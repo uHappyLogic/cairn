@@ -5,7 +5,7 @@ description: Analyze the current codebase and fill the "Relevant implementation 
 
 # specify-milestone-starting-implementation-state
 
-Reads the milestone goal, explores the Unity project's current state, and writes a concise technical summary into the `## Relevant implementation state` section of `requirements.md`. The output is reference material — not decisions — to ground the `## Implementation decisions` conversation that follows.
+Reads the milestone goal, explores the current project's codebase, and writes a concise technical summary into the `## Relevant implementation state` section of `requirements.md`. The output is reference material — not decisions — to ground the `## Implementation decisions` conversation that follows.
 
 ## Usage
 
@@ -30,19 +30,27 @@ Resolve `milestones/<milestone_id>/requirements.md`. If the file does not exist,
 
 Read `requirements.md` in full. Extract the `## Goal` section. This is the lens for everything that follows — only surface implementation state that is directly relevant to achieving or building on that goal.
 
-### 3. Explore the codebase
+### 3. Load the environment and explore the codebase
 
-Using the goal as a filter, investigate the Unity project under `eisenwolf/Assets/`. Focus on:
+**Guard:** Read `IMPLEMENTATION_ENVIRONMENT.md` at the workspace root. If it does not exist, stop and tell the user:
+```
+IMPLEMENTATION_ENVIRONMENT.md not found. Run /define-implementation-environment first to describe your project's tech stack, file organization, and tooling. Then re-run this skill.
+```
 
-- **Scripts** — find classes, MonoBehaviours, and systems whose names or responsibilities overlap with the goal. Read their public API (fields, methods, events). Skip internal implementation detail.
-- **Scenes** — identify which scenes exist and what GameObjects/components are present that relate to the goal.
-- **Prefabs** — note prefabs that the milestone will likely create, extend, or replace.
-- **Existing mechanics** — if the goal builds on an existing system (movement, camera, splines, input), describe its current behavior and exposed integration points.
+Extract from `IMPLEMENTATION_ENVIRONMENT.md`:
+- `## File Organization` — the directories that contain meaningful code; use these to anchor all exploration
+- `## MCP Tools` — whether any MCP tools are available for deeper inspection
+
+Using the goal as a filter, investigate the project under the directories listed in `## File Organization`. Focus on:
+
+- **Source files relevant to the goal** — find files, classes, modules, and components whose names or responsibilities overlap with the goal. Read their public API (exported functions/classes/types/interfaces). Skip internal implementation detail.
+- **Existing features** — if the goal builds on an existing system, describe its current behavior and exposed integration points.
+- **Configuration and data** — note relevant config files, schemas, database models, or data structures that the milestone will likely touch.
 - **Known gaps** — if the goal requires something that clearly does not exist yet, state it as a gap.
 
 Do not exhaustively catalog everything — stay goal-relevant. Depth over breadth: a precise description of one related system is more useful than a surface mention of ten.
 
-Use `find`, `grep`, and file reads via Bash and Read tools. You may also use Unity MCP tools (`mcp__UnityMCP__*`) if the Editor is running and the MCP server is active — e.g. `find_gameobjects`, `manage_scene`, `read_console` — but file-based exploration is sufficient when the Editor is not running.
+Use `find`, `grep`, and `Read` for file-based exploration. If MCP tools are listed in `## MCP Tools` and are relevant to exploration, use them.
 
 ### 4. Write the implementation state
 

@@ -22,6 +22,8 @@ No build system, no tests, no dependencies. Everything is plain Markdown.
 The skills form a linear pipeline. Each skill's SKILL.md defines its exact behaviour:
 
 ```
+define-implementation-environment ← one-time project setup: write IMPLEMENTATION_ENVIRONMENT.md
+update-implementation-environment ← update environment file when stack changes
 discuss-milestone-goal          ← optional sharpening conversation, creates no files
 define-milestone-goal           ← creates milestones/milestone_<N>_<slug>/ with requirements.md, TASKS_TODO.md, TASKS_DONE.md
 specify-milestone-starting-implementation-state ← fills "Relevant implementation state" in requirements.md
@@ -52,7 +54,9 @@ Each active milestone lives at `milestones/milestone_<N>_<slug>/` and contains e
 - `implement-backlog-tasks` (orchestrator) commits after each successful task; individual skills never commit.
 - `finish-current-milestone` must always run before `goto-next-milestone` — the pointer must never be advanced without a completion record.
 - Open questions in `requirements.md` must be fully resolved before `populate-backlog` can run.
+- `specify-milestone-starting-implementation-state`, `populate-backlog`, and `implement-backlog-task` (skill and agent) all require `IMPLEMENTATION_ENVIRONMENT.md` to exist. Run `define-implementation-environment` once at project setup to create it.
+- The `implement-backlog-task` agent always resolves `<MILESTONE_DIR>` by reading `CLAUDE.md` — it must never use a hardcoded backlog path.
 
 ## Current Milestone
 
-_(none yet — run `/define-milestone-goal` to start the first milestone)_
+_(none yet — run `/define-implementation-environment` then `/define-milestone-goal` to start the first milestone)_

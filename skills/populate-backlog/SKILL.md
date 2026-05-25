@@ -29,7 +29,9 @@ Read `CLAUDE.md` and extract the path from the `## Current Milestone` section (s
 
 ### 1. Read source documents
 
-Read `<MILESTONE_DIR>/requirements.md` in full. Also read any referenced scripts or assets mentioned in the **Relevant implementation state** section so you understand the exact starting point.
+Read `IMPLEMENTATION_ENVIRONMENT.md` at the workspace root. If it does not exist, stop and tell the user to run `/define-implementation-environment` first.
+
+Read `<MILESTONE_DIR>/requirements.md` in full. Also read any referenced files mentioned in the **Relevant implementation state** section so you understand the exact starting point.
 
 ### 2. Check for unresolved open questions
 
@@ -49,9 +51,9 @@ Break the milestone into discrete, independently-implementable tasks. Apply thes
 
 **Atomic scope** — each task should be completable in a single `/implement-backlog-task` invocation without requiring decisions from the user mid-task. A task that says "implement X and Y" is two tasks if X and Y can be done independently.
 
-**One system per task** — group by Unity system: one task for script changes, one for material/shader changes, one for scene hierarchy changes, one for prefab changes. Do not mix systems unless they are inseparable (e.g., creating a script and attaching it to a specific GameObject in the same operation).
+**One system per task** — group changes by the technology boundary or layer they touch, as defined by `## File Organization` and `## Tech Stack` in `IMPLEMENTATION_ENVIRONMENT.md`. For example: one task for backend API changes, one for frontend component changes, one for database schema changes; or for a Unity project: one task for script changes, one for prefab changes, one for scene hierarchy changes. Do not mix layers unless they are inseparable (e.g., a database migration and the code that reads the new column may need to be one task).
 
-**Dependency ordering** — place tasks in `TASKS_TODO.md` in the order they should be executed (top = highest priority, done first). A task that creates a script must appear before any task that attaches that script as a component. A task that adds a Unity layer must appear before any task that assigns GameObjects to that layer.
+**Dependency ordering** — place tasks in `TASKS_TODO.md` in the order they should be executed (top = highest priority, done first). A task that creates a module or schema must appear before any task that imports or references it. A task that adds a shared utility must appear before any task that uses it.
 
 **No open decisions** — all implementation choices must be resolved in the task description itself or traceable to the requirements document. A task must never say "choose the appropriate approach" — it must say exactly which approach.
 
@@ -79,10 +81,10 @@ Use this template for each task section:
 
 Guidelines for writing tasks suited for AI-agent execution:
 
-- **Steps must be imperative and concrete.** "Open `Assets/Scripts/RailCameraSnapper.cs` and add a coroutine `SwingCameraArc`" is good. "Update the camera script" is not.
-- **Reference exact file paths, class names, method names, and field names** as given in the requirements or discoverable from the current codebase.
-- **Quote numeric values, durations, easing functions, and thresholds** directly from the requirements doc — do not paraphrase.
-- **Success criteria must be checkable without human judgement.** Prefer: "Console shows no errors after compilation", "Component X is visible in the Inspector on GameObject Y", "Field Z reads value W in the Inspector". Avoid: "looks correct", "feels smooth".
+- **Steps must be imperative and concrete.** "Open `src/components/Button.tsx` and add a `disabled` prop" is good. "Update the button component" is not.
+- **Reference exact file paths, class names, function names, and field names** as given in the requirements or discoverable from the current codebase.
+- **Quote numeric values, durations, thresholds, and configuration values** directly from the requirements doc — do not paraphrase.
+- **Success criteria must be checkable without human judgement.** Prefer: "Build command exits with code 0", "File X exists at path Y", "Function Z is exported from module W". Avoid: "looks correct", "feels smooth".
 - **Do not include rationale or design discussion** — that belongs in the requirements doc. Tasks are instructions, not explanations.
 
 ### 5. Write TASKS_TODO.md
@@ -118,5 +120,5 @@ After writing the file, output a brief summary, and flag any requirement from th
 - Do not add "nice to have" polish tasks unless explicitly stated in the spec.
 - Do not create tasks for work already present in `TASKS_DONE.md`.
 - If the requirements doc references a current implementation that already satisfies a requirement, skip that task and note it in the report.
-- Tasks must be ordered so that each task's dependencies (scripts, layers, materials) are satisfied by earlier tasks in the list.
+- Tasks must be ordered so that each task's dependencies (modules, schemas, shared utilities) are satisfied by earlier tasks in the list.
 - Keep task titles short (4–8 words), title-cased, and unique within the file.
