@@ -22,8 +22,7 @@ No build system, no tests, no dependencies. Everything is plain Markdown.
 The skills form a linear pipeline. Each skill's SKILL.md defines its exact behaviour:
 
 ```
-define-implementation-environment ← one-time project setup: write IMPLEMENTATION_ENVIRONMENT.md
-update-implementation-environment ← update environment file when stack changes
+init-milestone-base-workflow    ← one-time bootstrap: create milestones/ + milestones/README.md, seed CLAUDE.md ## Current Milestone pointer
 discuss-milestone-goal          ← optional sharpening conversation, creates no files
 define-milestone-goal           ← creates milestones/milestone_<N>_<slug>/ with requirements.md, TASKS_TODO.md, TASKS_DONE.md
 specify-milestone-starting-implementation-state ← fills "Relevant implementation state" in requirements.md
@@ -49,14 +48,15 @@ Each active milestone lives at `milestones/milestone_<N>_<slug>/` and contains e
 
 ## Invariants to preserve when editing skills
 
+- `init-milestone-base-workflow` is the one-time bootstrap; it is additive and idempotent — it never overwrites an existing `milestones/README.md` or `CLAUDE.md`, only creating missing files and appending missing sections. It must leave both `CLAUDE.md` and `milestones/README.md` with an agreeing `## Current Milestone` section.
 - `answer-open-question` splits its arg on the first `.` — title before, answer after.
 - `implement-backlog-task` expects tasks as `##` sections in `TASKS_TODO.md`, each terminated by a `---` separator.
 - `implement-backlog-tasks` (orchestrator) commits after each successful task; individual skills never commit.
 - `finish-current-milestone` must always run before `goto-next-milestone` — the pointer must never be advanced without a completion record.
 - Open questions in `requirements.md` must be fully resolved before `populate-backlog` can run.
-- `specify-milestone-starting-implementation-state`, `populate-backlog`, and `implement-backlog-task` (skill and agent) all require `IMPLEMENTATION_ENVIRONMENT.md` to exist. Run `define-implementation-environment` once at project setup to create it.
+- `specify-milestone-starting-implementation-state`, `populate-backlog`, and `implement-backlog-task` (skill and agent) read the project's environment context (tech stack, build/test commands, MCP tools, conventions) from `CLAUDE.md`. Run `/init` once at project setup so `CLAUDE.md` documents it.
 - The `implement-backlog-task` agent always resolves `<MILESTONE_DIR>` by reading `CLAUDE.md` — it must never use a hardcoded backlog path.
 
 ## Current Milestone
 
-_(none yet — run `/define-implementation-environment` then `/define-milestone-goal` to start the first milestone)_
+_(none yet — run `/init` then `/define-milestone-goal` to start the first milestone)_

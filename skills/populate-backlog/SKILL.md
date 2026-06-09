@@ -29,7 +29,7 @@ Read `CLAUDE.md` and extract the path from the `## Current Milestone` section (s
 
 ### 1. Read source documents
 
-Read `IMPLEMENTATION_ENVIRONMENT.md` at the workspace root. If it does not exist, stop and tell the user to run `/define-implementation-environment` first.
+Read `CLAUDE.md` at the workspace root for the project's tech stack, file organization, and conventions. If it carries no such description, suggest the user run `/init` to enrich it first — task decomposition is sharper when grounded in the real environment — then proceed.
 
 Read `<MILESTONE_DIR>/requirements.md` in full. Also read any referenced files mentioned in the **Relevant implementation state** section so you understand the exact starting point.
 
@@ -51,7 +51,7 @@ Break the milestone into discrete, independently-implementable tasks. Apply thes
 
 **Atomic scope** — each task should be completable in a single `/implement-backlog-task` invocation without requiring decisions from the user mid-task. A task that says "implement X and Y" is two tasks if X and Y can be done independently.
 
-**One system per task** — group changes by the technology boundary or layer they touch, as defined by `## File Organization` and `## Tech Stack` in `IMPLEMENTATION_ENVIRONMENT.md`. For example: one task for backend API changes, one for frontend component changes, one for database schema changes; or for a Unity project: one task for script changes, one for prefab changes, one for scene hierarchy changes. Do not mix layers unless they are inseparable (e.g., a database migration and the code that reads the new column may need to be one task).
+**One system per task** — group changes by the technology boundary or layer they touch, as defined by the file organization and tech stack documented in `CLAUDE.md`. For example: one task for backend API changes, one for frontend component changes, one for database schema changes; or for a Unity project: one task for script changes, one for prefab changes, one for scene hierarchy changes. Do not mix layers unless they are inseparable (e.g., a database migration and the code that reads the new column may need to be one task).
 
 **Dependency ordering** — place tasks in `TASKS_TODO.md` in the order they should be executed (top = highest priority, done first). A task that creates a module or schema must appear before any task that imports or references it. A task that adds a shared utility must appear before any task that uses it.
 

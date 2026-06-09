@@ -31,20 +31,18 @@ Parse the full task description: requirements, steps, success criteria, and any 
 
 ### 3. Load the implementation environment
 
-Read `IMPLEMENTATION_ENVIRONMENT.md` at the workspace root. If it does not exist, stop and tell the user to run `/define-implementation-environment` first.
-
-Extract and hold in context:
-- `## MCP Tools` — the set of available MCP tools for this project
-- `## Build & Test Commands` — commands to verify changes after editing
-- `## Key Conventions` — post-edit verification steps to always follow
+Read `CLAUDE.md` at the workspace root and hold in context:
+- Available MCP tools for this project
+- Build & test commands — how to verify changes after editing
+- Conventions — post-edit verification steps to always follow
 
 ### 4. Implement the task
 
 Execute all steps described in the task.
 
-After any source file creation or modification, follow the post-edit steps from `## Key Conventions` and run the relevant verification command from `## Build & Test Commands`. Fix any errors before continuing.
+After any source file creation or modification, follow the post-edit conventions and run the relevant verification command from `CLAUDE.md`. Fix any errors before continuing.
 
-Use MCP tools listed in `## MCP Tools` where the task steps call for them. For file edits use `Read` then `Edit`. For shell commands use `Bash`.
+Use the MCP tools documented in `CLAUDE.md` where the task steps call for them. For file edits use `Read` then `Edit`. For shell commands use `Bash`.
 
 ### 5. Verify it works
 
@@ -61,6 +59,6 @@ Use the `Edit` tool for both files.
 
 ## Rules
 
-- Follow `## Key Conventions` from `IMPLEMENTATION_ENVIRONMENT.md` for all post-edit verification — do not skip these steps.
+- Follow the conventions from `CLAUDE.md` for all post-edit verification — do not skip these steps.
 - Do not move the task to TASKS_DONE.md until every success criterion is confirmed.
 - If a step fails, diagnose the root cause using available tools and fix before continuing — do not mark partial work as done.

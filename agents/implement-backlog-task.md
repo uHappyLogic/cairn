@@ -25,25 +25,21 @@ Parse the full task body: description, numbered steps, and the **Success** secti
 
 ### 2. Load the implementation environment
 
-Read `IMPLEMENTATION_ENVIRONMENT.md` at the workspace root.
-
-- If the file does not exist, output `FAILED: IMPLEMENTATION_ENVIRONMENT.md not found — run /define-implementation-environment first` and stop.
-
-Extract and hold in context:
-- `## MCP Tools` — what tools are available and what they are for
-- `## Build & Test Commands` — commands to verify changes after editing
-- `## Key Conventions` — post-edit verification steps to always follow
+Read `CLAUDE.md` at the workspace root and hold in context:
+- Available MCP tools — what tools are available and what they are for
+- Build & test commands — commands to verify changes after editing
+- Conventions — post-edit verification steps to always follow
 
 ### 3. Implement the task
 
 Execute the task steps in order.
 
-**After creating or modifying any source file**, follow the post-edit steps from `## Key Conventions` in `IMPLEMENTATION_ENVIRONMENT.md`. At minimum, run the relevant verification command from `## Build & Test Commands` and fix any errors before continuing.
+**After creating or modifying any source file**, follow the post-edit conventions documented in `CLAUDE.md`. At minimum, run the relevant verification command and fix any errors before continuing.
 
 **Tool patterns:**
 - Read or edit a file: `Read` then `Edit`
 - Run a shell command: `Bash`
-- MCP-based operations: use the tool from `## MCP Tools` that matches the goal
+- MCP-based operations: use the MCP tool documented in `CLAUDE.md` that matches the goal
 
 ### 4. Verify success criteria
 
@@ -51,7 +47,7 @@ Re-read the task's **Success** section. For each criterion:
 - Source file criteria: check the file contents with `Read`.
 - Command-output criteria: run the specified command via `Bash` and check the output.
 - Structural criteria: use `find` or `Bash` to confirm files or exports exist where expected.
-- MCP-based criteria: use the relevant tool from `## MCP Tools`.
+- MCP-based criteria: use the relevant MCP tool documented in `CLAUDE.md`.
 
 Do not proceed to Step 5 until every criterion passes.
 
@@ -70,7 +66,7 @@ Output your final status on its own line:
 
 ## Rules
 
-- Always follow `## Key Conventions` from `IMPLEMENTATION_ENVIRONMENT.md` — do not skip post-edit verification steps.
+- Always follow the conventions from `CLAUDE.md` — do not skip post-edit verification steps.
 - Never mark a task done until every success criterion is confirmed.
 - Never update the backlog until Step 4 passes completely.
 - If a step fails, diagnose the root cause using available tools, fix it, and retry. Do not skip steps or mark partial work as done.

@@ -12,13 +12,15 @@ Each milestone lives in `milestones/milestone_<N>_<slug>/` and contains three fi
 
 The plugin provides skills that operate on the current milestone's files. `CLAUDE.md` and `milestones/README.md` are the source of truth for which milestone is current.
 
-Before starting the first milestone, run `/define-implementation-environment` to describe the project's tech stack, available tooling, and file organization. Skills use this file instead of assuming any particular environment.
+Before starting the first milestone, run `/init` so `CLAUDE.md` documents the project's tech stack, available tooling, and file organization. Skills read this environment context from `CLAUDE.md` instead of assuming any particular environment.
 
 ## Workflow overview
 
 ```
-define-implementation-environment ← one-time project setup (run once per new project)
-         ↓ (re-run update-implementation-environment when stack changes)
+init-milestone-base-workflow    ← one-time bootstrap: create milestones/ + README, seed CLAUDE.md pointer
+         ↓
+/init                           ← one-time project setup: document tech stack/tooling in CLAUDE.md
+         ↓
 discuss-milestone-goal          ← optional: sharpen a vague idea before defining
          ↓
 define-milestone-goal           ← create the milestone directory and seed requirements.md
@@ -46,13 +48,9 @@ Run `highlight-milestone-requirements-open-questions` as many times as needed �
 
 ## Skills
 
-### `define-implementation-environment [<intro>]`
+### `init-milestone-base-workflow`
 
-Analyzes the workspace (package.json, pyproject.toml, Cargo.toml, directory structure, etc.) and writes `IMPLEMENTATION_ENVIRONMENT.md` describing the project root, tech stack, MCP tools, build/test commands, file organization, and key conventions. Run once per project before the first milestone. Use `<intro>` for context that cannot be auto-discovered — most importantly, which MCP servers are connected.
-
-### `update-implementation-environment <description>`
-
-Reads `IMPLEMENTATION_ENVIRONMENT.md` and updates the relevant section(s) based on the description. Use when the build system changes, a new MCP server is added, conventions evolve, or the file organization is restructured.
+One-time bootstrap for a project. Creates the `milestones/` directory and `milestones/README.md`, and ensures `CLAUDE.md` carries the `## Milestone Workflow` guidance and the `## Current Milestone` pointer that every other skill reads. Additive and idempotent — it creates missing scaffolding and inserts missing sections into existing files, but never overwrites content that is already there. Run this before any other workflow skill.
 
 ### `discuss-milestone-goal <overall_goal_description>`
 
@@ -64,7 +62,7 @@ Creates a new `milestones/milestone_<N>_<slug>/` directory with `requirements.md
 
 ### `specify-milestone-starting-implementation-state <milestone_id>`
 
-Reads the milestone goal, explores the project using the file organization defined in `IMPLEMENTATION_ENVIRONMENT.md`, and writes a concise technical summary into the `## Relevant implementation state` section of `requirements.md`. Sets up the context needed to make implementation decisions.
+Reads the milestone goal, explores the project using the file organization documented in `CLAUDE.md`, and writes a concise technical summary into the `## Relevant implementation state` section of `requirements.md`. Sets up the context needed to make implementation decisions.
 
 ### `highlight-milestone-requirements-open-questions`
 
@@ -100,7 +98,8 @@ Creates the next milestone directory with empty starter files and updates the cu
 
 ## Rules
 
-- Run `/define-implementation-environment` once before starting the first milestone. Skills that explore or implement code require `IMPLEMENTATION_ENVIRONMENT.md` to exist.
+- Run `/init-milestone-base-workflow` once before anything else — it creates `milestones/` and the current-milestone pointer the other skills depend on.
+- Run `/init` once before starting the first milestone so `CLAUDE.md` documents the tech stack, tooling, and conventions. Skills that explore or implement code read this environment context from `CLAUDE.md`.
 - Never skip `/finish-current-milestone` before `/goto-next-milestone` — the pointer in `CLAUDE.md` must always reflect the active milestone.
 - Open questions in `requirements.md` must be resolved before running `/populate-backlog`.
 - Skills never commit — staging and committing is always left to the user (except `/implement-backlog-tasks`, which commits after each task).

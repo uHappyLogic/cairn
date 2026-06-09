@@ -32,16 +32,13 @@ Read `requirements.md` in full. Extract the `## Goal` section. This is the lens 
 
 ### 3. Load the environment and explore the codebase
 
-**Guard:** Read `IMPLEMENTATION_ENVIRONMENT.md` at the workspace root. If it does not exist, stop and tell the user:
-```
-IMPLEMENTATION_ENVIRONMENT.md not found. Run /define-implementation-environment first to describe your project's tech stack, file organization, and tooling. Then re-run this skill.
-```
+Read `CLAUDE.md` at the workspace root for the project's environment. If it carries no description of the tech stack or file organization, suggest the user run `/init` to enrich it first — richer project context yields a sharper implementation-state summary — then proceed with whatever the codebase reveals.
 
-Extract from `IMPLEMENTATION_ENVIRONMENT.md`:
-- `## File Organization` — the directories that contain meaningful code; use these to anchor all exploration
-- `## MCP Tools` — whether any MCP tools are available for deeper inspection
+Extract from `CLAUDE.md`:
+- File organization / directory layout — the directories that contain meaningful code; use these to anchor all exploration
+- Available MCP tools — whether any MCP tools are available for deeper inspection
 
-Using the goal as a filter, investigate the project under the directories listed in `## File Organization`. Focus on:
+Using the goal as a filter, investigate the project under the directories documented in `CLAUDE.md`. Focus on:
 
 - **Source files relevant to the goal** — find files, classes, modules, and components whose names or responsibilities overlap with the goal. Read their public API (exported functions/classes/types/interfaces). Skip internal implementation detail.
 - **Existing features** — if the goal builds on an existing system, describe its current behavior and exposed integration points.
@@ -50,7 +47,7 @@ Using the goal as a filter, investigate the project under the directories listed
 
 Do not exhaustively catalog everything — stay goal-relevant. Depth over breadth: a precise description of one related system is more useful than a surface mention of ten.
 
-Use `find`, `grep`, and `Read` for file-based exploration. If MCP tools are listed in `## MCP Tools` and are relevant to exploration, use them.
+Use `find`, `grep`, and `Read` for file-based exploration. If MCP tools are documented in `CLAUDE.md` and are relevant to exploration, use them.
 
 ### 4. Write the implementation state
 
