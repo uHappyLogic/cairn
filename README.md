@@ -78,7 +78,15 @@ Records the resolution of a named open question in `requirements.md`, updating t
 
 ### `populate-backlog`
 
-Converts the current milestone's `requirements.md` into `TASKS_TODO.md` — a complete, dependency-ordered list of atomic, AI-executable tasks. Requires all open questions to be resolved first.
+Converts the current milestone's `requirements.md` into `TASKS_TODO.md` — a complete, dependency-ordered list of atomic, AI-executable tasks. It decomposes the milestone into high-level task briefs, proves every requirement is covered with a requirement→task matrix, then delegates the detailed authoring of each task to the `submit-backlog-task` agent (one brief at a time, in dependency order). Requires all open questions to be resolved first.
+
+### `discuss-new-backlog-task <issue description>`
+
+Clarifies a rough or oversized issue discovered mid-implementation into one or more clear, task-sized briefs through a short conversation, then hands each off to `/submit-backlog-task`. Writes nothing itself. Use it when the affected system, desired behavior, or verification isn't yet clear, or when one issue is really several tasks.
+
+### `submit-backlog-task <issue description>`
+
+Adds a single, already-clear issue to `TASKS_TODO.md`. The skill triages for duplicates and decides where the task belongs, then delegates the detailed authoring to the `submit-backlog-task` agent. For vague or multi-task issues, route through `/discuss-new-backlog-task` first.
 
 ### `implement-backlog-tasks`
 
@@ -95,6 +103,13 @@ Verifies all tasks are done, writes a completion summary to `milestones/README.m
 ### `goto-next-milestone <number> <title>`
 
 Creates the next milestone directory with empty starter files and updates the current-milestone pointer in both `CLAUDE.md` and `milestones/README.md`. Only runnable after `/finish-current-milestone` has been called.
+
+## Agents
+
+Two subagents do per-task work in a clean context so detailed technical reasoning never pollutes the orchestrating skill's memory. They are spawned by skills, not invoked directly:
+
+- **`submit-backlog-task`** — authors one fully-specified task from a high-level brief and inserts it into `TASKS_TODO.md` at a caller-given position. Spawned by `populate-backlog` (bulk) and the `submit-backlog-task` skill (ad-hoc). Owns the task-body template.
+- **`implement-backlog-task`** — implements one named task, verifies its success criteria, and moves it to `TASKS_DONE.md`. Spawned by `implement-backlog-tasks`.
 
 ## Rules
 

@@ -1,11 +1,15 @@
 ---
 name: populate-backlog
-description: Convert the current milestone's requirements.md into implementation-ready tasks in TASKS_TODO.md, ordered by dependency and sized for agentic execution.
+description: Convert the current milestone's requirements.md into a complete, dependency-ordered TASKS_TODO.md. Decomposes the milestone into high-level task briefs, proves every requirement is covered, then delegates the detailed authoring of each task to the submit-backlog-task agent.
 ---
 
 # populate-backlog
 
 Reads the current milestone requirements and populates `TASKS_TODO.md` with a complete, dependency-ordered list of implementation tasks ready for AI-driven execution via `/implement-backlog-task`.
+
+Your job here is **decomposition and coverage**, not task authoring. You split the milestone into high-level task briefs and prove that those briefs cover every requirement — that whole-milestone view is the thing most likely to break if you get lost in file-paths and method names. The detailed, per-task technical authoring (steps, exact paths, success criteria) is delegated, one task at a time, to the `submit-backlog-task` agent. That keeps each task's technical reasoning out of your context so your attention stays on completeness and ordering.
+
+This mirrors the implement side: `implement-backlog-tasks` orchestrates and `implement-backlog-task` does the per-task work in a clean context. Here, you orchestrate and `submit-backlog-task` (the agent) does the per-task authoring.
 
 ## Usage
 
@@ -17,25 +21,24 @@ No arguments. The skill always reads from and writes to the current milestone di
 
 ## Preconditions
 
-Before running this skill:
-- All open questions in the current milestone's `requirements.md` must be resolved (no `> **Open question` blocks remain). If any are found, stop and tell the user to run `/answer-open-question` for each one first.
-- `TASKS_TODO.md` should be empty or contain only tasks from a previous milestone that are now stale.
+- All open questions in the current milestone's `requirements.md` must be resolved (no `> **Open question` blocks remain).
+- `TASKS_TODO.md` should be empty or contain only stale tasks from a previous milestone; this skill replaces its contents.
 
 ## Workflow
 
 ### 0. Find the current milestone
 
-Read `CLAUDE.md` and extract the path from the `## Current Milestone` section (shown in backticks, e.g. `milestones/milestone_11_tbd/`). Use this as `<MILESTONE_DIR>` throughout this workflow.
+Read `CLAUDE.md` and extract the path from the `## Current Milestone` section (shown in backticks, e.g. `milestones/milestone_11_tbd/`). Use this as `<MILESTONE_DIR>` throughout.
 
 ### 1. Read source documents
 
-Read `CLAUDE.md` at the workspace root for the project's tech stack, file organization, and conventions. If it carries no such description, suggest the user run `/init` to enrich it first — task decomposition is sharper when grounded in the real environment — then proceed.
+Read `CLAUDE.md` at the workspace root for the project's tech stack, file organization, and conventions. If it carries no such description, suggest the user run `/init` first — decomposition is sharper when grounded in the real environment — then proceed.
 
-Read `<MILESTONE_DIR>/requirements.md` in full. Also read any referenced files mentioned in the **Relevant implementation state** section so you understand the exact starting point.
+Read `<MILESTONE_DIR>/requirements.md` in full, plus any files referenced in its **Relevant implementation state** section, so you understand the exact starting point.
 
 ### 2. Check for unresolved open questions
 
-Scan `<MILESTONE_DIR>/requirements.md` for any `> **Open question` blocks. If any exist, stop immediately and output:
+Scan `requirements.md` for any `> **Open question` blocks. If any exist, stop immediately and output:
 
 ```
 Cannot populate backlog: the following open questions must be resolved first:
@@ -45,80 +48,72 @@ Cannot populate backlog: the following open questions must be resolved first:
 Run /answer-open-question for each one, then re-run /populate-backlog.
 ```
 
-### 3. Decompose requirements into tasks
+### 3. Decompose into high-level task briefs
 
-Break the milestone into discrete, independently-implementable tasks. Apply these decomposition rules:
+Break the milestone into discrete, independently-implementable task briefs. A **brief** is high-level — it names the affected system, the desired behavior, and how it would be verified. It does **not** contain file paths, method names, numbered steps, or success criteria; that detail is the agent's job. Keeping briefs high-level is deliberate: it lets you hold many more of them in mind at once and reason about whether they cover everything.
 
-**Atomic scope** — each task should be completable in a single `/implement-backlog-task` invocation without requiring decisions from the user mid-task. A task that says "implement X and Y" is two tasks if X and Y can be done independently.
+Apply these rules:
 
-**One system per task** — group changes by the technology boundary or layer they touch, as defined by the file organization and tech stack documented in `CLAUDE.md`. For example: one task for backend API changes, one for frontend component changes, one for database schema changes; or for a Unity project: one task for script changes, one for prefab changes, one for scene hierarchy changes. Do not mix layers unless they are inseparable (e.g., a database migration and the code that reads the new column may need to be one task).
+- **Atomic scope** — each brief must be completable in a single `/implement-backlog-task` invocation, with no mid-task decisions. "Implement X and Y" is two briefs when X and Y can be built and verified independently.
+- **One system per brief** — group by the technology boundary or layer it touches, as defined by the file organization in `CLAUDE.md` (e.g. backend API / frontend component / DB schema; or for Unity: scripts / prefabs / scene hierarchy). Do not mix layers unless they are inseparable.
+- **No "nice to have" briefs** — only what the spec states. Do not pad the backlog.
 
-**Dependency ordering** — place tasks in `TASKS_TODO.md` in the order they should be executed (top = highest priority, done first). A task that creates a module or schema must appear before any task that imports or references it. A task that adds a shared utility must appear before any task that uses it.
+### 4. Prove coverage (requirement → task matrix)
 
-**No open decisions** — all implementation choices must be resolved in the task description itself or traceable to the requirements document. A task must never say "choose the appropriate approach" — it must say exactly which approach.
+This is the step that most directly fixes "the backlog missed something." Re-read `requirements.md` bullet by bullet and build a traceability matrix mapping **every** requirement, constraint, and behavioral detail to at least one brief:
 
-**Completeness** — every requirement, constraint, and behavioral detail from the spec must be traceable to at least one task. After decomposing, do a gap check: re-read each bullet point in the requirements and confirm it appears in a task.
-
-### 4. Write each task
-
-Use this template for each task section:
-
-```markdown
-## <Task Title>
-
-<1–3 sentence description of what this task does and why it is needed in this milestone.>
-
-**Steps:**
-1. <Concrete, tool-actionable step.>
-2. <...>
-
-**Success:**
-- <Verifiable criterion — ideally observable in the Editor or Console without running the game.>
-- <...>
-
----
+```
+| Requirement (quote/paraphrase) | Covered by brief |
+|--------------------------------|------------------|
+| ...                            | <brief title>    |
 ```
 
-Guidelines for writing tasks suited for AI-agent execution:
+- Every requirement must map to ≥1 brief. If a requirement maps to none, you have a gap — add a brief (or note why it's already satisfied by existing code per the **Relevant implementation state**).
+- If a requirement is already satisfied by the current implementation, mark it so and do not create a brief for it.
+- Do not invent requirements that aren't in the spec.
 
-- **Steps must be imperative and concrete.** "Open `src/components/Button.tsx` and add a `disabled` prop" is good. "Update the button component" is not.
-- **Reference exact file paths, class names, function names, and field names** as given in the requirements or discoverable from the current codebase.
-- **Quote numeric values, durations, thresholds, and configuration values** directly from the requirements doc — do not paraphrase.
-- **Success criteria must be checkable without human judgement.** Prefer: "Build command exits with code 0", "File X exists at path Y", "Function Z is exported from module W". Avoid: "looks correct", "feels smooth".
-- **Do not include rationale or design discussion** — that belongs in the requirements doc. Tasks are instructions, not explanations.
+Do not proceed until the matrix has no unexplained gaps.
 
-### 5. Write TASKS_TODO.md
+### 5. Order the briefs by dependency
 
-Replace the content of `<MILESTONE_DIR>/TASKS_TODO.md` entirely with the generated task list. Use this file structure:
+Order briefs so each one's prerequisites come first: a brief that creates a module, schema, or shared utility must precede any brief that imports or references it. The top of `TASKS_TODO.md` is the highest priority / done first.
+
+### 6. Present the plan, then initialize the file
+
+Show the user the ordered brief list and the coverage matrix (or a short summary of it, flagging anything already-satisfied or any residual gap). This is the cheap moment to correct ordering or scope — before authoring N tasks. Then proceed (the user can interrupt to adjust).
+
+Initialize `<MILESTONE_DIR>/TASKS_TODO.md` to a clean header so the agent has an empty file to append into:
 
 ```markdown
 # TASKS TODO
-
-## <Task 1 Title>
-
-...
-
----
-
-## <Task 2 Title>
-
-...
-
----
 ```
 
-Preserve the `---` separator between tasks so `/implement-backlog-task` can reliably parse sections.
+### 7. Delegate authoring, one brief at a time, in order
 
-### 6. Report
+For each brief, **in dependency order**, spawn the `submit-backlog-task` agent with the `Agent` tool (`subagent_type: "submit-backlog-task"`). Send the brief and `POSITION: append` — because you submit in dependency order, appending each task yields the correct final order, and the agent never has to re-derive ordering:
 
-After writing the file, output a brief summary, and flag any requirement from the spec that you could not trace to a task (flag as a gap, do not silently omit)
+```
+Author and insert one backlog task.
+
+BRIEF:
+<the high-level brief: affected system, desired behavior, how to verify>
+
+POSITION: append
+```
+
+**Run these sequentially, never in parallel** — every agent mutates the same `TASKS_TODO.md`, so concurrent runs would clobber each other. Wait for each agent to return before spawning the next.
+
+- If an agent returns `FAILED: <reason>`, stop, report which brief failed and why, and do not continue. Never author the task yourself as a fallback.
+- If an agent's final line flags a leftover piece (it judged the brief to contain two tasks), decide whether to spawn a follow-up agent for the remainder or fold it in, then continue.
+
+### 8. Verify coverage and report
+
+Re-read the finished `<MILESTONE_DIR>/TASKS_TODO.md`. Confirm every brief from the matrix produced a task section. Output a brief summary: the ordered task titles, and explicitly flag any requirement you could not trace to a task (flag as a gap — never silently omit).
 
 ## Rules
 
-- Never invent requirements not present in the spec — tasks must be traceable to the document.
-- Never omit a requirement — if it is in the spec it must appear in a task.
-- Do not add "nice to have" polish tasks unless explicitly stated in the spec.
-- Do not create tasks for work already present in `TASKS_DONE.md`.
-- If the requirements doc references a current implementation that already satisfies a requirement, skip that task and note it in the report.
-- Tasks must be ordered so that each task's dependencies (modules, schemas, shared utilities) are satisfied by earlier tasks in the list.
-- Keep task titles short (4–8 words), title-cased, and unique within the file.
+- Your output is briefs + ordering + coverage. Do not write task steps, file paths, or success criteria yourself — that is the agent's job, and duplicating it both pollutes your context and risks diverging from the agent's template.
+- Never invent requirements not present in the spec; never omit one that is.
+- Do not create tasks for work already in `TASKS_DONE.md`, or for requirements already satisfied by the current implementation (note these in the report instead).
+- Submit briefs in dependency order with `POSITION: append`; let the agent own task wording and the caller (you) own order.
+- Spawn authoring agents sequentially, one at a time. Stop on the first `FAILED`.
