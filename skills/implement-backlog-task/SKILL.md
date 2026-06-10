@@ -1,11 +1,11 @@
 ---
 name: implement-backlog-task
-description: Implement a named task from the current milestone's TASKS_TODO.md, then move it to TASKS_DONE.md.
+description: Implement a single named task from the current milestone's TASKS_TODO.md, then move it to TASKS_DONE.md. Thin user-facing entry point that delegates the work to the implement-backlog-task agent.
 ---
 
 # implement-backlog-task
 
-Implement the task whose `##` heading matches the name given in the skill argument.
+Thin wrapper. Implements one ad-hoc named task by spawning the `implement-backlog-task` agent, which owns the full implementation procedure (find task → load environment → implement → verify success criteria → move TODO→DONE). Keeping the procedure in a single place — the agent — means the `implement-backlog-tasks` orchestrator and this single-task entry point can never drift apart.
 
 ## Invocation
 
@@ -13,52 +13,27 @@ Implement the task whose `##` heading matches the name given in the skill argume
 /implement-backlog-task <task name>
 ```
 
-`<task name>` is the full or partial text of a `##` heading in the current milestone's `TASKS_TODO.md`.
+`<task name>` is the full or partial text of a `##` heading in the current milestone's `TASKS_TODO.md`. The agent resolves the current milestone itself (from `CLAUDE.md`), so nothing needs to be looked up here first.
 
 ## Workflow
 
-### 0. Find the current milestone
+### 1. Spawn the implementation agent
 
-Read `CLAUDE.md` and extract the path from the `## Current Milestone` section (shown in backticks, e.g. `milestones/milestone_11_tbd/`). Use this as `<MILESTONE_DIR>` throughout this workflow.
+Use the `Agent` tool with `subagent_type: "implement-backlog-task"` and a prompt containing only the task name:
 
-### 1. Find the task
+```
+Implement the task named: "<task name>"
+```
 
-Read `<MILESTONE_DIR>/TASKS_TODO.md` and locate the `##` section whose heading matches (case-insensitive, partial match is fine). If no match is found, list all available task headings and stop.
+Wait for the agent to return. It runs in an isolated context and ends with `DONE` or `FAILED: <reason>`.
 
-### 2. Read and understand the task
+### 2. Relay the result
 
-Parse the full task description: requirements, steps, success criteria, and any code snippets.
-
-### 3. Load the implementation environment
-
-Read `CLAUDE.md` at the workspace root and hold in context:
-- Available MCP tools for this project
-- Build & test commands — how to verify changes after editing
-- Conventions — post-edit verification steps to always follow
-
-### 4. Implement the task
-
-Execute all steps described in the task.
-
-After any source file creation or modification, follow the post-edit conventions and run the relevant verification command from `CLAUDE.md`. Fix any errors before continuing.
-
-Use the MCP tools documented in `CLAUDE.md` where the task steps call for them. For file edits use `Read` then `Edit`. For shell commands use `Bash`.
-
-### 5. Verify it works
-
-Re-read the task's **Success** section and confirm each criterion is met.
-
-### 6. Update the milestone backlog
-
-Once all success criteria pass:
-
-1. **Remove** the completed `##` section (and its trailing `---` separator) from `<MILESTONE_DIR>/TASKS_TODO.md`.
-2. **Append** the same section to `<MILESTONE_DIR>/TASKS_DONE.md` under a `---` separator.
-
-Use the `Edit` tool for both files.
+- If the agent reports `DONE`, tell the user the task was implemented and moved to `TASKS_DONE.md`.
+- If the agent reports `FAILED` (including the no-matching-task case), relay the failure reason to the user. If no task matched, point them at the available headings the agent reported so they can retry with a correct name.
+- If the agent returns without an explicit `DONE` or `FAILED`, treat it as a failure: report what came back and stop. **Never implement the task yourself as a fallback.**
 
 ## Rules
 
-- Follow the conventions from `CLAUDE.md` for all post-edit verification — do not skip these steps.
-- Do not move the task to TASKS_DONE.md until every success criterion is confirmed.
-- If a step fails, diagnose the root cause using available tools and fix before continuing — do not mark partial work as done.
+- This skill only spawns the agent and relays its result — it never implements tasks directly, even when the agent fails.
+- Do not commit. Committing belongs to the `implement-backlog-tasks` orchestrator alone; an ad-hoc single-task run leaves the changes staged for the user to review and commit.
