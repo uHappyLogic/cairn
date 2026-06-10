@@ -65,6 +65,7 @@ Each active milestone lives at `milestones/milestone_<N>_<slug>/` and contains e
 - `submit-backlog-task` exists as both a thin user-facing skill (triage + dedup + positioning) and an agent (authoring). The skill decides the insert position from the whole-backlog view and passes it to the agent; the agent must not re-derive global ordering.
 - `implement-backlog-task` exists as both a thin user-facing skill (spawn + relay) and an agent (the procedure). The implementation procedure — find task, load environment, implement, verify success criteria, move TODO→DONE — lives in exactly one place: the agent. The skill must not duplicate it; it only spawns the agent and relays `DONE`/`FAILED`. Both the skill and the `implement-backlog-tasks` orchestrator reach the procedure through that single agent.
 - The `implement-backlog-task` and `submit-backlog-task` agents always resolve `<MILESTONE_DIR>` by reading `CLAUDE.md` — they must never use a hardcoded backlog path.
+- Task altitude is split between the two agents: `submit-backlog-task` authors **high-level** steps (the *what* — a flow plus the names/thresholds that form the task's contract for sibling tasks), and the `implement-backlog-task` agent owns the **detailed implementation design** (the *how* — exact code, insertion points, assertion wording, decided fresh against the live codebase). Keep task bodies concise to save tokens; never push line-by-line implementation detail back into authored tasks.
 
 ## Current Milestone
 

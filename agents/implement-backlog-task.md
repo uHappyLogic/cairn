@@ -32,7 +32,11 @@ Read `CLAUDE.md` at the workspace root and hold in context:
 
 ### 3. Implement the task
 
-Execute the task steps in order.
+**The task steps are intentionally high-level — they describe *what* to achieve, not the exact code.** You own the implementation design. Translate each step into concrete edits yourself: the exact files and insertion points, the precise statements, the assertion wording, the helper structure. Ground every decision in the live codebase (read the real source you are touching) and in the conventions from `CLAUDE.md`, not in assumptions. Where the task names a specific file, method, class, field, or threshold, treat that as a fixed contract other tasks depend on — honor those names exactly; design everything around them freely.
+
+If a step leaves genuine ambiguity, resolve it the way the task's description, the **Success** criteria, and `requirements.md` most plausibly intend — the success criteria are your target; whatever satisfies them faithfully is correct. Do not pause to widen scope or invent requirements the task did not ask for.
+
+Execute the steps in order.
 
 **After creating or modifying any source file**, follow the post-edit conventions documented in `CLAUDE.md`. At minimum, run the relevant verification command and fix any errors before continuing.
 

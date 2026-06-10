@@ -108,8 +108,8 @@ Creates the next milestone directory with empty starter files and updates the cu
 
 Two subagents do per-task work in a clean context so detailed technical reasoning never pollutes the orchestrating skill's memory. They are spawned by skills, not invoked directly:
 
-- **`submit-backlog-task`** — authors one fully-specified task from a high-level brief and inserts it into `TASKS_TODO.md` at a caller-given position. Spawned by `populate-backlog` (bulk) and the `submit-backlog-task` skill (ad-hoc). Owns the task-body template.
-- **`implement-backlog-task`** — implements one named task, verifies its success criteria, and moves it to `TASKS_DONE.md`. Owns the full implementation procedure. Spawned by the `implement-backlog-tasks` orchestrator (bulk) and the `implement-backlog-task` skill (ad-hoc).
+- **`submit-backlog-task`** — authors one well-scoped task from a high-level brief and inserts it into `TASKS_TODO.md` at a caller-given position. Keeps the task at contract altitude: *what* to achieve plus the names and thresholds sibling tasks depend on, not the line-by-line code. Spawned by `populate-backlog` (bulk) and the `submit-backlog-task` skill (ad-hoc). Owns the task-body template.
+- **`implement-backlog-task`** — implements one named task, verifies its success criteria, and moves it to `TASKS_DONE.md`. Owns the full implementation procedure **and the detailed implementation design** — it turns the task's high-level steps into concrete code against the live codebase. Spawned by the `implement-backlog-tasks` orchestrator (bulk) and the `implement-backlog-task` skill (ad-hoc).
 
 ## Rules
 
