@@ -1,99 +1,51 @@
 ---
 name: goto-next-milestone
-description: Advance the project to a new milestone — creates the milestone directory and updates all current-milestone references in CLAUDE.md and milestones/README.md.
+description: Activate an already-defined milestone — scans milestones/ for a defined-but-not-yet-active directory and updates CLAUDE.md and milestones/README.md to point to it as the current milestone. Requires finish-current-milestone to have been run first (current pointer must be "none").
 ---
 
 # goto-next-milestone
 
-Creates a new milestone directory with empty starter files, then updates `CLAUDE.md` and `milestones/README.md` to point to the new milestone as the current one. Run this after `/finish-milestone` has recorded the previous milestone's accomplishments.
+Activates an already-defined milestone by updating `CLAUDE.md` and `milestones/README.md` to point to it as the current milestone. The milestone directory must already exist (created by `/define-milestone-goal`). Run this after `/finish-current-milestone` has cleared the current pointer to "none".
 
 ## Usage
 
 ```
-/goto-next-milestone <number> <title>
+/goto-next-milestone
 ```
 
-- `<number>`: the milestone number (integer, e.g. `5`)
-- `<title>`: a short human-readable title (e.g. `player-shooting`)
-
-The directory slug is derived by converting `<title>` to lowercase kebab-case.
-
-**Example:**
-```
-/goto-next-milestone 7 WebGL Demo on GitHub Pages
-```
-Creates `milestones/milestone_7_webgl-demo-on-github-pages/`.
+No arguments. The milestone to activate is discovered automatically.
 
 ## Workflow
 
-### 1. Parse the input
+### 1. Check prerequisites
 
-Split the args: the first token is `<number>`, the rest is `<title>`. Derive `<slug>` by lowercasing `<title>` and replacing spaces with hyphens. The full directory name is `milestone_<number>_<slug>`.
+Read `CLAUDE.md`. If `## Current Milestone` does not show the "none" state (i.e. it still points to an active milestone path), stop and tell the user to run `/finish-current-milestone` first.
 
-If `<number>` or `<title>` is missing, report the expected format and stop.
+### 2. Find the candidate milestone
 
-### 2. Check for conflicts
+Read `milestones/README.md` and scan `milestones/` to collect:
+- All directories matching `milestone_<N>_<slug>/`
+- All milestone dirs already listed in the `## Milestone History` section (these are completed)
 
-Verify that `milestones/milestone_<number>_<slug>/` does not already exist. If it does, stop and report the conflict.
+The **candidates** are directories that exist in `milestones/` but do not appear in `## Milestone History`.
 
-### 3. Find the current milestone
+- **Zero candidates**: stop. Tell the user to run `/define-milestone-goal` first to create a milestone.
+- **One candidate**: confirm the path and title with the user, then proceed.
+- **Multiple candidates**: list them (number, slug, path) and ask the user which one to activate before proceeding.
 
-Read `CLAUDE.md` and extract the current milestone path and title from `## Current Milestone`. Use this as `<PREV_MILESTONE_DIR>` and `<PREV_MILESTONE_TITLE>`.
+### 3. Update milestones/README.md
 
-### 4. Create the new milestone directory
-
-Create `milestones/milestone_<number>_<slug>/` with three starter files:
-
-**`requirements.md`:**
-```markdown
-# Milestone <number>: <title>
-
-## Goal
-
-## Relevant implementation state
-
-## Implementation decisions
-
-## Open questions
-
-```
-
-**`TASKS_TODO.md`:**
-```markdown
-# TASKS TODO
-
-```
-
-**`TASKS_DONE.md`:**
-```markdown
-# TASKS DONE
-
-```
-
-### 5. Update milestones/README.md
-
-Read the current `milestones/README.md` and make two edits:
-
-**a. Replace the Current Milestone section** with the new milestone:
+Replace the body of the `## Current Milestone` section with:
 
 ```markdown
-## Current Milestone
-
 **Milestone <number> — <title>** (`milestones/milestone_<number>_<slug>/`)
-
 ```
 
-**b. Add the previous milestone to the Completed Milestones table** as the first data row (after the header):
+Leave the `## Milestone History` section and all other content unchanged.
 
-```
-| <prev_number> | <prev_title> | `milestones/<prev_dir>/` |
-```
+### 4. Update CLAUDE.md
 
-Extract `<prev_number>` and `<prev_title>` from the old Current Milestone section.
-
-### 6. Update CLAUDE.md
-
-Replace the `## Current Milestone` section content with:
+Replace the body of the `## Current Milestone` section with:
 
 ```markdown
 **Milestone <number> — <title>** (`milestones/milestone_<number>_<slug>/`)
@@ -101,16 +53,16 @@ Replace the `## Current Milestone` section content with:
 See `milestones/README.md` for the full milestone history.
 ```
 
-### 7. Confirm
+### 5. Confirm
 
 Report:
-- New milestone directory created: `milestones/milestone_<number>_<slug>/`
-- Previous milestone moved to completed in `milestones/README.md`
-- `CLAUDE.md` updated to reference the new milestone
+- The milestone activated: path and title
+- Both `milestones/README.md` and `CLAUDE.md` updated to point to it
+- Suggest the next step: `/specify-milestone-starting-implementation-state` to fill in the implementation context
 
 ## Rules
 
-- Never overwrite an existing milestone directory.
-- Do not populate `requirements.md` beyond the template — defining the milestone goal is the user's job.
+- Do not run if the current-milestone pointer is not in "none" state — always require `/finish-current-milestone` to have been run first.
+- Do not create any files or directories — the milestone directory must already exist.
 - Always update both `milestones/README.md` and `CLAUDE.md` — leaving either stale breaks every skill that reads the current milestone path.
 - Do not commit — leave staging to the user.

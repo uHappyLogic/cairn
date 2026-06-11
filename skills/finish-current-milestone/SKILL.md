@@ -1,11 +1,11 @@
 ---
 name: finish-current-milestone
-description: Mark the current milestone as done — records accomplishments in milestones/README.md and updates CLAUDE.md only for lasting tech-stack or structural changes.
+description: Mark the current milestone as done — records accomplishments in milestones/README.md, clears the current-milestone pointer to "none" in both CLAUDE.md and milestones/README.md, and updates CLAUDE.md only for lasting tech-stack or structural changes.
 ---
 
 # finish-current-milestone
 
-Wraps up the current milestone — verifies all tasks are done, records accomplishments in `milestones/README.md`, and updates `CLAUDE.md` only if the milestone introduced lasting technical changes. Run this when all tasks are complete, before running `/goto-next-milestone`.
+Wraps up the current milestone — verifies all tasks are done, records accomplishments in `milestones/README.md`, clears the current-milestone pointer to "none" in both `milestones/README.md` and `CLAUDE.md`, and updates `CLAUDE.md` only if the milestone introduced lasting technical changes. Run this when all tasks are complete. After this, run `/define-milestone-goal` to define the next milestone, then `/goto-next-milestone` to activate it.
 
 ## Usage
 
@@ -42,7 +42,7 @@ Write a short summary (3–8 bullet points) of what was accomplished. Draw from:
 
 Keep each bullet to one sentence. Focus on what now exists in the game/codebase, not on process.
 
-### 5. Update milestones/README.md
+### 5. Update milestones/README.md — history
 
 In `milestones/README.md`, add the finished milestone to the `## Milestone History` section. Prepend a new entry using this format:
 
@@ -54,17 +54,27 @@ In `milestones/README.md`, add the finished milestone to the `## Milestone Histo
 - ...
 ```
 
-If the `## Milestone History` section does not exist, create it after the `## Current Milestone` section. Do **not** change the `## Current Milestone` section — that is done by `/goto-next-milestone`.
+If the `## Milestone History` section does not exist, create it after the `## Current Milestone` section.
 
-### 6. Update CLAUDE.md only for lasting technical changes
+### 6. Clear the current milestone pointer
+
+In `milestones/README.md`, replace the body of the `## Current Milestone` section with:
+
+```markdown
+_(none — run `/define-milestone-goal` to define the next milestone, then `/goto-next-milestone` to activate it)_
+```
+
+In `CLAUDE.md`, replace the body of the `## Current Milestone` section with the same line.
+
+### 7. Update CLAUDE.md only for lasting technical changes
 
 Scan the completed tasks and requirements for changes that affect how future milestones are developed — new packages added to the tech stack, new MCP servers integrated, new documentation locations, or structural changes to the repository layout. If any such changes exist, update the relevant section of `CLAUDE.md` (e.g. `## Tech Stack`, `## Repository Layout`). Do **not** add a milestone history section or accomplishment bullets to `CLAUDE.md`.
 
 If nothing in the milestone changes the tech stack, tooling, or project structure, skip this step entirely.
 
-### 7. Confirm
+### 8. Confirm
 
-Report: the milestone name, the number of tasks completed, and the bullet list written into `milestones/README.md`. Note any `CLAUDE.md` sections updated (or confirm none were needed).
+Report: the milestone name, the number of tasks completed, the bullet list written into `milestones/README.md`, and that the current-milestone pointer has been cleared to "none". Note any `CLAUDE.md` sections updated (or confirm none were needed). Suggest the next step: `/define-milestone-goal` to start planning the next milestone.
 
 ## Rules
 
@@ -72,4 +82,4 @@ Report: the milestone name, the number of tasks completed, and the bullet list w
 - Do not rewrite existing `## Milestone History` entries — only prepend the new one.
 - Keep the summary factual and grounded in the requirements and tasks — do not invent accomplishments.
 - Do not create or modify any files in `<MILESTONE_DIR>/`.
-- Do not touch the `## Current Milestone` section in either `CLAUDE.md` or `milestones/README.md` — `/goto-next-milestone` owns that.
+- Always clear the `## Current Milestone` pointer in both `CLAUDE.md` and `milestones/README.md` — both must agree on the "none" state before `/goto-next-milestone` can run.

@@ -38,8 +38,8 @@ discuss-new-backlog-task        ← clarifies a vague/large issue into briefs, t
 implement-backlog-tasks         ← orchestrator: spawns implement-backlog-task agent per task, commits after each
 implement-backlog-task          ← (skill) user-facing entry for one ad-hoc task: runs shared/implement-procedure.md inline so the work context stays for follow-up
 implement-backlog-task          ← (agent, in agents/) single-task implementation subagent: runs shared/implement-procedure.md in isolation, returns DONE/FAILED
-finish-current-milestone        ← writes completion summary to milestones/README.md, updates CLAUDE.md only for lasting changes
-goto-next-milestone             ← advances the current-milestone pointer in CLAUDE.md and milestones/README.md
+finish-current-milestone        ← writes completion summary to milestones/README.md, clears current-milestone pointer to "none" in both CLAUDE.md and milestones/README.md, updates CLAUDE.md only for lasting changes
+goto-next-milestone             ← activates an already-defined milestone: scans milestones/ for a defined-but-not-yet-active directory, updates CLAUDE.md and milestones/README.md to point to it
 ```
 
 ## Milestone file structure
@@ -58,7 +58,7 @@ Each active milestone lives at `milestones/milestone_<N>_<slug>/` and contains e
 - `answer-open-question` splits its arg on the first `.` — title before, answer after.
 - The `implement-backlog-task` agent expects tasks as `##` sections in `TASKS_TODO.md`, each terminated by a `---` separator.
 - `implement-backlog-tasks` (orchestrator) commits after each successful task; individual skills never commit — including the `implement-backlog-task` skill, which leaves an ad-hoc task's changes staged for the user.
-- `finish-current-milestone` must always run before `goto-next-milestone` — the pointer must never be advanced without a completion record.
+- `finish-current-milestone` must always run before `goto-next-milestone` — it records the completion and clears the current-milestone pointer to "none". `goto-next-milestone` checks for this "none" state and refuses to run without it.
 - Open questions in `requirements.md` must be fully resolved before `populate-backlog` can run.
 - `specify-milestone-starting-implementation-state`, `populate-backlog`, and the shared implement procedure (run by both the `implement-backlog-task` skill and agent) read the project's environment context (tech stack, build/test commands, MCP tools, conventions) from `CLAUDE.md`. Run `/init` once at project setup so `CLAUDE.md` documents it.
 - `populate-backlog` owns decomposition and coverage only; it must not author task bodies itself. It proves every requirement maps to a brief (traceability matrix), then submits briefs **in dependency order** to the `submit-backlog-task` agent with `POSITION: append`, spawning the agents **sequentially** (they all mutate the same `TASKS_TODO.md`).
