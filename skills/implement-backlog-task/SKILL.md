@@ -1,11 +1,18 @@
 ---
 name: implement-backlog-task
-description: Implement a single named task from the current milestone's TASKS_TODO.md, then move it to TASKS_DONE.md. Thin user-facing entry point that delegates the work to the implement-backlog-task agent.
+description: Implement a single named task from the current milestone's TASKS_TODO.md inline in this conversation, then move it to TASKS_DONE.md. Use for one ad-hoc task you want to stay available to discuss and tweak afterwards.
 ---
 
 # implement-backlog-task
 
-Thin wrapper. Implements one ad-hoc named task by spawning the `implement-backlog-task` agent, which owns the full implementation procedure (find task → load environment → implement → verify success criteria → move TODO→DONE). Keeping the procedure in a single place — the agent — means the `implement-backlog-tasks` orchestrator and this single-task entry point can never drift apart.
+Implements one named ad-hoc task **inline, in the current conversation** — not in a
+subagent. Running inline is the whole point: the implementation reasoning (which files
+changed, why, and what the verification showed) stays in context, so you can follow up
+right after — ask why a choice was made, request a tweak, or extend the work — without the
+context being thrown away.
+
+For implementing the whole backlog unattended, use `/implement-backlog-tasks` instead — that
+orchestrator deliberately runs each task in an isolated subagent and commits after each.
 
 ## Invocation
 
@@ -13,27 +20,36 @@ Thin wrapper. Implements one ad-hoc named task by spawning the `implement-backlo
 /implement-backlog-task <task name>
 ```
 
-`<task name>` is the full or partial text of a `##` heading in the current milestone's `TASKS_TODO.md`. The agent resolves the current milestone itself (from `CLAUDE.md`), so nothing needs to be looked up here first.
+`<task name>` is the full or partial text of a `##` heading in the current milestone's
+`TASKS_TODO.md`. The procedure resolves the current milestone itself (from `CLAUDE.md`), so
+nothing needs to be looked up first.
 
 ## Workflow
 
-### 1. Spawn the implementation agent
+### 1. Run the shared procedure inline
 
-Use the `Agent` tool with `subagent_type: "implement-backlog-task"` and a prompt containing only the task name:
+Read and follow the shared procedure at
+`${CLAUDE_PLUGIN_ROOT}/shared/implement-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if
+you need to resolve the path), carrying out every step **yourself, in this conversation**.
+Do not spawn the `implement-backlog-task` agent — that would discard the working context
+this skill exists to keep.
 
-```
-Implement the task named: "<task name>"
-```
+If no task matches the given name, the procedure has you stop without changes; tell the user
+that and list the available `##` headings so they can retry with a correct name.
 
-Wait for the agent to return. It runs in an isolated context and ends with `DONE` or `FAILED: <reason>`.
+### 2. Hand back for review
 
-### 2. Relay the result
+When the procedure finishes (success criteria verified, task moved to `TASKS_DONE.md`):
 
-- If the agent reports `DONE`, tell the user the task was implemented and moved to `TASKS_DONE.md`.
-- If the agent reports `FAILED` (including the no-matching-task case), relay the failure reason to the user. If no task matched, point them at the available headings the agent reported so they can retry with a correct name.
-- If the agent returns without an explicit `DONE` or `FAILED`, treat it as a failure: report what came back and stop. **Never implement the task yourself as a fallback.**
+- Summarize what you implemented and how you verified it.
+- Leave the changes **staged, not committed** — committing belongs to
+  `/implement-backlog-tasks` alone; an ad-hoc run leaves the diff for the user to review.
+- Stay available: the user may now ask follow-up questions or request adjustments, with the
+  full implementation context still in hand.
 
 ## Rules
 
-- This skill only spawns the agent and relays its result — it never implements tasks directly, even when the agent fails.
-- Do not commit. Committing belongs to the `implement-backlog-tasks` orchestrator alone; an ad-hoc single-task run leaves the changes staged for the user to review and commit.
+- Run the procedure inline — never delegate this skill to the `implement-backlog-task`
+  agent. (The shared file is the single source of truth, so the work is identical either
+  way; only the context differs.)
+- Do not commit. Leave the changes staged for the user to review and commit.

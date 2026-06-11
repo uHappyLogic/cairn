@@ -94,7 +94,7 @@ Orchestrator: executes all tasks in `TASKS_TODO.md` top to bottom, spawning one 
 
 ### `implement-backlog-task <task_name>`
 
-Implements a single named task from the current milestone's `TASKS_TODO.md`. A thin wrapper: it spawns the `implement-backlog-task` agent (which owns the full implement-verify-and-move procedure) and relays the result. The changes are left staged for the user — unlike `/implement-backlog-tasks`, it does not commit.
+Implements a single named task from the current milestone's `TASKS_TODO.md` **inline, in the current conversation** — it follows `shared/implement-procedure.md` directly rather than spawning a subagent. Running inline keeps the implementation context (what changed, why, how it was verified) in the conversation, so you can ask follow-up questions or request tweaks right after. The changes are left staged for the user — unlike `/implement-backlog-tasks`, it does not commit. For implementing the whole backlog unattended, use `/implement-backlog-tasks`, which runs each task in an isolated subagent instead.
 
 ### `finish-current-milestone`
 
@@ -109,7 +109,7 @@ Creates the next milestone directory with empty starter files and updates the cu
 Two subagents do per-task work in a clean context so detailed technical reasoning never pollutes the orchestrating skill's memory. They are spawned by skills, not invoked directly:
 
 - **`submit-backlog-task`** — authors one well-scoped task from a high-level brief and inserts it into `TASKS_TODO.md` at a caller-given position. Keeps the task at contract altitude: *what* to achieve plus the names and thresholds sibling tasks depend on, not the line-by-line code. Spawned by `populate-backlog` (bulk) and the `submit-backlog-task` skill (ad-hoc). Owns the task-body template.
-- **`implement-backlog-task`** — implements one named task, verifies its success criteria, and moves it to `TASKS_DONE.md`. Owns the full implementation procedure **and the detailed implementation design** — it turns the task's high-level steps into concrete code against the live codebase. Spawned by the `implement-backlog-tasks` orchestrator (bulk) and the `implement-backlog-task` skill (ad-hoc).
+- **`implement-backlog-task`** — implements one named task, verifies its success criteria, and moves it to `TASKS_DONE.md`, following the shared `shared/implement-procedure.md` in an isolated context. That procedure owns the **detailed implementation design** — turning the task's high-level steps into concrete code against the live codebase. Spawned by the `implement-backlog-tasks` orchestrator for bulk runs. (The ad-hoc `implement-backlog-task` skill follows the *same* procedure, but inline rather than via this agent, so its work context survives for follow-up.)
 
 ## Rules
 

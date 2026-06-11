@@ -13,6 +13,7 @@ A Claude Code plugin (`workflow`) that implements a milestone-driven development
 skills/<skill-name>/SKILL.md — one skill per directory; the SKILL.md is the full skill definition
 agents/implement-backlog-task.md — implementation subagent invoked by implement-backlog-tasks skill
 agents/submit-backlog-task.md — task-authoring subagent invoked by populate-backlog and the submit-backlog-task skill
+shared/implement-procedure.md — single source of truth for the implement-one-task procedure, followed inline by the implement-backlog-task skill and in isolation by the implement-backlog-task agent
 README.md                    — authoritative workflow documentation and skill reference
 ```
 
@@ -35,8 +36,8 @@ submit-backlog-task             ← (skill) user-facing entry for a single ad-ho
 submit-backlog-task             ← (agent, in agents/) authors one task from a brief and inserts it into TASKS_TODO.md at a caller-given position
 discuss-new-backlog-task        ← clarifies a vague/large issue into briefs, then hands off to the submit-backlog-task skill
 implement-backlog-tasks         ← orchestrator: spawns implement-backlog-task agent per task, commits after each
-implement-backlog-task          ← (skill) thin user-facing entry for one ad-hoc task: spawns the implement-backlog-task agent and relays its result
-implement-backlog-task          ← (agent, in agents/) single-task implementation subagent that owns the full implement procedure
+implement-backlog-task          ← (skill) user-facing entry for one ad-hoc task: runs shared/implement-procedure.md inline so the work context stays for follow-up
+implement-backlog-task          ← (agent, in agents/) single-task implementation subagent: runs shared/implement-procedure.md in isolation, returns DONE/FAILED
 finish-current-milestone        ← writes completion summary to milestones/README.md, updates CLAUDE.md only for lasting changes
 goto-next-milestone             ← advances the current-milestone pointer in CLAUDE.md and milestones/README.md
 ```
@@ -59,13 +60,14 @@ Each active milestone lives at `milestones/milestone_<N>_<slug>/` and contains e
 - `implement-backlog-tasks` (orchestrator) commits after each successful task; individual skills never commit — including the `implement-backlog-task` skill, which leaves an ad-hoc task's changes staged for the user.
 - `finish-current-milestone` must always run before `goto-next-milestone` — the pointer must never be advanced without a completion record.
 - Open questions in `requirements.md` must be fully resolved before `populate-backlog` can run.
-- `specify-milestone-starting-implementation-state`, `populate-backlog`, and the `implement-backlog-task` agent read the project's environment context (tech stack, build/test commands, MCP tools, conventions) from `CLAUDE.md`. Run `/init` once at project setup so `CLAUDE.md` documents it.
+- `specify-milestone-starting-implementation-state`, `populate-backlog`, and the shared implement procedure (run by both the `implement-backlog-task` skill and agent) read the project's environment context (tech stack, build/test commands, MCP tools, conventions) from `CLAUDE.md`. Run `/init` once at project setup so `CLAUDE.md` documents it.
 - `populate-backlog` owns decomposition and coverage only; it must not author task bodies itself. It proves every requirement maps to a brief (traceability matrix), then submits briefs **in dependency order** to the `submit-backlog-task` agent with `POSITION: append`, spawning the agents **sequentially** (they all mutate the same `TASKS_TODO.md`).
 - The task body template (`##` title, description, **Steps**, **Success**, trailing `---`) lives in exactly one place: the `submit-backlog-task` agent. `populate-backlog` and the `submit-backlog-task` skill must not duplicate it.
 - `submit-backlog-task` exists as both a thin user-facing skill (triage + dedup + positioning) and an agent (authoring). The skill decides the insert position from the whole-backlog view and passes it to the agent; the agent must not re-derive global ordering.
-- `implement-backlog-task` exists as both a thin user-facing skill (spawn + relay) and an agent (the procedure). The implementation procedure — find task, load environment, implement, verify success criteria, move TODO→DONE — lives in exactly one place: the agent. The skill must not duplicate it; it only spawns the agent and relays `DONE`/`FAILED`. Both the skill and the `implement-backlog-tasks` orchestrator reach the procedure through that single agent.
-- The `implement-backlog-task` and `submit-backlog-task` agents always resolve `<MILESTONE_DIR>` by reading `CLAUDE.md` — they must never use a hardcoded backlog path.
-- Task altitude is split between the two agents: `submit-backlog-task` authors **high-level** steps (the *what* — a flow plus the names/thresholds that form the task's contract for sibling tasks), and the `implement-backlog-task` agent owns the **detailed implementation design** (the *how* — exact code, insertion points, assertion wording, decided fresh against the live codebase). Keep task bodies concise to save tokens; never push line-by-line implementation detail back into authored tasks.
+- The implementation procedure — find task, load environment, implement, verify success criteria, move TODO→DONE — lives in exactly one place: `shared/implement-procedure.md`. Neither the `implement-backlog-task` skill nor the agent may duplicate or restate those steps; both reference the shared file via `${CLAUDE_PLUGIN_ROOT}`. The shared file is execution-neutral — it must not mention the `DONE`/`FAILED` return protocol, committing, or follow-up; those belong to the wrappers.
+- `implement-backlog-task` exists as both a user-facing skill and an agent, differing only in *where* the shared procedure runs. The **skill runs it inline** in the user's conversation (so the work context survives for follow-up) and must never spawn the agent. The **agent runs it in an isolated subagent context** and adds the `DONE`/`FAILED` return protocol; it is what the `implement-backlog-tasks` orchestrator spawns per task. Choosing inline vs. isolated is the entire reason both exist — keep that the only difference.
+- The `submit-backlog-task` agent and the shared implement procedure always resolve `<MILESTONE_DIR>` by reading `CLAUDE.md` — they must never use a hardcoded backlog path.
+- Task altitude is split: the `submit-backlog-task` agent authors **high-level** steps (the *what* — a flow plus the names/thresholds that form the task's contract for sibling tasks), and the shared implement procedure owns the **detailed implementation design** (the *how* — exact code, insertion points, assertion wording, decided fresh against the live codebase). Keep task bodies concise to save tokens; never push line-by-line implementation detail back into authored tasks.
 
 ## Current Milestone
 
