@@ -31,7 +31,10 @@ without changing anything** and report that no matching task was found, listing 
 available `##` headings so the caller can retry. Do not implement anything that is not a
 task in `TASKS_TODO.md`.
 
-Parse the full task body: description, numbered steps, and the **Success** section.
+Parse the full task body: the description, the optional **Provides** section (the names
+other tasks depend on — a fixed contract), the optional **Notes** section (advisory facts),
+and the **Success** section. There is no steps section — you derive the flow yourself
+(step 3).
 
 ### 2. Load the implementation environment
 
@@ -43,21 +46,25 @@ Read the workspace root `CLAUDE.md` and hold in context:
 
 ### 3. Implement the task
 
-**The task steps are intentionally high-level — they describe *what* to achieve, not the
-exact code.** You own the implementation design. Translate each step into concrete edits
-yourself: the exact files and insertion points, the precise statements, the assertion
-wording, the helper structure. Ground every decision in the live codebase (read the real
-source you are touching) and in the conventions from `CLAUDE.md`, not in assumptions.
-Where the task names a specific file, method, class, field, or threshold, treat that as a
-fixed contract other tasks depend on — honor those names exactly; design everything around
-them freely.
+**The task gives you the goal, not a procedure — you own the implementation design.**
+Derive the flow yourself from the **Description** and **Success** criteria, then translate
+it into concrete edits: the exact files and insertion points, the precise statements, the
+assertion wording, the helper structure. Ground every decision in the live codebase (read
+the real source you are touching) and in the conventions from `CLAUDE.md`, not in
+assumptions.
 
-If a step leaves genuine ambiguity, resolve it the way the task's description, the
+Honor the two optional sections for what they are:
+- **Provides** lists the names other tasks depend on — files, methods, classes, fields,
+  thresholds. Treat these as a fixed contract: honor the names exactly, design everything
+  around them freely.
+- **Notes** are advisory facts the author surfaced to save you a discovery round (a
+  surprising behavior, an ordering constraint, a gotcha). Use them, but they are not
+  acceptance criteria — the **Success** section is.
+
+If the goal leaves genuine ambiguity, resolve it the way the **Description**, the
 **Success** criteria, and `requirements.md` most plausibly intend — the success criteria
 are your target; whatever satisfies them faithfully is correct. Do not pause to widen
 scope or invent requirements the task did not ask for.
-
-Execute the steps in order.
 
 **After creating or modifying any source file**, follow the post-edit conventions
 documented in `CLAUDE.md`. At minimum, run the relevant verification command and fix any

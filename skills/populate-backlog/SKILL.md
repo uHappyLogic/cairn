@@ -7,7 +7,7 @@ description: Convert the current milestone's requirements.md into a complete, de
 
 Reads the current milestone requirements and populates `TASKS_TODO.md` with a complete, dependency-ordered list of implementation tasks ready for AI-driven execution via `/implement-backlog-task`.
 
-Your job here is **decomposition and coverage**, not task authoring. You split the milestone into high-level task briefs and prove that those briefs cover every requirement — that whole-milestone view is the thing most likely to break if you get lost in file-paths and method names. The detailed, per-task technical authoring (steps, exact paths, success criteria) is delegated, one task at a time, to the `submit-backlog-task` agent. That keeps each task's technical reasoning out of your context so your attention stays on completeness and ordering.
+Your job here is **decomposition and coverage**, not task authoring. You split the milestone into high-level task briefs and prove that those briefs cover every requirement — that whole-milestone view is the thing most likely to break if you get lost in file-paths and method names. The detailed, per-task technical authoring (the contract surface, notes, exact paths, success criteria) is delegated, one task at a time, to the `submit-backlog-task` agent. That keeps each task's technical reasoning out of your context so your attention stays on completeness and ordering.
 
 This mirrors the implement side: `implement-backlog-tasks` orchestrates and `implement-backlog-task` does the per-task work in a clean context. Here, you orchestrate and `submit-backlog-task` (the agent) does the per-task authoring.
 
@@ -50,7 +50,7 @@ Run /answer-open-question for each one, then re-run /populate-backlog.
 
 ### 3. Decompose into high-level task briefs
 
-Break the milestone into discrete, independently-implementable task briefs. A **brief** is high-level — it names the affected system, the desired behavior, and how it would be verified. It does **not** contain file paths, method names, numbered steps, or success criteria; that detail is the agent's job. Keeping briefs high-level is deliberate: it lets you hold many more of them in mind at once and reason about whether they cover everything.
+Break the milestone into discrete, independently-implementable task briefs. A **brief** is high-level — it names the affected system, the desired behavior, and how it would be verified. It does **not** contain file paths, method names, contract surface, or success criteria; that detail is the agent's job. Keeping briefs high-level is deliberate: it lets you hold many more of them in mind at once and reason about whether they cover everything.
 
 Apply these rules:
 
@@ -112,7 +112,7 @@ Re-read the finished `<MILESTONE_DIR>/TASKS_TODO.md`. Confirm every brief from t
 
 ## Rules
 
-- Your output is briefs + ordering + coverage. Do not write task steps, file paths, or success criteria yourself — that is the agent's job, and duplicating it both pollutes your context and risks diverging from the agent's template.
+- Your output is briefs + ordering + coverage. Do not write task bodies — the contract surface, notes, file paths, or success criteria — yourself; that is the agent's job, and duplicating it both pollutes your context and risks diverging from the agent's template.
 - Never invent requirements not present in the spec; never omit one that is.
 - Do not create tasks for work already in `TASKS_DONE.md`, or for requirements already satisfied by the current implementation (note these in the report instead).
 - Submit briefs in dependency order with `POSITION: append`; let the agent own task wording and the caller (you) own order.

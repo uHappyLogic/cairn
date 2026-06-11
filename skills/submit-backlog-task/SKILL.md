@@ -7,7 +7,7 @@ description: Add a single implementation issue (surfaced during development) to 
 
 Turns a single, already-clear issue into an implementation-ready task in the current milestone's `TASKS_TODO.md`. This skill is the user-facing entry point (`/submit-backlog-task`) and the handoff target for `/discuss-new-backlog-task`.
 
-It is deliberately thin: it does the two things that need the **whole backlog in view** — checking for duplicates and deciding where the new task belongs — then hands the actual task authoring (steps, file paths, success criteria) to the `submit-backlog-task` **agent**. The agent owns the task template and does its technical reasoning in a clean context, so that reasoning never lands in this conversation. If the issue is still vague or might be several tasks, use `/discuss-new-backlog-task` first.
+It is deliberately thin: it does the two things that need the **whole backlog in view** — checking for duplicates and deciding where the new task belongs — then hands the actual task authoring (the contract surface, notes, success criteria) to the `submit-backlog-task` **agent**. The agent owns the task template and does its technical reasoning in a clean context, so that reasoning never lands in this conversation. If the issue is still vague or might be several tasks, use `/discuss-new-backlog-task` first.
 
 ## Invocation
 

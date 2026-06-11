@@ -72,7 +72,7 @@ Treat it as several tasks when any of these hold:
 
 Lean toward a single task when in doubt — splitting has a cost, and `submit-backlog-task` can still position a lone task correctly. Don't manufacture extra tasks to look thorough.
 
-If it's several, sketch a **provisional** breakdown into atomic, ordered pieces — just a working title or one-line gist per piece. You're finding the task boundaries here, not writing the tasks; resist any detail (file paths, steps, method names) that belongs to `submit-backlog-task`.
+If it's several, sketch a **provisional** breakdown into atomic, ordered pieces — just a working title or one-line gist per piece. You're finding the task boundaries here, not writing the tasks; resist any detail (file paths, contract surface, method names) that belongs to `submit-backlog-task`.
 
 ### 4. Clarify the ambiguities
 
@@ -99,7 +99,7 @@ Reach for `/discuss-open-question` instead if the ambiguity is really an open de
 
 ### 5. Propose the handoff
 
-When the readiness checks are satisfied, synthesize what you've learned into refined, self-contained issue description(s) — each at the high level `submit-backlog-task` expects as input, **not** a fleshed-out task. Naming the affected system, the desired behavior, and how to verify it is enough; leave steps, file paths, and success criteria to `submit-backlog-task`.
+When the readiness checks are satisfied, synthesize what you've learned into refined, self-contained issue description(s) — each at the high level `submit-backlog-task` expects as input, **not** a fleshed-out task. Naming the affected system, the desired behavior, and how to verify it is enough; leave the contract surface, file paths, and success criteria to `submit-backlog-task`.
 
 **If it's a single task**, propose one handoff:
 
@@ -121,7 +121,7 @@ In either case, if the user wants to adjust wording, ordering, or the split, inc
 ## Rules
 
 - Do not create or edit any files, and do not write to the backlog. Producing the task(s) is `submit-backlog-task`'s job; this skill only clarifies and hands off.
-- Keep your output high-level. The refined description(s) you pass to `submit-backlog-task` should name the system, behavior, and verification — and stop there. Don't write steps, file paths, or success criteria; duplicating that work slows the user down and steps on `submit-backlog-task`.
+- Keep your output high-level. The refined description(s) you pass to `submit-backlog-task` should name the system, behavior, and verification — and stop there. Don't write the contract surface, file paths, or success criteria; duplicating that work slows the user down and steps on `submit-backlog-task`.
 - Don't over-interrogate, and don't over-split. Stop at conceptual clarity, and prefer fewer tasks when a split isn't clearly warranted — each task should be independently implementable in a single `/implement-backlog-task` invocation.
 - For a multi-task chunk, confirm the ordered breakdown with the user before submitting, then hand off one task at a time in dependency order.
 - Ground questions in the files you read, not in assumptions. Prefer the project's real names for systems and files.
