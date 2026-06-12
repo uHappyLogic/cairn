@@ -24,7 +24,7 @@ No build system, no tests, no dependencies. Everything is plain Markdown.
 The skills form a linear pipeline. Each skill's SKILL.md defines its exact behaviour:
 
 ```
-init-milestone-base-workflow    ← one-time bootstrap: create milestones/ + milestones/README.md, seed CLAUDE.md ## Current Milestone pointer
+init-milestone-base-workflow    ← one-time bootstrap: create milestones/ + milestones/README.md
 discuss-milestone-goal          ← optional sharpening conversation, creates no files
 define-milestone-goal           ← creates milestones/milestone_<N>_<slug>/ with requirements.md, TASKS_TODO.md, TASKS_DONE.md
 specify-milestone-starting-implementation-state ← fills "Relevant implementation state" in requirements.md
@@ -38,8 +38,8 @@ discuss-new-backlog-task        ← clarifies a vague/large issue into briefs, t
 implement-backlog-tasks         ← orchestrator: spawns implement-backlog-task agent per task, commits after each
 implement-backlog-task          ← (skill) user-facing entry for one ad-hoc task: runs shared/implement-procedure.md inline so the work context stays for follow-up
 implement-backlog-task          ← (agent, in agents/) single-task implementation subagent: runs shared/implement-procedure.md in isolation, returns DONE/FAILED
-finish-current-milestone        ← writes completion summary to milestones/README.md, clears current-milestone pointer to "none" in both CLAUDE.md and milestones/README.md, updates CLAUDE.md only for lasting changes
-goto-next-milestone             ← activates an already-defined milestone: scans milestones/ for a defined-but-not-yet-active directory, updates CLAUDE.md and milestones/README.md to point to it
+finish-current-milestone        ← writes completion summary to milestones/README.md, clears current-milestone pointer to "none" in milestones/README.md, updates CLAUDE.md only for lasting changes
+goto-next-milestone             ← activates an already-defined milestone: scans milestones/ for a defined-but-not-yet-active directory, updates milestones/README.md to point to it
 ```
 
 ## Milestone file structure
@@ -50,11 +50,11 @@ Each active milestone lives at `milestones/milestone_<N>_<slug>/` and contains e
 - `TASKS_TODO.md` — pending tasks ordered by priority (highest first), `##` headings + `---` separators
 - `TASKS_DONE.md` — completed tasks appended in the same format
 
-`CLAUDE.md` (this file) and `milestones/README.md` are the source of truth for which milestone is current. The current milestone path is shown under `## Current Milestone` in backticks.
+`milestones/README.md` is the source of truth for which milestone is current.
 
 ## Invariants to preserve when editing skills
 
-- `init-milestone-base-workflow` is the one-time bootstrap; it is additive and idempotent — it never overwrites an existing `milestones/README.md` or `CLAUDE.md`, only creating missing files and appending missing sections. It must leave both `CLAUDE.md` and `milestones/README.md` with an agreeing `## Current Milestone` section.
+- `init-milestone-base-workflow` is the one-time bootstrap; it is additive and idempotent — it never overwrites an existing `milestones/README.md` or `CLAUDE.md`, only creating missing files and appending missing sections. It must leave `milestones/README.md` with a `Current milestone:` pointer line.
 - `answer-open-question` splits its arg on the first `.` — title before, answer after.
 - The `implement-backlog-task` agent expects tasks as `##` sections in `TASKS_TODO.md`, each terminated by a `---` separator.
 - `implement-backlog-tasks` (orchestrator) commits after each successful task; individual skills never commit — including the `implement-backlog-task` skill, which leaves an ad-hoc task's changes staged for the user.
@@ -66,20 +66,14 @@ Each active milestone lives at `milestones/milestone_<N>_<slug>/` and contains e
 - `submit-backlog-task` exists as both a thin user-facing skill (triage + dedup + positioning) and an agent (authoring). The skill decides the insert position from the whole-backlog view and passes it to the agent; the agent must not re-derive global ordering.
 - The implementation procedure — find task, load environment, implement, verify success criteria, move TODO→DONE — lives in exactly one place: `shared/implement-procedure.md`. Neither the `implement-backlog-task` skill nor the agent may duplicate or restate those steps; both reference the shared file via `${CLAUDE_PLUGIN_ROOT}`. The shared file is execution-neutral — it must not mention the `DONE`/`FAILED` return protocol, committing, or follow-up; those belong to the wrappers.
 - `implement-backlog-task` exists as both a user-facing skill and an agent, differing only in *where* the shared procedure runs. The **skill runs it inline** in the user's conversation (so the work context survives for follow-up) and must never spawn the agent. The **agent runs it in an isolated subagent context** and adds the `DONE`/`FAILED` return protocol; it is what the `implement-backlog-tasks` orchestrator spawns per task. Choosing inline vs. isolated is the entire reason both exist — keep that the only difference.
-- The `submit-backlog-task` agent and the shared implement procedure always resolve `<MILESTONE_DIR>` by reading `CLAUDE.md` — they must never use a hardcoded backlog path.
+- The `submit-backlog-task` agent and the shared implement procedure always resolve `<MILESTONE_DIR>` by reading `milestones/README.md` — they must never use a hardcoded backlog path.
 - Task altitude is split, and the dividing line is **what can be re-derived at implementation time**. The `submit-backlog-task` agent authors only what *cannot* be reconstructed from the goal + live code: the `Description` (intent), the `Success` bar, the optional `Provides` (the forward contract — names/thresholds sibling tasks reference before this task is built), and the optional `Notes` (non-obvious gotchas that would cost the implementer a discovery round). The shared implement procedure owns everything re-derivable — the flow itself and the **detailed implementation design** (exact code, insertion points, assertion wording, decided fresh against the live codebase). The agent must **not** author a step-by-step flow under any heading (no `Steps`); `Provides`/`Notes` are omitted entirely when empty. Keep task bodies minimal to save tokens; never push line-by-line implementation detail — or a re-narration of the flow — back into authored tasks.
 
 ## Milestone Workflow
 
 This project uses the milestone-driven workflow. Each milestone lives at
 `milestones/milestone_<N>_<slug>/` with `requirements.md`, `TASKS_TODO.md`, and
-`TASKS_DONE.md`. `CLAUDE.md` and `milestones/README.md` are the source of truth
-for which milestone is current — the path is shown under `## Current Milestone`
-in backticks. Never advance the pointer without first running
+`TASKS_DONE.md`. `milestones/README.md` is the source of truth for which milestone
+is current. Never advance the pointer without first running
 `/finish-current-milestone`.
 
-## Current Milestone
-
-**Milestone 1 — Public Release Preparation** (`milestones/milestone_1_public-release-prep/`)
-
-See `milestones/README.md` for the full milestone history.

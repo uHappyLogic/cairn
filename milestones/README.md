@@ -1,7 +1,6 @@
 # Milestones
 
-This file tracks milestone progress. `CLAUDE.md` and this file are the source of
-truth for which milestone is current — keep both in sync.
+This file tracks milestone progress. It is the source of truth for which milestone is current.
 
 Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 

@@ -2,23 +2,6 @@
 
 
 
-## Remove CLAUDE.md Pointer Section and Sync Invariant
-
-Remove the `## Current Milestone` section from `CLAUDE.md` entirely, drop the "keep `CLAUDE.md` and `milestones/README.md` in sync" invariant, update all remaining "source of truth" and pointer-dependency language in `CLAUDE.md` to name only `milestones/README.md`, and correct the header prose in `milestones/README.md` to the same effect. This is the final documentation cleanup that makes `milestones/README.md` the sole source of truth for the pointer, valid only after all readers and writers have been migrated off `CLAUDE.md` by the preceding tasks.
-
-**Notes:**
-- The `## Milestone Workflow` guidance block in `CLAUDE.md` (seeded by `init-milestone-base-workflow`) must stay intact — only the sentence within it that names `CLAUDE.md` as a pointer source of truth needs to be corrected; do not remove the block.
-- In `milestones/README.md`, only the header prose (the "source of truth" sentence near the top) is in scope. The `## Current Milestone` heading and its machine pointer line (established by "Establish Grep-able Pointer Line and Shared Snippet") must not be modified.
-- Multiple spots in `CLAUDE.md` carry pointer-dependency language beyond the single obvious invariant bullet: the skill pipeline descriptions for `init-milestone-base-workflow`, `finish-current-milestone`, and `goto-next-milestone`; the "Milestone file structure" section's source-of-truth sentence; the `init-milestone-base-workflow` invariant bullet; and the invariant asserting the `submit-backlog-task` agent and shared implement procedure read `CLAUDE.md`. All must be updated.
-
-**Success:**
-- `grep "## Current Milestone" CLAUDE.md` returns no results — the section heading and all content beneath it are gone.
-- `CLAUDE.md` contains no invariant bullet or prose asserting that `CLAUDE.md` and `milestones/README.md` must be kept in sync, or that `CLAUDE.md` is a source of truth for the current-milestone pointer.
-- All "source of truth for which milestone is current" language remaining in `CLAUDE.md` names only `milestones/README.md`.
-- The header prose in `milestones/README.md` no longer names `CLAUDE.md` as a source of truth for the pointer and no longer instructs keeping both files in sync.
-- The `## Current Milestone` heading and its machine pointer line in `milestones/README.md` are unchanged from before this task ran.
-
----
 
 ## Adopt Zero-Padded Two-Digit Milestone Numbering
 
