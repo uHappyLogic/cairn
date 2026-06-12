@@ -32,7 +32,7 @@ If POSITION is missing, treat it as `append`.
 
 ### 1. Find the current milestone
 
-Read `CLAUDE.md` and extract the path from the `## Current Milestone` section (shown in backticks, e.g. `milestones/milestone_11_tbd/`). Use this as `<MILESTONE_DIR>`. Never use a hardcoded backlog path.
+Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded backlog path.
 
 ### 2. Load context
 

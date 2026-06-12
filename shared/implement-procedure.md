@@ -21,9 +21,7 @@ This procedure reads that file; it never assumes a stack.
 
 ### 1. Find and read the task
 
-Read the workspace root `CLAUDE.md` and extract the path from the `## Current Milestone`
-section (shown in backticks, e.g. `milestones/milestone_11_tbd/`). Use this as
-`<MILESTONE_DIR>`. Never use a hardcoded backlog path.
+Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded backlog path.
 
 Read `<MILESTONE_DIR>/TASKS_TODO.md`. Locate the `##` section whose heading matches the
 given task name (case-insensitive, partial match is fine). If no section matches, **stop

@@ -41,7 +41,7 @@ Once those are clear, `submit-backlog-task` fills in the file-, method-, and ste
 
 ### 0. Find the current milestone
 
-Read `CLAUDE.md` and extract the path from the `## Current Milestone` section (shown in backticks, e.g. `milestones/milestone_11_tbd/`). Use this as `<MILESTONE_DIR>` throughout.
+Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded backlog path.
 
 ### 1. Gather context
 

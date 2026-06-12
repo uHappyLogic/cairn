@@ -21,7 +21,7 @@ It is deliberately thin: it does the two things that need the **whole backlog in
 
 ### 0. Find the current milestone
 
-Read `CLAUDE.md` and extract the path from the `## Current Milestone` section (shown in backticks, e.g. `milestones/milestone_11_tbd/`). Use this as `<MILESTONE_DIR>`.
+Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded backlog path.
 
 ### 1. Read context for triage
 

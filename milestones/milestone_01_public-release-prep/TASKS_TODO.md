@@ -1,23 +1,6 @@
 # TASKS TODO
 
 
-## Migrate All Pointer Readers to Shared Snippet
-
-Refactor every skill/agent that currently resolves `<MILESTONE_DIR>` by parsing `CLAUDE.md`'s `## Current Milestone` section to instead resolve it through `shared/get-current-milestone.md` (created by "Establish Grep-able Pointer Line and Shared Snippet"), referenced via `${CLAUDE_PLUGIN_ROOT}`. After this task, no reader parses `CLAUDE.md` for the pointer; each carries a one-line reference to the shared snippet as the single source of truth.
-
-**Notes:**
-- The full reader list (per requirements.md "Current-milestone pointer (source of truth)"): `agents/submit-backlog-task.md`, `shared/implement-procedure.md`, and the skills `answer-open-question`, `discuss-new-backlog-task`, `discuss-open-question`, `highlight-milestone-requirements-open-questions`, `implement-backlog-tasks`, `populate-backlog`, `submit-backlog-task`.
-- The `implement-backlog-task` skill resolves the pointer transitively via `shared/implement-procedure.md` — once that shared file is updated, the skill is covered without a direct edit. Verify this is the case; do not double-edit the skill.
-- Do not modify `define-milestone-goal` (its milestone-number reading is owned by a separate task), and do not touch writer skills (`finish-current-milestone`, `goto-next-milestone`, `init-milestone-base-workflow`) or `CLAUDE.md`.
-- This task depends on "Establish Grep-able Pointer Line and Shared Snippet" being completed first; `shared/get-current-milestone.md` must already exist.
-
-**Success:**
-- Every file in the reader list (`agents/submit-backlog-task.md`, `shared/implement-procedure.md`, and the seven named skills) references `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`.
-- None of those files contain logic that reads or parses `CLAUDE.md`'s `## Current Milestone` section for the pointer.
-- `skills/implement-backlog-task/SKILL.md` is not directly modified (it is covered via the shared procedure).
-- Writer skills and `define-milestone-goal` are unmodified.
-
----
 
 ## Migrate Pointer Writers Off CLAUDE.md
 
