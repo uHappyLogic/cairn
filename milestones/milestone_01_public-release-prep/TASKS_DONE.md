@@ -171,3 +171,18 @@ Replace `README.md` with a complete, freshly authored adoption-focused rewrite t
 - No files other than `README.md` are modified by this task.
 
 ---
+
+## Write Cairn Banner Image Prompt
+
+Design and deliver a single concrete headline image concept for README.md's top banner, anchored on the cairn (stacked-stone trail marker) metaphor that names the plugin and echoes the tagline "Mark the path from idea to shipped." Produce a complete, paste-ready Gemini Nano Banana image-generation prompt covering subject, visual style, composition, mood/lighting, and an aspect ratio suited to a wide README banner. The deliverable is the prompt text, output directly in the conversation; no file is written and README.md is not edited.
+
+**Notes:**
+- This task's only deliverable is conversation output — it produces no repo footprint. The `implement-backlog-task` agent runs in an isolated subagent context whose output is not surfaced to the user; this task must be implemented **inline via the `/implement-backlog-task` skill**, not through the bulk `/implement-backlog-tasks` orchestrator, or the prompt will never reach the user.
+
+**Success:**
+- The conversation response contains one concrete headline image concept described in prose (not a list of alternatives).
+- The response contains a complete Gemini Nano Banana prompt covering subject, visual style, composition, mood/lighting, and a banner-appropriate aspect ratio (wide landscape, e.g. 16:9 or wider).
+- The prompt is entirely self-contained — no ellipses, placeholders, or "fill in X" markers — and can be pasted directly without editing.
+- No file is created in the repository and README.md is unchanged.
+
+---

@@ -1,3 +1,17 @@
+<p align="center">
+    <img src=".github/assets/readme/cairn-banner.webp" style="height: 10em" alt="Cairn banner"/>
+</p>
+<p align="center">
+  <a href="https://github.com/uHappyLogic/cairn/releases/latest">
+    <img alt="Latest Release" src="https://img.shields.io/github/v/release/uHappyLogic/cairn?style=flat&color=22c55e&label=release&display_name=tag" />
+  </a>
+  <a href="LICENSE">
+    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-3b82f6?style=flat" />
+  </a>
+</p>
+
+---
+
 # Cairn
 
 **Mark the path from idea to shipped.**
