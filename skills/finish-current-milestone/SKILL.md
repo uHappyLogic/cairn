@@ -56,6 +56,14 @@ In `milestones/README.md`, add the finished milestone to the `## Milestone Histo
 
 If the `## Milestone History` section does not exist, create it after the `## Current Milestone` section.
 
+Then add a one-line index entry to the `## Completed Milestones` table — append a new row with the milestone number N (leading zeros stripped), the Title, and the backticked `<MILESTONE_DIR>` path:
+
+```markdown
+| N | Title | `milestones/milestone_<NN>_<slug>/` |
+```
+
+Append the row in ascending milestone-number order (after any existing rows). If the `## Completed Milestones` section or its table header does not exist, create it after `## Milestone History`.
+
 ### 6. Clear the current milestone pointer
 
 In `milestones/README.md`, overwrite the `Current milestone:` line with the literal:
@@ -79,7 +87,7 @@ Report: the milestone name, the number of tasks completed, the bullet list writt
 ## Rules
 
 - Do not mark the milestone done if `TASKS_TODO.md` still has tasks with `##` headings.
-- Do not rewrite existing `## Milestone History` entries — only prepend the new one.
+- Do not rewrite existing `## Milestone History` entries — only prepend the new one. Likewise only append the new row to the `## Completed Milestones` table; do not alter existing rows.
 - Keep the summary factual and grounded in the requirements and tasks — do not invent accomplishments.
 - Do not create or modify any files in `<MILESTONE_DIR>/`.
 - Clear the current-milestone pointer only in `milestones/README.md` — overwrite the `Current milestone:` line to `Current milestone: none`. Do not modify `CLAUDE.md`'s pointer section.

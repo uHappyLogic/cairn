@@ -10,10 +10,13 @@ A Claude Code plugin (`cairn`) that implements a milestone-driven development wo
 
 ```
 .claude-plugin/plugin.json   — plugin manifest (name, version, author)
+.claude-plugin/marketplace.json — single-plugin marketplace manifest (installable via /plugin marketplace add uHappyLogic/cairn)
 skills/<skill-name>/SKILL.md — one skill per directory; the SKILL.md is the full skill definition
 agents/implement-backlog-task.md — implementation subagent invoked by implement-backlog-tasks skill
 agents/submit-backlog-task.md — task-authoring subagent invoked by populate-backlog and the submit-backlog-task skill
 shared/implement-procedure.md — single source of truth for the implement-one-task procedure, followed inline by the implement-backlog-task skill and in isolation by the implement-backlog-task agent
+shared/get-current-milestone.md — single source of truth for resolving <MILESTONE_DIR> from the grep-able pointer line in milestones/README.md
+LICENSE                      — MIT license
 README.md                    — authoritative workflow documentation and skill reference
 ```
 
