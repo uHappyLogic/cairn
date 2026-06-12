@@ -39,32 +39,25 @@ Each milestone lives in `milestones/milestone_<N>_<slug>/` and contains three fi
 
 ## Workflow pipeline
 
-```
-init-milestone-base-workflow    ← one-time bootstrap: create milestones/ + README, seed pointer
-         ↓
-/init                           ← one-time project setup: document tech stack/tooling in CLAUDE.md
-         ↓
-discuss-milestone-goal          ← optional: sharpen a vague idea before defining
-         ↓
-define-milestone-goal           ← create the milestone directory and seed requirements.md
-         ↓
-specify-milestone-starting-implementation-state ← fill "Relevant implementation state" from the codebase
-         ↓
-┌─────────────────────────────────────────────────────────────────┐
-│  highlight-milestone-requirements-open-questions                │  ← repeat to surface more gaps
-│           ↓                                                     │
-│  discuss-open-question  ← explore one question (optional)      │
-│           ↓                                                     │
-│  answer-open-question   ← record the decision                  │
-└──────────────────────────────── repeat until satisfied ─────────┘
-         ↓
-populate-backlog                ← convert requirements.md → ordered TASKS_TODO.md
-         ↓
-implement-backlog-tasks         ← execute all tasks, committing after each one
-         ↓
-finish-current-milestone        ← record accomplishments; finalize the milestone
-         ↓
-goto-next-milestone             ← advance the current-milestone pointer
+```mermaid
+flowchart TD
+    A["init-milestone-base-workflow<br/>one-time bootstrap: create milestones/ + README, seed pointer"]
+    B["/init<br/>one-time project setup: document tech stack/tooling in CLAUDE.md"]
+    C["discuss-milestone-goal<br/>(optional) sharpen a vague idea before defining"]
+    D["define-milestone-goal<br/>create the milestone directory and seed requirements.md"]
+    E["specify-milestone-starting-implementation-state<br/>fill 'Relevant implementation state' from the codebase"]
+    F["highlight-milestone-requirements-open-questions<br/>repeat to surface more gaps"]
+    G["discuss-open-question<br/>(optional) explore one question"]
+    H["answer-open-question<br/>record the decision"]
+    I["populate-backlog<br/>convert requirements.md → ordered TASKS_TODO.md"]
+    J["implement-backlog-tasks<br/>execute all tasks, committing after each one"]
+    K["finish-current-milestone<br/>record accomplishments; finalize the milestone"]
+    L["goto-next-milestone<br/>advance the current-milestone pointer"]
+
+    A --> B --> C --> D --> E --> F
+    F --> G --> H
+    H -->|repeat until satisfied| F
+    H --> I --> J --> K --> L
 ```
 
 Run `highlight-milestone-requirements-open-questions` as many times as needed — each pass may surface questions that earlier answers opened up. Once no open questions remain, proceed to `populate-backlog`.
