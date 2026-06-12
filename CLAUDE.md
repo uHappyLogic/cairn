@@ -69,6 +69,17 @@ Each active milestone lives at `milestones/milestone_<N>_<slug>/` and contains e
 - The `submit-backlog-task` agent and the shared implement procedure always resolve `<MILESTONE_DIR>` by reading `CLAUDE.md` — they must never use a hardcoded backlog path.
 - Task altitude is split, and the dividing line is **what can be re-derived at implementation time**. The `submit-backlog-task` agent authors only what *cannot* be reconstructed from the goal + live code: the `Description` (intent), the `Success` bar, the optional `Provides` (the forward contract — names/thresholds sibling tasks reference before this task is built), and the optional `Notes` (non-obvious gotchas that would cost the implementer a discovery round). The shared implement procedure owns everything re-derivable — the flow itself and the **detailed implementation design** (exact code, insertion points, assertion wording, decided fresh against the live codebase). The agent must **not** author a step-by-step flow under any heading (no `Steps`); `Provides`/`Notes` are omitted entirely when empty. Keep task bodies minimal to save tokens; never push line-by-line implementation detail — or a re-narration of the flow — back into authored tasks.
 
+## Milestone Workflow
+
+This project uses the milestone-driven workflow. Each milestone lives at
+`milestones/milestone_<N>_<slug>/` with `requirements.md`, `TASKS_TODO.md`, and
+`TASKS_DONE.md`. `CLAUDE.md` and `milestones/README.md` are the source of truth
+for which milestone is current — the path is shown under `## Current Milestone`
+in backticks. Never advance the pointer without first running
+`/finish-current-milestone`.
+
 ## Current Milestone
 
-_(none yet — run `/init` then `/define-milestone-goal` to start the first milestone)_
+**Milestone 1 — Public Release Preparation** (`milestones/milestone_1_public-release-prep/`)
+
+See `milestones/README.md` for the full milestone history.
