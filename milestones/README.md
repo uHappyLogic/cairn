@@ -11,7 +11,7 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-**Milestone 1 — Public Release Preparation** (`milestones/milestone_1_public-release-prep/`)
+Current milestone: `milestones/milestone_01_public-release-prep/`
 
 ## Milestone History
 
