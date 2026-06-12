@@ -5,16 +5,6 @@
 
 
 
-## Add MIT License File
-
-Add a `LICENSE` file at the repo root containing the canonical MIT License text. No license file exists anywhere in the repo today; this is a from-scratch addition. The file establishes the legal basis for public release.
-
-**Success:**
-- `LICENSE` exists at the repo root.
-- The file contains the standard MIT License text with the copyright line exactly `Copyright (c) 2026 Lukasz Kosiak`.
-- No other files are modified by this task.
-
----
 
 ## Add Marketplace Manifest
 

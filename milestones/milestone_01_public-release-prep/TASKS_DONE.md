@@ -89,6 +89,17 @@ Update the plugin's proper name from `workflow` to `cairn` in `.claude-plugin/pl
 
 ---
 
+## Add MIT License File
+
+Add a `LICENSE` file at the repo root containing the canonical MIT License text. No license file exists anywhere in the repo today; this is a from-scratch addition. The file establishes the legal basis for public release.
+
+**Success:**
+- `LICENSE` exists at the repo root.
+- The file contains the standard MIT License text with the copyright line exactly `Copyright (c) 2026 Lukasz Kosiak`.
+- No other files are modified by this task.
+
+---
+
 ## Adopt Zero-Padded Two-Digit Milestone Numbering
 
 Update `define-milestone-goal` to derive the next milestone number by scanning `milestones/` for `milestone_<NN>_*` directories — parsing each directory's numeric portion as an integer (stripping leading zeros), taking `max(N) + 1`, and formatting the result zero-padded to two digits — rather than reading the number from `CLAUDE.md`. The milestone directory it creates must use this zero-padded two-digit name. Any other location in the repo that parses a milestone number from a path slug must also strip leading zeros when interpreting it.
