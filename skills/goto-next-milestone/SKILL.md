@@ -31,7 +31,7 @@ The **candidates** are directories that exist in `milestones/` but do not appear
 
 - **Zero candidates**: stop. Tell the user to run `/define-milestone-goal` first to create a milestone.
 - **One candidate**: confirm the path and title with the user, then proceed.
-- **Multiple candidates**: list them (number, slug, path) and ask the user which one to activate before proceeding.
+- **Multiple candidates**: list them (number, slug, path) and ask the user which one to activate before proceeding. When deriving the number from the directory slug, strip leading zeros and treat it as an integer (e.g. `milestone_01_foo` → number `1`).
 
 ### 3. Update milestones/README.md
 

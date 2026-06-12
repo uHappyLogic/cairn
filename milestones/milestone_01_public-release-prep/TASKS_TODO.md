@@ -3,22 +3,6 @@
 
 
 
-## Adopt Zero-Padded Two-Digit Milestone Numbering
-
-Update `define-milestone-goal` to derive the next milestone number by scanning `milestones/` for `milestone_<NN>_*` directories — parsing each directory's numeric portion as an integer (stripping leading zeros), taking `max(N) + 1`, and formatting the result zero-padded to two digits — rather than reading the number from `CLAUDE.md`. The milestone directory it creates must use this zero-padded two-digit name. Any other location in the repo that parses a milestone number from a path slug must also strip leading zeros when interpreting it.
-
-**Notes:**
-- When `milestones/` contains no `milestone_<NN>_*` directories (cold start), treat `max(N)` as `0` so the first number is `1`, formatted `01`.
-- The live directory on disk is already `milestones/milestone_01_public-release-prep/` (zero-padded), so no directory rename is needed — only the skill logic must match the convention.
-- `goto-next-milestone` scans `milestones/` for a defined-but-not-yet-active directory; verify whether it derives a milestone number from a slug and, if so, ensure it strips leading zeros.
-
-**Success:**
-- `skills/define-milestone-goal/SKILL.md` contains no instruction to read a milestone number from `CLAUDE.md` or from `milestones/README.md`'s pointer.
-- `skills/define-milestone-goal/SKILL.md` derives the next number by scanning `milestones/` for `milestone_<NN>_*` directories, parsing each numeric portion as a leading-zero-stripped integer, taking `max + 1`, and formatting the result zero-padded to two digits (e.g. `01`, `02`, …, `10`).
-- The directory name `define-milestone-goal` creates follows `milestone_<NN>_<slug>/` with a two-digit zero-padded number.
-- No file in the repo that parses a milestone number from a path slug treats leading zeros as significant (i.e. `01` is parsed as integer `1`, not skipped or misread).
-
----
 
 ## Rename Plugin to Cairn in Manifest and CLAUDE.md
 

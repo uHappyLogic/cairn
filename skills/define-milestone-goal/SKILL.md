@@ -24,27 +24,29 @@ Creates a new milestone directory under `milestones/` with a `requirements.md` p
 
 ### 1. Determine the milestone number
 
-Read `milestones/README.md` and `CLAUDE.md` to find the current milestone number. The new milestone number is `<current_number> + 1`.
+Scan the `milestones/` directory for subdirectories whose names match the pattern `milestone_<NN>_*` (e.g. `milestone_01_public-release-prep`). For each matching directory, extract the numeric prefix and parse it as an integer, stripping any leading zeros (`01` → `1`, `09` → `9`). Take the maximum integer found and add 1 to get the next milestone number. Format the result zero-padded to two digits (e.g. `1` → `01`, `9` → `09`, `10` → `10`).
 
-If the current milestone is already `TBD` (i.e. `/finish-current-milestone` has not been run), stop and tell the user to finish the current milestone first before defining a new one.
+If `milestones/` contains no matching directories (cold start), treat the maximum as `0`, so the first milestone number is `1`, formatted `01`.
+
+Do not read the milestone number from `CLAUDE.md` or from `milestones/README.md`'s pointer — the scan is the sole source.
 
 ### 2. Derive the milestone slug
 
-Convert `<overall_goal_description>` to a short kebab-case slug (3–5 words max) that captures the essence of the goal. The full directory name is `milestone_<number>_<slug>`.
+Convert `<overall_goal_description>` to a short kebab-case slug (3–5 words max) that captures the essence of the goal. The full directory name is `milestone_<NN>_<slug>` where `<NN>` is the zero-padded two-digit number from step 1.
 
-**Example:** "add a shooting mechanic where the player fires a single projectile" → `milestone_12_player-shooting`
+**Example:** "add a shooting mechanic where the player fires a single projectile" → `milestone_12_player-shooting` (if the next number happens to be 12)
 
 ### 3. Check for conflicts
 
-Verify that `milestones/milestone_<number>_<slug>/` does not already exist. If a milestone with that number exists under any slug, stop and report the conflict.
+Verify that `milestones/milestone_<NN>_<slug>/` does not already exist. If a milestone with that number exists under any slug, stop and report the conflict.
 
 ### 4. Create the milestone directory
 
-Create `milestones/milestone_<number>_<slug>/` with three files:
+Create `milestones/milestone_<NN>_<slug>/` with three files. Use the zero-padded `<NN>` in the directory name and the integer (leading zeros stripped) `<N>` in the `requirements.md` heading.
 
 **`requirements.md`:**
 ```markdown
-# Milestone <number>: <title>
+# Milestone <N>: <title>
 
 ## Goal
 
@@ -73,9 +75,9 @@ Create `milestones/milestone_<number>_<slug>/` with three files:
 ### 5. Confirm
 
 Report:
-- New milestone directory created: `milestones/milestone_<number>_<slug>/`
+- New milestone directory created: `milestones/milestone_<NN>_<slug>/`
 - The goal written into `requirements.md`
-- Suggest the next step: `/specify-milestone-starting-implementation-state milestone_<number>_<slug>` to fill in the implementation state section.
+- Suggest the next step: `/specify-milestone-starting-implementation-state milestone_<NN>_<slug>` to fill in the implementation state section.
 
 ## Rules
 
