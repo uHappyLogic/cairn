@@ -4,21 +4,6 @@
 
 
 
-## Rename Plugin to Cairn in Manifest and CLAUDE.md
-
-Update the plugin's proper name from `workflow` to `cairn` in `.claude-plugin/plugin.json` (the `name` field) and in the one `CLAUDE.md` sentence that identifies the plugin by its backticked proper name. This is the foundation of the Cairn rename (requirements.md "Plugin name and tagline") for the files in scope — the README rewrite and `.claude-plugin/marketplace.json` creation are handled by separate tasks.
-
-**Notes:**
-- The only proper-name instance in `CLAUDE.md` is the opening sentence: `A Claude Code plugin (\`workflow\`) that implements a milestone-driven development workflow.` The backticked `workflow` is the plugin name; the trailing "milestone-driven development workflow" is the generic concept and must not change.
-- All other appearances of the word "workflow" in `CLAUDE.md` — the `## Milestone Workflow` heading, "the milestone-driven workflow", skill names like `init-milestone-base-workflow` — are either the generic concept or skill-directory identifiers, not the plugin's proper name. Leave them untouched.
-
-**Success:**
-- `.claude-plugin/plugin.json` `name` field equals `"cairn"`.
-- `CLAUDE.md` no longer contains the string `` plugin (`workflow`) ``; the opening description reads `` A Claude Code plugin (`cairn`) ``.
-- The `## Milestone Workflow` heading, the phrase "milestone-driven development workflow", and all skill/directory names containing `workflow` in `CLAUDE.md` are unchanged.
-- No files other than `.claude-plugin/plugin.json` and `CLAUDE.md` are modified by this task.
-
----
 
 ## Add MIT License File
 

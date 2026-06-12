@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-A Claude Code plugin (`workflow`) that implements a milestone-driven development workflow. It ships as a set of skills and a couple of agents that move a project from a vague idea through discussion, planning, implementation, and archival — one milestone at a time.
+A Claude Code plugin (`cairn`) that implements a milestone-driven development workflow. It ships as a set of skills and a couple of agents that move a project from a vague idea through discussion, planning, implementation, and archival — one milestone at a time.
 
 ## Repository layout
 
