@@ -65,6 +65,7 @@ end
     E["<b>/specify-milestone-starting-implementation-state</b><br/>fill 'Relevant implementation state' from the codebase"]
 subgraph Iterating milestone requirements document
     F["<b>/highlight-milestone-requirements-open-questions</b><br/>repeat to surface more gaps"]
+    M["<b>/answer-obvious-open-questions</b><br/>(optional) auto-resolve the clear-cut questions; leave the rest"]
     G["<b>/discuss-open-question</b><br/>(optional) explore one question"]
     H["<b>/answer-open-question</b><br/>record the decision"]
 end
@@ -74,7 +75,7 @@ end
     L["<b>/goto-next-milestone</b><br/>advance the current-milestone pointer"]
 
     A --> B --> C --> D --> E --> F
-    F --> G --> H
+    F --> M --> G --> H
     H -->|repeat until satisfied| F
     H --> I --> J --> K --> L
 ```
@@ -102,6 +103,10 @@ Reads the milestone goal, explores the project using the environment documented 
 ### `highlight-milestone-requirements-open-questions`
 
 Scans the current milestone's `requirements.md` and surfaces remaining ambiguities or decisions that need to be made before the backlog can be populated. Run it multiple times — earlier answers often open new questions.
+
+### `answer-obvious-open-questions`
+
+Sweeps every open and deferred question in the current milestone's `requirements.md` and resolves only the ones that have a clear, low-risk answer once the real code is read — recording each decision (and any it cascades into) the same way `answer-open-question` does. Genuinely contentious questions are left untouched for `/discuss-open-question` or `/answer-open-question`. Run it right after `/highlight-milestone-requirements-open-questions` to clear the easy questions in one pass before spending time on the hard ones.
 
 ### `discuss-open-question <question_name>`
 

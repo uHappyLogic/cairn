@@ -32,6 +32,7 @@ discuss-milestone-goal          ← optional sharpening conversation, creates no
 define-milestone-goal           ← creates milestones/milestone_<N>_<slug>/ with requirements.md, TASKS_TODO.md, TASKS_DONE.md
 specify-milestone-starting-implementation-state ← fills "Relevant implementation state" in requirements.md
 highlight-milestone-requirements-open-questions ← surfaces ambiguities; run repeatedly
+answer-obvious-open-questions   ← sweeps open/deferred questions, records answers for the clear-cut ones (via the answer-open-question mechanism), leaves contentious ones; run after highlight
 discuss-open-question           ← structured conversation about one open question
 answer-open-question            ← records the decision in requirements.md
 populate-backlog                ← decomposes requirements.md into ordered briefs, proves coverage, spawns submit-backlog-task agent per brief
@@ -59,6 +60,7 @@ Each active milestone lives at `milestones/milestone_<N>_<slug>/` and contains e
 
 - `init-milestone-base-workflow` is the one-time bootstrap; it is additive and idempotent — it never overwrites an existing `milestones/README.md` or `CLAUDE.md`, only creating missing files and appending missing sections. It must leave `milestones/README.md` with a `Current milestone:` pointer line.
 - `answer-open-question` splits its arg on the first `.` — title before, answer after.
+- `answer-obvious-open-questions` is the batch "clear out the easy ones" pass run after `highlight-milestone-requirements-open-questions`. It must reuse `answer-open-question`'s recording mechanism (remove the question block → fold the decision into `## Implementation decisions` → cascade), never a parallel format, and process questions **sequentially against the live document** so cascades apply. Its whole value is restraint: it answers only clear, low-risk questions (higher bar for `Deferred` entries — default-leave), leaves contentious ones byte-identical, and never commits.
 - The `implement-backlog-task` agent expects tasks as `##` sections in `TASKS_TODO.md`, each terminated by a `---` separator.
 - `implement-backlog-tasks` (orchestrator) commits after each successful task; individual skills never commit — including the `implement-backlog-task` skill, which leaves an ad-hoc task's changes staged for the user.
 - `finish-current-milestone` must always run before `goto-next-milestone` — it records the completion and clears the current-milestone pointer to "none". `goto-next-milestone` checks for this "none" state and refuses to run without it.
