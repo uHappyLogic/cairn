@@ -37,3 +37,20 @@ Refactor every skill/agent that currently resolves `<MILESTONE_DIR>` by parsing 
 - Writer skills and `define-milestone-goal` are unmodified.
 
 ---
+
+## Migrate Pointer Writers Off CLAUDE.md
+
+Refactor the three writer skills (`finish-current-milestone`, `goto-next-milestone`, `init-milestone-base-workflow`) so they update the current-milestone pointer by overwriting the single grep-able `Current milestone:` line in `milestones/README.md` only — no longer writing any pointer into `CLAUDE.md`. This makes `milestones/README.md` the sole source of truth for the pointer, as decided in requirements.md "CLAUDE.md pointer role." The existing `## Current Milestone` section in `CLAUDE.md` must not be removed or modified here; that cleanup belongs to a later task.
+
+**Notes:**
+- `goto-next-milestone` currently reads the "none" state from `CLAUDE.md`'s `## Current Milestone` section. After this task it reads the grep-able `Current milestone:` line from `milestones/README.md`; the gate passes when that line equals the literal `Current milestone: none` (bare token, no backticks — per the pointer line format in requirements.md "Grep-able pointer line format").
+- `init-milestone-base-workflow`'s idempotency short-circuit currently requires `milestones/`, `milestones/README.md`, and a `## Current Milestone` section in `CLAUDE.md`. After this task the CLAUDE.md condition is dropped — presence of the grep-able `Current milestone:` line in `milestones/README.md` (alongside `milestones/`) is sufficient to declare the project already initialized.
+
+**Success:**
+- `skills/finish-current-milestone/SKILL.md` contains no instruction to write to `CLAUDE.md`'s pointer section; it writes the literal line `Current milestone: none` into `milestones/README.md` only.
+- `skills/goto-next-milestone/SKILL.md` contains no instruction to write to `CLAUDE.md`'s pointer section; it writes `Current milestone: \`<path>\`` into `milestones/README.md` only, and its "none" gate reads the grep-able `Current milestone:` line from `milestones/README.md`.
+- `skills/init-milestone-base-workflow/SKILL.md` seeds `Current milestone: none` in `milestones/README.md` when creating the file, does not write a pointer into `CLAUDE.md`, and its idempotency check no longer requires `CLAUDE.md` to have a `## Current Milestone` section.
+- `CLAUDE.md` is unmodified by this task.
+- No skills or agents outside the three named writers are modified.
+
+---

@@ -1,11 +1,11 @@
 ---
 name: goto-next-milestone
-description: Activate an already-defined milestone — scans milestones/ for a defined-but-not-yet-active directory and updates CLAUDE.md and milestones/README.md to point to it as the current milestone. Requires finish-current-milestone to have been run first (current pointer must be "none").
+description: Activate an already-defined milestone — scans milestones/ for a defined-but-not-yet-active directory and updates milestones/README.md to point to it as the current milestone. Requires finish-current-milestone to have been run first (current pointer must be "none").
 ---
 
 # goto-next-milestone
 
-Activates an already-defined milestone by updating `CLAUDE.md` and `milestones/README.md` to point to it as the current milestone. The milestone directory must already exist (created by `/define-milestone-goal`). Run this after `/finish-current-milestone` has cleared the current pointer to "none".
+Activates an already-defined milestone by updating `milestones/README.md` to point to it as the current milestone. The milestone directory must already exist (created by `/define-milestone-goal`). Run this after `/finish-current-milestone` has cleared the current pointer to "none".
 
 ## Usage
 
@@ -19,7 +19,7 @@ No arguments. The milestone to activate is discovered automatically.
 
 ### 1. Check prerequisites
 
-Read `CLAUDE.md`. If `## Current Milestone` does not show the "none" state (i.e. it still points to an active milestone path), stop and tell the user to run `/finish-current-milestone` first.
+Read `milestones/README.md` and find the line whose prefix is `Current milestone:`. If that line is not `Current milestone: none` (i.e. it still points to an active milestone path), stop and tell the user to run `/finish-current-milestone` first.
 
 ### 2. Find the candidate milestone
 
@@ -35,34 +35,24 @@ The **candidates** are directories that exist in `milestones/` but do not appear
 
 ### 3. Update milestones/README.md
 
-Replace the body of the `## Current Milestone` section with:
+In `milestones/README.md`, overwrite the `Current milestone:` line with:
 
-```markdown
-**Milestone <number> — <title>** (`milestones/milestone_<number>_<slug>/`)
+```
+Current milestone: `milestones/milestone_<number>_<slug>/`
 ```
 
-Leave the `## Milestone History` section and all other content unchanged.
+Leave the `## Current Milestone` heading, the `## Milestone History` section, and all other content unchanged.
 
-### 4. Update CLAUDE.md
-
-Replace the body of the `## Current Milestone` section with:
-
-```markdown
-**Milestone <number> — <title>** (`milestones/milestone_<number>_<slug>/`)
-
-See `milestones/README.md` for the full milestone history.
-```
-
-### 5. Confirm
+### 4. Confirm
 
 Report:
 - The milestone activated: path and title
-- Both `milestones/README.md` and `CLAUDE.md` updated to point to it
+- `milestones/README.md` updated to point to it
 - Suggest the next step: `/specify-milestone-starting-implementation-state` to fill in the implementation context
 
 ## Rules
 
-- Do not run if the current-milestone pointer is not in "none" state — always require `/finish-current-milestone` to have been run first.
+- Do not run if the `Current milestone:` line in `milestones/README.md` is not `none` — always require `/finish-current-milestone` to have been run first.
 - Do not create any files or directories — the milestone directory must already exist.
-- Always update both `milestones/README.md` and `CLAUDE.md` — leaving either stale breaks every skill that reads the current milestone path.
+- Update `milestones/README.md` only — do not write the pointer into `CLAUDE.md`.
 - Do not commit — leave staging to the user.
