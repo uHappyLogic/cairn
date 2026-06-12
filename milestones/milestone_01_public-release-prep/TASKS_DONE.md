@@ -116,3 +116,17 @@ Update `define-milestone-goal` to derive the next milestone number by scanning `
 - No file in the repo that parses a milestone number from a path slug treats leading zeros as significant (i.e. `01` is parsed as integer `1`, not skipped or misread).
 
 ---
+
+## Add Marketplace Manifest
+
+Creates `.claude-plugin/marketplace.json` so the repo is installable as its own single-plugin Claude Code marketplace via `/plugin marketplace add uHappyLogic/cairn`. No marketplace manifest exists today; this is a from-scratch addition that lives side by side with the existing `.claude-plugin/plugin.json` (the recommended single-plugin convention), per requirements.md "Marketplace manifest path and shape."
+
+**Notes:**
+- This task must run after "Rename Plugin to Cairn in Manifest and CLAUDE.md" — the plugin entry `name` in `marketplace.json` must equal `cairn`, and that name is established by the rename task. Verify the `name` field in `.claude-plugin/plugin.json` is `"cairn"` before writing the manifest.
+
+**Success:**
+- `.claude-plugin/marketplace.json` exists with the exact shape: top-level `name` of `"cairn"` (kebab-case), `owner.name` of `"Lukasz Kosiak"`, and a single `plugins` array entry with `name: "cairn"`, `source: "."`, and `description: "Milestone-driven development for any stack."`.
+- The `name` value in the `plugins` entry matches the `name` field in `.claude-plugin/plugin.json`.
+- No files other than `.claude-plugin/marketplace.json` are modified by this task.
+
+---
