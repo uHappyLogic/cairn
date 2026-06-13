@@ -54,33 +54,88 @@ Each milestone lives in `milestones/milestone_<N>_<slug>/` and contains three fi
 ## Workflow pipeline
 
 ```mermaid
-%%{init: {'flowchart': {'wrappingWidth': 9999}}}%%
+%%{init: {'theme':'base','themeVariables':{'fontFamily':'ui-sans-serif, system-ui','lineColor':'#94a3b8','primaryBorderColor':'#475569'},'flowchart':{'wrappingWidth':9999,'curve':'basis'}}}%%
 flowchart TD
-subgraph one-time setup
-    A["<b>/init</b><br/>one-time project setup: document tech stack/tooling in CLAUDE.md"]
-    B("<b>/init-milestone-base-workflow</b><br/>one-time bootstrap: create milestones/ + README, seed pointer")
+subgraph S0["⚙️ One-time setup"]
+    OT1(["<b>/init</b><br/>one-time project setup: document tech stack/tooling in CLAUDE.md"])
+    OT2(["<b>/init-milestone-base-workflow</b><br/>one-time bootstrap: create milestones/ + README, seed pointer"])
 end
-    C["<b>/discuss-milestone-goal</b><br/>(optional) sharpen a vague idea before defining"]
-    D["<b>/define-milestone-goal</b><br/>create the milestone directory and seed requirements.md"]
-    E["<b>/specify-milestone-starting-implementation-state</b><br/>fill 'Relevant implementation state' from the codebase"]
-subgraph Iterating milestone requirements document
-    F["<b>/highlight-milestone-requirements-open-questions</b><br/>repeat to surface more gaps"]
-    M["<b>/answer-obvious-open-questions</b><br/>(optional) auto-resolve the clear-cut questions; leave the rest"]
-    G["<b>/discuss-open-question</b><br/>(optional) explore one question"]
-    H["<b>/answer-open-question</b><br/>record the decision"]
-end
-    I["<b>/populate-backlog</b><br/>convert requirements.md → ordered TASKS_TODO.md"]
-    J["<b>/implement-backlog-tasks</b><br/>execute all tasks, committing after each one"]
-    K["<b>/finish-current-milestone</b><br/>record accomplishments; finalize the milestone"]
-    L["<b>/goto-next-milestone</b><br/>advance the current-milestone pointer"]
 
-    A --> B --> C --> D --> E --> F
-    F --> M --> G --> H
-    H -->|repeat until satisfied| F
-    H --> I --> J --> K --> L
+D0[/"Workflow scaffold ready<br/>milestones/ + CLAUDE.md documented"/]
+
+subgraph S1["🎯 Initializing a milestone"]
+    IM1["<b>/discuss-milestone-goal</b><br/>(optional) sharpen a vague idea before defining"]
+    IM2["<b>/define-milestone-goal</b><br/>create the milestone directory and seed requirements.md"]
+    IM3["<b>/goto-next-milestone</b><br/>advance the current-milestone pointer"]
+end
+
+D1[/"Milestone goal defined<br/>requirements.md seeded, pointer active"/]
+
+subgraph S2["❓ Iterating milestone requirements document"]
+    ITM0["<b>/specify-milestone-starting-implementation-state</b><br/>fill 'Relevant implementation state' from the codebase"]
+    ITM1["<b>/highlight-milestone-requirements-open-questions</b><br/>repeat to surface more gaps"]
+    ITM2["<b>/answer-obvious-open-questions</b><br/>(optional) auto-resolve the clear-cut questions; leave the rest"]
+    ITM3["<b>/discuss-open-question</b><br/>(optional) explore one question"]
+    ITM4{{"<b>/answer-open-question</b><br/>record the decision"}}
+end
+
+D2[/"Requirements finalized<br/>all open questions resolved"/]
+
+subgraph S3["🤖 Automated one-shot backlog population and implementation"]
+    AI1["<b>/populate-backlog</b><br/>convert requirements.md → ordered TASKS_TODO.md"]
+    AI2["<b>/implement-backlog-tasks</b><br/>execute all tasks, committing after each one"]
+end
+
+D3[/"Ordered backlog implemented and committed"/]
+
+subgraph S4["🔧 Semi-manual follow-up and adjustments"]
+    SM1["<b>/discuss-new-backlog-task</b><br/>(optional) clarify a new issue discovered mid-implementation into one or more briefs, then hand off to /submit-backlog-task"]
+    SM2["<b>/submit-backlog-task</b><br/>add a single new task to the backlog inline in the conversation, with context available for follow-up tweaks"]
+    SM3{{"<b>/implement-backlog-task</b><br/> implement a single task inline with the conversation for context, without committing; use when you want to ask follow-ups or tweak the implementation right after seeing it"}}
+end
+
+D4[/"Follow-up adjustments implemented"/]
+
+subgraph S5["🏁 Ending a milestone and moving to the next"]
+    EM1["<b>/finish-current-milestone</b><br/>record accomplishments; finalize the milestone"]
+end
+
+D5[/"Milestone closed<br/>pointer cleared"/]
+
+    OT1 --> OT2 --> D0
+    D0 --> IM1 --> IM2 --> IM3
+    IM3 --> D1
+    D1 --> ITM0 --> ITM1 --> ITM2 --> ITM3 --> ITM4
+    ITM4 -.->|repeat until satisfied| ITM1
+    ITM4 --> D2
+    D2 --> AI1 --> AI2 --> D3
+    D3 --> SM1
+    SM1 --> SM2 --> SM3
+    SM3 -.->|repeat until satisfied| SM1
+    SM3 --> D4
+    D4 --> EM1 --> D5
+    D5 -.->|next milestone| IM1
+
+    classDef setup  fill:#f1f5f9,stroke:#475569,color:#0f172a;
+    classDef init   fill:#eff6ff,stroke:#2563eb,color:#1e3a8a;
+    classDef req    fill:#faf5ff,stroke:#9333ea,color:#581c87;
+    classDef auto   fill:#ecfdf5,stroke:#059669,color:#064e3b;
+    classDef manual fill:#fff7ed,stroke:#ea580c,color:#7c2d12;
+    classDef finish fill:#fef2f2,stroke:#e11d48,color:#881337;
+    classDef optional stroke-dasharray:5 4;
+    classDef state  fill:#fffbeb,stroke:#d97706,color:#78350f,font-style:italic;
+
+    class OT1,OT2 setup;
+    class IM1,IM2,IM3 init;
+    class ITM0,ITM1,ITM2,ITM3,ITM4 req;
+    class AI1,AI2 auto;
+    class SM1,SM2,SM3 manual;
+    class EM1 finish;
+    class IM1,ITM2,ITM3,SM1,SM3 optional;
+    class D0,D1,D2,D3,D4,D5 state;
+
+    linkStyle 11,19,23 stroke:#9333ea,stroke-width:1.5px;
 ```
-
-Run `highlight-milestone-requirements-open-questions` as many times as needed — each pass may surface questions that earlier answers opened up. Once no open questions remain, proceed to `populate-backlog`.
 
 ## Skill reference
 
