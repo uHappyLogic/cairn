@@ -126,7 +126,7 @@ Clarifies a rough or oversized issue discovered mid-implementation into one or m
 
 ### `submit-backlog-task <issue description>`
 
-Adds a single, already-clear issue to `TASKS_TODO.md`. Triages for duplicates and decides where the task belongs, then delegates authoring to the `submit-backlog-task` agent. For vague or multi-task issues, route through `/discuss-new-backlog-task` first.
+Adds a single, already-clear issue to `TASKS_TODO.md`. Triages for duplicates and decides where the task belongs, then authors and inserts the task **inline, in the current conversation** so the authoring context stays available for follow-up tweaks. For vague or multi-task issues, route through `/discuss-new-backlog-task` first.
 
 ### `implement-backlog-tasks`
 

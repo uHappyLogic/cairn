@@ -1,7 +1,6 @@
 ---
 name: implement-backlog-task
 description: Implements a single named task from the current milestone's TASKS_TODO.md, verifies success criteria, and updates the backlog. Invoke with the task's ## heading text as the prompt.
-model: sonnet
 color: green
 ---
 

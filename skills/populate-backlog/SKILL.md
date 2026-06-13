@@ -112,7 +112,7 @@ Re-read the finished `<MILESTONE_DIR>/TASKS_TODO.md`. Confirm every brief from t
 
 ## Rules
 
-- Your output is briefs + ordering + coverage. Do not write task bodies — the contract surface, notes, file paths, or success criteria — yourself; that is the agent's job, and duplicating it both pollutes your context and risks diverging from the agent's template.
+- Your output is briefs + ordering + coverage. Do not write task bodies — the contract surface, notes, file paths, or success criteria — yourself; that is the agent's job, and duplicating it both pollutes your context and risks diverging from the shared task template the agent uses.
 - Never invent requirements not present in the spec; never omit one that is.
 - Do not create tasks for work already in `TASKS_DONE.md`, or for requirements already satisfied by the current implementation (note these in the report instead).
 - Submit briefs in dependency order with `POSITION: append`; let the agent own task wording and the caller (you) own order.
