@@ -1,29 +1,5 @@
 # TASKS TODO
 
-## Create Try-Answer-Question-By-Principle Subagent
-
-Create `agents/try-answer-question-by-principle.md` — the read-only, single-question candidate-elimination subagent the `try-answer-questions-by-principle` orchestrator dispatches once per Open/Deferred question. Given one question (its Short Title plus context), it reads the project-wide principle store, enumerates the realistic candidate answers, keeps only those each supportable by at least one confirmed principle, and returns a structured verdict naming the unique survivor (if any) and the principles that kept it alive. It mutates nothing — it is read-only on both `requirements.md` and the principle store; the orchestrator owns all document mutation and committing.
-
-**Provides:**
-- `agents/try-answer-question-by-principle.md` — the per-question elimination subagent, dispatched by the orchestrator.
-- Its input contract: one question's **Short Title + context** (supplied by the orchestrator).
-- Its verdict return contract (the orchestrator parses this to emit one `Answer-Principle:` trailer line per load-bearing principle): (a) whether exactly one candidate survives (unique-survivor yes/no); (b) the surviving answer; (c) the **full** set of load-bearing principles supporting the survivor, by `### <Short Title>` handle — every principle that genuinely kept the survivor alive, **not** a curated "most important" subset; (d) the candidate set considered. Auto-answer is warranted only when exactly one candidate survives; two-or-more survivors (including the conflicting-principles case, where different principles imply different answers) or zero survivors both yield a "no unique survivor" verdict.
-
-**Notes:**
-- The principle store is `milestones/answer_decision_principles.md` at the `milestones/` **root** — above any `<MILESTONE_DIR>`, shared across all milestones. It is the one file the loop reads at a fixed root path and is **not** resolved via `shared/get-current-milestone.md` (every other reader resolves relative to `<MILESTONE_DIR>` — do not default to that here).
-- If the principle store is **absent or empty**, treat it as no principles → nothing is supportable → every candidate is eliminated → the verdict is always "no unique survivor". This must be stated in the agent because the behavior lives in the still-open `Deferred — Missing principle file` block, not in `## Implementation decisions`.
-- The candidate set must be the realistic alternatives — the same bar `discuss-open-question` uses when enumerating options. The gate is only as strong as the candidate set, so an impoverished set defeats it.
-- The "supportable" test must be a genuine fit, not a rationalization. Apply each principle's **statement**, not its optional `*Origin:*` line.
-- Model the agent's shape on `agents/implement-backlog-task.md`, but it is **READ-ONLY** and returns the structured verdict as its final message in place of that agent's `DONE`/`FAILED` protocol. There is no strength-gate / judgment-based answering (the removed `answer-obvious` logic): a confirmed principle is the sole basis for keeping a candidate.
-
-**Success:**
-- `agents/try-answer-question-by-principle.md` exists with valid agent frontmatter (e.g. `name`, `description`).
-- The body describes reading the principle store at the `milestones/` root, enumerating realistic candidate answers, keeping only those supportable by ≥1 confirmed principle, and returning a structured verdict reporting unique-survivor yes/no, the surviving answer, all load-bearing principles, and the candidate set considered.
-- It explicitly states the subagent never edits `requirements.md` or the principle store.
-- It explicitly states that an absent or empty principle store yields a "no unique survivor" verdict.
-
----
-
 ## Create Try-Capture-Answer-Principle Skill
 
 Create `skills/try-capture-answer-principle/SKILL.md` — the interactive skill that records or revises a confirmed answering principle extracted from a just-made decision, per the *Capture input contract*, *Capture revise-vs-add*, and *Principle entry schema* decisions in `requirements.md`. It is the first writer of the project-wide principle store `milestones/answer_decision_principles.md`. This task authors only the skill; wiring the unconditional chain-off from `answer-open-question` (and the `reject-auto-answer` chain-in) are separate downstream tasks.
