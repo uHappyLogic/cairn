@@ -46,3 +46,24 @@ Create `agents/try-answer-question-by-principle.md` — the read-only, single-qu
 
 ---
 
+## Create Try-Capture-Answer-Principle Skill
+
+Create `skills/try-capture-answer-principle/SKILL.md` — the interactive skill that records or revises a confirmed answering principle extracted from a just-made decision, per the *Capture input contract*, *Capture revise-vs-add*, and *Principle entry schema* decisions in `requirements.md`. It is the first writer of the project-wide principle store `milestones/answer_decision_principles.md`. This task authors only the skill; wiring the unconditional chain-off from `answer-open-question` (and the `reject-auto-answer` chain-in) are separate downstream tasks.
+
+**Provides:**
+- `skills/try-capture-answer-principle/SKILL.md` — the principle-capture skill.
+- `milestones/answer_decision_principles.md` — the project-wide principle store this skill is the sole writer of (created on first write). Per the *Principle entry schema* decision: one principle per `### <Short Title>` subsection — that heading is the unique citable handle the orchestrator writes to the `Answer-Principle:` commit trailer and the key this skill matches on for revise-vs-add.
+
+**Notes:**
+- If `milestones/answer_decision_principles.md` does not exist, this skill **creates it on first write**. State this in the skill because the behavior lives in the still-open `Deferred — Missing principle file` block, not in `## Implementation decisions` (mirrors the read-side note in the sibling subagent task).
+
+**Success:**
+- `skills/try-capture-answer-principle/SKILL.md` exists with valid skill frontmatter (`name`, `description`) and a "pushy" trigger description.
+- It documents the no-required-param entry that analyzes the current conversation anchored on the most recent decision, and the optional free-text focus hint (including the cold-invocation ask-the-user behavior).
+- It documents the brief-report-and-exit-without-engaging path when no generalizable principle can be extracted, running the revise-vs-add flow only on a real candidate.
+- It documents the semantic-overlap revise-vs-add flow with **mandatory user confirmation** — never revise-vs-add by title alone, never auto-merge/auto-add silently.
+- It documents the principle entry schema it writes (one `### <Short Title>` subsection; body = a generalizable keep/eliminate directive, not a restatement of one decision; optional `*Origin:*` line; no status field) and that it creates the store on first write.
+- It states the skill leaves its edit staged and never commits.
+
+---
+
