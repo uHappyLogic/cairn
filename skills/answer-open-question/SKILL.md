@@ -5,7 +5,7 @@ description: Answer a named open question in the current milestone requirements 
 
 # answer-open-question
 
-Resolves a named open question or deferred entry in the current milestone's `requirements.md` by recording the user's answer and propagating its implications through the document.
+Resolves a named open question or deferred entry in the current milestone's `requirements.md` by recording the user's answer and propagating its implications through the document — then chains into `try-capture-answer-principle` so a reusable rule behind the call can be learned for future autonomous sweeps.
 
 ## Usage
 
@@ -22,49 +22,33 @@ The `<Short Title>` must match (case-insensitive) the title of an existing `Open
 
 ## Workflow
 
-### 0. Find the current milestone
-
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded backlog path.
-
 ### 1. Parse the input
 
 Split the skill args on the first `.` character:
-- Before: the question title (trim whitespace)
-- After: the answer text (trim whitespace)
+- Before: the question **Short Title** (trim whitespace)
+- After: the **answer text** (trim whitespace)
 
 If no `.` is found, report a parse error and show the expected format.
 
-### 2. Locate the question
+### 2. Record the answer
 
-Read `<MILESTONE_DIR>/requirements.md`. Find the `Open question` or `Deferred` entry whose title matches the parsed title (case-insensitive). If no match is found, report the error and list all available titles.
+Read and follow the shared answer-recording procedure at `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out every step **yourself, in this conversation**. Pass it the **Short Title** and **answer text** parsed in step 1 as its `SHORT TITLE` and `ANSWER` inputs.
 
-### 3. Analyse the answer
+That procedure owns resolving the current milestone, locating the matching block, analysing the answer's implications, removing the block, folding the decision into `## Implementation decisions`, and cascading to any entries the answer moots. Do not restate those steps here. If the Short Title matches no entry, the procedure stops without changes and reports the mismatch — relay that to the user so they can retry.
 
-Before editing, reason about:
-- Does the answer resolve the question completely, or does it leave a sub-question open?
-- Does it introduce a concrete implementation constraint that belongs in the **Requirements** section?
-- Does it make any other open question moot, or force a specific answer to one?
-- Does it contradict or supersede anything already written in the document?
+### 3. Report findings
 
-### 4. Update the document
+After the procedure finishes, briefly state:
+- Which question was resolved and how the document changed (resolved block, implementation-decision updates, cascading resolutions).
+- Any new open questions the answer may have introduced — surface these but do **not** add them to the document without user confirmation.
 
-Make changes in separate, targeted edits — one per logical change (removal, requirements update, cascade). This is safer than a single large replacement on a long document:
+### 4. Capture any reusable principle
 
-**a. Remove the matched block** from the document entirely.
-
-**b. Update the Requirements section** if the answer introduces a decision that meaningfully constrains implementation. Add a concise requirement statement under the relevant subsection (or create a new one if needed).
-
-**c. Cascade to other open questions** if the answer makes another entry moot or implies its answer. Remove each affected entry and, if the implied answer introduces a constraint, fold it into the Requirements section with a brief note.
-
-### 5. Report findings
-
-After editing, briefly state:
-- Which question was resolved and how the document changed (resolved block, requirements updates, cascading resolutions)
-- Any new open questions the answer may have introduced — surface these but do **not** add them to the document without user confirmation
+After recording, **always** invoke `/try-capture-answer-principle` with no argument. This chain-off is **unconditional** — `answer-open-question` does not judge whether the decision generalizes. Capture runs inline in this same conversation, where the full deliberation is in context; it anchors on the answer just recorded, analyses whether a reusable answering principle lies behind it, and exits quietly on its own when nothing generalizes. So the chain is always taken; the decision about whether a principle is worth recording belongs entirely to capture.
 
 ## Rules
 
-- Title matching is case-insensitive.
-- Do not rewrite or restructure existing content — only remove the answered entry and add or amend requirement statements.
-- Do not invent implications not directly supported by the answer text.
-- If the answer is ambiguous or incomplete, remove what is clearly resolved and ask the user before adding any new open question.
+- Parse on the **first** `.` only — Short Title before, answer text after.
+- The recording mechanism lives **only** in `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md`; never duplicate or restate its locate / analyse / remove / fold / cascade steps here.
+- Always chain into `/try-capture-answer-principle` after recording — unconditionally, never gated on your own judgment of whether the decision is reusable.
+- Do not commit. Leave the document (and any principle-store) changes staged for the user to review.

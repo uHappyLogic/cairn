@@ -67,3 +67,20 @@ Create `skills/try-capture-answer-principle/SKILL.md` — the interactive skill 
 
 ---
 
+## Rewire Answer-Open-Question Onto Shared Procedure And Capture Chain
+
+Rewire `skills/answer-open-question/SKILL.md` so it no longer restates the answer-recording steps inline and teaches a principle after every manual answer. Keep its arg-parsing front (split the arg on the **first `.`** into Short Title + answer text); replace its current inline recording prose (the locate → remove block → fold into `## Implementation decisions` → cascade steps, roughly today's steps 2–4) with a reference to `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md`, passing the resolved Short Title + answer text; keep its report tail; and add an unconditional chain-off to `try-capture-answer-principle` after recording. Depends on the already-queued *Create Answer-Recording Shared Procedure* and *Create Try-Capture-Answer-Principle Skill* tasks.
+
+**Notes:**
+- Reference the shared procedure exactly as the `submit-backlog-task` / `implement-backlog-task` skills reference their shared procedures — via the `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` idiom. Do **not** duplicate or restate the shared procedure's locate/analyse/remove/fold/cascade steps; the whole point is that the recording mechanism now lives in exactly one place.
+- The chain-off to `try-capture-answer-principle` is **unconditional** — `answer-open-question` does not gate it. Capture itself analyzes the conversation and self-decides whether anything is worth capturing (and exits briefly when not), so the caller always invokes it. This capture chain lives in the `answer-open-question` skill **only**; the `try-answer-questions-by-principle` orchestrator deliberately never chains to capture (an auto-answer was itself derived from a principle, so capturing would be circular).
+
+**Success:**
+- `skills/answer-open-question/SKILL.md` references `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` for the recording core.
+- The inline locate → remove → fold → cascade prose (today's recording steps) is gone — replaced by the reference, not duplicated alongside it.
+- The skill retains arg parsing that splits on the **first `.`** into Short Title + answer text.
+- The skill ends with an **unconditional** invocation of `try-capture-answer-principle` after recording.
+- The skill performs no `git commit` (no-commit invariant preserved); edits are left staged.
+
+---
+
