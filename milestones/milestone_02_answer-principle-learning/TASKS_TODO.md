@@ -1,24 +1,5 @@
 # TASKS TODO
 
-## Create Reject-Auto-Answer Skill
-
-Create `skills/reject-auto-answer/SKILL.md` — the interactive, single-shot skill that reverts one bad auto-answer and reopens its question, per the *Reject-auto-answer contract* decision in `requirements.md`. It resolves a single optional positional argument (HEAD default / commit-ish / text fragment), validates the target is a genuine auto-answer commit, confirms with the user, then reverts it with `git revert --no-commit` and directs the user to re-capture. Depends on the already-queued *Create Try-Capture-Answer-Principle Skill* task (the chain-in target for re-capture) and *Rename And Restructure Sweep Into Principle Orchestrator* task (which produces the commit format this skill validates and reverts against).
-
-**Notes:**
-- The auto-answer commit format this skill validates and reverts against is owned by the sweep orchestrator and specified in the *Principle citation* decision: subject `Principle-based-answer: <Short Title>`, one or more `Answer-Principle: <Short Title>` trailer lines (repeated key), commit touches only `requirements.md`. Read exact strings there rather than re-deriving them.
-- The skill **never edits the principle store** — the revert alone reopens the question (the one-commit-=-one-auto-answer invariant means the revert restores the deleted question block AND removes the folded decision in one shot), so there is no hand-reconstruction of the reopened question and no principle-file write.
-
-**Success:**
-- `skills/reject-auto-answer/SKILL.md` exists with valid skill frontmatter (`name`, `description`) and a "pushy" trigger description.
-- It documents the overloaded single-optional-arg resolution order: no argument → `HEAD`; argument that is a valid git rev → use directly as the target commit; otherwise → treat as a text fragment, locate it in `<MILESTONE_DIR>/requirements.md`, and resolve to its introducing commit via `git log -S'<fragment>' -- requirements.md` / `git blame`.
-- It documents the validation gate that both paths feed: the resolved target must touch only `requirements.md` AND carry at least one `Answer-Principle:` trailer line, refusing otherwise.
-- It documents the mandatory display-and-confirm step (show the resolved commit's `Principle-based-answer:` subject and `Answer-Principle:` trailer line(s) before reverting), and that ambiguous / no-match / non-auto-answer resolution reports and asks the user for an explicit commit id rather than reverting silently.
-- It documents reverting via `git revert --no-commit <commit-id>`, left **staged and not committed** (no-commit invariant).
-- It documents the conflict path: on a revert that cannot apply cleanly, run `git revert --abort`, name the conflicting commit(s), and hand off to the user — never leaving conflict markers or a half-applied revert.
-- It documents the closure: the skill never edits the principle store, surfaces the commit's cited `Answer-Principle:` principle set, directs the user to re-capture (the user picks which principle when more than one is cited — the skill does not auto-target one), and may then offer to chain into `try-capture-answer-principle` with a focus hint naming the chosen principle.
-
----
-
 ## Sync README With Principle-Learning Loop
 
 Bring `README.md` — the public, authoritative workflow documentation — fully in sync with the answer-principle-learning loop introduced by this milestone, across both the Mermaid workflow flowchart and the per-skill reference. Rename the sweep everywhere `answer-obvious-open-questions` appears, add coverage for the new skills/subagent/principle store, and document the manual teaching flow alongside the autonomous sweep and the correction loop. This is a documentation-only update; it must run after the new and renamed skills exist. Updating `CLAUDE.md` is a separate concern and out of scope here.
