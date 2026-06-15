@@ -84,3 +84,31 @@ Rewire `skills/answer-open-question/SKILL.md` so it no longer restates the answe
 
 ---
 
+
+## Rename And Restructure Sweep Into Principle Orchestrator
+
+Rename the existing `skills/answer-obvious-open-questions/` skill to `skills/try-answer-questions-by-principle/` and restructure its `SKILL.md` from a self-contained judgment-based sweep into an **orchestrator** over the read-only `try-answer-question-by-principle` subagent, per the *Orchestrator / subagent architecture*, *Sweep run scope*, *Autonomous answering*, *Auto-answer commit isolation*, *Principle citation*, and *Sweep run report* decisions in `requirements.md`. The old strength-gate / informed-reader judgment logic is **removed entirely** — a confirmed principle (via the subagent's verdict) becomes the sole basis for any auto-answer. Depends on the already-queued *Create Answer-Recording Shared Procedure* and *Create Try-Answer-Question-By-Principle Subagent* tasks.
+
+**Provides:**
+- `skills/try-answer-questions-by-principle/SKILL.md` — the renamed orchestrator skill (the `answer-obvious-open-questions` directory and skill `name:` no longer exist); takes no args and sweeps every Open/Deferred entry.
+- The auto-answer commit contract that `reject-auto-answer` and the *Sweep run report* depend on: **exactly one auto-answer per commit**, commit **subject** `Principle-based-answer: <Short Title>` (the answered question's handle), and one **trailer** line `Answer-Principle: <Short Title>` **per** load-bearing principle (repeated key, never comma-separated).
+
+**Notes:**
+- The directory rename, the frontmatter `name:`, and the in-body invocation example (`/try-answer-questions-by-principle`) must **all** change together; a stale `name:` or `/answer-obvious-open-questions` example is a defect.
+- **Never chain to `try-capture-answer-principle`.** This orchestrator replicates the answer-recording mechanism via the shared procedure but must not chain to capture — the auto-answer was itself derived from an existing principle, so capturing would be circular. The capture chain lives **only** in `answer-open-question`. State this explicitly as a negative invariant; it is easy to drop.
+- "Clean" tree (the precondition) means `git status --porcelain` produces **no output** — no staged, unstaged, or untracked changes; ignored files are fine. Check **once** at the start; on a dirty tree, abort with an explicit message telling the user to commit pending changes first and re-run.
+- The gathered+ordered question list is an **ordering, not a work snapshot**: walk it **once** (a single ordered pass terminates the sweep — answering only removes questions, nothing adds them), but before each dispatch re-check in the **live** document that the question still exists and is unresolved (a prior answer's cascade may have removed it) and **skip** it if not. No outer re-gather / loop-until-no-survivors wrapper. Ordering decides only *which question goes first*, never *whether* one is answered.
+- On no unique survivor (two-or-more survive, conflicting principles, or none survive) leave the question **untouched** — no advisory note.
+- Record each unique-survivor answer by referencing `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` (remove the block, fold into `## Implementation decisions` as clean prose, cascade) — reference it, do not restate the locate/analyse/remove/fold/cascade steps.
+- Read-side of the still-open `Deferred — Missing principle file` block: on a fresh project where `milestones/answer_decision_principles.md` is absent or empty, the subagent finds no supporting principle for any candidate, so the sweep resolves nothing and (committing nothing) prints the no-op report. State this in the skill; the behavior lives in that Deferred block, not in `## Implementation decisions`.
+
+**Success:**
+- `skills/try-answer-questions-by-principle/SKILL.md` exists with frontmatter `name: try-answer-questions-by-principle`; the old `skills/answer-obvious-open-questions/` directory is gone; the in-body invocation example reads `/try-answer-questions-by-principle`.
+- It documents the clean-tree precondition (`git status --porcelain` empty, checked once) with an **explicit abort message** instructing the user to commit pending changes and re-run, and captures `BASE=$(git rev-parse HEAD)` at start.
+- It documents gathering all Open/Deferred questions up front, ordering them loosely most-significant → least, and walking that order **once** with a per-question live re-check + skip — and contains no outer re-gather loop.
+- It documents dispatching the read-only `try-answer-question-by-principle` subagent sequentially (one per surviving question) and that the orchestrator owns **all** document mutation and the commit.
+- For a unique survivor it references `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` to record the answer (not a restated/parallel recording mechanism), then commits **one auto-answer per commit** (`git add -A` → commit) with subject `Principle-based-answer: <Short Title>` and one `Answer-Principle: <Short Title>` trailer line per load-bearing principle.
+- It documents leaving no-unique-survivor questions untouched (no note), and an end-of-run report that prints a single ready-to-run full-message `git log <BASE>..HEAD` (not a `--grep` form) scoped to this invocation's commits, neither re-serializing per-answer details nor enumerating untouched questions — and that says so in one sentence with **no** `git log` command when nothing was committed.
+- The old strength-gate / informed-reader judgment logic is removed entirely, and the skill explicitly states it never chains to `try-capture-answer-principle`.
+
+---
