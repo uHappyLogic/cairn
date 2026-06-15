@@ -1,26 +1,5 @@
 # TASKS TODO
 
-## Sync README With Principle-Learning Loop
-
-Bring `README.md` — the public, authoritative workflow documentation — fully in sync with the answer-principle-learning loop introduced by this milestone, across both the Mermaid workflow flowchart and the per-skill reference. Rename the sweep everywhere `answer-obvious-open-questions` appears, add coverage for the new skills/subagent/principle store, and document the manual teaching flow alongside the autonomous sweep and the correction loop. This is a documentation-only update; it must run after the new and renamed skills exist. Updating `CLAUDE.md` is a separate concern and out of scope here.
-
-**Notes:**
-- The only two old-name occurrences are README.md line ~77 (Mermaid node `ITM2["<b>/answer-obvious-open-questions</b>…"]`, inside the `S2` "Iterating milestone requirements document" subgraph) and line ~162 (per-skill reference heading `### answer-obvious-open-questions`). Line 164's `answer-open-question` is a different skill that must stay.
-- Rename the Mermaid node **label-only**: keep the node ID `ITM2`, change only its bracketed text. Node IDs drive the `class` and `linkStyle` references, so a label-only rename touches nothing structural — only the *added* nodes/edges cause churn. The renamed node's description should reflect that the sweep now applies confirmed principles via candidate elimination, requires a clean tree, and commits one auto-answer per commit citing the principle in an `Answer-Principle:` trailer.
-- Edge-index hazard: `linkStyle 11,19,23` (around line 137) uses **0-based edge indices in definition order**; those three are the purple dashed loop-back edges (`ITM4→ITM1`, `SM3→SM1`, `D5→IM1`). Any edge added in/around the `S2` subgraph sits before index 23 and **renumbers all three**, silently mis-coloring the wrong edges — so `linkStyle` must be recomputed after adding edges. Any new loop-back edge (the `reject-auto-answer → re-capture` correction loop is the natural candidate) should reuse the dashed `optional` class + purple `linkStyle` styling to stay consistent with the existing repeat edges.
-- Flowchart-node convention: only user-invocable slash-command skills get Mermaid nodes — the dispatched subagents (`submit-backlog-task`, `implement-backlog-task` agents) appear nowhere as nodes. So `try-capture-answer-principle` and `reject-auto-answer` (slash commands) get nodes; the `try-answer-question-by-principle` **subagent** gets a per-skill reference entry only, no Mermaid node. The exact node/edge layout within `S2` is the implementer's call.
-- Pull the exact terminology (the `Principle-based-answer:` commit subject, the repeated `Answer-Principle:` trailer key, the `milestones/answer_decision_principles.md` root path, the candidate-elimination / unique-survivor gate, the clean-tree precondition) from the now-built skills/agent and requirements, matching the existing README's tone.
-
-**Success:**
-- README.md contains zero occurrences of `answer-obvious-open-questions`.
-- The Mermaid `S2` node formerly labelled `/answer-obvious-open-questions` (node ID `ITM2`) now reads `/try-answer-questions-by-principle` with a description reflecting confirmed-principle candidate elimination, the clean-tree requirement, and one auto-answer per commit with an `Answer-Principle:` trailer.
-- The per-skill reference heading `### answer-obvious-open-questions` is renamed to `### try-answer-questions-by-principle` with a correspondingly updated description.
-- New per-skill reference entries exist for `try-capture-answer-principle`, `reject-auto-answer`, and the `try-answer-question-by-principle` subagent.
-- README documents the principle store `milestones/answer_decision_principles.md` (project-wide at the `milestones/` root, accumulating confirmed answering principles), the manual `discuss-open-question → answer-open-question → (auto) try-capture-answer-principle` teaching flow, the autonomous `try-answer-questions-by-principle` sweep, and the `reject-auto-answer → re-capture` correction loop.
-- The Mermaid diagram still parses, and every node in it is assigned to a `classDef` via a `class` statement (no unstyled node).
-
----
-
 ## Sync CLAUDE.md With Principle-Learning Loop
 
 Bring `CLAUDE.md` — the repository guidance — fully in sync with the answer-principle-learning loop, across its three affected surfaces: the "Repository layout" tree, the "Skills and the workflow they encode" overview block, and the "Invariants to preserve when editing skills" list (including the no-commit invariant). This is a documentation-only update and must run **last**, after every new/renamed skill, agent, and shared file already exists. Keep all additions in the file's existing terse invariant-bullet style. Updating `README.md` is a separate concern, handled by the *Sync README With Principle-Learning Loop* task and out of scope here.

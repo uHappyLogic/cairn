@@ -74,9 +74,11 @@ D1[/"Milestone goal defined<br/>requirements.md seeded, pointer active"/]
 subgraph S2["❓ Iterating milestone requirements document"]
     ITM0["<b>/specify-milestone-starting-implementation-state</b><br/>fill 'Relevant implementation state' from the codebase"]
     ITM1["<b>/highlight-milestone-requirements-open-questions</b><br/>repeat to surface more gaps"]
-    ITM2["<b>/answer-obvious-open-questions</b><br/>(optional) auto-resolve the clear-cut questions; leave the rest"]
     ITM3["<b>/discuss-open-question</b><br/>(optional) explore one question"]
     ITM4{{"<b>/answer-open-question</b><br/>record the decision"}}
+    ITM5["<b>/try-capture-answer-principle</b><br/>(auto after answering) record the reusable principle behind the decision to the project-wide store"]
+    ITM2["<b>/try-answer-questions-by-principle</b><br/>(optional) autonomously answer questions a confirmed principle settles, by candidate elimination; needs a clean tree; one auto-answer per commit naming the principle in an Answer-Principle trailer"]
+    ITM6["<b>/reject-auto-answer</b><br/>(optional) revert a bad auto-answer's commit, reopening its question"]
 end
 
 D2[/"Requirements finalized<br/>all open questions resolved"/]
@@ -105,9 +107,15 @@ D5[/"Milestone closed<br/>pointer cleared"/]
     OT1 --> OT2 --> D0
     D0 --> IM1 --> IM2 --> IM3
     IM3 --> D1
-    D1 --> ITM0 --> ITM1 --> ITM2 --> ITM3 --> ITM4
+    D1 --> ITM0 --> ITM1
+    ITM1 --> ITM3 --> ITM4
+    ITM4 --> ITM5
     ITM4 -.->|repeat until satisfied| ITM1
     ITM4 --> D2
+    ITM1 --> ITM2
+    ITM2 -.->|on a wrong auto-answer| ITM6
+    ITM6 -.->|re-capture the principle| ITM5
+    ITM2 --> D2
     D2 --> AI1 --> AI2 --> D3
     D3 --> SM1
     SM1 --> SM2 --> SM3
@@ -127,14 +135,14 @@ D5[/"Milestone closed<br/>pointer cleared"/]
 
     class OT1,OT2 setup;
     class IM1,IM2,IM3 init;
-    class ITM0,ITM1,ITM2,ITM3,ITM4 req;
+    class ITM0,ITM1,ITM2,ITM3,ITM4,ITM5,ITM6 req;
     class AI1,AI2 auto;
     class SM1,SM2,SM3 manual;
     class EM1 finish;
-    class IM1,ITM2,ITM3,SM1,SM3 optional;
+    class IM1,ITM2,ITM3,SM1,SM3,ITM6 optional;
     class D0,D1,D2,D3,D4,D5 state;
 
-    linkStyle 11,19,23 stroke:#9333ea,stroke-width:1.5px;
+    linkStyle 11,15,23,27 stroke:#9333ea,stroke-width:1.5px;
 ```
 
 ## Skill reference
@@ -159,9 +167,13 @@ Reads the milestone goal, explores the project using the environment documented 
 
 Scans the current milestone's `requirements.md` and surfaces remaining ambiguities or decisions that need to be made before the backlog can be populated. Run it multiple times — earlier answers often open new questions.
 
-### `answer-obvious-open-questions`
+### The answer-principle-learning loop
 
-Sweeps every open and deferred question in the current milestone's `requirements.md` and resolves only the ones that have a clear, low-risk answer once the real code is read — recording each decision (and any it cascades into) the same way `answer-open-question` does. Genuinely contentious questions are left untouched for `/discuss-open-question` or `/answer-open-question`. Run it right after `/highlight-milestone-requirements-open-questions` to clear the easy questions in one pass before spending time on the hard ones.
+Open questions get resolved two ways, and the project *learns* from every manual answer. Confirmed answering principles accumulate in `milestones/answer_decision_principles.md` — a single project-wide store at the `milestones/` **root**, above any one milestone, so principles carry across milestones. Each principle is a reusable keep/eliminate directive that future autonomous answers can apply.
+
+- **Manual teaching flow** — `/discuss-open-question → /answer-open-question → (auto) /try-capture-answer-principle`. You deliberate a question, record the answer, and `answer-open-question` automatically offers to generalize the rule behind it into a confirmed principle.
+- **Autonomous sweep** — `/try-answer-questions-by-principle` re-sweeps the requirements and auto-answers exactly the questions those confirmed principles already settle, one traceable commit per answer.
+- **Correction loop** — `/reject-auto-answer → re-capture`. If the sweep gets one wrong, reject reverts that commit (reopening the question) and points you back to `/try-capture-answer-principle` to revise the offending principle so the next sweep does better.
 
 ### `discuss-open-question <question_name>`
 
@@ -169,7 +181,23 @@ Opens a structured conversation about a named open question in `requirements.md`
 
 ### `answer-open-question <question_name>`
 
-Records the resolution of a named open question in `requirements.md`, updating the document to reflect the decision and its downstream implications.
+Records the resolution of a named open question in `requirements.md`, updating the document to reflect the decision and its downstream implications. After recording, it automatically chains into `/try-capture-answer-principle` to offer to generalize the decision into a reusable answering principle.
+
+### `try-capture-answer-principle [focus_hint]`
+
+Extracts a reusable answering principle from a decision just made and records it in the project-wide principle store `milestones/answer_decision_principles.md`. Runs automatically after `/answer-open-question`, and is also directly invocable with an optional free-text focus hint. It analyzes the conversation's deliberation, exits quietly when nothing generalizes, and only ever proposes a revise-or-add for you to confirm — never editing the store silently. It is the **sole writer** of the principle store.
+
+### `try-answer-questions-by-principle`
+
+The autonomous sweep. Re-reads every open and deferred question in the current milestone's `requirements.md` and answers exactly those a confirmed principle already settles, by **candidate elimination** — enumerate the realistic answers, keep only those a confirmed principle supports, and auto-answer only when a single survivor remains. Requires a clean working tree, and commits **one auto-answer per commit**: subject `Principle-based-answer: <question>`, with each applied principle named in an `Answer-Principle:` trailer line. It is a pure orchestrator — it dispatches the read-only `try-answer-question-by-principle` subagent per question and owns all recording and committing. On a fresh project with no principles taught yet, it resolves nothing.
+
+### `try-answer-question-by-principle` (subagent)
+
+Read-only candidate-elimination subagent dispatched once per question by `/try-answer-questions-by-principle` — not user-invocable. Reads the principle store, enumerates the realistic candidate answers, keeps only those a confirmed principle supports, and returns a verdict naming the unique survivor (if any) and the load-bearing principles. It mutates nothing; the orchestrator owns all document edits and commits.
+
+### `reject-auto-answer [commit-id | text_fragment]`
+
+Reverts one bad auto-answer from the sweep. Takes an optional argument — a commit id from the sweep's report, a fragment of the wrong folded decision text in `requirements.md`, or nothing (defaults to `HEAD`). It validates the target is a genuine auto-answer commit (touches only `requirements.md`, carries an `Answer-Principle:` trailer), shows it for confirmation, then `git revert --no-commit`s it — which **reopens** the answered question — leaving the revert staged. It never edits the principle store; it points you to re-capture the principle behind the bad answer so the next sweep does not reproduce it.
 
 ### `populate-backlog`
 
