@@ -1,19 +1,5 @@
 # TASKS TODO
 
-## Reconcile Residual Heading/State Echoes With Completed Renames
-
-Two skills still carry "implementation"-flavored prose that names sections this milestone already renamed, leaving them inconsistent with the shipped vocabulary. `answer-open-question` reports document changes as "implementation-decision updates", which must reflect the renamed `## Decisions` section. `goto-next-milestone` suggests the user "fill in the implementation context", referring to the section now named `## Relevant starting state` (written by `specify-milestone-starting-state`). Reword both so they read as plain, domain-neutral English consistent with the completed renames, without changing what either skill does.
-
-**Notes:**
-- The two sites: `skills/answer-open-question/SKILL.md` (the "what changed" reporting line — "implementation-decision updates") and `skills/goto-next-milestone/SKILL.md` (the next-step suggestion — "fill in the implementation context").
-- Match the already-shipped vocabulary: decisions live under `## Decisions`; the baseline section is `## Relevant starting state`. Do not reintroduce a retired term.
-
-**Success:**
-- `git grep -ni implementation -- skills/answer-open-question skills/goto-next-milestone` returns zero hits.
-- Both skills still describe the same behavior (answer-open-question still reports which parts of the document changed; goto-next-milestone still points at filling the starting-state section as the next step).
-
----
-
 ## Retire Coding-Flavored "Implementation Phase" Framing In Highlight-Open-Questions
 
 `highlight-milestone-requirements-open-questions/SKILL.md` repeatedly frames the post-requirements work as "implementation" — the phase, its choices, and when it "begins" (e.g. "ready enough for implementation", "the implementation phase", "leave implementation choices ambiguous", "force a wrong implementation", "before implementation begins", "decided during implementation", "begin implementation"). This is the coding-specific vocabulary the milestone's goal retires so the plugin reads as a generic idea-to-done workflow. Reword these to domain-neutral terms that preserve the skill's logic, keeping the Blocking/Deferred question distinction intact (Blocking = must be resolved before the work starts; Deferred = settle while doing the work).

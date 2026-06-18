@@ -174,3 +174,17 @@ Per the milestone's *Task-execution vocabulary* and *Rename ordering* decisions,
 - `finish-current-milestone` is unchanged.
 
 ---
+
+## Reconcile Residual Heading/State Echoes With Completed Renames
+
+Two skills still carry "implementation"-flavored prose that names sections this milestone already renamed, leaving them inconsistent with the shipped vocabulary. `answer-open-question` reports document changes as "implementation-decision updates", which must reflect the renamed `## Decisions` section. `goto-next-milestone` suggests the user "fill in the implementation context", referring to the section now named `## Relevant starting state` (written by `specify-milestone-starting-state`). Reword both so they read as plain, domain-neutral English consistent with the completed renames, without changing what either skill does.
+
+**Notes:**
+- The two sites: `skills/answer-open-question/SKILL.md` (the "what changed" reporting line — "implementation-decision updates") and `skills/goto-next-milestone/SKILL.md` (the next-step suggestion — "fill in the implementation context").
+- Match the already-shipped vocabulary: decisions live under `## Decisions`; the baseline section is `## Relevant starting state`. Do not reintroduce a retired term.
+
+**Success:**
+- `git grep -ni implementation -- skills/answer-open-question skills/goto-next-milestone` returns zero hits.
+- Both skills still describe the same behavior (answer-open-question still reports which parts of the document changed; goto-next-milestone still points at filling the starting-state section as the next step).
+
+---

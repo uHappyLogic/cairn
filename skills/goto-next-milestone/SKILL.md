@@ -48,7 +48,7 @@ Leave the `## Current Milestone` heading, the `## Milestone History` section, an
 Report:
 - The milestone activated: path and title
 - `milestones/README.md` updated to point to it
-- Suggest the next step: `/specify-milestone-starting-state` to fill in the implementation context
+- Suggest the next step: `/specify-milestone-starting-state` to fill in the `## Relevant starting state` section
 
 ## Rules
 

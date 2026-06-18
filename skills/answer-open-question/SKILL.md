@@ -39,7 +39,7 @@ That procedure owns resolving the current milestone, locating the matching block
 ### 3. Report findings
 
 After the procedure finishes, briefly state:
-- Which question was resolved and how the document changed (resolved block, implementation-decision updates, cascading resolutions).
+- Which question was resolved and how the document changed (resolved block, decision folded into `## Decisions`, cascading resolutions).
 - Any new open questions the answer may have introduced — surface these but do **not** add them to the document without user confirmation.
 
 ### 4. Capture any reusable principle
