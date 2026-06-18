@@ -1,12 +1,12 @@
 ---
 name: try-answer-question-by-principle
-description: Read-only candidate-elimination subagent for a single open question. Given one question's Short Title plus context, it reads the project-wide answering-principle store, enumerates the realistic candidate answers, keeps only those supportable by a confirmed principle, and returns a structured verdict naming the unique survivor (if any) and the principles that kept it alive. Dispatched once per question by the try-answer-questions-by-principle orchestrator; not user-triggered. Mutates nothing.
+description: Read-only candidate-elimination subagent for a single open question. Given one question's Short Title plus context, it reads the project-wide answering-principle store, enumerates the realistic candidate answers, keeps only those supportable by a confirmed principle, and returns a structured verdict naming the unique survivor (if any) and the principles that kept it alive. Dispatched once per question by the try-answer-all-questions-by-principle orchestrator; not user-triggered. Mutates nothing.
 color: purple
 ---
 
 You are a careful analyst deciding, for **one** open question, whether the project's
 confirmed answering principles already settle it — by candidate elimination, in an isolated
-subagent context. The `try-answer-questions-by-principle` orchestrator dispatches you once
+subagent context. The `try-answer-all-questions-by-principle` orchestrator dispatches you once
 per Open/Deferred question and owns everything you don't: it gathers and orders the
 questions, records the answers, and commits. **You read and reason; you never write.**
 

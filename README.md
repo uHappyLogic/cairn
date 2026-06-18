@@ -77,7 +77,7 @@ subgraph S2["❓ Iterating milestone requirements document"]
     ITM3["<b>/discuss-open-question</b><br/>(optional) explore one question"]
     ITM4{{"<b>/answer-open-question</b><br/>record the decision"}}
     ITM5["<b>/try-capture-answer-principle</b><br/>(auto after answering) record the reusable principle behind the decision to the project-wide store"]
-    ITM2["<b>/try-answer-questions-by-principle</b><br/>(optional) autonomously answer questions a confirmed principle settles, by candidate elimination; needs a clean tree; one auto-answer per commit naming the principle in an Answer-Principle trailer"]
+    ITM2["<b>/try-answer-all-questions-by-principle</b><br/>(optional) autonomously answer questions a confirmed principle settles, by candidate elimination; needs a clean tree; one auto-answer per commit naming the principle in an Answer-Principle trailer"]
     ITM6["<b>/reject-auto-answer</b><br/>(optional) revert a bad auto-answer's commit, reopening its question"]
 end
 
@@ -172,7 +172,7 @@ Scans the current milestone's `requirements.md` and surfaces remaining ambiguiti
 Open questions get resolved two ways, and the project *learns* from every manual answer. Confirmed answering principles accumulate in `milestones/answer_decision_principles.md` — a single project-wide store at the `milestones/` **root**, above any one milestone, so principles carry across milestones. Each principle is a reusable keep/eliminate directive that future autonomous answers can apply.
 
 - **Manual teaching flow** — `/discuss-open-question → /answer-open-question → (auto) /try-capture-answer-principle`. You deliberate a question, record the answer, and `answer-open-question` automatically offers to generalize the rule behind it into a confirmed principle.
-- **Autonomous sweep** — `/try-answer-questions-by-principle` re-sweeps the requirements and auto-answers exactly the questions those confirmed principles already settle, one traceable commit per answer.
+- **Autonomous sweep** — `/try-answer-all-questions-by-principle` re-sweeps the requirements and auto-answers exactly the questions those confirmed principles already settle, one traceable commit per answer.
 - **Correction loop** — `/reject-auto-answer → re-capture`. If the sweep gets one wrong, reject reverts that commit (reopening the question) and points you back to `/try-capture-answer-principle` to revise the offending principle so the next sweep does better.
 
 ### `discuss-open-question <question_name>`
@@ -187,13 +187,13 @@ Records the resolution of a named open question in `requirements.md`, updating t
 
 Extracts a reusable answering principle from a decision just made and records it in the project-wide principle store `milestones/answer_decision_principles.md`. Runs automatically after `/answer-open-question`, and is also directly invocable with an optional free-text focus hint. It analyzes the conversation's deliberation, exits quietly when nothing generalizes, and only ever proposes a revise-or-add for you to confirm — never editing the store silently. It is the **sole writer** of the principle store.
 
-### `try-answer-questions-by-principle`
+### `try-answer-all-questions-by-principle`
 
 The autonomous sweep. Re-reads every open and deferred question in the current milestone's `requirements.md` and answers exactly those a confirmed principle already settles, by **candidate elimination** — enumerate the realistic answers, keep only those a confirmed principle supports, and auto-answer only when a single survivor remains. Requires a clean working tree, and commits **one auto-answer per commit**: subject `Principle-based-answer: <question>`, with each applied principle named in an `Answer-Principle:` trailer line. It is a pure orchestrator — it dispatches the read-only `try-answer-question-by-principle` subagent per question and owns all recording and committing. On a fresh project with no principles taught yet, it resolves nothing.
 
 ### `try-answer-question-by-principle` (subagent)
 
-Read-only candidate-elimination subagent dispatched once per question by `/try-answer-questions-by-principle` — not user-invocable. Reads the principle store, enumerates the realistic candidate answers, keeps only those a confirmed principle supports, and returns a verdict naming the unique survivor (if any) and the load-bearing principles. It mutates nothing; the orchestrator owns all document edits and commits.
+Read-only candidate-elimination subagent dispatched once per question by `/try-answer-all-questions-by-principle` — not user-invocable. Reads the principle store, enumerates the realistic candidate answers, keeps only those a confirmed principle supports, and returns a verdict naming the unique survivor (if any) and the load-bearing principles. It mutates nothing; the orchestrator owns all document edits and commits.
 
 ### `reject-auto-answer [commit-id | text_fragment]`
 

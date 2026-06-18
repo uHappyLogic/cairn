@@ -5,7 +5,7 @@ description: Extract a reusable, user-confirmed answering principle from a decis
 
 # try-capture-answer-principle
 
-The autonomous sweep `try-answer-questions-by-principle` can only resolve an open question when a **confirmed answering principle** covers it. This skill is how those principles get into the store: it watches a real decision being made, asks "is there a reusable rule behind this, beyond this one question?", and — only when there is — records it as a generalizable keep/eliminate directive that future sweeps can apply.
+The autonomous sweep `try-answer-all-questions-by-principle` can only resolve an open question when a **confirmed answering principle** covers it. This skill is how those principles get into the store: it watches a real decision being made, asks "is there a reusable rule behind this, beyond this one question?", and — only when there is — records it as a generalizable keep/eliminate directive that future sweeps can apply.
 
 The principles live in `milestones/answer_decision_principles.md` (a single project-wide file at the `milestones/` root, **above** any one milestone, so principles accumulate across milestones). This skill is the **sole writer** of that file — presence of an entry means it is confirmed.
 
@@ -84,7 +84,7 @@ restatement of one past decision.>
 
 ### 5. Report
 
-Briefly state what was captured: the principle's `### <Short Title>`, whether it was added or a revision of an existing entry, and that it is now available to `try-answer-questions-by-principle`. If nothing was captured (step 2 found no candidate, or the user declined), say so in one line.
+Briefly state what was captured: the principle's `### <Short Title>`, whether it was added or a revision of an existing entry, and that it is now available to `try-answer-all-questions-by-principle`. If nothing was captured (step 2 found no candidate, or the user declined), say so in one line.
 
 ## Rules
 

@@ -1,7 +1,7 @@
 # Answer decision principles
 
 Project-wide, confirmed answering principles. Each is a reusable keep/eliminate
-directive that `try-answer-questions-by-principle` can apply to the candidate
+directive that `try-answer-all-questions-by-principle` can apply to the candidate
 answers of a future open question. Presence here means the principle is
 user-confirmed. This file is written **only** by `try-capture-answer-principle`.
 

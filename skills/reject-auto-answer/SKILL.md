@@ -1,12 +1,12 @@
 ---
 name: reject-auto-answer
-description: Reject one bad auto-answer produced by the /try-answer-questions-by-principle sweep — revert its commit (which reopens the answered question) and point the user at re-capturing the principle that produced it. Takes an optional argument: a commit id from the sweep's report, a fragment of the wrong folded decision text in requirements.md, or nothing (defaults to HEAD). Use it whenever the user says things like "undo that auto-answer", "that principle-based answer was wrong", "revert the last sweep answer", "reopen that question", or "the auto-answerer got this one wrong" — it validates the target is a real auto-answer commit, confirms with you, then reverts it staged for review.
+description: Reject one bad auto-answer produced by the /try-answer-all-questions-by-principle sweep — revert its commit (which reopens the answered question) and point the user at re-capturing the principle that produced it. Takes an optional argument: a commit id from the sweep's report, a fragment of the wrong folded decision text in requirements.md, or nothing (defaults to HEAD). Use it whenever the user says things like "undo that auto-answer", "that principle-based answer was wrong", "revert the last sweep answer", "reopen that question", or "the auto-answerer got this one wrong" — it validates the target is a real auto-answer commit, confirms with you, then reverts it staged for review.
 ---
 
 # reject-auto-answer
 
 This is the correction step of the answer-principle-learning loop. The autonomous sweep
-`/try-answer-questions-by-principle` commits one auto-answer per commit, each citing the
+`/try-answer-all-questions-by-principle` commits one auto-answer per commit, each citing the
 confirmed principle(s) that produced it in an `Answer-Principle:` trailer. When one of those
 auto-answers is wrong, this skill reverts that single commit — which **reopens** the question
 it answered — and directs the user to fix the principle behind it so the next sweep does not
@@ -139,7 +139,7 @@ contract* in `requirements.md`):
 
 - it is consistent with the universal no-commit invariant — every cairn skill leaves its
   changes staged for the user;
-- the resulting dirty tree collides with `/try-answer-questions-by-principle`'s clean-tree
+- the resulting dirty tree collides with `/try-answer-all-questions-by-principle`'s clean-tree
   abort, which **blocks the next sweep** until the user closes the loop (re-answers the now-open
   question, or fixes the principle). Committing here would only make sense if this skill were
   batch/orchestrated; it is interactive and single.

@@ -1,9 +1,9 @@
 ---
-name: try-answer-questions-by-principle
+name: try-answer-all-questions-by-principle
 description: Autonomously sweep the current milestone's requirements for open and deferred questions and answer every one a confirmed answering principle already settles — by candidate elimination, committing one auto-answer per commit that names the applied principle in an Answer-Principle trailer. Use this once the project has taught some principles (via /answer-open-question → /try-capture-answer-principle) and you want the requirements re-swept to resolve everything those principles now cover without re-deciding by hand. Trigger it whenever the user says things like "sweep the open questions", "answer what the principles cover", "run the principle sweep", "auto-answer by principle", or "resolve the questions our principles already settle". Requires a clean working tree.
 ---
 
-# try-answer-questions-by-principle
+# try-answer-all-questions-by-principle
 
 This is the autonomous sweep at the end of the answer-principle-learning loop. The project
 accumulates user-confirmed answering principles in `milestones/answer_decision_principles.md`
@@ -27,7 +27,7 @@ reversible by `/reject-auto-answer`.
 ## Usage
 
 ```
-/try-answer-questions-by-principle
+/try-answer-all-questions-by-principle
 ```
 
 Takes no arguments — it sweeps every `Open question` and `Deferred` entry in the current
@@ -53,7 +53,7 @@ files are fine; porcelain already excludes them) — **abort without changing an
 tell the user explicitly:
 
 > The working tree is not clean. Commit (or stash/remove) your pending changes first, then
-> re-run `/try-answer-questions-by-principle`. This sweep needs a clean tree so each
+> re-run `/try-answer-all-questions-by-principle`. This sweep needs a clean tree so each
 > auto-answer lands in its own commit.
 
 Reaching a clean tree is a deliberate checkpoint, not a wart: the preceding loop skills
