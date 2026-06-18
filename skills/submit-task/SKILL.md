@@ -7,7 +7,7 @@ description: Add a single implementation issue (surfaced during development) to 
 
 Turns a single, already-clear issue into an implementation-ready task in the current
 milestone's `TASKS_TODO.md`. This skill is the user-facing entry point
-(`/submit-task`) and the handoff target for `/discuss-new-backlog-task`.
+(`/submit-task`) and the handoff target for `/discuss-new-task`.
 
 It does two things the agent can't: the triage and positioning that need the **whole
 task list in view** — checking for duplicates and deciding where the task belongs — and then
@@ -17,7 +17,7 @@ in context, so the user can immediately ask why a choice was made or request a t
 bulk authoring, `derive-tasks` instead spawns the `submit-task` **agent**, which
 runs the same shared procedure in isolation so N tasks' reasoning never lands in its
 context. If the issue is still vague or might be several tasks, use
-`/discuss-new-backlog-task` first.
+`/discuss-new-task` first.
 
 ## Invocation
 
@@ -72,7 +72,7 @@ appended (task #4 of 4).`), then stay available: the user may now ask why you sc
 way or request a tweak, with the authoring context still in hand. If the procedure's
 atomic-scope rule left a second buildable piece unauthored, mention it and offer to queue it
 as a follow-up task. If you could not author a concrete task — typically because the issue
-was too vague — say so and suggest `/discuss-new-backlog-task` to sharpen it first.
+was too vague — say so and suggest `/discuss-new-task` to sharpen it first.
 
 ## Rules
 
@@ -81,4 +81,4 @@ was too vague — say so and suggest `/discuss-new-backlog-task` to sharpen it f
   agent. (The shared file is the single source of truth, so the authored task is identical
   either way; only the context differs.)
 - Never queue a duplicate of an existing pending or completed task.
-- For vague issues or ones that may span several tasks, route through `/discuss-new-backlog-task` first.
+- For vague issues or ones that may span several tasks, route through `/discuss-new-task` first.

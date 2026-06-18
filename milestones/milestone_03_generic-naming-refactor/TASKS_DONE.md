@@ -69,3 +69,25 @@ Fully rename the task-deriver skill `populate-backlog` → `derive-tasks` (the s
 
 ---
 
+## Rename Discuss-New-Backlog-Task To Discuss-New-Task
+
+Drop the redundant `-backlog` segment from the issue-clarification skill — which breaks a vague or oversized issue into clear task-sized briefs and hands each off to the single-task submit skill — renaming `discuss-new-backlog-task` → `discuss-new-task` (`skills/discuss-new-backlog-task/` directory, whose name IS the slash-command name) and updating every cross-reference to its handle across the plugin. Reword surrounding "backlog" prose around this handle to "task"/"the task list" as fits. This is one of the milestone's order-free renames (per *Task-collection noun*).
+
+**Provides:**
+- The renamed skill directory `skills/discuss-new-task/` (directory name IS the slash-command name), referenced by the docs.
+
+**Notes:**
+- Update only THIS skill's own handle. This skill hands off to the single-task submit skill; that submit skill's handle is owned by its own *Rename Submit-Backlog-Task To Submit-Task* task and is equally order-free. Refer to the submit skill by whatever name it currently has on disk — `git grep` the submit handle wherever that skill currently lives and leave it exactly as you find it; on any line that names both handles, change only `discuss-new-backlog-task` → `discuss-new-task`.
+- The handle's live references are in: `skills/discuss-new-backlog-task/SKILL.md` (frontmatter `name:`, the H1, the `/discuss-new-backlog-task` usage + example lines, plus all other self-references and the directory rename), the submit skill's `SKILL.md` (currently `skills/submit-backlog-task/SKILL.md` — it names `/discuss-new-backlog-task` as the route-here-first front-end; grep the handle wherever that skill currently lives), `README.md` (the Mermaid workflow node `/discuss-new-backlog-task` and the per-skill reference-table row `### discuss-new-backlog-task`, plus the prose naming it in the `submit-backlog-task` row), and `CLAUDE.md` (the skills-overview line).
+- `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` do NOT reference this handle (verified by grep), so no manifest edit is needed.
+- Per the milestone's *Rename ordering* decision, this task syncs its own `README.md` and `CLAUDE.md` references rather than deferring to a trailing doc-sync pass.
+- Do not edit frozen surfaces: historical milestone dirs (`milestone_01_*`, `milestone_02_*`), milestone_03's own `requirements.md`/`TASKS_*`, the history/completed sections of `milestones/README.md`, the `Origin:` provenance lines in `answer_decision_principles.md`, and `.claude/settings.local.json`.
+
+**Success:**
+- `git grep discuss-new-backlog-task` over live plugin surfaces (`skills/`, `agents/`, `shared/`, `README.md`, `CLAUDE.md`, `.claude-plugin/`) returns zero hits.
+- Directory `skills/discuss-new-task/` exists with its `SKILL.md`; the old `skills/discuss-new-backlog-task/` directory no longer exists.
+- The submit skill's handle is left exactly as found (this task does not rename it).
+- The README Mermaid node + per-skill reference-table row and the CLAUDE.md skills-overview mention read coherently with the new `discuss-new-task` handle, with surrounding "backlog" prose reworded to "task"/"the task list".
+
+---
+

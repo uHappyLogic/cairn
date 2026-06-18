@@ -1,11 +1,11 @@
 ---
-name: discuss-new-backlog-task
-description: Clarify a rough or ambiguous implementation issue discovered during development into one or more clear backlog tasks, then hand off to /submit-task. Use this whenever the user reports a bug, gap, or "we should also..." idea mid-implementation but the description is too vague to act on, or whenever they want to talk through an issue before adding it to the milestone backlog. Also use it when the user flags that something is a bigger chunk of work that may need several task entries, or when a single reported issue turns out to be too large for one task — this skill will break it into an ordered set of task-sized pieces before handing each off. Prefer this over jumping straight to /submit-task when the affected system, desired behavior, or how to verify the fix is unclear, or when the right number of tasks isn't obvious yet.
+name: discuss-new-task
+description: Clarify a rough or ambiguous implementation issue discovered during development into one or more clear tasks, then hand off to /submit-task. Use this whenever the user reports a bug, gap, or "we should also..." idea mid-implementation but the description is too vague to act on, or whenever they want to talk through an issue before adding it to the milestone task list. Also use it when the user flags that something is a bigger chunk of work that may need several task entries, or when a single reported issue turns out to be too large for one task — this skill will break it into an ordered set of task-sized pieces before handing each off. Prefer this over jumping straight to /submit-task when the affected system, desired behavior, or how to verify the fix is unclear, or when the right number of tasks isn't obvious yet.
 ---
 
-# discuss-new-backlog-task
+# discuss-new-task
 
-Facilitates a short, focused conversation that turns a half-formed issue — the kind that surfaces while building — into a description concrete enough to become a backlog task. This skill is the conversational front-end for `/submit-task`: it clarifies just enough, then proposes the handoff. It never writes to the backlog itself.
+Facilitates a short, focused conversation that turns a half-formed issue — the kind that surfaces while building — into a description concrete enough to become a task. This skill is the conversational front-end for `/submit-task`: it clarifies just enough, then proposes the handoff. It never writes to the task list itself.
 
 Most issues are a single task. But some are a bigger chunk of work that only makes sense as **several** tasks — the user may flag this up front ("this might be a few entries"), or it may become apparent mid-discussion that one "issue" is really two or three independent pieces. When that happens, this skill helps draw the boundaries and produces an ordered set of task-sized descriptions, then hands each off in turn.
 
@@ -22,19 +22,19 @@ Once those are clear, `submit-task` fills in the file-, method-, and step-level 
 ## Usage
 
 ```
-/discuss-new-backlog-task <issue description>
+/discuss-new-task <issue description>
 ```
 
 - `<issue description>`: a free-form, possibly rough description of a problem, gap, or idea discovered during development. May be a single bug or a larger "we need to build X" that spans several pieces.
 
 **Example (single task):**
 ```
-/discuss-new-backlog-task enemies sometimes walk through walls, feels broken
+/discuss-new-task enemies sometimes walk through walls, feels broken
 ```
 
 **Example (likely several tasks):**
 ```
-/discuss-new-backlog-task I think we need a proper save system — this is probably a few tasks, not one
+/discuss-new-task I think we need a proper save system — this is probably a few tasks, not one
 ```
 
 ## Workflow
@@ -63,7 +63,7 @@ Before asking anything, check two things:
 
 ### 3. Size the work: one task or several?
 
-Decide whether the issue is a single task or a chunk that needs several. The anchor is the same one the backlog uses: **a task should be completable in a single `/implement-backlog-task` invocation.** "Implement X and Y" is two tasks when X and Y can be built and verified independently.
+Decide whether the issue is a single task or a chunk that needs several. The anchor is the same one the task list uses: **a task should be completable in a single `/implement-backlog-task` invocation.** "Implement X and Y" is two tasks when X and Y can be built and verified independently.
 
 Treat it as several tasks when any of these hold:
 - The user flagged it as a bigger chunk or "a few entries."
@@ -120,7 +120,7 @@ In either case, if the user wants to adjust wording, ordering, or the split, inc
 
 ## Rules
 
-- Do not create or edit any files, and do not write to the backlog. Producing the task(s) is `submit-task`'s job; this skill only clarifies and hands off.
+- Do not create or edit any files, and do not write to the task list. Producing the task(s) is `submit-task`'s job; this skill only clarifies and hands off.
 - Keep your output high-level. The refined description(s) you pass to `submit-task` should name the system, behavior, and verification — and stop there. Don't write the contract surface, file paths, or success criteria; duplicating that work slows the user down and steps on `submit-task`.
 - Don't over-interrogate, and don't over-split. Stop at conceptual clarity, and prefer fewer tasks when a split isn't clearly warranted — each task should be independently implementable in a single `/implement-backlog-task` invocation.
 - For a multi-task chunk, confirm the ordered breakdown with the user before submitting, then hand off one task at a time in dependency order.

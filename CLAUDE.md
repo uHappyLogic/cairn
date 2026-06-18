@@ -45,7 +45,7 @@ reject-auto-answer              ← reverts one bad auto-answer commit and reope
 derive-tasks                    ← decomposes requirements.md into ordered briefs, proves coverage, spawns submit-task agent per brief
 submit-task                     ← (skill) user-facing entry for a single ad-hoc issue: triages + positions, then runs shared/submit-procedure.md inline so the authoring context stays for follow-up
 submit-task                     ← (agent, in agents/) bulk per-task authoring for derive-tasks: runs shared/submit-procedure.md in isolation, returns DONE/FAILED
-discuss-new-backlog-task        ← clarifies a vague/large issue into briefs, then hands off to the submit-task skill
+discuss-new-task                ← clarifies a vague/large issue into briefs, then hands off to the submit-task skill
 implement-backlog-tasks         ← orchestrator: spawns implement-backlog-task agent per task, commits after each
 implement-backlog-task          ← (skill) user-facing entry for one ad-hoc task: runs shared/implement-procedure.md inline so the work context stays for follow-up
 implement-backlog-task          ← (agent, in agents/) single-task implementation subagent: runs shared/implement-procedure.md in isolation, returns DONE/FAILED
