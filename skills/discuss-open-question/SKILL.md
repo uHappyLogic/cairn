@@ -24,7 +24,7 @@ The `<Short Title>` must match (case-insensitive) the title of an existing `Open
 
 ### 0. Find the current milestone
 
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded backlog path.
+Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 1. Locate the question
 

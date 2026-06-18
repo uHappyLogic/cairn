@@ -1,6 +1,6 @@
 # Submit-task procedure (shared core)
 
-This is the single source of truth for authoring one backlog task and inserting it into
+This is the single source of truth for authoring one task and inserting it into
 the current milestone's `TASKS_TODO.md`. It is followed in two ways:
 
 - **Inline**, by the `submit-task` skill, which runs these steps directly in the
@@ -57,7 +57,7 @@ reconstruct:
 
 ### 1. Find the current milestone
 
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded backlog path.
+Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 2. Load context
 
@@ -77,7 +77,7 @@ produces a sharper contract and sharper notes.
 
 ### 3. Author the task
 
-Use this exact template — it is the single source of truth for backlog task format:
+Use this exact template — it is the single source of truth for task format:
 
 ```markdown
 ## <Task Title>
@@ -89,7 +89,7 @@ Use this exact template — it is the single source of truth for backlog task fo
 - <...>
 
 **Notes:** (omit this section entirely if nothing about the task is non-obvious)
-- <A non-obvious fact that would otherwise cost the implementer a round of discovery — a surprising behavior, an ordering constraint, a gotcha.>
+- <A non-obvious fact that would otherwise cost the completer a round of discovery — a surprising behavior, an ordering constraint, a gotcha.>
 
 **Success:**
 - <Verifiable criterion observable in the Editor, Console, build output, or other automated checks.>
@@ -98,7 +98,7 @@ Use this exact template — it is the single source of truth for backlog task fo
 ---
 ```
 
-There is no `Steps` section: the implementer derives the flow itself from `Description` +
+There is no `Steps` section: the completer derives the flow itself from `Description` +
 `Success` against the live codebase. Do not reintroduce a step-by-step narration under any
 heading.
 
@@ -109,12 +109,12 @@ Authoring guidelines:
 - **`Provides` is the forward contract — binding on sibling tasks.** Name only the things
   *other tasks will reference* — the new file, method/class/field/singleton/scene being
   introduced, the public API, the threshold values — because sibling tasks are authored
-  against those names before this task is built. The implementer treats these as fixed.
+  against those names before this task is built. The completer treats these as fixed.
   Don't list private fields, exact statements, or message strings that nothing else
   depends on. If the task creates no new shared surface (e.g. a pure bugfix), omit the
   section rather than padding it.
-- **`Notes` is advisory — implementer-only, and only the non-obvious.** If a behavior
-  would surprise the implementer or cost it a round of discovery — e.g. "with no `Creep`
+- **`Notes` is advisory — completer-only, and only the non-obvious.** If a behavior
+  would surprise the completer or cost it a round of discovery — e.g. "with no `Creep`
   objects in the test scene, `RegisterWaveStart()` makes `AllCreepsDead()` return true
   immediately, so Day2 fires on the next tick" — state it as a short note. This is
   high-value content precisely because it can't be cheaply re-derived. Do not use `Notes`

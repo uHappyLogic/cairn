@@ -37,7 +37,7 @@ milestone's `requirements.md`.
 
 ### 0. Find the current milestone
 
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded backlog path.
+Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 1. Require a clean working tree
 

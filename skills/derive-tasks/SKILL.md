@@ -28,7 +28,7 @@ No arguments. The skill always reads from and writes to the current milestone di
 
 ### 0. Find the current milestone
 
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded backlog path.
+Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 1. Read source documents
 

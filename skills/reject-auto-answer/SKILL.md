@@ -40,7 +40,7 @@ points at that wrong text rather than hunting a commit id.
 Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`
 (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path). The fragment path locates
 text inside `<MILESTONE_DIR>/requirements.md`, so this resolution is required — never use a
-hardcoded backlog path.
+hardcoded task-list path.
 
 ### 1. The auto-answer commit format this skill acts on
 
