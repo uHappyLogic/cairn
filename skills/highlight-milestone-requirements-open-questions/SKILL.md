@@ -6,7 +6,7 @@ description: Highlight remaining open questions around milestone requirements.
 # highlight-milestone-requirements-open-questions
 
 The current "work in progress" requirements for the planned milestone are described in the current milestone's `requirements.md`.
-The overall goal is to make that file ready enough for implementation. It's ok to leave some decisions for the implementation phase if they are better to be solved there.
+The overall goal is to make that file ready enough for the work to begin. It's ok to leave some decisions to settle while doing the work if they are better solved there.
 
 ## highlight-milestone-requirements-open-questions
 
@@ -50,7 +50,7 @@ Read `<MILESTONE_DIR>/requirements.md` in full. Identify every stated requiremen
 ### 2. Identify open questions and gaps
 
 For each requirement, ask:
-- Is the expected behavior fully specified, or does it leave implementation choices ambiguous?
+- Is the expected behavior fully specified, or does it leave choices ambiguous?
 - Are there edge cases not addressed?
 - Are there dependencies on systems not yet described (e.g., input handling, animation state, physics)?
 - Are there performance or architectural constraints implied but not stated?
@@ -59,9 +59,9 @@ For each requirement, ask:
 
 Group your findings into two categories:
 
-**Blocking** — questions that, if left unanswered, would force a wrong implementation or require a rewrite. These must be resolved before implementation begins.
+**Blocking** — questions that, if left unanswered, would force a wrong approach or require a rewrite. These must be resolved before the work begins.
 
-**Deferred** — decisions that are better made during implementation (e.g., tuning a lerp speed, choosing a specific easing curve). Note these explicitly so they are not forgotten, but do not block on them.
+**Deferred** — decisions that are better made while doing the work (e.g., tuning a lerp speed, choosing a specific easing curve). Note these explicitly so they are not forgotten, but do not block on them.
 
 ### 4. Annotate and update the document
 
@@ -76,7 +76,7 @@ The `<Short Title>` is a 2–5 word phrase that uniquely identifies this questio
 For deferred decisions, use:
 
 ```
-> **Deferred — <Short Title>:** <what will be decided during implementation>
+> **Deferred — <Short Title>:** <what will be decided while doing the work>
 ```
 
 Do not restructure or rewrite the existing content — only add annotations.
@@ -84,7 +84,7 @@ Do not restructure or rewrite the existing content — only add annotations.
 ## Rules
 
 - Do not invent requirements — only annotate gaps relative to what is already written.
-- Do not mark something as blocking if a reasonable implementation choice exists that is low-risk to reverse.
+- Do not mark something as blocking if a reasonable choice exists that is low-risk to reverse.
 - Do not resolve open questions yourself — surface them for the user to decide.
 - Keep annotations brief and question-shaped; avoid writing design proposals inside the document.
-- If the requirements are already complete enough to begin implementation, say so explicitly and add no annotations.
+- If the requirements are already complete enough for the work to begin, say so explicitly and add no annotations.

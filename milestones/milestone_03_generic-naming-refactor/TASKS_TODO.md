@@ -1,19 +1,5 @@
 # TASKS TODO
 
-## Retire Coding-Flavored "Implementation Phase" Framing In Highlight-Open-Questions
-
-`highlight-milestone-requirements-open-questions/SKILL.md` repeatedly frames the post-requirements work as "implementation" — the phase, its choices, and when it "begins" (e.g. "ready enough for implementation", "the implementation phase", "leave implementation choices ambiguous", "force a wrong implementation", "before implementation begins", "decided during implementation", "begin implementation"). This is the coding-specific vocabulary the milestone's goal retires so the plugin reads as a generic idea-to-done workflow. Reword these to domain-neutral terms that preserve the skill's logic, keeping the Blocking/Deferred question distinction intact (Blocking = must be resolved before the work starts; Deferred = settle while doing the work).
-
-**Notes:**
-- Per the project's *Prefer domain-neutral terms* answering principle, word choice is case-by-case — pick the natural neutral phrasing per sentence (e.g. "the work", "before work begins", "while doing the work", "at completion time"); do not mechanically substitute one fixed token.
-- Scope is this one file. Do not touch the protected/renamed handles or headings — only the generic "implementation" prose.
-
-**Success:**
-- `git grep -ni implement -- skills/highlight-milestone-requirements-open-questions` returns zero hits.
-- The skill still distinguishes Blocking from Deferred questions and still emits the `> **Deferred — <Short Title>:**` annotation format unchanged.
-
----
-
 ## Sweep Scattered Generic "Implementation" Prose From The Authoring/Clarification Skills
 
 Four skills still use the word "implementation"/"implementable" incidentally in prose, leftover coding flavor the milestone's goal retires: `discuss-new-task` ("ambiguous implementation issue", "mid-implementation", "full implementation detail", "independently implementable", "concrete implementation issue" — including in its `description:` frontmatter), `submit-task` ("single implementation issue", "implementation-ready task" — including its `description:` frontmatter), `derive-tasks` ("independently-implementable task briefs", "satisfied by the current implementation" ×2), and `specify-milestone-starting-state` ("internal implementation detail"). Reword each to neutral English that keeps the meaning (e.g. "issue", "mid-flight", "detail", "independently completable", "the existing/current code").
