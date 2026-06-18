@@ -35,17 +35,17 @@ the whole-milestone view.
 
 **A task is a contract, not a script.** You are defining *what* the task achieves and the
 surface other tasks will build on — not transcribing the code that achieves it. The
-line-by-line "how" is the implementer's job, decided fresh against the live codebase by
-the `implement-backlog-task` agent.
+line-by-line "how" is the completer's job, decided fresh against the live codebase by
+the `complete-task` agent.
 
-**State only what cannot be re-derived at implementation time.** The implementer
+**State only what cannot be re-derived at completion time.** The completer
 reconstructs the flow itself from the goal and the real code — so a numbered list of steps
 is wasted tokens and re-decides things it is better placed to decide. What it *cannot*
 re-derive is (a) the goal and its acceptance bar, and (b) the named surface and gotchas.
 So write the task to serve two readers, with one section each for what only they can't
 reconstruct:
 
-1. **The implementer** — needs the goal (`Description`), the acceptance bar (`Success`),
+1. **The completer** — needs the goal (`Description`), the acceptance bar (`Success`),
    and any *non-obvious fact* that would otherwise cost it a discovery round (`Notes`). It
    does **not** need the flow spelled out; give it the freedom to write the code
    organically.
@@ -121,13 +121,13 @@ Authoring guidelines:
   to smuggle in a flow; if there's nothing non-obvious, omit it.
 - **Quote numeric values, durations, thresholds, and configuration values** directly from
   the requirements doc — do not paraphrase them.
-- **Atomic scope**: the task must be completable in a single `/implement-backlog-task`
+- **Atomic scope**: the task must be completable in a single `/complete-task`
   invocation, with no decisions left to make mid-task. If the brief secretly contains two
   independently-buildable pieces, author the one that matches the brief's primary intent
   and surface the leftover to the caller so it can decide — do not silently split or merge.
 - **No open decisions.** Decide *which* approach (traceable to the requirements) — never
   "choose the appropriate approach". That is a different thing from spelling out the code:
-  pick the strategy, leave the implementation.
+  pick the strategy, leave the build.
 - **`Success` is verification-only — never a back door for steps.** Each criterion must be
   checkable without human judgement: prefer "Build command exits with code 0", "File X
   exists at path Y", "Function Z is exported from W", Inspector/Console state. Avoid "looks
@@ -146,7 +146,7 @@ section (including its trailing `---`).
 - `after: <Title>`: insert immediately after that section's trailing `---`.
 - If a named anchor is not found, append at the end instead and note that you did.
 
-The `---` separator after every task section is mandatory — `/implement-backlog-task`
+The `---` separator after every task section is mandatory — `/complete-task`
 parses sections by it. Never modify or reorder existing task sections; only insert your
 new one.
 

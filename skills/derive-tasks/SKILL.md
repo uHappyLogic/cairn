@@ -5,11 +5,11 @@ description: Convert the current milestone's requirements.md into a complete, de
 
 # derive-tasks
 
-Reads the current milestone requirements and derives a complete, dependency-ordered list of implementation tasks into `TASKS_TODO.md`, ready for AI-driven execution via `/implement-backlog-task`.
+Reads the current milestone requirements and derives a complete, dependency-ordered list of tasks into `TASKS_TODO.md`, ready for AI-driven completion via `/complete-task`.
 
 Your job here is **decomposition and coverage**, not task authoring. You split the milestone into high-level task briefs and prove that those briefs cover every requirement — that whole-milestone view is the thing most likely to break if you get lost in file-paths and method names. The detailed, per-task technical authoring (the contract surface, notes, exact paths, success criteria) is delegated, one task at a time, to the `submit-task` agent. That keeps each task's technical reasoning out of your context so your attention stays on completeness and ordering.
 
-This mirrors the implement side: `implement-backlog-tasks` orchestrates and `implement-backlog-task` does the per-task work in a clean context. Here, you orchestrate and `submit-task` (the agent) does the per-task authoring.
+This mirrors the completion side: `complete-all-tasks` orchestrates and `complete-task` does the per-task work in a clean context. Here, you orchestrate and `submit-task` (the agent) does the per-task authoring.
 
 ## Usage
 
@@ -54,7 +54,7 @@ Break the milestone into discrete, independently-implementable task briefs. A **
 
 Apply these rules:
 
-- **Atomic scope** — each brief must be completable in a single `/implement-backlog-task` invocation, with no mid-task decisions. "Implement X and Y" is two briefs when X and Y can be built and verified independently.
+- **Atomic scope** — each brief must be completable in a single `/complete-task` invocation, with no mid-task decisions. "Do X and Y" is two briefs when X and Y can be built and verified independently.
 - **One system per brief** — group by the technology boundary or layer it touches, as defined by the file organization in `CLAUDE.md` (e.g. backend API / frontend component / DB schema; or for Unity: scripts / prefabs / scene hierarchy). Do not mix layers unless they are inseparable.
 - **No "nice to have" briefs** — only what the spec states. Do not pad the task list.
 

@@ -63,7 +63,7 @@ Before asking anything, check two things:
 
 ### 3. Size the work: one task or several?
 
-Decide whether the issue is a single task or a chunk that needs several. The anchor is the same one the task list uses: **a task should be completable in a single `/implement-backlog-task` invocation.** "Implement X and Y" is two tasks when X and Y can be built and verified independently.
+Decide whether the issue is a single task or a chunk that needs several. The anchor is the same one the task list uses: **a task should be completable in a single `/complete-task` invocation.** "Do X and Y" is two tasks when X and Y can be built and verified independently.
 
 Treat it as several tasks when any of these hold:
 - The user flagged it as a bigger chunk or "a few entries."
@@ -122,7 +122,7 @@ In either case, if the user wants to adjust wording, ordering, or the split, inc
 
 - Do not create or edit any files, and do not write to the task list. Producing the task(s) is `submit-task`'s job; this skill only clarifies and hands off.
 - Keep your output high-level. The refined description(s) you pass to `submit-task` should name the system, behavior, and verification — and stop there. Don't write the contract surface, file paths, or success criteria; duplicating that work slows the user down and steps on `submit-task`.
-- Don't over-interrogate, and don't over-split. Stop at conceptual clarity, and prefer fewer tasks when a split isn't clearly warranted — each task should be independently implementable in a single `/implement-backlog-task` invocation.
+- Don't over-interrogate, and don't over-split. Stop at conceptual clarity, and prefer fewer tasks when a split isn't clearly warranted — each task should be independently completable in a single `/complete-task` invocation.
 - For a multi-task chunk, confirm the ordered breakdown with the user before submitting, then hand off one task at a time in dependency order.
 - Ground questions in the files you read, not in assumptions. Prefer the project's real names for systems and files.
 - If the issue (or part of it) duplicates tracked work, stop and point to it rather than starting a discussion.

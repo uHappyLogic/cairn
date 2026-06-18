@@ -19,9 +19,9 @@ Milestone-driven development for any stack.
 
 ## Why Cairn?
 
-Large-scale software projects fail in predictable ways: the goal drifts during planning, ambiguities pile up before coding starts, the backlog grows unbounded, and there's no clear line between "working on it" and "done."
+Large-scale software projects fail in predictable ways: the goal drifts during planning, ambiguities pile up before coding starts, the task list grows unbounded, and there's no clear line between "working on it" and "done."
 
-Cairn gives Claude Code a structured, repeatable process for moving an idea from rough goal to shipped code — one milestone at a time. Each milestone is a self-contained unit: you clarify the goal, resolve every open question, derive an ordered task list, implement the tasks, and close out the milestone before moving on. Nothing falls through the cracks because every decision is recorded and every requirement maps to a task.
+Cairn gives Claude Code a structured, repeatable process for moving an idea from rough goal to shipped code — one milestone at a time. Each milestone is a self-contained unit: you clarify the goal, resolve every open question, derive an ordered task list, complete the tasks, and close out the milestone before moving on. Nothing falls through the cracks because every decision is recorded and every requirement maps to a task.
 
 It works with any tech stack. Skills read your project's environment (tooling, conventions, build commands) from `CLAUDE.md`, so the workflow adapts to whatever you're building.
 
@@ -83,20 +83,20 @@ end
 
 D2[/"Requirements finalized<br/>all open questions resolved"/]
 
-subgraph S3["🤖 Automated one-shot task derivation and implementation"]
+subgraph S3["🤖 Automated one-shot task derivation and completion"]
     AI1["<b>/derive-tasks</b><br/>convert requirements.md → ordered TASKS_TODO.md"]
-    AI2["<b>/implement-backlog-tasks</b><br/>execute all tasks, committing after each one"]
+    AI2["<b>/complete-all-tasks</b><br/>complete all tasks, committing after each one"]
 end
 
-D3[/"Ordered backlog implemented and committed"/]
+D3[/"Ordered task list completed and committed"/]
 
 subgraph S4["🔧 Semi-manual follow-up and adjustments"]
-    SM1["<b>/discuss-new-task</b><br/>(optional) clarify a new issue discovered mid-implementation into one or more briefs, then hand off to /submit-task"]
+    SM1["<b>/discuss-new-task</b><br/>(optional) clarify a new issue discovered mid-flight into one or more briefs, then hand off to /submit-task"]
     SM2["<b>/submit-task</b><br/>add a single new task inline in the conversation, with context available for follow-up tweaks"]
-    SM3{{"<b>/implement-backlog-task</b><br/> implement a single task inline with the conversation for context, without committing; use when you want to ask follow-ups or tweak the implementation right after seeing it"}}
+    SM3{{"<b>/complete-task</b><br/> complete a single task inline with the conversation for context, without committing; use when you want to ask follow-ups or tweak the work right after seeing it"}}
 end
 
-D4[/"Follow-up adjustments implemented"/]
+D4[/"Follow-up adjustments completed"/]
 
 subgraph S5["🏁 Ending a milestone and moving to the next"]
     EM1["<b>/finish-current-milestone</b><br/>record accomplishments; finalize the milestone"]
@@ -205,19 +205,19 @@ Converts the current milestone's `requirements.md` into `TASKS_TODO.md` — a co
 
 ### `discuss-new-task <issue description>`
 
-Clarifies a rough or oversized issue discovered mid-implementation into one or more clear, task-sized briefs through a short conversation, then hands each off to `/submit-task`. Use it when the affected system, desired behavior, or verification isn't yet clear, or when one issue is really several tasks.
+Clarifies a rough or oversized issue discovered mid-flight into one or more clear, task-sized briefs through a short conversation, then hands each off to `/submit-task`. Use it when the affected system, desired behavior, or verification isn't yet clear, or when one issue is really several tasks.
 
 ### `submit-task <issue description>`
 
 Adds a single, already-clear issue to `TASKS_TODO.md`. Triages for duplicates and decides where the task belongs, then authors and inserts the task **inline, in the current conversation** so the authoring context stays available for follow-up tweaks. For vague or multi-task issues, route through `/discuss-new-task` first.
 
-### `implement-backlog-tasks`
+### `complete-all-tasks`
 
-Orchestrator: executes all tasks in `TASKS_TODO.md` top to bottom, spawning one subagent per task and committing after each success. Stops on first failure.
+Orchestrator: completes all tasks in `TASKS_TODO.md` top to bottom, spawning one subagent per task and committing after each success. Stops on first failure.
 
-### `implement-backlog-task <task_name>`
+### `complete-task <task_name>`
 
-Implements a single named task from `TASKS_TODO.md` **inline, in the current conversation**. Running inline keeps the implementation context (what changed, why, how it was verified) in the conversation so you can ask follow-up questions or request tweaks right after. Changes are left staged — use `/implement-backlog-tasks` to implement the whole backlog unattended with automatic commits.
+Completes a single named task from `TASKS_TODO.md` **inline, in the current conversation**. Running inline keeps the work context (what changed, why, how it was verified) in the conversation so you can ask follow-up questions or request tweaks right after. Changes are left staged — use `/complete-all-tasks` to complete the whole task list unattended with automatic commits.
 
 ### `finish-current-milestone`
 
@@ -229,7 +229,7 @@ Creates the next milestone directory with empty starter files and updates the cu
 
 ## Self-dogfooding
 
-This repository runs its own workflow on itself. The `milestones/` directory, `milestones/README.md`, and the active milestone directory (`milestones/milestone_01_public-release-prep/`) are live workflow artifacts produced by Cairn's own skills — the requirements, backlog, and completed tasks for the current milestone are all right there in the repo. If you want to see what a real milestone looks like end-to-end, look no further.
+This repository runs its own workflow on itself. The `milestones/` directory, `milestones/README.md`, and the active milestone directory (`milestones/milestone_01_public-release-prep/`) are live workflow artifacts produced by Cairn's own skills — the requirements, task list, and completed tasks for the current milestone are all right there in the repo. If you want to see what a real milestone looks like end-to-end, look no further.
 
 ## License
 
