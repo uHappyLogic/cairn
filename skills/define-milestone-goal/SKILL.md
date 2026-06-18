@@ -5,7 +5,7 @@ description: Create a new milestone directory with initialized requirements.md (
 
 # define-milestone-goal
 
-Creates a new milestone directory under `milestones/` with a `requirements.md` pre-filled with the goal, plus empty `TASKS_TODO.md` and `TASKS_DONE.md`. Does not populate the remaining sections — those are filled by subsequent skills (`/specify-milestone-starting-implementation-state`, `/highlight-milestone-requirements-open-questions`, etc.).
+Creates a new milestone directory under `milestones/` with a `requirements.md` pre-filled with the goal, plus empty `TASKS_TODO.md` and `TASKS_DONE.md`. Does not populate the remaining sections — those are filled by subsequent skills (`/specify-milestone-starting-state`, `/highlight-milestone-requirements-open-questions`, etc.).
 
 ## Usage
 
@@ -52,7 +52,7 @@ Create `milestones/milestone_<NN>_<slug>/` with three files. Use the zero-padded
 
 <overall_goal_description>
 
-## Relevant implementation state
+## Relevant starting state
 
 ## Implementation decisions
 
@@ -77,12 +77,12 @@ Create `milestones/milestone_<NN>_<slug>/` with three files. Use the zero-padded
 Report:
 - New milestone directory created: `milestones/milestone_<NN>_<slug>/`
 - The goal written into `requirements.md`
-- Suggest the next step: `/specify-milestone-starting-implementation-state milestone_<NN>_<slug>` to fill in the implementation state section.
+- Suggest the next step: `/specify-milestone-starting-state milestone_<NN>_<slug>` to fill in the starting state section.
 
 ## Rules
 
 - Do not update `CLAUDE.md` or `milestones/README.md` — those are only updated when the milestone becomes the *current* active milestone via `/goto-next-milestone`.
-- Do not populate `## Relevant implementation state`, `## Implementation decisions`, or `## Out of Scope` — leave them empty for later skills.
+- Do not populate `## Relevant starting state`, `## Implementation decisions`, or `## Out of Scope` — leave them empty for later skills.
 - Do not assign the milestone as current — defining a milestone does not activate it.
 - Never overwrite an existing milestone directory.
 - Do not commit — leave staging to the user.

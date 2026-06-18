@@ -34,7 +34,7 @@ Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILE
 
 Read `CLAUDE.md` at the workspace root for the project's tech stack, file organization, and conventions. If it carries no such description, suggest the user run `/init` first — decomposition is sharper when grounded in the real environment — then proceed.
 
-Read `<MILESTONE_DIR>/requirements.md` in full, plus any files referenced in its **Relevant implementation state** section, so you understand the exact starting point.
+Read `<MILESTONE_DIR>/requirements.md` in full, plus any files referenced in its **Relevant starting state** section, so you understand the exact starting point.
 
 ### 2. Check for unresolved open questions
 
@@ -68,7 +68,7 @@ This is the step that most directly fixes "the task list missed something." Re-r
 | ...                            | <brief title>    |
 ```
 
-- Every requirement must map to ≥1 brief. If a requirement maps to none, you have a gap — add a brief (or note why it's already satisfied by existing code per the **Relevant implementation state**).
+- Every requirement must map to ≥1 brief. If a requirement maps to none, you have a gap — add a brief (or note why it's already satisfied by existing code per the **Relevant starting state**).
 - If a requirement is already satisfied by the current implementation, mark it so and do not create a brief for it.
 - Do not invent requirements that aren't in the spec.
 

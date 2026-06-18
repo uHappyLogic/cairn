@@ -1,23 +1,23 @@
 ---
-name: specify-milestone-starting-implementation-state
-description: Analyze the current codebase and fill the "Relevant implementation state" section of a milestone's requirements.md with technical context that supports future implementation decisions.
+name: specify-milestone-starting-state
+description: Analyze the current codebase and fill the "Relevant starting state" section of a milestone's requirements.md with technical context that supports future implementation decisions.
 ---
 
-# specify-milestone-starting-implementation-state
+# specify-milestone-starting-state
 
-Reads the milestone goal, explores the current project's codebase, and writes a concise technical summary into the `## Relevant implementation state` section of `requirements.md`. The output is reference material — not decisions — to ground the `## Implementation decisions` conversation that follows.
+Reads the milestone goal, explores the current project's codebase, and writes a concise technical summary into the `## Relevant starting state` section of `requirements.md`. The output is reference material — not decisions — to ground the `## Implementation decisions` conversation that follows.
 
 ## Usage
 
 ```
-/specify-milestone-starting-implementation-state <milestone_id>
+/specify-milestone-starting-state <milestone_id>
 ```
 
 - `<milestone_id>`: the milestone directory name under `milestones/`, e.g. `milestone_12_player-shooting`.
 
 **Example:**
 ```
-/specify-milestone-starting-implementation-state milestone_12_player-shooting
+/specify-milestone-starting-state milestone_12_player-shooting
 ```
 
 ## Workflow
@@ -28,11 +28,11 @@ Resolve `milestones/<milestone_id>/requirements.md`. If the file does not exist,
 
 ### 2. Read the goal
 
-Read `requirements.md` in full. Extract the `## Goal` section. This is the lens for everything that follows — only surface implementation state that is directly relevant to achieving or building on that goal.
+Read `requirements.md` in full. Extract the `## Goal` section. This is the lens for everything that follows — only surface starting state that is directly relevant to achieving or building on that goal.
 
 ### 3. Load the environment and explore the codebase
 
-Read `CLAUDE.md` at the workspace root for the project's environment. If it carries no description of the tech stack or file organization, suggest the user run `/init` to enrich it first — richer project context yields a sharper implementation-state summary — then proceed with whatever the codebase reveals.
+Read `CLAUDE.md` at the workspace root for the project's environment. If it carries no description of the tech stack or file organization, suggest the user run `/init` to enrich it first — richer project context yields a sharper starting-state summary — then proceed with whatever the codebase reveals.
 
 Extract from `CLAUDE.md`:
 - File organization / directory layout — the directories that contain meaningful code; use these to anchor all exploration
@@ -49,12 +49,12 @@ Do not exhaustively catalog everything — stay goal-relevant. Depth over breadt
 
 Use `find`, `grep`, and `Read` for file-based exploration. If MCP tools are documented in `CLAUDE.md` and are relevant to exploration, use them.
 
-### 4. Write the implementation state
+### 4. Write the starting state
 
-Draft the `## Relevant implementation state` section. Structure it as named subsections, one per relevant system or area:
+Draft the `## Relevant starting state` section. Structure it as named subsections, one per relevant system or area:
 
 ```markdown
-## Relevant implementation state
+## Relevant starting state
 
 ### <System Name>
 
@@ -69,7 +69,7 @@ Keep each subsection tight. The audience is someone who will use this to make im
 
 ### 5. Update the file
 
-Replace the (empty) `## Relevant implementation state` section in `requirements.md` with the drafted content. Do not modify any other section.
+Replace the (empty) `## Relevant starting state` section in `requirements.md` with the drafted content. Do not modify any other section.
 
 ### 6. Confirm
 

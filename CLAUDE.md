@@ -34,7 +34,7 @@ The skills form a linear pipeline. Each skill's SKILL.md defines its exact behav
 init-milestone-base-workflow    ← one-time bootstrap: create milestones/ + milestones/README.md
 discuss-milestone-goal          ← optional sharpening conversation, creates no files
 define-milestone-goal           ← creates milestones/milestone_<N>_<slug>/ with requirements.md, TASKS_TODO.md, TASKS_DONE.md
-specify-milestone-starting-implementation-state ← fills "Relevant implementation state" in requirements.md
+specify-milestone-starting-state ← fills "Relevant starting state" in requirements.md
 highlight-milestone-requirements-open-questions ← surfaces ambiguities; run repeatedly
 try-answer-all-questions-by-principle ← orchestrator: sweeps open/deferred questions, auto-answers only those a confirmed principle resolves, one commit per answer; run after highlight
 try-answer-question-by-principle ← (agent, in agents/) read-only candidate-elimination subagent: returns a verdict (unique survivor + cited principles), never edits documents
@@ -57,7 +57,7 @@ goto-next-milestone             ← activates an already-defined milestone: scan
 
 Each active milestone lives at `milestones/milestone_<N>_<slug>/` and contains exactly:
 
-- `requirements.md` — Goal, Relevant implementation state, implementation decisions, open questions
+- `requirements.md` — Goal, Relevant starting state, implementation decisions, open questions
 - `TASKS_TODO.md` — pending tasks ordered by priority (highest first), `##` headings + `---` separators
 - `TASKS_DONE.md` — completed tasks appended in the same format
 
@@ -75,7 +75,7 @@ Each active milestone lives at `milestones/milestone_<N>_<slug>/` and contains e
 - Two orchestrators commit; individual skills never commit — including the `implement-backlog-task` skill, which leaves an ad-hoc task's changes staged for the user. `implement-backlog-tasks` commits after each successful task. `try-answer-all-questions-by-principle` commits exactly **one auto-answer per commit** — subject `Principle-based-answer: <Short Title>` (the answered question's handle), with one repeated `Answer-Principle: <Short Title>` trailer line per load-bearing principle.
 - `finish-current-milestone` must always run before `goto-next-milestone` — it records the completion and clears the current-milestone pointer to "none". `goto-next-milestone` checks for this "none" state and refuses to run without it.
 - Open questions in `requirements.md` must be fully resolved before `derive-tasks` can run.
-- `specify-milestone-starting-implementation-state`, `derive-tasks`, and the shared implement procedure (run by both the `implement-backlog-task` skill and agent) read the project's environment context (tech stack, build/test commands, MCP tools, conventions) from `CLAUDE.md`. Run `/init` once at project setup so `CLAUDE.md` documents it.
+- `specify-milestone-starting-state`, `derive-tasks`, and the shared implement procedure (run by both the `implement-backlog-task` skill and agent) read the project's environment context (tech stack, build/test commands, MCP tools, conventions) from `CLAUDE.md`. Run `/init` once at project setup so `CLAUDE.md` documents it.
 - `derive-tasks` owns decomposition and coverage only; it must not author task bodies itself. It proves every requirement maps to a brief (traceability matrix), then submits briefs **in dependency order** to the `submit-task` agent with `POSITION: append`, spawning the agents **sequentially** (they all mutate the same `TASKS_TODO.md`).
 - The task body template (`##` title, description, optional **Provides**, optional **Notes**, **Success**, trailing `---`) lives in exactly one place: `shared/submit-procedure.md`. The `submit-task` skill, the `submit-task` agent, and `derive-tasks` must not duplicate it. There is deliberately **no** `Steps` section — see the altitude invariant below.
 - The author-and-insert procedure — find milestone, load context, author the task (template + authoring guidelines), insert at the given POSITION — lives in exactly one place: `shared/submit-procedure.md`. Neither the `submit-task` skill nor the agent may duplicate or restate those steps; both reference the shared file via `${CLAUDE_PLUGIN_ROOT}`. The shared file is execution-neutral — it takes BRIEF + POSITION, inserts at the POSITION it is given, and never decides global ordering, mentions the `DONE`/`FAILED` return protocol, triages, or follows up; those belong to the wrappers.

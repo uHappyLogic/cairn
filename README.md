@@ -45,7 +45,7 @@ Run `/init` to document your project's tech stack and tooling in `CLAUDE.md` so 
 
 Each milestone lives in `milestones/milestone_<N>_<slug>/` and contains three files:
 
-- `requirements.md` — goal, relevant implementation state, implementation decisions, and open questions
+- `requirements.md` — goal, relevant starting state, implementation decisions, and open questions
 - `TASKS_TODO.md` — pending tasks ordered by priority (highest first)
 - `TASKS_DONE.md` — completed tasks appended in the same format
 
@@ -72,7 +72,7 @@ end
 D1[/"Milestone goal defined<br/>requirements.md seeded, pointer active"/]
 
 subgraph S2["❓ Iterating milestone requirements document"]
-    ITM0["<b>/specify-milestone-starting-implementation-state</b><br/>fill 'Relevant implementation state' from the codebase"]
+    ITM0["<b>/specify-milestone-starting-state</b><br/>fill 'Relevant starting state' from the codebase"]
     ITM1["<b>/highlight-milestone-requirements-open-questions</b><br/>repeat to surface more gaps"]
     ITM3["<b>/discuss-open-question</b><br/>(optional) explore one question"]
     ITM4{{"<b>/answer-open-question</b><br/>record the decision"}}
@@ -159,9 +159,9 @@ Facilitates a structured conversation to sharpen a vague goal into a clear, acti
 
 Creates a new `milestones/milestone_<N>_<slug>/` directory with `requirements.md` (Goal section filled), plus empty `TASKS_TODO.md` and `TASKS_DONE.md`. Does **not** activate the milestone.
 
-### `specify-milestone-starting-implementation-state <milestone_id>`
+### `specify-milestone-starting-state <milestone_id>`
 
-Reads the milestone goal, explores the project using the environment documented in `CLAUDE.md`, and writes a concise technical summary into the `## Relevant implementation state` section of `requirements.md`. Sets up the context needed to make informed implementation decisions.
+Reads the milestone goal, explores the project using the environment documented in `CLAUDE.md`, and writes a concise technical summary into the `## Relevant starting state` section of `requirements.md`. Sets up the context needed to make informed implementation decisions.
 
 ### `highlight-milestone-requirements-open-questions`
 

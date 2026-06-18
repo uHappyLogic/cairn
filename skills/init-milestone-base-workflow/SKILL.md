@@ -44,7 +44,7 @@ This file is the source of truth for which milestone is current.
 
 Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
-- `requirements.md` — goal, relevant implementation state, implementation decisions, open questions
+- `requirements.md` — goal, relevant starting state, implementation decisions, open questions
 - `TASKS_TODO.md` — pending tasks ordered by priority (highest first)
 - `TASKS_DONE.md` — completed tasks
 
