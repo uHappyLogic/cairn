@@ -123,7 +123,7 @@ record it by reading and following `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedur
 yourself in this conversation. Pass the verdict's **Short Title** as its `SHORT TITLE` input
 and the verdict's **Surviving answer** as its `ANSWER` input. That procedure owns locating the
 matching block, analysing implications, removing the block, folding the decision into
-`## Implementation decisions` as clean prose, and cascading to any entries the answer moots.
+`## Decisions` as clean prose, and cascading to any entries the answer moots.
 **Do not restate those steps here, and do not invent a parallel recording format.**
 
 **d. Commit exactly this one auto-answer.** Immediately after recording (so the commit

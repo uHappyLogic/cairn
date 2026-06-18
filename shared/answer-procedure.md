@@ -43,7 +43,7 @@ available titles so the caller can retry.
 Before editing, reason about the answer's implications:
 
 - Does it resolve the question completely, or leave a sub-question open?
-- Does it introduce a concrete constraint that belongs under `## Implementation decisions`?
+- Does it introduce a concrete constraint that belongs under `## Decisions`?
 - Does it make any other open or deferred entry moot, or force a specific answer to one?
 - Does it contradict or supersede anything already written in the document?
 
@@ -54,9 +54,9 @@ the document.
 
 Remove the located `Open question` / `Deferred` block from the document entirely.
 
-### 5. Fold the decision into `## Implementation decisions`
+### 5. Fold the decision into `## Decisions`
 
-Add a concise statement under `## Implementation decisions` — in the relevant existing
+Add a concise statement under `## Decisions` — in the relevant existing
 subsection, or a new subsection if none fits — capturing what was decided and any
 constraint it imposes. Write it as **clean prose with no citation marker**: the document
 records the decision itself, not where it came from. Match the live document's section
@@ -65,7 +65,7 @@ names.
 ### 6. Cascade to mooted entries
 
 If the decision moots another open or deferred entry or forces its answer, remove that
-entry too and fold any implied constraint into `## Implementation decisions` the same way.
+entry too and fold any implied constraint into `## Decisions` the same way.
 Then the document is left in the now-updated state for any further work.
 
 Make steps 4–6 as separate, targeted edits — one per logical change (removal, fold,

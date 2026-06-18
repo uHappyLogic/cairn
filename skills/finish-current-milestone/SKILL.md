@@ -26,7 +26,7 @@ Read `<MILESTONE_DIR>/requirements.md` and extract the milestone title from its 
 ### 2. Read milestone content
 
 Read in parallel:
-- `<MILESTONE_DIR>/requirements.md` — to extract the milestone **Goal** and key implementation decisions.
+- `<MILESTONE_DIR>/requirements.md` — to extract the milestone **Goal** and key decisions.
 - `<MILESTONE_DIR>/TASKS_DONE.md` — to list what was concretely built.
 
 ### 3. Verify the milestone is done
@@ -38,7 +38,7 @@ Check that `<MILESTONE_DIR>/TASKS_TODO.md` contains no `##` sections. If tasks r
 Write a short summary (3–8 bullet points) of what was accomplished. Draw from:
 - The Goal section of `requirements.md`
 - The completed tasks in `TASKS_DONE.md`
-- Any significant implementation decisions recorded in `requirements.md`
+- Any significant decisions recorded in `requirements.md`
 
 Keep each bullet to one sentence. Focus on what now exists in the game/codebase, not on process.
 

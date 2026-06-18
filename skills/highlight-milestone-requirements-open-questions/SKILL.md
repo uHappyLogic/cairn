@@ -28,7 +28,7 @@ The structure of `requirements.md` is as follows:
 
 <description of the Relevant starting state>
 
-## Implementation decisions
+## Decisions
 
 <subsections with detailed requirements>
 

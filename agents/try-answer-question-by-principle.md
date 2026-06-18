@@ -38,7 +38,7 @@ means confirmed — there is no status field.
 supported, every candidate is eliminated, and your verdict is always "no unique survivor."**
 Return that verdict (step 4) with an empty load-bearing set. (This behavior is governed by
 the still-open `Deferred — Missing principle file` block in `requirements.md`, not by an
-`## Implementation decisions` entry — which is why it is stated here.)
+`## Decisions` entry — which is why it is stated here.)
 
 ### 2. Enumerate the realistic candidate answers
 

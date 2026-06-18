@@ -20,7 +20,7 @@ The value is restraint plus user confirmation. A principle governs *every* futur
 - **No argument (the primary entry).** Its main use is as an unconditional chain-off appended to `/answer-open-question`: after a manual answer is recorded, that skill invokes this one. Because capture runs **inline in the same conversation**, the full deliberation — the alternatives weighed in any `/discuss-open-question`, the trade-off articulated, the decision reached — is in context. Capture analyzes that conversation **anchored on the most recent decision**.
 - **Free-text focus hint (optional).** A short phrase naming which decision to generalize, used to disambiguate a conversation that covered several decisions, or when `/reject-auto-answer` chains in to revise a specific offending principle (the hint names that principle).
 
-This skill takes **no required parameter** and does **not** take a `(Short Title, decision prose)` payload — a principle generalizes the *rule behind* a decision, which lives in the deliberation (the alternatives, the trade-off), not in the clean prose folded into `## Implementation decisions`. The conversation is the source.
+This skill takes **no required parameter** and does **not** take a `(Short Title, decision prose)` payload — a principle generalizes the *rule behind* a decision, which lives in the deliberation (the alternatives, the trade-off), not in the clean prose folded into `## Decisions`. The conversation is the source.
 
 > Note: this skill writes **only** the principle store at the fixed path `milestones/answer_decision_principles.md`. It does **not** touch any milestone's `requirements.md`, so it does **not** resolve `<MILESTONE_DIR>` and must not call `get-current-milestone`.
 

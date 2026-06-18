@@ -1,11 +1,11 @@
 ---
 name: specify-milestone-starting-state
-description: Analyze the current codebase and fill the "Relevant starting state" section of a milestone's requirements.md with technical context that supports future implementation decisions.
+description: Analyze the current codebase and fill the "Relevant starting state" section of a milestone's requirements.md with technical context that supports future decisions.
 ---
 
 # specify-milestone-starting-state
 
-Reads the milestone goal, explores the current project's codebase, and writes a concise technical summary into the `## Relevant starting state` section of `requirements.md`. The output is reference material — not decisions — to ground the `## Implementation decisions` conversation that follows.
+Reads the milestone goal, explores the current project's codebase, and writes a concise technical summary into the `## Relevant starting state` section of `requirements.md`. The output is reference material — not decisions — to ground the `## Decisions` conversation that follows.
 
 ## Usage
 
@@ -65,7 +65,7 @@ Draft the `## Relevant starting state` section. Structure it as named subsection
 ...
 ```
 
-Keep each subsection tight. The audience is someone who will use this to make implementation decisions — they need facts, not commentary.
+Keep each subsection tight. The audience is someone who will use this to make decisions — they need facts, not commentary.
 
 ### 5. Update the file
 
@@ -81,7 +81,7 @@ Report:
 ## Rules
 
 - Only write what currently exists in the codebase. Do not describe intended behavior or speculate about future state.
-- Do not propose implementation decisions — that is for `/highlight-milestone-requirements-open-questions` and `/discuss-open-question`.
+- Do not propose decisions — that is for `/highlight-milestone-requirements-open-questions` and `/discuss-open-question`.
 - If a system is missing entirely, say so in one sentence and move on. Do not design its replacement here.
-- Do not overwrite `## Goal`, `## Implementation decisions`, or `## Out of Scope`.
+- Do not overwrite `## Goal`, `## Decisions`, or `## Out of Scope`.
 - Do not commit — leave staging to the user.

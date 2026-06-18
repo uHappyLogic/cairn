@@ -34,7 +34,7 @@ If no `.` is found, report a parse error and show the expected format.
 
 Read and follow the shared answer-recording procedure at `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out every step **yourself, in this conversation**. Pass it the **Short Title** and **answer text** parsed in step 1 as its `SHORT TITLE` and `ANSWER` inputs.
 
-That procedure owns resolving the current milestone, locating the matching block, analysing the answer's implications, removing the block, folding the decision into `## Implementation decisions`, and cascading to any entries the answer moots. Do not restate those steps here. If the Short Title matches no entry, the procedure stops without changes and reports the mismatch — relay that to the user so they can retry.
+That procedure owns resolving the current milestone, locating the matching block, analysing the answer's implications, removing the block, folding the decision into `## Decisions`, and cascading to any entries the answer moots. Do not restate those steps here. If the Short Title matches no entry, the procedure stops without changes and reports the mismatch — relay that to the user so they can retry.
 
 ### 3. Report findings
 

@@ -54,7 +54,7 @@ Create `milestones/milestone_<NN>_<slug>/` with three files. Use the zero-padded
 
 ## Relevant starting state
 
-## Implementation decisions
+## Decisions
 
 ## Out of Scope
 
@@ -82,7 +82,7 @@ Report:
 ## Rules
 
 - Do not update `CLAUDE.md` or `milestones/README.md` — those are only updated when the milestone becomes the *current* active milestone via `/goto-next-milestone`.
-- Do not populate `## Relevant starting state`, `## Implementation decisions`, or `## Out of Scope` — leave them empty for later skills.
+- Do not populate `## Relevant starting state`, `## Decisions`, or `## Out of Scope` — leave them empty for later skills.
 - Do not assign the milestone as current — defining a milestone does not activate it.
 - Never overwrite an existing milestone directory.
 - Do not commit — leave staging to the user.

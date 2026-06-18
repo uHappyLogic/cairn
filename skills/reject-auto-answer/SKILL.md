@@ -15,7 +15,7 @@ reproduce the bad answer.
 The reopen is exact and automatic: because the sweep enforces **one commit = one auto-answer**
 (see *Auto-answer commit isolation* in `requirements.md`), reverting that commit simultaneously
 restores the deleted `Open question` / `Deferred` block **and** removes the folded decision
-under `## Implementation decisions` in one shot. So **the revert *is* the reopen** — this skill
+under `## Decisions` in one shot. So **the revert *is* the reopen** — this skill
 never hand-reconstructs the reopened question and never edits the principle store.
 
 This skill is **interactive and single** (one commit per invocation), so it always shows the
@@ -79,7 +79,7 @@ Resolve the single optional argument in this order:
   region is a fine cross-check when the fragment still appears in the working tree.
 
   Fragment→commit resolution is fragile when a later cascade or manual edit reworded the
-  `## Implementation decisions` region. If the pickaxe returns **no commit** or **more than
+  `## Decisions` region. If the pickaxe returns **no commit** or **more than
   one**, the resolution is unsafe — take the refuse path (step 3, *Refuse rather than revert
   silently*).
 

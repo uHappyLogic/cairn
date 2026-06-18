@@ -120,3 +120,30 @@ Perform the two tightly-coupled, in-step renames the milestone's *Starting-state
 
 ---
 
+## Rename Decisions-Section Heading
+
+Per the milestone's *Decisions-section heading* decision, rename the `requirements.md` section heading `## Implementation decisions` → `## Decisions` everywhere the literal heading string is **written or read** — "implementation" is *dropped entirely*, not replaced (unlike the *Relevant starting state* rename): the section sits inside `requirements.md` under a known structure, so the bare noun is unambiguous and needs no qualifier. This task is also the sole sink for the bare lowercase phrase "implementation decisions" on live surfaces — both the structural-blurb enumerations of the heading names and the few generic-concept prose mentions — so the phrase no longer survives anywhere live. This is a pure heading rename (no skill/agent handle component) and one of the milestone's order-free renames.
+
+**Provides:**
+- The new `requirements.md` template heading `## Decisions` (the folded-decisions section), referenced by every reader/writer of the heading and by the docs.
+
+**Notes:**
+- The brief's enumerated update list is **not exhaustive** — the Success bar (a case-insensitive zero-hit grep) is the real contract. Two kinds of hits, both in scope: (a) the literal heading `## Implementation decisions` written or read → `## Decisions`; (b) bare lowercase "implementation decisions" prose → drop "implementation" so it reads "decisions". The bare-prose hits split into blurb enumerations (below) **and generic-concept mentions that read as out-of-scope but are not** — `README.md` ~164 "make informed implementation decisions" (which the order-free *Rename Starting-State Heading* task deliberately left for this task), `skills/finish-current-milestone/SKILL.md` ~29 "key implementation decisions" and ~41 "Any significant implementation decisions recorded in `requirements.md`", and the writer skill's ~3 "supports future implementation decisions" / ~68 "make implementation decisions" / ~84 "Do not propose implementation decisions". The bare "implementation" drop reads coherently in every one (e.g. "Any significant **decisions** recorded in `requirements.md`") — no "decisions about implementation" gymnastics are needed. Re-grep the bare phrase (case-insensitive) at the end to confirm none survive.
+- **Carve-out symmetry with the *Relevant starting state* rename.** Four blurb lines list BOTH heading names: `CLAUDE.md` (~60), `README.md` (~48), `skills/init-milestone-base-workflow/SKILL.md` (~47), and `milestones/README.md` line 7. On each, change **only** "implementation decisions" → "decisions" and leave the "implementation state" / "starting state" phrase exactly as found — its rename is owned by the order-free *Rename Starting-State Heading* task.
+- **`milestones/README.md` line 7 is LIVE** (the structural blurb). The history/Completed sections of that file are frozen — do not touch them.
+- Heading writers/template: `skills/define-milestone-goal/SKILL.md` (the emitted `## Implementation decisions` template heading ~57, and the "Do not populate …" list ~85). Heading readers: `shared/answer-procedure.md` (the `### 5. Fold the decision into …` subheading plus the three other mentions ~46/~59/~68), `skills/answer-open-question/SKILL.md` (~37), `skills/highlight-milestone-requirements-open-questions/SKILL.md` (the emitted block heading ~31), `skills/reject-auto-answer/SKILL.md` (~18, ~82), `agents/try-answer-question-by-principle.md` (~41), `skills/try-capture-answer-principle/SKILL.md` (~23), and `CLAUDE.md` (~20, ~70).
+- Two readers are **simultaneously being renamed by order-free sibling tasks** — `git grep` the heading/phrase wherever those dirs currently live and change only the heading/phrase, leaving their handle exactly as found: the writer skill `specify-milestone-starting-implementation-state` (→ `specify-milestone-starting-state`; heading-ref ~8, do-not-overwrite list ~86, plus its generic prose ~3/~68/~84) and `try-answer-questions-by-principle` (→ `try-answer-all-questions-by-principle`; ~126).
+- This task touches **only** the heading and the "implementation decisions" phrase — it must NOT alter the "implementation state"/"starting state" phrase, any skill/agent handle, or any dispatch string; those belong to their own order-free tasks.
+- `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` reference neither the heading nor the phrase (verified by grep), so no manifest edit is needed.
+- Per the milestone's *Rename ordering* decision, this task syncs its own `README.md` and `CLAUDE.md` references rather than deferring to a trailing doc-sync pass.
+- Do not edit frozen surfaces: historical milestone dirs (`milestone_01_*`, `milestone_02_*`), milestone_03's own `requirements.md`/`TASKS_*`, the history/completed sections of `milestones/README.md`, the `Origin:` provenance lines in `answer_decision_principles.md`, and `.claude/settings.local.json`.
+
+**Success:**
+- `git grep -i "implementation decisions"` over live plugin surfaces (`skills/`, `agents/`, `shared/`, `README.md`, `CLAUDE.md`, `.claude-plugin/`, and the live line 7 of `milestones/README.md`) returns zero hits (subsuming both the capitalized `## Implementation decisions` heading form and the lowercase prose form).
+- The heading `## Decisions` is the one emitted by the `define-milestone-goal` template and is the heading read by `shared/answer-procedure.md`, `highlight-milestone-requirements-open-questions`, `reject-auto-answer`, the `try-answer-question-by-principle` agent, and the answer-recording chain.
+- On the four shared blurb lines, the "implementation state"/"starting state" phrase is left exactly as found (untouched by this task).
+- No skill/agent handle or dispatch string is changed by this task.
+- The README structural blurb + per-skill table prose and the CLAUDE.md layout/skills-overview/invariants mentions read coherently with the new `## Decisions` heading.
+
+---
+
