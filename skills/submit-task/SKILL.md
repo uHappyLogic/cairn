@@ -1,20 +1,20 @@
 ---
-name: submit-backlog-task
+name: submit-task
 description: Add a single implementation issue (surfaced during development) to the current milestone's TASKS_TODO.md as a properly formatted task. Use when the user reports a concrete bug, gap, or "we should also..." that is already clear enough to queue. Triages for duplicates, decides where the task belongs, then authors and inserts the task inline.
 ---
 
-# submit-backlog-task
+# submit-task
 
 Turns a single, already-clear issue into an implementation-ready task in the current
 milestone's `TASKS_TODO.md`. This skill is the user-facing entry point
-(`/submit-backlog-task`) and the handoff target for `/discuss-new-backlog-task`.
+(`/submit-task`) and the handoff target for `/discuss-new-backlog-task`.
 
 It does two things the agent can't: the triage and positioning that need the **whole
-backlog in view** — checking for duplicates and deciding where the task belongs — and then
+task list in view** — checking for duplicates and deciding where the task belongs — and then
 it authors and inserts the task **inline, in this conversation**. Running the authoring
 inline is deliberate: the contract surface, notes, and success criteria you just wrote stay
 in context, so the user can immediately ask why a choice was made or request a tweak. For
-bulk authoring, `populate-backlog` instead spawns the `submit-backlog-task` **agent**, which
+bulk authoring, `populate-backlog` instead spawns the `submit-task` **agent**, which
 runs the same shared procedure in isolation so N tasks' reasoning never lands in its
 context. If the issue is still vague or might be several tasks, use
 `/discuss-new-backlog-task` first.
@@ -22,7 +22,7 @@ context. If the issue is still vague or might be several tasks, use
 ## Invocation
 
 ```
-/submit-backlog-task <issue description>
+/submit-task <issue description>
 ```
 
 `<issue description>` is a free-form description of a problem or gap discovered during
@@ -49,7 +49,7 @@ Read in parallel:
 
 ### 3. Decide the position
 
-You hold the whole backlog, so you decide where the task goes:
+You hold the whole task list, so you decide where the task goes:
 - If the task is a prerequisite for an existing task, position it **before** that task: `before: <Task Title>`.
 - If it depends on an existing task, position it **after** that task: `after: <Task Title>`.
 - Otherwise, `append`.
@@ -61,7 +61,7 @@ in this conversation** (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve 
 with the issue as the BRIEF and the POSITION you chose in step 3. It owns the task template,
 the authoring guidelines, and the insertion logic — follow it exactly.
 
-Do **not** spawn the `submit-backlog-task` agent — that would discard the authoring context
+Do **not** spawn the `submit-task` agent — that would discard the authoring context
 this skill exists to keep. (You already read `requirements.md` and `TASKS_TODO.md` in
 step 1, so reuse them rather than re-reading.)
 
@@ -76,8 +76,8 @@ was too vague — say so and suggest `/discuss-new-backlog-task` to sharpen it f
 
 ## Rules
 
-- Triage and position from the whole-backlog view (that is the skill's job), then author and
-  insert via the shared procedure — never delegate this skill to the `submit-backlog-task`
+- Triage and position from the whole-task-list view (that is the skill's job), then author and
+  insert via the shared procedure — never delegate this skill to the `submit-task`
   agent. (The shared file is the single source of truth, so the authored task is identical
   either way; only the context differs.)
 - Never queue a duplicate of an existing pending or completed task.

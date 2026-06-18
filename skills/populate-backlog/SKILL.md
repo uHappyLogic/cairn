@@ -1,15 +1,15 @@
 ---
 name: populate-backlog
-description: Convert the current milestone's requirements.md into a complete, dependency-ordered TASKS_TODO.md. Decomposes the milestone into high-level task briefs, proves every requirement is covered, then delegates the detailed authoring of each task to the submit-backlog-task agent.
+description: Convert the current milestone's requirements.md into a complete, dependency-ordered TASKS_TODO.md. Decomposes the milestone into high-level task briefs, proves every requirement is covered, then delegates the detailed authoring of each task to the submit-task agent.
 ---
 
 # populate-backlog
 
 Reads the current milestone requirements and populates `TASKS_TODO.md` with a complete, dependency-ordered list of implementation tasks ready for AI-driven execution via `/implement-backlog-task`.
 
-Your job here is **decomposition and coverage**, not task authoring. You split the milestone into high-level task briefs and prove that those briefs cover every requirement — that whole-milestone view is the thing most likely to break if you get lost in file-paths and method names. The detailed, per-task technical authoring (the contract surface, notes, exact paths, success criteria) is delegated, one task at a time, to the `submit-backlog-task` agent. That keeps each task's technical reasoning out of your context so your attention stays on completeness and ordering.
+Your job here is **decomposition and coverage**, not task authoring. You split the milestone into high-level task briefs and prove that those briefs cover every requirement — that whole-milestone view is the thing most likely to break if you get lost in file-paths and method names. The detailed, per-task technical authoring (the contract surface, notes, exact paths, success criteria) is delegated, one task at a time, to the `submit-task` agent. That keeps each task's technical reasoning out of your context so your attention stays on completeness and ordering.
 
-This mirrors the implement side: `implement-backlog-tasks` orchestrates and `implement-backlog-task` does the per-task work in a clean context. Here, you orchestrate and `submit-backlog-task` (the agent) does the per-task authoring.
+This mirrors the implement side: `implement-backlog-tasks` orchestrates and `implement-backlog-task` does the per-task work in a clean context. Here, you orchestrate and `submit-task` (the agent) does the per-task authoring.
 
 ## Usage
 
@@ -90,7 +90,7 @@ Initialize `<MILESTONE_DIR>/TASKS_TODO.md` to a clean header so the agent has an
 
 ### 7. Delegate authoring, one brief at a time, in order
 
-For each brief, **in dependency order**, spawn the `submit-backlog-task` agent with the `Agent` tool (`subagent_type: "submit-backlog-task"`). Send the brief and `POSITION: append` — because you submit in dependency order, appending each task yields the correct final order, and the agent never has to re-derive ordering:
+For each brief, **in dependency order**, spawn the `submit-task` agent with the `Agent` tool (`subagent_type: "submit-task"`). Send the brief and `POSITION: append` — because you submit in dependency order, appending each task yields the correct final order, and the agent never has to re-derive ordering:
 
 ```
 Author and insert one backlog task.

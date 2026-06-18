@@ -1,28 +1,5 @@
 # TASKS TODO
 
-## Rename Submit-Backlog-Task To Submit-Task
-
-Drop the redundant `-backlog` segment from the single-task authoring machinery — which exists as BOTH a user-facing skill and an isolated bulk-authoring agent sharing one name — renaming `submit-backlog-task` → `submit-task` for the skill (`skills/submit-backlog-task/` directory, whose name IS the slash-command name) and the agent (`agents/submit-backlog-task.md`). Update the agent's dispatch type-string in the task-deriver orchestrator and every cross-reference across the plugin, and reword surrounding "backlog" prose around this handle to "task"/"the task list". This is one of the milestone's order-free renames (per *Task-collection noun*).
-
-**Provides:**
-- The renamed skill directory `skills/submit-task/` and agent file `agents/submit-task.md` (each name IS its handle), plus the agent dispatch type-string `submit-task`, referenced by sibling rename tasks and the docs.
-
-**Notes:**
-- An agent's filename doubles as its `subagent_type` dispatch string, so the dispatch call must read `subagent_type: "submit-task"` and match `agents/submit-task.md` exactly. That dispatch string lives in the task-deriver skill (currently `skills/populate-backlog/SKILL.md`, line ~93: `spawn the \`submit-backlog-task\` agent ... (subagent_type: "submit-backlog-task")`). This rename is order-free w.r.t. the `populate-backlog` → `derive-tasks` rename — `git grep` the dispatch string and update it wherever the deriver dir currently lives, regardless of its current name.
-- The handle's live references are in: `skills/submit-backlog-task/SKILL.md` (its own self-references + the directory rename), the discuss-new-task skill (currently `skills/discuss-new-backlog-task/SKILL.md` — it hands off to this skill; its own `-backlog` rename is equally order-free, so grep the handle wherever that skill currently lives), the deriver skill's dispatch (above), `shared/submit-procedure.md`, `agents/submit-backlog-task.md` (the agent file + rename), `README.md` (Mermaid workflow node + per-skill reference-table rows for both skill AND agent), and `CLAUDE.md` (repository-layout, skills-overview, and invariants mentions — note CLAUDE.md describes this handle as *both* a skill and an agent).
-- The shared file NAME stays `submit-procedure.md` (its rename is out of scope here) — only update mentions of the skill/agent *handle* inside it, including its own title line "Submit-backlog-task procedure".
-- `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` do NOT reference this handle (verified by grep), so no manifest edit is needed.
-- Per the milestone's *Rename ordering* decision, this task syncs its own `README.md` and `CLAUDE.md` references rather than deferring to a trailing doc-sync pass.
-- Do not edit frozen surfaces: historical milestone dirs (`milestone_01_*`, `milestone_02_*`), milestone_03's own `requirements.md`/`TASKS_*`, the history/completed sections of `milestones/README.md`, the `Origin:` provenance lines in `answer_decision_principles.md`, and `.claude/settings.local.json`.
-
-**Success:**
-- `git grep submit-backlog-task` over live plugin surfaces (`skills/`, `agents/`, `shared/`, `README.md`, `CLAUDE.md`, `.claude-plugin/`) returns zero hits.
-- Directory `skills/submit-task/` exists with its `SKILL.md`, and `agents/submit-task.md` exists; the old `skills/submit-backlog-task/` directory and `agents/submit-backlog-task.md` no longer exist.
-- The task-deriver orchestrator's dispatch call reads `subagent_type: "submit-task"` and resolves to `agents/submit-task.md`.
-- The `discuss-new-backlog-task` handoff target, the `shared/submit-procedure.md` handle mentions, and the README Mermaid node + per-skill reference-table rows (skill and agent) + the CLAUDE.md layout/skills-overview/invariants mentions all read coherently with the new `submit-task` handle.
-
----
-
 ## Rename Populate-Backlog To Derive-Tasks
 
 Fully rename the task-deriver skill `populate-backlog` → `derive-tasks` (the skill that decomposes `requirements.md` into a covered, dependency-ordered task list) and update every cross-reference to its handle across the plugin. Per the *Task-collection noun* decision this is a distinctive-function rename, **not** a `-backlog`-segment drop: "derive" names that the tasks logically follow from `requirements.md` with a proven requirement→task coverage matrix, and the object "tasks" keeps consistency with the `complete-task` / `submit-task` / `discuss-new-task` family. This is one of the milestone's order-free renames.

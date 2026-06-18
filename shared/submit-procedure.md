@@ -1,12 +1,12 @@
-# Submit-backlog-task procedure (shared core)
+# Submit-task procedure (shared core)
 
 This is the single source of truth for authoring one backlog task and inserting it into
 the current milestone's `TASKS_TODO.md`. It is followed in two ways:
 
-- **Inline**, by the `submit-backlog-task` skill, which runs these steps directly in the
+- **Inline**, by the `submit-task` skill, which runs these steps directly in the
   user's conversation (after its own triage) so the authoring context survives for
   follow-up tweaks.
-- **In isolation**, by the `submit-backlog-task` agent, which runs the same steps in a
+- **In isolation**, by the `submit-task` agent, which runs the same steps in a
   throwaway subagent context for `populate-backlog` (bulk) so per-task technical reasoning
   never pollutes the caller's memory.
 
