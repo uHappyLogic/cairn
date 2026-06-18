@@ -1,5 +1,30 @@
 # TASKS DONE
 
+## Add Migrate-Workspace Skill For Existing Workspaces
+
+Add a new, manually-run skill that upgrades an **existing consuming workspace's** `milestones/` artifacts to Cairn's current conventions, so a project that adopted an earlier version of the plugin can be brought in step with later changes. v1 applies this milestone's renames; the skill is the standing mechanism through which future milestones' migration-worthy changes are applied too.
+
+**Provides:**
+- The skill directory `skills/migrate-workspace/` (directory name IS the `/migrate-workspace` slash-command handle), the manually-run entry point a user invokes against their own workspace.
+- A documented extension point inside the skill — a registry/catalog of migrations — that later milestones add an entry to whenever they introduce a workspace-artifact change requiring migration. Future migration tasks are authored against this surface.
+
+**Notes:**
+- This skill targets a **consuming workspace's `milestones/` data artifacts**, NOT the plugin's own source. It is the inverse of this milestone's other tasks (which rename the plugin); a consumer has no copies of the plugin's skills/agents, only the generated `milestones/` tree, so the migration surface is just `requirements.md` files plus `milestones/README.md`.
+- It must rewrite **every** milestone's `requirements.md` under `milestones/`, **including historical/completed milestone directories** — exactly the surfaces this milestone froze in *this* repo. The frozen-surface rule was specific to refactoring the plugin in place; a consumer needs its whole history normalized.
+- The post-migration target state is whatever the **live templates emit** — `define-milestone-goal` (`## Relevant starting state`, `## Decisions`) and the `init-milestone-base-workflow` README blurb ("requirements.md — goal, relevant starting state, decisions, open questions"). Treat those templates as the source of truth for the destination rather than restating the strings, so the skill stays correct as templates evolve.
+- v1's concrete migrations: in each `requirements.md`, the section heading `## Relevant implementation state` → `## Relevant starting state` and `## Implementation decisions` → `## Decisions`; and the structural-blurb line in `milestones/README.md` ("relevant implementation state, implementation decisions" → "relevant starting state, decisions"). Migrate only these **structural heading/blurb lines** — do not rewrite incidental prose mentions of "implementation" inside a milestone's Goal or decision text.
+- **Idempotent by detection, not assumption**: each migration detects its retired pattern wherever it appears and rewrites in place, so a partially-migrated or already-current workspace is handled and a re-run is a no-op (workspaces carry no version stamp).
+- Build the skill with `/skill-creator`.
+
+**Success:**
+- `skills/migrate-workspace/SKILL.md` exists with `name:` and `description:` frontmatter and the manually-run `/migrate-workspace` usage documented.
+- Run against a workspace seeded with old artifacts (a `requirements.md` carrying `## Relevant implementation state` / `## Implementation decisions` and an old `milestones/README.md` blurb): afterward `git grep -i "implementation state"` and `git grep -i "implementation decisions"` under that workspace's `milestones/` return zero hits.
+- The migrated `requirements.md` headings match the current `define-milestone-goal` template (`## Relevant starting state`, `## Decisions`), across historical/completed milestone dirs as well as the active one; the `milestones/README.md` blurb line reads "relevant starting state, decisions".
+- A second consecutive run reports/produces no changes (idempotent).
+- The SKILL.md documents the extension point future milestones use to register additional migrations.
+
+---
+
 ## Rename Answer-Sweep Orchestrator To Fan-Out Form
 
 Rename the answer-sweep orchestrator skill `try-answer-questions-by-principle` → `try-answer-all-questions-by-principle` (the fan-out grammar `<verb>-all-<plural-object>` form, applied because this orchestrator shares the verb "answer" with its per-item worker) and update every cross-reference to the orchestrator's handle across the plugin. This is one of the milestone's order-free renames; the read-only candidate-elimination subagent `try-answer-question-by-principle` is deliberately NOT renamed.
