@@ -21,7 +21,7 @@ Milestone-driven development for any stack.
 
 Large-scale software projects fail in predictable ways: the goal drifts during planning, ambiguities pile up before coding starts, the backlog grows unbounded, and there's no clear line between "working on it" and "done."
 
-Cairn gives Claude Code a structured, repeatable process for moving an idea from rough goal to shipped code — one milestone at a time. Each milestone is a self-contained unit: you clarify the goal, resolve every open question, populate an ordered backlog, implement the tasks, and close out the milestone before moving on. Nothing falls through the cracks because every decision is recorded and every requirement maps to a task.
+Cairn gives Claude Code a structured, repeatable process for moving an idea from rough goal to shipped code — one milestone at a time. Each milestone is a self-contained unit: you clarify the goal, resolve every open question, derive an ordered task list, implement the tasks, and close out the milestone before moving on. Nothing falls through the cracks because every decision is recorded and every requirement maps to a task.
 
 It works with any tech stack. Skills read your project's environment (tooling, conventions, build commands) from `CLAUDE.md`, so the workflow adapts to whatever you're building.
 
@@ -83,8 +83,8 @@ end
 
 D2[/"Requirements finalized<br/>all open questions resolved"/]
 
-subgraph S3["🤖 Automated one-shot backlog population and implementation"]
-    AI1["<b>/populate-backlog</b><br/>convert requirements.md → ordered TASKS_TODO.md"]
+subgraph S3["🤖 Automated one-shot task derivation and implementation"]
+    AI1["<b>/derive-tasks</b><br/>convert requirements.md → ordered TASKS_TODO.md"]
     AI2["<b>/implement-backlog-tasks</b><br/>execute all tasks, committing after each one"]
 end
 
@@ -165,7 +165,7 @@ Reads the milestone goal, explores the project using the environment documented 
 
 ### `highlight-milestone-requirements-open-questions`
 
-Scans the current milestone's `requirements.md` and surfaces remaining ambiguities or decisions that need to be made before the backlog can be populated. Run it multiple times — earlier answers often open new questions.
+Scans the current milestone's `requirements.md` and surfaces remaining ambiguities or decisions that need to be made before tasks can be derived. Run it multiple times — earlier answers often open new questions.
 
 ### The answer-principle-learning loop
 
@@ -199,7 +199,7 @@ Read-only candidate-elimination subagent dispatched once per question by `/try-a
 
 Reverts one bad auto-answer from the sweep. Takes an optional argument — a commit id from the sweep's report, a fragment of the wrong folded decision text in `requirements.md`, or nothing (defaults to `HEAD`). It validates the target is a genuine auto-answer commit (touches only `requirements.md`, carries an `Answer-Principle:` trailer), shows it for confirmation, then `git revert --no-commit`s it — which **reopens** the answered question — leaving the revert staged. It never edits the principle store; it points you to re-capture the principle behind the bad answer so the next sweep does not reproduce it.
 
-### `populate-backlog`
+### `derive-tasks`
 
 Converts the current milestone's `requirements.md` into `TASKS_TODO.md` — a complete, dependency-ordered list of atomic, AI-executable tasks. Decomposes the milestone into high-level briefs, proves every requirement is covered, then delegates detailed task authoring to the `submit-task` agent. Requires all open questions to be resolved first.
 

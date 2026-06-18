@@ -1,6 +1,6 @@
 ---
 name: submit-task
-description: Authors one fully-specified task from a high-level brief and inserts it into the current milestone's TASKS_TODO.md at a caller-specified position. Invoked by populate-backlog (bulk); not called directly by the user.
+description: Authors one fully-specified task from a high-level brief and inserts it into the current milestone's TASKS_TODO.md at a caller-specified position. Invoked by derive-tasks (bulk); not called directly by the user.
 color: blue
 ---
 

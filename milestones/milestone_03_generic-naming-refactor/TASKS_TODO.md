@@ -1,29 +1,5 @@
 # TASKS TODO
 
-## Rename Populate-Backlog To Derive-Tasks
-
-Fully rename the task-deriver skill `populate-backlog` → `derive-tasks` (the skill that decomposes `requirements.md` into a covered, dependency-ordered task list) and update every cross-reference to its handle across the plugin. Per the *Task-collection noun* decision this is a distinctive-function rename, **not** a `-backlog`-segment drop: "derive" names that the tasks logically follow from `requirements.md` with a proven requirement→task coverage matrix, and the object "tasks" keeps consistency with the `complete-task` / `submit-task` / `discuss-new-task` family. This is one of the milestone's order-free renames.
-
-**Provides:**
-- The renamed skill directory `skills/derive-tasks/` (directory name IS the slash-command name), referenced by sibling rename tasks and the docs.
-
-**Notes:**
-- This deriver spawns the single-task authoring worker agent. Do **not** touch that dispatch string or the worker handle — the worker rename is owned by the *Rename Submit-Backlog-Task To Submit-Task* task. Rename only THIS deriver's own handle. The two renames are order-free; on shared doc/`CLAUDE.md` lines that name **both** handles, change only `populate-backlog` → `derive-tasks` and leave the worker handle (`submit-backlog-task`/`submit-task`) exactly as you find it for its own task to settle.
-- The live deriver-handle references are in: `skills/populate-backlog/SKILL.md` (frontmatter `name:`, the H1, the `/populate-backlog` usage line, the "Cannot populate backlog" / "re-run /populate-backlog" error prose, plus all other self-references and the directory rename), `shared/submit-procedure.md` (names `populate-backlog` as the bulk caller), `agents/submit-backlog-task.md` (its file's prose names `populate-backlog` as its caller — update the handle only, not the agent's own filename), `skills/submit-backlog-task/SKILL.md` (names `populate-backlog` as the bulk caller), `README.md` (the intro-prose "populate an ordered backlog" line, the Mermaid workflow node `/populate-backlog`, the "before the backlog can be populated" phrasing in the highlight reference, and the per-skill reference-table row `### populate-backlog`), and `CLAUDE.md` (repository-layout line, skills-overview line, and the several invariants mentions — note several co-name `submit-backlog-task` on the same line).
-- Beyond exact-handle hits, grep prose in other skills that names this as a next step (e.g. the openings/closings of the answer/highlight family, `finish-current-milestone`) and reword "populate the backlog" / "before the backlog can be populated"-style phrasing to the `derive-tasks` vocabulary.
-- Manifest waypoint: `.claude-plugin/plugin.json`'s description currently reads "…populate backlogs, implement tasks…". Retire the "populate backlogs" phrase toward the new vocabulary, but do **not** finalize the one-liner's wording — its final coherent form is owned by the execution-family rename task (it still names "implement tasks"); here just retire the dead phrase. `.claude-plugin/marketplace.json` does **not** reference this handle or the phrase (its description is "Milestone-driven development for any stack."), so no marketplace edit is needed.
-- Per the milestone's *Rename ordering* decision, this task syncs its own `README.md` and `CLAUDE.md` references rather than deferring to a trailing doc-sync pass.
-- Do not edit frozen surfaces: historical milestone dirs (`milestone_01_*`, `milestone_02_*`), milestone_03's own `requirements.md`/`TASKS_*`, the history/completed sections of `milestones/README.md`, the `Origin:` provenance lines in `answer_decision_principles.md`, and `.claude/settings.local.json`.
-
-**Success:**
-- `git grep populate-backlog` over live plugin surfaces (`skills/`, `agents/`, `shared/`, `README.md`, `CLAUDE.md`, `.claude-plugin/`) returns zero hits.
-- Directory `skills/derive-tasks/` exists with its `SKILL.md`; the old `skills/populate-backlog/` directory no longer exists.
-- The single-task authoring worker's dispatch string inside the deriver skill is left untouched by this task (still exactly the handle the submit-task rename task owns).
-- `.claude-plugin/plugin.json` no longer contains the phrase "populate backlogs".
-- The README Mermaid node + per-skill reference-table row, the CLAUDE.md layout/skills-overview/invariants mentions, and all next-step prose references read coherently with the new `derive-tasks` handle.
-
----
-
 ## Rename Discuss-New-Backlog-Task To Discuss-New-Task
 
 Drop the redundant `-backlog` segment from the issue-clarification skill — which breaks a vague or oversized issue into clear task-sized briefs and hands each off to the single-task submit skill — renaming `discuss-new-backlog-task` → `discuss-new-task` (`skills/discuss-new-backlog-task/` directory, whose name IS the slash-command name) and updating every cross-reference to its handle across the plugin. Reword surrounding "backlog" prose around this handle to "task"/"the task list" as fits. This is one of the milestone's order-free renames (per *Task-collection noun*).

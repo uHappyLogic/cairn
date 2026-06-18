@@ -14,7 +14,7 @@ task list in view** — checking for duplicates and deciding where the task belo
 it authors and inserts the task **inline, in this conversation**. Running the authoring
 inline is deliberate: the contract surface, notes, and success criteria you just wrote stay
 in context, so the user can immediately ask why a choice was made or request a tweak. For
-bulk authoring, `populate-backlog` instead spawns the `submit-task` **agent**, which
+bulk authoring, `derive-tasks` instead spawns the `submit-task` **agent**, which
 runs the same shared procedure in isolation so N tasks' reasoning never lands in its
 context. If the issue is still vague or might be several tasks, use
 `/discuss-new-backlog-task` first.

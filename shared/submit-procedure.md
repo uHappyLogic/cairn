@@ -7,7 +7,7 @@ the current milestone's `TASKS_TODO.md`. It is followed in two ways:
   user's conversation (after its own triage) so the authoring context survives for
   follow-up tweaks.
 - **In isolation**, by the `submit-task` agent, which runs the same steps in a
-  throwaway subagent context for `populate-backlog` (bulk) so per-task technical reasoning
+  throwaway subagent context for `derive-tasks` (bulk) so per-task technical reasoning
   never pollutes the caller's memory.
 
 The wrappers add their own framing (where the inputs come from, the return protocol,

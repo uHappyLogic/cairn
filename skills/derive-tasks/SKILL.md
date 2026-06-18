@@ -1,11 +1,11 @@
 ---
-name: populate-backlog
+name: derive-tasks
 description: Convert the current milestone's requirements.md into a complete, dependency-ordered TASKS_TODO.md. Decomposes the milestone into high-level task briefs, proves every requirement is covered, then delegates the detailed authoring of each task to the submit-task agent.
 ---
 
-# populate-backlog
+# derive-tasks
 
-Reads the current milestone requirements and populates `TASKS_TODO.md` with a complete, dependency-ordered list of implementation tasks ready for AI-driven execution via `/implement-backlog-task`.
+Reads the current milestone requirements and derives a complete, dependency-ordered list of implementation tasks into `TASKS_TODO.md`, ready for AI-driven execution via `/implement-backlog-task`.
 
 Your job here is **decomposition and coverage**, not task authoring. You split the milestone into high-level task briefs and prove that those briefs cover every requirement — that whole-milestone view is the thing most likely to break if you get lost in file-paths and method names. The detailed, per-task technical authoring (the contract surface, notes, exact paths, success criteria) is delegated, one task at a time, to the `submit-task` agent. That keeps each task's technical reasoning out of your context so your attention stays on completeness and ordering.
 
@@ -14,7 +14,7 @@ This mirrors the implement side: `implement-backlog-tasks` orchestrates and `imp
 ## Usage
 
 ```
-/populate-backlog
+/derive-tasks
 ```
 
 No arguments. The skill always reads from and writes to the current milestone directory.
@@ -41,11 +41,11 @@ Read `<MILESTONE_DIR>/requirements.md` in full, plus any files referenced in its
 Scan `requirements.md` for any `> **Open question` blocks. If any exist, stop immediately and output:
 
 ```
-Cannot populate backlog: the following open questions must be resolved first:
+Cannot derive tasks: the following open questions must be resolved first:
 - <Short Title>
 - ...
 
-Run /answer-open-question for each one, then re-run /populate-backlog.
+Run /answer-open-question for each one, then re-run /derive-tasks.
 ```
 
 ### 3. Decompose into high-level task briefs
@@ -56,11 +56,11 @@ Apply these rules:
 
 - **Atomic scope** — each brief must be completable in a single `/implement-backlog-task` invocation, with no mid-task decisions. "Implement X and Y" is two briefs when X and Y can be built and verified independently.
 - **One system per brief** — group by the technology boundary or layer it touches, as defined by the file organization in `CLAUDE.md` (e.g. backend API / frontend component / DB schema; or for Unity: scripts / prefabs / scene hierarchy). Do not mix layers unless they are inseparable.
-- **No "nice to have" briefs** — only what the spec states. Do not pad the backlog.
+- **No "nice to have" briefs** — only what the spec states. Do not pad the task list.
 
 ### 4. Prove coverage (requirement → task matrix)
 
-This is the step that most directly fixes "the backlog missed something." Re-read `requirements.md` bullet by bullet and build a traceability matrix mapping **every** requirement, constraint, and behavioral detail to at least one brief:
+This is the step that most directly fixes "the task list missed something." Re-read `requirements.md` bullet by bullet and build a traceability matrix mapping **every** requirement, constraint, and behavioral detail to at least one brief:
 
 ```
 | Requirement (quote/paraphrase) | Covered by brief |
@@ -93,7 +93,7 @@ Initialize `<MILESTONE_DIR>/TASKS_TODO.md` to a clean header so the agent has an
 For each brief, **in dependency order**, spawn the `submit-task` agent with the `Agent` tool (`subagent_type: "submit-task"`). Send the brief and `POSITION: append` — because you submit in dependency order, appending each task yields the correct final order, and the agent never has to re-derive ordering:
 
 ```
-Author and insert one backlog task.
+Author and insert one task.
 
 BRIEF:
 <the high-level brief: affected system, desired behavior, how to verify>

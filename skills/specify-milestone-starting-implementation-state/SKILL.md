@@ -76,7 +76,7 @@ Replace the (empty) `## Relevant implementation state` section in `requirements.
 Report:
 - Which milestone was updated.
 - How many systems/areas were documented.
-- Suggest the next step: `/highlight-milestone-requirements-open-questions` to surface gaps and ambiguities before populating the backlog.
+- Suggest the next step: `/highlight-milestone-requirements-open-questions` to surface gaps and ambiguities before deriving the task list.
 
 ## Rules
 
