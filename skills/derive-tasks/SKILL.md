@@ -50,7 +50,7 @@ Run /answer-open-question for each one, then re-run /derive-tasks.
 
 ### 3. Decompose into high-level task briefs
 
-Break the milestone into discrete, independently-implementable task briefs. A **brief** is high-level — it names the affected system, the desired behavior, and how it would be verified. It does **not** contain file paths, method names, contract surface, or success criteria; that detail is the agent's job. Keeping briefs high-level is deliberate: it lets you hold many more of them in mind at once and reason about whether they cover everything.
+Break the milestone into discrete, independently-completable task briefs. A **brief** is high-level — it names the affected system, the desired behavior, and how it would be verified. It does **not** contain file paths, method names, contract surface, or success criteria; that detail is the agent's job. Keeping briefs high-level is deliberate: it lets you hold many more of them in mind at once and reason about whether they cover everything.
 
 Apply these rules:
 
@@ -69,7 +69,7 @@ This is the step that most directly fixes "the task list missed something." Re-r
 ```
 
 - Every requirement must map to ≥1 brief. If a requirement maps to none, you have a gap — add a brief (or note why it's already satisfied by existing code per the **Relevant starting state**).
-- If a requirement is already satisfied by the current implementation, mark it so and do not create a brief for it.
+- If a requirement is already satisfied by the existing code, mark it so and do not create a brief for it.
 - Do not invent requirements that aren't in the spec.
 
 Do not proceed until the matrix has no unexplained gaps.
@@ -114,6 +114,6 @@ Re-read the finished `<MILESTONE_DIR>/TASKS_TODO.md`. Confirm every brief from t
 
 - Your output is briefs + ordering + coverage. Do not write task bodies — the contract surface, notes, file paths, or success criteria — yourself; that is the agent's job, and duplicating it both pollutes your context and risks diverging from the shared task template the agent uses.
 - Never invent requirements not present in the spec; never omit one that is.
-- Do not create tasks for work already in `TASKS_DONE.md`, or for requirements already satisfied by the current implementation (note these in the report instead).
+- Do not create tasks for work already in `TASKS_DONE.md`, or for requirements already satisfied by the existing code (note these in the report instead).
 - Submit briefs in dependency order with `POSITION: append`; let the agent own task wording and the caller (you) own order.
 - Spawn authoring agents sequentially, one at a time. Stop on the first `FAILED`.

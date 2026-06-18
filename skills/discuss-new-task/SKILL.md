@@ -1,6 +1,6 @@
 ---
 name: discuss-new-task
-description: Clarify a rough or ambiguous implementation issue discovered during development into one or more clear tasks, then hand off to /submit-task. Use this whenever the user reports a bug, gap, or "we should also..." idea mid-implementation but the description is too vague to act on, or whenever they want to talk through an issue before adding it to the milestone task list. Also use it when the user flags that something is a bigger chunk of work that may need several task entries, or when a single reported issue turns out to be too large for one task — this skill will break it into an ordered set of task-sized pieces before handing each off. Prefer this over jumping straight to /submit-task when the affected system, desired behavior, or how to verify the fix is unclear, or when the right number of tasks isn't obvious yet.
+description: Clarify a rough or ambiguous issue discovered during development into one or more clear tasks, then hand off to /submit-task. Use this whenever the user reports a bug, gap, or "we should also..." idea mid-flight but the description is too vague to act on, or whenever they want to talk through an issue before adding it to the milestone task list. Also use it when the user flags that something is a bigger chunk of work that may need several task entries, or when a single reported issue turns out to be too large for one task — this skill will break it into an ordered set of task-sized pieces before handing each off. Prefer this over jumping straight to /submit-task when the affected system, desired behavior, or how to verify the fix is unclear, or when the right number of tasks isn't obvious yet.
 ---
 
 # discuss-new-task
@@ -9,13 +9,13 @@ Facilitates a short, focused conversation that turns a half-formed issue — the
 
 Most issues are a single task. But some are a bigger chunk of work that only makes sense as **several** tasks — the user may flag this up front ("this might be a few entries"), or it may become apparent mid-discussion that one "issue" is really two or three independent pieces. When that happens, this skill helps draw the boundaries and produces an ordered set of task-sized descriptions, then hands each off in turn.
 
-The bar to clear is **conceptual clarity**, not full implementation detail. For each task that comes out of the discussion, three things must be unambiguous:
+The bar to clear is **conceptual clarity**, not full design detail. For each task that comes out of the discussion, three things must be unambiguous:
 
 1. **Which system** the issue touches (a file, component, mechanic, or requirement).
 2. **What the desired behavior is** — what should be true after the fix that isn't true now.
 3. **Roughly how you'd verify it** — what you'd look at to confirm it's done.
 
-When the work splits into several tasks, one more thing must be clear: **where the boundaries are** — each piece should be independently implementable, and their order (what depends on what) should be evident.
+When the work splits into several tasks, one more thing must be clear: **where the boundaries are** — each piece should be independently completable, and their order (what depends on what) should be evident.
 
 Once those are clear, `submit-task` fills in the file-, method-, and step-level specifics for each task. That is its job, not yours — keep what you produce high-level. Don't push the conversation, or the descriptions you write, past conceptual clarity.
 
@@ -68,7 +68,7 @@ Decide whether the issue is a single task or a chunk that needs several. The anc
 Treat it as several tasks when any of these hold:
 - The user flagged it as a bigger chunk or "a few entries."
 - The work spans multiple systems, or mixes an immediate fix with follow-on improvements.
-- There are parts that could be implemented and verified on their own, in sequence.
+- There are parts that could be completed and verified on their own, in sequence.
 
 Lean toward a single task when in doubt — splitting has a cost, and `submit-task` can still position a lone task correctly. Don't manufacture extra tasks to look thorough.
 
@@ -95,7 +95,7 @@ Format as:
 
 Continue the conversation: after each answer, either ask the next question that matters most or confirm things are clear enough. Keep replies short and move fast. Favor judgment over completeness — listing every conceivable edge case wastes the user's time. The breakdown is allowed to shift as you learn: pieces may merge, split, or drop.
 
-Reach for `/discuss-open-question` instead if the ambiguity is really an open design decision about the milestone's direction (a trade-off to deliberate and record in `requirements.md`), not a concrete implementation issue to queue up.
+Reach for `/discuss-open-question` instead if the ambiguity is really an open design decision about the milestone's direction (a trade-off to deliberate and record in `requirements.md`), not a concrete issue to queue up.
 
 ### 5. Propose the handoff
 

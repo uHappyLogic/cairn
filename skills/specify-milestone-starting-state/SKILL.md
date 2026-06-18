@@ -40,7 +40,7 @@ Extract from `CLAUDE.md`:
 
 Using the goal as a filter, investigate the project under the directories documented in `CLAUDE.md`. Focus on:
 
-- **Source files relevant to the goal** — find files, classes, modules, and components whose names or responsibilities overlap with the goal. Read their public API (exported functions/classes/types/interfaces). Skip internal implementation detail.
+- **Source files relevant to the goal** — find files, classes, modules, and components whose names or responsibilities overlap with the goal. Read their public API (exported functions/classes/types/interfaces). Skip internal detail.
 - **Existing features** — if the goal builds on an existing system, describe its current behavior and exposed integration points.
 - **Configuration and data** — note relevant config files, schemas, database models, or data structures that the milestone will likely touch.
 - **Known gaps** — if the goal requires something that clearly does not exist yet, state it as a gap.

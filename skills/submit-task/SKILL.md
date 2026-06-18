@@ -1,11 +1,11 @@
 ---
 name: submit-task
-description: Add a single implementation issue (surfaced during development) to the current milestone's TASKS_TODO.md as a properly formatted task. Use when the user reports a concrete bug, gap, or "we should also..." that is already clear enough to queue. Triages for duplicates, decides where the task belongs, then authors and inserts the task inline.
+description: Add a single issue (surfaced during development) to the current milestone's TASKS_TODO.md as a properly formatted task. Use when the user reports a concrete bug, gap, or "we should also..." that is already clear enough to queue. Triages for duplicates, decides where the task belongs, then authors and inserts the task inline.
 ---
 
 # submit-task
 
-Turns a single, already-clear issue into an implementation-ready task in the current
+Turns a single, already-clear issue into a fully-specified task in the current
 milestone's `TASKS_TODO.md`. This skill is the user-facing entry point
 (`/submit-task`) and the handoff target for `/discuss-new-task`.
 
