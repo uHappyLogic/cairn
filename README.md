@@ -53,61 +53,69 @@ Each milestone lives in `milestones/milestone_<N>_<slug>/` and contains three fi
 
 ## Workflow pipeline
 
+The workflow runs as a stack of six phases. Each phase is its own diagram below, and the amber parallelogram **state** nodes (`D0`–`D5`) are the seams: every phase ends on the state node that the next phase begins with, so the shared node repeats at each boundary and the whole sequence reads top-to-bottom. Node labels are bare skill names — see the [Skill reference](#skill-reference) for what each one does. Dashed nodes and edges are optional or repeated steps.
+
+### One-time setup
+
+Run once per project, before any milestone work. `/init` records the tech stack and tooling in `CLAUDE.md`; `/init-milestone-base-workflow` creates the `milestones/` scaffold and seeds the current-milestone pointer — leaving the workflow scaffold ready.
+
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'fontFamily':'ui-sans-serif, system-ui','lineColor':'#94a3b8','primaryBorderColor':'#475569'},'flowchart':{'wrappingWidth':9999,'curve':'basis'}}}%%
 flowchart TD
-subgraph S0["⚙️ One-time setup"]
-    OT1(["<b>/init</b><br/>one-time project setup: document tech stack/tooling in CLAUDE.md"])
-    OT2(["<b>/init-milestone-base-workflow</b><br/>one-time bootstrap: create milestones/ + README, seed pointer"])
-end
-
-D0[/"Workflow scaffold ready<br/>milestones/ + CLAUDE.md documented"/]
-
-subgraph S1["🎯 Initializing a milestone"]
-    IM1["<b>/discuss-milestone-goal</b><br/>(optional) sharpen a vague idea before defining"]
-    IM2["<b>/define-milestone-goal</b><br/>create the milestone directory and seed requirements.md"]
-    IM3["<b>/goto-next-milestone</b><br/>advance the current-milestone pointer"]
-end
-
-D1[/"Milestone goal defined<br/>requirements.md seeded, pointer active"/]
-
-subgraph S2["❓ Iterating milestone requirements document"]
-    ITM0["<b>/specify-milestone-starting-state</b><br/>fill 'Relevant starting state' from the codebase"]
-    ITM1["<b>/review-milestone-requirements</b><br/>repeat each pass: reconcile, surface new gaps, check convergence"]
-    ITM3["<b>/discuss-open-question</b><br/>(optional) explore one question"]
-    ITM4{{"<b>/answer-open-question</b><br/>record the decision"}}
-    ITM5["<b>/try-capture-answer-principle</b><br/>(auto after answering) record the reusable principle behind the decision to the project-wide store"]
-    ITM2["<b>/try-answer-all-questions-by-principle</b><br/>(optional) autonomously answer questions a confirmed principle settles, by candidate elimination; needs a clean tree; one auto-answer per commit naming the principle in an Answer-Principle trailer"]
-    ITM6["<b>/reject-auto-answer</b><br/>(optional) revert a bad auto-answer's commit, reopening its question"]
-end
-
-D2[/"Requirements finalized<br/>all open questions resolved"/]
-
-subgraph S3["🤖 Automated one-shot task derivation and completion"]
-    AI1["<b>/derive-tasks</b><br/>convert requirements.md → ordered TASKS_TODO.md"]
-    AI2["<b>/complete-all-tasks</b><br/>complete all tasks, committing after each one"]
-end
-
-D3[/"Ordered task list completed and committed"/]
-
-subgraph S4["🔧 Semi-manual follow-up and adjustments"]
-    SM0["<b>/ask-in-milestone-context</b><br/>(optional, anytime) ask an informational question about the milestone's goal, decisions, done/pending tasks, and the code they produced — read-only, hands off when a next step surfaces"]
-    SM1["<b>/discuss-new-task</b><br/>(optional) clarify a new issue discovered mid-flight into one or more briefs, then hand off to /submit-task"]
-    SM2["<b>/submit-task</b><br/>add a single new task inline in the conversation, with context available for follow-up tweaks"]
-    SM3{{"<b>/complete-task</b><br/> complete a single task inline with the conversation for context, without committing; use when you want to ask follow-ups or tweak the work right after seeing it"}}
-end
-
-D4[/"Follow-up adjustments completed"/]
-
-subgraph S5["🏁 Ending a milestone and moving to the next"]
-    EM1["<b>/finish-current-milestone</b><br/>record accomplishments; finalize the milestone"]
-end
-
-D5[/"Milestone closed<br/>pointer cleared"/]
+    OT1(["/init"])
+    OT2(["/init-milestone-base-workflow"])
+    D0[/"Workflow scaffold ready<br/>milestones/ + CLAUDE.md documented"/]
 
     OT1 --> OT2 --> D0
-    D0 --> IM1 --> IM2 --> IM3
-    IM3 --> D1
+
+    classDef setup fill:#f1f5f9,stroke:#475569,color:#0f172a;
+    classDef state fill:#fffbeb,stroke:#d97706,color:#78350f,font-style:italic;
+    class OT1,OT2 setup;
+    class D0 state;
+```
+
+### Initializing a milestone
+
+From a ready scaffold — or looping back from a just-closed milestone (the dashed **next milestone** entry from `D5`) — shape and open the next milestone. `/discuss-milestone-goal` optionally sharpens a vague idea, `/define-milestone-goal` creates the milestone directory and seeds `requirements.md`, and `/goto-next-milestone` advances the pointer — leaving the milestone goal defined.
+
+```mermaid
+%%{init: {'theme':'base','themeVariables':{'fontFamily':'ui-sans-serif, system-ui','lineColor':'#94a3b8','primaryBorderColor':'#475569'},'flowchart':{'wrappingWidth':9999,'curve':'basis'}}}%%
+flowchart TD
+    D0[/"Workflow scaffold ready<br/>milestones/ + CLAUDE.md documented"/]
+    IM1["/discuss-milestone-goal"]
+    IM2["/define-milestone-goal"]
+    IM3["/goto-next-milestone"]
+    D5[/"Milestone closed<br/>pointer cleared"/]
+    D1[/"Milestone goal defined<br/>requirements.md seeded, pointer active"/]
+
+    D0 --> IM1 --> IM2 --> IM3 --> D1
+    D5 -.->|next milestone| IM1
+
+    classDef init fill:#eff6ff,stroke:#2563eb,color:#1e3a8a;
+    classDef optional stroke-dasharray:5 4;
+    classDef state fill:#fffbeb,stroke:#d97706,color:#78350f,font-style:italic;
+    class IM1,IM2,IM3 init;
+    class IM1 optional;
+    class D0,D5,D1 state;
+```
+
+### Iterating milestone requirements
+
+Drive `requirements.md` to convergence. `/specify-milestone-starting-state` fills the starting state from the codebase, then `/review-milestone-requirements` runs each pass to reconcile, surface new gaps, and check convergence (repeat until satisfied). Questions are explored with `/discuss-open-question`, recorded with `/answer-open-question`, and generalized into a reusable principle by `/try-capture-answer-principle`. The optional `/try-answer-all-questions-by-principle` sweep auto-answers what a confirmed principle settles, and `/reject-auto-answer` backs out a bad auto-answer — until every open question is resolved.
+
+```mermaid
+%%{init: {'theme':'base','themeVariables':{'fontFamily':'ui-sans-serif, system-ui','lineColor':'#94a3b8','primaryBorderColor':'#475569'},'flowchart':{'wrappingWidth':9999,'curve':'basis'}}}%%
+flowchart TD
+    D1[/"Milestone goal defined<br/>requirements.md seeded, pointer active"/]
+    ITM0["/specify-milestone-starting-state"]
+    ITM1["/review-milestone-requirements"]
+    ITM3["/discuss-open-question"]
+    ITM4["/answer-open-question"]
+    ITM5["/try-capture-answer-principle"]
+    ITM2["/try-answer-all-questions-by-principle"]
+    ITM6["/reject-auto-answer"]
+    D2[/"Requirements finalized<br/>all open questions resolved"/]
+
     D1 --> ITM0 --> ITM1
     ITM1 --> ITM3 --> ITM4
     ITM4 --> ITM5
@@ -117,34 +125,80 @@ D5[/"Milestone closed<br/>pointer cleared"/]
     ITM2 -.->|on a wrong auto-answer| ITM6
     ITM6 -.->|re-capture the principle| ITM5
     ITM2 --> D2
+
+    classDef req fill:#faf5ff,stroke:#9333ea,color:#581c87;
+    classDef optional stroke-dasharray:5 4;
+    classDef state fill:#fffbeb,stroke:#d97706,color:#78350f,font-style:italic;
+    class ITM0,ITM1,ITM2,ITM3,ITM4,ITM5,ITM6 req;
+    class ITM2,ITM3,ITM6 optional;
+    class D1,D2 state;
+```
+
+### Automated one-shot task derivation and completion
+
+Hands-off execution. `/derive-tasks` converts the finalized `requirements.md` into an ordered `TASKS_TODO.md`, and `/complete-all-tasks` works through the list, committing after each task — leaving the ordered task list completed.
+
+```mermaid
+%%{init: {'theme':'base','themeVariables':{'fontFamily':'ui-sans-serif, system-ui','lineColor':'#94a3b8','primaryBorderColor':'#475569'},'flowchart':{'wrappingWidth':9999,'curve':'basis'}}}%%
+flowchart TD
+    D2[/"Requirements finalized<br/>all open questions resolved"/]
+    AI1["/derive-tasks"]
+    AI2["/complete-all-tasks"]
+    D3[/"Ordered task list completed and committed"/]
+
     D2 --> AI1 --> AI2 --> D3
+
+    classDef auto fill:#ecfdf5,stroke:#059669,color:#064e3b;
+    classDef state fill:#fffbeb,stroke:#d97706,color:#78350f,font-style:italic;
+    class AI1,AI2 auto;
+    class D2,D3 state;
+```
+
+### Semi-manual follow-up and adjustments
+
+Inline, conversational adjustments after the automated pass. `/ask-in-milestone-context` answers read-only questions about the milestone at any time; `/discuss-new-task` clarifies a mid-flight issue into briefs that hand off to `/submit-task`; and `/complete-task` completes a single task inline (repeat until satisfied) with the conversation kept for follow-up tweaks — leaving the follow-up adjustments completed.
+
+```mermaid
+%%{init: {'theme':'base','themeVariables':{'fontFamily':'ui-sans-serif, system-ui','lineColor':'#94a3b8','primaryBorderColor':'#475569'},'flowchart':{'wrappingWidth':9999,'curve':'basis'}}}%%
+flowchart TD
+    D3[/"Ordered task list completed and committed"/]
+    SM0["/ask-in-milestone-context"]
+    SM1["/discuss-new-task"]
+    SM2["/submit-task"]
+    SM3["/complete-task"]
+    D4[/"Follow-up adjustments completed"/]
+
     D3 --> SM1
     D3 -.->|ask about state/finished work| SM0
     SM1 --> SM2 --> SM3
     SM3 -.->|repeat until satisfied| SM1
     SM3 --> D4
-    D4 --> EM1 --> D5
-    D5 -.->|next milestone| IM1
 
-    classDef setup  fill:#f1f5f9,stroke:#475569,color:#0f172a;
-    classDef init   fill:#eff6ff,stroke:#2563eb,color:#1e3a8a;
-    classDef req    fill:#faf5ff,stroke:#9333ea,color:#581c87;
-    classDef auto   fill:#ecfdf5,stroke:#059669,color:#064e3b;
     classDef manual fill:#fff7ed,stroke:#ea580c,color:#7c2d12;
-    classDef finish fill:#fef2f2,stroke:#e11d48,color:#881337;
     classDef optional stroke-dasharray:5 4;
-    classDef state  fill:#fffbeb,stroke:#d97706,color:#78350f,font-style:italic;
-
-    class OT1,OT2 setup;
-    class IM1,IM2,IM3 init;
-    class ITM0,ITM1,ITM2,ITM3,ITM4,ITM5,ITM6 req;
-    class AI1,AI2 auto;
+    classDef state fill:#fffbeb,stroke:#d97706,color:#78350f,font-style:italic;
     class SM0,SM1,SM2,SM3 manual;
-    class EM1 finish;
-    class IM1,ITM2,ITM3,SM0,SM1,SM3,ITM6 optional;
-    class D0,D1,D2,D3,D4,D5 state;
+    class SM0,SM1,SM3 optional;
+    class D3,D4 state;
+```
 
-    linkStyle 11,15,24,28 stroke:#9333ea,stroke-width:1.5px;
+### Ending a milestone
+
+Close out. `/finish-current-milestone` records accomplishments and clears the pointer, leaving the milestone closed. From `D5` the loop returns to **Initializing a milestone** for the next one.
+
+```mermaid
+%%{init: {'theme':'base','themeVariables':{'fontFamily':'ui-sans-serif, system-ui','lineColor':'#94a3b8','primaryBorderColor':'#475569'},'flowchart':{'wrappingWidth':9999,'curve':'basis'}}}%%
+flowchart TD
+    D4[/"Follow-up adjustments completed"/]
+    EM1["/finish-current-milestone"]
+    D5[/"Milestone closed<br/>pointer cleared"/]
+
+    D4 --> EM1 --> D5
+
+    classDef finish fill:#fef2f2,stroke:#e11d48,color:#881337;
+    classDef state fill:#fffbeb,stroke:#d97706,color:#78350f,font-style:italic;
+    class EM1 finish;
+    class D4,D5 state;
 ```
 
 ## Skill reference
