@@ -1,5 +1,5 @@
 <p align="center">
-    <img src=".github/assets/readme/cairn-banner.webp" style="height: 10em; width: 100%; object-fit: cover" alt="Cairn banner"/>
+    <img src=".github/assets/readme/cairn-banner.png" width="100%" alt="Cairn banner"/>
 </p>
 <p align="center">
   <a href="https://github.com/uHappyLogic/cairn/releases/latest">
