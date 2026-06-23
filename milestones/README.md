@@ -10,9 +10,19 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_03_generic-naming-refactor/`
+Current milestone: `milestones/milestone_04_readme-pipeline-diagrams/`
 
 ## Milestone History
+
+### Milestone 3 — Generic Naming Refactor
+
+- Retired coding-flavored vocabulary across the whole plugin so Cairn reads as a generic idea-to-done workflow, in a clean break with no aliases.
+- Renamed the task-execution machinery from "implement" to "complete": `complete-all-tasks` (orchestrator), `complete-task` (skill + agent), and `shared/complete-procedure.md`, with the dispatch type-string updated to match.
+- Dropped the redundant "backlog" noun: `submit-backlog-task` → `submit-task` (skill + agent), `discuss-new-backlog-task` → `discuss-new-task`, and renamed `populate-backlog` → `derive-tasks` to name that tasks derive from the requirements.
+- Applied the fan-out naming grammar `<verb>-all-<plural-object>`, renaming the answer sweep `try-answer-questions-by-principle` → `try-answer-all-questions-by-principle` while keeping its read-only subagent singular.
+- Renamed the `requirements.md` template headings `## Relevant implementation state` → `## Relevant starting state` (and its writer skill to `specify-milestone-starting-state`) and `## Implementation decisions` → `## Decisions`, updating every reader and writer.
+- Swept residual generic "implementation"/"implement" prose out of the authoring, clarification, and open-questions skills, and re-synced `README.md` and `CLAUDE.md` with the new vocabulary.
+- Added the manually-run `migrate-workspace` skill that upgrades an existing consuming workspace's `milestones/` artifacts to current conventions, with an extension point for future migrations.
 
 ### Milestone 2 — Answer Principle Learning Loop
 
@@ -39,3 +49,4 @@ Current milestone: `milestones/milestone_03_generic-naming-refactor/`
 |---|-------|------|
 | 1 | Public Release Preparation | `milestones/milestone_01_public-release-prep/` |
 | 2 | Answer Principle Learning Loop | `milestones/milestone_02_answer-principle-learning/` |
+| 3 | Generic Naming Refactor | `milestones/milestone_03_generic-naming-refactor/` |
