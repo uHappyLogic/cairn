@@ -91,6 +91,7 @@ end
 D3[/"Ordered task list completed and committed"/]
 
 subgraph S4["🔧 Semi-manual follow-up and adjustments"]
+    SM0["<b>/ask-in-milestone-context</b><br/>(optional, anytime) ask an informational question about the milestone's goal, decisions, done/pending tasks, and the code they produced — read-only, hands off when a next step surfaces"]
     SM1["<b>/discuss-new-task</b><br/>(optional) clarify a new issue discovered mid-flight into one or more briefs, then hand off to /submit-task"]
     SM2["<b>/submit-task</b><br/>add a single new task inline in the conversation, with context available for follow-up tweaks"]
     SM3{{"<b>/complete-task</b><br/> complete a single task inline with the conversation for context, without committing; use when you want to ask follow-ups or tweak the work right after seeing it"}}
@@ -118,6 +119,7 @@ D5[/"Milestone closed<br/>pointer cleared"/]
     ITM2 --> D2
     D2 --> AI1 --> AI2 --> D3
     D3 --> SM1
+    D3 -.->|ask about state/finished work| SM0
     SM1 --> SM2 --> SM3
     SM3 -.->|repeat until satisfied| SM1
     SM3 --> D4
@@ -137,12 +139,12 @@ D5[/"Milestone closed<br/>pointer cleared"/]
     class IM1,IM2,IM3 init;
     class ITM0,ITM1,ITM2,ITM3,ITM4,ITM5,ITM6 req;
     class AI1,AI2 auto;
-    class SM1,SM2,SM3 manual;
+    class SM0,SM1,SM2,SM3 manual;
     class EM1 finish;
-    class IM1,ITM2,ITM3,SM1,SM3,ITM6 optional;
+    class IM1,ITM2,ITM3,SM0,SM1,SM3,ITM6 optional;
     class D0,D1,D2,D3,D4,D5 state;
 
-    linkStyle 11,15,23,27 stroke:#9333ea,stroke-width:1.5px;
+    linkStyle 11,15,24,28 stroke:#9333ea,stroke-width:1.5px;
 ```
 
 ## Skill reference
@@ -218,6 +220,10 @@ Orchestrator: completes all tasks in `TASKS_TODO.md` top to bottom, spawning one
 ### `complete-task <task_name>`
 
 Completes a single named task from `TASKS_TODO.md` **inline, in the current conversation**. Running inline keeps the work context (what changed, why, how it was verified) in the conversation so you can ask follow-up questions or request tweaks right after. Changes are left staged — use `/complete-all-tasks` to complete the whole task list unattended with automatic commits.
+
+### `ask-in-milestone-context <question>`
+
+Answers a free-form, informational question about the current milestone — its goal, recorded decisions, done and pending tasks, and the actual code those tasks produced — grounding the answer in the live files and source rather than memory. **Read-only and conversational**, usable any time: use it to look back on finished work ("how did task X end up handling Y?", "where did we put Z?"), to take stock ("what's left and why?"), or to surface context before deciding what to do next. When the answer reveals a concrete next step, it offers the right skill — `/discuss-open-question`, `/submit-task` or `/discuss-new-task`, `/discuss-milestone-goal`, `/complete-task` — but performs none of their work itself.
 
 ### `finish-current-milestone`
 
