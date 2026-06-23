@@ -10,9 +10,17 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_04_readme-pipeline-diagrams/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 4 — README Pipeline Diagrams
+
+- Replaced the single oversized Workflow pipeline Mermaid diagram in `README.md` with six smaller per-phase `flowchart TD` diagrams (setup, milestone init, requirements loop, automated derivation/completion, follow-up, ending), each in its own `###` subsection with short flow prose.
+- Chained the per-phase diagrams via the shared parallelogram state seam nodes `D0`–`D5`, each internal seam node appearing in its two adjacent diagrams, with the cross-phase "next milestone" loop hosted on the receiving *Initializing a milestone* diagram.
+- Trimmed every skill node to its bare skill name (no inline descriptions or `(optional)`/`(auto)` qualifiers), keeping the `## Skill reference` section as the single home for full descriptions.
+- Retained per-diagram phase-colour styling for cross-diagram identity, kept the amber `state` styling and parallelogram shape on the seam nodes, flattened the former hexagon nodes to plain boxes, and dropped the stale `linkStyle` line tied to the old monolith's edge indices.
+- Fixed the stale `## Self-dogfooding` reference from `milestone_01_public-release-prep` to the current `milestone_04_readme-pipeline-diagrams` — the milestone's single mandated polish edit.
 
 ### Milestone 3 — Generic Naming Refactor
 
@@ -50,3 +58,4 @@ Current milestone: `milestones/milestone_04_readme-pipeline-diagrams/`
 | 1 | Public Release Preparation | `milestones/milestone_01_public-release-prep/` |
 | 2 | Answer Principle Learning Loop | `milestones/milestone_02_answer-principle-learning/` |
 | 3 | Generic Naming Refactor | `milestones/milestone_03_generic-naming-refactor/` |
+| 4 | README Pipeline Diagrams | `milestones/milestone_04_readme-pipeline-diagrams/` |
