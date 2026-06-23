@@ -76,12 +76,12 @@ Replace the (empty) `## Relevant starting state` section in `requirements.md` wi
 Report:
 - Which milestone was updated.
 - How many systems/areas were documented.
-- Suggest the next step: `/highlight-milestone-requirements-open-questions` to surface gaps and ambiguities before deriving the task list.
+- Suggest the next step: `/review-milestone-requirements` to open the requirements-iteration loop — surface gaps and ambiguities, then re-run it after each answer until the requirements converge.
 
 ## Rules
 
 - Only write what currently exists in the codebase. Do not describe intended behavior or speculate about future state.
-- Do not propose decisions — that is for `/highlight-milestone-requirements-open-questions` and `/discuss-open-question`.
+- Do not propose decisions — that is for `/review-milestone-requirements` and `/discuss-open-question`.
 - If a system is missing entirely, say so in one sentence and move on. Do not design its replacement here.
 - Do not overwrite `## Goal`, `## Decisions`, or `## Out of Scope`.
 - Do not commit — leave staging to the user.

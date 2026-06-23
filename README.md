@@ -73,7 +73,7 @@ D1[/"Milestone goal defined<br/>requirements.md seeded, pointer active"/]
 
 subgraph S2["❓ Iterating milestone requirements document"]
     ITM0["<b>/specify-milestone-starting-state</b><br/>fill 'Relevant starting state' from the codebase"]
-    ITM1["<b>/highlight-milestone-requirements-open-questions</b><br/>repeat to surface more gaps"]
+    ITM1["<b>/review-milestone-requirements</b><br/>repeat each pass: reconcile, surface new gaps, check convergence"]
     ITM3["<b>/discuss-open-question</b><br/>(optional) explore one question"]
     ITM4{{"<b>/answer-open-question</b><br/>record the decision"}}
     ITM5["<b>/try-capture-answer-principle</b><br/>(auto after answering) record the reusable principle behind the decision to the project-wide store"]
@@ -165,9 +165,9 @@ Creates a new `milestones/milestone_<N>_<slug>/` directory with `requirements.md
 
 Reads the milestone goal, explores the project using the environment documented in `CLAUDE.md`, and writes a concise technical summary into the `## Relevant starting state` section of `requirements.md`. Sets up the context needed to make informed decisions.
 
-### `highlight-milestone-requirements-open-questions`
+### `review-milestone-requirements`
 
-Scans the current milestone's `requirements.md` and surfaces remaining ambiguities or decisions that need to be made before tasks can be derived. Run it multiple times — earlier answers often open new questions.
+The repeatable engine of the requirements-iteration loop. Each pass over the current milestone's `requirements.md` does three jobs: **reconciles** the existing question set against what's already decided (prunes a block a recorded decision now covers, dedups repeats), **surfaces** genuinely new gaps the latest decisions exposed, and **reports convergence** — whether any `Open question` blocks remain (which `/derive-tasks` forbids) or the requirements are ready to derive tasks. Run it after `/specify-milestone-starting-state` to open the questions, then re-run after every answer or two — earlier answers keep opening new ones. It never answers questions or records decisions itself; it shapes and reports the open-questions state for the answering skills to resolve.
 
 ### The answer-principle-learning loop
 

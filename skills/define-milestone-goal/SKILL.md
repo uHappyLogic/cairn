@@ -5,7 +5,7 @@ description: Create a new milestone directory with initialized requirements.md (
 
 # define-milestone-goal
 
-Creates a new milestone directory under `milestones/` with a `requirements.md` pre-filled with the goal, plus empty `TASKS_TODO.md` and `TASKS_DONE.md`. Does not populate the remaining sections — those are filled by subsequent skills (`/specify-milestone-starting-state`, `/highlight-milestone-requirements-open-questions`, etc.).
+Creates a new milestone directory under `milestones/` with a `requirements.md` pre-filled with the goal, plus empty `TASKS_TODO.md` and `TASKS_DONE.md`. Does not populate the remaining sections — those are filled by subsequent skills (`/specify-milestone-starting-state`, `/review-milestone-requirements`, etc.).
 
 ## Usage
 

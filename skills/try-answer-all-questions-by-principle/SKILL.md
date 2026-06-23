@@ -178,7 +178,7 @@ When the gathered order is exhausted, report once:
 
 Do **not** enumerate the untouched questions: they remain visible as `Open question` /
 `Deferred` blocks in `requirements.md` and via re-running
-`/highlight-milestone-requirements-open-questions`, so listing them here would just duplicate
+`/review-milestone-requirements`, so listing them here would just duplicate
 the live document.
 
 ## Rules
