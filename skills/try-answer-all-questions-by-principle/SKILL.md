@@ -22,7 +22,7 @@ subagent's verdict, is the sole basis for any auto-answer.
 
 Because each answer is committed on its own with the applied principle named in an
 `Answer-Principle:` trailer, every autonomous decision is traceable and individually
-reversible by `/reject-auto-answer`.
+reversible.
 
 ## Usage
 
@@ -158,8 +158,9 @@ When the gathered order is exhausted, report once:
 
 - **If the sweep committed at least one auto-answer**, print a single ready-to-run command
   that shows exactly this invocation's commits with their full messages (so the
-  `Answer-Principle:` trailers are visible in one shot), and direct the user to it — they pass
-  any commit id from it to `/reject-auto-answer` to undo a bad answer:
+  `Answer-Principle:` trailers are visible in one shot), and direct the user to it — to undo a
+  bad answer, revert that auto-answer's commit (which restores the reopened question block) and
+  then run `/answer-open-question` to re-answer:
 
   ```
   git log <BASE>..HEAD

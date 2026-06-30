@@ -89,3 +89,24 @@ Update `/finish-current-milestone` (`skills/finish-current-milestone/SKILL.md`) 
 
 ---
 
+## Retire Reject-Auto-Answer Skill
+
+Delete the now-retired `skills/reject-auto-answer/` directory and scrub its remaining live cross-references in other skill files so nothing dangles a pointer at the deleted skill. Per the "Bad-principle correction path" decision, `reject-auto-answer` is retired entirely with no dedicated replacement: correcting a bad auto-answer becomes the uniform "revert the auto-answer commit, then `/answer-open-question` to re-answer" flow, with the offending principle reconciled at milestone finish. This reference cleanup is `/derive-tasks` work.
+
+**Notes:**
+- **Scope of edits — one dir deleted, one file scrubbed:**
+  1. Delete the entire `skills/reject-auto-answer/` directory (its `SKILL.md` and the dir; its own self-references go with it).
+  2. `skills/try-answer-all-questions-by-principle/SKILL.md` has the two surviving live mentions (run `grep -rn "reject-auto-answer" skills/` to confirm). Both must go, but **preserve the still-true invariant prose** around each — the sweep still commits one auto-answer per commit and still prints `git log <BASE>..HEAD`, and each auto-answer is still individually traceable and revertible; only the pointer to the retired correction skill changes.
+- **The line that points the user at `/reject-auto-answer` to undo a bad answer is a redirect, not a plain deletion.** Per the "Bad-principle correction path" decision, repoint it at the uniform replacement flow — revert the offending auto-answer commit, then run `/answer-open-question` to re-answer — so the "here's how to undo a bad answer" affordance survives the rename rather than silently vanishing. The other mention (the traceability/reversibility claim) stays true once the skill name is dropped.
+- **Do NOT touch these surfaces** (each owned elsewhere): `skills/try-capture-answer-principle/SKILL.md` — that skill is deleted by its own "Retire Try-Capture-Answer-Principle Skill" task, sequenced **before** this one, so it should already be gone; do not recreate or edit it (if a mid-task grep still shows its refs, that is the prior task's domain, not a gap here). `CLAUDE.md` and `README.md` — the single downstream doc-sync task owns all of those, including the coupled README Mermaid graph and the no-commit-invariant prose. This milestone's own `milestones/milestone_05_*/requirements.md`.
+- **Do NOT rewrite frozen historical records:** leave the `milestones/README.md` history untouched and the `milestone_02`/`03`/`04` `requirements.md` + `TASKS_DONE.md` files untouched — they record what happened.
+- This skill does not commit; leave all changes staged.
+
+**Success:**
+- `skills/reject-auto-answer/` no longer exists (directory and `SKILL.md` gone).
+- `grep -rn "reject-auto-answer" skills/` returns no hits.
+- `skills/try-answer-all-questions-by-principle/SKILL.md` no longer names `reject-auto-answer`, yet still states the auto-answers are individually traceable/reversible and still tells the user how to undo a bad answer — now via the revert-then-`/answer-open-question` flow.
+- `git diff` shows `CLAUDE.md`, `README.md`, `milestones/README.md`, this milestone's own `requirements.md`, and every `milestone_02`/`03`/`04` `requirements.md` and `TASKS_DONE.md` unchanged by this task.
+
+---
+
