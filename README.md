@@ -101,7 +101,7 @@ flowchart TD
 
 ### Iterating milestone requirements
 
-Drive `requirements.md` to convergence. `/specify-milestone-starting-state` fills the starting state from the codebase, then `/review-milestone-requirements` runs each pass to reconcile, surface new gaps, and check convergence (repeat until satisfied). Questions are explored with `/discuss-open-question`, recorded with `/answer-open-question`, and generalized into a reusable principle by `/try-capture-answer-principle`. The optional `/try-answer-all-questions-by-principle` sweep auto-answers what a confirmed principle settles, and `/reject-auto-answer` backs out a bad auto-answer — until every open question is resolved.
+Drive `requirements.md` to convergence. `/specify-milestone-starting-state` fills the starting state from the codebase, then `/review-milestone-requirements` runs each pass to reconcile, surface new gaps, and check convergence (repeat until satisfied). Questions are explored with `/discuss-open-question`, recorded with `/answer-open-question`, and generalized into a reusable principle by `/try-capture-answer-principle`. When a discussion concludes the milestone goal itself must shift, `/discuss-open-question` offers `/modify-milestone-goal` to revise the `## Goal` (then loop back through review to reconcile). The optional `/try-answer-all-questions-by-principle` sweep auto-answers what a confirmed principle settles, and `/reject-auto-answer` backs out a bad auto-answer — until every open question is resolved.
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'fontFamily':'ui-sans-serif, system-ui','lineColor':'#94a3b8','primaryBorderColor':'#475569'},'flowchart':{'wrappingWidth':9999,'curve':'basis'}}}%%
@@ -114,10 +114,13 @@ flowchart TD
     ITM5["/try-capture-answer-principle"]
     ITM2["/try-answer-all-questions-by-principle"]
     ITM6["/reject-auto-answer"]
+    ITM7["/modify-milestone-goal"]
     D2[/"Requirements finalized<br/>all open questions resolved"/]
 
     D1 --> ITM0 --> ITM1
     ITM1 --> ITM3 --> ITM4
+    ITM3 -.->|goal must shift| ITM7
+    ITM7 -.->|reconcile against new goal| ITM1
     ITM4 --> ITM5
     ITM4 -.->|repeat until satisfied| ITM1
     ITM4 --> D2
@@ -129,8 +132,8 @@ flowchart TD
     classDef req fill:#faf5ff,stroke:#9333ea,color:#581c87;
     classDef optional stroke-dasharray:5 4;
     classDef state fill:#fffbeb,stroke:#d97706,color:#78350f,font-style:italic;
-    class ITM0,ITM1,ITM2,ITM3,ITM4,ITM5,ITM6 req;
-    class ITM2,ITM3,ITM6 optional;
+    class ITM0,ITM1,ITM2,ITM3,ITM4,ITM5,ITM6,ITM7 req;
+    class ITM2,ITM3,ITM6,ITM7 optional;
     class D1,D2 state;
 ```
 
@@ -238,6 +241,10 @@ Opens a structured conversation about a named open question in `requirements.md`
 ### `answer-open-question <question_name>`
 
 Records the resolution of a named open question in `requirements.md`, updating the document to reflect the decision and its downstream implications. After recording, it automatically chains into `/try-capture-answer-principle` to offer to generalize the decision into a reusable answering principle.
+
+### `modify-milestone-goal <new or revised goal text>`
+
+Revises the `## Goal` of the **already-defined** current milestone — the one skill that mutates the goal of a live milestone (`define-milestone-goal` only seeds it at creation). **Act-only**: it edits the Goal section and nothing else, then *surfaces* the downstream impact (which decisions, open questions, out-of-scope entries, and already-derived tasks the new goal may invalidate) and points you at `/review-milestone-requirements` to reconcile — it never cascades those changes itself. Offered by `/discuss-open-question` when a deliberation concludes the goal must shift, and directly invocable. Does not commit.
 
 ### `try-capture-answer-principle [focus_hint]`
 

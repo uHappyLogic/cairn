@@ -58,6 +58,10 @@ After the opening, invite the user to push back, ask follow-up questions, or nar
 
 When the user lands on an answer, offer to invoke `/answer-open-question` with that answer to record it in the document. Do not edit the document yourself — that is `answer-open-question`'s responsibility.
 
+If the deliberation instead reveals that the milestone **goal itself** needs to change — not just this question, but the objective the question hangs off — surface that explicitly and offer to invoke `/modify-milestone-goal` with the proposed revised goal. Still do not edit anything yourself; the user confirms the wording and that skill performs the write.
+
+The two offers are not exclusive: a discussion can both resolve the question and conclude the goal must shift. When both apply, run `/modify-milestone-goal` **first**, then `/answer-open-question` — the goal is the root the answer hangs off, so recording the answer against the already-revised goal lets `answer-open-question` analyse implications and cascade against the new objective rather than a stale one.
+
 ## Rules
 
 - Do not start with summaries, restating the question at length, or meta-commentary about what you are about to do. Open directly with the substance.
