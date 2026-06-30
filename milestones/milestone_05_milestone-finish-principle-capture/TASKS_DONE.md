@@ -21,3 +21,31 @@ Make the `/answer-open-question` skill wrapper (`skills/answer-open-question/SKI
 
 ---
 
+## Author Capture-Milestone-Principle-Updates Skill
+
+Author the new optional, finish-time skill `skills/capture-milestone-principle-updates/SKILL.md` that distills reusable answering principles from this milestone's `Manual-answer:` commits into the principle store. It is the milestone's central new artifact: it carries forward the retired `try-capture-answer-principle`'s principle-entry schema and revise-vs-add discipline, but wraps them in a batch two-phase flow over a finite, known-up-front commit set. It runs as an optional follow-up *after* `/finish-current-milestone` has already cleared the current-milestone pointer to `none`.
+
+**Provides:**
+- The slash command `/capture-milestone-principle-updates`, backed by `skills/capture-milestone-principle-updates/SKILL.md`. It is the **new sole writer** of the principle store `milestones/answer_decision_principles.md` (superseding the retired `try-capture-answer-principle`).
+- It writes **only** `milestones/answer_decision_principles.md` and never touches any `requirements.md`. Like other individual skills it does **not** commit — it leaves its principle-store edit **staged** for the user.
+- It carries forward the principle-entry schema verbatim: each entry is a `### <Short Title>` heading + a generalizable keep/eliminate directive in prose + an optional `*Origin: …*` line; **presence = confirmed**, there is no status field.
+
+**Notes:**
+- **`skill-creator` is the mandated authoring tool.** The milestone goal requires this skill be created via the `/skill-creator:skill-creator` skill — invoke it to scaffold and author `SKILL.md`; do not hand-write the skill outside that tool. State plainly in the skill text that this skill commits nothing and leaves its edit staged.
+- **Target resolution (per "Finish-time recommendation"):** because the current-milestone pointer is already `none` when this skill runs, it must **not** resolve `<MILESTONE_DIR>` via `shared/get-current-milestone.md`. Instead it resolves `<MILESTONE_DIR>` from the **last row of the `## Completed Milestones` table** in `milestones/README.md` (the row `/finish-current-milestone` just appended), and feeds that same path into the commit walk.
+- **Commit walk (per "Commit-walk boundary"):** `git log --grep='^Manual-answer: ' -- <MILESTONE_DIR>/requirements.md`. The path filter is itself the lower boundary (that file does not exist before the milestone was defined), so no milestone-start marker is needed. As a guard, exclude any matched commit carrying an `Answer-Principle:` trailer — those are sweep auto-answers, not manual answers.
+- **Two-phase interaction model (per "Batch capture interaction model"):** (1) **Internal candidate elimination first** — extract candidate keep/eliminate directives from all in-range `Manual-answer` commit bodies, drop the non-generalizable ones, and cluster the surviving candidates **against each other** (cross-candidate dedup; the commit→principle mapping is many-to-many). (2) **Then strongest-first user confirmation against the live store** — present surviving candidates strongest-first; confirmation granularity is **per-candidate at write time** (never grouped-per-round): for each candidate run revise-vs-add by semantic overlap against the **live** store, take the user's add/revise/decline, write that one, then **re-scan** the remaining pool before the next (a write can turn a later candidate's "add" into a "revise"). It **may** optionally display the full surviving pool up front for context, but writes one candidate at a time.
+- **Termination is deterministic:** the candidate pool is the finite, known-up-front set of in-range commits; the loop ends when every commit's rationale has been considered and every surviving candidate is resolved (add/revise/decline) with no pending merges.
+- **Empty range is a normal exit, not a branch (per "Empty commit range"):** when the walk returns no qualifying commits, report a single line that there are no `Manual-answer` commits in range to distill, and exit writing/staging nothing. This is the **same** terminal "nothing captured" report the candidate-elimination flow produces when in-range commits exist but none generalize — the two converge on one report rather than a distinct empty-range branch.
+- This task only authors the new skill. Retiring `try-capture-answer-principle` and reconciling the CLAUDE.md / README references (including the principle-store header's writer-attribution line) is downstream work — do not do it here.
+
+**Success:**
+- `skills/capture-milestone-principle-updates/SKILL.md` exists (authored via `/skill-creator:skill-creator`, per Notes).
+- The skill resolves `<MILESTONE_DIR>` from the last row of the `## Completed Milestones` table in `milestones/README.md` (explicitly **not** via `shared/get-current-milestone.md`), and walks `git log --grep='^Manual-answer: ' -- <MILESTONE_DIR>/requirements.md`, excluding commits that carry an `Answer-Principle:` trailer.
+- The skill text describes the two-phase flow: internal cross-candidate dedup, then strongest-first **per-candidate** revise-vs-add against the live store with a re-scan of the remaining pool after each write.
+- The skill carries forward the `### <Short Title>` + prose keep/eliminate directive + optional `*Origin: …*` entry schema, with presence meaning confirmed and no status field.
+- The skill treats an empty commit range as a single-line "nothing to distill" exit that converges with the "commits exist but none generalize" report, writing and staging nothing.
+- The skill writes only `milestones/answer_decision_principles.md`, never touches any `requirements.md`, and does not commit (leaves its edit staged).
+
+---
+
