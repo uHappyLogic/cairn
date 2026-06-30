@@ -1,22 +1,5 @@
 # TASKS TODO
 
-## Recommend Capture Skill At Finish
-
-Update `/finish-current-milestone` (`skills/finish-current-milestone/SKILL.md`) so its step 8 ("Confirm") surfaces a recommendation to run the new `/capture-milestone-principle-updates` skill as an optional follow-up. Per the "Finish-time recommendation" decision, the recommendation is **RECOMMENDED, never auto-run**: step 8 only adds the suggestion text — the skill must not invoke the new skill and must not commit. The two next-step suggestions must be ordered `/capture-milestone-principle-updates` first (the milestone just closed) then `/define-milestone-goal` (the next one). No other step of the skill changes.
-
-**Notes:**
-- The recommendation belongs in **step 8** specifically, which already runs **after** the `## Completed Milestones` table-row append (step 5) and the pointer-clear to `none` (step 6) — so nothing moves; the change is purely adding the ordered suggestion to step 8. The reason it cannot fire earlier: `/capture-milestone-principle-updates` resolves its target `<MILESTONE_DIR>` from the **last row of the `## Completed Milestones` table**, which step 5 only just appended.
-- Use a plain suggestion line worded as optional/recommended, e.g. "Optional: run `/capture-milestone-principle-updates` to distill reusable answering principles from this milestone's recorded decisions into the principle store."
-- The brief names step 8 **and its Rules** as the affected surface. The Rules section (currently silent on the next-step suggestion) is the natural home for a guard such as "`/finish-current-milestone` only *suggests* `/capture-milestone-principle-updates` — it never invokes it and never commits." Add that guard rather than leaving the no-auto-run/no-commit constraint implicit.
-
-**Success:**
-- Step 8 of `skills/finish-current-milestone/SKILL.md` lists `/capture-milestone-principle-updates` (worded as optional/recommended) **before** `/define-milestone-goal` in its closing next-step suggestion.
-- Step 8 contains no Skill/slash invocation that actually *runs* `/capture-milestone-principle-updates` and no `git commit` instruction — the change adds suggestion text only.
-- The Rules section carries a guard stating `/finish-current-milestone` only suggests the new skill and never invokes it or commits.
-- No step other than step 8 (and the Rules guard) is altered.
-
----
-
 ## Retire Try-Capture-Answer-Principle Skill
 
 Delete the now-superseded `skills/try-capture-answer-principle/` directory and scrub its remaining live cross-references so nothing dangles a pointer at the deleted skill. Capture has moved to the finish-time `/capture-milestone-principle-updates` skill, so the on-demand capture skill and every live mention of it outside the doc-sync surface and the frozen records must go. Per the "Bad-principle correction path" decision, this reference cleanup is `/derive-tasks` work.

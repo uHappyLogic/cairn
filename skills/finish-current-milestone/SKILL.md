@@ -82,7 +82,12 @@ If nothing in the milestone changes the tech stack, tooling, or project structur
 
 ### 8. Confirm
 
-Report: the milestone name, the number of tasks completed, the bullet list written into `milestones/README.md`, and that the current-milestone pointer has been cleared to "none". Note any `CLAUDE.md` sections updated (or confirm none were needed). Suggest the next step: `/define-milestone-goal` to start planning the next milestone.
+Report: the milestone name, the number of tasks completed, the bullet list written into `milestones/README.md`, and that the current-milestone pointer has been cleared to "none". Note any `CLAUDE.md` sections updated (or confirm none were needed).
+
+Suggest the next steps, in this order:
+
+1. Optional: run `/capture-milestone-principle-updates` to distill reusable answering principles from this milestone's recorded decisions into the principle store. (Recommended now that the milestone has just closed and its row was appended to the `## Completed Milestones` table — but never auto-run.)
+2. `/define-milestone-goal` to start planning the next milestone.
 
 ## Rules
 
@@ -91,3 +96,4 @@ Report: the milestone name, the number of tasks completed, the bullet list writt
 - Keep the summary factual and grounded in the requirements and tasks — do not invent accomplishments.
 - Do not create or modify any files in `<MILESTONE_DIR>/`.
 - Clear the current-milestone pointer only in `milestones/README.md` — overwrite the `Current milestone:` line to `Current milestone: none`. Do not modify `CLAUDE.md`'s pointer section.
+- `/finish-current-milestone` only *suggests* `/capture-milestone-principle-updates` — it never invokes it and never commits. Step 8 adds the recommendation as suggestion text only.
