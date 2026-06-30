@@ -183,9 +183,8 @@ restatement of one past decision.>
 
 ## Rules
 
-- This skill is the **new sole writer** of `milestones/answer_decision_principles.md` (superseding the
-  retired `try-capture-answer-principle`). Never write it without explicit user confirmation of the
-  revise-or-add choice for each candidate (step 4.2).
+- This skill is the **sole writer** of `milestones/answer_decision_principles.md`. Never write it
+  without explicit user confirmation of the revise-or-add choice for each candidate (step 4.2).
 - **Resolve `<MILESTONE_DIR>` from the last row of the `## Completed Milestones` table in
   `milestones/README.md` — explicitly NOT via `shared/get-current-milestone.md`.** The current-milestone
   pointer is already `none` when this skill runs.

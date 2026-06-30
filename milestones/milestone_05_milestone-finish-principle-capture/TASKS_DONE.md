@@ -1,5 +1,28 @@
 # TASKS DONE
 
+## Retire Try-Capture-Answer-Principle Skill
+
+Delete the now-superseded `skills/try-capture-answer-principle/` directory and scrub its remaining live cross-references so nothing dangles a pointer at the deleted skill. Capture has moved to the finish-time `/capture-milestone-principle-updates` skill, so the on-demand capture skill and every live mention of it outside the doc-sync surface and the frozen records must go. Per the "Bad-principle correction path" decision, this reference cleanup is `/derive-tasks` work.
+
+**Notes:**
+- **Scope of edits — three live surfaces only:**
+  1. Delete the entire `skills/try-capture-answer-principle/` directory (its `SKILL.md` and the dir).
+  2. `milestones/answer_decision_principles.md` header: the sentence currently reading the file is "written **only** by `try-capture-answer-principle`" must name the new sole writer `capture-milestone-principle-updates` (exact name, authored by the "Author Capture-Milestone-Principle-Updates Skill" task) instead.
+  3. `skills/try-answer-all-questions-by-principle/SKILL.md` and `skills/modify-milestone-goal/SKILL.md`: scrub every live mention of `try-capture-answer-principle`. The `try-answer-all-questions-by-principle` file has **multiple** references (its `description` frontmatter, body prose, and the "Never chain to `/try-capture-answer-principle`" invariant) — all must go, not just the invariant line. Preserve each invariant's meaning without naming a deleted skill: the sweep still never feeds its auto-answers into principle capture (its answers were already derived from a confirmed principle); `modify-milestone-goal` still records no answering principle from a goal change.
+- **Do NOT touch these surfaces** (each owned elsewhere): `skills/answer-open-question/SKILL.md` (its capture-chain refs are removed by the earlier "Commit Manual Answers, Drop Capture Chain" task — leave whatever it did); `skills/reject-auto-answer/SKILL.md` (deleted wholesale by its own retirement task — its references go with it); `CLAUDE.md` and `README.md` (the single downstream doc-sync task owns all of those, including the coupled README Mermaid graph and the no-commit-invariant prose); this milestone's own `milestones/milestone_05_*/requirements.md`.
+- **Do NOT rewrite frozen historical records:** leave the `milestones/README.md` history untouched and the `milestone_02`/`03`/`04` `requirements.md` + `TASKS_DONE.md` files untouched — they record what happened.
+- When removing a token from a sentence the milestone has also invalidated, keep the *edited* sentence locally true — e.g. a clause listing `answer-open-question` as a skill that "leaves its edits staged" or a "taught via `answer-open-question` → `try-capture-answer-principle`" path is now stale; rephrase or pick a still-valid example for the sentence you are editing. Do **not** expand this into a staleness audit of the whole file or touch the global no-commit-invariant prose — that lives with the doc-sync task.
+- This skill does not commit; leave all changes staged.
+
+**Success:**
+- `skills/try-capture-answer-principle/` no longer exists (directory and `SKILL.md` gone).
+- `grep -rn "try-capture-answer-principle" skills/ milestones/answer_decision_principles.md` returns no hits **except** inside `skills/reject-auto-answer/` (handled by its own retirement task).
+- The header of `milestones/answer_decision_principles.md` names `capture-milestone-principle-updates` as the file's sole writer.
+- `skills/try-answer-all-questions-by-principle/SKILL.md` and `skills/modify-milestone-goal/SKILL.md` contain no occurrence of `try-capture-answer-principle`, and each still states its surviving invariant (sweep never captures its auto-answers / goal change yields no answering principle) without naming a deleted skill.
+- `git diff` shows `CLAUDE.md`, `README.md`, `milestones/README.md`, and every `milestone_02`/`03`/`04` `requirements.md` and `TASKS_DONE.md` unchanged by this task.
+
+---
+
 ## Commit Manual Answers, Drop Capture Chain
 
 Make the `/answer-open-question` skill wrapper (`skills/answer-open-question/SKILL.md`) commit its own manual-answer edit instead of leaving it staged, and sever its unconditional chain into `/try-capture-answer-principle`. After the shared answer-recording procedure folds the decision into `## Decisions`, the skill stages only its own `requirements.md` edit and commits it with a recognizable subject and the rationale in the body — establishing the `Manual-answer:` commit convention that the later finish-time capture skill walks. Only the skill wrapper changes; `shared/answer-procedure.md` is not touched.

@@ -3,7 +3,7 @@
 Project-wide, confirmed answering principles. Each is a reusable keep/eliminate
 directive that `try-answer-all-questions-by-principle` can apply to the candidate
 answers of a future open question. Presence here means the principle is
-user-confirmed. This file is written **only** by `try-capture-answer-principle`.
+user-confirmed. This file is written **only** by `capture-milestone-principle-updates`.
 
 ### Prefer domain-neutral terms
 

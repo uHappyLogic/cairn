@@ -1,13 +1,13 @@
 ---
 name: try-answer-all-questions-by-principle
-description: Autonomously sweep the current milestone's requirements for open and deferred questions and answer every one a confirmed answering principle already settles — by candidate elimination, committing one auto-answer per commit that names the applied principle in an Answer-Principle trailer. Use this once the project has taught some principles (via /answer-open-question → /try-capture-answer-principle) and you want the requirements re-swept to resolve everything those principles now cover without re-deciding by hand. Trigger it whenever the user says things like "sweep the open questions", "answer what the principles cover", "run the principle sweep", "auto-answer by principle", or "resolve the questions our principles already settle". Requires a clean working tree.
+description: Autonomously sweep the current milestone's requirements for open and deferred questions and answer every one a confirmed answering principle already settles — by candidate elimination, committing one auto-answer per commit that names the applied principle in an Answer-Principle trailer. Use this once the project has taught some principles (via the answer-principle-learning loop) and you want the requirements re-swept to resolve everything those principles now cover without re-deciding by hand. Trigger it whenever the user says things like "sweep the open questions", "answer what the principles cover", "run the principle sweep", "auto-answer by principle", or "resolve the questions our principles already settle". Requires a clean working tree.
 ---
 
 # try-answer-all-questions-by-principle
 
 This is the autonomous sweep at the end of the answer-principle-learning loop. The project
 accumulates user-confirmed answering principles in `milestones/answer_decision_principles.md`
-(taught via `/answer-open-question` → `/try-capture-answer-principle`); this skill re-reads
+(taught via `/answer-open-question`, distilled into the store at milestone finish); this skill re-reads
 every open and deferred question in the current milestone and **answers exactly those a
 confirmed principle already settles** — leaving everything else untouched.
 
@@ -56,11 +56,10 @@ tell the user explicitly:
 > re-run `/try-answer-all-questions-by-principle`. This sweep needs a clean tree so each
 > auto-answer lands in its own commit.
 
-Reaching a clean tree is a deliberate checkpoint, not a wart: the preceding loop skills
-(`answer-open-question`, `try-capture-answer-principle`) leave their edits staged per the
-no-commit invariant, so the user hand-commits their manual answers and freshly-taught
-principles before escalating to this autonomous sweep. That commit is what separates human
-decisions from auto-answers in git history.
+Reaching a clean tree is a deliberate checkpoint, not a wart: manual answers land already
+committed on their own `Manual-answer:` commits, and the user clears any other pending
+working-tree changes before escalating to this autonomous sweep. That clean boundary is
+what separates human decisions from auto-answers in git history.
 
 On a clean tree, capture the pre-sweep commit so the end-of-run report can scope to exactly
 the commits this invocation adds:
@@ -183,18 +182,18 @@ the live document.
 
 ## Rules
 
-- **Never chain to `/try-capture-answer-principle`.** This orchestrator replicates the
-  answer-recording mechanism (via the shared procedure) but must **never** chain into capture.
-  Every auto-answer was itself *derived from* an existing confirmed principle, so capturing a
-  principle from it would be circular. The capture chain lives **only** in
-  `answer-open-question`; this skill is the one recorder that deliberately omits it.
+- **Never feed an auto-answer into principle capture.** This orchestrator replicates the
+  answer-recording mechanism (via the shared procedure) but its auto-answers must **never**
+  become the basis for a captured principle. Every auto-answer was itself *derived from* an
+  existing confirmed principle, so capturing a principle from it would be circular.
 - A confirmed principle (via the subagent's verdict) is the **sole** basis for any auto-answer.
   The old strength-gate / informed-reader judgment logic is gone — do not reintroduce it.
 - On a **fresh project** where `milestones/answer_decision_principles.md` is absent or empty,
   the subagent finds no supporting principle for any candidate, so every question yields "no
   unique survivor", the sweep resolves nothing, commits nothing, and prints the no-op report.
   That is correct: principles must first be taught via the manual
-  `/discuss-open-question → /answer-open-question → /try-capture-answer-principle` flow.
+  `/discuss-open-question → /answer-open-question` flow, with principles distilled into the
+  store at milestone finish.
 - Walk the gathered order **once**, with a per-question live re-check + skip. There is **no**
   outer re-gather loop.
 - The orchestrator owns all document mutation and the commit; the `try-answer-question-by-principle`

@@ -66,6 +66,6 @@ Briefly state:
 
 - Edit **only** the `## Goal` section. This skill never records decisions, answers questions, edits Out-of-Scope, or touches the task lists.
 - **Surface, never cascade.** The downstream consequences of a goal change are for the user to resolve (via `/review-milestone-requirements` and the answer/task skills) — never auto-apply them. The blast radius of a goal change is too large to fold in silently.
-- Never chain into `/try-capture-answer-principle` — a goal change is not an answering decision and produces no reusable answering principle.
+- A goal change is not an answering decision and produces no reusable answering principle — this skill never feeds into principle capture.
 - Confirm the revised wording with the user when the intended change is ambiguous; the Goal is load-bearing.
 - Do not commit — leave the change staged for the user to review.
