@@ -101,7 +101,7 @@ flowchart TD
 
 ### Iterating milestone requirements
 
-Drive `requirements.md` to convergence. `/specify-milestone-starting-state` fills the starting state from the codebase, then `/review-milestone-requirements` runs each pass to reconcile, surface new gaps, and check convergence (repeat until satisfied). Questions are explored with `/discuss-open-question`, recorded with `/answer-open-question`, and generalized into a reusable principle by `/try-capture-answer-principle`. When a discussion concludes the milestone goal itself must shift, `/discuss-open-question` offers `/modify-milestone-goal` to revise the `## Goal` (then loop back through review to reconcile). The optional `/try-answer-all-questions-by-principle` sweep auto-answers what a confirmed principle settles, and `/reject-auto-answer` backs out a bad auto-answer — until every open question is resolved.
+Drive `requirements.md` to convergence. `/specify-milestone-starting-state` fills the starting state from the codebase, then `/review-milestone-requirements` runs each pass to reconcile, surface new gaps, and check convergence (repeat until satisfied). Questions are explored with `/discuss-open-question` and recorded with `/answer-open-question`, which commits each answer with its rationale in the commit body (the reusable principle behind it is distilled later, at milestone finish). When a discussion concludes the milestone goal itself must shift, `/discuss-open-question` offers `/modify-milestone-goal` to revise the `## Goal` (then loop back through review to reconcile). The optional `/try-answer-all-questions-by-principle` sweep auto-answers what a confirmed principle settles; a wrong auto-answer is corrected by reverting its commit and re-running `/answer-open-question` — until every open question is resolved.
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'fontFamily':'ui-sans-serif, system-ui','lineColor':'#94a3b8','primaryBorderColor':'#475569'},'flowchart':{'wrappingWidth':9999,'curve':'basis'}}}%%
@@ -111,9 +111,7 @@ flowchart TD
     ITM1["/review-milestone-requirements"]
     ITM3["/discuss-open-question"]
     ITM4["/answer-open-question"]
-    ITM5["/try-capture-answer-principle"]
     ITM2["/try-answer-all-questions-by-principle"]
-    ITM6["/reject-auto-answer"]
     ITM7["/modify-milestone-goal"]
     D2[/"Requirements finalized<br/>all open questions resolved"/]
 
@@ -121,19 +119,17 @@ flowchart TD
     ITM1 --> ITM3 --> ITM4
     ITM3 -.->|goal must shift| ITM7
     ITM7 -.->|reconcile against new goal| ITM1
-    ITM4 --> ITM5
     ITM4 -.->|repeat until satisfied| ITM1
     ITM4 --> D2
     ITM1 --> ITM2
-    ITM2 -.->|on a wrong auto-answer| ITM6
-    ITM6 -.->|re-capture the principle| ITM5
+    ITM2 -.->|wrong auto-answer: revert + re-answer| ITM4
     ITM2 --> D2
 
     classDef req fill:#faf5ff,stroke:#9333ea,color:#581c87;
     classDef optional stroke-dasharray:5 4;
     classDef state fill:#fffbeb,stroke:#d97706,color:#78350f,font-style:italic;
-    class ITM0,ITM1,ITM2,ITM3,ITM4,ITM5,ITM6,ITM7 req;
-    class ITM2,ITM3,ITM6,ITM7 optional;
+    class ITM0,ITM1,ITM2,ITM3,ITM4,ITM7 req;
+    class ITM2,ITM3,ITM7 optional;
     class D1,D2 state;
 ```
 
@@ -187,7 +183,7 @@ flowchart TD
 
 ### Ending a milestone
 
-Close out. `/finish-current-milestone` records accomplishments and clears the pointer, leaving the milestone closed. From `D5` the loop returns to **Initializing a milestone** for the next one.
+Close out. `/finish-current-milestone` records accomplishments and clears the pointer, leaving the milestone closed. It then recommends the optional `/capture-milestone-principle-updates`, which distills reusable answering principles from the just-finished milestone's recorded answers into the principle store. From `D5` the loop returns to **Initializing a milestone** for the next one.
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'fontFamily':'ui-sans-serif, system-ui','lineColor':'#94a3b8','primaryBorderColor':'#475569'},'flowchart':{'wrappingWidth':9999,'curve':'basis'}}}%%
@@ -195,12 +191,16 @@ flowchart TD
     D4[/"Follow-up adjustments completed"/]
     EM1["/finish-current-milestone"]
     D5[/"Milestone closed<br/>pointer cleared"/]
+    EM2["/capture-milestone-principle-updates"]
 
     D4 --> EM1 --> D5
+    D5 -.->|optional: distill principles| EM2
 
     classDef finish fill:#fef2f2,stroke:#e11d48,color:#881337;
+    classDef optional stroke-dasharray:5 4;
     classDef state fill:#fffbeb,stroke:#d97706,color:#78350f,font-style:italic;
-    class EM1 finish;
+    class EM1,EM2 finish;
+    class EM2 optional;
     class D4,D5 state;
 ```
 
@@ -230,9 +230,9 @@ The repeatable engine of the requirements-iteration loop. Each pass over the cur
 
 Open questions get resolved two ways, and the project *learns* from every manual answer. Confirmed answering principles accumulate in `milestones/answer_decision_principles.md` — a single project-wide store at the `milestones/` **root**, above any one milestone, so principles carry across milestones. Each principle is a reusable keep/eliminate directive that future autonomous answers can apply.
 
-- **Manual teaching flow** — `/discuss-open-question → /answer-open-question → (auto) /try-capture-answer-principle`. You deliberate a question, record the answer, and `answer-open-question` automatically offers to generalize the rule behind it into a confirmed principle.
+- **Manual teaching flow** — `/discuss-open-question → /answer-open-question`. You deliberate a question and record the answer; `answer-open-question` commits the decision with its rationale in the commit body. The reusable rule behind it isn't generalized on the spot — it is distilled later, at milestone finish, by `/capture-milestone-principle-updates`, which walks the milestone's `Manual-answer:` commits and confirms each principle with you before writing it to the store.
 - **Autonomous sweep** — `/try-answer-all-questions-by-principle` re-sweeps the requirements and auto-answers exactly the questions those confirmed principles already settle, one traceable commit per answer.
-- **Correction loop** — `/reject-auto-answer → re-capture`. If the sweep gets one wrong, reject reverts that commit (reopening the question) and points you back to `/try-capture-answer-principle` to revise the offending principle so the next sweep does better.
+- **Correction loop** — there is no dedicated correction skill. If the sweep gets one wrong, revert its commit (which reopens the question) and re-run `/answer-open-question`. The offending principle is reconciled at milestone finish, when `/capture-milestone-principle-updates` offers the re-answer's rationale as a revision of the bad principle.
 
 ### `discuss-open-question <question_name>`
 
@@ -240,15 +240,15 @@ Opens a structured conversation about a named open question in `requirements.md`
 
 ### `answer-open-question <question_name>`
 
-Records the resolution of a named open question in `requirements.md`, updating the document to reflect the decision and its downstream implications. After recording, it automatically chains into `/try-capture-answer-principle` to offer to generalize the decision into a reusable answering principle.
+Records the resolution of a named open question in `requirements.md`, updating the document to reflect the decision and its downstream implications, then **commits** that edit. The commit stages only its own `requirements.md` change (`git add <MILESTONE_DIR>/requirements.md`, never `git add -A`) under the subject `Manual-answer: <Short Title>`, with the decision's rationale in the commit body and no `Answer-Principle:` trailer. It no longer chains to any capture skill — the reusable principle behind the answer is distilled later by `/capture-milestone-principle-updates` at milestone finish. This is the one individual skill that deliberately commits.
 
 ### `modify-milestone-goal <new or revised goal text>`
 
 Revises the `## Goal` of the **already-defined** current milestone — the one skill that mutates the goal of a live milestone (`define-milestone-goal` only seeds it at creation). **Act-only**: it edits the Goal section and nothing else, then *surfaces* the downstream impact (which decisions, open questions, out-of-scope entries, and already-derived tasks the new goal may invalidate) and points you at `/review-milestone-requirements` to reconcile — it never cascades those changes itself. Offered by `/discuss-open-question` when a deliberation concludes the goal must shift, and directly invocable. Does not commit.
 
-### `try-capture-answer-principle [focus_hint]`
+### `capture-milestone-principle-updates`
 
-Extracts a reusable answering principle from a decision just made and records it in the project-wide principle store `milestones/answer_decision_principles.md`. Runs automatically after `/answer-open-question`, and is also directly invocable with an optional free-text focus hint. It analyzes the conversation's deliberation, exits quietly when nothing generalizes, and only ever proposes a revise-or-add for you to confirm — never editing the store silently. It is the **sole writer** of the principle store.
+The **finish-time** principle harvester — the **sole writer** of the project-wide principle store `milestones/answer_decision_principles.md`. Run it as the optional follow-up `/finish-current-milestone` recommends, *after* the milestone is closed and the pointer cleared. It resolves the just-finished milestone from the last row of the `## Completed Milestones` table (not the current-milestone pointer, which is already `none`), walks that milestone's `Manual-answer:` commits (`git log --grep='^Manual-answer: ' -- <MILESTONE_DIR>/requirements.md`, excluding any sweep auto-answer that carries an `Answer-Principle:` trailer), and distills the rationale in those commit bodies into reusable keep/eliminate directives. It dedups the candidates against each other, then walks them strongest-first, confirming each with you one at a time — revise an overlapping existing principle or add a new one against the live store — and re-scans the pool after every write. An empty range or a set that none generalize both yield the same single-line "nothing to distill" report. It leaves its edit **staged**, never commits.
 
 ### `try-answer-all-questions-by-principle`
 
@@ -257,10 +257,6 @@ The autonomous sweep. Re-reads every open and deferred question in the current m
 ### `try-answer-question-by-principle` (subagent)
 
 Read-only candidate-elimination subagent dispatched once per question by `/try-answer-all-questions-by-principle` — not user-invocable. Reads the principle store, enumerates the realistic candidate answers, keeps only those a confirmed principle supports, and returns a verdict naming the unique survivor (if any) and the load-bearing principles. It mutates nothing; the orchestrator owns all document edits and commits.
-
-### `reject-auto-answer [commit-id | text_fragment]`
-
-Reverts one bad auto-answer from the sweep. Takes an optional argument — a commit id from the sweep's report, a fragment of the wrong folded decision text in `requirements.md`, or nothing (defaults to `HEAD`). It validates the target is a genuine auto-answer commit (touches only `requirements.md`, carries an `Answer-Principle:` trailer), shows it for confirmation, then `git revert --no-commit`s it — which **reopens** the answered question — leaving the revert staged. It never edits the principle store; it points you to re-capture the principle behind the bad answer so the next sweep does not reproduce it.
 
 ### `derive-tasks`
 
