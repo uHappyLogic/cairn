@@ -1,11 +1,11 @@
 ---
 name: answer-open-question
-description: Answer a named open question in the current milestone requirements document, updating the document to reflect the decision and its downstream implications.
+description: Answer a named open question in the current milestone requirements document, recording the decision and its downstream implications and committing the manual-answer edit.
 ---
 
 # answer-open-question
 
-Resolves a named open question or deferred entry in the current milestone's `requirements.md` by recording the user's answer and propagating its implications through the document — then chains into `try-capture-answer-principle` so a reusable rule behind the call can be learned for future autonomous sweeps.
+Resolves a named open question or deferred entry in the current milestone's `requirements.md` by recording the user's answer, propagating its implications through the document, and committing that edit on its own with the decision's rationale in the commit body — establishing the `Manual-answer:` commit the finish-time `/capture-milestone-principle-updates` skill later distills into reusable principles.
 
 ## Usage
 
@@ -34,21 +34,35 @@ If no `.` is found, report a parse error and show the expected format.
 
 Read and follow the shared answer-recording procedure at `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out every step **yourself, in this conversation**. Pass it the **Short Title** and **answer text** parsed in step 1 as its `SHORT TITLE` and `ANSWER` inputs.
 
-That procedure owns resolving the current milestone, locating the matching block, analysing the answer's implications, removing the block, folding the decision into `## Decisions`, and cascading to any entries the answer moots. Do not restate those steps here. If the Short Title matches no entry, the procedure stops without changes and reports the mismatch — relay that to the user so they can retry.
+That procedure owns resolving the current milestone (the `<MILESTONE_DIR>` referenced below), locating the matching block, analysing the answer's implications, removing the block, folding the decision into `## Decisions`, and cascading to any entries the answer moots. Do not restate those steps here. If the Short Title matches no entry, the procedure stops without changes and reports the mismatch — relay that to the user so they can retry.
 
-### 3. Report findings
+### 3. Commit the manual answer
 
-After the procedure finishes, briefly state:
+**Only if step 2 actually recorded the answer** — i.e. the shared procedure folded a decision into `## Decisions` rather than stopping on a Short-Title mismatch — commit the edit. If the procedure stopped without changes (or step 1 hit a parse error), there is nothing to commit; do not run these commands.
+
+Stage **only** this skill's own `requirements.md` edit — path-scoped, never `git add -A` — and commit it on its own, using the same `<MILESTONE_DIR>` step 2 resolved:
+
+```
+git add <MILESTONE_DIR>/requirements.md
+git commit -m "Manual-answer: <Short Title>" -m "<rationale / decision body>"
+```
+
+- **Subject:** exactly `Manual-answer: <Short Title>` (the answered question's handle), mirroring the sweep's `Principle-based-answer: <Short Title>` so `/capture-milestone-principle-updates` can collect these with `git log --grep='^Manual-answer: '`.
+- **Body:** the decision's rationale — but record only rationale that genuinely exists in this conversation. Never prompt the user for a rationale and never fabricate one. When `/discuss-open-question` deliberation is in context, the body captures that reasoning. On a cold answer (no deliberation), the body is the answer text recorded verbatim, including any inline "because" clause the user typed; when the answer states no reasoning, the body holds the bare decision. The answer string is itself the cold path's rationale affordance — add no separate rationale prompt.
+- **No `Answer-Principle:` trailer.** That trailer is the sweep's signature; its absence is what marks this commit as a manual answer rather than an auto-answer.
+
+This is a deliberate, documented exception to the project's "individual skills never commit" rule: `answer-open-question` commits exactly its own path-scoped manual-answer edit so that finish-time principle capture has a clean, greppable commit to walk. Staging path-scoped keeps the commit touching only `requirements.md` and never sweeps in unrelated working-tree changes, which also preserves the sweep's clean-tree precondition.
+
+### 4. Report findings
+
+After committing, briefly state:
 - Which question was resolved and how the document changed (resolved block, decision folded into `## Decisions`, cascading resolutions).
 - Any new open questions the answer may have introduced — surface these but do **not** add them to the document without user confirmation.
-
-### 4. Capture any reusable principle
-
-After recording, **always** invoke `/try-capture-answer-principle` with no argument. This chain-off is **unconditional** — `answer-open-question` does not judge whether the decision generalizes. Capture runs inline in this same conversation, where the full deliberation is in context; it anchors on the answer just recorded, analyses whether a reusable answering principle lies behind it, and exits quietly on its own when nothing generalizes. So the chain is always taken; the decision about whether a principle is worth recording belongs entirely to capture.
 
 ## Rules
 
 - Parse on the **first** `.` only — Short Title before, answer text after.
 - The recording mechanism lives **only** in `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md`; never duplicate or restate its locate / analyse / remove / fold / cascade steps here.
-- Always chain into `/try-capture-answer-principle` after recording — unconditionally, never gated on your own judgment of whether the decision is reusable.
-- Do not commit. Leave the document (and any principle-store) changes staged for the user to review.
+- Commit **only** when step 2 actually recorded the answer; a parse error or a Short-Title mismatch produces no commit.
+- Stage path-scoped — `git add <MILESTONE_DIR>/requirements.md`, never `git add -A` — so the commit touches only `requirements.md`.
+- The manual-answer commit carries the rationale in its **body** and **no** `Answer-Principle:` trailer. Committing here is a deliberate, documented exception to the "individual skills never commit" rule.
