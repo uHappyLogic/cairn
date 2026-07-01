@@ -10,9 +10,18 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_05_milestone-finish-principle-capture/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 5 — Milestone-finish Principle Capture
+
+- Moved answering-principle capture off the per-answer path to an optional, recommended end-of-milestone step.
+- `/answer-open-question` now commits its own `requirements.md` edit (path-scoped `git add`, subject `Manual-answer: <Short Title>`, rationale in the body, no `Answer-Principle:` trailer) instead of leaving it staged and chaining to capture — a deliberate, documented exception to the "individual skills never commit" invariant.
+- Added the new finish-time skill `capture-milestone-principle-updates` (authored via `/skill-creator:skill-creator`) that distills principles from a milestone's `Manual-answer:` commits into the principle store via a two-phase flow (internal cross-candidate dedup, then strongest-first per-candidate revise-vs-add against the live store); it is now the sole writer of `milestones/answer_decision_principles.md`.
+- Made `/finish-current-milestone` recommend (never auto-run) `/capture-milestone-principle-updates` in its step 8, ordered before `/define-milestone-goal`.
+- Retired the `try-capture-answer-principle` skill (on-demand per-answer capture) and the `reject-auto-answer` skill (its correction role replaced by the uniform "revert the auto-answer commit, then `/answer-open-question` to re-answer, principle reconciled at finish" flow), scrubbing every live cross-reference.
+- Synced `CLAUDE.md` and `README.md` (including the per-phase Mermaid diagrams and the answer-principle-learning-loop prose) to the new capture model.
 
 ### Milestone 4 — README Pipeline Diagrams
 
@@ -59,3 +68,4 @@ Current milestone: `milestones/milestone_05_milestone-finish-principle-capture/`
 | 2 | Answer Principle Learning Loop | `milestones/milestone_02_answer-principle-learning/` |
 | 3 | Generic Naming Refactor | `milestones/milestone_03_generic-naming-refactor/` |
 | 4 | README Pipeline Diagrams | `milestones/milestone_04_readme-pipeline-diagrams/` |
+| 5 | Milestone-finish Principle Capture | `milestones/milestone_05_milestone-finish-principle-capture/` |
