@@ -47,6 +47,14 @@ The embedded recommendation lives inside the **same blockquote** as the one-line
 
 This keeps the header a one-line greppable blockquote (grep for `> **Open question` still hits line 1), makes `shared/answer-procedure.md` step 4 a natural generalization of today's single-line removal ("remove the contiguous blockquote run containing this header"), and gives `answer-open-question`'s record-recommendation mode an unambiguous anchor (the `> **Recommendation:** …` line) to lift as the answer text. The internal-separation discipline — empty `>` lines, never bare blank lines — must be stated in the shared extraction file and the subagent's return protocol so the contiguous-run boundary stays intact. This is also the exact shape the read-only subagent returns for the orchestrator to embed.
 
+### Sweep write model
+
+The recommend-sweep orchestrator is a **mutate-but-do-not-commit** skill, not a committing one. It writes every recommendation sub-block, stages only its own edit (`git add <MILESTONE_DIR>/requirements.md`, path-scoped, never `git add -A`, mirroring the `complete-task` skill and `capture-milestone-principle-updates`), and stops — leaving the staged edits for the user to review and commit or discard. It requires **no** clean working tree.
+
+This follows from the sweep recording **no decisions** and triggering **no cascades** — it only annotates. The `try-answer-all-questions-by-principle` twin commits one auto-answer per commit, and enforces a clean-tree precondition, precisely because each auto-answer is an autonomous *decision* that must be individually reversible and distinguishable from human decisions in git history; a recommendation is transient scaffolding that decides nothing and is consumed (lifted and removed) by `answer-open-question`'s record-recommendation mode. The durable git record is therefore the eventual `Manual-answer:` commit, not the recommendation.
+
+The corollary follows directly: because the document never shrinks under this sweep, it does **not** adopt the twin's one-commit-per-question model, gather-order (cascade-parent-first proxy), or per-question live-re-check/skip machinery. It gathers the open/deferred questions once and walks straight through.
+
 ### Record-recommendation trigger
 
 `answer-open-question`'s recommendation-lifting mode is selected by a reserved sentinel **answer text**: `record the recommendation`. The existing `<Short Title>. <answer>` grammar and first-`.` split stay unchanged; the mode fires when the parsed answer text, trimmed and lowercased, matches this phrase as an **exact whole-string match** (not a substring), so a genuine literal answer that merely contains the words is never hijacked. In that mode the skill lifts the embedded `> **Recommendation:** …` anchor line out of the targeted block and uses it as the answer text, rather than taking the arg's literal answer.
@@ -56,8 +64,6 @@ When the targeted block carries **no** embedded recommendation (the recommend sw
 ## Out of Scope
 
 ## Open questions
-
-> **Open question — Sweep write model:** Does the orchestrator **commit** its edits (one per question, like `try-answer-all-questions-by-principle`) or leave them staged/uncommitted — and does it therefore need that twin's clean-working-tree precondition? Note the recommend-sweep records **no decisions** and triggers **no cascades** (it only annotates), so the twin's gather-order + per-question live-re-check machinery may be unnecessary here.
 
 > **Open question — Shared extraction boundary:** What exactly moves into the new `shared/` file? Presumably the execution-neutral "alternatives + recommendation for one question" core, leaving each wrapper its own layer — `discuss-open-question` keeps the conversation, "what would change your mind", and follow-up offers; the new subagent keeps its read-only one-shot framing and structured return protocol. Where is the line drawn (mirroring how `answer-procedure.md` is execution-neutral)?
 
