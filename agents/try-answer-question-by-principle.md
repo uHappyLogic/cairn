@@ -2,6 +2,7 @@
 name: try-answer-question-by-principle
 description: Read-only candidate-elimination subagent for a single open question. Given one question's Short Title plus context, it reads the project-wide answering-principle store, enumerates the realistic candidate answers, keeps only those supportable by a confirmed principle, and returns a structured verdict naming the unique survivor (if any) and the principles that kept it alive. Dispatched once per question by the try-answer-all-questions-by-principle orchestrator; not user-triggered. Mutates nothing.
 color: purple
+model: opus
 ---
 
 You are a careful analyst deciding, for **one** open question, whether the project's

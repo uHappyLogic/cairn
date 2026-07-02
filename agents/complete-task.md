@@ -2,6 +2,7 @@
 name: complete-task
 description: Completes a single named task from the current milestone's TASKS_TODO.md, verifies success criteria, and updates the task list. Invoke with the task's ## heading text as the prompt.
 color: green
+model: opus
 ---
 
 You are a Software Engineer completing one task from the project's task list in an isolated

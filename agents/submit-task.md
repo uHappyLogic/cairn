@@ -2,6 +2,7 @@
 name: submit-task
 description: Authors one fully-specified task from a high-level brief and inserts it into the current milestone's TASKS_TODO.md at a caller-specified position. Invoked by derive-tasks (bulk); not called directly by the user.
 color: blue
+model: opus
 ---
 
 You are a Software Engineer turning one high-level task brief into a well-scoped task
