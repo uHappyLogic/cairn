@@ -1,22 +1,5 @@
 # TASKS TODO
 
-## Rewire Discuss-Open-Question To Shared Core
-
-Refactor the existing interactive skill `skills/discuss-open-question/SKILL.md` so its restated "alternatives + recommendation" analytical core (current step 3) becomes a **reference** to `${CLAUDE_PLUGIN_ROOT}/shared/recommend-procedure.md` instead of inline duplication, completing the single-source-of-truth extraction. Net user behavior is unchanged; the only change is that the alternatives+recommendation substance is now sourced from the shared file rather than restated inline. Mirror the reference-a-shared-procedure pattern used by the `complete-task` / `submit-task` skills.
-
-**Notes:**
-- Per the *Shared extraction boundary* decision, only the shared analytical core moves out. The skill **keeps** everything that is its own layer and is not in the shared core: the conversational opening/framing (open directly with the substance, no preamble), the **"What would change your mind"** section (explicitly a `discuss-open-question`-only layer, not part of the shared core — do not delete it), the invite-pushback / continue-the-conversation loop, and the on-decision follow-up offers (offer `/answer-open-question`, and `/modify-milestone-goal` when the goal itself must shift, running `/modify-milestone-goal` first when both apply).
-- Do **not** duplicate the alternatives/recommendation substance (the 2–4-options-with-what-it-is/advantage/drawback and the single recommendation-with-tie-break) that now lives in the shared file — reference it, do not restate it. `shared/recommend-procedure.md` is created by the "Extract Shared Recommend Procedure File" task, which this task depends on.
-- Preserve the existing frontmatter, Usage, and the "find the current milestone" / "locate the question" / "gather context" steps and the Rules section unchanged — only the restated analytical core in step 3 changes to a reference. The skill still edits nothing (purely conversational).
-
-**Success:**
-- `skills/discuss-open-question/SKILL.md` no longer restates inline the 2–4-alternatives-with-three-fields (what-it-is / advantage / drawback) and the single-recommendation-with-tie-break substance; instead it references `${CLAUDE_PLUGIN_ROOT}/shared/recommend-procedure.md` for that core.
-- The **"What would change your mind"** section, the conversational opening/framing, the continue-the-conversation loop, and the on-decision offers (`/answer-open-question` and `/modify-milestone-goal`, with `/modify-milestone-goal` run first when both apply) all remain present.
-- The skill's frontmatter, Usage, and the find-milestone / locate-question / gather-context steps and Rules are preserved.
-- The skill still edits no files — it remains purely conversational.
-
----
-
 ## Generalize Answer-Procedure Block Removal
 
 Generalize step 4 ("Remove the matched block") of `shared/answer-procedure.md` so it removes the **entire contiguous blockquote run** containing the located question header — the unchanged one-line header plus any recommendation sub-block the recommend-sweep has embedded beneath it — instead of assuming the block is a single line. Once questions can carry an embedded recommendation, a question block is a contiguous run of `>`-prefixed lines, and answering it must clear the whole run, not just line 1.

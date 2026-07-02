@@ -36,14 +36,11 @@ Before forming a view, read any source files, scripts, or design documents that 
 
 ### 3. Present the discussion
 
-Open with a concise framing of what is actually at stake — one or two sentences, no preamble. Then structure the response as:
+Open with a concise framing of what is actually at stake — one or two sentences, no preamble.
 
-**Alternatives** — enumerate the realistic options (typically two to four). For each:
-- What it is (one sentence)
-- Key advantage
-- Key drawback or risk
+For the analytical core — the realistic alternatives and the single recommendation — read and follow the shared procedure at `${CLAUDE_PLUGIN_ROOT}/shared/recommend-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), producing its output **inline in this conversation** as the spine of the deliberation. It is the single source of truth for enumerating the alternatives (each with what-it-is / key advantage / key drawback) and stating one direct recommendation with a tie-break; do not restate those specifics here. Its grounding step overlaps the context you already gathered in step 2 — reuse that reading rather than repeating it. Pass the located question as its **QUESTION** input.
 
-**Recommendation** — state a single preferred option with a brief rationale. Be direct; avoid hedging. If two options are genuinely equivalent, say so and explain what should break the tie.
+Then add the layer that is this skill's own — not part of the shared core:
 
 **What would change your mind** — name one or two conditions under which a different option would be the right call. This helps the user push back productively.
 
