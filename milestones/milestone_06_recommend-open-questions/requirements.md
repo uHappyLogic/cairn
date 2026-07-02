@@ -55,6 +55,12 @@ This follows from the sweep recording **no decisions** and triggering **no casca
 
 The corollary follows directly: because the document never shrinks under this sweep, it does **not** adopt the twin's one-commit-per-question model, gather-order (cascade-parent-first proxy), or per-question live-re-check/skip machinery. It gathers the open/deferred questions once and walks straight through.
 
+### Re-run idempotency
+
+On re-running the recommend-sweep, the orchestrator **skips** any block that already carries a recommendation sub-block and annotates only blocks that lack one. This makes the sweep idempotent and cheap — no wasted subagent dispatches on already-annotated questions — and preserves any hand-edits to an existing recommendation. It follows directly from the *Sweep write model*: a recommendation is transient scaffolding placed once and later consumed (lifted and removed) by `answer-open-question`'s record-recommendation mode, so a second pass has nothing to add to a block that already has one. The primary re-run motive — picking up questions newly surfaced by a later `/review-milestone-requirements` pass — is exactly the set skip targets.
+
+To force a fresh recommendation on a stale block, the user deletes that block's recommendation sub-block (leaving the one-line question header intact) and re-runs; skip then regenerates it because the block now lacks one. No `refresh`/selectable mode is added — this delete-and-re-run escape hatch covers staleness without a mode knob, keeping the orchestrator argument-free like its `try-answer-all-questions-by-principle` twin.
+
 ### Record-recommendation trigger
 
 `answer-open-question`'s recommendation-lifting mode is selected by a reserved sentinel **answer text**: `record the recommendation`. The existing `<Short Title>. <answer>` grammar and first-`.` split stay unchanged; the mode fires when the parsed answer text, trimmed and lowercased, matches this phrase as an **exact whole-string match** (not a substring), so a genuine literal answer that merely contains the words is never hijacked. In that mode the skill lifts the embedded `> **Recommendation:** …` anchor line out of the targeted block and uses it as the answer text, rather than taking the arg's literal answer.
@@ -76,8 +82,6 @@ Two boundary calls are explicit. First, **"what would change your mind" is a `di
 ## Out of Scope
 
 ## Open questions
-
-> **Deferred — Re-run idempotency:** On re-running the sweep, does it skip blocks that already carry a recommendation, overwrite/refresh them, or make that selectable? A reasonable default (skip already-recommended) exists, so settle this while building.
 
 > **Deferred — Recommendation independence:** Is each per-question recommendation formed in isolation, or may the subagent reference sibling questions/recommendations? The principle-sweep twin sees a shrinking set via cascade; this sweep doesn't cascade, so per-question isolation is the low-risk default — confirm during the work.
 
