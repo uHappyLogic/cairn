@@ -86,3 +86,19 @@ Refactor the existing interactive skill `skills/discuss-open-question/SKILL.md` 
 
 ---
 
+## Generalize Answer-Procedure Block Removal
+
+Generalize step 4 ("Remove the matched block") of `shared/answer-procedure.md` so it removes the **entire contiguous blockquote run** containing the located question header — the unchanged one-line header plus any recommendation sub-block the recommend-sweep has embedded beneath it — instead of assuming the block is a single line. Once questions can carry an embedded recommendation, a question block is a contiguous run of `>`-prefixed lines, and answering it must clear the whole run, not just line 1.
+
+**Notes:**
+- Per the *Recommendation sub-block format* decision in `requirements.md`, a question block is one contiguous `>`-prefixed run: the one-line header on line 1, then optionally an embedded recommendation sub-block, with internal gaps rendered as empty `>` lines (never bare blank lines). The run is therefore bounded by the blank lines that already separate entries — that boundary is how "the contiguous run containing this header" is delimited.
+- This is a targeted edit to step 4's removal semantics only. Do **not** touch step 2 (locating still keys off the unchanged one-line header), steps 3/5/6 (analyse / fold into `## Decisions` / cascade), or the file's execution-neutrality (no arg-parsing, committing, or return protocol).
+- The bare one-line header with no sub-block is the degenerate single-line case and must still be removed exactly as today — the new wording is a strict generalization, not a behavior change for that case.
+
+**Success:**
+- `shared/answer-procedure.md` step 4 removes the entire contiguous `>`-prefixed run containing the located header (header plus any embedded recommendation sub-block), explicitly covering both the annotated case and the bare single-line header case.
+- Step 2's locating still keys off the one-line header, and steps 3, 5, and 6 are unchanged.
+- The file stays execution-neutral — no arg-parsing, committing, return protocol, or milestone-resolution added.
+
+---
+

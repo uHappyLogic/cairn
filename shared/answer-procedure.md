@@ -52,7 +52,16 @@ the document.
 
 ### 4. Remove the matched block
 
-Remove the located `Open question` / `Deferred` block from the document entirely.
+Remove the located block from the document entirely. A question block is the **entire
+contiguous run of `>`-prefixed lines** containing the located header — the unchanged
+one-line header on line 1 plus any recommendation sub-block embedded beneath it (its
+internal gaps rendered as empty `>` lines, never bare blank lines). The run is bounded by
+the blank lines that already separate entries, so removing it clears from the header down
+to the last consecutive `>` line before the next blank line.
+
+This covers both cases uniformly: a bare one-line header with no sub-block is the
+degenerate single-line run and is removed exactly as before, while an annotated header
+plus its recommendation sub-block is removed as the whole multi-line run.
 
 ### 5. Fold the decision into `## Decisions`
 
