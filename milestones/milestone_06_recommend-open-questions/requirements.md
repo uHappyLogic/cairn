@@ -61,11 +61,17 @@ The corollary follows directly: because the document never shrinks under this sw
 
 When the targeted block carries **no** embedded recommendation (the recommend sweep never ran, or the question was added afterward), lift-mode **stops without changing anything** and reports — directing the user to run the recommend sweep first, or to answer with literal text via `<Title>. <answer>` — and commits nothing, mirroring how `shared/answer-procedure.md` already stops cleanly on a Short-Title mismatch.
 
+### Shared extraction boundary
+
+The new `shared/` file is **execution-neutral** and holds only the analytical core — the substance plus the logical output shape, never its rendering. It owns: the grounding discipline (read real context/code over memory before forming a view); the **Alternatives** requirement (2–4 genuinely realistic options, no strawmen, no padding), where each option carries three logical fields — *what-it-is / key advantage / key drawback*; and the single **Recommendation** (one preferred option with a brief, direct rationale, no hedging, plus the tie-break rule — if two options are equivalent, say so and name what breaks the tie). These are defined as logical content only; the file never spells out concrete rendering.
+
+Each wrapper owns its own rendering, interaction, and side-effects. `discuss-open-question` keeps the conversational opening/framing, the **"what would change your mind"** section, the invite-pushback / continue-the-conversation loop, and the on-decision follow-up offers (`answer-open-question`, and `modify-milestone-goal` when the goal must shift); it edits nothing. The new read-only subagent keeps its one-shot read-only framing, resolving the target question from its prompt, the literal recommendation sub-block markup (the `>`-prefixed contiguous run, the empty-`>` separation discipline, and the `> **Recommendation:**` anchor line — i.e. how the three shared fields render as a blockquote bullet), and its return protocol (emit the block as its final message for the orchestrator to embed).
+
+Two boundary calls are explicit. First, **"what would change your mind" is a `discuss-open-question`-only layer**, not part of the shared core: the goal names the extract as the "alternatives + recommendation" logic, and the recorded *Recommendation sub-block format* decision already fixes the sub-block as Alternatives + a `> **Recommendation:**` anchor with no WWCYM. Second, **the shared file owns the three option fields as logical content while the subagent's return protocol owns their blockquote rendering** — the `>`-markup stays out of the shared file so the extraction does not re-create the duplication it removes. This mirrors how `shared/answer-procedure.md` is execution-neutral (locate/fold/cascade) while its wrappers own arg-parsing and committing.
+
 ## Out of Scope
 
 ## Open questions
-
-> **Open question — Shared extraction boundary:** What exactly moves into the new `shared/` file? Presumably the execution-neutral "alternatives + recommendation for one question" core, leaving each wrapper its own layer — `discuss-open-question` keeps the conversation, "what would change your mind", and follow-up offers; the new subagent keeps its read-only one-shot framing and structured return protocol. Where is the line drawn (mirroring how `answer-procedure.md` is execution-neutral)?
 
 > **Open question — New artifact names:** What are the names of the new orchestrator skill (fan-out `<verb>-all-<plural>` grammar, e.g. `recommend-all-open-questions`) and the singular read-only subagent (e.g. `recommend-open-question`), given `discuss-open-question` is already taken?
 
