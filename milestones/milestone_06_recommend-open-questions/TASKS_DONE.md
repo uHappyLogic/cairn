@@ -123,3 +123,22 @@ Extend `skills/answer-open-question/SKILL.md` with a record-recommendation mode:
 
 ---
 
+## Sync README And CLAUDE To Milestone 6
+
+Update the project's descriptive documentation — `README.md` and `CLAUDE.md` — to reflect everything milestone 6 shipped, so a reader of the docs sees the recommend-sweep path as a first-class part of the workflow. The milestone added the `recommend-all-open-questions` orchestrator skill, its read-only `recommend-open-question` subagent, and the new `shared/recommend-procedure.md`, and it edited three existing pieces: `discuss-open-question` now references the shared recommend core instead of restating it, `answer-open-question` gained a record-recommendation mode (sentinel answer text `record the recommendation`), and `shared/answer-procedure.md`'s block-removal step was generalized to clear the whole contiguous blockquote run. Both docs must describe the two new artifacts and the three edits; nothing in the docs currently mentions any of them.
+
+**Notes:**
+- Scope is exactly `README.md` and `CLAUDE.md`. Do **not** touch `milestones/README.md` — its Milestone History entry and completion summary are `/finish-current-milestone`'s job (not yet run for this milestone).
+- `README.md` needs: new `## Skill reference` entries for `recommend-all-open-questions` and the `recommend-open-question` subagent (mirror the existing `try-answer-all-questions-by-principle` / `try-answer-question-by-principle` pair's style), an updated `discuss-open-question` / `answer-open-question` entry where their behavior changed, and the recommend sweep added to the **"Iterating milestone requirements"** Mermaid diagram (the `flowchart TD` with the purple `req` nodes) — that is the phase diagram it belongs in. Also fix the stale `## Self-dogfooding` reference, which still names `milestone_04_readme-pipeline-diagrams` and should name the current milestone.
+- `CLAUDE.md` needs the same coverage in its idiom: add the new skill/agent/shared file to the **Repository layout** tree, add their lines to the **Skills and the workflow they encode** pipeline block, and add the load-bearing **invariants** these changes establish (the recommend sweep's mutate-but-don't-commit / no-clean-tree / idempotent-skip model and its read-only subagent split; `answer-open-question`'s record-recommendation sentinel and no-recommendation guard; the generalized whole-run removal in `answer-procedure.md`; the shared-extraction boundary between `shared/recommend-procedure.md` and its wrappers). The requirements doc's `## Decisions` section is the authoritative source for the exact wording of these invariants.
+- Sequencing (no conflict, just so it isn't a surprise): `/finish-current-milestone` also updates `CLAUDE.md` for lasting structural changes — after this task it will simply find those updates already present.
+
+**Success:**
+- `README.md` has `## Skill reference` entries for `recommend-all-open-questions` and `recommend-open-question`, and its "Iterating milestone requirements" Mermaid diagram includes a node for the recommend sweep.
+- `README.md`'s `## Self-dogfooding` section no longer references `milestone_04_readme-pipeline-diagrams`.
+- `CLAUDE.md`'s Repository layout tree and skills/workflow pipeline block both list `skills/recommend-all-open-questions`, `agents/recommend-open-question.md`, and `shared/recommend-procedure.md`; its invariants cover the recommend sweep's write model, `answer-open-question`'s record-recommendation mode, and the generalized `answer-procedure.md` removal.
+- Neither `README.md` nor `CLAUDE.md` still describes `discuss-open-question` as restating the alternatives+recommendation core inline, and both name the new `shared/recommend-procedure.md` as its source.
+- `milestones/README.md` is unchanged.
+
+---
+

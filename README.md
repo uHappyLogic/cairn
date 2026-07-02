@@ -101,7 +101,7 @@ flowchart TD
 
 ### Iterating milestone requirements
 
-Drive `requirements.md` to convergence. `/specify-milestone-starting-state` fills the starting state from the codebase, then `/review-milestone-requirements` runs each pass to reconcile, surface new gaps, and check convergence (repeat until satisfied). Questions are explored with `/discuss-open-question` and recorded with `/answer-open-question`, which commits each answer with its rationale in the commit body (the reusable principle behind it is distilled later, at milestone finish). When a discussion concludes the milestone goal itself must shift, `/discuss-open-question` offers `/modify-milestone-goal` to revise the `## Goal` (then loop back through review to reconcile). The optional `/try-answer-all-questions-by-principle` sweep auto-answers what a confirmed principle settles; a wrong auto-answer is corrected by reverting its commit and re-running `/answer-open-question` — until every open question is resolved.
+Drive `requirements.md` to convergence. `/specify-milestone-starting-state` fills the starting state from the codebase, then `/review-milestone-requirements` runs each pass to reconcile, surface new gaps, and check convergence (repeat until satisfied). Questions are explored with `/discuss-open-question` and recorded with `/answer-open-question`, which commits each answer with its rationale in the commit body (the reusable principle behind it is distilled later, at milestone finish). When a discussion concludes the milestone goal itself must shift, `/discuss-open-question` offers `/modify-milestone-goal` to revise the `## Goal` (then loop back through review to reconcile). The optional `/recommend-all-open-questions` sweep is the batch form of `/discuss-open-question`: it annotates every open/deferred question with an embedded Alternatives + Recommendation block, which `/answer-open-question` can then record directly via its `record the recommendation` mode. The optional `/try-answer-all-questions-by-principle` sweep auto-answers what a confirmed principle settles; a wrong auto-answer is corrected by reverting its commit and re-running `/answer-open-question` — until every open question is resolved.
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'fontFamily':'ui-sans-serif, system-ui','lineColor':'#94a3b8','primaryBorderColor':'#475569'},'flowchart':{'wrappingWidth':9999,'curve':'basis'}}}%%
@@ -112,6 +112,7 @@ flowchart TD
     ITM3["/discuss-open-question"]
     ITM4["/answer-open-question"]
     ITM2["/try-answer-all-questions-by-principle"]
+    ITM5["/recommend-all-open-questions"]
     ITM7["/modify-milestone-goal"]
     D2[/"Requirements finalized<br/>all open questions resolved"/]
 
@@ -124,12 +125,14 @@ flowchart TD
     ITM1 --> ITM2
     ITM2 -.->|wrong auto-answer: revert + re-answer| ITM4
     ITM2 --> D2
+    ITM1 -.->|annotate recommendations| ITM5
+    ITM5 -.->|record the recommendation| ITM4
 
     classDef req fill:#faf5ff,stroke:#9333ea,color:#581c87;
     classDef optional stroke-dasharray:5 4;
     classDef state fill:#fffbeb,stroke:#d97706,color:#78350f,font-style:italic;
-    class ITM0,ITM1,ITM2,ITM3,ITM4,ITM7 req;
-    class ITM2,ITM3,ITM7 optional;
+    class ITM0,ITM1,ITM2,ITM3,ITM4,ITM5,ITM7 req;
+    class ITM2,ITM3,ITM5,ITM7 optional;
     class D1,D2 state;
 ```
 
@@ -236,11 +239,13 @@ Open questions get resolved two ways, and the project *learns* from every manual
 
 ### `discuss-open-question <question_name>`
 
-Opens a structured conversation about a named open question in `requirements.md`. Surfaces alternatives, trade-offs, and a recommendation to help reach a decision.
+Opens a structured conversation about a named open question in `requirements.md`. Surfaces alternatives, trade-offs, and a recommendation to help reach a decision. The analytical core — the realistic alternatives and the single recommendation — is sourced from the shared `shared/recommend-procedure.md` (the same core the `/recommend-all-open-questions` sweep uses), and the skill adds its own conversational layer on top: a "what would change your mind" section and the continue-the-conversation loop. Purely conversational — it edits nothing.
 
 ### `answer-open-question <question_name>`
 
 Records the resolution of a named open question in `requirements.md`, updating the document to reflect the decision and its downstream implications, then **commits** that edit. The commit stages only its own `requirements.md` change (`git add <MILESTONE_DIR>/requirements.md`, never `git add -A`) under the subject `Manual-answer: <Short Title>`, with the decision's rationale in the commit body and no `Answer-Principle:` trailer. It no longer chains to any capture skill — the reusable principle behind the answer is distilled later by `/capture-milestone-principle-updates` at milestone finish. This is the one individual skill that deliberately commits.
+
+The answer text is recorded literally, with one reserved exception — the sentinel `record the recommendation` (**record-recommendation mode**). Given `/answer-open-question <Short Title>. record the recommendation`, the skill lifts the `> **Recommendation:** …` line that `/recommend-all-open-questions` embedded beneath that question's header and records *that* as the answer, instead of the literal phrase. The sentinel matches only as an exact whole-string comparison (after trim + lowercase), never a substring, so a genuine literal answer that merely contains those words is never hijacked. If the targeted block carries no embedded recommendation (the sweep never ran, or the question was added afterward), the mode stops without changing anything and commits nothing, pointing you at `/recommend-all-open-questions` or the literal `<Title>. <answer>` form.
 
 ### `modify-milestone-goal <new or revised goal text>`
 
@@ -257,6 +262,14 @@ The autonomous sweep. Re-reads every open and deferred question in the current m
 ### `try-answer-question-by-principle` (subagent)
 
 Read-only candidate-elimination subagent dispatched once per question by `/try-answer-all-questions-by-principle` — not user-invocable. Reads the principle store, enumerates the realistic candidate answers, keeps only those a confirmed principle supports, and returns a verdict naming the unique survivor (if any) and the load-bearing principles. It mutates nothing; the orchestrator owns all document edits and commits.
+
+### `recommend-all-open-questions`
+
+The non-interactive **recommendation sweep** — the batch form of `/discuss-open-question`, and the argument-free twin of `/try-answer-all-questions-by-principle`. It gathers every open and deferred question in the current milestone's `requirements.md` **once**, dispatches one read-only `recommend-open-question` subagent per question, and is the **sole document mutator**: it embeds each returned Alternatives + Recommendation sub-block directly beneath the **unchanged one-line question header** (which stays greppable on line 1). Because it records no decisions and triggers no cascades, it deliberately drops the twin's machinery — no gather-order, no per-question live-re-check, no re-gather loop, and no clean-working-tree precondition. It is **idempotent**: it skips any block that already carries a `> **Recommendation:**` anchor and annotates only those lacking one (to force a fresh recommendation, delete that block's sub-block and re-run). It **mutates but does not commit** — it stages only its own path-scoped `git add <MILESTONE_DIR>/requirements.md` and stops, leaving the recommendations for you to review; the durable git record is the eventual `Manual-answer:` commit made when `/answer-open-question`'s `record the recommendation` mode consumes one.
+
+### `recommend-open-question` (subagent)
+
+Read-only recommendation subagent dispatched once per question by `/recommend-all-open-questions` — not user-invocable, and the non-interactive twin of `/discuss-open-question`. Given one question's Short Title plus context, it grounds in the live project (read-only), enumerates the honest alternatives, and picks a single recommendation — sourcing that analytical core from the shared `shared/recommend-procedure.md` — then returns the ready-to-embed recommendation sub-block (its `> **Recommendation:** …` anchor is what `answer-open-question` later lifts) as its final message. It mutates nothing; the orchestrator owns all embedding and staging.
 
 ### `derive-tasks`
 
@@ -292,7 +305,7 @@ Creates the next milestone directory with empty starter files and updates the cu
 
 ## Self-dogfooding
 
-This repository runs its own workflow on itself. The `milestones/` directory, `milestones/README.md`, and the active milestone directory (`milestones/milestone_04_readme-pipeline-diagrams/`) are live workflow artifacts produced by Cairn's own skills — the requirements, task list, and completed tasks for the current milestone are all right there in the repo. If you want to see what a real milestone looks like end-to-end, look no further.
+This repository runs its own workflow on itself. The `milestones/` directory and `milestones/README.md` are live workflow artifacts produced by Cairn's own skills — the requirements, task list, and completed tasks for the current milestone are all right there in the repo. If you want to see what a real milestone looks like end-to-end, look no further.
 
 ## License
 
