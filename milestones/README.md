@@ -10,9 +10,19 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_06_recommend-open-questions/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 6 — Recommend Open Questions
+
+- Added the `recommend-all-open-questions` orchestrator skill: a non-interactive, argument-free batch path that sweeps the current milestone's open/deferred questions and embeds an alternatives+recommendation sub-block beneath each unchanged one-line question header.
+- Added its read-only `recommend-open-question` subagent — the non-interactive twin of `discuss-open-question` — dispatched once per question, which grounds in the live project and returns the recommendation sub-block for the orchestrator to embed (mutating nothing itself).
+- Extracted the "alternatives + recommendation for one question" analytical core into the new execution-neutral `shared/recommend-procedure.md`, now referenced (never restated) by both `discuss-open-question` and the `recommend-open-question` agent.
+- Made the recommend sweep mutate-but-do-not-commit (path-scoped `git add`, no clean-tree precondition) and idempotent — it skips any block already carrying a `> **Recommendation:**` anchor, with a delete-the-sub-block-and-re-run escape hatch instead of a refresh mode.
+- Gave `answer-open-question` a record-recommendation mode: the reserved sentinel answer text `record the recommendation` (exact whole-string match) lifts a block's embedded recommendation as the answer, and stops without changes when no recommendation is present.
+- Generalized `shared/answer-procedure.md`'s block-removal step to clear the entire contiguous blockquote run (header plus any embedded recommendation), with the bare one-line header as the degenerate case.
+- Synced `README.md` and `CLAUDE.md` to the new recommend-sweep path (skill reference, requirements-loop diagram, layout, pipeline block, and invariants).
 
 ### Milestone 5 — Milestone-finish Principle Capture
 
@@ -69,3 +79,4 @@ Current milestone: `milestones/milestone_06_recommend-open-questions/`
 | 3 | Generic Naming Refactor | `milestones/milestone_03_generic-naming-refactor/` |
 | 4 | README Pipeline Diagrams | `milestones/milestone_04_readme-pipeline-diagrams/` |
 | 5 | Milestone-finish Principle Capture | `milestones/milestone_05_milestone-finish-principle-capture/` |
+| 6 | Recommend Open Questions | `milestones/milestone_06_recommend-open-questions/` |
