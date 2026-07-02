@@ -23,3 +23,25 @@ Create the new execution-neutral shared file `shared/recommend-procedure.md`, ex
 
 ---
 
+## Read-Only Recommend-Open-Question Subagent
+
+Create the new read-only subagent `agents/recommend-open-question.md` — the non-interactive twin of `discuss-open-question`, dispatched once per question by the `recommend-all-open-questions` orchestrator (a later task). Model its YAML frontmatter and section structure (inputs / how-to-produce / Return protocol) on the sibling read-only agent `agents/try-answer-question-by-principle.md`.
+
+**Provides:**
+- `agents/recommend-open-question.md` — a read-only single-question subagent (YAML frontmatter: `name: recommend-open-question`, plus a `description` and a `color`) dispatched once per question by `recommend-all-open-questions`; it resolves its target question from its own prompt (the question's Short Title + full block/context) and decides no global ordering.
+- Its return-protocol contract — the recommendation sub-block the orchestrator embeds verbatim beneath the unchanged one-line question header, and that `answer-open-question`'s record-recommendation mode later lifts from. It is rendered per the *Recommendation sub-block format* decision in `requirements.md`; its stable, lift-able anchor is the `> **Recommendation:** <chosen option> — <one-line rationale>` line.
+
+**Notes:**
+- Unlike the sibling `try-answer-question-by-principle` (whose analytical core is inline in-body), this subagent's how-to-produce section must **reference** `${CLAUDE_PLUGIN_ROOT}/shared/recommend-procedure.md` for the alternatives+recommendation core and never restate it — the reference-a-shared-procedure pattern to mirror is the `complete-task` / `submit-task` agents, not `try-answer-question-by-principle`.
+- The shared `recommend-procedure.md` deliberately keeps **all** `>`-blockquote markup out (it is execution-neutral, logical content only). So this subagent **owns** the literal blockquote rendering: the empty-`>` separation discipline (internal gaps are empty `>` lines, never bare blank lines, so the whole thing stays one contiguous `>`-prefixed run) and the `> **Recommendation:**` anchor text. That markup lives here, not in the shared file.
+
+**Success:**
+- `agents/recommend-open-question.md` exists with YAML frontmatter carrying `name: recommend-open-question` (plus a `description` and a `color`).
+- Its how-to-produce section references `${CLAUDE_PLUGIN_ROOT}/shared/recommend-procedure.md` for the alternatives+recommendation core and does not restate that core.
+- It specifies the exact recommendation sub-block shape: beneath the unchanged one-line question header, an empty `>` line, then `> **Alternatives:**` followed by one `> - **<Option>** — what it is. *Advantage:* … *Drawback:* …` bullet per option, an empty `>` line, then the stable `> **Recommendation:** …` anchor line — with every internal gap rendered as an empty `>` line, never a bare blank line.
+- It states it is read-only — it mutates nothing (never edits `requirements.md`); the orchestrator owns all document mutation and embedding.
+- Its Return protocol emits **only** the sub-block lines placed beneath the header (starting with the leading empty `>` attach line, not the header itself) as its final message, for the orchestrator to embed verbatim.
+- It states the *Recommendation independence* distinction: "isolation" is an orchestrator constraint (never feed one question's recommendation into another) and does **not** forbid this subagent from reading `requirements.md` and live code read-only to enumerate honest alternatives (incidentally seeing sibling one-line question headers) — what it must never do is treat another question's recommendation as an input.
+
+---
+
