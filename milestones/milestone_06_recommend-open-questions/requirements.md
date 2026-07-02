@@ -41,11 +41,15 @@ The new skill is modeled directly on the existing pair — this milestone is a t
 
 ## Decisions
 
+### Recommendation sub-block format
+
+The embedded recommendation lives inside the **same blockquote** as the one-line question header: a single contiguous run of `>`-prefixed lines, with the header unchanged as line 1, internal gaps rendered as empty `>` lines (never bare blank lines), and the whole block bounded by the blank lines that already separate entries. Beneath the header the fixed shape is: an empty `>` line, then `> **Alternatives:**` followed by one `> - **<Option>** — what it is. *Advantage:* … *Drawback:* …` bullet per option, an empty `>` line, then a stable `> **Recommendation:** <chosen option> — <one-line rationale>` anchor line.
+
+This keeps the header a one-line greppable blockquote (grep for `> **Open question` still hits line 1), makes `shared/answer-procedure.md` step 4 a natural generalization of today's single-line removal ("remove the contiguous blockquote run containing this header"), and gives `answer-open-question`'s record-recommendation mode an unambiguous anchor (the `> **Recommendation:** …` line) to lift as the answer text. The internal-separation discipline — empty `>` lines, never bare blank lines — must be stated in the shared extraction file and the subagent's return protocol so the contiguous-run boundary stays intact. This is also the exact shape the read-only subagent returns for the orchestrator to embed.
+
 ## Out of Scope
 
 ## Open questions
-
-> **Open question — Recommendation sub-block format:** What exact markdown structure holds the embedded recommendation *beneath* the unchanged one-line question header? It must keep the header a one-line greppable blockquote, be unambiguously bounded so `answer-open-question` can read it and `shared/answer-procedure.md` step 4 can remove it whole, survive sitting adjacent to the next block, and carry the alternatives + recommendation. This is also the shape the read-only subagent returns for the orchestrator to embed.
 
 > **Open question — Record-recommendation trigger:** How does `answer-open-question`'s new mode get selected, given it currently splits its arg on the first `.` (Short Title before, literal answer after)? Is "record the recommendation" a reserved sentinel answer-text phrase (exact match? case-insensitive?), and what happens when the targeted block carries no embedded recommendation (sweep never run, or question added afterward)?
 
