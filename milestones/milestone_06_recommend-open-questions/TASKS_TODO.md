@@ -1,29 +1,5 @@
 # TASKS TODO
 
-## Recommend-All-Open-Questions Sweep Orchestrator
-
-Create the new orchestrator skill `skills/recommend-all-open-questions/SKILL.md` — the non-interactive batch path that sweeps the current milestone's open/deferred questions and annotates each one with an embedded recommendation. It is the argument-free twin of `try-answer-all-questions-by-principle` (model its structure and tone on `skills/try-answer-all-questions-by-principle/SKILL.md`) but is deliberately simpler because it records no decisions and triggers no cascades. It dispatches one `recommend-open-question` subagent per un-annotated question and is the sole document mutator, embedding each returned sub-block beneath the unchanged one-line question header.
-
-**Provides:**
-- `skills/recommend-all-open-questions/SKILL.md` — the orchestrator skill (YAML frontmatter `name: recommend-all-open-questions`), argument-free, that sweeps every `> **Open question — <Short Title>` / `> **Deferred — <Short Title>` entry in `<MILESTONE_DIR>/requirements.md`, dispatches `subagent_type: "recommend-open-question"` per surviving question, and is the sole mutator that embeds the returned recommendation sub-block beneath the unchanged one-line header. It is a **mutate-but-do-not-commit** skill: it stages only its own path-scoped `git add <MILESTONE_DIR>/requirements.md` edit and stops. Its named consumer is `answer-open-question`'s record-recommendation mode.
-
-**Notes:**
-- Model on the twin but **deliberately drop** four pieces of its machinery, per the *Sweep write model* and *Recommendation independence* decisions: no gather-order (the twin's most-significant→least cascade-parent-first proxy), no per-question live-re-check/skip against a mutating document, no outer re-gather loop, and no clean-working-tree precondition. Gather the open/deferred entries **once** and walk straight through — because the sweep records no decisions and triggers no cascades, the question set never shrinks under it.
-- Re-run idempotency (*Re-run idempotency* decision): **skip** any question block that already carries a recommendation sub-block — detect by the presence of the `> **Recommendation:**` anchor line within the block's contiguous `>` run — and dispatch/annotate **only** blocks that lack one. Document the escape hatch: to force a fresh recommendation on a stale block the user deletes that block's recommendation sub-block (leaving the one-line question header intact) and re-runs, whereupon skip regenerates it. Add **no** `refresh`/selectable mode — keep the skill argument-free like its twin.
-- The per-question dispatches are **independent** and may be parallelized (*Recommendation independence*): never feed one question's recommendation into another. Embedding keeps the whole entry one contiguous `>` run with empty-`>` internal separation (never bare blank lines), and the one-line `> **Open question — …` / `> **Deferred — …` header must stay greppable on line 1.
-- Write model (*Sweep write model* decision): after writing all sub-blocks, stage **only** its own edit with a path-scoped `git add <MILESTONE_DIR>/requirements.md` (**never** `git add -A`) and stop, leaving the staged edit for the user to review and commit or discard. State briefly *why* it neither commits nor requires a clean tree: it records no decisions and triggers no cascades, so it needs neither the one-commit-per-question model nor the clean-tree precondition — the durable git record is the eventual `Manual-answer:` commit, not the transient recommendation scaffolding.
-
-**Success:**
-- `skills/recommend-all-open-questions/SKILL.md` exists with YAML frontmatter carrying `name: recommend-all-open-questions`, and takes no arguments.
-- It resolves `<MILESTONE_DIR>` by following `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` (no hardcoded path), gathers every `Open question`/`Deferred` entry **once**, and walks straight through with no re-gather loop, no gather-order, and no live-re-check/skip; it says so and stops when there are no open/deferred questions.
-- It skips blocks that already carry a `> **Recommendation:**` anchor and annotates only those lacking one, and documents the delete-the-sub-block-and-re-run escape hatch; it adds no `refresh`/selectable mode.
-- It dispatches `subagent_type: "recommend-open-question"` (singular) via the `Agent` tool once per surviving question, passing that question's Short Title and full block/context, and treats the subagent as read-only (returns the sub-block; the orchestrator does all writing).
-- It embeds each returned sub-block directly beneath the unchanged one-line header, keeping one contiguous `>` run with empty-`>` separation and the header greppable on line 1.
-- It stages a path-scoped `git add <MILESTONE_DIR>/requirements.md` and does **not** commit, and requires no clean working tree.
-- It reports which questions were annotated and which were skipped, and points the user at `answer-open-question`'s record-recommendation mode as the consumer.
-
----
-
 ## Rewire Discuss-Open-Question To Shared Core
 
 Refactor the existing interactive skill `skills/discuss-open-question/SKILL.md` so its restated "alternatives + recommendation" analytical core (current step 3) becomes a **reference** to `${CLAUDE_PLUGIN_ROOT}/shared/recommend-procedure.md` instead of inline duplication, completing the single-source-of-truth extraction. Net user behavior is unchanged; the only change is that the alternatives+recommendation substance is now sourced from the shared file rather than restated inline. Mirror the reference-a-shared-procedure pattern used by the `complete-task` / `submit-task` skills.
