@@ -47,11 +47,15 @@ The embedded recommendation lives inside the **same blockquote** as the one-line
 
 This keeps the header a one-line greppable blockquote (grep for `> **Open question` still hits line 1), makes `shared/answer-procedure.md` step 4 a natural generalization of today's single-line removal ("remove the contiguous blockquote run containing this header"), and gives `answer-open-question`'s record-recommendation mode an unambiguous anchor (the `> **Recommendation:** …` line) to lift as the answer text. The internal-separation discipline — empty `>` lines, never bare blank lines — must be stated in the shared extraction file and the subagent's return protocol so the contiguous-run boundary stays intact. This is also the exact shape the read-only subagent returns for the orchestrator to embed.
 
+### Record-recommendation trigger
+
+`answer-open-question`'s recommendation-lifting mode is selected by a reserved sentinel **answer text**: `record the recommendation`. The existing `<Short Title>. <answer>` grammar and first-`.` split stay unchanged; the mode fires when the parsed answer text, trimmed and lowercased, matches this phrase as an **exact whole-string match** (not a substring), so a genuine literal answer that merely contains the words is never hijacked. In that mode the skill lifts the embedded `> **Recommendation:** …` anchor line out of the targeted block and uses it as the answer text, rather than taking the arg's literal answer.
+
+When the targeted block carries **no** embedded recommendation (the recommend sweep never ran, or the question was added afterward), lift-mode **stops without changing anything** and reports — directing the user to run the recommend sweep first, or to answer with literal text via `<Title>. <answer>` — and commits nothing, mirroring how `shared/answer-procedure.md` already stops cleanly on a Short-Title mismatch.
+
 ## Out of Scope
 
 ## Open questions
-
-> **Open question — Record-recommendation trigger:** How does `answer-open-question`'s new mode get selected, given it currently splits its arg on the first `.` (Short Title before, literal answer after)? Is "record the recommendation" a reserved sentinel answer-text phrase (exact match? case-insensitive?), and what happens when the targeted block carries no embedded recommendation (sweep never run, or question added afterward)?
 
 > **Open question — Sweep write model:** Does the orchestrator **commit** its edits (one per question, like `try-answer-all-questions-by-principle`) or leave them staged/uncommitted — and does it therefore need that twin's clean-working-tree precondition? Note the recommend-sweep records **no decisions** and triggers **no cascades** (it only annotates), so the twin's gather-order + per-question live-re-check machinery may be unnecessary here.
 
