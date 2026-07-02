@@ -79,9 +79,13 @@ Each wrapper owns its own rendering, interaction, and side-effects. `discuss-ope
 
 Two boundary calls are explicit. First, **"what would change your mind" is a `discuss-open-question`-only layer**, not part of the shared core: the goal names the extract as the "alternatives + recommendation" logic, and the recorded *Recommendation sub-block format* decision already fixes the sub-block as Alternatives + a `> **Recommendation:**` anchor with no WWCYM. Second, **the shared file owns the three option fields as logical content while the subagent's return protocol owns their blockquote rendering** — the `>`-markup stays out of the shared file so the extraction does not re-create the duplication it removes. This mirrors how `shared/answer-procedure.md` is execution-neutral (locate/fold/cascade) while its wrappers own arg-parsing and committing.
 
+### Recommendation independence
+
+Each per-question recommendation is formed in strict isolation. The `recommend-all-open-questions` orchestrator dispatches one `recommend-open-question` subagent per question, does **not** order the dispatches, and **never** feeds one question's recommendation into another — a recommendation is transient scaffolding that decides nothing, so nothing may build on one. This keeps the sweep fully parallelizable and follows directly from the *Sweep write model* decision (no gather-order, no cascade machinery — gather once and walk straight through).
+
+"Isolation" constrains the **orchestrator**, not the subagent's grounding. The subagent still reads `requirements.md` and the live code **read-only** to enumerate honest alternatives (and thereby incidentally sees the one-line sibling question headers); what it must not do is treat another question's recommendation as an input. The extracted `shared/` file and the subagent's return protocol must state this distinction explicitly so "isolation" is not misread as forming recommendations blind to the rest of the project.
+
 ## Out of Scope
 
 ## Open questions
-
-> **Deferred — Recommendation independence:** Is each per-question recommendation formed in isolation, or may the subagent reference sibling questions/recommendations? The principle-sweep twin sees a shrinking set via cascade; this sweep doesn't cascade, so per-question isolation is the low-risk default — confirm during the work.
 
