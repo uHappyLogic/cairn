@@ -61,6 +61,10 @@ The corollary follows directly: because the document never shrinks under this sw
 
 When the targeted block carries **no** embedded recommendation (the recommend sweep never ran, or the question was added afterward), lift-mode **stops without changing anything** and reports — directing the user to run the recommend sweep first, or to answer with literal text via `<Title>. <answer>` — and commits nothing, mirroring how `shared/answer-procedure.md` already stops cleanly on a Short-Title mismatch.
 
+### New artifact names
+
+The orchestrator fan-out skill is named `recommend-all-open-questions` and its singular read-only subagent is named `recommend-open-question`. Both keep the `-open-question(s)` family suffix shared with `discuss-open-question` and `answer-open-question`, and both use the verb `recommend` to match the milestone's fixed "recommendation" vocabulary (the `> **Recommendation:**` anchor line and `answer-open-question`'s `record the recommendation` trigger). The pair is kept internally parallel — both carry `-open-question` — rather than adopting the sweep twin's bare `question` (`try-answer-all-questions-by-principle` / `try-answer-question-by-principle`).
+
 ### Shared extraction boundary
 
 The new `shared/` file is **execution-neutral** and holds only the analytical core — the substance plus the logical output shape, never its rendering. It owns: the grounding discipline (read real context/code over memory before forming a view); the **Alternatives** requirement (2–4 genuinely realistic options, no strawmen, no padding), where each option carries three logical fields — *what-it-is / key advantage / key drawback*; and the single **Recommendation** (one preferred option with a brief, direct rationale, no hedging, plus the tie-break rule — if two options are equivalent, say so and name what breaks the tie). These are defined as logical content only; the file never spells out concrete rendering.
@@ -72,8 +76,6 @@ Two boundary calls are explicit. First, **"what would change your mind" is a `di
 ## Out of Scope
 
 ## Open questions
-
-> **Open question — New artifact names:** What are the names of the new orchestrator skill (fan-out `<verb>-all-<plural>` grammar, e.g. `recommend-all-open-questions`) and the singular read-only subagent (e.g. `recommend-open-question`), given `discuss-open-question` is already taken?
 
 > **Deferred — Re-run idempotency:** On re-running the sweep, does it skip blocks that already carry a recommendation, overwrite/refresh them, or make that selectable? A reasonable default (skip already-recommended) exists, so settle this while building.
 
