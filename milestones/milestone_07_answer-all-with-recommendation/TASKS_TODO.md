@@ -1,27 +1,5 @@
 # TASKS TODO
 
-## Add Answer-With-Recommendation Skill
-
-Create the new user-facing skill `skills/answer-open-question-with-recommendation/SKILL.md` — the inline twin of the `answer-open-question-with-recommendation` agent, completing the SKILL + AGENT wrapper pair (like `complete-task`/`submit-task`). Invoked as `/answer-open-question-with-recommendation <Short Title>`, it runs the shared lift-then-delegate procedure inline to record that one question's embedded recommendation, then commits inline. This is the "Standalone skill commit" decision in `requirements.md`.
-
-**Provides:**
-- New file `skills/answer-open-question-with-recommendation/SKILL.md`: a `model: opus` user-facing skill, invoked `/answer-open-question-with-recommendation <Short Title>`, whose description triggers when a user wants to record a single question's embedded recommendation as its answer. It runs `shared/answer-with-recommendation-procedure.md` (referenced via `${CLAUDE_PLUGIN_ROOT}`) **inline** in the user's conversation to lift and record that question's embedded recommendation, then **commits inline** — path-scoped `git add <MILESTONE_DIR>/requirements.md` (never `git add -A`), subject `Recommendation-answer: <Short Title>`, no `Answer-Principle:` trailer.
-
-**Notes:**
-- Model the frontmatter and structure on the `complete-task` / `submit-task` **skill** wrappers (the inline half of the SKILL+AGENT pattern: `model: opus`, run the shared procedure inline in the user's conversation so the context survives for follow-up, never spawn the agent twin). The **only** differences from the `answer-open-question-with-recommendation` agent are that this skill runs the procedure inline rather than in isolation, and that it omits the agent's `DONE` / `FAILED` return protocol.
-- Unlike `complete-task`/`submit-task`, which leave changes staged, this skill **commits** — because it records a decision, it joins the committing category, mirroring `answer-open-question`, the committing mode this pair is extracted from. Path-scoped staging (`git add <MILESTONE_DIR>/requirements.md`, never `git add -A`) is the mechanism that keeps a dirty tree from contaminating the commit, not an incidental choice.
-- On the shared procedure's clean stop (no matching block, or the matched block carries no `> **Recommendation:**` anchor), the skill stops without changing or committing anything — its existing clean-stop-and-point pattern.
-- Reference — do not restate — the lift/record steps: point at `shared/answer-with-recommendation-procedure.md` via `${CLAUDE_PLUGIN_ROOT}` and never re-narrate lifting the anchor, folding into `## Decisions`, or cascading (all owned by the shared procedures). See the "Standalone skill commit", "Recommendation-answer commit subject", and "Lift-procedure placement" decisions in `requirements.md` for authoritative detail.
-
-**Success:**
-- The file `skills/answer-open-question-with-recommendation/SKILL.md` exists and carries `model: opus` in its frontmatter with a description that triggers on recording a single question's embedded recommendation as its answer.
-- It references `shared/answer-with-recommendation-procedure.md` via `${CLAUDE_PLUGIN_ROOT}` and does not restate the lift/record/cascade steps.
-- It runs the shared procedure inline and never spawns the `answer-open-question-with-recommendation` agent.
-- It instructs the skill to commit inline path-scoped (`git add <MILESTONE_DIR>/requirements.md`, never `git add -A`) under the subject `Recommendation-answer: <Short Title>` with no `Answer-Principle:` trailer.
-- It stops without changing or committing anything on the shared procedure's no-embedded-recommendation / missing-block clean stop.
-
----
-
 ## Add Answer-All-With-Recommendation Orchestrator
 
 Create the new orchestrator skill `skills/answer-all-open-questions-with-recommendation/SKILL.md` — the sweep that answers every open question already carrying an embedded recommendation by dispatching the file-editing `answer-open-question-with-recommendation` agent once per question, strictly sequentially. It is structurally modeled on `skills/try-answer-all-questions-by-principle/SKILL.md` but deliberately diverges on one axis: it dispatches a **file-editing** agent, not a read-only subagent, because the recommendation is pre-computed — so only mutation (not reasoning) is isolated. This realizes the milestone's "mutation isolated into a file-editing agent, dispatched strictly sequentially, one commit per answer" divergence plus the "Sweep cascade ordering" and "Sweep commit ownership" decisions in `requirements.md`.
