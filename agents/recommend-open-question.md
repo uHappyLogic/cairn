@@ -72,8 +72,9 @@ that attaches directly beneath the unchanged one-line question header, in exactl
   three fields inline: what it is, then `*Advantage:*`, then `*Drawback:*`.
 - The last line is always the stable `> **Recommendation:** <chosen option> — <one-line
   rationale>` anchor — the single recommendation and its rationale rendered on one line. This
-  anchor is what `answer-open-question`'s record-recommendation mode later lifts as the answer
-  text, so its shape must stay exactly `> **Recommendation:** …`.
+  anchor is what the `answer-open-question-with-recommendation` skill/agent pair (and the
+  `answer-all-open-questions-with-recommendation` batch sweep) later lifts as the answer text,
+  so its shape must stay exactly `> **Recommendation:** …`.
 - **Every internal gap is an empty `>` line — never a bare blank line.** The empty `>`
   between the header and `> **Alternatives:**`, and the empty `>` between the last bullet and
   `> **Recommendation:**`, keep the whole entry one uninterrupted `>`-prefixed run so the
@@ -112,9 +113,10 @@ Nothing before it, nothing after it — the orchestrator pastes it in as-is.
 - **Isolation is a cross-question constraint on the orchestrator, not on your grounding.**
   Never treat another question's recommendation as an input; that never narrows the read-only
   grounding you do for the question at hand.
-- **Keep the `> **Recommendation:** …` anchor exact.** It is lifted verbatim by
-  `answer-open-question`'s record-recommendation mode, so the final line must stay exactly
-  `> **Recommendation:** <chosen option> — <one-line rationale>`.
+- **Keep the `> **Recommendation:** …` anchor exact.** It is lifted verbatim by the
+  `answer-open-question-with-recommendation` skill/agent pair (and the
+  `answer-all-open-questions-with-recommendation` batch sweep), so the final line must stay
+  exactly `> **Recommendation:** <chosen option> — <one-line rationale>`.
 - **Empty-`>` internal separation, never bare blank lines**, so the entry stays one
   contiguous `>` run and the header remains greppable on line 1.
 - **Final message is the sub-block only** — no question header, nothing before or after it.

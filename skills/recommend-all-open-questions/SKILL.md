@@ -1,6 +1,6 @@
 ---
 name: recommend-all-open-questions
-description: Non-interactively sweep the current milestone's requirements for open and deferred questions and annotate each one with an embedded recommendation — alternatives plus a single recommended option — produced by dispatching one read-only recommend-open-question subagent per question. Use this to batch the per-question /discuss-open-question deliberation across every question at once, typically right after a /review-milestone-requirements pass, so the questions arrive at /answer-open-question with a recommendation ready to record. Trigger it whenever the user says things like "recommend on the open questions", "sweep recommendations", "run the recommend sweep", "annotate every question with a recommendation", or "give me a recommendation for each open question". Records no decisions and requires no clean working tree — it only annotates and leaves its edit staged.
+description: Non-interactively sweep the current milestone's requirements for open and deferred questions and annotate each one with an embedded recommendation — alternatives plus a single recommended option — produced by dispatching one read-only recommend-open-question subagent per question. Use this to batch the per-question /discuss-open-question deliberation across every question at once, typically right after a /review-milestone-requirements pass, so the questions arrive at /answer-open-question-with-recommendation with a recommendation ready to record. Trigger it whenever the user says things like "recommend on the open questions", "sweep recommendations", "run the recommend sweep", "annotate every question with a recommendation", or "give me a recommendation for each open question". Records no decisions and requires no clean working tree — it only annotates and leaves its edit staged.
 ---
 
 # recommend-all-open-questions
@@ -26,9 +26,10 @@ annotates. That single fact removes four pieces of the twin's machinery:
 - **No clean-working-tree precondition.** The twin needs one to keep "one commit = one
   auto-answer"; this skill commits nothing, so it needs no clean tree.
 
-The durable git record is the eventual `Manual-answer:` commit produced when a recommendation
-is recorded — the recommendation itself is transient scaffolding that decides nothing and is
-later consumed (lifted and removed) by `/answer-open-question`'s record-recommendation mode.
+The durable git record is the eventual `Recommendation-answer:` commit produced when a
+recommendation is recorded — the recommendation itself is transient scaffolding that decides
+nothing and is later consumed (lifted and removed) by the `/answer-open-question-with-recommendation`
+skill/agent pair (or the `/answer-all-open-questions-with-recommendation` batch sweep).
 
 ## Usage
 
@@ -136,8 +137,8 @@ git add <MILESTONE_DIR>/requirements.md
 Then **stop**, leaving the staged edit for the user to review and commit or discard. This skill
 **does not commit** and requires **no** clean working tree. It records no decisions and triggers
 no cascades, so it needs neither the twin's one-commit-per-question model nor a clean-tree
-precondition — the durable git record is the eventual `Manual-answer:` commit, not the transient
-recommendation scaffolding.
+precondition — the durable git record is the eventual `Recommendation-answer:` commit, not the
+transient recommendation scaffolding.
 
 ### 6. Report
 
@@ -145,9 +146,10 @@ Report once:
 
 - **Which questions were annotated** (dispatched and embedded this run).
 - **Which questions were skipped** (already carried a `> **Recommendation:**` anchor).
-- Point the user at the consumer: run `/answer-open-question` with the sentinel answer text
-  `record the recommendation` (its record-recommendation mode) to lift a block's embedded
-  recommendation as the recorded answer.
+- Point the user at the consumer: run `/answer-open-question-with-recommendation <Short Title>`
+  to lift a single block's embedded recommendation as the recorded answer, or
+  `/answer-all-open-questions-with-recommendation` to record every recommendation-bearing
+  question's answer in one batch sweep.
 
 If there were no open/deferred questions at all, say so and stop (step 1) — nothing to report.
 
