@@ -40,15 +40,11 @@ The principle-aware `shared/recommend-procedure.md` names the fixed store path `
 
 When a bearing principle is cited in a recommendation, the `recommend-open-question` agent renders that citation as a separate `> **Applied principle:** <Short Title>` line placed above the `> **Recommendation:**` anchor — never baked into the anchor rationale. Because `/answer-open-question-with-recommendation` lifts only the anchor line verbatim, the citation stays out of the recorded `## Decisions` prose, keeping it provenance-free by construction; and `shared/answer-procedure.md`'s whole-run removal clears the extra line on answer. The `> **Applied principle:**` line must sit above the anchor so the "anchor is always the last line" rendering invariant holds.
 
-## Open questions
+### Manual-vs-sweep discriminator scrub
 
-> **Deferred — Manual-vs-sweep discriminator scrub:** `skills/answer-open-question/SKILL.md` documents the *absence* of an `Answer-Principle:` trailer as the discriminator between manual and sweep auto-answer commits; with the sweep gone that counterpart disappears. Whether to reword it (e.g. against `Recommendation-answer:` as the only other answer subject) or drop the discriminator note entirely — a mechanical wording call best settled while editing.
->
-> **Alternatives:**
-> - **Drop the discriminator note entirely** — delete the orphaned "no `Answer-Principle:` trailer / its absence marks this a manual vs. auto-answer" sentence and the sweep-mirroring clauses, leaving no replacement; the `Manual-answer:` subject and its surviving `git log --grep='^Manual-answer: '` capture rationale stand on their own. *Advantage:* truest to a dead-vocabulary scrub — it removes what became vacuous when the sweep and the only `Answer-Principle:` emitter disappeared, and invents no new framing. *Drawback:* a reader comparing the two surviving answer subjects (`Manual-answer:` vs `Recommendation-answer:`) gets no in-file sentence spelling out how they differ.
-> - **Reword the discriminator against `Recommendation-answer:`** — keep a discriminator sentence but repoint it, e.g. "the `Manual-answer:` subject (not `Recommendation-answer:`) is what marks a capture-harvested manual answer." *Advantage:* preserves an explicit "how this subject differs from its sibling" note for future readers. *Drawback:* manufactures a discriminator the design does not need — the two subjects are already separated solely by the `^Manual-answer:` grep anchor, so a trailer-style "discriminator" note restates existing machinery and risks reading as newly-invented, cutting against a clean scrub.
->
-> **Recommendation:** Drop the discriminator note entirely — with the sweep and its `Answer-Principle:` trailer gone there is nothing left to discriminate against, and the `^Manual-answer:` capture grep already carries every fact the subject needs; a repointed discriminator would invent framing the scrub is meant to remove, not relocate.
+In `skills/answer-open-question/SKILL.md`, drop the manual-vs-sweep discriminator note entirely rather than repointing it: delete the orphaned sentence documenting the *absence* of an `Answer-Principle:` trailer (and its sweep-mirroring clauses), with no replacement. With the sweep and its `Answer-Principle:` trailer gone there is nothing left to discriminate against, and the surviving `^Manual-answer:` capture grep already carries every fact the `Manual-answer:` subject needs; a repointed discriminator against `Recommendation-answer:` would invent framing the scrub is meant to remove, not relocate.
+
+## Open questions
 
 ## Out of Scope
 
