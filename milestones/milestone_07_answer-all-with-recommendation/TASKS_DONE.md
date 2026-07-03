@@ -89,3 +89,21 @@ Create the new orchestrator skill `skills/answer-all-open-questions-with-recomme
 - It never itself commits and never edits `requirements.md`, and it documents that the agent owns all mutation and its own commit.
 
 ---
+
+## Narrow Answer-Open-Question To Literal-Only With Redirect Guard
+
+Now that recommendation-recording is extracted into the `answer-open-question-with-recommendation` pair, narrow `skills/answer-open-question/SKILL.md` to the **literal-answer path only**: remove the record-recommendation mode — the sentinel-gated lift/locate logic that resolved `<MILESTONE_DIR>`, found the question's blockquote run, and lifted its `> **Recommendation:**` anchor as the answer. In its place retain a small **redirect guard** that still recognizes the old sentinel and, instead of recording it, cleanly stops and points the user at `/answer-open-question-with-recommendation`. This is the "answer-open-question redirect after extraction" decision in `requirements.md`.
+
+**Notes:**
+- The redirect guard reuses the sentinel-matching discipline of the removed mode exactly: the parsed answer text, **trimmed and lowercased**, compared as an **exact whole-string match** against `record the recommendation` — **never a substring**, so a literal answer that merely contains those words still records literally. On a match the skill **stops without recording or committing anything** and prints a redirect message naming `/answer-open-question-with-recommendation`. This is not a revived feature — it records nothing; it fits the skill's existing clean-stop-and-point pattern (the old no-anchor guard and the shared procedure's Short-Title mismatch).
+- The guard must fire **before** delegating to `shared/answer-procedure.md`, at the arg-resolution point where the old sentinel would otherwise flow through as literal text and be committed as a `Manual-answer:` decision recording the phrase itself — that interception is the entire purpose.
+- Everything else is unchanged and must stay: the first-`.` arg split (Short Title before, answer text after), the literal-answer path for any non-sentinel text, delegation to `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md`, and the `Manual-answer: <Short Title>` commit (path-scoped `git add <MILESTONE_DIR>/requirements.md`, rationale in the body, no `Answer-Principle:` trailer).
+- The current file threads record-recommendation mode through several surfaces beyond the workflow steps — the intro paragraph after Usage, the "record-recommendation mode" example block, step 2 ("Resolve the answer text"), the step 4 commit-body wording that mentions "the lifted `<chosen option>`", and the Rules list. Reconcile all of them to literal-only-plus-redirect so no stale lift/anchor language survives.
+
+**Success:**
+- `skills/answer-open-question/SKILL.md` no longer contains any record-recommendation lift/locate logic — no resolving `<MILESTONE_DIR>` to find a block, no reading or stripping a `> **Recommendation:**` anchor, no `/recommend-all-open-questions`-first pointer.
+- Any literal answer still records exactly as before and commits under `Manual-answer: <Short Title>` (path-scoped, rationale in body, no `Answer-Principle:` trailer).
+- An answer text exactly equal to `record the recommendation` (after trim + lowercase, whole-string) triggers a clean stop that records nothing and commits nothing, and prints a redirect to `/answer-open-question-with-recommendation`.
+- The first-`.` split and the literal-answer path are intact and documented; no stale references to record-recommendation mode remain anywhere in the file (Usage intro, examples, workflow steps, or Rules).
+
+---
