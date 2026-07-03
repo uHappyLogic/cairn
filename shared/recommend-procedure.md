@@ -34,6 +34,13 @@ turns on. Prefer reading the live code over reasoning from memory — the point 
 the recommendation in what the project actually is, not what you recall it to be. All of
 this reading is read-only; forming a recommendation changes nothing.
 
+Part of that grounding is the project-wide answering-principle store
+`milestones/answer_decision_principles.md` — a fixed path at the `milestones/` root, above
+any one milestone. Read it in place (name that path directly; the confirmed principles are
+not a caller-supplied input alongside QUESTION) and note any confirmed principle that bears
+on this question. Presence of a principle in that file means it is user-confirmed. How a
+bearing principle shapes the recommendation is covered in step 3.
+
 Grounding is not the same as coupling to other questions. Reading `requirements.md`
 incidentally surfaces the sibling questions, but a recommendation for this question is
 formed in isolation from any *other* question's recommendation — never treat another
@@ -58,6 +65,16 @@ State a single preferred option with a brief, direct rationale. Do not hedge. If
 are genuinely equivalent, say so plainly and name the one thing that should break the tie
 rather than pretending a winner exists.
 
+A confirmed principle that bears on this question (found while grounding, step 1) is a
+**weighted advisory factor** in the recommendation, not a binding filter: it is a strong
+default in favor of the option it supports. Merit may override a bearing principle, but only
+for a specific reason you state — a bearing principle never vetoes a candidate outright and
+never drops it from the alternatives. Whenever a confirmed principle influenced the
+recommended pick, cite it: the recommendation must name the principle it leaned on, and when
+more than one bore on the pick it names each of them. When no confirmed principle bears on
+the question, form the recommendation exactly as you otherwise would — the alternatives and
+single-recommendation contract is unchanged from a project with no principles at all.
+
 The alternatives and the recommendation together form one contiguous, self-contained unit
 that stays attached to the question it answers — it reads as a single coherent block about
 that one question, not scattered commentary. How that unit is laid out, marked up, and either
@@ -65,11 +82,17 @@ shown to the user or handed back for embedding is the wrapper's concern, not thi
 
 ## Rules
 
-- Ground in the real project state before forming a view — live code over memory.
+- Ground in the real project state before forming a view — live code over memory — and read
+  the project-wide principle store `milestones/answer_decision_principles.md` in place as
+  part of that grounding.
 - Two to four alternatives, no strawmen and no padding; each carrying what-it-is / key
   advantage / key drawback.
 - Exactly one recommendation, stated directly with no hedging; on a genuine tie, say so and
   name what breaks it.
+- A confirmed principle that bears on the question is a weighted advisory default in favor of
+  its supported option — overridable only for a stated reason, never a veto that drops a
+  candidate — and any principle that influenced the pick must be cited. When no principle
+  bears, the recommendation is produced exactly as before.
 - Isolation is a cross-question constraint on the caller: never build one question's
   recommendation on another's. It never restricts the read-only grounding you do for the
   question at hand.
