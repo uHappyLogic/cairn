@@ -43,13 +43,11 @@ git commit -m "Recommendation-answer: <Short Title>" -m "<lifted recommendation 
 ```
 
 - **Subject:** exactly `Recommendation-answer: <Short Title>` (the answered question's
-  handle). This subject matches neither the `^Manual-answer:` nor the
-  `Principle-based-answer:` grep, so finish-time `/capture-milestone-principle-updates` never
-  harvests it.
+  handle). This distinct subject keeps the commit out of finish-time
+  `/capture-milestone-principle-updates`: a recommendation-derived answer's body is a
+  pre-computed recommendation, not user-deliberated reasoning, so capture never harvests it.
 - **Body:** the lifted recommendation content (the `<chosen option> — <rationale>` derived
   from the block's `> **Recommendation:**` anchor) — the answer that was recorded.
-- **No `Answer-Principle:` trailer.** That trailer is the principle sweep's signature; its
-  absence marks this as a recommendation-derived answer.
 - **Path-scoped staging** (`git add <MILESTONE_DIR>/requirements.md`, **never** `git add -A`)
   is what keeps a dirty working tree from contaminating the commit — it is the mechanism
   behind the "one commit = one answer" guarantee. The sweep orchestrator relies on this: the

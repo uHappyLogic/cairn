@@ -12,19 +12,19 @@ a read-only subagent — the non-interactive twin of `/discuss-open-question` �
 it embeds each returned sub-block directly beneath the **unchanged one-line question header**,
 so the header stays a one-line, greppable blockquote and the recommendation lives beneath it.
 
-It is the argument-free twin of `/try-answer-all-questions-by-principle`, but **deliberately
-simpler**, because it records **no decisions** and triggers **no cascades** — it only
-annotates. That single fact removes four pieces of the twin's machinery:
+It is **argument-free** and **deliberately simple**, because it records **no decisions** and
+triggers **no cascades** — it only annotates. Because the question set never shrinks under it,
+four pieces of machinery a decision-recording sweep would need are all unnecessary here:
 
-- **No gather-order.** The twin orders questions most-significant → least as a cascade-parent-first
+- **No gather-order.** Ordering questions most-significant → least is a cascade-parent-first
   proxy; there are no cascades here, so ordering buys nothing. Gather once, walk straight through.
-- **No per-question live-re-check / skip against a mutating document.** The twin re-reads the
-  document before each question because a prior answer's cascade may have removed it. Nothing
-  removes a question here, so the gathered set stays valid start to finish.
+- **No per-question live-re-check / skip against a mutating document.** A decision-recording sweep
+  re-reads the document before each question because a prior answer's cascade may have removed it.
+  Nothing removes a question here, so the gathered set stays valid start to finish.
 - **No outer re-gather loop.** Nothing adds or removes questions mid-sweep, so a single pass
   is the fixed point.
-- **No clean-working-tree precondition.** The twin needs one to keep "one commit = one
-  auto-answer"; this skill commits nothing, so it needs no clean tree.
+- **No clean-working-tree precondition.** A sweep that commits needs one to keep "one commit = one
+  answer"; this skill commits nothing, so it needs no clean tree.
 
 The durable git record is the eventual `Recommendation-answer:` commit produced when a
 recommendation is recorded — the recommendation itself is transient scaffolding that decides
@@ -76,7 +76,7 @@ recommendation has gone stale, the user **deletes that block's recommendation su
 (leaving the one-line question header intact) and re-runs. The block now lacks a
 `> **Recommendation:**` anchor, so skip regenerates it. There is deliberately **no**
 `refresh`/selectable mode — this delete-and-re-run hatch covers staleness and keeps the skill
-argument-free like its twin.
+argument-free.
 
 ### 3. Dispatch the read-only subagent per surviving question
 
@@ -136,7 +136,7 @@ git add <MILESTONE_DIR>/requirements.md
 
 Then **stop**, leaving the staged edit for the user to review and commit or discard. This skill
 **does not commit** and requires **no** clean working tree. It records no decisions and triggers
-no cascades, so it needs neither the twin's one-commit-per-question model nor a clean-tree
+no cascades, so it needs neither a one-commit-per-question model nor a clean-tree
 precondition — the durable git record is the eventual `Recommendation-answer:` commit, not the
 transient recommendation scaffolding.
 

@@ -66,7 +66,7 @@ This is the step that makes the skill loop-aware: the document you're reading ha
 - **Dedup repeats** — when two blocks ask materially the same thing, keep the clearest one and drop the other.
 - **When in doubt, flag — don't delete.** If a block *looks* answered but no recorded decision clearly covers it, leave it in place and note it in your report as "possibly resolved — confirm". Silently dropping a still-live question destroys tracked state; that's the one outcome to avoid.
 
-You **never** record a decision, fold an answer into `## Decisions`, or otherwise resolve a question here. Recording answers belongs to `/answer-open-question` (and the principle sweep) alone. This step only shapes the *questions* section to match decisions that already exist.
+You **never** record a decision, fold an answer into `## Decisions`, or otherwise resolve a question here. Recording answers belongs to `/answer-open-question` alone. This step only shapes the *questions* section to match decisions that already exist.
 
 ### 3. Surface new gaps
 

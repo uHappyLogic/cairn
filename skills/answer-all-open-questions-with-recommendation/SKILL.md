@@ -19,12 +19,11 @@ anchor, folds the decision into `## Decisions`, cascades to mooted siblings, and
 own answer**. The orchestrator owns only gathering, ordering, and sequencing the dispatches — it
 **never edits `requirements.md` and never commits**.
 
-This is a **deliberate divergence** from `/try-answer-all-questions-by-principle`, whose
-read-only subagent isolates the *reasoning* while the orchestrator owns all mutation and the
-commit. Here the reasoning is pre-computed (the recommendation already exists), so it is the
-**mutation** that is isolated into a **file-editing** agent, and the agent — not the orchestrator
-— owns its own commit. Because every dispatch mutates the same `requirements.md`, the dispatches
-run **strictly sequentially, never in parallel**.
+The reasoning here is **pre-computed** — the recommendation already exists in the question
+block — so there is no candidate elimination worth isolating. What a per-question agent isolates
+instead is the **mutation**: each dispatch is a **file-editing** agent that owns its own commit,
+keeping the expensive per-question edit out of the orchestrator's context. Because every dispatch
+mutates the same `requirements.md`, the dispatches run **strictly sequentially, never in parallel**.
 
 ## Usage
 
@@ -132,9 +131,9 @@ Do **not** enumerate the untouched (recommendation-less) questions: they remain 
   mutates the same `requirements.md`.
 - The **agent** owns all document mutation and its own path-scoped commit (one commit = one
   answer, subject `Recommendation-answer: <Short Title>`). The orchestrator **never edits
-  `requirements.md` and never commits** — it purely dispatches and sequences. This is the "Sweep
-  commit ownership" divergence from `/try-answer-all-questions-by-principle`, whose orchestrator
-  (unlike this one) owns the commit.
+  `requirements.md` and never commits** — it purely dispatches and sequences. This inverts the
+  usual orchestrator-commits arrangement (as in `/complete-all-tasks`, whose orchestrator owns the
+  commit): here the per-question agent, not this orchestrator, owns it.
 - This sweep needs **no** clean-working-tree precondition: the agent stages path-scoped
   (`git add <MILESTONE_DIR>/requirements.md`, never `git add -A`), so a dirty tree cannot
   contaminate its commit.

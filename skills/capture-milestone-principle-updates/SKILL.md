@@ -11,13 +11,13 @@ commit body** (subject `Manual-answer: <Short Title>`). Those commit bodies are 
 reasoning lives — the alternatives weighed, the trade-off accepted — because the recorded
 `## Decisions` prose is deliberately citation-free and provenance-free. This skill reads that finite,
 known-up-front set of commits **once the milestone is finished** and distills from them the
-generalizable answering principles that future autonomous sweeps can apply.
+generalizable answering principles that the recommendation advisor can apply.
 
 It is the **sole writer** of `milestones/answer_decision_principles.md` (a single project-wide file at
 the `milestones/` root, **above** any one milestone, so principles accumulate across milestones).
 Presence of an entry means it is confirmed — there is no status field.
 
-The value is restraint plus user confirmation. A principle governs *every* future autonomous answer,
+The value is restraint plus user confirmation. A principle informs *every* future recommendation,
 so a wrong or sloppy one corrupts the highest-value artifact in the loop. This skill therefore
 captures only genuinely reusable rules, and never writes the store without the user's explicit
 say-so. What changes from the old per-answer capture is the **shape** of the work: instead of judging
@@ -66,11 +66,6 @@ git log --grep='^Manual-answer: ' -- <MILESTONE_DIR>/requirements.md
 - **The path filter is itself the lower boundary.** `<MILESTONE_DIR>/requirements.md` does not exist
   before `/define-milestone-goal` created it, so no earlier commit can touch it — there is no need
   for a milestone-start marker or recorded base SHA.
-- **Exclude sweep auto-answers.** As a guard, inspect each matched commit and **drop any that carries
-  an `Answer-Principle:` trailer** — that trailer is the autonomous sweep's signature
-  (`Principle-based-answer:` subject), and those answers were *already* derived from a confirmed
-  principle, so re-distilling them would be circular. A genuine `/answer-open-question` commit carries
-  the `Manual-answer:` subject and **no** `Answer-Principle:` trailer.
 - **Read the commit bodies, not just the subjects.** The subject only names the answered question; the
   reusable reasoning is in the **body** (`git log` / `git show` of each commit). Phase-1 extraction
   works from those bodies.
@@ -105,7 +100,7 @@ bodies into a clean, deduped set of principle candidates.
    time and never had to dedup new candidates among themselves. Where several commits express the
    **same** underlying rule, merge them into one candidate (carrying the strongest phrasing and the
    originating examples). The output of phase 1 is the deduped set of surviving candidates, ranked
-   **strongest first** (most clearly generalizable / most load-bearing for future sweeps).
+   **strongest first** (most clearly generalizable / most load-bearing for future recommendations).
 
 If phase 1 leaves **no** surviving candidate (commits existed but none generalize), go to step 5 —
 this converges on the **same** "nothing captured" report as the empty range.
@@ -160,21 +155,20 @@ restatement of one past decision.>
 ```
 
 - **`### <Short Title>` heading — the handle.** A 2–5 word unique name, mirroring the open-question
-  Short-Title convention. This is the citable key the autonomous sweep writes to its `Answer-Principle:`
-  commit trailer, and the key this skill matches on for revise-vs-add. No separate ID scheme.
+  Short-Title convention. This is the key this skill matches on for revise-vs-add. No separate ID scheme.
 - **Body — the directive in prose.** A generalizable keep/eliminate rule, not a restatement of the
   originating decision.
 - **`*Origin:*` line — optional.** A pointer to the originating question or example, to aid human
-  auditing and future overlap judgments. Omit it when there is nothing useful to record. The sweep
-  applies the *statement*, not the origin.
+  auditing and future overlap judgments. Omit it when there is nothing useful to record. What is
+  applied is the *statement*, not the origin.
 - **No status field.** Presence in the file means confirmed.
 
 ### 5. Report
 
 - **If at least one principle was written,** briefly state, per principle, its `### <Short Title>`,
-  whether it was an add or a revision, and that it is now available to
-  `/try-answer-all-questions-by-principle`. Remind the user the principle-store edit is **staged, not
-  committed**, for them to review.
+  whether it was an add or a revision, and that it is now available to the recommendation advisor
+  (`/discuss-open-question` and `/recommend-all-open-questions`). Remind the user the principle-store
+  edit is **staged, not committed**, for them to review.
 - **If nothing was captured** — the empty commit range (step 2) **or** in-range commits that none
   generalize (step 3) **or** the user declined every candidate — report it in a **single line**: there
   are no `Manual-answer` principles in range to distill (write and stage nothing). These cases
@@ -188,8 +182,7 @@ restatement of one past decision.>
 - **Resolve `<MILESTONE_DIR>` from the last row of the `## Completed Milestones` table in
   `milestones/README.md` — explicitly NOT via `shared/get-current-milestone.md`.** The current-milestone
   pointer is already `none` when this skill runs.
-- Walk **only** `git log --grep='^Manual-answer: ' -- <MILESTONE_DIR>/requirements.md`, and **exclude
-  any matched commit carrying an `Answer-Principle:` trailer** (those are sweep auto-answers). Read the
+- Walk **only** `git log --grep='^Manual-answer: ' -- <MILESTONE_DIR>/requirements.md`. Read the
   commit **bodies** for the rationale.
 - Phase 1 is **internal** (extract → drop non-generalizable → cross-candidate dedup, no user); phase 2
   is **strongest-first, per-candidate** revise-vs-add against the **live** store with a **re-scan of the

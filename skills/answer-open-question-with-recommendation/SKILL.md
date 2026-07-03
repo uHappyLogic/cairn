@@ -72,13 +72,11 @@ git commit -m "Recommendation-answer: <Short Title>" -m "<lifted recommendation 
 ```
 
 - **Subject:** exactly `Recommendation-answer: <Short Title>` (the answered question's
-  handle). This subject matches neither the `^Manual-answer:` nor the
-  `Principle-based-answer:` grep, so finish-time `/capture-milestone-principle-updates` never
-  harvests it.
+  handle). This distinct subject keeps the commit out of finish-time
+  `/capture-milestone-principle-updates`: a recommendation-derived answer's body is a
+  pre-computed recommendation, not user-deliberated reasoning, so capture never harvests it.
 - **Body:** the lifted recommendation content (the `<chosen option> — <rationale>` derived
   from the block's `> **Recommendation:**` anchor) — the answer that was recorded.
-- **No `Answer-Principle:` trailer.** That trailer is the principle sweep's signature; its
-  absence marks this as a recommendation-derived answer.
 
 Committing here is a deliberate, documented exception to the project's "individual skills
 never commit" rule — the standalone `answer-open-question-with-recommendation` skill records
@@ -110,6 +108,6 @@ the full recording context still in hand.
   no-embedded-recommendation / missing-block clean stop produces no change and no commit.
 - Stage path-scoped — `git add <MILESTONE_DIR>/requirements.md`, never `git add -A` — so the
   commit touches only `requirements.md`.
-- The commit carries the lifted recommendation content in its **body**, the subject
-  `Recommendation-answer: <Short Title>`, and **no** `Answer-Principle:` trailer. Committing
-  here is a deliberate, documented exception to the "individual skills never commit" rule.
+- The commit carries the lifted recommendation content in its **body** and the subject
+  `Recommendation-answer: <Short Title>`. Committing here is a deliberate, documented exception
+  to the "individual skills never commit" rule.

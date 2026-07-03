@@ -61,11 +61,10 @@ git add <MILESTONE_DIR>/requirements.md
 git commit -m "Manual-answer: <Short Title>" -m "<rationale / decision body>"
 ```
 
-- **Subject:** exactly `Manual-answer: <Short Title>` (the answered question's handle), mirroring the sweep's `Principle-based-answer: <Short Title>` so `/capture-milestone-principle-updates` can collect these with `git log --grep='^Manual-answer: '`.
+- **Subject:** exactly `Manual-answer: <Short Title>` (the answered question's handle), so `/capture-milestone-principle-updates` can collect these with `git log --grep='^Manual-answer: '`.
 - **Body:** the decision's rationale — but record only rationale that genuinely exists in this conversation. Never prompt the user for a rationale and never fabricate one. When `/discuss-open-question` deliberation is in context, the body captures that reasoning. On a cold answer (no deliberation), the body is the literal answer text — recorded verbatim, including any inline "because" clause the user typed; when the answer states no reasoning, the body holds the bare decision. The answer string is itself the cold path's rationale affordance — add no separate rationale prompt.
-- **No `Answer-Principle:` trailer.** That trailer is the sweep's signature; its absence is what marks this commit as a manual answer rather than an auto-answer.
 
-This is a deliberate, documented exception to the project's "individual skills never commit" rule: `answer-open-question` commits exactly its own path-scoped manual-answer edit so that finish-time principle capture has a clean, greppable commit to walk. Staging path-scoped keeps the commit touching only `requirements.md` and never sweeps in unrelated working-tree changes, which also preserves the sweep's clean-tree precondition.
+This is a deliberate, documented exception to the project's "individual skills never commit" rule: `answer-open-question` commits exactly its own path-scoped manual-answer edit so that finish-time principle capture has a clean, greppable commit to walk. Staging path-scoped keeps the commit touching only `requirements.md` and never sweeps in unrelated working-tree changes.
 
 ### 5. Report findings
 
@@ -81,4 +80,4 @@ After committing, briefly state:
 - The recording mechanism lives **only** in `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md`; never duplicate or restate its locate / analyse / remove / fold / cascade steps here.
 - Commit **only** when step 3 actually recorded the answer; a parse error, a Short-Title mismatch, or the step 2 redirect guard produces no commit.
 - Stage path-scoped — `git add <MILESTONE_DIR>/requirements.md`, never `git add -A` — so the commit touches only `requirements.md`.
-- The manual-answer commit carries the rationale in its **body** and **no** `Answer-Principle:` trailer. Committing here is a deliberate, documented exception to the "individual skills never commit" rule.
+- The manual-answer commit carries the rationale in its **body**. Committing here is a deliberate, documented exception to the "individual skills never commit" rule.

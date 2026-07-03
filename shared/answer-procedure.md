@@ -5,8 +5,7 @@ current milestone's `requirements.md`. It is followed in two ways:
 
 - **Inline**, by the `answer-open-question` skill, which runs these steps directly in the
   user's conversation so the recording context survives for follow-up.
-- **By an orchestrator**, `try-answer-all-questions-by-principle`, which runs the same steps
-  once per question it resolves during a sweep.
+- **By an orchestrator**, which runs the same steps once per question it resolves during a sweep.
 
 The wrappers add their own framing (where the title and answer come from, how the outcome
 is signalled, any follow-up). This file describes only the recording work itself —

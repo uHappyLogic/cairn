@@ -59,3 +59,27 @@ Add applied-principle citation rendering to the read-only `recommend-open-questi
 
 ---
 
+## Scrub Retired Sweep Vocabulary From Workflow-Logic Files
+
+Remove every now-dead reference to the deleted auto-answer sweep and its `Principle-based-answer:` / `Answer-Principle:` provenance vocabulary from the plugin's live skill/agent/shared-procedure layer, per the milestone's "Manual-vs-sweep discriminator scrub" decision and its "Retired-vocabulary blast radius" starting-state note. This is a reference/vocabulary scrub only — each touched file must keep its real semantics; nothing changes but the dead cross-references. Scope is exactly `skills/`, `agents/`, and `shared/`; do **not** touch `CLAUDE.md`, `README.md`, `milestones/answer_decision_principles.md`, or any past-milestone document (those are separate tasks / immutable history).
+
+**Notes:**
+- Per-file intent (preserve all surrounding semantics):
+  - `skills/answer-open-question/SKILL.md`: DROP the manual-vs-sweep discriminator note entirely (do not repoint it) — delete the orphaned sentence(s) documenting the *absence* of an `Answer-Principle:` trailer as the manual-vs-sweep discriminator, including their sweep-mirroring clauses (e.g. the `Manual-answer:` subject "mirroring the sweep's `Principle-based-answer:`" phrasing), with no replacement. The literal-answer path, first-`.` split, the retired `record the recommendation` redirect guard, and the `Manual-answer:` commit rules stay UNCHANGED; the `Manual-answer:` subject and its `git log --grep='^Manual-answer: '` collectability must still read correctly without naming the sweep.
+  - `skills/capture-milestone-principle-updates/SKILL.md`: remove the now-vacuous `Answer-Principle:`-trailer exclusion clause on its `git log --grep='^Manual-answer: '` walk (nothing emits that trailer anymore), and repoint/remove its step-5 report line that points captured principles at `/try-answer-all-questions-by-principle`. Its manual-answer→principle learning input and sole-writer role stay untouched.
+  - `skills/answer-open-question-with-recommendation/SKILL.md` and `agents/answer-open-question-with-recommendation.md`: rewrite the `Recommendation-answer:` subject's contrast framing (currently defined against BOTH `^Manual-answer:` and `Principle-based-answer:`) so it no longer names the deleted sweep's vocabulary, while keeping the distinct `Recommendation-answer: <Short Title>` subject and its finish-time-capture-never-harvests rationale intact.
+  - `shared/answer-procedure.md`: remove/repoint the `try-answer-all-questions-by-principle`-named reference so the execution-neutral core no longer names the deleted sweep (its "run by an orchestrator" framing can survive without the dead name).
+  - `skills/answer-all-open-questions-with-recommendation/SKILL.md`: remove/repoint the `try-answer`-named references to the deleted sweep (the "deliberate divergence" and "commit ownership" comparisons must stand on their own or against a surviving sibling).
+  - `skills/recommend-all-open-questions/SKILL.md`: rewrite the repeated "argument-free twin of `/try-answer-all-questions-by-principle`" comparison anchors so the skill is described on its own terms (or against a surviving sibling) without referencing the deleted sweep — preserving its real behavior description (mutate-but-do-not-commit, idempotent, argument-free, path-scoped staging).
+- This task runs *after* the sweep-file deletion task, so the two deleted files (`skills/try-answer-all-questions-by-principle/`, `agents/try-answer-question-by-principle.md`) already do not exist — every surviving reference to them is dead and must go.
+- Behavior is preserved everywhere: no commit subject, grep pattern, procedure step, or return protocol changes beyond the reference removal.
+
+**Success:**
+- `grep -rn 'try-answer\|Answer-Principle\|Principle-based-answer' skills/ agents/ shared/` returns no live reference to the deleted sweep or its provenance vocabulary.
+- In `skills/answer-open-question/SKILL.md` the manual-vs-sweep discriminator sentence(s) are gone with no replacement, and the rest of the skill (literal-answer path, first-`.` split, `record the recommendation` redirect guard, `Manual-answer:` commit rules) is unchanged.
+- In `skills/capture-milestone-principle-updates/SKILL.md` the `Answer-Principle:` exclusion clause and the `/try-answer-all-questions-by-principle` step-5 pointer are both gone, and its `git log --grep='^Manual-answer: '` learning input and sole-writer role are intact.
+- The `Recommendation-answer: <Short Title>` subject and its capture-never-harvests rationale survive in both `skills/answer-open-question-with-recommendation/SKILL.md` and `agents/answer-open-question-with-recommendation.md` without naming `^Manual-answer:` or `Principle-based-answer:` as the contrast.
+- No behavior described in any touched file is altered beyond the reference removal, and no file outside `skills/`, `agents/`, `shared/` is modified.
+
+---
+
