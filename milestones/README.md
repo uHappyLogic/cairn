@@ -10,9 +10,18 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_07_answer-all-with-recommendation/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 7 — Answer Open Questions With Recommendation
+
+- Extracted recommendation-recording out of `answer-open-question` into a new execution-neutral shared procedure `shared/answer-with-recommendation-procedure.md` that lifts a question's embedded `> **Recommendation:**` anchor (with a no-anchor guard) and composes over `shared/answer-procedure.md`, leaving that recording core's ANSWER-as-input contract unchanged.
+- Added the `answer-open-question-with-recommendation` skill+agent pair over that procedure: the skill runs it inline and commits its own path-scoped answer, and the file-editing agent runs it in isolation, commits its own answer, and returns `DONE`/`FAILED` — a deliberate mutation-in-agent divergence from the read-only-subagent design of `try-answer-all-questions-by-principle`.
+- Added the `answer-all-open-questions-with-recommendation` orchestrator that sweeps every open/deferred question carrying an embedded recommendation and dispatches the file-editing agent strictly sequentially (gather-once-most-significant-first + per-dispatch re-read/skip), where the agent — not the orchestrator — owns each one-commit-per-answer commit.
+- Fixed the recommendation-answer commit subject to the distinct `Recommendation-answer: <Short Title>`, which matches neither `^Manual-answer:` nor `Principle-based-answer:` so finish-time principle capture never harvests it, and widened the documented "individual skills never commit" exception from one skill to two.
+- Narrowed `answer-open-question` to literal-only, replacing its removed record-recommendation mode with a targeted redirect guard that recognizes the retired `record the recommendation` sentinel (exact whole-string) and cleanly stops, pointing the user at `/answer-open-question-with-recommendation`.
+- Repointed every stale recommend-sweep consumer pointer (in `recommend-all-open-questions` and `recommend-open-question`) to the new consumer, and synced `CLAUDE.md` and `README.md` (skill reference, layout, pipeline block, invariants, and the *Iterating milestone requirements* Mermaid diagram edge) to the new machinery.
 
 ### Milestone 6 — Recommend Open Questions
 
@@ -80,3 +89,4 @@ Current milestone: `milestones/milestone_07_answer-all-with-recommendation/`
 | 4 | README Pipeline Diagrams | `milestones/milestone_04_readme-pipeline-diagrams/` |
 | 5 | Milestone-finish Principle Capture | `milestones/milestone_05_milestone-finish-principle-capture/` |
 | 6 | Recommend Open Questions | `milestones/milestone_06_recommend-open-questions/` |
+| 7 | Answer Open Questions With Recommendation | `milestones/milestone_07_answer-all-with-recommendation/` |
