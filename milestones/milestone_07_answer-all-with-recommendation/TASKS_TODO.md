@@ -1,27 +1,5 @@
 # TASKS TODO
 
-## Add Answer-With-Recommendation Agent
-
-Create the new file-editing agent `agents/answer-open-question-with-recommendation.md` — the isolated-context twin of the forthcoming `answer-open-question-with-recommendation` skill, dispatched per-question by the forthcoming `/answer-all-open-questions-with-recommendation` sweep. Given a target question's Short Title in its prompt, it runs the shared lift-then-delegate procedure to record that question's embedded recommendation, then commits its own answer. This is the "mutation isolated into a file-editing agent" divergence plus the "Sweep commit ownership" and "Recommendation-answer commit subject" decisions in `requirements.md`.
-
-**Provides:**
-- New file `agents/answer-open-question-with-recommendation.md`: a `model: opus` file-editing agent that takes a target question's Short Title from its prompt, runs `shared/answer-with-recommendation-procedure.md` (referenced via `${CLAUDE_PLUGIN_ROOT}`) to lift and record that question's embedded recommendation, and **commits its own answer** — path-scoped `git add <MILESTONE_DIR>/requirements.md`, subject `Recommendation-answer: <Short Title>`, no `Answer-Principle:` trailer.
-- Return protocol: `DONE` on a successful recorded-and-committed answer; `FAILED: <reason>` on the shared procedure's clean stop or any error, leaving the tree as it found it (no partial commit). The `/answer-all-open-questions-with-recommendation` orchestrator relies on this contract — because the agent owns the commit, the orchestrator dispatches and sequences only and never commits.
-
-**Notes:**
-- Model this agent's frontmatter and structure on `agents/complete-task.md` / `agents/submit-task.md` (the established SKILL+AGENT pattern: `model: opus`, run the shared procedure in isolation, add a return protocol), **but** unlike those two this agent (a) mutates `requirements.md` and (b) commits its own answer. In `complete-task` committing is the orchestrator's job; here it is deliberately the agent's — do not mirror `complete-task`'s stage-and-leave-to-orchestrator behavior. Both reversals are documented decisions ("Sweep commit ownership", plus the mutation-in-agent divergence).
-- Path-scoped staging (`git add <MILESTONE_DIR>/requirements.md`, **never** `git add -A`) is what keeps a dirty working tree from contaminating the commit — it is the mechanism behind the "one commit = one answer" guarantee, not an incidental choice.
-- The shared procedure's no-anchor / missing-block outcome is a **clean stop**, which this agent surfaces as `FAILED: <reason>` (not `DONE`) with nothing committed — "nothing recorded" is a failure to answer, not a success.
-- Reference — do not restate — the lift/record steps: the agent points at `shared/answer-with-recommendation-procedure.md` via `${CLAUDE_PLUGIN_ROOT}` and never re-narrates lifting the anchor, folding into `## Decisions`, or cascading (all owned by the shared procedures). See the "Sweep commit ownership" and "Recommendation-answer commit subject" decisions in `requirements.md` for authoritative detail.
-
-**Success:**
-- The file `agents/answer-open-question-with-recommendation.md` exists and carries `model: opus` in its frontmatter.
-- It references `shared/answer-with-recommendation-procedure.md` via `${CLAUDE_PLUGIN_ROOT}` and does not restate the lift/record/cascade steps.
-- It instructs the agent to commit path-scoped (`git add <MILESTONE_DIR>/requirements.md`, never `git add -A`) under the subject `Recommendation-answer: <Short Title>` with no `Answer-Principle:` trailer.
-- It defines the `DONE` / `FAILED: <reason>` return protocol and states that a clean stop or any failure returns `FAILED` and leaves the tree as it found it with no partial commit.
-
----
-
 ## Add Answer-With-Recommendation Skill
 
 Create the new user-facing skill `skills/answer-open-question-with-recommendation/SKILL.md` — the inline twin of the `answer-open-question-with-recommendation` agent, completing the SKILL + AGENT wrapper pair (like `complete-task`/`submit-task`). Invoked as `/answer-open-question-with-recommendation <Short Title>`, it runs the shared lift-then-delegate procedure inline to record that one question's embedded recommendation, then commits inline. This is the "Standalone skill commit" decision in `requirements.md`.
