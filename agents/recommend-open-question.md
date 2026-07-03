@@ -56,8 +56,9 @@ file adds only the rendering the shared procedure deliberately leaves out.
 ### 3. Render the sub-block
 
 The shared procedure keeps all `>`-blockquote markup out — the literal rendering is owned
-here. Lay the alternatives and recommendation out as one contiguous run of `>`-prefixed lines
-that attaches directly beneath the unchanged one-line question header, in exactly this shape:
+here. Lay the alternatives, any applied-principle citations, and the recommendation out as one
+contiguous run of `>`-prefixed lines that attaches directly beneath the unchanged one-line
+question header, in exactly this shape:
 
 ```
 >
@@ -65,20 +66,35 @@ that attaches directly beneath the unchanged one-line question header, in exactl
 > - **<Option A>** — what it is. *Advantage:* the strongest reason to choose it. *Drawback:* the main cost or risk it carries.
 > - **<Option B>** — what it is. *Advantage:* … *Drawback:* …
 >
+> **Applied principle:** <Short Title>
 > **Recommendation:** <chosen option> — <one-line rationale>
 ```
 
 - One `> - **<Option>** — …` bullet per alternative, each rendering the shared procedure's
   three fields inline: what it is, then `*Advantage:*`, then `*Drawback:*`.
+- When a confirmed principle bore on the recommended pick (the shared core, step 3, requires
+  citing it), render it as its own `> **Applied principle:** <Short Title>` line stacked
+  immediately above the `> **Recommendation:** …` anchor. **One line per bearing principle** —
+  when more than one bore, the lines stack, each atomic and independently greppable; there is
+  no new label and no in-line list syntax, so the multi-principle case is pure repetition of
+  the single-line form. **When no principle bears, emit no `> **Applied principle:**` line at
+  all** — the sub-block then renders exactly as it did before principle-awareness.
+- **Never bake the citation into the anchor rationale.** The applied-principle text is always
+  its own line above the anchor, never folded into the `> **Recommendation:** …` line — the
+  anchor is lifted verbatim as the recorded answer, and keeping the citation above it keeps
+  the applied-principle text out of the recorded `## Decisions` prose by construction.
 - The last line is always the stable `> **Recommendation:** <chosen option> — <one-line
   rationale>` anchor — the single recommendation and its rationale rendered on one line. This
   anchor is what the `answer-open-question-with-recommendation` skill/agent pair (and the
   `answer-all-open-questions-with-recommendation` batch sweep) later lifts as the answer text,
-  so its shape must stay exactly `> **Recommendation:** …`.
+  so its shape must stay exactly `> **Recommendation:** …` and it must stay the final line of
+  the run (any applied-principle lines sit above it, never below).
 - **Every internal gap is an empty `>` line — never a bare blank line.** The empty `>`
   between the header and `> **Alternatives:**`, and the empty `>` between the last bullet and
-  `> **Recommendation:**`, keep the whole entry one uninterrupted `>`-prefixed run so the
-  contiguous-run boundary stays intact and the header remains greppable on line 1.
+  the first of the applied-principle/`> **Recommendation:**` lines, keep the whole entry one
+  uninterrupted `>`-prefixed run so the contiguous-run boundary stays intact and the header
+  remains greppable on line 1. The applied-principle lines and the anchor stack with no empty
+  `>` between them — they form the closing group of the run.
 
 ### 4. Return the sub-block only
 
@@ -89,7 +105,8 @@ start with the leading empty `>` attach line and end with the `> **Recommendatio
 anchor. Do **not** include the one-line question header itself: the orchestrator keeps that
 header unchanged and embeds your lines directly under it.
 
-So your final message is exactly:
+So your final message is exactly (the `> **Applied principle:** …` line appears once per
+bearing principle, or not at all when none bore):
 
 ```
 >
@@ -97,6 +114,7 @@ So your final message is exactly:
 > - **<Option A>** — what it is. *Advantage:* … *Drawback:* …
 > - **<Option B>** — what it is. *Advantage:* … *Drawback:* …
 >
+> **Applied principle:** <Short Title>
 > **Recommendation:** <chosen option> — <one-line rationale>
 ```
 
@@ -113,10 +131,17 @@ Nothing before it, nothing after it — the orchestrator pastes it in as-is.
 - **Isolation is a cross-question constraint on the orchestrator, not on your grounding.**
   Never treat another question's recommendation as an input; that never narrows the read-only
   grounding you do for the question at hand.
-- **Keep the `> **Recommendation:** …` anchor exact.** It is lifted verbatim by the
+- **Keep the `> **Recommendation:** …` anchor exact and final.** It is lifted verbatim by the
   `answer-open-question-with-recommendation` skill/agent pair (and the
   `answer-all-open-questions-with-recommendation` batch sweep), so the final line must stay
-  exactly `> **Recommendation:** <chosen option> — <one-line rationale>`.
+  exactly `> **Recommendation:** <chosen option> — <one-line rationale>` and remain the last
+  line of the run.
+- **Render each bearing principle as its own `> **Applied principle:** <Short Title>` line**,
+  stacked immediately above the anchor — one line per bearing principle (pure repetition for
+  the multi-principle case, no new label, no in-line list), and none at all when no principle
+  bears (identical to the pre-principle rendering). Never fold the citation into the anchor
+  rationale; it is always a separate line above the anchor, keeping the lifted answer text
+  principle-free by construction.
 - **Empty-`>` internal separation, never bare blank lines**, so the entry stays one
   contiguous `>` run and the header remains greppable on line 1.
 - **Final message is the sub-block only** — no question header, nothing before or after it.
