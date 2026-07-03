@@ -10,9 +10,18 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_08_principles-recommendation-advisor/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 8 — Principles As Recommendation Advisor
+
+- Reframed the project-wide answering principles from a binding auto-answer engine into a recommendation advisor, deleting the `try-answer-all-questions-by-principle` orchestrator skill and its read-only `try-answer-question-by-principle` subagent so no auto-answer path remains.
+- Made the shared recommendation core `shared/recommend-procedure.md` principle-aware: its grounding step reads the fixed-path store `milestones/answer_decision_principles.md` in place, and a bearing confirmed principle acts as a weighted advisory factor (strong default, merit-override-only-with-a-named-reason, never a veto) that is cited whenever it influenced the recommended pick.
+- Taught the `recommend-open-question` agent to render each bearing principle as its own `> **Applied principle:** <Short Title>` line stacked above the last-line `> **Recommendation:**` anchor, keeping the lifted anchor provenance-free by construction.
+- Scrubbed the now-dead auto-answer provenance vocabulary (`Principle-based-answer:` subject, `Answer-Principle:` trailer, capture's exclusion grep, the manual-vs-sweep discriminator, and the revert-then-re-answer wording) from the `skills/`, `agents/`, and `shared/` layer.
+- Repointed the principle-store header to name the recommendation core as the consumer, leaving the four principle entries and their `*Origin:*` lines byte-for-byte unchanged.
+- Synced `CLAUDE.md` and `README.md` (skill roster, layout, pipeline block, invariants, the answer-principle-learning-loop prose, and the *Iterating milestone requirements* Mermaid diagram) to the recommendation-advisor model.
 
 ### Milestone 7 — Answer Open Questions With Recommendation
 
@@ -90,3 +99,4 @@ Current milestone: `milestones/milestone_08_principles-recommendation-advisor/`
 | 5 | Milestone-finish Principle Capture | `milestones/milestone_05_milestone-finish-principle-capture/` |
 | 6 | Recommend Open Questions | `milestones/milestone_06_recommend-open-questions/` |
 | 7 | Answer Open Questions With Recommendation | `milestones/milestone_07_answer-all-with-recommendation/` |
+| 8 | Principles As Recommendation Advisor | `milestones/milestone_08_principles-recommendation-advisor/` |
