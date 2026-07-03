@@ -1,9 +1,13 @@
 # Answer decision principles
 
 Project-wide, confirmed answering principles. Each is a reusable keep/eliminate
-directive that `try-answer-all-questions-by-principle` can apply to the candidate
-answers of a future open question. Presence here means the principle is
-user-confirmed. This file is written **only** by `capture-milestone-principle-updates`.
+directive. When a principle bears on an open question, the principle-aware
+recommendation core `shared/recommend-procedure.md` — used by `/discuss-open-question`
+and by `/recommend-all-open-questions`'s `recommend-open-question` agent — applies it
+as a **weighted advisory factor** that drives, and is cited in, the recommended option
+(rather than silently filtering a candidate). Presence here means the principle is
+user-confirmed (there is no status field). This file is written **only** by
+`capture-milestone-principle-updates`.
 
 ### Prefer domain-neutral terms
 

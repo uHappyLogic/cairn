@@ -1,23 +1,5 @@
 # TASKS TODO
 
-## Repoint Principle-Store Header To Advisor Model
-
-Rewrite the header prose of the project-wide principle store `milestones/answer_decision_principles.md` — the intro lines above the first `### <Short Title>` entry — so it names the recommendation advisor as the consumer instead of the deleted auto-answer sweep, per the milestone goal ("The principle store's data and format are unchanged — only its consumer pointer moves" / "sync … the principle-store header to the new model"). The header currently says each principle is a keep/eliminate directive that `try-answer-all-questions-by-principle` applies to the candidate answers of a future question; the confirmed principles are now applied by the principle-aware recommendation core `shared/recommend-procedure.md` (used by `/discuss-open-question` and by `/recommend-all-open-questions`'s `recommend-open-question` agent) as a weighted advisory factor that drives and is cited in a recommendation, rather than a candidate-elimination directive for an auto-answer sweep.
-
-**Notes:**
-- Touch ONLY the header prose (lines above the first `### <Short Title>` entry). Do NOT modify, reword, reorder, or remove any of the four `### <Short Title>` principle entries or their `*Origin:*` lines — the store's data and per-entry format are explicitly unchanged this milestone.
-- The keep/eliminate framing describes each entry's *body*, which is unchanged; only the header sentence about *who consumes the principles and how* is updated (from candidate-elimination-for-a-sweep to weighted-advisory-factor-in-a-recommendation).
-- Two surviving facts must be preserved in spirit: presence in the file means the principle is user-confirmed (there is no status field), and this file is written **only** by `capture-milestone-principle-updates`.
-- This is a docs-sync task on the store's header only; it is deliberately separate from the workflow-logic scrub task, which excludes `milestones/answer_decision_principles.md`.
-
-**Success:**
-- The header of `milestones/answer_decision_principles.md` no longer names `try-answer-all-questions-by-principle`.
-- The header describes the confirmed principles as applied by the principle-aware recommendation core `shared/recommend-procedure.md` (via `/discuss-open-question` and the `/recommend-all-open-questions` recommend sweep) as a weighted advisory factor that drives and is cited in a recommendation.
-- The "presence means user-confirmed (no status field)" fact and the "written only by `capture-milestone-principle-updates`" fact both survive in the rewritten header.
-- All four `### <Short Title>` principle entries and their `*Origin:*` lines are byte-for-byte unchanged (a `git diff` of the file shows only header lines changed).
-
----
-
 ## Sync CLAUDE.md To The Recommendation-Advisor Model
 
 End-to-end sync of `CLAUDE.md` — the agent-facing project spec carrying the repository layout, the skill roster / pipeline block, and the dense invariant set — to the recommendation-advisor model this milestone establishes, now that all the logic changes exist (sweep deleted, recommend core principle-aware, `> **Applied principle:**` citation rendered, workflow-logic vocabulary scrubbed, principle-store header repointed). This is a faithful sync that matches the house style of dense, precise invariants — remove everything describing the deleted auto-answer sweep, preserve everything still true and unrelated, and add/adjust the invariants that document the new model.
