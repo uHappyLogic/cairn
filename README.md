@@ -112,21 +112,19 @@ flowchart TD
     ITM3["/discuss-open-question"]
     ITM4["/answer-open-question"]
     ITM5["/recommend-all-open-questions"]
-    ITM6["/answer-open-question-with-recommendation"]
     ITM8["/answer-all-open-questions-with-recommendation"]
-    ITM7["/modify-milestone-goal"]
     D2[/"Requirements finalized<br/>all open questions resolved"/]
 
     D1 --> ITM0 --> ITM1
-    ITM1 --> ITM3 --> ITM4
-    ITM3 -.->|goal must shift| ITM7
-    ITM7 -.->|reconcile against new goal| ITM1
-    ITM4 -.->|repeat until satisfied| ITM1
-    ITM4 --> D2
+
     ITM1 -.->|annotate recommendations| ITM5
-    ITM5 -.->|record one recommendation| ITM6
-    ITM5 -.->|record every recommendation| ITM8
-    ITM6 --> D2
+    ITM5 -.->|discuss wrong recommendations| ITM3 --> ITM4
+    ITM5 -.->|choose from alternatives| ITM4
+
+    ITM4 -.->|apply recommendation to remaining questions| ITM8
+
+    ITM8 -.->|repeat until satisfied| ITM1
+
     ITM8 --> D2
 
     classDef req fill:#faf5ff,stroke:#9333ea,color:#581c87;
