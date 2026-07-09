@@ -5,7 +5,7 @@ description: Start a structured conversation about a named open question in the 
 
 # discuss-open-question
 
-Facilitates a deliberation on a named open question or deferred entry in the current milestone's `requirements.md` where the user cannot give an immediate answer. The goal is a concrete decision by the end of the conversation — not a design document.
+Facilitates a deliberation on a named `<open-question>` block (whether `status="open"` or `status="deferred"`) in the current milestone's `requirements.md` where the user cannot give an immediate answer. The goal is a concrete decision by the end of the conversation — not a design document.
 
 ## Usage
 
@@ -13,7 +13,7 @@ Facilitates a deliberation on a named open question or deferred entry in the cur
 /discuss-open-question <Short Title>
 ```
 
-The `<Short Title>` must match (case-insensitive) the title of an existing `Open question` or `Deferred` entry in the document.
+The `<Short Title>` must match (case-insensitive) the `id` of an existing `<open-question>` block (either `status="open"` or `status="deferred"`) in the document.
 
 **Example:**
 ```
@@ -28,11 +28,17 @@ Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILE
 
 ### 1. Locate the question
 
-Read `<MILESTONE_DIR>/requirements.md`. Find the entry matching the title. If no match is found, report the error and list available titles.
+Locating a block by its handle is a deterministic lookup, so query it with the line-oriented CLI (`awk`/`sed`/`grep`) keyed on the `<open-question …>` / `</open-question>` boundary lines rather than reading the whole file to eyeball a header — never a real XML processor (`xmllint`). Every `<open-question>` block lives under the single `## Open questions` section of `<MILESTONE_DIR>/requirements.md`, so those boundary lines within that one section enumerate the entire question set.
+
+For each `<open-question …>` opening boundary line, pull its `id` attribute with an attribute-name-anchored regex — `id="([^"]*)"` — so the match is independent of attribute order (`status` may precede or follow `id`). The captured value is stored **entity-escaped**, so reverse the five-predefined-entity substitution on it before comparing — replace `&lt;`→`<`, `&gt;`→`>`, `&quot;`→`"`, `&apos;`→`'`, and `&amp;`→`&` **last**. Then case-fold both that un-escaped `id` and the `<Short Title>` argument and compare: the block whose `id` case-folds equal to the title is the match. Open and deferred blocks share the one `<open-question …>` / `</open-question>` boundary-token pair (they differ only in the `status` attribute value), so the locate is uniform with no type-specific branch.
+
+Pull the **whole matched block** — from its `<open-question …>` opening boundary line through the next `</open-question>` closing boundary line — as the question context the deliberation runs on: its `<question>` text plus any `<alternative>` / `<applied-principle>` / `<recommendation>` sub-elements the recommend sweep may already have embedded. That whole block is the **QUESTION** you carry into step 3.
+
+If no block's `id` case-folds equal to the title, report the mismatch and list the available titles — deterministically enumerable by pulling `id="([^"]*)"` from every `<open-question …>` boundary line in the `## Open questions` section — so the user can retry.
 
 ### 2. Gather context
 
-Before forming a view, read any source files, scripts, or design documents that bear on the question. Prefer reading the actual code over reasoning from memory. The goal is to ground the discussion in the real project state.
+Before forming a view, read any source files, scripts, or design documents that bear on the question. Prefer reading the actual code over reasoning from memory. The goal is to ground the discussion in the real project state. This grounding is reason-across work, so read `requirements.md` and the bearing source files **whole** rather than querying via the CLI — the CLI is reserved for the deterministic locate in step 1, while forming a genuine view means taking in the surrounding document and code.
 
 ### 3. Present the discussion
 
