@@ -1,28 +1,5 @@
 # TASKS TODO
 
-## Rewire Answer-Procedure Locate And Remove To CLI
-
-Rewrite the locate (step 2) and remove (step 4) steps of `shared/answer-procedure.md` — the execution-neutral recording core (inputs SHORT TITLE + ANSWER) — so they operate on the new `<open-question>` XML block via the milestone's decided line-oriented CLI idiom instead of the Markdown blockquote header. This is the answering-core half of the Markdown→XML conversion; the `<recommendation>`-lift in `shared/answer-with-recommendation-procedure.md` and the wrapper skills are separate tasks that compose over this unchanged SHORT TITLE + ANSWER core.
-
-**Provides:**
-- The retained SHORT TITLE + ANSWER recording contract, now backed by a CLI locate/remove that treats one `<open-question …>` / `</open-question>` boundary-token pair as the block unit — the same block the `answer-with-recommendation-procedure` locate/lift step and the wrapper skills target. Locate: match the block whose `id` attribute case-folds equal to the queried Short Title (attribute extracted by attribute-name-anchored regex so match is attribute-order-independent, entity-escaped stored value handled before comparing). Remove: delete the block from its opening boundary line through its closing `</open-question>` boundary line.
-
-**Notes:**
-- This is a shared **procedure file**, not a skill or agent, so it is edited directly with `Edit` — the milestone's skill-creator constraint applies only to `skills/`+`agents/` files.
-- The CLI idiom is already decided — do not re-invent or reach for `xmllint`/an XML processor. Read and follow these `requirements.md` `## Decisions` subsections: **CLI query tooling** (line-oriented `awk`/`sed`/`grep` keyed on the `<open-question …>` / `</open-question>` boundary lines, never a real XML processor), **id match case-sensitivity** (case-fold both the queried Short Title and the block's `id` before comparing — preserving today's case-insensitive locate contract with zero regression), **Boundary-line tag contract** (extract `id` by attribute-name-anchored regex like `id="([^"]*)"`, order-independent), **XML special-char escaping** (the stored `id` is entity-escaped, so handle the five predefined entities when comparing), and **Open/Deferred encoding** (one `<open-question>` element with `status`, so open and deferred blocks share one boundary-token pair and status is irrelevant to locate/remove).
-- Only steps 2 (locate) and 4 (remove) become CLI operations. Steps 3/5/6 — analyse implications, fold the decision into `## Decisions` as clean citation-free prose, cascade to mooted entries — stay whole-document read-and-reason operations per the query-where-it-pays convention (deterministic locate/extract/remove via CLI; reason-across via reading the whole file).
-- The stop-on-missing-block behavior is retained: when no block's `id` matches, stop without changes and list the available ids — which the CLI can enumerate deterministically from the boundary lines.
-
-**Success:**
-- Step 2 (locate) describes a concrete CLI operation that finds the `<open-question>` block by case-folded `id` match, extracts the `id` by attribute-name-anchored regex (attribute-order-independent), and accounts for the stored `id` being entity-escaped when comparing.
-- Step 4 (remove) describes deleting the block from its `<open-question …>` opening boundary line through its `</open-question>` closing boundary line via a deterministic CLI operation, replacing the old "remove the entire contiguous `>`-prefixed run" step.
-- Open and deferred blocks are handled uniformly through the single `<open-question …>` / `</open-question>` boundary-token pair, with no type-specific locate/remove branch.
-- The stop-on-missing-block path remains and lists the available ids on a mismatch (deterministically enumerable via the CLI).
-- No `>`-blockquote / contiguous-`>`-run vocabulary remains anywhere in the file.
-- Steps 3, 5, and 6 still read the whole document to reason, and the clean-prose / no-citation-marker / targeted-edits rules are unchanged.
-
----
-
 ## Rewire Recommendation-Lift To CLI XML Extract
 
 Rewrite the locate (step 2) and lift (step 3) steps of `shared/answer-with-recommendation-procedure.md` — the execution-neutral lift-then-delegate core (input SHORT TITLE only) that composes over `shared/answer-procedure.md` — so they locate the new `<open-question>` XML block and extract its `<recommendation>` element via the milestone's line-oriented CLI idiom instead of lifting the `> **Recommendation:**` blockquote anchor. This is the recommendation-lift half of the Markdown→XML conversion; it pairs with the sibling `shared/answer-procedure.md` locate/remove rewire, and the `answer-open-question-with-recommendation` skill and agent that wrap this procedure are separate tasks.

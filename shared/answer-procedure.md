@@ -16,9 +16,10 @@ inputs or wrap the result.
 
 This procedure records one decision given two inputs the caller supplies:
 
-- **SHORT TITLE** — the resolved handle of an existing `Open question` or `Deferred`
-  entry to answer (case-insensitive). The caller has already obtained it; locating the
-  matching block is this procedure's job.
+- **SHORT TITLE** — the resolved handle of an existing `<open-question>` block to answer,
+  whether `status="open"` or `status="deferred"` (case-insensitive against the block's
+  `id`). The caller has already obtained it; locating the matching block is this
+  procedure's job.
 - **ANSWER** — the answer text for that question.
 
 Locating the block by its Short Title and cascading to mooted entries are shared work
@@ -32,10 +33,30 @@ Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILE
 
 ### 2. Locate the question
 
-Read `<MILESTONE_DIR>/requirements.md`. Find the `Open question — <Short Title>` or
-`Deferred — <Short Title>` entry whose title matches SHORT TITLE (case-insensitive). If no
-match is found, **stop without changing anything** and report the mismatch, listing all
-available titles so the caller can retry.
+Locating a block by its handle is a deterministic lookup, so query it with the line-oriented
+CLI (`awk`/`sed`/`grep`) keyed on the `<open-question …>` / `</open-question>` boundary
+lines rather than reading the whole file to eyeball a header. Every `<open-question>` block
+lives under the single `## Open questions` section of `<MILESTONE_DIR>/requirements.md`, so
+those boundary lines within that one section enumerate the entire question set.
+
+For each `<open-question …>` opening boundary line, pull its `id` attribute with an
+attribute-name-anchored regex — `id="([^"]*)"` — so the match is independent of attribute
+order (`status` may precede or follow `id`). The captured value is stored **entity-escaped**,
+so reverse the five-predefined-entity substitution on it before comparing — replace
+`&lt;`→`<`, `&gt;`→`>`, `&quot;`→`"`, `&apos;`→`'`, and `&amp;`→`&` **last**. Then case-fold
+both that un-escaped `id` and SHORT TITLE and compare: the block whose `id` case-folds equal
+to SHORT TITLE is the match. (This preserves the existing case-insensitive locate contract
+with zero regression.)
+
+The matched block spans from its `<open-question …>` opening boundary line through the next
+`</open-question>` closing boundary line — one boundary-token pair per block. Open and
+deferred blocks share that same pair (they differ only in the `status` attribute value), so
+the locate is uniform with no type-specific branch.
+
+If no block's `id` case-folds equal to SHORT TITLE, **stop without changing anything** and
+report the mismatch, listing all available ids — deterministically enumerable by pulling
+`id="([^"]*)"` from every `<open-question …>` boundary line in the `## Open questions`
+section — so the caller can retry.
 
 ### 3. Analyse the answer
 
@@ -51,16 +72,15 @@ the document.
 
 ### 4. Remove the matched block
 
-Remove the located block from the document entirely. A question block is the **entire
-contiguous run of `>`-prefixed lines** containing the located header — the unchanged
-one-line header on line 1 plus any recommendation sub-block embedded beneath it (its
-internal gaps rendered as empty `>` lines, never bare blank lines). The run is bounded by
-the blank lines that already separate entries, so removing it clears from the header down
-to the last consecutive `>` line before the next blank line.
+Delete the located block from the document — from its `<open-question …>` opening boundary
+line through and including its `</open-question>` closing boundary line, the boundary-token
+pair found in step 2. This is a deterministic line-range removal, so drive it with the
+line-oriented CLI (delete the opening-through-closing line span), not by hand-matching prose.
 
-This covers both cases uniformly: a bare one-line header with no sub-block is the
-degenerate single-line run and is removed exactly as before, while an annotated header
-plus its recommendation sub-block is removed as the whole multi-line run.
+This covers both cases uniformly: an open block and a deferred block share the one
+`<open-question …>` / `</open-question>` boundary-token pair — whether or not the block
+carries embedded `<alternative>` / `<applied-principle>` / `<recommendation>` children, the
+same opening-through-closing removal clears the whole block with no type-specific branch.
 
 ### 5. Fold the decision into `## Decisions`
 
