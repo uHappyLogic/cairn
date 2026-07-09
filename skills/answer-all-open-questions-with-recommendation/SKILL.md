@@ -6,18 +6,18 @@ description: Autonomously sweep the current milestone's requirements for open an
 # answer-all-open-questions-with-recommendation
 
 This is the batch path that records every open question's **embedded recommendation** as its
-answer. The recommend sweep (`/recommend-all-open-questions`) annotates each question with an
-`> **Recommendation:**` anchor; this skill re-reads the current milestone's questions and, for
-each one that carries such an anchor, dispatches the file-editing
+answer. The recommend sweep (`/recommend-all-open-questions`) annotates each question by embedding
+a `<recommendation>` element in its `<open-question>` block; this skill re-checks the current
+milestone's questions and, for each block that contains such an element, dispatches the file-editing
 `answer-open-question-with-recommendation` agent to lift that recommendation and record it —
-leaving recommendation-less questions untouched (annotating them is the recommend sweep's job,
+leaving recommendation-less blocks untouched (annotating them is the recommend sweep's job,
 not this one's).
 
 It is a pure **orchestrator**. It does not record answers itself: for each recommendation-bearing
 question it dispatches the `answer-open-question-with-recommendation` agent, which lifts the
-anchor, folds the decision into `## Decisions`, cascades to mooted siblings, and **commits its
-own answer**. The orchestrator owns only gathering, ordering, and sequencing the dispatches — it
-**never edits `requirements.md` and never commits**.
+`<recommendation>` element, folds the decision into `## Decisions`, cascades to mooted siblings, and
+**commits its own answer**. The orchestrator owns only gathering, ordering, and sequencing the
+dispatches — it **never edits `requirements.md` and never commits**.
 
 The reasoning here is **pre-computed** — the recommendation already exists in the question
 block — so there is no candidate elimination worth isolating. What a per-question agent isolates
@@ -31,8 +31,9 @@ mutates the same `requirements.md`, the dispatches run **strictly sequentially, 
 /answer-all-open-questions-with-recommendation
 ```
 
-Takes no arguments — it sweeps every `Open question` / `Deferred` entry in the current
-milestone's `requirements.md` that carries an embedded `> **Recommendation:**` anchor.
+Takes no arguments — it sweeps every `<open-question>` block (both `status="open"` and
+`status="deferred"`) in the current milestone's `requirements.md` that contains a
+`<recommendation>` element.
 
 ## Workflow
 
@@ -42,11 +43,19 @@ Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILE
 
 ### 1. Gather and order the recommendation-bearing questions once
 
-Read `<MILESTONE_DIR>/requirements.md` in full. Gather every `Open question — <Short Title>` and
-`Deferred — <Short Title>` entry **that carries an embedded `> **Recommendation:**` anchor** in
-its blockquote run. Recommendation-less questions are **not gathered** — annotating them is the
-recommend sweep's job (`/recommend-all-open-questions`), never this one's. If no gathered
-question carries a recommendation, say so and stop.
+Fetch the recommendation-bearing set with the line-oriented boundary-line CLI — do **not** read
+the whole file to eyeball headers. Every `<open-question>` block lives under the single
+`## Open questions` section of `<MILESTONE_DIR>/requirements.md`, so that section is the one
+bounded region the CLI slices deterministically. Using `awk`/`sed`/`grep` keyed on the
+`<open-question …>` opening and `</open-question>` closing **boundary lines** — never a real XML
+processor (`xmllint`) — enumerate every block and keep only those that **contain a
+`<recommendation>` element**, extracting each surviving block's `id` (and `status`) by
+attribute-name-anchored regex like `id="([^"]*)"` (so extraction is independent of attribute
+order). Open and deferred blocks share one `<open-question …>` / `</open-question>` boundary-token
+pair distinguished only by `status`, so the gather ignores type. Recommendation-less blocks —
+those with **no `<recommendation>` element** — are **not gathered**: annotating them is the
+recommend sweep's job (`/recommend-all-open-questions`), never this one's. If no block carries a
+`<recommendation>` element, say so and stop.
 
 Order the gathered list **loosely most-significant → least** — answer foundational questions
 before the questions that depend on them. This ordering is a proxy for *cascade-parent-first*:
@@ -54,7 +63,7 @@ answering a foundational question may moot its dependents via cascade before the
 dispatched, which is the safe direction for cascades.
 
 The ordering is a **sequencing heuristic only** — it decides *which question goes first*, never
-*whether* a question gets answered. Every gathered question carries a recommendation, so every
+*whether* a question gets answered. Every gathered block carries a recommendation, so every
 surviving question gets recorded; ordering never reintroduces judgment.
 
 You walk this gathered, ordered list **exactly once** (step 2). A single ordered pass terminates
@@ -66,11 +75,13 @@ an outer re-gather loop** — there is no such loop, and adding one is a defect.
 
 For each question in the gathered order:
 
-**a. Re-check against the live document.** Re-read `<MILESTONE_DIR>/requirements.md` and confirm
-the question's block still exists and still carries its `> **Recommendation:**` anchor. A prior
-answer's cascade may have already removed it; if it is gone, **skip it** and move on. The
-gathered list is an *ordering, not a work snapshot* — this cheap live re-read is what keeps the
-sweep correct as cascades fire, and it earns its keep by avoiding a whole agent spin-up on an
+**a. Re-check against the live document.** With the same line-oriented boundary-line CLI, confirm
+the block whose `id` case-folds equal to this question's Short Title **still exists and still
+contains a `<recommendation>` element**. A prior answer's cascade may have already removed the
+block; if it is gone — or its `<recommendation>` element is gone — **skip it** and move on. This is
+a cheap deterministic locate/extract check keyed on the boundary lines, not a whole-document read.
+The gathered list is an *ordering, not a work snapshot* — this cheap live re-check is what keeps
+the sweep correct as cascades fire, and it earns its keep by avoiding a whole agent spin-up on an
 already-mooted block. The agent's own `shared/answer-procedure.md` step-2 stop-on-missing-block
 stays as a backstop.
 
@@ -99,12 +110,12 @@ nor commits.
   `Recommendation-answer: <Short Title>`. Continue to the next question.
 - **`FAILED: <reason>`** — stop the loop, report the question's Short Title and the failure
   reason, and stop. Do not dispatch any further questions. A `FAILED` here means the agent's
-  no-anchor / missing-block clean stop (or another error) fired — but the gather step already
-  filtered to questions carrying an embedded recommendation and step 2a re-checked immediately
-  before dispatch, so a `FAILED` signals a genuine should-not-happen inconsistency (a block that
-  raced away between the re-check and the dispatch, or an internal error). Treat it as a real
-  failure to report-and-stop on, not a benign skip. **Never record the answer yourself as a
-  fallback** — the agent owns all mutation and the commit.
+  no-`<recommendation>`-element / missing-block clean stop (or another error) fired — but the
+  gather step already filtered to blocks containing a `<recommendation>` element and step 2a
+  re-checked immediately before dispatch, so a `FAILED` signals a genuine should-not-happen
+  inconsistency (a block that raced away between the re-check and the dispatch, or an internal
+  error). Treat it as a real failure to report-and-stop on, not a benign skip. **Never record the
+  answer yourself as a fallback** — the agent owns all mutation and the commit.
 - If the agent returns without an explicit `DONE` or `FAILED` status (returned early, produced no
   output, or gave an ambiguous result), treat it as `FAILED`: report what was returned, stop the
   loop, and do not dispatch further.
@@ -117,15 +128,16 @@ direct the user to review the commits — each recorded answer landed on its own
 nothing (no recommendation-bearing questions), say so in one sentence.
 
 Do **not** enumerate the untouched (recommendation-less) questions: they remain visible as
-`Open question` / `Deferred` blocks in `requirements.md` and via re-running
-`/review-milestone-requirements`, so listing them here would just duplicate the live document.
+`<open-question>` blocks (`status="open"` / `status="deferred"`) in `requirements.md` and via
+re-running `/review-milestone-requirements`, so listing them here would just duplicate the live
+document.
 
 ## Rules
 
-- Gather **only** questions that carry an embedded `> **Recommendation:**` anchor —
-  recommendation-less questions are the recommend sweep's job and are never gathered here.
-- Walk the gathered order **once**, with a per-question live re-read + skip. There is **no** outer
-  re-gather loop.
+- Gather **only** blocks that contain a `<recommendation>` element — recommendation-less blocks
+  are the recommend sweep's job and are never gathered here.
+- Walk the gathered order **once**, with a per-question live re-check + skip via the boundary-line
+  CLI. There is **no** outer re-gather loop.
 - Dispatch the `answer-open-question-with-recommendation` agent **strictly sequentially — never
   in parallel** — waiting for each to return before dispatching the next, because every dispatch
   mutates the same `requirements.md`.
