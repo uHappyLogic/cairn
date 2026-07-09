@@ -86,16 +86,11 @@ When the answer path lifts a `<recommendation option="...">…</recommendation>`
 
 Special characters are handled by uniform XML entity-escaping: the five predefined entities (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`) are used everywhere the data can carry a special char — both element text (`<question>`, `<advantage>`, rationale) and the `id`/`option` attribute values — and the substitution is reversed when a `<recommendation>` is lifted back into `## Decisions` prose. Because attribute values cannot use CDATA at all, entity-escaping is unavoidable for `id`/`option` regardless, so making it uniform across text too gives one deterministic rule that round-trips for free under a real XML processor and reduces to a fixed reverse-substitution map (un-escape `&amp;` last) for line-oriented tools. As a Deferred item, the exact reverse-substitution mechanics can be pinned once the CLI query-tooling question lands, but entity-escaping is the default to build against now.
 
-## Open questions
+### Block indentation
 
-> **Deferred — Block indentation spec:** The precise indent depth and style of the well-formed block — decided during implementation, kept consistent enough for whatever the chosen CLI extraction relies on.
->
-> **Alternatives:**
-> - **2-space indent per nesting level** — each `<open-question>` child (`<question>`, `<alternative>` and its `<advantage>`/`<drawback>`, `<applied-principle>`, `<recommendation>`) is indented two spaces deeper than its parent, boundary tags at the requirement's base column. *Advantage:* compact and readable at the 3–4 levels of nesting these blocks reach, matching the lightweight nesting the surrounding Markdown already uses, and trivially consistent to author. *Drawback:* deep nesting is visually shallow, so mis-nesting is slightly easier to miss by eye than with a wider indent.
-> - **4-space indent per nesting level** — same scheme, four spaces per level. *Advantage:* each level is unmistakable, the most forgiving to read when a block nests `<alternative>` → `<advantage>` several deep. *Drawback:* pushes the innermost text far to the right, wrapping long question/rationale lines awkwardly and costing more horizontal room for no functional gain.
-> - **Tab indentation** — one tab per nesting level. *Advantage:* width is reader-configurable and the leading whitespace is unambiguously structural. *Drawback:* mixes with the space-indented Markdown around it, renders inconsistently across viewers, and invites space/tab drift that a whitespace-sensitive line-oriented CLI would be least tolerant of.
->
-> **Recommendation:** 2-space indent per nesting level, boundary tags at the requirement's base column, applied consistently — it is the most compact fit for the shallow nesting these blocks reach and matches the document's existing style; since the CLI keys on the `<open-question …>`/`</open-question>` boundary lines (and a real XML parser is whitespace-insensitive anyway), interior depth is a readability choice, so lock in 2-space during implementation once the CLI-tooling question settles.
+`<open-question>` blocks use a 2-space indent per nesting level, with the boundary tags (`<open-question …>` / `</open-question>`) at the requirement's base column, applied consistently. It is the most compact fit for the shallow nesting these blocks reach and matches the document's existing style; since the CLI keys on the `<open-question …>` / `</open-question>` boundary lines (and a real XML parser is whitespace-insensitive anyway), interior depth is purely a readability choice. The exact 2-space depth is locked in during implementation once the CLI query-tooling is wired.
+
+## Open questions
 
 > **Deferred — id match case-sensitivity:** Whether the CLI `id` lookup preserves today's case-insensitive Short-Title matching or tightens to exact-match — a low-risk default (keep case-insensitive) exists; confirm while wiring the locate.
 >
