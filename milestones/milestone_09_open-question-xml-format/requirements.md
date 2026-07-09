@@ -96,5 +96,14 @@ The CLI `id` lookup keeps today's case-insensitive Short-Title matching rather t
 
 ## Open questions
 
+> **Deferred — Boundary-line tag contract:** The exact single-line form of the `<open-question …>` opening tag the CLI greps against — attribute order (`id` before `status`?), attribute quoting style, and the rule that the opening tag never wraps — pinned while wiring the query tooling. The CLI-query-tooling decision names the boundary-line contract as its one load-bearing cost; the Block indentation decision pins interior indent depth but not the tag line itself.
+>
+> **Alternatives:**
+> - **id-first, double-quoted, single-line; CLI extracts by attribute-name regex** — `<open-question id="..." status="...">` always on one physical line, and the tooling pulls `id="([^"]*)"` / `status="..."` by name, independent of position. *Advantage:* matches the goal's own illustrated tag order, keeps the primary locating handle first, and stays robust if an attribute is ever added or reordered. *Drawback:* the canonical order becomes a mere authoring convention the matcher does not enforce, so a hand-edit that reorders attributes would not be flagged as malformed.
+> - **status-first, double-quoted, single-line** — `<open-question status="..." id="...">`, putting the lifecycle discriminator the gather/convergence filters read ahead of the id. *Advantage:* leads with the attribute the type-filtering scans key on. *Drawback:* contradicts the goal's illustrated order and demotes the id (the actual locate handle) for no real matcher gain, since name-anchored extraction is order-insensitive anyway.
+> - **Positional fixed-template contract** — pin an exact byte-for-byte tag `<open-question id="X" status="Y">` and have the CLI match it with one rigid positional regex covering both attributes in order. *Advantage:* a single maximally-simple pattern that self-validates — any tag not matching the template is malformed. *Drawback:* brittle — any added attribute, extra whitespace, or reorder silently breaks locate/extract/remove, fighting the extensibility the escaping and encoding decisions bank on.
+>
+> **Recommendation:** id-first, double-quoted, always single physical line (never wrapped), with the CLI extracting `id`/`status` by attribute-name-anchored regex rather than position — it honors the goal's illustrated `<open-question id="Short Title" status="open|deferred">`, keeps id (the locate handle) leading, uses XML-convention double quotes that the uniform `&quot;`/`&apos;` escaping already covers, and stays resilient to future attributes; attribute order is nearly immaterial to a name-anchored matcher, so fidelity to the goal's own example breaks the tie.
+
 ## Out of Scope
 
