@@ -41,8 +41,10 @@ The structure of `requirements.md` is as follows:
 
 ## Open questions
 
-<list of open questions around the requirements, if any>
+<any open questions, each a `<open-question>` XML block>
 ```
+
+The `## Goal`, `## Relevant starting state`, `## Decisions`, and `## Out of Scope` sections stay prose Markdown. The `## Open questions` section is different: it holds raw, structured `<open-question>` XML blocks (one per question, never inline next to a requirement) — deliberately traded away from clean Markdown rendering so the blocks are deterministically queryable by line-oriented CLI (`awk`/`sed`/`grep` on the block boundary lines) and parseable by future tooling. All `<open-question>` blocks live under this one section.
 
 ## Workflow
 
@@ -55,15 +57,15 @@ Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILE
 Read `<MILESTONE_DIR>/requirements.md` in full. Build a mental inventory of three things, because the rest of the pass plays them against each other:
 
 - the **Decisions** already recorded (what's settled),
-- the **Open question** and **Deferred** blocks already present (what's still flagged),
+- the **`<open-question>` blocks** already present under `## Open questions` (what's still flagged) — both `status="open"` and `status="deferred"`,
 - every stated requirement, constraint, and assumption.
 
 ### 2. Reconcile the existing question set
 
 This is the step that makes the skill loop-aware: the document you're reading has been edited since questions were last raised, so the existing blocks may be stale. Tidy them — but only with evidence, and never by answering:
 
-- **Prune a settled block** — remove an `Open question` / `Deferred` block **only when you can point to an entry already in `## Decisions` that covers it**. This is cleanup of cascade-misses and manual drift, not answering. If you can't cite the covering decision, do not remove it.
-- **Dedup repeats** — when two blocks ask materially the same thing, keep the clearest one and drop the other.
+- **Prune a settled block** — remove an `<open-question>` block **only when you can point to an entry already in `## Decisions` that covers it**. Removing a block means deleting it in full, from its `<open-question …>` opening boundary line through its matching `</open-question>` closing boundary line (inclusive). This is cleanup of cascade-misses and manual drift, not answering. If you can't cite the covering decision, do not remove it.
+- **Dedup repeats** — when two blocks ask materially the same thing, keep the clearest one and drop the other (again, deleting the loser in full from `<open-question …>` through `</open-question>`).
 - **When in doubt, flag — don't delete.** If a block *looks* answered but no recorded decision clearly covers it, leave it in place and note it in your report as "possibly resolved — confirm". Silently dropping a still-live question destroys tracked state; that's the one outcome to avoid.
 
 You **never** record a decision, fold an answer into `## Decisions`, or otherwise resolve a question here. Recording answers belongs to `/answer-open-question` alone. This step only shapes the *questions* section to match decisions that already exist.
@@ -83,37 +85,50 @@ Add only genuinely new questions — don't re-raise anything already present (yo
 
 **Deferred** — better decided while doing the work (e.g. tuning a value, choosing a specific curve). Note it so it isn't forgotten, but it does not block.
 
-Annotate inline, close to the relevant requirement, using a clearly marked block:
+Author each new finding as an `<open-question>` XML block, appended under the single `## Open questions` section (create that section if it does not yet exist). These blocks are **not** placed inline next to the requirement they concern — they all live together in `## Open questions` so the four prose sections stay clean Markdown and the whole question set sits in one bounded region the answering and recommendation skills can query deterministically. Because a block no longer sits next to its originating requirement, **each `<question>` must stand on its own** — write it so it is fully understandable without the surrounding context that inline placement used to supply.
+
+A block you author has exactly three lines: the opening boundary tag, one `<question>` child, and the closing boundary tag. For a blocking (open) question:
 
 ```
-> **Open question — <Short Title>:** <question text>
+<open-question id="Short Title" status="open">
+  <question>Question text here.</question>
+</open-question>
 ```
 
-For deferred decisions:
+For a deferred decision, only the `status` value and the child text change:
 
 ```
-> **Deferred — <Short Title>:** <what will be decided while doing the work>
+<open-question id="Short Title" status="deferred">
+  <question>What will be decided while doing the work.</question>
+</open-question>
 ```
 
-The `<Short Title>` is a 2–5 word phrase that uniquely identifies the question within the document (e.g. "Arc drive technique", "Player input during swing"). It is a stable handle so the question can be cited by name in conversation and by the answering skills. Titles must be unique across all `Open question` and `Deferred` blocks in the document.
+Author every block to this exact shape — these conventions are the contract the recommendation and answer skills match against, so hold to them precisely:
 
-Do not restructure or rewrite existing content — only add annotations and apply the reconcile edits from step 2.
+- **Single-line opening tag, id first.** The `<open-question …>` opening tag is written on one physical line that never wraps, with attributes in id-first order: `id` then `status`, both double-quoted — `<open-question id="…" status="open">`. Downstream tooling extracts each attribute by name (a regex like `id="([^"]*)"`), so order is a convention you follow, not something the matcher depends on.
+- **Boundary tags at the base column.** The `<open-question …>` and `</open-question>` lines both sit at the section's base column (no leading indent under `## Open questions`).
+- **`<question>` indented 2 spaces.** The child is nested one level — 2 spaces — under the opening tag. (Two-space-per-level indentation is the block's convention; you author only the one `<question>` child here — the `<alternative>` / `<applied-principle>` / `<recommendation>` children are added later by the recommend path, not by this skill.)
+- **Entity-escape everything.** Both the element text (inside `<question>`) and the attribute values (`id` and `status`) are XML-escaped using the five predefined entities — `&amp;` for `&`, `&lt;` for `<`, `&gt;` for `>`, `&quot;` for `"`, `&apos;` for `'`. Escape any of these characters wherever they appear in the Short Title or the question text.
+
+The `id` is the **Short Title**: a 2–5 word phrase that uniquely identifies the question within the document (e.g. "Arc drive technique", "Player input during swing"). It is the stable handle the question is cited by in conversation and located by in the answering and recommendation skills, which match it **case-insensitively** — so keep every Short Title unique across all `<open-question>` blocks even ignoring case.
+
+Do not restructure or rewrite existing content — only append the new `<open-question>` blocks and apply the reconcile edits from step 2.
 
 ### 4. Report convergence
 
 Close the pass by telling the user where the loop stands, so they know whether to go around again or move on:
 
 - **What changed this pass** — blocks pruned (with the covering decision cited), repeats merged, new questions raised, and anything flagged "possibly resolved — confirm".
-- **What's still open** — the remaining `Open question` blocks, by Short Title, with a one-line nudge toward `/discuss-open-question` or `/answer-open-question`.
-- **Convergence** — `/derive-tasks` requires that **no `> **Open question` blocks remain** (Deferred blocks may carry forward — they're meant to be settled while doing the work). So:
-  - If `Open question` blocks remain → the requirements are **not** ready; the next loop step is to answer them, then re-run this skill.
-  - If none remain → say explicitly that the requirements look **ready for `/derive-tasks`**, noting any Deferred decisions that will be settled during the work.
+- **What's still open** — the remaining `status="open"` blocks, by Short Title (`id`), with a one-line nudge toward `/discuss-open-question` or `/answer-open-question`.
+- **Convergence** — `/derive-tasks` requires that **no `status="open"` blocks remain** (`status="deferred"` blocks may carry forward — they're meant to be settled while doing the work). So:
+  - If any `status="open"` block remains → the requirements are **not** ready; the next loop step is to answer them, then re-run this skill.
+  - If none remain → say explicitly that the requirements look **ready for `/derive-tasks`**, noting any `status="deferred"` blocks that will be settled during the work.
 
 ## Rules
 
 - Do not invent requirements — only annotate gaps relative to what is already written.
 - Do not mark something as blocking if a reasonable, low-risk-to-reverse choice exists.
 - Do not resolve open questions or record decisions yourself — surface and shape them for the answering skills to decide.
-- Remove a question block only when a recorded decision covers it (cite it) or it's an exact duplicate; otherwise flag, don't delete.
-- Keep annotations brief and question-shaped; avoid writing design proposals inside the document.
+- Remove an `<open-question>` block only when a recorded decision covers it (cite it) or it's an exact duplicate; otherwise flag, don't delete. A removal deletes the whole block, `<open-question …>` through `</open-question>`.
+- Keep each `<question>` brief, self-contained, and question-shaped; avoid writing design proposals inside the document.
 - If a pass finds nothing to reconcile and no new gaps, say so — and state whether the document has converged.
