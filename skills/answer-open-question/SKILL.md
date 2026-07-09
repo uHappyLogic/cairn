@@ -5,7 +5,7 @@ description: Answer a named open question in the current milestone requirements 
 
 # answer-open-question
 
-Resolves a named open question or deferred entry in the current milestone's `requirements.md` by recording the user's answer, propagating its implications through the document, and committing that edit on its own with the decision's rationale in the commit body — establishing the `Manual-answer:` commit the finish-time `/capture-milestone-principle-updates` skill later distills into reusable principles.
+Resolves a named open or deferred question in the current milestone's `requirements.md` by recording the user's answer, propagating its implications through the document, and committing that edit on its own with the decision's rationale in the commit body — establishing the `Manual-answer:` commit the finish-time `/capture-milestone-principle-updates` skill later distills into reusable principles.
 
 ## Usage
 
@@ -13,7 +13,7 @@ Resolves a named open question or deferred entry in the current milestone's `req
 /answer-open-question <Short Title>. <answer text>
 ```
 
-The `<Short Title>` must match (case-insensitive) the title of an existing `Open question` or `Deferred` entry. The `.` character is the separator. Everything after the first `.` is the answer.
+The `<Short Title>` must match (case-insensitive, against the block's `id`) an existing `<open-question status="open|deferred">` block. The `.` character is the separator. Everything after the first `.` is the answer.
 
 The answer text is recorded literally. The one reserved answer text is the retired sentinel `record the recommendation`: recording a question's embedded recommendation now lives in `/answer-open-question-with-recommendation`, so instead of recording that phrase this skill recognizes it, stops without recording, and redirects — see step 2.
 
@@ -48,7 +48,7 @@ Compare the parsed answer text — **trimmed and lowercased** — against the re
 
 Read and follow the shared answer-recording procedure at `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out every step **yourself, in this conversation**. Pass it the **Short Title** parsed in step 1 and the **answer text** resolved in step 2 as its `SHORT TITLE` and `ANSWER` inputs.
 
-That procedure owns resolving the current milestone (the `<MILESTONE_DIR>` referenced below), locating the matching block, analysing the answer's implications, removing the block, folding the decision into `## Decisions`, and cascading to any entries the answer moots. Do not restate those steps here. If the Short Title matches no entry, the procedure stops without changes and reports the mismatch — relay that to the user so they can retry.
+That procedure owns resolving the current milestone (the `<MILESTONE_DIR>` referenced below), locating the matching block, analysing the answer's implications, removing the block, folding the decision into `## Decisions`, and cascading to any entries the answer moots. Do not restate those steps here. If the Short Title matches no block, the procedure stops without changes and reports the mismatch — relay that to the user so they can retry.
 
 ### 4. Commit the manual answer
 

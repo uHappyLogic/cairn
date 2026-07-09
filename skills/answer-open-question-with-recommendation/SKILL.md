@@ -24,10 +24,10 @@ file-editing agent per question and each dispatch commits its own answer.
 /answer-open-question-with-recommendation <Short Title>
 ```
 
-`<Short Title>` must match (case-insensitive) the title of an existing `Open question` or
-`Deferred` entry that the `/recommend-all-open-questions` sweep has already annotated with a
-`> **Recommendation:**` anchor. The procedure resolves the current milestone itself, so
-nothing needs to be looked up first.
+`<Short Title>` must match (case-insensitive, against the block's `id`) an existing
+`<open-question status="open|deferred">` block that the `/recommend-all-open-questions` sweep
+has already annotated with a `<recommendation>` element. The procedure resolves the current
+milestone itself, so nothing needs to be looked up first.
 
 ## Workflow
 
@@ -49,9 +49,9 @@ truth, so the work is identical either way; only the context differs.)
 The shared procedure resolves `<MILESTONE_DIR>` in its step 1 — hold that value; you need it
 for the commit below.
 
-**Clean-stop-and-point:** if the shared procedure hits its no-embedded-recommendation /
-missing-block guard (no entry matches the Short Title, or the matched entry carries no
-`> **Recommendation:**` anchor), it stops without changing anything. Relay that to the user
+**Clean-stop-and-point:** if the shared procedure hits its no-`<recommendation>`-element /
+missing-block guard (no block matches the Short Title, or the matched block carries no
+`<recommendation>` element), it stops without changing anything. Relay that to the user
 and point them to run `/recommend-all-open-questions` first (so the question gets an embedded
 recommendation), or to record a literal answer via `/answer-open-question <Short Title>. <answer text>`.
 Commit nothing — go no further.
@@ -59,7 +59,7 @@ Commit nothing — go no further.
 ### 2. Commit the recommendation answer
 
 **Only if step 1 actually recorded the answer** — i.e. the shared procedure folded a decision
-into `## Decisions` rather than stopping on its no-embedded-recommendation / missing-block
+into `## Decisions` rather than stopping on its no-`<recommendation>`-element / missing-block
 guard — commit the edit. If it stopped without changes, there is nothing to commit; do not
 run these commands.
 
@@ -75,8 +75,9 @@ git commit -m "Recommendation-answer: <Short Title>" -m "<lifted recommendation 
   handle). This distinct subject keeps the commit out of finish-time
   `/capture-milestone-principle-updates`: a recommendation-derived answer's body is a
   pre-computed recommendation, not user-deliberated reasoning, so capture never harvests it.
-- **Body:** the lifted recommendation content (the `<chosen option> — <rationale>` derived
-  from the block's `> **Recommendation:**` anchor) — the answer that was recorded.
+- **Body:** the lifted recommendation content (the `<option>` — `<rationale>` answer text,
+  derived from the block's `<recommendation>` element — its `option` attribute recombined with
+  the element's text, with XML entities un-escaped) — the answer that was recorded.
 
 Committing here is a deliberate, documented exception to the project's "individual skills
 never commit" rule — the standalone `answer-open-question-with-recommendation` skill records
@@ -103,9 +104,9 @@ the full recording context still in hand.
 - The lift/record/cascade mechanism lives **only** in the shared procedures
   (`${CLAUDE_PLUGIN_ROOT}/shared/answer-with-recommendation-procedure.md` composing over
   `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md`); never duplicate or restate lifting the
-  anchor, folding into `## Decisions`, or cascading here.
+  `<recommendation>` element, folding into `## Decisions`, or cascading here.
 - Commit **only** when step 1 actually recorded the answer; the shared procedure's
-  no-embedded-recommendation / missing-block clean stop produces no change and no commit.
+  no-`<recommendation>`-element / missing-block clean stop produces no change and no commit.
 - Stage path-scoped — `git add <MILESTONE_DIR>/requirements.md`, never `git add -A` — so the
   commit touches only `requirements.md`.
 - The commit carries the lifted recommendation content in its **body** and the subject

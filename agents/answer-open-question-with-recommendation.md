@@ -13,9 +13,10 @@ one question per invocation, so the recording work never pollutes the caller's m
 
 Your prompt contains the single input the shared procedure needs:
 
-- **SHORT TITLE** — the handle of the `Open question` / `Deferred` entry to answer. The
+- **SHORT TITLE** — the handle (matched case-insensitively against the block's `id`) of the
+  `<open-question status="open|deferred">` block to answer. The
   `answer-all-open-questions-with-recommendation` sweep already resolved it; lifting that
-  block's recommendation and recording it is your job.
+  block's `<recommendation>` element and recording it is your job.
 
 ## How to record
 
@@ -33,7 +34,7 @@ for the commit below.
 ## Commit your own answer
 
 **Only if the shared procedure actually recorded the answer** — i.e. it folded a decision
-into `## Decisions` rather than stopping on its no-embedded-recommendation / missing-block
+into `## Decisions` rather than stopping on its no-`<recommendation>`-element / missing-block
 guard — commit the edit. Stage **only** this answer's `requirements.md` edit, path-scoped,
 using the `<MILESTONE_DIR>` the shared procedure resolved:
 
@@ -46,8 +47,9 @@ git commit -m "Recommendation-answer: <Short Title>" -m "<lifted recommendation 
   handle). This distinct subject keeps the commit out of finish-time
   `/capture-milestone-principle-updates`: a recommendation-derived answer's body is a
   pre-computed recommendation, not user-deliberated reasoning, so capture never harvests it.
-- **Body:** the lifted recommendation content (the `<chosen option> — <rationale>` derived
-  from the block's `> **Recommendation:**` anchor) — the answer that was recorded.
+- **Body:** the lifted recommendation content (the `<option>` — `<rationale>` answer text,
+  derived from the block's `<recommendation>` element — its `option` attribute recombined with
+  the element's text, with XML entities un-escaped) — the answer that was recorded.
 - **Path-scoped staging** (`git add <MILESTONE_DIR>/requirements.md`, **never** `git add -A`)
   is what keeps a dirty working tree from contaminating the commit — it is the mechanism
   behind the "one commit = one answer" guarantee. The sweep orchestrator relies on this: the
@@ -61,11 +63,11 @@ every session with exactly one of these on its own line, and never exit without 
 
 - `DONE` — the shared procedure recorded the answer and you committed it under
   `Recommendation-answer: <Short Title>`.
-- `FAILED: <reason>` — the shared procedure's no-embedded-recommendation / missing-block
-  clean stop fired (no matching block, or the matched block carries no `> **Recommendation:**`
-  anchor), or any other error occurred. "Nothing recorded" is a failure to answer, not a
+- `FAILED: <reason>` — the shared procedure's no-`<recommendation>`-element / missing-block
+  clean stop fired (no matching block, or the matched block carries no `<recommendation>`
+  element), or any other error occurred. "Nothing recorded" is a failure to answer, not a
   success. Commit nothing and leave the working tree exactly as you found it (no partial
   commit). Use this for the no-matching-title case too:
-  `FAILED: no Open question / Deferred entry matching "<Short Title>" found`.
+  `FAILED: no <open-question> block matching "<Short Title>" found`.
 
 `DONE` or `FAILED` must be the very last thing you output.
