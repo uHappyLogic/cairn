@@ -8,9 +8,10 @@ description: Non-interactively sweep the current milestone's requirements for op
 This is the non-interactive batch path for producing recommendations on open questions. It
 walks every open and deferred question in the current milestone and, per question, dispatches
 a read-only subagent — the non-interactive twin of `/discuss-open-question` — that returns
-**Alternatives + a single Recommendation**. The orchestrator is the **sole document mutator**:
-it embeds each returned sub-block directly beneath the **unchanged one-line question header**,
-so the header stays a one-line, greppable blockquote and the recommendation lives beneath it.
+**alternatives + a single recommendation** as the `<open-question>` block's XML sub-elements.
+The orchestrator is the **sole document mutator**: it embeds each returned set of sub-elements
+inside the existing `<open-question>` block, leaving the block's `<open-question …>` /
+`</open-question>` boundary tags and its `<question>` element untouched.
 
 It is **argument-free** and **deliberately simple**, because it records **no decisions** and
 triggers **no cascades** — it only annotates. Because the question set never shrinks under it,
@@ -28,8 +29,9 @@ four pieces of machinery a decision-recording sweep would need are all unnecessa
 
 The durable git record is the eventual `Recommendation-answer:` commit produced when a
 recommendation is recorded — the recommendation itself is transient scaffolding that decides
-nothing and is later consumed (lifted and removed) by the `/answer-open-question-with-recommendation`
-skill/agent pair (or the `/answer-all-open-questions-with-recommendation` batch sweep).
+nothing and is later consumed (the `<recommendation>` element is lifted and its block removed) by
+the `/answer-open-question-with-recommendation` skill/agent pair (or the
+`/answer-all-open-questions-with-recommendation` batch sweep).
 
 ## Usage
 
@@ -37,8 +39,8 @@ skill/agent pair (or the `/answer-all-open-questions-with-recommendation` batch 
 /recommend-all-open-questions
 ```
 
-Takes no arguments — it sweeps every `Open question` and `Deferred` entry in the current
-milestone's `requirements.md`.
+Takes no arguments — it sweeps every `<open-question>` block (both `status="open"` and
+`status="deferred"`) in the current milestone's `requirements.md`.
 
 ## Workflow
 
@@ -49,9 +51,19 @@ Never use a hardcoded path.
 
 ### 1. Gather the questions once
 
-Read `<MILESTONE_DIR>/requirements.md` in full. Gather **every** `> **Open question — <Short Title>`
-and `> **Deferred — <Short Title>` entry, in document order — no reordering. If there are none,
-say so and stop.
+Fetch the open/deferred set with the line-oriented boundary-line CLI. Every `<open-question>`
+block lives under the single `## Open questions` section of `<MILESTONE_DIR>/requirements.md`,
+so that section is the one bounded region the CLI slices deterministically. Using `awk`/`sed`/`grep`
+keyed on the `<open-question …>` opening and `</open-question>` closing **boundary lines** — never
+a real XML processor (`xmllint`) — enumerate every block in document order and, for each, extract
+its `id` and `status` (by attribute-name-anchored regex like `id="([^"]*)"` and `status="([^"]*)"`,
+so extraction is independent of attribute order) and its `<question>` text. Open and deferred
+blocks share one `<open-question …>` / `</open-question>` boundary-token pair distinguished only by
+`status`, so the gather ignores type — it lists them all. If there are none, say so and stop.
+
+Keep the full text of each gathered block (from this same pass) in hand — the embed step (step 4)
+rewrites the whole block via an exact-string Edit and needs the block's current text as the match
+target.
 
 You gather this set **once** and walk it straight through (step 3). There is **no**
 gather-order and **no** outer re-gather loop: because the sweep records no decisions and
@@ -60,21 +72,20 @@ for the whole run.
 
 ### 2. Skip already-recommended blocks (re-run idempotency)
 
-For each gathered question, inspect its block — the contiguous run of `>`-prefixed lines that
-starts at the one-line question header and continues until the first non-`>` line (the blank
-line that separates entries). A block already carries a recommendation when that contiguous
-`>` run contains a `> **Recommendation:**` anchor line.
+A block already carries a recommendation when it **contains a `<recommendation>` element**. Inspect
+each gathered block for one:
 
-- **Skip** any block that already carries a `> **Recommendation:**` anchor — do not dispatch a
+- **Skip** any block that already contains a `<recommendation>` element — do not dispatch a
   subagent and do not re-annotate it. This makes the sweep idempotent and cheap and preserves
   any hand-edits to an existing recommendation.
 - **Annotate only** blocks that lack one. The primary re-run motive — questions newly surfaced
   by a later `/review-milestone-requirements` pass — is exactly this un-annotated set.
 
 **Escape hatch for a stale recommendation:** to force a fresh recommendation on a block whose
-recommendation has gone stale, the user **deletes that block's recommendation sub-block**
-(leaving the one-line question header intact) and re-runs. The block now lacks a
-`> **Recommendation:**` anchor, so skip regenerates it. There is deliberately **no**
+recommendation has gone stale, the user **deletes that block's embedded sub-elements** — the
+`<alternative>` / `<applied-principle>` / `<recommendation>` children — leaving the
+`<open-question>` wrapper and its `<question>` element intact, and re-runs. The block now lacks a
+`<recommendation>` element, so skip regenerates it. There is deliberately **no**
 `refresh`/selectable mode — this delete-and-re-run hatch covers staleness and keeps the skill
 argument-free.
 
@@ -95,39 +106,60 @@ Recommend on this single open question.
 Short Title: <Short Title>
 
 Context:
-<the question's full Open question / Deferred block, plus relevant surrounding requirements>
+<the question's full <open-question> block, plus relevant surrounding requirements>
 ```
 
 The subagent is **read-only** — it reads `requirements.md` and the live code to ground its
-alternatives but mutates nothing. It returns a ready-to-embed recommendation sub-block as its
-final message (an empty `>` line, `> **Alternatives:**` with one `>`-bullet per option, an
-empty `>` line, then a `> **Recommendation:** <chosen option> — <rationale>` anchor line). The
-orchestrator does **all** the writing.
+alternatives but mutates nothing. It returns the ready-to-embed XML sub-elements as its final
+message — one `<alternative id="...">` element per option (each with child `<advantage>` and
+`<drawback>`), zero or more sibling `<applied-principle>` elements, and one
+`<recommendation option="...">` element — and **only** those child elements, never the
+`<open-question>` wrapper or the `<question>` element. The orchestrator does **all** the writing.
 
-### 4. Embed each returned sub-block
+### 4. Embed each returned set of sub-elements
 
-The orchestrator is the sole mutator. Embed each returned sub-block **directly beneath the
-unchanged one-line question header** — insert its `>`-prefixed lines immediately after the
-header line with **no** blank line between, so the whole entry stays **one contiguous `>` run**
-with empty-`>` internal separation (never bare blank lines). The one-line
-`> **Open question — …` / `> **Deferred — …` header must stay unchanged and greppable as the
-block's first line.
+The orchestrator is the sole mutator. Embed each returned set of sub-elements **inside the
+existing `<open-question>` block**, as children of its wrapper. Do this by **whole-block
+replacement**, not a line-oriented CLI splice: locate the target
+`<open-question id="...">…</open-question>` in the block text the sweep already holds from its
+single gather pass, and replace it whole with an exact-string structural `Edit` — the `old_string`
+is the block as it stands (the `<open-question …>` boundary tag, its `<question>` element, and the
+`</open-question>` boundary tag), and the `new_string` is that same block with the subagent's
+returned children inserted between the `<question>` element and the closing `</open-question>`
+tag. Insert the children at a **2-space indent per nesting level** relative to the block's base
+column, matching the depth of the existing `<question>` child, so the wrapper's boundary tags and
+`<question>` element stay byte-for-byte unchanged.
+
+The CLI is deliberately scoped to locate/extract (step 1) and never used to splice mid-block:
+constructing correctly-indented nested children is structural construction the read-whole Edit
+idiom handles cleanly, where escaping-heavy line-oriented insertion is weakest.
 
 The block after embedding looks like:
 
 ```
-> **Open question — <Short Title>:** <question text>
->
-> **Alternatives:**
-> - **<Option A>** — what it is. *Advantage:* … *Drawback:* …
-> - **<Option B>** — what it is. *Advantage:* … *Drawback:* …
->
-> **Recommendation:** <chosen option> — <one-line rationale>
+<open-question id="Short Title" status="open">
+  <question>Question text here.</question>
+  <alternative id="Option A">
+    what it is
+    <advantage>the strongest reason to choose it</advantage>
+    <drawback>the main cost or risk it carries</drawback>
+  </alternative>
+  <alternative id="Option B">
+    what it is
+    <advantage>…</advantage>
+    <drawback>…</drawback>
+  </alternative>
+  <applied-principle>Short Title</applied-principle>
+  <recommendation option="Option A">one-line rationale</recommendation>
+</open-question>
 ```
+
+(The `<applied-principle>` element appears once per bearing principle, or not at all when none
+bore; there are one or more `<alternative>` elements and exactly one `<recommendation>`.)
 
 ### 5. Stage the edit (do not commit)
 
-After writing all the sub-blocks, stage **only** this skill's own edit — path-scoped, **never**
+After writing all the sub-elements, stage **only** this skill's own edit — path-scoped, **never**
 `git add -A`:
 
 ```
@@ -145,7 +177,7 @@ transient recommendation scaffolding.
 Report once:
 
 - **Which questions were annotated** (dispatched and embedded this run).
-- **Which questions were skipped** (already carried a `> **Recommendation:**` anchor).
+- **Which questions were skipped** (already contained a `<recommendation>` element).
 - Point the user at the consumer: run `/answer-open-question-with-recommendation <Short Title>`
   to lift a single block's embedded recommendation as the recorded answer, or
   `/answer-all-open-questions-with-recommendation` to record every recommendation-bearing
@@ -155,18 +187,19 @@ If there were no open/deferred questions at all, say so and stop (step 1) — no
 
 ## Rules
 
-- Takes **no arguments** — sweeps every `Open question` / `Deferred` entry. Add no
-  `refresh`/selectable mode.
-- Gather the questions **once** and walk straight through: **no** gather-order, **no** outer
-  re-gather loop, **no** per-question live-re-check/skip against the document. The set never
-  shrinks under this sweep.
-- **Skip** any block that already carries a `> **Recommendation:**` anchor; annotate **only**
-  blocks that lack one.
+- Takes **no arguments** — sweeps every `<open-question>` block (`status="open"` and
+  `status="deferred"`). Add no `refresh`/selectable mode.
+- Gather the questions **once** via the boundary-line CLI and walk straight through: **no**
+  gather-order, **no** outer re-gather loop, **no** per-question live-re-check/skip against the
+  document. The set never shrinks under this sweep.
+- **Skip** any block that already contains a `<recommendation>` element; annotate **only** blocks
+  that lack one.
 - Dispatch **one** read-only `recommend-open-question` subagent per surviving question; treat it
-  as read-only (it returns the sub-block, the orchestrator does all writing). The dispatches are
-  independent — never feed one question's recommendation into another.
-- The orchestrator is the **sole document mutator**: embed each sub-block beneath the unchanged
-  one-line header, keeping one contiguous `>` run with empty-`>` separation and the header
-  greppable on line 1.
+  as read-only (it returns the XML sub-elements, the orchestrator does all writing). The dispatches
+  are independent — never feed one question's recommendation into another.
+- The orchestrator is the **sole document mutator**: embed each returned set of sub-elements inside
+  the existing `<open-question>` block by whole-block-replacement `Edit` (not a CLI splice),
+  inserting the children at 2-space-per-level indent and leaving the `<open-question …>` /
+  `</open-question>` boundary tags and the `<question>` element unchanged.
 - **Mutate but do not commit**: stage path-scoped `git add <MILESTONE_DIR>/requirements.md`
   only, never `git add -A`, and stop. Require **no** clean working tree.
