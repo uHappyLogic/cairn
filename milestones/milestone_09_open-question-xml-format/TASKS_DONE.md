@@ -44,3 +44,26 @@ Rewrite the locate (step 2) and remove (step 4) steps of `shared/answer-procedur
 - Steps 3, 5, and 6 still read the whole document to reason, and the clean-prose / no-citation-marker / targeted-edits rules are unchanged.
 
 ---
+
+## Rewire Recommendation-Lift To CLI XML Extract
+
+Rewrite the locate (step 2) and lift (step 3) steps of `shared/answer-with-recommendation-procedure.md` — the execution-neutral lift-then-delegate core (input SHORT TITLE only) that composes over `shared/answer-procedure.md` — so they locate the new `<open-question>` XML block and extract its `<recommendation>` element via the milestone's line-oriented CLI idiom instead of lifting the `> **Recommendation:**` blockquote anchor. This is the recommendation-lift half of the Markdown→XML conversion; it pairs with the sibling `shared/answer-procedure.md` locate/remove rewire, and the `answer-open-question-with-recommendation` skill and agent that wrap this procedure are separate tasks.
+
+**Provides:**
+- The retained SHORT TITLE-only input contract, now backed by a CLI locate + `<recommendation>` extract that treats one `<open-question …>` / `</open-question>` boundary-token pair as the block unit — the same block the reworked `answer-procedure` locate targets. Locate: match the block whose `id` attribute case-folds equal to the queried Short Title (attribute pulled by attribute-name-anchored regex so match is attribute-order-independent, entity-escaped stored value handled before comparing). Lift: within that block, read the `<recommendation option="...">…</recommendation>` element as a single-element CLI read (one attribute + one text node, no dereferencing of the referenced `<alternative id>`), then derive ANSWER by recombining the `option` attribute value with the element's text as "`<option>` — `<rationale>`" (the old anchor form) after reversing entity-escaping on both parts. That derived ANSWER, with SHORT TITLE, is handed to `shared/answer-procedure.md` unchanged.
+
+**Notes:**
+- This is a shared **procedure file**, not a skill or agent, so it is edited directly with `Edit` — the milestone's skill-creator constraint applies only to `skills/`+`agents/` files.
+- The XML contract and CLI idiom are already decided — do not re-invent them or reach for `xmllint`/an XML processor. Read and follow these `requirements.md` `## Decisions` subsections: **Recommendation lift mapping** (ANSWER is the `option` attribute value recombined with the element text as "`<option>` — `<rationale>`", a single-element read with no `<alternative id>` dereference), **XML special-char escaping** (reverse the five-predefined-entity substitution on the lifted `option` value and rationale text, un-escaping `&amp;` last, so the recorded prose is clean unescaped text), **CLI query tooling** (line-oriented `awk`/`sed`/`grep` on the `<open-question …>` / `</open-question>` boundary lines), **id match case-sensitivity** (case-fold both the queried Short Title and the block's `id` before comparing), **Boundary-line tag contract** (extract attributes by attribute-name-anchored regex like `id="([^"]*)"`, order-independent), and **Applied-principle placement** (`<applied-principle>` is a sibling of `<recommendation>`, so a `<recommendation>`-only extract never touches a citation and ANSWER stays provenance-free by construction).
+- The no-anchor guard becomes a **no-`<recommendation>`-element guard**: when no block's `id` matches SHORT TITLE, or the matched block contains no `<recommendation>` element (the recommend sweep never annotated it), stop cleanly without changing anything and report why — the same clean-stop semantics as today.
+- Only the locate + lift (steps 2 and 3) change. Step 4 — delegate the resolved SHORT TITLE and derived ANSWER to `shared/answer-procedure.md` — is unchanged, as is the rule that this file never restates the recording core's locate/analyse/remove/fold/cascade steps.
+
+**Success:**
+- Step 2 (locate) describes a concrete CLI operation that finds the `<open-question>` block by case-folded `id` match, extracting the `id` by attribute-name-anchored regex and accounting for the stored `id` being entity-escaped when comparing.
+- Step 3 (lift) describes extracting the `<recommendation option="...">…</recommendation>` element as a single-element read (one attribute + one text node, no `<alternative id>` dereference), and derives ANSWER as the `option` value recombined with the rationale text as "`<option>` — `<rationale>`".
+- The lift reverses entity-escaping on both the `option` value and the rationale text using the fixed five-predefined-entity reverse-substitution map, un-escaping `&amp;` last, so lifting a sample annotated block yields a "`<option>` — `<rationale>`" answer with all entities un-escaped.
+- The guard fires cleanly — stops without changing anything and reports why — when no block's `id` matches SHORT TITLE, or when the matched block carries no `<recommendation>` element.
+- Step 4 still delegates the resolved SHORT TITLE + derived ANSWER to `shared/answer-procedure.md` unchanged, and the file still does not restate that core's steps.
+- No `> **Recommendation:**` anchor reference or `>`-blockquote / contiguous-`>`-run vocabulary remains anywhere in the file.
+
+---
