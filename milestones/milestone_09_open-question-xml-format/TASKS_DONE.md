@@ -1,5 +1,24 @@
 # TASKS DONE
 
+## Sync CLAUDE.md Invariants To XML Format
+
+Re-sync every `CLAUDE.md` passage that describes the old open-question representation to the new `<open-question>` XML block format and the query-where-it-pays convention, so the plugin's own per-skill/-procedure/-agent invariants match the skills as shipped by this milestone's earlier tasks. This is the documentation-sync half of the Markdown→XML conversion for `CLAUDE.md`; only format- and convention-describing passages change, and the architectural invariants themselves are preserved verbatim in meaning.
+
+**Notes:**
+- `CLAUDE.md` is a plain documentation file edited **directly** with `Edit` — the milestone's `skill-creator` authoring constraint applies only to `skills/`+`agents/` files, not to `CLAUDE.md`.
+- The XML contract is already decided — do not re-invent it. Ground every rewrite in this milestone's `requirements.md` `## Goal` and `## Decisions` (which pin all contracts), and also verify each rewritten invariant against the **actually-updated** `skills/`/`shared/`/`agents/` files, since those land first (the earlier tasks in this milestone): the invariant prose must match the file it describes.
+- Concrete stale claims to replace: the one-line greppable blockquote header and contiguous-`>`-run vocabulary (including `shared/answer-procedure.md`'s "removes the entire contiguous `>`-prefixed run" invariant); the empty-`>` internal-separation discipline; the `> **Recommendation:**` anchor and its last-line / lifted-verbatim contract; the `> **Applied principle:**` citation-line stacking; and the recommend-sweep's "embed beneath the unchanged one-line header" description.
+- Their replacements describe: the `<open-question id status>` block under the single `## Open questions` section (boundary-line tag contract, id-first single-line opening tag, `status="open"|"deferred"` encoding, 2-space indentation, uniform entity-escaping); the `<alternative>` / `<advantage>` / `<drawback>` children; sibling `<applied-principle>` elements (provenance-free lift by construction); the `<recommendation option>` element and its "`<option>` — `<rationale>`" lift mapping with reverse entity-substitution; the line-oriented `awk`/`sed`/`grep` CLI (never `xmllint`) keyed on boundary lines with case-folded `id` matching; the whole-block-replacement embedding idiom; and the query-where-it-pays convention (CLI for deterministic locate/extract/remove; whole-document reads for cascade analysis and reconciliation).
+- Scope discipline — do **not** touch the non-format architectural invariants: who commits vs. stages, who mutates, the inline-vs-isolated skill/agent splits, the single-source-of-truth shared-procedure references, the `Manual-answer:` / `Recommendation-answer:` capture-grep boundaries, and the orchestration-sequencing rules are all preserved verbatim in meaning. The out-of-scope notes (no migration; `migrate-workspace` untouched) stay as they are.
+
+**Success:**
+- `grep`ing `CLAUDE.md` for the old vocabulary — `> **Recommendation:**`, `> **Applied principle:**`, `` contiguous `>` ``, `blockquote`, `greppable header`, `` empty `>` `` — surfaces no stale format claims.
+- Every invariant statement about locate / remove / lift / embed / authoring matches the corresponding updated `skills/`/`shared/`/`agents/` file (e.g. `answer-procedure` removal now describes deleting the `<open-question …>` … `</open-question>` block; the recommend sweep now describes whole-block-replacement embedding of `<alternative>`/`<applied-principle>`/`<recommendation>` children).
+- The XML-format vocabulary is present where the old format vocabulary was: `<open-question>` block under `## Open questions`, `status="open"|"deferred"`, `<recommendation option>` with the "`<option>` — `<rationale>`" lift, sibling `<applied-principle>`, the boundary-line CLI idiom, and the query-where-it-pays convention.
+- The non-format architectural invariants (who commits, who mutates, inline-vs-isolated splits, single-source-of-truth procedure references, capture-grep boundaries, orchestration sequencing) are unchanged in meaning, and the out-of-scope notes (no migration, `migrate-workspace` untouched) are unchanged.
+
+---
+
 ## Author Open Questions As XML Blocks
 
 Rewrite the `review-milestone-requirements` skill — the sole author of open-question blocks — so that when it surfaces a new open or deferred question it authors a well-formed, indented `<open-question>` XML block instead of a one-line Markdown blockquote header. This is the authoring half of the milestone's Markdown→XML conversion; the recommendation sub-elements and the CLI query/answer paths are separate tasks.
