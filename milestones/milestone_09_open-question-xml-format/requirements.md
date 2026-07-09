@@ -90,15 +90,11 @@ Special characters are handled by uniform XML entity-escaping: the five predefin
 
 `<open-question>` blocks use a 2-space indent per nesting level, with the boundary tags (`<open-question …>` / `</open-question>`) at the requirement's base column, applied consistently. It is the most compact fit for the shallow nesting these blocks reach and matches the document's existing style; since the CLI keys on the `<open-question …>` / `</open-question>` boundary lines (and a real XML parser is whitespace-insensitive anyway), interior depth is purely a readability choice. The exact 2-space depth is locked in during implementation once the CLI query-tooling is wired.
 
-## Open questions
+### id match case-sensitivity
 
-> **Deferred — id match case-sensitivity:** Whether the CLI `id` lookup preserves today's case-insensitive Short-Title matching or tightens to exact-match — a low-risk default (keep case-insensitive) exists; confirm while wiring the locate.
->
-> **Alternatives:**
-> - **Keep case-insensitive `id` matching** — the CLI `id` lookup lowercases (or otherwise case-folds) both the queried Short Title and the block's `id` attribute before comparing, preserving today's `shared/answer-procedure.md` behavior. *Advantage:* backward-compatible, so users who type a Short Title with different casing than the stored `id` still resolve the block, and no existing skill's locate semantics change. *Drawback:* case-folding adds a small step to every CLI query and a plain `grep`/`xmllint --xpath` on the raw `id` string won't match by default, so the tooling must wrap the fold explicitly.
-> - **Tighten to exact case-sensitive match** — the `id` lookup compares the queried Short Title against the `id` attribute byte-for-byte. *Advantage:* the simplest possible CLI query — a literal string match with no normalization, matching how XML attribute values are natively compared. *Drawback:* a behavior regression versus today's case-insensitive locate, so a user passing a differently-cased Short Title (a common typo) silently fails to match, pushing friction onto every answer/discuss/lift call.
->
-> **Recommendation:** Keep case-insensitive `id` matching — it is the question's named low-risk default, preserves the current `answer-procedure.md` locate contract with zero behavior regression, and being a Deferred item the exact case-fold mechanism can be finalized against the chosen CLI while wiring the locate.
+The CLI `id` lookup keeps today's case-insensitive Short-Title matching rather than tightening to an exact case-sensitive match: it case-folds both the queried Short Title and the block's `id` attribute before comparing, preserving `shared/answer-procedure.md`'s current locate contract with zero behavior regression. The exact case-fold mechanism is finalized against the chosen CLI while wiring the locate.
+
+## Open questions
 
 ## Out of Scope
 
