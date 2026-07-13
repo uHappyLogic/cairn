@@ -10,9 +10,18 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_09_open-question-xml-format/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 9 — Open-Question XML Format
+
+- Converted the open-question representation in `requirements.md` from the one-line Markdown blockquote (with its embedded `>`-run recommendation sub-block) to a well-formed, indented `<open-question id="..." status="open|deferred">` XML block — `<question>`, one or more `<alternative id="...">` with child `<advantage>`/`<drawback>`, zero or more sibling `<applied-principle>`, and a `<recommendation option="...">` — consolidated under the single `## Open questions` section while the prose sections stay Markdown.
+- Established the query-where-it-pays convention: `review-milestone-requirements` authors the XML block, and the open-question skills locate/extract/remove via a dependency-free line-oriented `awk`/`sed`/`grep` CLI keyed on the `<open-question …>` / `</open-question>` boundary lines (never `xmllint`), while cross-document work (reconciliation, cascade analysis) still reads the whole file.
+- Rewired `shared/answer-procedure.md` (locate + whole-block remove) and `shared/answer-with-recommendation-procedure.md` (locate + single-element `<recommendation>` lift with reverse entity-substitution) to the CLI/XML idiom, keeping their SHORT TITLE + ANSWER / SHORT-TITLE-only input contracts unchanged.
+- Taught the `recommend-open-question` agent to render alternatives/applied-principle/recommendation as `<open-question>` sub-elements, and rewired the `recommend-all-open-questions` and `answer-all-open-questions-with-recommendation` orchestrators plus `discuss-open-question` and the answer wrappers to the XML blocks (whole-block-replacement embedding, `<recommendation>`-element idempotency/gather keys).
+- Pinned the block contract in `## Decisions`: single-line id-first double-quoted opening tag, uniform five-predefined-entity escaping, 2-space-per-level indentation, case-folded `id` matching, sibling `<applied-principle>` for provenance-free lift, and the `<recommendation option>` → `<alternative id>` link with the "`<option>` — `<rationale>`" lift mapping.
+- Re-synced `CLAUDE.md` invariants and `README.md` (skill reference, the *Iterating milestone requirements* section prose and diagram, and the answer-principle-learning-loop bullet) to the XML format and the query-where-it-pays convention, with all skill/agent edits made through the `skill-creator` plugin.
 
 ### Milestone 8 — Principles As Recommendation Advisor
 
@@ -100,3 +109,4 @@ Current milestone: `milestones/milestone_09_open-question-xml-format/`
 | 6 | Recommend Open Questions | `milestones/milestone_06_recommend-open-questions/` |
 | 7 | Answer Open Questions With Recommendation | `milestones/milestone_07_answer-all-with-recommendation/` |
 | 8 | Principles As Recommendation Advisor | `milestones/milestone_08_principles-recommendation-advisor/` |
+| 9 | Open-Question XML Format | `milestones/milestone_09_open-question-xml-format/` |
