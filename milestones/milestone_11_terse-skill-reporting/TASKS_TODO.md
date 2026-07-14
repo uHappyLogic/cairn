@@ -1,25 +1,5 @@
 # TASKS TODO
 
-## Terse Reporting: Review-Milestone-Requirements
-
-Cut the success-path reporting of `review-milestone-requirements` step 5 "Report convergence" to a single fixed terse status line, removing the "What changed this pass" prose re-narration and the handoff pointers to `/discuss-open-question` and `/answer-open-question`. Per the milestone's "Non-redundant advisory output" decision, keep the genuinely git-absent, decision-critical output — the convergence verdict (whether the document is ready for `/derive-tasks`) and the list of still-open questions — alongside the terse line. The step also gains a distinct one-line no-op message for when the step-4 commit's dirty-own-path guard fires. This applies the milestone's terse-reporting decisions to `review-milestone-requirements`, this skill's flagship no-op-pass case.
-
-**Notes:**
-- Only step 5 "Report convergence" changes. Terse line shape (per the "Terse status line shape" decision): a fixed sentence carrying no identifier — no milestone id, count, or commit subject; a concrete choice to use is "Requirements reviewed."
-- Delete the "What changed this pass" bullet (blocks pruned with covering decision cited, repeats merged, new questions raised, "possibly resolved — confirm" flags) — that reshaping is exactly the committed diff the terse cut targets — and remove the "one-line nudge toward `/discuss-open-question` or `/answer-open-question`" handoff pointer from the "What's still open" bullet.
-- Non-redundant advisory (per the "Non-redundant advisory output" decision): keep the still-open list (remaining `status="open"` blocks by Short Title / `id`) and keep the full **Convergence** verdict — the `no status="open"` blocks remaining → ready-for-`/derive-tasks` rule, and the deferred-blocks-may-carry-forward note. This is decision-critical state the commit never captures, so it stays beside the terse line.
-- No-op case (per the "No-op pass reporting" decision): step 4 already documents this as "the milestone's flagship no-op-pass case" — when the step-4 dirty-own-path guard fires (a pass that reconciled, pruned, and surfaced nothing, so `requirements.md` is unchanged and nothing was committed), step 5 must instead print a concise one-line message stating that nothing changed and briefly why — distinct from the terse success line, because git holds no durable record of a no-op.
-- Boundary — every document-editing step is untouched: step 2 (reconcile/prune/dedup), step 3 (surface new gaps / author `<open-question>` blocks), and step 4 (the commit and its shared-procedure reference) are unchanged, as is the `## Rules` section. Only step 5's console output changes.
-- No file-writing or commit behavior changes; edit `skills/review-milestone-requirements/SKILL.md` inline (no shared reporting-convention file is introduced).
-
-**Success:**
-- `review-milestone-requirements` step 5's success path instructs printing exactly one fixed terse status line with no identifier, followed only by the still-open list and the convergence verdict; the "What changed this pass" bullet and the `/discuss-open-question` / `/answer-open-question` handoff pointers no longer appear in step 5.
-- Step 5 also instructs a distinct one-line no-op message, triggered when the step-4 dirty-own-path guard fires, that states nothing changed and briefly why.
-- Steps 0–4 and the `## Rules` section of `skills/review-milestone-requirements/SKILL.md` are unchanged — every reconcile, surface, prune, authoring, and commit instruction is byte-for-byte intact.
-- No new file is created under `shared/`.
-
----
-
 ## Terse Reporting: Task And Principle-Capture Skills
 
 Cut the success-path reporting of the three task-level and principle-capture skills — `submit-task`, `complete-task`, and `capture-milestone-principle-updates` — to a single fixed terse status line, removing the prose summary of what was authored/completed/distilled and every next-step/follow-up pointer. Each step also gains (or, for `capture`, keeps) a distinct one-line no-op message for when its commit's dirty-own-path guard fires. This applies the milestone's terse-reporting decisions to the task-level/capture group of `SKILL.md` files; the same-named dispatched agents under `agents/` (which return structured `DONE`/`FAILED` to an orchestrator, not console output) are out of scope.

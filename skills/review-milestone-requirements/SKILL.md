@@ -125,13 +125,16 @@ This is the milestone's flagship no-op-pass case, and the shared procedure's dir
 
 ### 5. Report convergence
 
-Close the pass by telling the user where the loop stands, so they know whether to go around again or move on:
+On the success path, print exactly one fixed terse status line — `Requirements reviewed.` — carrying no identifier (no milestone id, no count, no commit subject). The committed diff and `git log` are the durable record of what this pass reshaped, so do **not** re-narrate it: there is no "What changed this pass" summary (blocks pruned, repeats merged, new questions raised, "possibly resolved — confirm" flags) and no handoff pointer toward `/discuss-open-question` or `/answer-open-question`.
 
-- **What changed this pass** — blocks pruned (with the covering decision cited), repeats merged, new questions raised, and anything flagged "possibly resolved — confirm".
-- **What's still open** — the remaining `status="open"` blocks, by Short Title (`id`), with a one-line nudge toward `/discuss-open-question` or `/answer-open-question`.
+Follow that terse line with only the two pieces of decision-critical state git never captures, so the user knows whether to loop again or move on:
+
+- **What's still open** — the remaining `status="open"` blocks, by Short Title (`id`). No nudge pointer.
 - **Convergence** — `/derive-tasks` requires that **no `status="open"` blocks remain** (`status="deferred"` blocks may carry forward — they're meant to be settled while doing the work). So:
   - If any `status="open"` block remains → the requirements are **not** ready; the next loop step is to answer them, then re-run this skill.
   - If none remain → say explicitly that the requirements look **ready for `/derive-tasks`**, noting any `status="deferred"` blocks that will be settled during the work.
+
+**No-op pass.** When the step-4 dirty-own-path guard fires — this pass reconciled, pruned, and surfaced nothing, so `requirements.md` is unchanged and nothing was committed — do **not** print `Requirements reviewed.` Instead print a single distinct line stating that nothing changed and briefly why (e.g. "No changes — the question set already matched the recorded decisions and no new gaps surfaced."), because git holds no durable record of a no-op. Still report the still-open list and convergence verdict above, since that state is unchanged but the user still needs it to decide the next loop step.
 
 ## Rules
 
