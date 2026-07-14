@@ -37,8 +37,8 @@ already recorded the milestone and cleared the current-milestone pointer to `non
 
 > This skill writes **only** the principle store at the fixed path
 > `milestones/answer_decision_principles.md`. It does **not** touch any milestone's `requirements.md`.
-> Like every individual skill here it does **not** commit — it leaves its principle-store edit
-> **staged** for the user to review.
+> When a pass distills a new or revised principle it **commits** that principle-store edit itself
+> (step 5); a pass that distills none changes no file and commits nothing.
 
 ## Workflow
 
@@ -70,7 +70,7 @@ git log --grep='^Manual-answer: ' -- <MILESTONE_DIR>/requirements.md
   reusable reasoning is in the **body** (`git log` / `git show` of each commit). Phase-1 extraction
   works from those bodies.
 
-If the walk returns **no qualifying commits**, this is the empty-range exit — go straight to step 5
+If the walk returns **no qualifying commits**, this is the empty-range exit — go straight to step 6
 (it is a normal outcome, not an error).
 
 ### 3. Phase 1 — extract candidates and dedup them against each other (internal, no user yet)
@@ -102,7 +102,7 @@ bodies into a clean, deduped set of principle candidates.
    originating examples). The output of phase 1 is the deduped set of surviving candidates, ranked
    **strongest first** (most clearly generalizable / most load-bearing for future recommendations).
 
-If phase 1 leaves **no** surviving candidate (commits existed but none generalize), go to step 5 —
+If phase 1 leaves **no** surviving candidate (commits existed but none generalize), go to step 6 —
 this converges on the **same** "nothing captured" report as the empty range.
 
 ### 4. Phase 2 — confirm and write one candidate at a time, against the live store
@@ -163,15 +163,24 @@ restatement of one past decision.>
   applied is the *statement*, not the origin.
 - **No status field.** Presence in the file means confirmed.
 
-### 5. Report
+### 5. Commit the principle-store update
+
+Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these two inputs:
+
+- **PATHS** — this skill's own change set: the fixed-path store `milestones/answer_decision_principles.md` (a `milestones/`-root artifact, **not** any `<MILESTONE_DIR>` file — this skill writes only that store).
+- **SUBJECT** — `Principle-capture: <milestone_id>` (the `<MILESTONE_DIR>` resolved in step 1), the marker naming this skill's distinctive principle-capture function.
+
+This is the milestone's second named no-op-pass case (alongside `review-milestone-requirements`), and the shared procedure's dirty-own-path guard handles it for you: a pass that distilled no new principle — the empty commit range, in-range commits that none generalize, or the user declining every candidate — leaves `milestones/answer_decision_principles.md` unchanged, so the guard stages nothing and commits nothing; a pass whose confirmed revise/add actually edited the store commits that edit. The shared procedure owns the path-scoped staging, the no-op guard, and the commit — do not restate those mechanics here.
+
+### 6. Report
 
 - **If at least one principle was written,** briefly state, per principle, its `### <Short Title>`,
   whether it was an add or a revision, and that it is now available to the recommendation advisor
-  (`/discuss-open-question` and `/recommend-all-open-questions`). Remind the user the principle-store
-  edit is **staged, not committed**, for them to review.
+  (`/discuss-open-question` and `/recommend-all-open-questions`). The principle-store edit is
+  **committed** for the user under this skill's `Principle-capture:` subject (step 5).
 - **If nothing was captured** — the empty commit range (step 2) **or** in-range commits that none
   generalize (step 3) **or** the user declined every candidate — report it in a **single line**: there
-  are no `Manual-answer` principles in range to distill (write and stage nothing). These cases
+  are no `Manual-answer` principles in range to distill (write nothing, commit nothing). These cases
   **converge on the identical terminal report** rather than branching into a distinct empty-range
   message; the empty range is simply the natural floor of the normal flow.
 
@@ -198,5 +207,7 @@ restatement of one past decision.>
   distill" message as the "commits exist but none generalize" case — not a distinct branch.
 - Write **only** `milestones/answer_decision_principles.md`. **Never** touch any `requirements.md`, and
   never resolve `<MILESTONE_DIR>` via `get-current-milestone`.
-- **Do not commit.** Like every individual skill here, this leaves its edit to the principle store
-  **staged** for the user to review.
+- **Commit the principle-store edit** via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (step 5)
+  under subject `Principle-capture: <milestone_id>` — path-scoped to `milestones/answer_decision_principles.md`
+  (never `git add -A`). A pass that distilled no new principle changes no file, so the shared
+  dirty-own-path guard stages nothing and commits nothing.
