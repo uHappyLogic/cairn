@@ -79,11 +79,23 @@ clean-stop case: if step 1 hit its no-`<recommendation>`-element / missing-block
 
 ### 3. Report findings
 
-After committing, briefly state:
-- Which question was resolved and how the document changed (resolved block, decision folded
-  into `## Decisions`, cascading resolutions).
-- Any new open questions the recorded decision may have introduced — surface these but do
-  **not** add them to the document without user confirmation.
+On the success path — the recommendation was recorded and committed — print exactly one fixed
+terse status line, carrying no identifier (no Short Title, no commit subject):
+
+```
+Answer recorded.
+```
+
+Do **not** re-narrate which question resolved or how the document changed (the resolved block,
+the decision folded into `## Decisions`, the cascading resolutions) — the committed diff and
+`git log` are the durable record of that. Alongside the terse line keep only the one piece of
+genuinely git-absent advisory output: any new open questions the recorded decision may have
+introduced — surface these but do **not** add them to the document without user confirmation.
+
+**No-op case:** if step 2's dirty-own-path guard fired — nothing was committed because
+`requirements.md` was unchanged (step 1's no-`<recommendation>`-element / missing-block clean
+stop) — do **not** print the terse success line. Instead print a single line stating that
+nothing was recorded and briefly why, since git holds no durable record of a no-op.
 
 Then stay available: the user may now ask follow-up questions or request adjustments, with
 the full recording context still in hand.

@@ -62,9 +62,15 @@ The shared procedure owns the path-scoped staging, the dirty-own-path no-op guar
 
 ### 5. Report findings
 
-After committing, briefly state:
-- Which question was resolved and how the document changed (resolved block, decision folded into `## Decisions`, cascading resolutions).
-- Any new open questions the answer may have introduced — surface these but do **not** add them to the document without user confirmation.
+On the success path — the answer was recorded and committed — print exactly one fixed terse status line, carrying no identifier (no Short Title, no commit subject):
+
+```
+Answer recorded.
+```
+
+Do **not** re-narrate which question resolved or how the document changed (the resolved block, the decision folded into `## Decisions`, the cascading resolutions) — the committed diff and `git log` are the durable record of that. Alongside the terse line keep only the one piece of genuinely git-absent advisory output: any new open questions the answer may have introduced — surface these but do **not** add them to the document without user confirmation.
+
+**No-op case:** if step 4's dirty-own-path guard fired — nothing was committed because `requirements.md` was unchanged (a step 1 parse error, the step 2 retired-sentinel redirect, or a step 3 Short-Title mismatch) — do **not** print the terse success line. Instead print a single line stating that nothing was recorded and briefly why, since git holds no durable record of a no-op.
 
 ## Rules
 
