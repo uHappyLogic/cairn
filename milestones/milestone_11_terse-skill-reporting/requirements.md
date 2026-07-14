@@ -48,3 +48,21 @@ Two docs describe this behavior and must track the change: `CLAUDE.md` (the `fin
 
 ## Out of Scope
 
+## Open questions
+
+<open-question id="No-op pass reporting" status="open">
+  <question>When a committing skill's pass changes no files and its dirty-own-path no-op guard fires (for example a review-milestone-requirements pass that reconciled nothing, a recommend sweep that found no open questions, or a capture pass that distilled no principle), there is no commit or diff to serve as the durable record the terse-reporting rationale relies on. Should such a no-op pass still collapse to a single terse status line, and if so what should it convey, or should it keep an explanatory message precisely because nothing was recorded to git?</question>
+</open-question>
+
+<open-question id="Non-redundant advisories" status="open">
+  <question>Some skills emit success-path output that is not a re-narration of the committed diff but genuinely new information absent from the git log: review-milestone-requirements' convergence verdict and still-open list, derive-tasks' flag for any requirement it could not trace to a task, and the answer skills' note about new open questions an answer may have exposed. Does the terse cut apply to this non-redundant advisory output too, collapsing it to the bare status line, or is git-log-absent advisory information exempt and preserved on the success path?</question>
+</open-question>
+
+<open-question id="Terse line shape" status="open">
+  <question>What exactly should the single terse status line contain? Is it a fixed bare sentence such as Milestone defined., or may it carry a minimal identifier (the milestone id, the task heading, or the commit subject) so the user can tell which item was acted on? And for the looping orchestrators (complete-all-tasks, answer-all-open-questions-with-recommendation), does the rule mean one final line for the whole run, or is per-item progress during the loop preserved so a long run is not silent?</question>
+</open-question>
+
+<open-question id="Terse-reporting invariant" status="deferred">
+  <question>Beyond revising the existing CLAUDE.md text this change affects, should a dedicated CLAUDE.md invariant be added that codifies the terse-success-reporting rule itself so future skill edits inherit the convention, or is updating the existing affected wording sufficient?</question>
+</open-question>
+
