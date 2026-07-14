@@ -28,3 +28,25 @@ The document takes resolved inputs (the path set and the subject) and holds only
 
 ---
 
+## Commit From Three Milestone-Lifecycle Skills
+
+Turn the three simple single-edit milestone-lifecycle skills — `define-milestone-goal`, `specify-milestone-starting-state`, and `goto-next-milestone` — into committers under this milestone's skill-layer rule. Each currently ends with the instruction "Do not commit — leave staging to the user"; replace that end-state with a commit step that references the shared commit procedure (see the *Author Shared Skill-Layer Commit Procedure* task's Provides) rather than restating its logic. Each skill ends its pass by committing exactly the file(s) it changed, path-scoped, under its own distinct function-derived subject prefix, applying the uniform dirty-own-path no-op guard.
+
+Each skill has a different own-path set to stage: `define-milestone-goal` creates and commits the new milestone directory's three files (`requirements.md`, `TASKS_TODO.md`, `TASKS_DONE.md`); `specify-milestone-starting-state` commits the milestone's `requirements.md`; `goto-next-milestone` commits `milestones/README.md`. The three subject prefixes must be distinct from one another, each derived from that skill's distinctive function in the `<Marker>: <descriptor>` house shape, and none may match capture's `^Manual-answer:` grep.
+
+**Provides:**
+- `define-milestone-goal`, `specify-milestone-starting-state`, and `goto-next-milestone` each now end by committing their own path-scoped change set under a distinct, function-derived `<Marker>: <descriptor>` subject prefix (all clear of `^Manual-answer:`), via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`.
+
+**Notes:**
+- These are per-skill wirings, not one copy-pasted block: each skill's staged path set differs (a fresh directory of three files, a single `requirements.md`, or `milestones/README.md`), so the resolved path set handed to the shared procedure is authored per skill.
+- The commit step replaces the existing trailing "Do not commit — leave staging to the user" Rule in each of the three files — remove that line (and any other leave-staged/do-not-commit prose) so no residual "leave staging to the user" instruction contradicts the new commit step.
+- Reference the shared procedure via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`; do not restate its path-scoped-staging, subject-convention, or no-op-guard logic in these skills — the skill supplies only the resolved path set and the resolved subject.
+
+**Success:**
+- Each of `skills/define-milestone-goal/SKILL.md`, `skills/specify-milestone-starting-state/SKILL.md`, and `skills/goto-next-milestone/SKILL.md` ends with a commit step that references `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`.
+- No "Do not commit", "leave staging to the user", or other leave-staged/do-not-commit prose remains in any of the three files.
+- The three commit subject prefixes are distinct from one another, each in `<Marker>: <descriptor>` shape, function-derived, and none matches `^Manual-answer:`.
+- Each skill's commit stages only its own edited path(s) (the new milestone directory's files / the milestone `requirements.md` / `milestones/README.md`) and never uses `git add -A`.
+
+---
+

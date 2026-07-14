@@ -43,7 +43,16 @@ Current milestone: `milestones/milestone_<number>_<slug>/`
 
 Leave the `## Current Milestone` heading, the `## Milestone History` section, and all other content unchanged.
 
-### 4. Confirm
+### 4. Commit the activation
+
+Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these two inputs:
+
+- **PATHS** — this skill's own change set: `milestones/README.md` (the file whose `Current milestone:` pointer it just overwrote).
+- **SUBJECT** — `Milestone-activation: milestone_<number>_<slug>`.
+
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit; do not restate those mechanics here.
+
+### 5. Confirm
 
 Report:
 - The milestone activated: path and title
@@ -55,4 +64,3 @@ Report:
 - Do not run if the `Current milestone:` line in `milestones/README.md` is not `none` — always require `/finish-current-milestone` to have been run first.
 - Do not create any files or directories — the milestone directory must already exist.
 - Update `milestones/README.md` only — do not write the pointer into `CLAUDE.md`.
-- Do not commit — leave staging to the user.

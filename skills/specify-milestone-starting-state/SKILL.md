@@ -71,7 +71,16 @@ Keep each subsection tight. The audience is someone who will use this to make de
 
 Replace the (empty) `## Relevant starting state` section in `requirements.md` with the drafted content. Do not modify any other section.
 
-### 6. Confirm
+### 6. Commit the starting state
+
+Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these two inputs:
+
+- **PATHS** — this skill's own change set: `milestones/<milestone_id>/requirements.md` (the file whose `## Relevant starting state` section it just filled).
+- **SUBJECT** — `Starting-state: <milestone_id>`.
+
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit; do not restate those mechanics here.
+
+### 7. Confirm
 
 Report:
 - Which milestone was updated.
@@ -84,4 +93,3 @@ Report:
 - Do not propose decisions — that is for `/review-milestone-requirements` and `/discuss-open-question`.
 - If a system is missing entirely, say so in one sentence and move on. Do not design its replacement here.
 - Do not overwrite `## Goal`, `## Decisions`, or `## Out of Scope`.
-- Do not commit — leave staging to the user.
