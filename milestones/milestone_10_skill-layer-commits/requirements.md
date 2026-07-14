@@ -54,27 +54,11 @@ Every committing skill's subject prefix is derived systematically from its disti
 
 `complete-task` and `complete-all-tasks` stage the exact set of paths the completer created or edited while carrying out the task — recorded as each edit is made — together with the two milestone task-list files, then commit that explicit path set (never `git add -A`). This commits the task's real change set atomically while honoring both rules: naming paths is path-scoped, and recording paths as they are edited is not content inspection (no diffing to decide what to include). Under `complete-all-tasks` the agent stages its own paths (or returns them) so the orchestrator's per-task commit stays path-scoped.
 
-## Open questions
+### Finish commit file set
 
-<open-question id="Finish commit file set" status="deferred">
-  <question>finish-current-milestone edits milestones/README.md (completion summary plus clearing the current-milestone pointer to none) and, only for lasting tech-stack or structural changes, CLAUDE.md. When it becomes a committer, does it stage and commit both files in one path-scoped commit — including CLAUDE.md only on the passes where that edit actually happened — and leave goto-next-milestone&apos;s none-pointer precondition satisfied?</question>
-  <alternative id="One combined commit">
-    Stage &lt;MILESTONE_DIR&gt;-independent paths path-scoped — always `milestones/README.md`, plus `CLAUDE.md` only on the passes where step 7 actually edited it — and record them in a single commit under one finish subject; the pointer-clear rides inside the same README edit.
-    <advantage>One finish invocation yields one atomic commit, matching the milestone&apos;s layer-based &quot;a skill commits exactly its own changes&quot; rule and every sibling committer&apos;s single-commit shape; conditional CLAUDE.md staging keeps it path-scoped with no content inspection; and because the committed README already carries `Current milestone: none`, goto-next-milestone&apos;s precondition is recorded in git, not merely left dirty.</advantage>
-    <drawback>A lasting CLAUDE.md structural change is folded under the same subject as routine finish bookkeeping, so a later reader cannot revert or cherry-pick the durable config edit independently of the pointer-clear.</drawback>
-  </alternative>
-  <alternative id="Two separate commits">
-    Emit two path-scoped commits per finish — one for `milestones/README.md` (completion summary plus pointer-clear) and, only when step 7 edited it, a second for `CLAUDE.md` (the lasting structural change) under its own subject.
-    <advantage>Clean provenance separation: the durable project-config change gets its own greppable, independently-revertible subject, and the README finish commit stays byte-uniform whether or not CLAUDE.md changed that pass.</advantage>
-    <drawback>Two commits for one skill invocation contradicts the milestone&apos;s evident one-skill-one-commit shape (every other converted committer produces exactly one commit) and adds ordering/subject machinery for an edit that is itself a consequence of the same finish.</drawback>
-  </alternative>
-  <alternative id="Commit README only, stage CLAUDE.md">
-    Commit only `milestones/README.md` and leave any `CLAUDE.md` edit staged for the user to commit under their own boundary.
-    <advantage>Keeps the commit strictly to the finish bookkeeping the skill fully owns, treating the cross-cutting CLAUDE.md structural touch as user-owned project config.</advantage>
-    <drawback>Directly violates the milestone goal — &quot;every user-invoked skill that changes files ends by committing exactly those changes&quot; — by leaving a skill-made change uncommitted; a dirty tree with a staged CLAUDE.md is precisely the state this milestone eliminates.</drawback>
-  </alternative>
-  <recommendation option="One combined commit">Finish is one logical act, so one path-scoped commit (README always, CLAUDE.md only when step 7 touched it) best fits the milestone&apos;s layer-based one-skill-one-commit rule and records the none-pointer state that goto-next-milestone requires.</recommendation>
-</open-question>
+`finish-current-milestone` records its whole finish as a single path-scoped commit: it always stages `milestones/README.md` (completion summary plus the current-milestone pointer cleared to `none`) and additionally stages `CLAUDE.md` only on the passes where the lasting-change step actually edited it, then commits that explicit path set under one finish subject. The pointer-clear rides inside the same README edit, so the committed README already carries `Current milestone: none` and `goto-next-milestone`'s none-pointer precondition is recorded in git rather than left in a dirty tree. Conditional `CLAUDE.md` staging keeps the commit path-scoped with no content inspection.
+
+## Open questions
 
 <open-question id="No-op pass commit" status="deferred">
   <question>Some newly-committing skills can finish a pass having changed no file — review-milestone-requirements when a pass finds nothing to reconcile or surface, and capture-milestone-principle-updates when it distills no new principle. Should such a skill skip both staging and committing when it produced no change to its own path, rather than creating an empty commit?</question>
