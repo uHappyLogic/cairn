@@ -174,13 +174,19 @@ This is the milestone's second named no-op-pass case (alongside `review-mileston
 
 ### 6. Report
 
-- **If at least one principle was written,** briefly state, per principle, its `### <Short Title>`,
-  whether it was an add or a revision, and that it is now available to the recommendation advisor
-  (`/discuss-open-question` and `/recommend-all-open-questions`). The principle-store edit is
-  **committed** for the user under this skill's `Principle-capture:` subject (step 5).
+- **If at least one principle was written,** print exactly one fixed terse status line and nothing
+  else:
+
+  `Principles captured.`
+
+  Carry no principle `### <Short Title>`, no add/revision breakdown, and no commit subject, and print
+  no next-step or recommendation-advisor pointer. The principle-store edit is committed under this
+  skill's `Principle-capture:` subject (step 5), which is the durable record.
 - **If nothing was captured** — the empty commit range (step 2) **or** in-range commits that none
   generalize (step 3) **or** the user declined every candidate — report it in a **single line**: there
-  are no `Manual-answer` principles in range to distill (write nothing, commit nothing). These cases
+  are no `Manual-answer` principles in range to distill (write nothing, commit nothing). This is the
+  distinct one-line no-op message for a pass whose dirty-own-path guard fired (git holds no durable
+  record of a no-op) — keep it rather than collapsing it into `Principles captured.`. These cases
   **converge on the identical terminal report** rather than branching into a distinct empty-range
   message; the empty range is simply the natural floor of the normal flow.
 

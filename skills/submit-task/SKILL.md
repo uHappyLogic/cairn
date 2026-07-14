@@ -76,12 +76,22 @@ The shared procedure owns the path-scoped staging, the dirty-own-path no-op guar
 
 ### 6. Confirm
 
-Report the task title and where it was inserted (e.g. `Added "Fix Wall Collision Sweep" —
-appended (task #4 of 4).`), then stay available: the user may now ask why you scoped it that
-way or request a tweak, with the authoring context still in hand. If the procedure's
-atomic-scope rule left a second buildable piece unauthored, mention it and offer to queue it
-as a follow-up task. If you could not author a concrete task — typically because the issue
-was too vague — say so and suggest `/discuss-new-task` to sharpen it first.
+On the success path — the task was authored, inserted, and committed — print exactly one
+fixed terse status line and nothing else:
+
+`Task submitted.`
+
+Carry no task title, insert position, or commit subject, and print no next-step or follow-up
+pointer. (The authoring context stays in hand for follow-up exactly as before; only the
+printed summary goes — the committed diff and git log are the durable record.)
+
+If step 5's dirty-own-path guard fired because the insert authored nothing — no file
+changed, so nothing was committed — print instead a distinct one-line no-op message stating
+that nothing was submitted and briefly why (e.g. `No task submitted — nothing was authored.`),
+not the terse success line.
+
+If you could not author a concrete task — typically because the issue was too vague — say so
+and suggest `/discuss-new-task` to sharpen it first.
 
 ## Rules
 

@@ -58,11 +58,19 @@ commits nothing.
 
 ### 3. Hand back
 
-When the commit is recorded:
+On the success path — the task was completed, verified, moved to `TASKS_DONE.md`, and
+committed — print exactly one fixed terse status line and nothing else:
 
-- Summarize what you completed, how you verified it, and the commit you made.
-- Stay available: the user may now ask follow-up questions or request adjustments, with the
-  full work context still in hand.
+`Task completed.`
+
+Carry no task heading, verification detail, or commit subject, and print no follow-up
+pointer. (The full work context stays in hand for follow-up exactly as before; only the
+printed summary goes — the committed diff and git log are the durable record.)
+
+If step 2's dirty-own-path guard fired because the completion was abandoned before it
+changed any file — nothing was committed — print instead a distinct one-line no-op message
+stating that nothing was completed and briefly why (e.g. `No task completed — no file
+changed.`), not the terse success line.
 
 ## Rules
 
