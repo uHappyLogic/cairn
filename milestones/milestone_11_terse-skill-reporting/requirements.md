@@ -58,27 +58,11 @@ Genuinely git-absent advisory output is preserved on the success path rather tha
 
 When a committing skill's pass changes no files and its dirty-own-path no-op guard fires, it does not collapse to the terse success line: because a no-op commits nothing, git holds no durable record, so the console must carry the explanation. Such a pass prints a concise one-line message stating that nothing changed and briefly why (distinct from the terse success line) — mirroring how failure and clean-stop paths keep their full explanatory messages and how commit-procedure already instructs to "report the no-op". Terse success reporting is earned only where the committed diff and git log are the durable record.
 
+### Codifying the terse-reporting convention
+
+Beyond revising the specific existing CLAUDE.md text this change touches, a dedicated standalone invariant is added to CLAUDE.md's "Invariants to preserve when editing skills" section codifying the terse-success-reporting rule (success path prints one terse status line; failure/clean-stop paths keep full messages; conversational and exempt skills untouched). The cross-cutting convention needs a durable authoritative home, and with no shared reporting-convention file to carry it the standalone invariant is the only such home — mirroring how the equally cross-cutting commit convention earns its own invariant rather than being folded into another already-overloaded paragraph.
+
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Terse-reporting invariant" status="deferred">
-  <question>Beyond revising the existing CLAUDE.md text this change affects, should a dedicated CLAUDE.md invariant be added that codifies the terse-success-reporting rule itself so future skill edits inherit the convention, or is updating the existing affected wording sufficient?</question>
-  <alternative id="Add dedicated invariant">
-    Add a new standalone paragraph to CLAUDE.md's "Invariants to preserve when editing skills" section that codifies the terse-success-reporting rule (success path prints one terse status line; failure/clean-stop paths keep full messages; conversational and exempt skills untouched), alongside revising the specific affected wording.
-    <advantage>Gives the cross-cutting convention a single durable home so every future committing skill inherits it — matching exactly how the commit convention is pinned as its own big invariant, and doing so is more necessary here because this milestone adds no shared reporting-convention file to otherwise carry the rule.</advantage>
-    <drawback>Adds another long paragraph to an already very long invariants list, and unlike the commit invariant it can point to no shared procedure as the mechanism's source of truth.</drawback>
-  </alternative>
-  <alternative id="Fold into commit invariant">
-    Extend the existing "Committing is a property of the skill layer" invariant with a terse-reporting clause rather than adding a separate one, since both scope to the same set of file-mutating committing skills.
-    <advantage>Keeps the invariants list from growing and co-locates the rule with the closely related "committing skill" scope it shares.</advantage>
-    <drawback>That invariant is already the section's most overloaded paragraph; appending an unrelated-mechanism clause buries the reporting rule where a future editor scanning for reporting guidance would not find it, weakening the very inheritance the codification is meant to provide.</drawback>
-  </alternative>
-  <alternative id="Update affected wording only">
-    Revise just the specific existing text this change touches (the finish-current-milestone "recommends at runtime" invariant lines and layout line) and add no invariant codifying the general rule.
-    <advantage>Smallest, most conservative edit — exactly the documentation scope the milestone goal already names, with no net-new invariant prose to maintain.</advantage>
-    <drawback>Leaves the cross-cutting convention uncaptured anywhere authoritative, so a future skill author has no single rule stating "success path = one terse line" and can silently drift back to prose reporting — the precise regression a codified convention prevents.</drawback>
-  </alternative>
-  <recommendation option="Add dedicated invariant">A terse-reporting rule that binds every future committing skill needs a durable authoritative home, and with no shared reporting-convention file to carry it the standalone invariant is the only such home — directly mirroring how the equally cross-cutting commit convention earns its own invariant, while folding it into that already-overloaded commit paragraph would bury it.</recommendation>
-</open-question>
 
