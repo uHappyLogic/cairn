@@ -50,27 +50,11 @@ Every skill/agent that commits or stages does so after resolving `<MILESTONE_DIR
 
 Every committing skill's subject prefix is derived systematically from its distinctive function, expressed in the established `<Marker>: <descriptor>` house shape (the `-answer:` family being one instance) — no ad-hoc per-skill list and no grandfathered exception. `complete-all-tasks` comes under the same convention: it drops its bare task-heading subject in favour of a function-derived prefix, with the task heading moving into the commit body. This keeps committing a uniform skill-layer property with no role-based carve-outs, makes every prefix greppable and self-describing, and clears capture's `^Manual-answer:` grep by construction.
 
-## Open questions
+### Completion commit path scope
 
-<open-question id="Completion commit path scope" status="open">
-  <question>complete-task and complete-all-tasks stage with `git add -A` today, which the goal forbids in favor of path-scoped staging with no content inspection — but a task&apos;s changes span arbitrary source files not known ahead of time, unlike the single-file answer/recommend skills. How does the completer decide which paths to stage: only the milestone task-list files, those plus every source file it edited while carrying out the task, or a path set the task declares — and how does that square with the no-content-inspection rule?</question>
-  <alternative id="Task-list files only">
-    Stage and commit only the two milestone task-list files (the TODO and DONE lists) for the TODO&#8594;DONE move, leaving the task&apos;s actual source edits unstaged for the user or a later pass.
-    <advantage>Trivially path-scoped and fully known ahead of time &mdash; the two task-list paths are fixed, so nothing about arbitrary edits must be tracked and there is no `git add -A` risk.</advantage>
-    <drawback>Defeats the goal&apos;s &quot;commit exactly those changes&quot; by stranding the task&apos;s real work &mdash; the source edits that are the whole point of completing it &mdash; outside the atomic per-task commit.</drawback>
-  </alternative>
-  <alternative id="Edited paths plus task-list files">
-    The completer stages exactly the set of paths it created or edited while carrying out the task &mdash; recorded as it makes each edit &mdash; together with the two task-list files, then commits that explicit path set, never `git add -A`.
-    <advantage>Commits precisely the task&apos;s real change set atomically while honoring both rules: naming paths is path-scoped, and recording paths as you edit them is not content inspection &mdash; you never diff to decide what to include.</advantage>
-    <drawback>The acting party must carry its edited-path set to the committer &mdash; trivial for the inline skill, but under complete-all-tasks the agent must stage its own paths (or return them) so the orchestrator&apos;s commit stays path-scoped, a small protocol addition.</drawback>
-  </alternative>
-  <alternative id="Task-declared path set">
-    Each task authors an explicit manifest of the paths it will touch, and the completer stages exactly that declared set plus the task-list files.
-    <advantage>The commit&apos;s path set is known and reviewable before completion, and the committer needs no runtime edit-tracking.</advantage>
-    <drawback>Contradicts the milestone&apos;s own altitude split &mdash; exact files and insertion points are derived fresh at completion against the live code, not knowable at authoring &mdash; so a declared manifest is guesswork that drifts from what the task actually edits.</drawback>
-  </alternative>
-  <recommendation option="Edited paths plus task-list files">It is the only option that commits the task&apos;s actual change set atomically while satisfying both rules &mdash; the acting completer already knows exactly which paths it touched, so staging that recorded set (the agent staging its own paths under complete-all-tasks) needs no content inspection.</recommendation>
-</open-question>
+`complete-task` and `complete-all-tasks` stage the exact set of paths the completer created or edited while carrying out the task — recorded as each edit is made — together with the two milestone task-list files, then commit that explicit path set (never `git add -A`). This commits the task's real change set atomically while honoring both rules: naming paths is path-scoped, and recording paths as they are edited is not content inspection (no diffing to decide what to include). Under `complete-all-tasks` the agent stages its own paths (or returns them) so the orchestrator's per-task commit stays path-scoped.
+
+## Open questions
 
 <open-question id="Finish commit file set" status="deferred">
   <question>finish-current-milestone edits milestones/README.md (completion summary plus clearing the current-milestone pointer to none) and, only for lasting tech-stack or structural changes, CLAUDE.md. When it becomes a committer, does it stage and commit both files in one path-scoped commit — including CLAUDE.md only on the passes where that edit actually happened — and leave goto-next-milestone&apos;s none-pointer precondition satisfied?</question>
