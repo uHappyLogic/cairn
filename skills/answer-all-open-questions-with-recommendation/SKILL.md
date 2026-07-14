@@ -140,10 +140,16 @@ question, so one commit = one answer.
 
 ### 3. Report
 
-When the gathered order is exhausted, report once how many recommendations were recorded and
-direct the user to review the commits — each recorded answer landed on its own
-`Recommendation-answer: <Short Title>` commit, individually reversible. If the sweep recorded
-nothing (no recommendation-bearing questions), say so in one sentence.
+On the success path, when the gathered order is exhausted, print exactly one fixed terse status
+line for the whole run — `Recommendations recorded.` — and nothing more: no count of how many
+recommendations were recorded and no pointer to review the commits. Each recorded answer landed on
+its own reversible `Recommendation-answer: <Short Title>` commit, so the `git log` is the durable
+record.
+
+If the sweep recorded nothing (no recommendation-bearing questions, so nothing was committed this
+run), do not print the terse success line; instead say so in one sentence — this is the distinct
+one-line no-op message, kept separate from the terse success line because git holds no durable
+record of a no-op.
 
 Do **not** enumerate the untouched (recommendation-less) questions: they remain visible as
 `<open-question>` blocks (`status="open"` / `status="deferred"`) in `requirements.md` and via

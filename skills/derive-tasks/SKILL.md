@@ -108,7 +108,11 @@ POSITION: append
 
 ### 8. Verify coverage and report
 
-Re-read the finished `<MILESTONE_DIR>/TASKS_TODO.md`. Confirm every brief from the matrix produced a task section. Output a brief summary: the ordered task titles, and explicitly flag any requirement you could not trace to a task (flag as a gap — never silently omit).
+Re-read the finished `<MILESTONE_DIR>/TASKS_TODO.md` and confirm every brief from the matrix produced a task section.
+
+On the success path, print exactly one fixed terse status line for the whole run — `Tasks derived.` — with no list of the ordered task titles and no next-step pointer; the committed `TASKS_TODO.md` and `git log` are the durable record. **Alongside** that terse line, keep the one git-absent advisory this step owns: explicitly flag any requirement you could not trace to a task (flag as a gap — never silently omit). A coverage gap is decision-critical and the commit never captures it, so it is preserved beside the terse line rather than collapsed into it.
+
+If the run derived nothing — `TASKS_TODO.md` gained no task section, so step 9's dirty-own-path no-op guard will fire and nothing is committed — do not print the terse success line; instead print a distinct one-line message stating that nothing changed and why (no tasks were derived), since git holds no durable record of a no-op.
 
 ### 9. Commit the derived task list
 

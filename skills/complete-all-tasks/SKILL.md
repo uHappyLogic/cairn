@@ -62,7 +62,9 @@ Go back to 2a and process the next task.
 
 ### 3. Report completion
 
-When `<MILESTONE_DIR>/TASKS_TODO.md` contains no more `##` sections, report that all tasks have been completed and list each task that was completed.
+On the success path, when `<MILESTONE_DIR>/TASKS_TODO.md` contains no more `##` sections, print exactly one fixed terse status line for the whole run — `All tasks completed.` — and nothing more: no list of the tasks that were completed and no next-step pointer. The per-task commits and `git log` are the durable record of what was done.
+
+If the run committed nothing — every per-task commit in step 2c hit its dirty-own-path no-op guard, so no files changed across the whole run — do not print the terse success line; instead print a distinct one-line message stating that nothing changed and why (nothing was committed this run), since git holds no durable record of a no-op.
 
 ## Rules
 

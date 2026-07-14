@@ -178,14 +178,16 @@ one-commit-per-answer discipline.
 
 ### 6. Report
 
-Report once:
+On the success path, print exactly one fixed terse status line for the whole run —
+`Recommendations embedded.` — and nothing more: no annotated-vs-skipped breakdown, no per-question
+listing, and no consumer pointer to the `/answer-open-question-with-recommendation` /
+`/answer-all-open-questions-with-recommendation` skills. The committed annotations and `git log` are
+the durable record.
 
-- **Which questions were annotated** (dispatched and embedded this run).
-- **Which questions were skipped** (already contained a `<recommendation>` element).
-- Point the user at the consumer: run `/answer-open-question-with-recommendation <Short Title>`
-  to lift a single block's embedded recommendation as the recorded answer, or
-  `/answer-all-open-questions-with-recommendation` to record every recommendation-bearing
-  question's answer in one batch sweep.
+If the sweep committed nothing — its step-5 dirty-own-path no-op guard fired because every gathered
+block already carried a `<recommendation>` element, so step 4 changed no bytes — do not print the
+terse success line; instead print a distinct one-line message stating that nothing changed and why
+(no un-annotated questions remained to recommend on), since git holds no durable record of a no-op.
 
 If there were no open/deferred questions at all, say so and stop (step 1) — nothing to report.
 
