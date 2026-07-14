@@ -54,29 +54,13 @@ The single terse success line is a fixed sentence with no identifier (exactly th
 
 Genuinely git-absent advisory output is preserved on the success path rather than collapsed into the terse status line: the terse cut removes only re-narration of the committed diff, while decision-critical information the commit never captured — review-milestone-requirements' convergence verdict and still-open list, derive-tasks' flag for any requirement it could not trace to a task, and the answer skills' note about newly-exposed open questions — is kept alongside the terse status line. Every success-path output that is a diff re-narration still collapses.
 
+### No-op pass reporting
+
+When a committing skill's pass changes no files and its dirty-own-path no-op guard fires, it does not collapse to the terse success line: because a no-op commits nothing, git holds no durable record, so the console must carry the explanation. Such a pass prints a concise one-line message stating that nothing changed and briefly why (distinct from the terse success line) — mirroring how failure and clean-stop paths keep their full explanatory messages and how commit-procedure already instructs to "report the no-op". Terse success reporting is earned only where the committed diff and git log are the durable record.
+
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="No-op pass reporting" status="open">
-  <question>When a committing skill's pass changes no files and its dirty-own-path no-op guard fires (for example a review-milestone-requirements pass that reconciled nothing, a recommend sweep that found no open questions, or a capture pass that distilled no principle), there is no commit or diff to serve as the durable record the terse-reporting rationale relies on. Should such a no-op pass still collapse to a single terse status line, and if so what should it convey, or should it keep an explanatory message precisely because nothing was recorded to git?</question>
-  <alternative id="Concise explanatory no-op line">
-    The no-op path prints a short one-line message stating that nothing changed and briefly why (e.g. &quot;No open questions found; nothing to recommend.&quot;), distinct from the terse success line, on the grounds that with no commit or diff the console is the only record — aligning the no-op with the failure and clean-stop paths the milestone already exempts from the terse cut.
-    <advantage>Honors the terse-reporting rationale exactly: terseness is justified only because git holds the durable record, and a no-op leaves git untouched, so the console must carry the explanation — mirroring the goal&apos;s own decision to keep full messages on failure/clean-stop paths and the commit procedure&apos;s existing &quot;report the no-op&quot; step.</advantage>
-    <drawback>Adds a distinct no-op branch to author and keep worded in each committing skill, marginally more than one uniform status line.</drawback>
-  </alternative>
-  <alternative id="Bare terse no-op line">
-    Collapse the no-op to a single fixed bare status line of its own (e.g. &quot;Nothing to recommend.&quot;) — terse like the success line, just a different sentence, carrying no &quot;why&quot;.
-    <advantage>Keeps one uniform terse rule with minimal wording while still letting the user distinguish a no-op from a real change.</advantage>
-    <drawback>A bare line with no git backing can under-explain why nothing happened when the user expected a change, and the console is the sole record so the missing &quot;why&quot; cannot be recovered from a diff.</drawback>
-  </alternative>
-  <alternative id="Reuse the success terse line">
-    Print the same terse success line regardless of whether the pass changed anything, making the no-op indistinguishable from a real committed change.
-    <advantage>Absolute simplicity — one line and one branch, no special no-op handling at all.</advantage>
-    <drawback>Actively misleading: the user cannot tell a real change from a no-op, and unlike a genuine success there is no diff or commit to inspect, so it hides a possibly surprising &quot;nothing happened&quot; outcome behind a confirmation of success.</drawback>
-  </alternative>
-  <recommendation option="Concise explanatory no-op line">Terse reporting is earned only where the committed diff and git log are the durable record; a no-op commits nothing, so — exactly as the milestone already keeps failure and clean-stop paths explanatory and as commit-procedure already instructs to &quot;report the no-op&quot; — the no-op path should keep a concise one-line message saying nothing changed and why.</recommendation>
-</open-question>
 
 <open-question id="Terse-reporting invariant" status="deferred">
   <question>Beyond revising the existing CLAUDE.md text this change affects, should a dedicated CLAUDE.md invariant be added that codifies the terse-success-reporting rule itself so future skill edits inherit the convention, or is updating the existing affected wording sufficient?</question>
