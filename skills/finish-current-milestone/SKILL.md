@@ -80,9 +80,18 @@ Scan the completed tasks and requirements for changes that affect how future mil
 
 If nothing in the milestone changes the tech stack, tooling, or project structure, skip this step entirely.
 
-### 8. Confirm
+### 8. Commit the finish
 
-Report: the milestone name, the number of tasks completed, the bullet list written into `milestones/README.md`, and that the current-milestone pointer has been cleared to "none". Note any `CLAUDE.md` sections updated (or confirm none were needed).
+Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these two inputs:
+
+- **PATHS** — this skill's own change set: **always** `milestones/README.md` (it carries both the completion summary from steps 4–5 and the `Current milestone: none` pointer cleared in step 6, in the same edit), and **additionally** `CLAUDE.md` **only on passes where step 7 actually edited it**. If step 7 was skipped, `CLAUDE.md` is not in the set and the commit covers `milestones/README.md` alone. This conditional inclusion is keyed on whether this skill's step 7 edited the file — decided as the edit is (or is not) made, never by diffing or inspecting content.
+- **SUBJECT** — `Milestone-finish: milestone_<NN>_<slug>`.
+
+Because the pointer-clear rides inside the same `milestones/README.md` edit, the committed README already carries `Current milestone: none`, so `goto-next-milestone`'s none-pointer precondition is recorded in git rather than left in a dirty tree. The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit; do not restate those mechanics here.
+
+### 9. Confirm
+
+Report: the milestone name, the number of tasks completed, the bullet list written into `milestones/README.md`, and that the current-milestone pointer has been cleared to "none". Note any `CLAUDE.md` sections updated (or confirm none were needed), and that the finish was recorded as a single commit.
 
 Suggest the next steps, in this order:
 
@@ -96,4 +105,4 @@ Suggest the next steps, in this order:
 - Keep the summary factual and grounded in the requirements and tasks — do not invent accomplishments.
 - Do not create or modify any files in `<MILESTONE_DIR>/`.
 - Clear the current-milestone pointer only in `milestones/README.md` — overwrite the `Current milestone:` line to `Current milestone: none`. Do not modify `CLAUDE.md`'s pointer section.
-- `/finish-current-milestone` only *suggests* `/capture-milestone-principle-updates` — it never invokes it and never commits. Step 8 adds the recommendation as suggestion text only.
+- `/finish-current-milestone` only *suggests* `/capture-milestone-principle-updates` — it never invokes it. Step 9 adds the recommendation as suggestion text only.

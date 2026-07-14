@@ -226,3 +226,28 @@ The **orchestrator** (`skills/answer-all-open-questions-with-recommendation/SKIL
 - `skills/answer-open-question-with-recommendation/SKILL.md` (the single-question skill) is not modified by this task.
 
 ---
+
+## Commit From The Finish-Milestone Skill
+
+Turn `finish-current-milestone` into a committer under this milestone's skill-layer rule, per the *Finish commit file set* decision in `requirements.md`. It currently ends "never commits" (its step 8 recommendation prose and its trailing `## Rules` bullet both say so, leaving a dirty tree); replace that end-state with a single commit step — after the summary is written, the pointer is cleared, and the optional `CLAUDE.md` update has run — that records the whole finish as one path-scoped commit, referencing the shared commit procedure (see the *Author Shared Skill-Layer Commit Procedure* task's Provides) rather than restating its logic. Its recommend-never-auto-run of `/capture-milestone-principle-updates` and every other property of the finish flow are unchanged.
+
+The staged path set is authored per the decision: **always** `milestones/README.md` (which carries both the completion summary and the current-milestone pointer cleared to `none` in the same edit) and **additionally** the workspace `CLAUDE.md` **only on passes where step 7 actually edited it** — conditional staging keyed on whether-the-skill-edited-it, which is not content inspection. Because the pointer-clear rides inside the same README edit, the committed README already carries `Current milestone: none`, so `goto-next-milestone`'s none-pointer precondition is recorded in git rather than left in a dirty tree. The skill commits that explicit path set (never `git add -A`) under one distinct function-derived `<Marker>: <descriptor>` subject prefix that stays clear of capture's `^Manual-answer:` grep, applying the uniform dirty-own-path no-op guard.
+
+**Provides:**
+- `finish-current-milestone` now ends by committing its whole finish as one path-scoped commit — always staging `milestones/README.md` and conditionally staging `CLAUDE.md` (only when step 7 edited it) — under a distinct, function-derived `<Marker>: <descriptor>` subject prefix (clear of `^Manual-answer:`), via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`.
+
+**Notes:**
+- The conditional `CLAUDE.md` staging is decided by **whether this skill's step 7 edited it**, recorded as the edit is (or is not) made — not by diffing or inspecting content. On a pass that skips step 7 entirely, `CLAUDE.md` is not staged and the commit covers `milestones/README.md` alone.
+- The commit subject is one finish prefix in the `<Marker>: <descriptor>` house shape, function-derived from this skill's distinctive milestone-finish role, distinct from the other committing skills' prefixes, and must not match `^Manual-answer:`.
+- Remove the "never commits" prose from both the step 8 recommendation text and the trailing `## Rules` bullet ("it never invokes it and never commits"), and any other leave-staged/do-not-commit wording, so no residual instruction contradicts the new commit step. Keep the recommend-but-never-auto-run of `/capture-milestone-principle-updates` intact — only the "never commits" clause changes.
+- Reference the shared procedure via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`; do not restate its path-scoped-staging, subject-convention, or no-op-guard logic — the skill supplies only the resolved path set (README always, `CLAUDE.md` conditionally) and its resolved subject.
+- Scope is `skills/finish-current-milestone/SKILL.md` only. Re-syncing the committing-vs-staging prose in `CLAUDE.md` / `README.md` is a separate concern, not part of this task.
+
+**Success:**
+- `skills/finish-current-milestone/SKILL.md` ends with a single commit step that references `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`.
+- That commit always stages `milestones/README.md` and stages `CLAUDE.md` only on passes where step 7 edited it, and never uses `git add -A`.
+- The committed `milestones/README.md` carries both the completion summary and `Current milestone: none` (the pointer-clear rides inside the same README edit), so `goto-next-milestone`'s none-pointer precondition is recorded in git.
+- No "never commits", "leave staged", or other leave-staged/do-not-commit prose remains anywhere in the file (neither step 8 nor `## Rules`); the recommend-but-never-auto-run of `/capture-milestone-principle-updates` is preserved.
+- The commit subject is a function-derived `<Marker>: <descriptor>` prefix, distinct from the other committing skills' prefixes and not matching `^Manual-answer:`.
+
+---
