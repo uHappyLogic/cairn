@@ -1,34 +1,5 @@
 # TASKS TODO
 
-## Move Recommendation-Answer Sweep Commit To Orchestrator
-
-Reverse the milestone-7 inversion in the `answer-all-open-questions-with-recommendation` sweep so it obeys this milestone's layer rule (agents never commit; an orchestrator commits its agents' work after they return). Today the dispatched `answer-open-question-with-recommendation` **agent** records *and* commits each answer, while the orchestrator "never edits `requirements.md` and never commits." Move the commit **up from the agent to the orchestrator**, per answer, preserving one-commit-=-one-answer.
-
-The **agent** (`agents/answer-open-question-with-recommendation.md`) still runs `${CLAUDE_PLUGIN_ROOT}/shared/answer-with-recommendation-procedure.md` to record one question's answer in `<MILESTONE_DIR>/requirements.md`, but no longer stages or commits: its `Commit your own answer` section is removed, and it hands the recorded-but-uncommitted edit back — its `DONE`/`FAILED` protocol adjusted so `DONE` means "recorded, not committed" (its failure path still leaves the working tree exactly as it found it, committing nothing).
-
-The **orchestrator** (`skills/answer-all-open-questions-with-recommendation/SKILL.md`) commits after each successful agent `DONE` return, before dispatching the next agent (still strictly sequential, because cascades mutate the shared document): path-scoped to `<MILESTONE_DIR>/requirements.md` (never `git add -A`), keeping the existing `Recommendation-answer: <Short Title>` subject with the lifted recommendation rationale in the commit body, referencing `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (see the *Author Shared Skill-Layer Commit Procedure* task's Provides) for the mechanics rather than restating them.
-
-**Provides:**
-- Under `answer-all-open-questions-with-recommendation`, the **orchestrator commits per answer** (path-scoped `<MILESTONE_DIR>/requirements.md`, subject `Recommendation-answer: <Short Title>`, lifted recommendation rationale in the body, via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`) and the dispatched `answer-open-question-with-recommendation` **agent no longer commits** — it records the answer and returns `DONE` (with the lifted recommendation content for the commit body) / `FAILED` around an uncommitted edit.
-
-**Notes:**
-- This is the per-answer-granularity sibling of the *Commit Per Task From Complete-All-Tasks Orchestrator* task (which does the same orchestrator-commits move at per-task granularity). The commit stays **per answer** — inside the loop, after each successful agent `DONE`, before the next dispatch — not once-at-the-end; one-commit-=-one-answer is preserved.
-- The orchestrator's commit body must carry the **lifted recommendation rationale**, which the agent computes (the `<option>` — `<rationale>` text lifted from the block's `<recommendation>` element). So the agent's adjusted `DONE` return must hand that recorded answer content back to the orchestrator for the commit body — the orchestrator does not re-derive the lift. This is the hand-back contract that replaces the agent's own commit.
-- The subject stays exactly `Recommendation-answer: <Short Title>` — an already-conforming `<Marker>: <descriptor>` instance that stays clear of capture's `^Manual-answer:` grep; this task introduces **no** new prefix. Reference the shared commit procedure for path-scoped staging / no-op guard mechanics; do not restate them.
-- Rewrite the prose in **both** components that documents the old agent-commits divergence: the orchestrator's intro paragraphs and its `## Rules` "the agent owns all mutation and its own path-scoped commit … The orchestrator never edits `requirements.md` and never commits … This inverts the usual orchestrator-commits arrangement" bullet must flip to orchestrator-commits; the agent's "Commit your own answer" section and the commit references in its return-protocol prose must go.
-- The two shared procedures `shared/answer-with-recommendation-procedure.md` and `shared/answer-procedure.md` are execution-neutral and already commit-free — they must stay that way; add no commit language to either.
-- The single-question `answer-open-question-with-recommendation` **skill** keeps committing inline and is **not** modified by this task. Re-syncing the committing-vs-staging / milestone-7-inversion prose in `CLAUDE.md` and `README.md` is a separate concern, not part of this task.
-
-**Success:**
-- `agents/answer-open-question-with-recommendation.md` contains no `git add`/`git commit`/staging language; its `DONE` return wraps a recorded-but-uncommitted edit (and carries back the lifted recommendation content for the orchestrator's commit body), and its `FAILED` path leaves the working tree exactly as it found it (commits nothing).
-- `skills/answer-all-open-questions-with-recommendation/SKILL.md` commits once per successful agent `DONE` — before dispatching the next agent — staging only `<MILESTONE_DIR>/requirements.md` (never `git add -A`), under subject `Recommendation-answer: <Short Title>` with the lifted recommendation rationale in the body, referencing `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`.
-- The sweep's strictly-sequential dispatch and its per-question re-read/skip sequencing (step 2a live re-check, single gathered ordered pass, no outer re-gather loop) are unchanged.
-- No "the agent … commits" / "the orchestrator never edits `requirements.md` and never commits" / "inverts the usual orchestrator-commits arrangement" divergence prose remains in either the orchestrator or the agent file.
-- `shared/answer-with-recommendation-procedure.md` and `shared/answer-procedure.md` contain no `git add`/`git commit`/commit-step language — both remain commit-free.
-- `skills/answer-open-question-with-recommendation/SKILL.md` (the single-question skill) is not modified by this task.
-
----
-
 ## Commit From The Finish-Milestone Skill
 
 Turn `finish-current-milestone` into a committer under this milestone's skill-layer rule, per the *Finish commit file set* decision in `requirements.md`. It currently ends "never commits" (its step 8 recommendation prose and its trailing `## Rules` bullet both say so, leaving a dirty tree); replace that end-state with a single commit step — after the summary is written, the pointer is cleared, and the optional `CLAUDE.md` update has run — that records the whole finish as one path-scoped commit, referencing the shared commit procedure (see the *Author Shared Skill-Layer Commit Procedure* task's Provides) rather than restating its logic. Its recommend-never-auto-run of `/capture-milestone-principle-updates` and every other property of the finish flow are unchanged.

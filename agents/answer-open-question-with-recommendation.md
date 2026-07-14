@@ -1,13 +1,15 @@
 ---
 name: answer-open-question-with-recommendation
-description: Records one open question's embedded recommendation as its answer in the current milestone's requirements.md, then commits that answer on its own. Invoke with the target question's Short Title as the prompt. Dispatched per-question by the answer-all-open-questions-with-recommendation sweep; not called directly by the user.
+description: Records one open question's embedded recommendation as its answer in the current milestone's requirements.md, leaving the edit uncommitted for the orchestrator to commit. Invoke with the target question's Short Title as the prompt. Dispatched per-question by the answer-all-open-questions-with-recommendation sweep; not called directly by the user.
 color: green
 model: opus
 ---
 
 You are recording one open question's **embedded recommendation** as its answer in the
 current milestone's `requirements.md`, in an isolated subagent context. You handle exactly
-one question per invocation, so the recording work never pollutes the caller's memory.
+one question per invocation, so the recording work never pollutes the caller's memory. You
+**record but do not commit** — you hand the recorded-but-uncommitted edit back to the sweep
+orchestrator, which commits it.
 
 ## Input
 
@@ -28,46 +30,31 @@ locate/analyse/remove/fold/cascade recording). Read it first (run `echo "$CLAUDE
 if you need to resolve the path), then carry out every step against the SHORT TITLE in your
 prompt. Do not restate its lift/record/cascade steps here.
 
-The shared procedure resolves `<MILESTONE_DIR>` in its step 1 — hold that value; you need it
-for the commit below.
+As the shared procedure lifts the block's `<recommendation>` element, **capture the lifted
+recommendation content** — the `<option>` — `<rationale>` answer text (the `option` attribute
+recombined with the element's text, with XML entities un-escaped) that it recorded. You hand
+this back in your `DONE` return so the orchestrator can put it in the commit body; you do not
+commit it yourself.
 
-## Commit your own answer
-
-**Only if the shared procedure actually recorded the answer** — i.e. it folded a decision
-into `## Decisions` rather than stopping on its no-`<recommendation>`-element / missing-block
-guard — commit the edit. Stage **only** this answer's `requirements.md` edit, path-scoped,
-using the `<MILESTONE_DIR>` the shared procedure resolved:
-
-```
-git add <MILESTONE_DIR>/requirements.md
-git commit -m "Recommendation-answer: <Short Title>" -m "<lifted recommendation content>"
-```
-
-- **Subject:** exactly `Recommendation-answer: <Short Title>` (the answered question's
-  handle). This distinct subject keeps the commit out of finish-time
-  `/capture-milestone-principle-updates`: a recommendation-derived answer's body is a
-  pre-computed recommendation, not user-deliberated reasoning, so capture never harvests it.
-- **Body:** the lifted recommendation content (the `<option>` — `<rationale>` answer text,
-  derived from the block's `<recommendation>` element — its `option` attribute recombined with
-  the element's text, with XML entities un-escaped) — the answer that was recorded.
-- **Path-scoped staging** (`git add <MILESTONE_DIR>/requirements.md`, **never** `git add -A`)
-  is what keeps a dirty working tree from contaminating the commit — it is the mechanism
-  behind the "one commit = one answer" guarantee. The sweep orchestrator relies on this: the
-  agent owns all mutation and the commit, so the orchestrator only dispatches and sequences
-  and never commits.
+You **record but do not commit.** Do not stage or commit anything — leave the recorded
+`requirements.md` edit in the working tree for the orchestrator to commit. The mutation is
+yours; the commit is the orchestrator's.
 
 ## Return protocol (subagent only)
 
 Because you run in an isolated context, the orchestrator can only see your final line. **End
 every session with exactly one of these on its own line, and never exit without it:**
 
-- `DONE` — the shared procedure recorded the answer and you committed it under
-  `Recommendation-answer: <Short Title>`.
+- `DONE` — the shared procedure recorded the answer (folded a decision into `## Decisions`),
+  leaving the `requirements.md` edit **uncommitted**. Immediately above the `DONE` line, hand
+  back the **lifted recommendation content** (the `<option>` — `<rationale>` answer text you
+  captured) so the orchestrator can use it as the commit body. `DONE` means "recorded, not
+  committed" — you stage and commit nothing.
 - `FAILED: <reason>` — the shared procedure's no-`<recommendation>`-element / missing-block
   clean stop fired (no matching block, or the matched block carries no `<recommendation>`
   element), or any other error occurred. "Nothing recorded" is a failure to answer, not a
-  success. Commit nothing and leave the working tree exactly as you found it (no partial
-  commit). Use this for the no-matching-title case too:
+  success. Leave the working tree exactly as you found it (no partial edit). Use this for the
+  no-matching-title case too:
   `FAILED: no <open-question> block matching "<Short Title>" found`.
 
 `DONE` or `FAILED` must be the very last thing you output.
