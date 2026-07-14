@@ -58,22 +58,11 @@ Every committing skill's subject prefix is derived systematically from its disti
 
 `finish-current-milestone` records its whole finish as a single path-scoped commit: it always stages `milestones/README.md` (completion summary plus the current-milestone pointer cleared to `none`) and additionally stages `CLAUDE.md` only on the passes where the lasting-change step actually edited it, then commits that explicit path set under one finish subject. The pointer-clear rides inside the same README edit, so the committed README already carries `Current milestone: none` and `goto-next-milestone`'s none-pointer precondition is recorded in git rather than left in a dirty tree. Conditional `CLAUDE.md` staging keeps the commit path-scoped with no content inspection.
 
-## Open questions
+### No-op pass commit
 
-<open-question id="No-op pass commit" status="deferred">
-  <question>Some newly-committing skills can finish a pass having changed no file — review-milestone-requirements when a pass finds nothing to reconcile or surface, and capture-milestone-principle-updates when it distills no new principle. Should such a skill skip both staging and committing when it produced no change to its own path, rather than creating an empty commit?</question>
-  <alternative id="Skip on no-op">
-    Guard the commit on the skill&apos;s own path: after the pass, check whether that path actually changed, and if nothing changed, stage nothing, commit nothing, report the no-op, and return cleanly — the same dirty-path guard applied uniformly by every committer rather than special-cased to these two skills.
-    <advantage>Matches the goal&apos;s own &quot;every skill that changes files ends by committing exactly those changes&quot; phrasing exactly, keeps git history restricted to real changes, and needs no extra flags or content inspection.</advantage>
-    <drawback>The log no longer records that a reconcile or distill pass ran at all when it produced no change, so a reviewer cannot see from history alone that the skill was invoked.</drawback>
-  </alternative>
-  <alternative id="Always commit empty">
-    End every pass with a commit unconditionally, using `git commit --allow-empty` under the skill&apos;s subject prefix on a no-op pass so each invocation leaves exactly one commit.
-    <advantage>Uniform one-pass-one-commit provenance — the log shows every invocation, including no-op passes, giving a complete audit trail of when each skill ran.</advantage>
-    <drawback>Pollutes history with content-free commits, directly contradicts the goal&apos;s &quot;commits exactly those changes,&quot; and requires the extra `--allow-empty` machinery for a benefit an empty commit barely delivers.</drawback>
-  </alternative>
-  <recommendation option="Skip on no-op">Skip both staging and committing on a no-op pass via a dirty-own-path guard shared by every committer — it is the literal reading of the goal&apos;s &quot;changes files&quot; wording, keeps history meaningful, and avoids empty-commit machinery whose audit value is negligible when the pass recorded nothing.</recommendation>
-</open-question>
+A committing skill that finishes a pass having changed no file (e.g. `review-milestone-requirements` when a pass finds nothing to reconcile or surface, `capture-milestone-principle-updates` when it distills no new principle) skips both staging and committing rather than creating an empty commit. This is enforced by a dirty-own-path guard shared uniformly by every committer: after the pass, check whether the skill's own path actually changed, and if nothing changed, stage nothing, commit nothing, report the no-op, and return cleanly. This is the literal reading of the goal's "changes files" wording, keeps git history restricted to real changes, and avoids `--allow-empty` machinery whose audit value is negligible when the pass recorded nothing.
+
+## Open questions
 
 ## Out of Scope
 
