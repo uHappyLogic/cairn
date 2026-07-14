@@ -123,33 +123,26 @@ running inline is what keeps the recording context for follow-up.
 
 ### 5. Commit the alternative answer
 
-**Only if step 4 actually recorded the answer** — i.e. the shared procedure folded a decision
-into `## Decisions` rather than stopping on a mismatch. If the guard in step 2 fired or the
-recording core stopped without changes, there is nothing to commit; do not run these commands.
+Read and follow the shared commit procedure at
+`${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you
+need to resolve the path), carrying out its steps yourself. Supply it these inputs, using the
+`<MILESTONE_DIR>` from step 1:
 
-Stage **only** this skill's own `requirements.md` edit — path-scoped, never `git add -A` — and
-commit it on its own, using the `<MILESTONE_DIR>` from step 1:
-
-```
-git add <MILESTONE_DIR>/requirements.md
-git commit -m "Alternative-answer: <Short Title>" -m "<lifted alternative content>"
-```
-
-- **Subject:** exactly `Alternative-answer: <Short Title>` (the answered question's handle).
+- **PATHS** — this skill's own edit: `<MILESTONE_DIR>/requirements.md`.
+- **SUBJECT** — exactly `Alternative-answer: <Short Title>` (the answered question's handle).
   This distinct subject keeps the commit out of finish-time
   `/capture-milestone-principle-updates`: it does **not** match capture's `^Manual-answer:`
   grep, so capture never harvests it. The rationale matches recommendation-answers — the
   recorded body is the analyst's alternative text, not user-deliberated reasoning — so it stays
   outside the capture grep with **no** change to capture's logic. The distinct subject is the
   honest git-log provenance discriminator.
-- **Body:** the lifted alternative content (the `<id>` — `<what-it-is>` answer text derived in
+- **Body** — the lifted alternative content (the `<id>` — `<what-it-is>` answer text derived in
   step 3, with XML entities un-escaped) — the answer that was recorded.
 
-Committing here is a deliberate, documented exception to the project's "individual skills never
-commit" rule — this skill records a decision, so it commits its decision atomically with a
-greppable subject, exactly as `answer-open-question` and `answer-open-question-with-recommendation`
-do. Path-scoped staging keeps the commit touching only `requirements.md` and never sweeps in
-unrelated working-tree changes.
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the
+commit — do not restate those mechanics here. Its no-op guard also covers this skill's
+clean-stop cases: if the guard in step 2 fired or the recording core in step 4 stopped on a
+mismatch, `requirements.md` is unchanged, so nothing is staged and nothing is committed.
 
 ### 6. Report findings
 
@@ -179,9 +172,11 @@ full recording context still in hand.
 - Both guards are clean stops that change and commit nothing: no matching question id, a block
   with no `<alternative>` elements, or no alternative matching `<Alternative Id>`. On a stop,
   list the available ids (question ids, or that block's alternative ids) so the user can retry.
-- Commit **only** when step 4 actually recorded the answer. Stage path-scoped —
-  `git add <MILESTONE_DIR>/requirements.md`, never `git add -A`. The commit carries the lifted
-  alternative content in its **body** and the subject `Alternative-answer: <Short Title>`,
-  which stays outside `/capture-milestone-principle-updates`'s `^Manual-answer:` grep.
-  Committing here is a deliberate, documented exception to the "individual skills never commit"
-  rule.
+- Commit via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, supplying only the path
+  `<MILESTONE_DIR>/requirements.md` and the subject `Alternative-answer: <Short Title>` (which
+  stays outside `/capture-milestone-principle-updates`'s `^Manual-answer:` grep); never restate
+  its path-scoped-staging, no-op-guard, or subject-convention mechanics here.
+- The commit carries the lifted alternative content in its **body**. The shared procedure's
+  dirty-own-path no-op guard subsumes the old "commit only if recorded" conditional: if the
+  step 2 guard fired or the recording core stopped on a mismatch, `requirements.md` is
+  unchanged, so nothing is committed.

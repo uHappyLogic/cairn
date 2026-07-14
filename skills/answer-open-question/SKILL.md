@@ -52,19 +52,13 @@ That procedure owns resolving the current milestone (the `<MILESTONE_DIR>` refer
 
 ### 4. Commit the manual answer
 
-**Only if step 3 actually recorded the answer** — i.e. the shared procedure folded a decision into `## Decisions` rather than stopping on a Short-Title mismatch — commit the edit. If the procedure stopped without changes, step 2's redirect guard fired on the retired sentinel, or step 1 hit a parse error, there is nothing to commit; do not run these commands.
+Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these inputs, using the same `<MILESTONE_DIR>` resolved while recording:
 
-Stage **only** this skill's own `requirements.md` edit — path-scoped, never `git add -A` — and commit it on its own, using the same `<MILESTONE_DIR>` resolved while recording:
+- **PATHS** — this skill's own edit: `<MILESTONE_DIR>/requirements.md`.
+- **SUBJECT** — exactly `Manual-answer: <Short Title>` (the answered question's handle), so `/capture-milestone-principle-updates` can collect these with `git log --grep='^Manual-answer: '`.
+- **Body** — the decision's rationale — but record only rationale that genuinely exists in this conversation. Never prompt the user for a rationale and never fabricate one. When `/discuss-open-question` deliberation is in context, the body captures that reasoning. On a cold answer (no deliberation), the body is the literal answer text — recorded verbatim, including any inline "because" clause the user typed; when the answer states no reasoning, the body holds the bare decision. The answer string is itself the cold path's rationale affordance — add no separate rationale prompt.
 
-```
-git add <MILESTONE_DIR>/requirements.md
-git commit -m "Manual-answer: <Short Title>" -m "<rationale / decision body>"
-```
-
-- **Subject:** exactly `Manual-answer: <Short Title>` (the answered question's handle), so `/capture-milestone-principle-updates` can collect these with `git log --grep='^Manual-answer: '`.
-- **Body:** the decision's rationale — but record only rationale that genuinely exists in this conversation. Never prompt the user for a rationale and never fabricate one. When `/discuss-open-question` deliberation is in context, the body captures that reasoning. On a cold answer (no deliberation), the body is the literal answer text — recorded verbatim, including any inline "because" clause the user typed; when the answer states no reasoning, the body holds the bare decision. The answer string is itself the cold path's rationale affordance — add no separate rationale prompt.
-
-This is a deliberate, documented exception to the project's "individual skills never commit" rule: `answer-open-question` commits exactly its own path-scoped manual-answer edit so that finish-time principle capture has a clean, greppable commit to walk. Staging path-scoped keeps the commit touching only `requirements.md` and never sweeps in unrelated working-tree changes.
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit — do not restate those mechanics here. Its no-op guard also covers this skill's clean-stop cases: if step 3 stopped on a Short-Title mismatch, step 2's redirect guard fired on the retired sentinel, or step 1 hit a parse error, `requirements.md` is unchanged, so nothing is staged and nothing is committed.
 
 ### 5. Report findings
 
@@ -78,6 +72,5 @@ After committing, briefly state:
 - The answer text is recorded literally. The retired sentinel `record the recommendation` — matched as an **exact whole-string** comparison after trim + lowercase, **never a substring** — is the one reserved exception: it is not recorded but redirects to `/answer-open-question-with-recommendation` and stops (step 2). Any other answer text is a literal answer and takes the unchanged literal path.
 - The redirect guard records nothing and does no file I/O — it is a pure string comparison on the parsed answer text (no milestone resolution, no reading `requirements.md`). Recording a question's embedded recommendation belongs to `/answer-open-question-with-recommendation`, not this skill.
 - The recording mechanism lives **only** in `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md`; never duplicate or restate its locate / analyse / remove / fold / cascade steps here.
-- Commit **only** when step 3 actually recorded the answer; a parse error, a Short-Title mismatch, or the step 2 redirect guard produces no commit.
-- Stage path-scoped — `git add <MILESTONE_DIR>/requirements.md`, never `git add -A` — so the commit touches only `requirements.md`.
-- The manual-answer commit carries the rationale in its **body**. Committing here is a deliberate, documented exception to the "individual skills never commit" rule.
+- Commit via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, supplying only the path `<MILESTONE_DIR>/requirements.md` and the subject `Manual-answer: <Short Title>`; never restate its path-scoped-staging, no-op-guard, or subject-convention mechanics here.
+- The manual-answer commit carries the rationale in its **body**. The shared procedure's dirty-own-path no-op guard subsumes the old "commit only if recorded" conditional: a parse error, a Short-Title mismatch, or the step 2 redirect guard leaves `requirements.md` unchanged, so nothing is committed.

@@ -73,3 +73,25 @@ Both skills stage the same own-path — the milestone's `requirements.md` — bu
 
 ---
 
+## Rewire Three Answer Skills Onto Commit Procedure
+
+Bring the three already-committing answer-recording skills — `answer-open-question`, `answer-open-question-with-recommendation` (the **skill**, not its agent), and `answer-open-question-with-alternative` — onto this milestone's shared skill-layer commit convention **without changing their observable behavior**. Each already commits its own path-scoped `requirements.md` edit today with its commit mechanics restated inline; re-express each skill's commit step as a reference to the shared commit procedure (see the *Author Shared Skill-Layer Commit Procedure* task's Provides) instead of spelling out the path-scoped staging, subject, and no-op logic in-skill, and drop the prose that frames these skills as the documented committing "exception" — under the new layer rule every file-changing skill commits, so they are the norm, not exceptions.
+
+Each skill keeps its existing subject exactly as-is (`Manual-answer: <Short Title>` / `Recommendation-answer: <Short Title>` / `Alternative-answer: <Short Title>` — all already conforming `<Marker>: <descriptor>` instances), its path-scoped staging of `<MILESTONE_DIR>/requirements.md`, and its commit body exactly as they are, and comes under the uniform dirty-own-path no-op guard (which subsumes each skill's existing "commit only if the answer was actually recorded" conditional — a clean-stop leaves the path unchanged, so nothing is committed, preserving today's behavior). The skills supply only their already-resolved path (`<MILESTONE_DIR>/requirements.md`) and their resolved subject to the shared procedure.
+
+**Notes:**
+- Unlike the two sibling grouping tasks (which turn non-committers into committers), these three **already commit** — so this is a re-expression onto the shared procedure, not a behavior change. Subjects, path scope, and bodies must come out byte-for-byte equivalent; only the restated mechanics move to the reference and the "exception" framing is removed.
+- Each of the three files carries the exception framing in **two** places that both must go: the Workflow commit step ("This is a deliberate, documented exception to the project's 'individual skills never commit' rule…" / "Committing here is a deliberate, documented exception…") **and** the trailing `## Rules` bullet restating it. Remove the exception framing from both, in all three files.
+- Reference the shared procedure via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`; do not restate its path-scoped-staging, subject-convention, or no-op-guard logic in these skills.
+- Scope is the three `SKILL.md` files only. The `answer-open-question-with-recommendation` **agent** is out of scope (its commit moving up to the orchestrator is a separate concern), and so is any re-sync of the committing-vs-staging prose in `CLAUDE.md` / `README.md`.
+- Leave every existing clean-stop guard untouched: `answer-open-question`'s retired-sentinel redirect and Short-Title mismatch, the recommendation skill's no-`<recommendation>`-element / missing-block stop, and the alternative skill's missing-question / no-alternatives / non-matching-id stops. Each already commits nothing on a clean stop, which is exactly what the dirty-own-path guard also yields.
+
+**Success:**
+- Each of `skills/answer-open-question/SKILL.md`, `skills/answer-open-question-with-recommendation/SKILL.md`, and `skills/answer-open-question-with-alternative/SKILL.md` has its commit step reference `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` instead of restating path-scoped-staging / subject-convention / no-op-guard mechanics.
+- The three commit subjects are unchanged and still exactly `Manual-answer: <Short Title>`, `Recommendation-answer: <Short Title>`, and `Alternative-answer: <Short Title>` respectively; each commit still stages only `<MILESTONE_DIR>/requirements.md` (never `git add -A`) and its body is unchanged.
+- No "deliberate, documented exception", "individual skills never commit" exception framing, or equivalent "exception to the … rule" prose remains in any of the three files — in either the Workflow step or the `## Rules` section.
+- Each skill's commit is brought under the dirty-own-path no-op guard (via the shared procedure), and its existing clean-stop guards are unchanged.
+- The `answer-open-question-with-recommendation` agent file is not modified by this task.
+
+---
+

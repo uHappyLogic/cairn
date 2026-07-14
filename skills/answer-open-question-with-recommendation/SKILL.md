@@ -58,32 +58,24 @@ Commit nothing — go no further.
 
 ### 2. Commit the recommendation answer
 
-**Only if step 1 actually recorded the answer** — i.e. the shared procedure folded a decision
-into `## Decisions` rather than stopping on its no-`<recommendation>`-element / missing-block
-guard — commit the edit. If it stopped without changes, there is nothing to commit; do not
-run these commands.
+Read and follow the shared commit procedure at
+`${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you
+need to resolve the path), carrying out its steps yourself. Supply it these inputs, using the
+same `<MILESTONE_DIR>` the shared recording procedure resolved:
 
-Stage **only** this skill's own `requirements.md` edit — path-scoped, never `git add -A` —
-and commit it on its own, using the same `<MILESTONE_DIR>` the shared procedure resolved:
-
-```
-git add <MILESTONE_DIR>/requirements.md
-git commit -m "Recommendation-answer: <Short Title>" -m "<lifted recommendation content>"
-```
-
-- **Subject:** exactly `Recommendation-answer: <Short Title>` (the answered question's
+- **PATHS** — this skill's own edit: `<MILESTONE_DIR>/requirements.md`.
+- **SUBJECT** — exactly `Recommendation-answer: <Short Title>` (the answered question's
   handle). This distinct subject keeps the commit out of finish-time
   `/capture-milestone-principle-updates`: a recommendation-derived answer's body is a
   pre-computed recommendation, not user-deliberated reasoning, so capture never harvests it.
-- **Body:** the lifted recommendation content (the `<option>` — `<rationale>` answer text,
+- **Body** — the lifted recommendation content (the `<option>` — `<rationale>` answer text,
   derived from the block's `<recommendation>` element — its `option` attribute recombined with
   the element's text, with XML entities un-escaped) — the answer that was recorded.
 
-Committing here is a deliberate, documented exception to the project's "individual skills
-never commit" rule — the standalone `answer-open-question-with-recommendation` skill records
-a decision, so it commits its decision atomically with a greppable subject, exactly as
-`answer-open-question` does. Staging path-scoped keeps the commit touching only
-`requirements.md` and never sweeps in unrelated working-tree changes.
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the
+commit — do not restate those mechanics here. Its no-op guard also covers this skill's
+clean-stop case: if step 1 hit its no-`<recommendation>`-element / missing-block guard,
+`requirements.md` is unchanged, so nothing is staged and nothing is committed.
 
 ### 3. Report findings
 
@@ -105,10 +97,10 @@ the full recording context still in hand.
   (`${CLAUDE_PLUGIN_ROOT}/shared/answer-with-recommendation-procedure.md` composing over
   `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md`); never duplicate or restate lifting the
   `<recommendation>` element, folding into `## Decisions`, or cascading here.
-- Commit **only** when step 1 actually recorded the answer; the shared procedure's
-  no-`<recommendation>`-element / missing-block clean stop produces no change and no commit.
-- Stage path-scoped — `git add <MILESTONE_DIR>/requirements.md`, never `git add -A` — so the
-  commit touches only `requirements.md`.
-- The commit carries the lifted recommendation content in its **body** and the subject
-  `Recommendation-answer: <Short Title>`. Committing here is a deliberate, documented exception
-  to the "individual skills never commit" rule.
+- Commit via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, supplying only the path
+  `<MILESTONE_DIR>/requirements.md` and the subject `Recommendation-answer: <Short Title>`;
+  never restate its path-scoped-staging, no-op-guard, or subject-convention mechanics here.
+- The commit carries the lifted recommendation content in its **body**. The shared procedure's
+  dirty-own-path no-op guard subsumes the old "commit only if recorded" conditional: the
+  no-`<recommendation>`-element / missing-block clean stop leaves `requirements.md` unchanged,
+  so nothing is committed.
