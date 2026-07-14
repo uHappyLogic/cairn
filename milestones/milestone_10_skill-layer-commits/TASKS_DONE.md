@@ -145,3 +145,28 @@ The execution-neutral `shared/complete-procedure.md` — run by both this skill 
 
 ---
 
+
+## Commit Per Task From Complete-All-Tasks Orchestrator
+
+Complete the *Completion commit path scope* decision's orchestrator half (the sibling of the *Commit From The Complete-Task Skill* task, which handled the inline path): make the `complete-all-tasks` orchestrator commit its `complete-task` agent's real per-task change set, and give the agent the path-recording/hand-back contract that feeds it. The `complete-task` **agent** stays a non-committer (agents never commit under the layer rule); what it gains is: it records the exact set of paths it created or edited while carrying out its task — recorded as each edit is made, never by diffing or content inspection — and either stages that explicit path set itself or returns the path list to the orchestrator, in both cases alongside the milestone's two task-list files (`<MILESTONE_DIR>/TASKS_TODO.md` and `<MILESTONE_DIR>/TASKS_DONE.md`), so the orchestrator's commit can stay path-scoped.
+
+The `complete-all-tasks` orchestrator keeps its existing **per-task** commit granularity (one commit after each successful agent return, unchanged) but replaces its step-2c body: drop `git add -A` in favour of committing that explicit per-task path set, and drop the bare task-heading subject in favour of a function-derived `<Marker>: <descriptor>` subject prefix (clear of `^Manual-answer:`), with the task heading moving into the commit body. Reference the shared commit procedure (see the *Author Shared Skill-Layer Commit Procedure* task's Provides) for the path-scoped-staging, subject-convention, and no-op-guard mechanics rather than restating them.
+
+**Provides:**
+- The `complete-all-tasks` orchestrator now commits each completed task's explicit path set (the agent's recorded created/edited paths plus `<MILESTONE_DIR>/TASKS_TODO.md` and `<MILESTONE_DIR>/TASKS_DONE.md`) path-scoped, per task, under a distinct function-derived `<Marker>: <descriptor>` subject prefix (clear of `^Manual-answer:`) with the task heading in the commit body, via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`.
+- The `complete-task` agent now carries a path-recording/hand-back contract: it records the paths it created/edited (as each edit is made, no diffing) and either stages that explicit set itself or returns it to the orchestrator, alongside the two task-list files — while still never committing.
+
+**Notes:**
+- The agent's path-recording bookkeeping is the **same recorded path set** the inline `complete-task` skill uses in the *Commit From The Complete-Task Skill* task; place this task's agent-side wording consistently with wherever that sibling task homed the bookkeeping. `shared/complete-procedure.md` must stay execution-neutral and commit-free — recording paths as they are edited is not committing and not content inspection, so it may live in the shared procedure or the agent wrapper, but no `git add`/`git commit`/commit-step language may enter the shared procedure. The commit lives only in the orchestrator.
+- The orchestrator commit stays **per task** (inside the loop, after each agent's success return) — this is not the once-at-the-end granularity `derive-tasks` uses. Only the staging mechanism (explicit path set, no `git add -A`) and the subject (function-derived prefix + heading-in-body) change; the after-each-success timing is unchanged.
+- The orchestrator's new subject prefix is function-derived and must be distinct from the other committing skills' prefixes and clear of `^Manual-answer:`; the task's `##` heading text that was the old subject now goes into the commit body.
+- Reference `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` for the commit mechanics; do not restate its path-scoped-staging, subject-convention, or no-op-guard logic — the orchestrator supplies only the resolved per-task path set and its resolved subject.
+- Scope is `skills/complete-all-tasks/SKILL.md` and `agents/complete-task.md`. Leave the orchestrator's existing loop structure (re-read top task, spawn agent, stop-on-FAILED, never-complete-directly) intact; only step 2c's staging/commit body and the surrounding commit prose change.
+
+**Success:**
+- `skills/complete-all-tasks/SKILL.md` no longer contains `git add -A` and no longer uses the bare task heading as the commit subject; its per-task commit step stages the explicit per-task path set and references `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`.
+- The orchestrator commits once after each successful task (granularity unchanged), under a function-derived `<Marker>: <descriptor>` subject prefix that does not match `^Manual-answer:`, with the task heading in the commit body.
+- `agents/complete-task.md` carries the path-recording/hand-back contract (record created/edited paths as edited — no diffing/content inspection — and stage-or-return them alongside the two task-list files) and still states the agent does not commit.
+- `shared/complete-procedure.md` contains no `git add`/`git commit`/commit-step language — it remains commit-free and execution-neutral.
+
+---

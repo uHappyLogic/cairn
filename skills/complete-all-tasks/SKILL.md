@@ -45,17 +45,16 @@ Wait for the agent to return.
 
 - If the agent reports FAILED, stop the loop, report the task name and the failure reason to the user, and stop. Do not proceed to 2c.
 - If the agent returns without an explicit DONE or FAILED status (e.g. it returned early, produced no output, or gave an ambiguous result), treat this as FAILED. Report what was returned, stop the loop, and do not proceed to 2c. **Never attempt to complete the task yourself as a fallback.**
+- On `DONE`, the agent also hands back the explicit set of paths it created or edited while carrying out the task (its recorded change set). Collect those paths — you commit them in 2c.
 
 #### 2c. Commit the changes
 
-After the subagent confirms success and the task has been moved to `<MILESTONE_DIR>/TASKS_DONE.md`, commit:
+After the subagent returns `DONE` (success confirmed and the task moved to `<MILESTONE_DIR>/TASKS_DONE.md`), commit that task by reading and following the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path). Supply it these two inputs:
 
-```
-git add -A
-git commit -m "<task heading>"
-```
+- **PATHS** — this task's exact change set: the created/edited paths the subagent handed back in its `DONE` return, **plus** the two milestone task-list files `<MILESTONE_DIR>/TASKS_TODO.md` (the task left it) and `<MILESTONE_DIR>/TASKS_DONE.md` (the task joined it). Name each path explicitly — never `git add -A`.
+- **SUBJECT** — `Tasklist-completion: <descriptor>` (e.g. `Tasklist-completion: complete one milestone task`), the marker naming this orchestrator's task-list-completion function. Put the task's `##` heading text (without the `##` prefix) in the commit **body** (a second `-m`), not in the subject.
 
-Use the task's `##` heading (without the `##` prefix) as the commit message subject.
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit itself; do not restate those mechanics here. Commit once per task — the per-task granularity is unchanged.
 
 #### 2d. Continue
 
@@ -68,6 +67,6 @@ When `<MILESTONE_DIR>/TASKS_TODO.md` contains no more `##` sections, report that
 ## Rules
 
 - Re-read `TASKS_TODO.md` at the start of every iteration — do not cache the task list across iterations.
-- Never commit partial work. Only commit after the subagent has confirmed success and the task has been moved to `TASKS_DONE.md`.
+- Never commit partial work. Commit only after the subagent returns `DONE` and the task has been moved to `TASKS_DONE.md`, staging only that task's explicit path set (never `git add -A`) per `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`.
 - If any task fails, stop the loop immediately and report which task failed and why.
 - This file is the orchestrator only — **never complete tasks directly here, even as a fallback when a subagent fails.**
