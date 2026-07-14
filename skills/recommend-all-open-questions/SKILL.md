@@ -1,6 +1,6 @@
 ---
 name: recommend-all-open-questions
-description: Non-interactively sweep the current milestone's requirements for open and deferred questions and annotate each one with an embedded recommendation — alternatives plus a single recommended option — produced by dispatching one read-only recommend-open-question subagent per question. Use this to batch the per-question /discuss-open-question deliberation across every question at once, typically right after a /review-milestone-requirements pass, so the questions arrive at /answer-open-question-with-recommendation with a recommendation ready to record. Trigger it whenever the user says things like "recommend on the open questions", "sweep recommendations", "run the recommend sweep", "annotate every question with a recommendation", or "give me a recommendation for each open question". Records no decisions and requires no clean working tree — it only annotates and leaves its edit staged.
+description: Non-interactively sweep the current milestone's requirements for open and deferred questions and annotate each one with an embedded recommendation — alternatives plus a single recommended option — produced by dispatching one read-only recommend-open-question subagent per question. Use this to batch the per-question /discuss-open-question deliberation across every question at once, typically right after a /review-milestone-requirements pass, so the questions arrive at /answer-open-question-with-recommendation with a recommendation ready to record. Trigger it whenever the user says things like "recommend on the open questions", "sweep recommendations", "run the recommend sweep", "annotate every question with a recommendation", or "give me a recommendation for each open question". Records no decisions and requires no clean working tree — it only annotates and commits those annotations once at the end.
 ---
 
 # recommend-all-open-questions
@@ -24,14 +24,14 @@ four pieces of machinery a decision-recording sweep would need are all unnecessa
   Nothing removes a question here, so the gathered set stays valid start to finish.
 - **No outer re-gather loop.** Nothing adds or removes questions mid-sweep, so a single pass
   is the fixed point.
-- **No clean-working-tree precondition.** A sweep that commits needs one to keep "one commit = one
-  answer"; this skill commits nothing, so it needs no clean tree.
+- **No clean-working-tree precondition.** A sweep that commits per answer needs one to keep
+  "one commit = one answer"; this sweep commits once at the end and records no decisions, so it
+  needs no per-answer discipline and no clean tree.
 
-The durable git record is the eventual `Recommendation-answer:` commit produced when a
-recommendation is recorded — the recommendation itself is transient scaffolding that decides
-nothing and is later consumed (the `<recommendation>` element is lifted and its block removed) by
-the `/answer-open-question-with-recommendation` skill/agent pair (or the
-`/answer-all-open-questions-with-recommendation` batch sweep).
+Each embedded recommendation is later consumed (the `<recommendation>` element is lifted and its
+block removed) by the `/answer-open-question-with-recommendation` skill/agent pair (or the
+`/answer-all-open-questions-with-recommendation` batch sweep) when it is recorded as an answer.
+The sweep commits its own annotations once at the end of the run (step 5).
 
 ## Usage
 
@@ -157,20 +157,24 @@ The block after embedding looks like:
 (The `<applied-principle>` element appears once per bearing principle, or not at all when none
 bore; there are one or more `<alternative>` elements and exactly one `<recommendation>`.)
 
-### 5. Stage the edit (do not commit)
+### 5. Commit the annotations
 
-After writing all the sub-elements, stage **only** this skill's own edit — path-scoped, **never**
-`git add -A`:
+You are the orchestrator, so you commit **once at the end of the run** — here, after every
+per-question subagent (step 3) has returned and all their sub-elements are embedded (step 4),
+never inside the dispatch loop. Read and follow the shared commit procedure at
+`${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need
+to resolve the path), carrying out its steps yourself. Supply it these two inputs:
 
-```
-git add <MILESTONE_DIR>/requirements.md
-```
+- **PATHS** — this run's own change set: `<MILESTONE_DIR>/requirements.md` (the file this sweep
+  embedded the sub-elements into in step 4).
+- **SUBJECT** — `Recommendation-annotation: <milestone_id>`.
 
-Then **stop**, leaving the staged edit for the user to review and commit or discard. This skill
-**does not commit** and requires **no** clean working tree. It records no decisions and triggers
-no cascades, so it needs neither a one-commit-per-question model nor a clean-tree
-precondition — the durable git record is the eventual `Recommendation-answer:` commit, not the
-transient recommendation scaffolding.
+The shared procedure owns the path-scoped staging (never `git add -A`), the dirty-own-path no-op
+guard, and the commit; do not restate those mechanics here. Because the guard is dirty-own-path,
+a sweep that annotated nothing — every gathered block already carried a `<recommendation>`
+element, so step 4 changed no bytes — stages and commits nothing. This sweep requires **no** clean
+working tree: it commits once at the end and records no decisions, so it needs no
+one-commit-per-answer discipline.
 
 ### 6. Report
 
@@ -201,5 +205,8 @@ If there were no open/deferred questions at all, say so and stop (step 1) — no
   the existing `<open-question>` block by whole-block-replacement `Edit` (not a CLI splice),
   inserting the children at 2-space-per-level indent and leaving the `<open-question …>` /
   `</open-question>` boundary tags and the `<question>` element unchanged.
-- **Mutate but do not commit**: stage path-scoped `git add <MILESTONE_DIR>/requirements.md`
-  only, never `git add -A`, and stop. Require **no** clean working tree.
+- **Commit once at the end**: after all sub-elements are embedded, commit this sweep's own
+  path-scoped edit to `<MILESTONE_DIR>/requirements.md` (never `git add -A`) under subject
+  `Recommendation-annotation: <milestone_id>` via
+  `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, behind its dirty-own-path no-op guard (a
+  sweep that annotated nothing commits nothing). Require **no** clean working tree.
