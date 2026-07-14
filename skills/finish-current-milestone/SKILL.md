@@ -91,12 +91,19 @@ Because the pointer-clear rides inside the same `milestones/README.md` edit, the
 
 ### 9. Confirm
 
-Report: the milestone name, the number of tasks completed, the bullet list written into `milestones/README.md`, and that the current-milestone pointer has been cleared to "none". Note any `CLAUDE.md` sections updated (or confirm none were needed), and that the finish was recorded as a single commit.
+On the success path, print exactly one fixed terse status line and nothing else:
 
-Suggest the next steps, in this order:
+```
+Milestone finished.
+```
 
-1. Optional: run `/capture-milestone-principle-updates` to distill reusable answering principles from this milestone's recorded decisions into the principle store. (Recommended now that the milestone has just closed and its row was appended to the `## Completed Milestones` table — but never auto-run.)
-2. `/define-milestone-goal` to start planning the next milestone.
+Do not restate the milestone name, the tasks-completed count, the accomplishment bullets written into `milestones/README.md`, the pointer clear, any `CLAUDE.md` sections touched, or the commit — the committed diff and `git log` are the durable record. Do not print any next-step or handoff pointer; the finish→capture and finish→`/define-milestone-goal` handoffs live only in `CLAUDE.md`/`README.md`, not in this runtime output.
+
+If step 8's dirty-own-path no-op guard fired (the pass changed no files, so nothing was committed), do not print the terse success line. Instead print a distinct one-line message stating that nothing changed and briefly why — because git holds no durable record of a no-op — for example:
+
+```
+Nothing to finish — no changes to commit.
+```
 
 ## Rules
 
@@ -105,4 +112,4 @@ Suggest the next steps, in this order:
 - Keep the summary factual and grounded in the requirements and tasks — do not invent accomplishments.
 - Do not create or modify any files in `<MILESTONE_DIR>/`.
 - Clear the current-milestone pointer only in `milestones/README.md` — overwrite the `Current milestone:` line to `Current milestone: none`. Do not modify `CLAUDE.md`'s pointer section.
-- `/finish-current-milestone` only *suggests* `/capture-milestone-principle-updates` — it never invokes it. Step 9 adds the recommendation as suggestion text only.
+- `/finish-current-milestone` never invokes `/capture-milestone-principle-updates`. Step 9 no longer prints a runtime recommendation of it; the finish→capture handoff is documented in `CLAUDE.md`/`README.md` as an optional follow-up a user runs after finishing.

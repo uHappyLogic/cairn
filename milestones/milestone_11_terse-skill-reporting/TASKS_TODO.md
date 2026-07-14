@@ -1,27 +1,5 @@
 # TASKS TODO
 
-## Terse Reporting: Finish-Current-Milestone
-
-Cut the success-path reporting of `finish-current-milestone` step 9 "Confirm" to a single fixed terse status line, removing the prose summary (milestone name, tasks-completed count, the README bullet list, the pointer-clear note) and — the distinctive piece of this task — retiring the runtime "Suggest the next steps" block entirely, including its first item recommending `/capture-milestone-principle-updates` and its second item pointing at `/define-milestone-goal`. The step also gains a distinct one-line no-op message for when the step-8 commit's dirty-own-path guard fires. This applies the milestone's terse-reporting decisions to `finish-current-milestone`; the finish→capture handoff stays documented in `CLAUDE.md` and `README.md` (a separate documentation task updates those) but is no longer printed at runtime.
-
-**Notes:**
-- Only step 9 "Confirm" changes. Terse line shape (per the "Terse status line shape" decision): a fixed sentence carrying no identifier — no milestone id/name, task count, or commit subject; a concrete choice to use is "Milestone finished."
-- Delete both prose-summary and handoff elements from step 9: the report of milestone name / tasks-completed count / README accomplishment bullets / pointer-clear / CLAUDE.md-sections-touched / single-commit note, **and** the entire ordered "Suggest the next steps" block (both its `/capture-milestone-principle-updates` item and its `/define-milestone-goal` item). `finish-current-milestone` is **not** among the skills the "Non-redundant advisory output" decision keeps advisory output for, so its success path collapses fully to the terse line.
-- No-op case (per the "No-op pass reporting" decision): when the step-8 shared-commit dirty-own-path guard fires (the pass changed no files, so nothing was committed), step 9 must instead print a concise one-line message stating that nothing changed and briefly why — distinct from the terse success line, because git holds no durable record of a no-op.
-- The `## Rules` bullet that currently reads "`/finish-current-milestone` only *suggests* `/capture-milestone-principle-updates` — it never invokes it. Step 9 adds the recommendation as suggestion text only." describes the now-retired runtime suggestion; reconcile it so it no longer asserts step 9 prints that recommendation (the handoff living on only in `CLAUDE.md`/`README.md`). This is the one Rules-section edit this task makes; leaving it would contradict the changed step 9.
-- Boundary — leave every failure/clean-stop message untouched: step 1's no-active-milestone stop (pointer is `none`) and step 3's pending-tasks stop ("`TASKS_TODO.md` still has `##` sections — complete them first"). Every file-writing/commit step is unchanged: step 4–5's README history + `## Completed Milestones` row, step 6's `Current milestone: none` pointer clear, step 7's conditional `CLAUDE.md` update, and step 8's `Milestone-finish: milestone_<NN>_<slug>` commit all stay exactly as they are.
-- No file-writing or commit behavior changes; edit `skills/finish-current-milestone/SKILL.md` inline (no shared reporting-convention file is introduced).
-
-**Success:**
-- `finish-current-milestone` step 9's success path instructs printing exactly one fixed terse status line with no identifier and no next-step/handoff pointer.
-- The "Suggest the next steps" block is gone from step 9's runtime output — neither the `/capture-milestone-principle-updates` recommendation nor the `/define-milestone-goal` pointer appears in the skill's printed success path — and the milestone-name / task-count / README-bullet-list / pointer-clear prose summary no longer appears.
-- Step 9 also instructs a distinct one-line no-op message, triggered when the step-8 dirty-own-path guard fires, that states nothing changed and briefly why.
-- The stale `## Rules` bullet no longer asserts that step 9 prints the `/capture-milestone-principle-updates` recommendation.
-- Steps 1–8 of `skills/finish-current-milestone/SKILL.md` are unchanged — the no-active-milestone stop, the pending-tasks stop, the README history/table writes, the pointer clear, the conditional `CLAUDE.md` update, and the `Milestone-finish:` commit are byte-for-byte intact.
-- No new file is created under `shared/`.
-
----
-
 ## Terse Reporting: CLAUDE.md Documentation And Invariant
 
 Update the plugin repository's own `CLAUDE.md` to track the terse-reporting change this milestone applies to the skills. Two kinds of edit: (1) reconcile the existing assertions that `finish-current-milestone` "recommends (never auto-runs)" `capture-milestone-principle-updates` at runtime so they no longer claim a runtime recommendation, while keeping the finish→capture handoff documented as the optional finish-time follow-up a user runs after finishing; and (2) add a new standalone invariant to the "Invariants to preserve when editing skills" section codifying the cross-cutting terse-success-reporting convention, per the milestone's "Codifying the terse-reporting convention" decision.
