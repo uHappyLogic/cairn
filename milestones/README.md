@@ -10,7 +10,7 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: none
+Current milestone: `milestones/milestone_10_skill-layer-commits/`
 
 ## Milestone History
 
