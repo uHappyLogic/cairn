@@ -83,10 +83,15 @@ The shared procedure owns the path-scoped staging, the dirty-own-path no-op guar
 
 ### 6. Confirm
 
-Report:
-- New milestone directory created: `milestones/milestone_<NN>_<slug>/`
-- The goal written into `requirements.md`
-- Suggest the next step: `/specify-milestone-starting-state milestone_<NN>_<slug>` to fill in the starting state section.
+On the success path — the commit in step 5 recorded the new milestone — print exactly one fixed terse status line and nothing else:
+
+```
+Milestone defined.
+```
+
+Do not add the created directory path, the goal text, or a next-step pointer; the committed diff and git log are the durable record.
+
+If instead the step-5 dirty-own-path guard fired (none of the three files changed, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the milestone files already existed; nothing committed.`
 
 ## Rules
 

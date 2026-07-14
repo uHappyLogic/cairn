@@ -54,10 +54,15 @@ The shared procedure owns the path-scoped staging, the dirty-own-path no-op guar
 
 ### 5. Confirm
 
-Report:
-- The milestone activated: path and title
-- `milestones/README.md` updated to point to it
-- Suggest the next step: `/specify-milestone-starting-state` to fill in the `## Relevant starting state` section
+On the success path — the commit in step 4 recorded the activation — print exactly one fixed terse status line and nothing else:
+
+```
+Milestone activated.
+```
+
+Do not add the activated milestone's path or title, or a next-step pointer; the committed diff and git log are the durable record.
+
+If instead the step-4 dirty-own-path guard fired (the `Current milestone:` pointer was unchanged, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the pointer already named that milestone; nothing committed.`
 
 ## Rules
 

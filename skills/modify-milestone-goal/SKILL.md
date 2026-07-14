@@ -63,13 +63,17 @@ Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/com
 
 The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit — do not restate those mechanics here.
 
-### 6. Report and hand off
+### 6. Confirm
 
-Briefly state:
+On the success path — the commit in step 5 recorded the revised goal — print exactly one fixed terse status line and nothing else:
 
-- **Before → after** — the old goal and the new goal.
-- **Downstream impact** — the specific Decisions, questions, Out-of-Scope entries, and (if tasks exist) tasks from step 3 that the change may have invalidated. Be concrete; name them.
-- **Recommended next step** — re-run `/review-milestone-requirements` to reconcile the requirements against the new goal. If tasks were already derived, call out that they likely need revisiting before completion.
+```
+Goal revised.
+```
+
+Do not add the before → after goal text, the downstream-impact analysis from step 3, the milestone id, or a next-step pointer; the committed diff and git log are the durable record. (The step-3 analysis still runs — it informs your own reasoning — but it is no longer printed.)
+
+If instead the step-5 dirty-own-path guard fired (the `## Goal` section was unchanged, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the revised goal matched the existing one; nothing committed.`
 
 ## Rules
 

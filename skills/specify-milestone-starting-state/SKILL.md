@@ -82,10 +82,15 @@ The shared procedure owns the path-scoped staging, the dirty-own-path no-op guar
 
 ### 7. Confirm
 
-Report:
-- Which milestone was updated.
-- How many systems/areas were documented.
-- Suggest the next step: `/review-milestone-requirements` to open the requirements-iteration loop — surface gaps and ambiguities, then re-run it after each answer until the requirements converge.
+On the success path — the commit in step 6 recorded the filled-in starting state — print exactly one fixed terse status line and nothing else:
+
+```
+Starting state recorded.
+```
+
+Do not add the milestone id, the count of systems documented, or a next-step pointer; the committed diff and git log are the durable record.
+
+If instead the step-6 dirty-own-path guard fired (`requirements.md` was unchanged, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the starting state was already up to date; nothing committed.`
 
 ## Rules
 
