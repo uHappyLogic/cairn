@@ -68,6 +68,12 @@ scope or invent requirements the task did not ask for.
 documented in `CLAUDE.md`. At minimum, run the relevant verification command and fix any
 errors before continuing.
 
+**Record the paths you touch.** As you create or edit each file while carrying out the
+task, keep an explicit running list of those paths — recorded as each edit is made, never
+reconstructed afterwards by diffing the working tree. This recorded set is the task's real
+change set; a wrapper reads it from here when it needs to know exactly which files this task
+touched. Recording paths as you go is neither committing nor content inspection.
+
 **Tool patterns:**
 - Read or edit a file: `Read` then `Edit`.
 - Run a shell command: `Bash`.

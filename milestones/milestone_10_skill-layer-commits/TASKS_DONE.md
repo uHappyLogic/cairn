@@ -118,3 +118,30 @@ The two skills commit at different points because they occupy different layers: 
 
 ---
 
+## Commit From The Complete-Task Skill
+
+Turn the `complete-task` **skill** (the inline, user-facing single-task completion path) into a committer under this milestone's skill-layer rule. It currently ends by leaving the diff staged ("committing belongs to `/complete-all-tasks` alone"); replace that end-state with a commit step that references the shared commit procedure (see the *Author Shared Skill-Layer Commit Procedure* task's Provides) rather than restating its logic. Per the *Completion commit path scope* decision in `requirements.md`, the skill commits the task's real change set — the exact set of paths the completer created or edited while carrying out the task (recorded as each edit is made, never derived by diffing) together with the milestone's two task-list files (the `TASKS_TODO.md` the task left and the `TASKS_DONE.md` it joined) — as one path-scoped commit (never `git add -A`), under its own distinct function-derived subject prefix, applying the uniform dirty-own-path no-op guard.
+
+The execution-neutral `shared/complete-procedure.md` — run by both this skill and the `complete-task` agent — must stay commit-free: the commit itself lives only in this skill wrapper. If the record-paths-as-you-edit bookkeeping needs a home, place it so the shared procedure gains no commit language (recording paths as they are edited is not committing and not content inspection).
+
+**Provides:**
+- The `complete-task` skill now ends by committing its own path-scoped completion change set (the completer's recorded created/edited paths plus `<MILESTONE_DIR>/TASKS_TODO.md` and `<MILESTONE_DIR>/TASKS_DONE.md`) under a distinct, function-derived `<Marker>: <descriptor>` subject prefix (clear of `^Manual-answer:`), via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`.
+
+**Notes:**
+- The staged path set is the completer's created/edited paths (recorded as each edit happens — not chosen by diffing the tree) plus the two task-list files `<MILESTONE_DIR>/TASKS_TODO.md` and `<MILESTONE_DIR>/TASKS_DONE.md`; this matches the *Completion commit path scope* decision's "record paths as each edit is made" wording exactly.
+- Keep `shared/complete-procedure.md` commit-free — it must not gain `git add`/`git commit`/commit-step language, because the `complete-task` agent also runs it and agents never commit. Wherever the record-paths bookkeeping lands, phrase it as commit-free recording (recording is not committing), and put the commit only in this skill's `SKILL.md`.
+- Remove the trailing leave-staged prose in **both** places it appears: the Workflow "Hand back for review" step ("Leave the changes staged, not committed — committing belongs to `/complete-all-tasks` alone…") **and** the `## Rules` bullet ("Do not commit. Leave the changes staged for the user to review and commit."), so no residual instruction contradicts the new commit step.
+- A failed or abandoned completion must commit nothing — this is exactly what the shared procedure's dirty-own-path no-op guard yields (a no-match clean stop leaves the tree unchanged, so nothing is staged or committed). Do not restate the guard; reference the shared commit procedure.
+- Reference the shared procedure via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`; do not restate its path-scoped-staging, subject-convention, or no-op-guard logic — the skill supplies only the resolved path set and its resolved subject.
+- Scope is `skills/complete-task/SKILL.md` (and, if needed, a commit-free bookkeeping note) only. The other half of the *Completion commit path scope* decision — the `complete-all-tasks` orchestrator committing its `complete-task` agent's per-task path set — is a separate concern and not part of this task.
+
+**Success:**
+- `skills/complete-task/SKILL.md` ends with a commit step that references `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`.
+- That commit stages the completer's recorded created/edited paths plus `<MILESTONE_DIR>/TASKS_TODO.md` and `<MILESTONE_DIR>/TASKS_DONE.md`, and never uses `git add -A`.
+- The commit subject is a function-derived `<Marker>: <descriptor>` prefix that does not match `^Manual-answer:`.
+- No "Do not commit", "leave staged", "leave the changes staged", or "committing belongs to `/complete-all-tasks`" prose remains anywhere in `skills/complete-task/SKILL.md` (neither the Workflow step nor `## Rules`).
+- `shared/complete-procedure.md` contains no `git add`/`git commit`/commit-step language — it remains commit-free.
+- A failed or abandoned completion commits nothing (the dirty-own-path no-op guard from the shared procedure).
+
+---
+
