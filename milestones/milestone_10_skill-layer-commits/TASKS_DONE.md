@@ -95,3 +95,26 @@ Each skill keeps its existing subject exactly as-is (`Manual-answer: <Short Titl
 
 ---
 
+## Commit From The Task-Authoring Skills
+
+Turn the two task-authoring-path committers — the `submit-task` **skill** (which authors and inserts inline) and the `derive-tasks` **orchestrator** — into committers under this milestone's skill-layer rule, and verify the `submit-task` **agent** stays non-committing. Both skills are currently **silent** about git (they just edit and hand back a dirty tree); each now ends by committing exactly its own change to the milestone's `TASKS_TODO.md`, path-scoped, under its own distinct function-derived subject prefix, referencing the shared commit procedure (see the *Author Shared Skill-Layer Commit Procedure* task's Provides) rather than restating its logic.
+
+The two skills commit at different points because they occupy different layers: the `submit-task` skill authors inline, so it commits its **own** path-scoped insertion into `<MILESTONE_DIR>/TASKS_TODO.md` at the end of its run; `derive-tasks` is an orchestrator, so it commits **once at the end of a run** — after all its sequential `submit-task` agents have returned (the milestone's stated per-run granularity for it) — covering the `TASKS_TODO.md` file it initialized and its agents appended into, under the uniform dirty-own-path no-op guard. The two subject prefixes must be distinct from each other (and from the other committing skills' prefixes), each derived from that skill's distinctive function in the `<Marker>: <descriptor>` house shape, and neither matching capture's `^Manual-answer:` grep. The `submit-task` agent and the execution-neutral `shared/submit-procedure.md` stay commit-free — under the layer rule agents never commit — so this task adds **no** commit language to either; it only confirms they gain none.
+
+**Provides:**
+- The `submit-task` skill now ends by committing its own path-scoped insertion into `<MILESTONE_DIR>/TASKS_TODO.md` under a distinct, function-derived `<Marker>: <descriptor>` subject prefix (clear of `^Manual-answer:`), via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`.
+- `derive-tasks` now ends by committing once per run — after its sequential `submit-task` agent loop returns — its path-scoped `<MILESTONE_DIR>/TASKS_TODO.md` under its own distinct, function-derived prefix (clear of `^Manual-answer:`), with the dirty-own-path no-op guard, via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`.
+
+**Notes:**
+- `derive-tasks` commits **once per run, not once per agent** — the single commit sits after the whole sequential per-brief agent loop completes (it is the orchestrator committing its agents' appended work after they return), never inside the loop. This mirrors `complete-all-tasks` being the per-task committer while `derive-tasks` is the milestone's once-at-the-end committer.
+- Both committers stage only `<MILESTONE_DIR>/TASKS_TODO.md`; the distinctness lives entirely in the two subject prefixes. Reference the shared procedure via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`; do not restate its path-scoped-staging, subject-convention, or no-op-guard logic — each supplies only the resolved path (`<MILESTONE_DIR>/TASKS_TODO.md`) and its resolved subject.
+- The `submit-task` **agent** part is a boundary check, not an edit: `agents/submit-task.md` already carries "Do not commit," and the execution-neutral `shared/submit-procedure.md` must gain no commit language. Verify both remain commit-free; add nothing to either.
+
+**Success:**
+- `skills/submit-task/SKILL.md` ends with a commit step that references `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` and stages only `<MILESTONE_DIR>/TASKS_TODO.md` (never `git add -A`).
+- `skills/derive-tasks/SKILL.md` ends with a single commit step — placed after its sequential agent loop returns, committing exactly once per run — that references `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, stages only `<MILESTONE_DIR>/TASKS_TODO.md` (never `git add -A`), and is under the dirty-own-path no-op guard.
+- `agents/submit-task.md` and `shared/submit-procedure.md` contain no `git add`/`git commit`/commit-step language — both remain commit-free.
+- The two commit subject prefixes are distinct from one another, each in `<Marker>: <descriptor>` shape, function-derived, and neither matches `^Manual-answer:`.
+
+---
+

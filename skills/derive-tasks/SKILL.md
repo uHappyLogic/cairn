@@ -110,6 +110,15 @@ POSITION: append
 
 Re-read the finished `<MILESTONE_DIR>/TASKS_TODO.md`. Confirm every brief from the matrix produced a task section. Output a brief summary: the ordered task titles, and explicitly flag any requirement you could not trace to a task (flag as a gap — never silently omit).
 
+### 9. Commit the derived task list
+
+You are the orchestrator, so you commit **once at the end of the run** — here, after the whole sequential per-brief agent loop (step 7) has returned and coverage is verified (step 8), never inside the loop. Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these two inputs:
+
+- **PATHS** — this run's own change set: `<MILESTONE_DIR>/TASKS_TODO.md` (the file this skill initialized in step 6 and its agents appended into in step 7).
+- **SUBJECT** — `Task-derivation: <milestone_id>`.
+
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard (a run that derived nothing into `TASKS_TODO.md` stages and commits nothing), and the commit; do not restate those mechanics here.
+
 ## Rules
 
 - Your output is briefs + ordering + coverage. Do not write task bodies — the contract surface, notes, file paths, or success criteria — yourself; that is the agent's job, and duplicating it both pollutes your context and risks diverging from the shared task template the agent uses.

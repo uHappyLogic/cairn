@@ -65,7 +65,16 @@ Do **not** spawn the `submit-task` agent — that would discard the authoring co
 this skill exists to keep. (You already read `requirements.md` and `TASKS_TODO.md` in
 step 1, so reuse them rather than re-reading.)
 
-### 5. Confirm
+### 5. Commit the inserted task
+
+Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these two inputs:
+
+- **PATHS** — this skill's own change set: `<MILESTONE_DIR>/TASKS_TODO.md` (the file it just inserted the task into).
+- **SUBJECT** — `Task-submission: <task title>`.
+
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit; do not restate those mechanics here.
+
+### 6. Confirm
 
 Report the task title and where it was inserted (e.g. `Added "Fix Wall Collision Sweep" —
 appended (task #4 of 4).`), then stay available: the user may now ask why you scoped it that
