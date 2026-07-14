@@ -46,6 +46,10 @@ Two docs describe this behavior and must track the change: `CLAUDE.md` (the `fin
 
 ## Decisions
 
+### Terse status line shape
+
+The single terse success line is a fixed sentence with no identifier (exactly the goal's examples — "Milestone defined.", "All tasks completed."); it does not carry the milestone id, task heading, or commit subject. Each orchestrator prints one such line for the whole run, with no per-item output during the loop.
+
 ## Out of Scope
 
 ## Open questions
@@ -88,26 +92,6 @@ Two docs describe this behavior and must track the change: `CLAUDE.md` (the `fin
     <drawback>Multi-item advisories (a long still-open list, several coverage gaps) do not fit one scalar line, stretching &quot;bare status line&quot; past its intent, and it prejudges the separate &quot;Terse line shape&quot; open question by deciding what the line may contain.</drawback>
   </alternative>
   <recommendation option="Preserve advisories">Preserve genuinely git-absent advisory output; the milestone&apos;s redundancy rationale does not reach information the diff and git log never captured, and the convergence verdict, coverage-gap flag, and newly-exposed-question note are each skill&apos;s decision-critical reason to run &mdash; while every output that is a diff re-narration still collapses. Recommended over folding-into-the-line because that answers the separate &quot;Terse line shape&quot; question and cannot hold multi-item advisories.</recommendation>
-</open-question>
-
-<open-question id="Terse line shape" status="open">
-  <question>What exactly should the single terse status line contain? Is it a fixed bare sentence such as Milestone defined., or may it carry a minimal identifier (the milestone id, the task heading, or the commit subject) so the user can tell which item was acted on? And for the looping orchestrators (complete-all-tasks, answer-all-open-questions-with-recommendation), does the rule mean one final line for the whole run, or is per-item progress during the loop preserved so a long run is not silent?</question>
-  <alternative id="Fixed bare sentence">
-    Every success line is a fixed sentence with no identifier (exactly the goal's examples — &quot;Milestone defined.&quot;, &quot;All tasks completed.&quot;), and each orchestrator prints one such line for the whole run with no per-item output.
-    <advantage>Maximum token savings and dead-simple uniform authoring — it is the most literal reading of the goal's own examples, with nothing to compute or vary per skill.</advantage>
-    <drawback>A bare line in scrollback cannot say which item it acted on, and a long orchestrator run emits nothing until the final line.</drawback>
-  </alternative>
-  <alternative id="Bare sentence plus minimal identifier">
-    The success line is the fixed sentence carrying the acted-on item's existing identifier — the same milestone id, task heading, or Short Title that already forms the commit subject (e.g. &quot;Milestone defined: milestone_11_terse-skill-reporting.&quot;) — and orchestrators still print one final whole-run line.
-    <advantage>Each line names its own item at a glance without reopening git log, at a cost of a few tokens and zero new computation since the identifier is a straight reuse of the commit subject the goal already permits.</advantage>
-    <drawback>Slightly above the bare minimum, and a loose reading of &quot;identifier&quot; could let cascade notes or counts creep back in, so it needs a tight one-short-line rule to hold the boundary.</drawback>
-  </alternative>
-  <alternative id="Preserve per-item progress in loops">
-    Single-item skills get the identifier-bearing line, but orchestrators additionally emit a terse per-item line as each item commits (e.g. &quot;Task completed: &lt;heading&gt;.&quot;) plus a final whole-run line, so a long run streams progress.
-    <advantage>A long run is never dark — each per-item line maps one-to-one to a commit, giving live progress that is not redundant re-narration of a single diff.</advantage>
-    <drawback>It reopens exactly the per-item verbosity the goal names as waste (complete-all-tasks &quot;lists every task&quot;), and the per-item stream largely reconstitutes that list; the agent-dispatch tool calls already make the loop visibly non-silent.</drawback>
-  </alternative>
-  <recommendation option="Bare sentence plus minimal identifier">Take the goal's bare-sentence template and add only the commit-subject identifier it already permits — a few-token, zero-new-computation reuse that lets any line name its item — while holding orchestrators to one final whole-run line, since the per-item list is the precise waste the goal targets and agent dispatch already keeps a long run visibly non-silent.</recommendation>
 </open-question>
 
 <open-question id="Terse-reporting invariant" status="deferred">
