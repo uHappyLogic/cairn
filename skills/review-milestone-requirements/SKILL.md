@@ -114,7 +114,16 @@ The `id` is the **Short Title**: a 2–5 word phrase that uniquely identifies th
 
 Do not restructure or rewrite existing content — only append the new `<open-question>` blocks and apply the reconcile edits from step 2.
 
-### 4. Report convergence
+### 4. Commit the reshaped requirements
+
+Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these two inputs:
+
+- **PATHS** — this skill's own change set: `<MILESTONE_DIR>/requirements.md` (the file whose `## Open questions` section it reconciled and surfaced into).
+- **SUBJECT** — `Requirements-review: <milestone_id>`.
+
+This is the milestone's flagship no-op-pass case, and the shared procedure's dirty-own-path guard handles it for you: a pass that reconciled, pruned, and surfaced nothing leaves `requirements.md` unchanged, so the guard stages nothing and commits nothing; a pass that reshaped the questions section commits that reshaping. The shared procedure owns the path-scoped staging, the no-op guard, and the commit — do not restate those mechanics here.
+
+### 5. Report convergence
 
 Close the pass by telling the user where the loop stands, so they know whether to go around again or move on:
 

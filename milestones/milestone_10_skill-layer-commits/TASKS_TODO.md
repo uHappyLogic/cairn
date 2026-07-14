@@ -1,28 +1,5 @@
 # TASKS TODO
 
-## Commit From Two Requirements-Editing Skills
-
-Turn the two requirements-editing skills — `review-milestone-requirements` and `modify-milestone-goal` — into committers under this milestone's skill-layer rule. Each ends its pass by committing exactly its own edit to the milestone's `requirements.md`, path-scoped, under its own distinct function-derived subject prefix, via the shared commit procedure (see the *Author Shared Skill-Layer Commit Procedure* task's Provides) rather than restating its logic. `review-milestone-requirements` is the milestone's flagship no-op-pass case: a pass that reconciles, prunes, and surfaces nothing must stage nothing and commit nothing (the uniform dirty-own-path guard), reporting the no-op — while a pass that did reshape the questions section commits that reshaping. `modify-milestone-goal`'s documented "does not commit — leave staged" ending is replaced by the commit step; its act-only scope (edit `## Goal` only, surface but never cascade downstream impact) is unchanged.
-
-Both skills stage the same own-path — the milestone's `requirements.md` — but must commit under two distinct subject prefixes, each derived from that skill's distinctive function in the `<Marker>: <descriptor>` house shape, and neither matching capture's `^Manual-answer:` grep.
-
-**Provides:**
-- `review-milestone-requirements` and `modify-milestone-goal` each now end by committing their own path-scoped edit to `<MILESTONE_DIR>/requirements.md` under a distinct, function-derived `<Marker>: <descriptor>` subject prefix (both clear of `^Manual-answer:`), via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`; `review-milestone-requirements`'s no-op pass commits nothing.
-
-**Notes:**
-- `review-milestone-requirements` is where the no-op-pass decision most matters: its own reporting already says so when a pass finds nothing to reconcile and no new gaps, so the commit step must sit behind the dirty-own-path guard — commit the reshaped `requirements.md` when the pass changed it, stage and commit nothing when it did not.
-- `modify-milestone-goal`'s trailing Rule is the exact line "Do not commit — leave the change staged for the user to review." — remove it (and any other leave-staged/do-not-commit prose) so no residual instruction contradicts the new commit step; leave the act-only "edit only `## Goal`" / "surface, never cascade" rules intact.
-- Both skills edit only `requirements.md`, so the two staged path sets are identical; distinctness lives entirely in the two subject prefixes. Reference the shared procedure via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`; do not restate its path-scoped-staging, subject-convention, or no-op-guard logic — each skill supplies only the resolved path (`<MILESTONE_DIR>/requirements.md`) and its resolved subject.
-
-**Success:**
-- Each of `skills/review-milestone-requirements/SKILL.md` and `skills/modify-milestone-goal/SKILL.md` ends with a commit step that references `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`.
-- `review-milestone-requirements`'s no-op pass path explicitly commits nothing (dirty-own-path guard), while a pass that reshaped the questions section commits `requirements.md`.
-- No "does not commit", "leave staging to the user", "leave the change staged", or other leave-staged/do-not-commit prose remains in either file.
-- The two commit subject prefixes are distinct from one another, each in `<Marker>: <descriptor>` shape, function-derived, and neither matches `^Manual-answer:`.
-- Each skill's commit stages only its own edited path (`<MILESTONE_DIR>/requirements.md`) and never uses `git add -A`.
-
----
-
 ## Rewire Three Answer Skills Onto Commit Procedure
 
 Bring the three already-committing answer-recording skills — `answer-open-question`, `answer-open-question-with-recommendation` (the **skill**, not its agent), and `answer-open-question-with-alternative` — onto this milestone's shared skill-layer commit convention **without changing their observable behavior**. Each already commits its own path-scoped `requirements.md` edit today with its commit mechanics restated inline; re-express each skill's commit step as a reference to the shared commit procedure (see the *Author Shared Skill-Layer Commit Procedure* task's Provides) instead of spelling out the path-scoped staging, subject, and no-op logic in-skill, and drop the prose that frames these skills as the documented committing "exception" — under the new layer rule every file-changing skill commits, so they are the norm, not exceptions.

@@ -54,7 +54,16 @@ Reason about what the new goal may have invalidated. Do **not** write this analy
 
 Replace the body of the `## Goal` section with the revised goal text. Touch nothing else — not `## Decisions`, not the questions, not `## Out of Scope`, not the task lists. A single targeted edit, not a rewrite of the file.
 
-### 5. Report and hand off
+### 5. Commit the goal revision
+
+Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these two inputs:
+
+- **PATHS** — this skill's own change set: `<MILESTONE_DIR>/requirements.md` (the file whose `## Goal` section it just revised).
+- **SUBJECT** — `Goal-revision: <milestone_id>`.
+
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit — do not restate those mechanics here.
+
+### 6. Report and hand off
 
 Briefly state:
 
@@ -68,4 +77,3 @@ Briefly state:
 - **Surface, never cascade.** The downstream consequences of a goal change are for the user to resolve (via `/review-milestone-requirements` and the answer/task skills) — never auto-apply them. The blast radius of a goal change is too large to fold in silently.
 - A goal change is not an answering decision and produces no reusable answering principle — this skill never feeds into principle capture.
 - Confirm the revised wording with the user when the intended change is ambiguous; the Goal is load-bearing.
-- Do not commit — leave the change staged for the user to review.
