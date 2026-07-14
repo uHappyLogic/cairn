@@ -50,6 +50,10 @@ Two docs describe this behavior and must track the change: `CLAUDE.md` (the `fin
 
 The single terse success line is a fixed sentence with no identifier (exactly the goal's examples — "Milestone defined.", "All tasks completed."); it does not carry the milestone id, task heading, or commit subject. Each orchestrator prints one such line for the whole run, with no per-item output during the loop.
 
+### Non-redundant advisory output
+
+Genuinely git-absent advisory output is preserved on the success path rather than collapsed into the terse status line: the terse cut removes only re-narration of the committed diff, while decision-critical information the commit never captured — review-milestone-requirements' convergence verdict and still-open list, derive-tasks' flag for any requirement it could not trace to a task, and the answer skills' note about newly-exposed open questions — is kept alongside the terse status line. Every success-path output that is a diff re-narration still collapses.
+
 ## Out of Scope
 
 ## Open questions
@@ -72,26 +76,6 @@ The single terse success line is a fixed sentence with no identifier (exactly th
     <drawback>Actively misleading: the user cannot tell a real change from a no-op, and unlike a genuine success there is no diff or commit to inspect, so it hides a possibly surprising &quot;nothing happened&quot; outcome behind a confirmation of success.</drawback>
   </alternative>
   <recommendation option="Concise explanatory no-op line">Terse reporting is earned only where the committed diff and git log are the durable record; a no-op commits nothing, so — exactly as the milestone already keeps failure and clean-stop paths explanatory and as commit-procedure already instructs to &quot;report the no-op&quot; — the no-op path should keep a concise one-line message saying nothing changed and why.</recommendation>
-</open-question>
-
-<open-question id="Non-redundant advisories" status="open">
-  <question>Some skills emit success-path output that is not a re-narration of the committed diff but genuinely new information absent from the git log: review-milestone-requirements' convergence verdict and still-open list, derive-tasks' flag for any requirement it could not trace to a task, and the answer skills' note about new open questions an answer may have exposed. Does the terse cut apply to this non-redundant advisory output too, collapsing it to the bare status line, or is git-log-absent advisory information exempt and preserved on the success path?</question>
-  <alternative id="Preserve advisories">
-    Exempt genuinely git-absent advisory output and keep it on the success path: the terse cut removes only diff re-narration, while decision-critical information the commit never captured &mdash; review-milestone-requirements&apos; convergence verdict and still-open list, derive-tasks&apos; untraceable-requirement flag, the answer skills&apos; newly-exposed-question note &mdash; is preserved alongside the status line.
-    <advantage>Faithful to the milestone&apos;s own stated rationale (re-narration is redundant because git is the durable record), which by construction does not reach information absent from git, and it keeps each loop-engine skill&apos;s decision-critical reason to exist &mdash; a bare &quot;Requirements reviewed.&quot; would force a re-read or re-run to learn whether the doc is ready for derive-tasks, plausibly costing more tokens than the cut saves.</advantage>
-    <drawback>Introduces a per-skill judgment about what counts as &quot;non-redundant advisory&quot; versus &quot;narration,&quot; softening the clean bright-line rule and leaving room for a skill to justify keeping prose.</drawback>
-  </alternative>
-  <alternative id="Collapse everything">
-    Apply the terse cut uniformly with no exemption, collapsing the advisory output to the bare status line too; the user re-derives convergence, coverage gaps, or newly-exposed questions by re-reading requirements.md or re-running the skill.
-    <advantage>An unambiguous bright-line rule with zero per-skill judgment, maximally faithful to the goal text&apos;s literal &quot;cut everything on the success path to the bare status line&quot; and to token minimization.</advantage>
-    <drawback>Guts the function of the very skills whose purpose is the advisory: review-milestone-requirements exists to report convergence, and derive-tasks explicitly mandates &quot;flag as a gap &mdash; never silently omit&quot; &mdash; collapsing these silently drops the one output the user ran the skill to get, likely inverting the token goal via re-runs.</drawback>
-  </alternative>
-  <alternative id="Fold into status line">
-    Keep a single line but let it carry the git-absent scalar &mdash; e.g. &quot;Requirements reviewed &mdash; 2 open, not ready for derive-tasks.&quot; &mdash; so the discipline of one line holds while the decision-critical bit survives.
-    <advantage>Reconciles the literal single-line instruction with substance, preserving the readiness/coverage signal at near-zero token cost.</advantage>
-    <drawback>Multi-item advisories (a long still-open list, several coverage gaps) do not fit one scalar line, stretching &quot;bare status line&quot; past its intent, and it prejudges the separate &quot;Terse line shape&quot; open question by deciding what the line may contain.</drawback>
-  </alternative>
-  <recommendation option="Preserve advisories">Preserve genuinely git-absent advisory output; the milestone&apos;s redundancy rationale does not reach information the diff and git log never captured, and the convergence verdict, coverage-gap flag, and newly-exposed-question note are each skill&apos;s decision-critical reason to run &mdash; while every output that is a diff re-narration still collapses. Recommended over folding-into-the-line because that answers the separate &quot;Terse line shape&quot; question and cannot hold multi-item advisories.</recommendation>
 </open-question>
 
 <open-question id="Terse-reporting invariant" status="deferred">
