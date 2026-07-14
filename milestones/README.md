@@ -10,9 +10,18 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_10_skill-layer-commits/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 10 — Skill-Layer Commits
+
+- Established committing as a property of the skill layer: every user-invoked skill that changes files commits exactly those changes path-scoped under a distinct function-derived subject prefix, while dispatched agents never commit and orchestrators commit their agents' work after they return.
+- Created `shared/commit-procedure.md` as the single source of truth for the skill-layer commit step (path-scoped staging, dirty-own-path no-op guard, function-derived `<Marker>: <descriptor>` subject convention), referenced by all committing skills and orchestrators.
+- Converted 11 previously non-committing or partially-committing skills to commit their changes: `define-milestone-goal`, `specify-milestone-starting-state`, `modify-milestone-goal`, `review-milestone-requirements`, `submit-task`, `complete-task`, `recommend-all-open-questions`, `finish-current-milestone`, `capture-milestone-principle-updates`, and `goto-next-milestone`.
+- Moved the `answer-all-open-questions-with-recommendation` commit from the dispatched agent up to the orchestrator (per answer), preserving one-commit-per-answer while obeying the skill-layer rule that agents never commit.
+- Unified the per-skill subject convention: `complete-all-tasks` now commits under a function-derived prefix with the task heading moved to the commit body, and `recommend-all-open-questions` commits once at the end instead of being deliberately non-committing.
+- Updated `CLAUDE.md` and `README.md` to document the layer-based commit rule, retiring the old role-based committing-vs-staging invariant and the milestone-7 agent-commits divergence.
 
 ### Milestone 9 — Open-Question XML Format
 
@@ -110,3 +119,4 @@ Current milestone: `milestones/milestone_10_skill-layer-commits/`
 | 7 | Answer Open Questions With Recommendation | `milestones/milestone_07_answer-all-with-recommendation/` |
 | 8 | Principles As Recommendation Advisor | `milestones/milestone_08_principles-recommendation-advisor/` |
 | 9 | Open-Question XML Format | `milestones/milestone_09_open-question-xml-format/` |
+| 10 | Skill-Layer Commits | `milestones/milestone_10_skill-layer-commits/` |
