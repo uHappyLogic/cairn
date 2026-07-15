@@ -10,9 +10,18 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_11_terse-skill-reporting/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 11 — Terse Skill Reporting
+
+- Cut every file-mutating, committing skill's success-path console output to a single fixed terse status line carrying no identifier (e.g. "Milestone defined.", "All tasks completed.", "Recommendations embedded."), since the committed diff and `git log` are the durable record of what changed.
+- Applied the terse cut across all skill groups: the milestone-lifecycle skills, the three answer skills, `review-milestone-requirements`, the task-level/capture skills, `finish-current-milestone`, and the four orchestrators (each of which now prints one line for the whole run with no per-item loop output).
+- Preserved the genuinely git-absent, decision-critical advisories alongside the terse line — `review-milestone-requirements`' convergence verdict and still-open list, `derive-tasks`' untraceable-requirement flag, and the answer skills' newly-exposed-open-questions note.
+- Gave each committing skill a distinct one-line no-op message for when its dirty-own-path guard fires, since git holds no durable record of a no-op, while leaving all failure and clean-stop paths' full explanatory messages intact.
+- Retired `finish-current-milestone`'s runtime "Suggest the next steps" block — including its recommendation of `/capture-milestone-principle-updates` and its `/define-milestone-goal` pointer — with the finish→capture handoff kept only as documented workflow guidance.
+- Added a standalone terse-success-reporting invariant to `CLAUDE.md` (its sole durable home, since there is deliberately no shared `report-procedure.md`) and reconciled `CLAUDE.md` and `README.md` so no passage claims a skill prints a prose success summary or a runtime next-step recommendation.
 
 ### Milestone 10 — Skill-Layer Commits
 
@@ -120,3 +129,4 @@ Current milestone: `milestones/milestone_11_terse-skill-reporting/`
 | 8 | Principles As Recommendation Advisor | `milestones/milestone_08_principles-recommendation-advisor/` |
 | 9 | Open-Question XML Format | `milestones/milestone_09_open-question-xml-format/` |
 | 10 | Skill-Layer Commits | `milestones/milestone_10_skill-layer-commits/` |
+| 11 | Terse Skill Reporting | `milestones/milestone_11_terse-skill-reporting/` |
