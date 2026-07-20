@@ -42,30 +42,13 @@ Milestone 3 ("Generic Naming Refactor") already retired coding-flavored *vocabul
 
 A software-engineer-specific finding — the target the sweep neutralizes and the thing the final re-audit counts toward its zero-findings bar — is any text that assumes the user's own deliverable or domain is software engineering: personas, "the code/codebase," insertion points, build/test verification, code examples, and the like. Cairn's own operating mechanics are exempt as domain-uniform plugin infrastructure and Claude Code conventions — git commits and git-log greps, path-scoped staging, the CLAUDE.md/README.md file names, and the consuming project being a git repository — reusing the goal's own migrate-workspace exclusion logic (this is plugin infrastructure, not a claim about the user's work type). The named exemptions are illustrative, not exhaustive: the independent re-auditor applies the "does this assume the user's deliverable is software?" test as a generalizable rule to cases the initial audit did not foresee.
 
+### Replacement example strategy
+
+Neutralized examples use one canonical work-type-neutral worked example — concrete but domain-generic (a task producing a deliverable with a checkable Success bar) — reused consistently everywhere the current software-specific illustrations appear (the Creep tower-defense example, RailCameraSnapper, and the recurring Arc-drive/swing question titles). A rewritten example may stay concrete but must not name a specific domain: keeping one reused concrete illustration preserves the consistency and teaching value that abstract placeholders lose, while the domain-neutral stance rules out naming any concrete industry.
+
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Replacement example strategy" status="open">
-  <question>Which replacement strategy should the neutralized examples use: one canonical work-type-neutral worked example reused consistently across all files (replacing the Creep tower-defense example, RailCameraSnapper, and the recurring Arc-drive/swing question titles), a varied set of examples drawn from different non-software domains, or fully abstract placeholders — and may a rewritten example name a concrete domain (e.g. cooking, event planning) at all, or does that conflict with the goal&apos;s domain-silent stance?</question>
-  <alternative id="Canonical neutral example">
-    A single work-type-neutral worked example that is concrete but domain-generic (a task producing, say, a document or deliverable with a checkable Success bar), reused consistently everywhere the Creep example, RailCameraSnapper, and the Arc-drive/swing titles appear; concrete illustration is kept, but no specific industry is named.
-    <advantage>Maximizes consistency and auditability — one example a reader learns once, one artifact to maintain and to prove domain-silent, and it retains the concreteness a worked example needs to actually teach.</advantage>
-    <drawback>A single reused illustration can feel slightly generic in every context, and picking a good domain-generic yet concrete scenario takes more care than grabbing a real domain.</drawback>
-  </alternative>
-  <alternative id="Varied concrete domains">
-    A varied set of examples drawn from several named non-software domains (cooking, event planning, writing), each site illustrated with whichever concrete domain fits best.
-    <advantage>Concrete named domains read vividly and actively demonstrate the tool&apos;s range by showing it working across genuinely different fields.</advantage>
-    <drawback>Naming concrete industries reintroduces exactly the domain-specific connotation the goal&apos;s domain-silent stance and the re-audit exist to remove — it swaps one assumed work type for several — and multiplies the surface a &quot;zero findings&quot; audit must clear.</drawback>
-  </alternative>
-  <alternative id="Abstract placeholders">
-    Fully abstract structural placeholders throughout (Task A, Component X, &quot;the deliverable meets criterion Z&quot;), naming no domain and no concrete scenario.
-    <advantage>Maximally domain-silent with zero risk of the re-audit flagging domain-specific content, and nothing to maintain.</advantage>
-    <drawback>Placeholders gut the pedagogical purpose of a worked example — the Creep illustration exists to show a filled-in task concretely, and &quot;Task A provides X&quot; teaches far less than a real, if generic, illustration.</drawback>
-  </alternative>
-  <applied-principle>Prefer domain-neutral terms</applied-principle>
-  <recommendation option="Canonical neutral example">One concrete-but-domain-generic worked example reused everywhere keeps the consistency and teaching value a placeholder set loses, while the domain-neutral principle tips decisively against naming any concrete industry — so examples may stay concrete but must not name a specific domain.</recommendation>
-</open-question>
 
 <open-question id="Environment-context replacement wording" status="open">
   <question>What neutral formula replaces the recurring &quot;tech stack, build/test commands, MCP tools, conventions&quot; environment-context phrase across its seven reader files and the corresponding CLAUDE.md invariant — i.e. what is a work-type-agnostic project&apos;s CLAUDE.md expected to supply (domain context, working conventions, how done is verified?), and does the &quot;run /init once at project setup&quot; pointer survive for non-software projects?</question>
