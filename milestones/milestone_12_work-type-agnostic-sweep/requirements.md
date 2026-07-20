@@ -61,3 +61,11 @@ The final independent re-audit is executed as a final milestone task whose compl
 ## Out of Scope
 
 ## Open questions
+
+<open-question id="Canonical example content" status="deferred">
+  <question>What the single canonical work-type-neutral worked example actually is — the concrete deliverable, task framing, and checkable Success bar that will be reused everywhere the Creep tower-defense, RailCameraSnapper, and Arc-drive/swing illustrations are replaced.</question>
+</open-question>
+
+<open-question id="Re-audit task success wording" status="deferred">
+  <question>How the final re-audit task is authored when the audit may return findings: whether its Success bar is the delivered structured report or the zero-findings verdict itself, and how a repeat audit is sequenced after follow-up fix tasks so the milestone's zero-findings bar is ultimately proven.</question>
+</open-question>
