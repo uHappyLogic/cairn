@@ -89,3 +89,21 @@ Sweep `skills/derive-tasks/SKILL.md` — the skill that decomposes a milestone's
 
 ---
 
+## Neutralize Ask-In-Milestone-Context Skill Language
+
+Sweep `skills/ask-in-milestone-context/SKILL.md` — the read-only Q&A skill that answers questions grounded in the current milestone — so it becomes fully work-type-agnostic. Reframe its code-grounding language ("the code those tasks shipped", "the actual code those tasks produced", "the truth is in the code", "Live code is primary", "live source", "the actual source", "the repository … the code wins", the step-2 heading "what actually shipped") as grounding answers in the live deliverables/artifacts the tasks produced, whatever the work type. The skill's contracts stay intact.
+
+**Notes:**
+- This skill is not one of the milestone's seven environment-context reader files, so the "Environment-context replacement wording" decision does not govern it — do not force the enumerated phrase in. Its `CLAUDE.md` read (step 1, "the project's stack, conventions, and real names for systems and files") still carries light SE flavor; neutralize it to a work-type-neutral equivalent (e.g. the project's domain context, conventions, and real names for its systems and files) in the same pass without adopting the seven-file enumeration.
+- The best-effort task→commit mapping (step 2 and the frontmatter/prose) — `TASKS_DONE.md` intent plus `git log`/`git show` as a *supporting lens* — is a contract to preserve, not neutralize: git commits and greps are exempt plugin infrastructure under the "SE-specific finding boundary" decision. Keep the mapping and its "best-effort / not guaranteed / fall back to reading the live files" hedge intact; only the *deliverable* vocabulary around it changes (e.g. "reading the live files" stays, "reading the live source/code" is reframed to reading the live deliverable/artifact).
+- The illustrative example questions that name software work ("how did the auth task end up handling token refresh?", "where did we put the retry logic?") are SE-specific illustrations under the zero-findings bar; neutralize them to work-type-neutral examples in the same pass. This skill is not where the milestone's one canonical worked example lives, so match the surrounding illustration style rather than importing the "Draft the Getting Started section" example.
+- This is a language sweep only — carry no verification-mechanism reframe (this skill verifies nothing) and no canonical-example import. The frontmatter `description` field carries the "the code those tasks shipped" framing and is in scope; neutralize it too.
+
+**Success:**
+- No software-engineer-specific phrasing remains in the file — the code-grounding terms it currently carries ("the code those tasks shipped", "the actual code those tasks produced", "the truth is in the code", "Live code is primary", "live source", "the actual source the task touched", "the code wins", "reading the live source", the step-2 heading "Ground the answer in what actually shipped") are gone or neutralized to deliverable/artifact framing, verifiable by reading the file including the frontmatter `description`.
+- The read-only contract is intact: the skill still never edits any file, and step 4 still only *offers* the owning skill for a surfaced next action while performing none of its work (the `## Rules` read-only and asking/acting bullets unchanged in meaning).
+- The best-effort task→commit mapping — `TASKS_DONE.md` entries as intent plus `git log`/`git show` as a supporting-lens, with its not-guaranteed hedge and live-file fallback — is present and unchanged in function.
+- The skill's structure survives: the workflow steps (0–4) and their flow, and the `## Rules` section, are all present and unchanged in function.
+
+---
+
