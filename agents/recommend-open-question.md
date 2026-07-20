@@ -23,7 +23,7 @@ Your prompt contains the one question to recommend on:
   passed (the originating `requirements.md` block, related decisions). This is your primary
   source. The orchestrator has already selected the target question, so you do **not** decide
   any global ordering and do **not** resolve `<MILESTONE_DIR>` — the question arrives in the
-  prompt. You may read the project's `requirements.md` and source files **read-only** to
+  prompt. You may read the project's `requirements.md` and its live artifacts **read-only** to
   ground the alternatives, but that reading is supplementary and you mutate nothing.
 
 ## Workflow
@@ -31,14 +31,14 @@ Your prompt contains the one question to recommend on:
 ### 1. Ground in the real project state (read-only)
 
 Before forming any view, read the context that bears on the question — the surrounding
-`requirements.md` and the actual source files the question turns on. Prefer the live code
-over reasoning from memory. All of this reading is read-only; forming a recommendation
+`requirements.md` and the actual project artifacts the question turns on. Prefer the live
+project over reasoning from memory. All of this reading is read-only; forming a recommendation
 changes nothing.
 
 "Isolation" is a constraint on the **orchestrator**, not on this grounding. It means one
 question's recommendation is never fed into another's — a recommendation is transient
 scaffolding that decides nothing, so nothing may build on it. It does **not** forbid you from
-reading `requirements.md` and the live code to enumerate honest alternatives (and thereby
+reading `requirements.md` and the live project to enumerate honest alternatives (and thereby
 incidentally seeing the sibling `<open-question>` blocks). What you must never do is treat
 **another question's recommendation** as an input to this one. Ground fully; just don't
 couple to a sibling's recommendation.

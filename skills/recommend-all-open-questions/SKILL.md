@@ -109,7 +109,7 @@ Context:
 <the question's full <open-question> block, plus relevant surrounding requirements>
 ```
 
-The subagent is **read-only** — it reads `requirements.md` and the live code to ground its
+The subagent is **read-only** — it reads `requirements.md` and the live project to ground its
 alternatives but mutates nothing. It returns the ready-to-embed XML sub-elements as its final
 message — one `<alternative id="...">` element per option (each with child `<advantage>` and
 `<drawback>`), zero or more sibling `<applied-principle>` elements, and one

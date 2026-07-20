@@ -1,23 +1,23 @@
 ---
 name: discuss-new-task
-description: Clarify a rough or ambiguous issue discovered during development into one or more clear tasks, then hand off to /submit-task. Use this whenever the user reports a bug, gap, or "we should also..." idea mid-flight but the description is too vague to act on, or whenever they want to talk through an issue before adding it to the milestone task list. Also use it when the user flags that something is a bigger chunk of work that may need several task entries, or when a single reported issue turns out to be too large for one task — this skill will break it into an ordered set of task-sized pieces before handing each off. Prefer this over jumping straight to /submit-task when the affected system, desired behavior, or how to verify the fix is unclear, or when the right number of tasks isn't obvious yet.
+description: Clarify a rough or ambiguous issue surfaced mid-flight into one or more clear tasks, then hand off to /submit-task. Use this whenever the user reports a problem, gap, or "we should also..." idea mid-flight but the description is too vague to act on, or whenever they want to talk through an issue before adding it to the milestone task list. Also use it when the user flags that something is a bigger chunk of work that may need several task entries, or when a single reported issue turns out to be too large for one task — this skill will break it into an ordered set of task-sized pieces before handing each off. Prefer this over jumping straight to /submit-task when the affected system, desired behavior, or how to verify it is unclear, or when the right number of tasks isn't obvious yet.
 ---
 
 # discuss-new-task
 
-Facilitates a short, focused conversation that turns a half-formed issue — the kind that surfaces while building — into a description concrete enough to become a task. This skill is the conversational front-end for `/submit-task`: it clarifies just enough, then proposes the handoff. It never writes to the task list itself.
+Facilitates a short, focused conversation that turns a half-formed issue — the kind that surfaces mid-flight — into a description concrete enough to become a task. This skill is the conversational front-end for `/submit-task`: it clarifies just enough, then proposes the handoff. It never writes to the task list itself.
 
 Most issues are a single task. But some are a bigger chunk of work that only makes sense as **several** tasks — the user may flag this up front ("this might be a few entries"), or it may become apparent mid-discussion that one "issue" is really two or three independent pieces. When that happens, this skill helps draw the boundaries and produces an ordered set of task-sized descriptions, then hands each off in turn.
 
 The bar to clear is **conceptual clarity**, not full design detail. For each task that comes out of the discussion, three things must be unambiguous:
 
-1. **Which system** the issue touches (a file, component, mechanic, or requirement).
+1. **Which system** the issue touches (a file, component, section, or requirement).
 2. **What the desired behavior is** — what should be true after the fix that isn't true now.
 3. **Roughly how you'd verify it** — what you'd look at to confirm it's done.
 
 When the work splits into several tasks, one more thing must be clear: **where the boundaries are** — each piece should be independently completable, and their order (what depends on what) should be evident.
 
-Once those are clear, `submit-task` fills in the file-, method-, and step-level specifics for each task. That is its job, not yours — keep what you produce high-level. Don't push the conversation, or the descriptions you write, past conceptual clarity.
+Once those are clear, `submit-task` fills in the file- and step-level specifics for each task. That is its job, not yours — keep what you produce high-level. Don't push the conversation, or the descriptions you write, past conceptual clarity.
 
 ## Usage
 
@@ -25,16 +25,16 @@ Once those are clear, `submit-task` fills in the file-, method-, and step-level 
 /discuss-new-task <issue description>
 ```
 
-- `<issue description>`: a free-form, possibly rough description of a problem, gap, or idea discovered during development. May be a single bug or a larger "we need to build X" that spans several pieces.
+- `<issue description>`: a free-form, possibly rough description of a problem, gap, or idea surfaced mid-flight. May be a single issue or a larger "we need to create X" that spans several pieces.
 
 **Example (single task):**
 ```
-/discuss-new-task enemies sometimes walk through walls, feels broken
+/discuss-new-task the setup section's steps are out of order, feels confusing
 ```
 
 **Example (likely several tasks):**
 ```
-/discuss-new-task I think we need a proper save system — this is probably a few tasks, not one
+/discuss-new-task I think we need a proper glossary — this is probably a few tasks, not one
 ```
 
 ## Workflow
@@ -50,9 +50,9 @@ Read in parallel to ground the discussion in the real project state rather than 
 - `<MILESTONE_DIR>/requirements.md` — the goal, constraints, and decisions the issue must fit within.
 - `<MILESTONE_DIR>/TASKS_TODO.md` — pending tasks, to spot overlap and dependencies.
 - `<MILESTONE_DIR>/TASKS_DONE.md` — completed work, to catch issues already addressed.
-- `CLAUDE.md` — the stack and conventions, so the discussion uses the project's real terms.
+- `CLAUDE.md` — the project's conventions and context, so the discussion uses the project's real terms.
 
-If relevant source files are named or implied by the issue, read them too. Concrete grounding makes for sharper questions.
+If relevant project files are named or implied by the issue, read them too. Concrete grounding makes for sharper questions.
 
 ### 2. Triage before discussing
 
@@ -63,7 +63,7 @@ Before asking anything, check two things:
 
 ### 3. Size the work: one task or several?
 
-Decide whether the issue is a single task or a chunk that needs several. The anchor is the same one the task list uses: **a task should be completable in a single `/complete-task` invocation.** "Do X and Y" is two tasks when X and Y can be built and verified independently.
+Decide whether the issue is a single task or a chunk that needs several. The anchor is the same one the task list uses: **a task should be completable in a single `/complete-task` invocation.** "Do X and Y" is two tasks when X and Y can be completed and verified independently.
 
 Treat it as several tasks when any of these hold:
 - The user flagged it as a bigger chunk or "a few entries."
@@ -72,7 +72,7 @@ Treat it as several tasks when any of these hold:
 
 Lean toward a single task when in doubt — splitting has a cost, and `submit-task` can still position a lone task correctly. Don't manufacture extra tasks to look thorough.
 
-If it's several, sketch a **provisional** breakdown into atomic, ordered pieces — just a working title or one-line gist per piece. You're finding the task boundaries here, not writing the tasks; resist any detail (file paths, contract surface, method names) that belongs to `submit-task`.
+If it's several, sketch a **provisional** breakdown into atomic, ordered pieces — just a working title or one-line gist per piece. You're finding the task boundaries here, not writing the tasks; resist any detail (file paths, contract surface, success criteria) that belongs to `submit-task`.
 
 ### 4. Clarify the ambiguities
 

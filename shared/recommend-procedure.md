@@ -29,10 +29,10 @@ Rendering the result and any side-effects are the caller's job.
 ### 1. Ground in the real project state
 
 Before forming any view, read the context that bears on the question: the milestone's
-`requirements.md` and the actual source files, scripts, or design documents the question
-turns on. Prefer reading the live code over reasoning from memory — the point is to ground
-the recommendation in what the project actually is, not what you recall it to be. All of
-this reading is read-only; forming a recommendation changes nothing.
+`requirements.md` and the actual project artifacts the question turns on. Prefer reading the
+live project over reasoning from memory — the point is to ground the recommendation in what
+the project actually is, not what you recall it to be. All of this reading is read-only;
+forming a recommendation changes nothing.
 
 Part of that grounding is the project-wide answering-principle store
 `milestones/answer_decision_principles.md` — a fixed path at the `milestones/` root, above
@@ -82,7 +82,7 @@ shown to the user or handed back for embedding is the wrapper's concern, not thi
 
 ## Rules
 
-- Ground in the real project state before forming a view — live code over memory — and read
+- Ground in the real project state before forming a view — the live project over memory — and read
   the project-wide principle store `milestones/answer_decision_principles.md` in place as
   part of that grounding.
 - Two to four alternatives, no strawmen and no padding; each carrying what-it-is / key
