@@ -46,30 +46,13 @@ A software-engineer-specific finding — the target the sweep neutralizes and th
 
 Neutralized examples use one canonical work-type-neutral worked example — concrete but domain-generic (a task producing a deliverable with a checkable Success bar) — reused consistently everywhere the current software-specific illustrations appear (the Creep tower-defense example, RailCameraSnapper, and the recurring Arc-drive/swing question titles). A rewritten example may stay concrete but must not name a specific domain: keeping one reused concrete illustration preserves the consistency and teaching value that abstract placeholders lose, while the domain-neutral stance rules out naming any concrete industry.
 
+### Environment-context replacement wording
+
+The recurring "tech stack, build/test commands, MCP tools, conventions" environment-context phrase — across its seven reader files and the corresponding CLAUDE.md invariant — is replaced item-for-item with a plain-English neutral enumeration that keeps the enumerated shape: the project's domain context, working conventions, available tools, and how work is verified as done. Keeping the enumeration (rather than collapsing to an abstract umbrella phrase) preserves the concrete grounding — each reader is still pointed at the verification convention and the available tools, foregrounding how "done" is verified. A reworded, generalized `/init` pointer survives for non-software projects: `/init` is a genuine Claude Code built-in that inspects and documents any project regardless of work type, so the setup pointer is retained rather than dropped.
+
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Environment-context replacement wording" status="open">
-  <question>What neutral formula replaces the recurring &quot;tech stack, build/test commands, MCP tools, conventions&quot; environment-context phrase across its seven reader files and the corresponding CLAUDE.md invariant — i.e. what is a work-type-agnostic project&apos;s CLAUDE.md expected to supply (domain context, working conventions, how done is verified?), and does the &quot;run /init once at project setup&quot; pointer survive for non-software projects?</question>
-  <alternative id="Neutral enumerated formula">
-    Replace the phrase item-for-item with neutral equivalents that keep the enumerated shape — e.g. &quot;the project&apos;s domain context, working conventions, available tools, and how work is verified as done&quot; — and retain a reworded, generalized `/init` pointer.
-    <advantage>Keeps the concrete grounding value the phrase exists to provide: each reader is still told to look for the verification convention and the available tools (not just vague &quot;context&quot;), which directly serves the goal&apos;s aim of reframing and foregrounding how &quot;done&quot; is verified.</advantage>
-    <drawback>An enumerated list is more edit surface to keep consistent across seven files plus the invariant, and a slot like &quot;available tools&quot; can still faintly echo the old MCP/tooling framing if worded carelessly.</drawback>
-  </alternative>
-  <alternative id="Abstract umbrella phrase">
-    Collapse the enumeration into a single neutral umbrella phrase such as &quot;the project&apos;s working context and conventions,&quot; dropping the itemized list while retaining the `/init` pointer.
-    <advantage>Maximally domain-silent and shortest — with nothing enumerated, there is no list item left that could leak a work-type assumption, and it is the least text to keep synchronized.</advantage>
-    <drawback>Loses the actionable specificity: readers are no longer pointed at the verification method or the available tools, weakening the exact grounding the phrase was there to supply and leaving the goal&apos;s verification-reframing with no anchor in the reader files.</drawback>
-  </alternative>
-  <alternative id="Drop phrase and /init pointer">
-    Remove both the enumerated phrase and the `/init`-at-setup suggestion, treating `CLAUDE.md` as an opaque context source (&quot;read whatever `CLAUDE.md` documents&quot;), on the view that `/init` is itself coding-flavored setup.
-    <advantage>Strips even the faint software residue of a &quot;run `/init` at project setup&quot; onboarding step, going furthest toward domain silence.</advantage>
-    <drawback>Over-corrects past the goal&apos;s intent: `/init` is a genuine Claude Code built-in that inspects and documents any project regardless of work type, so dropping the pointer discards real cross-domain onboarding value for a mechanism that is not actually domain-specific.</drawback>
-  </alternative>
-  <applied-principle>Prefer domain-neutral terms</applied-principle>
-  <recommendation option="Neutral enumerated formula">Replace item-for-item with a plain-English neutral enumeration (domain context, working conventions, available tools, how work is verified as done) and keep a generalized `/init` pointer: it satisfies the domain-neutral-terms principle while preserving the concrete verification/tools/conventions grounding the goal wants foregrounded — which the abstract umbrella drops — and retains `/init`, a genuinely cross-domain built-in, which the third option needlessly discards.</recommendation>
-</open-question>
 
 <open-question id="Verification fallback without conventions" status="deferred">
   <question>When a consuming project&apos;s CLAUDE.md defines no done-verification convention, what should the reframed completion procedure fall back to — direct inspection of the deliverable against the task&apos;s Success criteria, or something stronger?</question>
