@@ -10,9 +10,18 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_12_work-type-agnostic-sweep/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 12 — Work-Type-Agnostic Sweep
+
+- Completed Cairn's transformation into a fully work-type-agnostic workflow, finishing what the Generic Naming Refactor (milestone 3) began by removing every remaining assumption that the user's own deliverable is software engineering.
+- Neutralized the two SE-saturated shared task cores (`shared/complete-procedure.md`, `shared/submit-procedure.md`) — reframing insertion-points/assertions/exports/build-test language and replacing the Unity tower-defense worked example with a canonical work-type-neutral written-guide example ("Draft the Getting Started section of the user guide").
+- Reframed the verification mechanism so a task is checked against its Success criteria however the project defines done, with a direct criterion-by-criterion inspection fallback when CLAUDE.md names no done-verification convention — no build assumed.
+- Replaced the "You are a Software Engineer" agent personas and swept the code/codebase framing across the skill layer, plus replaced the recurring environment-context enumeration ("tech stack, build/test commands, MCP tools") with the neutral "the project's domain context, working conventions, available tools, and how work is verified as done" across its seven reader files and the CLAUDE.md invariant (retaining a generalized `/init` pointer).
+- Neutralized all software/game illustrations (RailCameraSnapper, Cinemachine cameras, the Arc-drive/swing question titles, shooting-mechanic goal examples) to the one canonical "Getting-started section order" / user-guide worked example, reused consistently, and swept the plugin's own `README.md` and `CLAUDE.md` while keeping Cairn's operating mechanics (git commits, path-scoped staging, file names) exempt as plugin infrastructure.
+- Proved success with two independent fresh-context re-audits — the first surfaced 7 residual findings closed by two follow-up tasks, and the final re-audit returned an explicit zero-findings verdict.
 
 ### Milestone 11 — Terse Skill Reporting
 
@@ -130,3 +139,4 @@ Current milestone: `milestones/milestone_12_work-type-agnostic-sweep/`
 | 9 | Open-Question XML Format | `milestones/milestone_09_open-question-xml-format/` |
 | 10 | Skill-Layer Commits | `milestones/milestone_10_skill-layer-commits/` |
 | 11 | Terse Skill Reporting | `milestones/milestone_11_terse-skill-reporting/` |
+| 12 | Work-Type-Agnostic Sweep | `milestones/milestone_12_work-type-agnostic-sweep/` |
