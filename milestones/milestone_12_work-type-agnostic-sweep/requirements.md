@@ -64,8 +64,41 @@ The final independent re-audit is executed as a final milestone task whose compl
 
 <open-question id="Canonical example content" status="deferred">
   <question>What the single canonical work-type-neutral worked example actually is — the concrete deliverable, task framing, and checkable Success bar that will be reused everywhere the Creep tower-defense, RailCameraSnapper, and Arc-drive/swing illustrations are replaced.</question>
+  <alternative id="Guide document section">
+    A written-document deliverable: a task like &quot;Draft the Getting Started section of the user guide,&quot; whose deliverable is a Markdown/document file, whose Provides is the named `## Getting Started` heading later sections cross-link to, whose Notes gotcha is that the auto-generated table of contents keys off `##` headings so a section added without one is silently dropped, and whose Success bar is inspection-checkable (the guide file exists at its path, contains a `## Getting Started` heading, stays under the agreed length) with an optional command criterion (the doc-lint check passes). The recurring example question title becomes a document-design question such as &quot;Getting-started section order.&quot;
+    <advantage>Producing a written document is the single most work-type-universal knowledge-work activity — every project across software, legal, research, marketing, or operations writes documents — so it reads as domain-neutral rather than as any named industry, while still yielding a real Provides surface, a genuine non-obvious Notes gotcha, and a Success bar that maps almost one-for-one onto the three models being replaced (file exists / contains heading / passes a check).</advantage>
+    <drawback>A document heading is a softer, less vivid public contract than the original Creep example&apos;s method signature, so the Provides teaching point lands a shade less sharply; and because this milestone&apos;s own deliverables are Markdown, the example sits close to the plugin&apos;s real files.</drawback>
+  </alternative>
+  <alternative id="Structured list artifact">
+    A structured-data deliverable: a task like &quot;Compile the regional contact roster,&quot; whose deliverable is a structured list/table file, whose Provides is the per-entry field schema (name, region, contact) siblings depend on, whose Notes gotcha is that an empty roster still passes validation so a downstream merge task runs against zero entries on the next pass, and whose Success bar is that the file exists, each entry carries the required fields, and validation passes.
+    <advantage>Maps most faithfully to the original&apos;s structure — a real public surface plus an emptiness/timing gotcha that directly mirrors the Creep `AllCreepsDead()`-returns-true-on-empty behavior — so the maximum teaching value of the worked example is preserved.</advantage>
+    <drawback>&quot;Roster / schema / validation&quot; carries a faint data-or-ops connotation, making it marginally less universally plain-English than plain document authoring, and it needs slightly more setup prose to introduce.</drawback>
+  </alternative>
+  <alternative id="Everyday physical deliverable">
+    A tangible everyday deliverable: a task producing a concrete physical or hands-on item (assembling, preparing, or arranging something), chosen to be unmistakably non-software.
+    <advantage>Maximally vivid and instantly readable as outside the software frame, leaving no doubt the plugin is work-type-agnostic.</advantage>
+    <drawback>Any concrete physical example implicitly names a domain (cooking, carpentry, logistics), which fights the decision&apos;s &quot;must not name a specific domain&quot; constraint, and such deliverables tend toward human-judged Success checks (&quot;looks right&quot;) rather than the automatable, inspection-checkable bar the template requires.</drawback>
+  </alternative>
+  <applied-principle>Prefer domain-neutral terms</applied-principle>
+  <recommendation option="Guide document section">Anchor the canonical example on a written-guide section: document authoring is the most work-type-universal activity, so it reads as domain-silent while still supplying a Provides surface, a real Notes gotcha, and a Success bar that maps cleanly onto the three criterion models being replaced — Structured list artifact is a close runner-up preserving more of the original gotcha but carrying a faint data-domain tint, and Everyday physical deliverable is ruled out for implying a domain and for weak checkable Success.</recommendation>
 </open-question>
 
 <open-question id="Re-audit task success wording" status="deferred">
   <question>How the final re-audit task is authored when the audit may return findings: whether its Success bar is the delivered structured report or the zero-findings verdict itself, and how a repeat audit is sequenced after follow-up fix tasks so the milestone's zero-findings bar is ultimately proven.</question>
+  <alternative id="Report delivered; iterate to clean">
+    The re-audit task&apos;s Success bar is that the audit subagent ran and its structured output was delivered — the per-finding list, or the explicit zero-findings verdict; on findings, follow-up fix tasks plus a fresh re-audit task are appended after them, iterating until a run comes back clean, and that final clean verdict is the milestone&apos;s proof.
+    <advantage>Every audit task is completable in a single complete-task invocation against an objectively checkable Success (&quot;the report/verdict was produced&quot;), fitting the task model exactly and honoring the already-recorded decision that findings drop into follow-up tasks.</advantage>
+    <drawback>The milestone&apos;s zero-findings bar is an emergent property of the last run returning clean rather than one task&apos;s Success, so no single task self-evidently &quot;proves&quot; the milestone in isolation.</drawback>
+  </alternative>
+  <alternative id="Zero-findings verdict as Success">
+    The re-audit task&apos;s Success bar is the explicit zero-findings verdict itself, so the one task is not complete until the audit comes back clean.
+    <advantage>Completing the task literally proves the milestone&apos;s zero-findings goal — the proof is encoded in one task&apos;s Success with no separate convergence step to reason about.</advantage>
+    <drawback>It contradicts the task model: complete-task cannot mark the task done while findings remain, and its diagnose-fix-retry path would either wedge the task or collapse auditing and fixing into one task, violating atomic scope and the recorded &quot;findings drop into follow-up tasks&quot; decision.</drawback>
+  </alternative>
+  <alternative id="Self-propagating audit task">
+    The re-audit task&apos;s Success is report-delivered as in the first option, but on findings its completion additionally authors the follow-up fix tasks and a successor re-audit task, so the repeat-until-clean loop propagates automatically instead of being re-authored by hand.
+    <advantage>Keeps every audit task completable while making the loop self-sustaining, needing no manual re-authoring of fix tasks or a successor audit between rounds.</advantage>
+    <drawback>It overloads completion with task-authoring that belongs to submit-task/derive-tasks — the complete-task procedure carries out and closes one task and never authors new ones — so it bends the model&apos;s completion-vs-authoring role split.</drawback>
+  </alternative>
+  <recommendation option="Report delivered; iterate to clean">Only a report-delivered Success bar is objectively checkable and completable in a single complete-task invocation as the task model requires, and it honors the recorded decision that findings drop into follow-up tasks, with the zero-findings bar proven by the final re-audit run returning clean.</recommendation>
 </open-question>
