@@ -40,3 +40,24 @@ Milestone 3 ("Generic Naming Refactor") already retired coding-flavored *vocabul
 
 ## Out of Scope
 
+## Open questions
+
+<open-question id="Replacement example strategy" status="open">
+  <question>Which replacement strategy should the neutralized examples use: one canonical work-type-neutral worked example reused consistently across all files (replacing the Creep tower-defense example, RailCameraSnapper, and the recurring Arc-drive/swing question titles), a varied set of examples drawn from different non-software domains, or fully abstract placeholders — and may a rewritten example name a concrete domain (e.g. cooking, event planning) at all, or does that conflict with the goal&apos;s domain-silent stance?</question>
+</open-question>
+
+<open-question id="SE-assumption audit boundary" status="open">
+  <question>What counts as a software-engineer-specific finding for the sweep and the final re-audit — in particular, are Cairn&apos;s own operating mechanics (git commits and git-log greps, path-scoped staging, the CLAUDE.md and README.md file names, the consuming project being a git repository) exempt plugin infrastructure or findings to neutralize? Without a decided boundary the &quot;zero findings&quot; success bar is unmeasurable.</question>
+</open-question>
+
+<open-question id="Environment-context replacement wording" status="open">
+  <question>What neutral formula replaces the recurring &quot;tech stack, build/test commands, MCP tools, conventions&quot; environment-context phrase across its seven reader files and the corresponding CLAUDE.md invariant — i.e. what is a work-type-agnostic project&apos;s CLAUDE.md expected to supply (domain context, working conventions, how done is verified?), and does the &quot;run /init once at project setup&quot; pointer survive for non-software projects?</question>
+</open-question>
+
+<open-question id="Verification fallback without conventions" status="deferred">
+  <question>When a consuming project&apos;s CLAUDE.md defines no done-verification convention, what should the reframed completion procedure fall back to — direct inspection of the deliverable against the task&apos;s Success criteria, or something stronger?</question>
+</open-question>
+
+<open-question id="Re-audit execution form" status="deferred">
+  <question>How is the final independent re-audit executed so it is genuinely independent of the sweep (e.g. a fresh-context agent auditing the whole plugin against the decided finding criteria), and in what form does it report its findings?</question>
+</open-question>
