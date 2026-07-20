@@ -15,11 +15,11 @@ This is the only skill that edits the Goal of an *already-defined* milestone. `d
 /modify-milestone-goal <new or revised goal text>
 ```
 
-- `<new or revised goal text>`: either a complete replacement goal statement, or a described change to fold into the existing one (e.g. "also support offline playback"). If it is a delta, integrate it against the current Goal rather than discarding what is still true.
+- `<new or revised goal text>`: either a complete replacement goal statement, or a described change to fold into the existing one (e.g. "also cover a quick-reference section"). If it is a delta, integrate it against the current Goal rather than discarding what is still true.
 
 **Example:**
 ```
-/modify-milestone-goal Broaden the shooting mechanic so the player can fire at any enemy in line of sight, not only enemies on the same spline segment.
+/modify-milestone-goal Broaden the getting-started guide to walk a new user through their first week, not only their first session.
 ```
 
 ## Workflow

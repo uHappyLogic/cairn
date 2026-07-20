@@ -17,7 +17,7 @@ Creates a new milestone directory under `milestones/` with a `requirements.md` p
 
 **Example:**
 ```
-/define-milestone-goal add a shooting mechanic where the player fires a single projectile at enemies on the same spline segment
+/define-milestone-goal add a getting-started guide that walks a new user through their first session
 ```
 
 ## Workflow
@@ -34,7 +34,7 @@ Do not read the milestone number from `CLAUDE.md` or from `milestones/README.md`
 
 Convert `<overall_goal_description>` to a short kebab-case slug (3–5 words max) that captures the essence of the goal. The full directory name is `milestone_<NN>_<slug>` where `<NN>` is the zero-padded two-digit number from step 1.
 
-**Example:** "add a shooting mechanic where the player fires a single projectile" → `milestone_12_player-shooting` (if the next number happens to be 12)
+**Example:** "add a getting-started guide that walks a new user through their first session" → `milestone_12_getting-started-guide` (if the next number happens to be 12)
 
 ### 3. Check for conflicts
 
