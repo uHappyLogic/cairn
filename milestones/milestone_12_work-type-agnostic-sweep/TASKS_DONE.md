@@ -20,3 +20,21 @@ Sweep `shared/complete-procedure.md` — the single-source completion procedure 
 
 ---
 
+## Neutralize Submit-Task Procedure Language
+
+Sweep `shared/submit-procedure.md` — the single-source task-authoring procedure run by the `submit-task` skill and agent and by `derive-tasks`' bulk dispatch — so it becomes fully work-type-agnostic. Neutralize its code-deliverable framing, reword its environment-context read per the milestone's decisions, and replace its Unity tower-defense worked example and software success-criterion models with the milestone's canonical work-type-neutral worked example. The task body template and the BRIEF+POSITION execution-neutral contract stay intact.
+
+**Notes:**
+- Three recorded decisions pin the wording and example — pull them directly rather than paraphrasing. The environment-context read (step 2) follows the "Environment-context replacement wording" decision: replace "tech stack, file organization, available MCP tools, build/test commands, and conventions" item-for-item with "the project's domain context, working conventions, available tools, and how work is verified as done", keeping the enumerated shape and retaining the generalized `/init` pointer (`/init` documents any project regardless of work type). Reconcile this against the exact phrasing the sibling "Neutralize Complete-Task Procedure Language" task provides.
+- The canonical worked example, per the "Canonical example content" and "Replacement example strategy" decisions, is a task "Draft the Getting Started section of the user guide": deliverable is a Markdown/document file; `Provides` is the named `## Getting Started` heading later sections cross-link to; the `Notes` gotcha is that the auto-generated table of contents keys off `##` headings so a section added without one is silently dropped; the `Success` bar is inspection-checkable (the guide file exists at its path, contains a `## Getting Started` heading, stays under the agreed length) with an optional command criterion (the doc-lint check passes). This one example replaces the `Creep`/`RegisterWaveStart()`/`AllCreepsDead()` illustration and the "Build command exits with code 0" / "Function Z is exported from W" success-criterion models wherever they appear in the file (the `Notes` guideline's embedded gotcha and the `Success` guideline's example criteria both carry the SE illustrations).
+- The file is execution-neutral by contract — it must stay silent on committing, the DONE/FAILED return protocol, triage, and follow-up, which live in the wrappers. Neutralizing language must not introduce any of those.
+- This is a self-referential edit: the file being rewritten is the very procedure that authors tasks, so the task body template (`##` title, description, optional `Provides`, optional `Notes`, `Success`, trailing `---`), the BRIEF+POSITION input contract, the five-step flow, and the `## Rules` section must survive the language sweep unchanged — only framing, environment wording, and examples change.
+
+**Success:**
+- No software-engineer-specific phrasing remains in the file — the code-deliverable framing it currently carries ("write the code organically", "read from the code", "the public API", "read from the code" in the `Provides`/`Notes` guidelines) is gone or neutralized, verifiable by reading the file.
+- The environment-context read (step 2) enumerates "the project's domain context, working conventions, available tools, and how work is verified as done", preserving the enumerated shape, with the generalized `/init` pointer retained.
+- The Unity tower-defense worked example (`Creep`, `RegisterWaveStart()`, `AllCreepsDead()`) and the software success-criterion models ("Build command exits with code 0", "Function Z is exported from W") are replaced by the canonical written-guide example (the "Draft the Getting Started section of the user guide" task with its `## Getting Started` Provides, its table-of-contents `##`-heading Notes gotcha, and its inspection-checkable Success bar plus optional doc-lint command criterion).
+- The task body template, the BRIEF+POSITION execution-neutral contract, the five numbered steps with the same flow, and the `## Rules` section are all unchanged, and the file remains execution-neutral (no mention of committing, the DONE/FAILED return protocol, triage, or follow-up).
+
+---
+

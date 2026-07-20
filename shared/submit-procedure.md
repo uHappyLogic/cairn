@@ -7,7 +7,7 @@ the current milestone's `TASKS_TODO.md`. It is followed in two ways:
   user's conversation (after its own triage) so the authoring context survives for
   follow-up tweaks.
 - **In isolation**, by the `submit-task` agent, which runs the same steps in a
-  throwaway subagent context for `derive-tasks` (bulk) so per-task technical reasoning
+  throwaway subagent context for `derive-tasks` (bulk) so per-task reasoning
   never pollutes the caller's memory.
 
 The wrappers add their own framing (where the inputs come from, the return protocol,
@@ -34,12 +34,12 @@ the whole-milestone view.
 ## What a task is
 
 **A task is a contract, not a script.** You are defining *what* the task achieves and the
-surface other tasks will build on — not transcribing the code that achieves it. The
-line-by-line "how" is the completer's job, decided fresh against the live codebase by
+surface other tasks will build on — not transcribing the work that achieves it. The
+line-by-line "how" is the completer's job, decided fresh against the live project by
 the `complete-task` agent.
 
 **State only what cannot be re-derived at completion time.** The completer
-reconstructs the flow itself from the goal and the real code — so a numbered list of steps
+reconstructs the flow itself from the goal and what already exists — so a numbered list of steps
 is wasted tokens and re-decides things it is better placed to decide. What it *cannot*
 re-derive is (a) the goal and its acceptance bar, and (b) the named surface and gotchas.
 So write the task to serve two readers, with one section each for what only they can't
@@ -47,10 +47,10 @@ reconstruct:
 
 1. **The completer** — needs the goal (`Description`), the acceptance bar (`Success`),
    and any *non-obvious fact* that would otherwise cost it a discovery round (`Notes`). It
-   does **not** need the flow spelled out; give it the freedom to write the code
+   does **not** need the flow spelled out; give it the freedom to produce the deliverable
    organically.
 2. **The author of the *next* task** — sibling tasks are written before this one is built,
-   so the names and behaviors others will reference can't yet be read from the code. Pin
+   so the names and behaviors others will reference can't yet be read from the finished work. Pin
    them down in `Provides` (its public surface), even while leaving the internals open.
 
 ## Procedure
@@ -63,8 +63,8 @@ Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILE
 
 Read in parallel (skip any file you already hold in context from earlier triage):
 
-- `CLAUDE.md` — the project's tech stack, file organization, available MCP tools,
-  build/test commands, and conventions. Ground every step and success criterion in this
+- `CLAUDE.md` — the project's domain context, working conventions, available tools, and
+  how work is verified as done. Ground every step and success criterion in this
   real environment.
 - `<MILESTONE_DIR>/requirements.md` — the goal, constraints, and decisions the task must
   fit within. Pull exact file paths, names, numeric values, and thresholds from here
@@ -72,7 +72,7 @@ Read in parallel (skip any file you already hold in context from earlier triage)
 - `<MILESTONE_DIR>/TASKS_TODO.md` — existing task titles, to avoid title collisions and to
   locate the POSITION anchor.
 
-If the brief names or implies specific source files, read them too — concrete grounding
+If the brief names or implies specific existing artifacts, read them too — concrete grounding
 produces a sharper contract and sharper notes.
 
 ### 3. Author the task
@@ -85,21 +85,21 @@ Use this exact template — it is the single source of truth for task format:
 <1–3 sentence description of what this task does and why it is needed in this milestone.>
 
 **Provides:** (omit this section entirely if the task introduces no new shared surface)
-- <A named structure other tasks will reference: new class/singleton/scene/method/field/endpoint, with its threshold or signature.>
+- <A named structure other tasks will reference: a new file, section, name, or field, with its threshold or identifier.>
 - <...>
 
 **Notes:** (omit this section entirely if nothing about the task is non-obvious)
 - <A non-obvious fact that would otherwise cost the completer a round of discovery — a surprising behavior, an ordering constraint, a gotcha.>
 
 **Success:**
-- <Verifiable criterion observable in the Editor, Console, build output, or other automated checks.>
+- <Verifiable criterion observable by inspecting the deliverable or running an automated check.>
 - <...>
 
 ---
 ```
 
 There is no `Steps` section: the completer derives the flow itself from `Description` +
-`Success` against the live codebase. Do not reintroduce a step-by-step narration under any
+`Success` against the live project. Do not reintroduce a step-by-step narration under any
 heading.
 
 Authoring guidelines:
@@ -107,16 +107,17 @@ Authoring guidelines:
 - **Title**: 4–8 words, title-cased, unique within the file. If it would collide with an
   existing title, distinguish it.
 - **`Provides` is the forward contract — binding on sibling tasks.** Name only the things
-  *other tasks will reference* — the new file, method/class/field/singleton/scene being
-  introduced, the public API, the threshold values — because sibling tasks are authored
+  *other tasks will reference* — the new file, section, name, or field being
+  introduced (e.g. the `## Getting Started` heading later sections cross-link to), the
+  shared surface, the threshold values — because sibling tasks are authored
   against those names before this task is built. The completer treats these as fixed.
-  Don't list private fields, exact statements, or message strings that nothing else
-  depends on. If the task creates no new shared surface (e.g. a pure bugfix), omit the
+  Don't list internal details, exact wording, or values that nothing else
+  depends on. If the task creates no new shared surface (e.g. a pure correction), omit the
   section rather than padding it.
-- **`Notes` is advisory — completer-only, and only the non-obvious.** If a behavior
-  would surprise the completer or cost it a round of discovery — e.g. "with no `Creep`
-  objects in the test scene, `RegisterWaveStart()` makes `AllCreepsDead()` return true
-  immediately, so Day2 fires on the next tick" — state it as a short note. This is
+- **`Notes` is advisory — completer-only, and only the non-obvious.** If a fact
+  would surprise the completer or cost it a round of discovery — e.g. "the auto-generated
+  table of contents keys off `##` headings, so a section added without one is silently
+  dropped" — state it as a short note. This is
   high-value content precisely because it can't be cheaply re-derived. Do not use `Notes`
   to smuggle in a flow; if there's nothing non-obvious, omit it.
 - **Quote numeric values, durations, thresholds, and configuration values** directly from
@@ -126,11 +127,11 @@ Authoring guidelines:
   independently-buildable pieces, author the one that matches the brief's primary intent
   and surface the leftover to the caller so it can decide — do not silently split or merge.
 - **No open decisions.** Decide *which* approach (traceable to the requirements) — never
-  "choose the appropriate approach". That is a different thing from spelling out the code:
-  pick the strategy, leave the build.
+  "choose the appropriate approach". That is a different thing from spelling out the work:
+  pick the strategy, leave the execution.
 - **`Success` is verification-only — never a back door for steps.** Each criterion must be
-  checkable without human judgement: prefer "Build command exits with code 0", "File X
-  exists at path Y", "Function Z is exported from W", Inspector/Console state. Avoid "looks
+  checkable without human judgement: prefer "File X exists at path Y", "The guide contains a
+  `## Getting Started` heading", "The doc-lint check passes". Avoid "looks
   correct" or "feels smooth", and avoid restating the procedure as a checklist of
   actions — criteria are *observable outcomes*, not moves.
 - **No rationale or design discussion** — that belongs in `requirements.md`. Tasks are
