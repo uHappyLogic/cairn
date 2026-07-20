@@ -1,5 +1,22 @@
 # TASKS DONE
 
+## Neutralize Specify-Starting-State Skill Language
+
+Sweep `skills/specify-milestone-starting-state/SKILL.md` — the skill that fills the `## Relevant starting state` section of a milestone's `requirements.md` — so it becomes fully work-type-agnostic. Reframe its code-analysis language ("Analyze the current codebase", "meaningful code", "exported functions/classes/types/interfaces", "schemas, database models", "Source files", "public API") as analyzing the project's existing artifacts and state whatever the work type, and reword its environment-context read per the milestone's decisions. The skill's function — grounding future decisions in what already exists — its seven-step workflow, and its output contract (filling the `## Relevant starting state` section) stay unchanged.
+
+**Notes:**
+- The environment-context read (step 3, "Load the environment and explore the codebase") follows the "Environment-context replacement wording" decision: reword the `CLAUDE.md` read from "tech stack or file organization" / "File organization … meaningful code" / "Available MCP tools" to the neutral enumeration "the project's domain context, working conventions, available tools, and how work is verified as done", keeping the enumerated shape. Reconcile against the exact phrasing the sibling "Neutralize Complete-Task Procedure Language" task provides. Retain the generalized `/init` pointer (`/init` documents any project regardless of work type — reword its trigger from "no description of the tech stack or file organization" to the neutral equivalent).
+- The frontmatter `description` field currently reads "Analyze the current codebase and fill the … section … with technical context"; it carries SE framing and is in scope — neutralize it in the same pass (unlike the agent-persona task, whose frontmatter describes dispatch role, this line asserts the deliverable is a codebase).
+- This skill carries neither a verification mechanism nor the canonical worked example, so neither the "Verification fallback" nor the "Canonical example content" decisions apply here — this is a language + environment-context sweep only.
+- Structural elements that must survive the sweep unchanged: the seven numbered workflow steps and their flow, the commit step (step 6, `Starting-state: <milestone_id>` via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`), the terse success-reporting step (step 7, the fixed "Starting state recorded." line and its dirty-own-path no-op variant), the `## Relevant starting state` output template, and the `## Rules` section.
+
+**Success:**
+- No software-engineer-specific phrasing remains in the file — the code-analysis terms it currently carries ("Analyze the current codebase", "meaningful code", "exported functions/classes/types/interfaces", "schemas, database models", "Source files", "public API", "technical summary/context") are gone or neutralized, verifiable by reading the file (including the frontmatter `description`).
+- The environment-context read (step 3) enumerates "the project's domain context, working conventions, available tools, and how work is verified as done", preserving the enumerated shape, with the generalized `/init` pointer retained.
+- The seven numbered workflow steps and their flow, the step-6 commit (`Starting-state: <milestone_id>`), the step-7 terse reporting (the "Starting state recorded." line plus its no-op variant), the `## Relevant starting state` output template, and the `## Rules` section are all present and unchanged in function.
+
+---
+
 ## Neutralize Complete-Task Procedure Language
 
 Sweep `shared/complete-procedure.md` — the single-source completion procedure run by the `complete-task` skill and agent — so it becomes fully work-type-agnostic. Neutralize its software-engineering language, reframe its verification mechanism to check the deliverable against the task's Success criteria however the project defines done (with the recorded fallback), and reword its environment-context read per the milestone's decisions. The procedure's steps, execution-neutral contract, and structure stay intact.

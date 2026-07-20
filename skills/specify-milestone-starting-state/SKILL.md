@@ -1,11 +1,11 @@
 ---
 name: specify-milestone-starting-state
-description: Analyze the current codebase and fill the "Relevant starting state" section of a milestone's requirements.md with technical context that supports future decisions.
+description: Analyze the project's existing state and fill the "Relevant starting state" section of a milestone's requirements.md with context that supports future decisions.
 ---
 
 # specify-milestone-starting-state
 
-Reads the milestone goal, explores the current project's codebase, and writes a concise technical summary into the `## Relevant starting state` section of `requirements.md`. The output is reference material — not decisions — to ground the `## Decisions` conversation that follows.
+Reads the milestone goal, explores the project's existing state, and writes a concise summary into the `## Relevant starting state` section of `requirements.md`. The output is reference material — not decisions — to ground the `## Decisions` conversation that follows.
 
 ## Usage
 
@@ -13,11 +13,11 @@ Reads the milestone goal, explores the current project's codebase, and writes a 
 /specify-milestone-starting-state <milestone_id>
 ```
 
-- `<milestone_id>`: the milestone directory name under `milestones/`, e.g. `milestone_12_player-shooting`.
+- `<milestone_id>`: the milestone directory name under `milestones/`, e.g. `milestone_12_user-guide`.
 
 **Example:**
 ```
-/specify-milestone-starting-state milestone_12_player-shooting
+/specify-milestone-starting-state milestone_12_user-guide
 ```
 
 ## Workflow
@@ -30,22 +30,24 @@ Resolve `milestones/<milestone_id>/requirements.md`. If the file does not exist,
 
 Read `requirements.md` in full. Extract the `## Goal` section. This is the lens for everything that follows — only surface starting state that is directly relevant to achieving or building on that goal.
 
-### 3. Load the environment and explore the codebase
+### 3. Load the environment and explore the project
 
-Read `CLAUDE.md` at the workspace root for the project's environment. If it carries no description of the tech stack or file organization, suggest the user run `/init` to enrich it first — richer project context yields a sharper starting-state summary — then proceed with whatever the codebase reveals.
+Read `CLAUDE.md` at the workspace root for the project's environment. If it carries no description of the project's domain context or working conventions, suggest the user run `/init` to enrich it first — richer project context yields a sharper starting-state summary — then proceed with whatever the project reveals.
 
 Extract from `CLAUDE.md`:
-- File organization / directory layout — the directories that contain meaningful code; use these to anchor all exploration
-- Available MCP tools — whether any MCP tools are available for deeper inspection
+- The project's domain context — what the project is and how its material is organized; use this to anchor all exploration
+- Working conventions — the practices the project follows
+- Available tools — whether any tools (including MCP tools) are available for deeper inspection
+- How work is verified as done — the project's convention for confirming a deliverable meets its bar
 
-Using the goal as a filter, investigate the project under the directories documented in `CLAUDE.md`. Focus on:
+Using the goal as a filter, investigate the areas the project documents in `CLAUDE.md`. Focus on:
 
-- **Source files relevant to the goal** — find files, classes, modules, and components whose names or responsibilities overlap with the goal. Read their public API (exported functions/classes/types/interfaces). Skip internal detail.
-- **Existing features** — if the goal builds on an existing system, describe its current behavior and exposed integration points.
-- **Configuration and data** — note relevant config files, schemas, database models, or data structures that the milestone will likely touch.
+- **Existing artifacts relevant to the goal** — find the artifacts, sections, and components whose names or responsibilities overlap with the goal. Read what they expose — their outward-facing surface. Skip internal detail.
+- **Existing capabilities** — if the goal builds on something that already exists, describe its current state and how other work connects to it.
+- **Supporting materials** — note any settings, reference data, or structures the milestone will likely touch.
 - **Known gaps** — if the goal requires something that clearly does not exist yet, state it as a gap.
 
-Do not exhaustively catalog everything — stay goal-relevant. Depth over breadth: a precise description of one related system is more useful than a surface mention of ten.
+Do not exhaustively catalog everything — stay goal-relevant. Depth over breadth: a precise description of one related area is more useful than a surface mention of ten.
 
 Use `find`, `grep`, and `Read` for file-based exploration. If MCP tools are documented in `CLAUDE.md` and are relevant to exploration, use them.
 
@@ -94,7 +96,7 @@ If instead the step-6 dirty-own-path guard fired (`requirements.md` was unchange
 
 ## Rules
 
-- Only write what currently exists in the codebase. Do not describe intended behavior or speculate about future state.
+- Only write what currently exists in the project. Do not describe intended behavior or speculate about future state.
 - Do not propose decisions — that is for `/review-milestone-requirements` and `/discuss-open-question`.
 - If a system is missing entirely, say so in one sentence and move on. Do not design its replacement here.
 - Do not overwrite `## Goal`, `## Decisions`, or `## Out of Scope`.
