@@ -62,26 +62,11 @@ When a consuming project's CLAUDE.md defines no done-verification convention, th
 
 The final independent re-audit is executed as a final milestone task whose completion dispatches a single fresh-context subagent, given only the decided finding criteria plus the full file set (skills/, agents/, shared/, README.md, CLAUDE.md) with no access to the sweep's reasoning. It returns a structured per-finding list (file path, location, offending phrase, which criterion/layer it violates) plus an explicit zero-findings verdict when clean. This is the only form that satisfies both the goal's "independent" requirement and its measurable "zero findings" bar, and it reuses Cairn's own agent-dispatch idiom so a clean pass is objectively checkable and any finding drops straight into a follow-up task.
 
+### Re-audit task success wording
+
+The final re-audit task's Success bar is that the audit subagent ran and its structured output was delivered — the per-finding list, or the explicit zero-findings verdict — so the task is completable in a single complete-task invocation against an objectively checkable bar. On findings, follow-up fix tasks plus a fresh re-audit task are appended after them, iterating until a run comes back clean; that final clean verdict is the milestone's zero-findings proof. This keeps every audit task atomic and honors the recorded decision that findings drop into follow-up tasks, rather than making the zero-findings verdict itself a single task's Success (which the task model cannot hold open) or overloading completion with authoring the next round's tasks.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Re-audit task success wording" status="deferred">
-  <question>How the final re-audit task is authored when the audit may return findings: whether its Success bar is the delivered structured report or the zero-findings verdict itself, and how a repeat audit is sequenced after follow-up fix tasks so the milestone's zero-findings bar is ultimately proven.</question>
-  <alternative id="Report delivered; iterate to clean">
-    The re-audit task&apos;s Success bar is that the audit subagent ran and its structured output was delivered — the per-finding list, or the explicit zero-findings verdict; on findings, follow-up fix tasks plus a fresh re-audit task are appended after them, iterating until a run comes back clean, and that final clean verdict is the milestone&apos;s proof.
-    <advantage>Every audit task is completable in a single complete-task invocation against an objectively checkable Success (&quot;the report/verdict was produced&quot;), fitting the task model exactly and honoring the already-recorded decision that findings drop into follow-up tasks.</advantage>
-    <drawback>The milestone&apos;s zero-findings bar is an emergent property of the last run returning clean rather than one task&apos;s Success, so no single task self-evidently &quot;proves&quot; the milestone in isolation.</drawback>
-  </alternative>
-  <alternative id="Zero-findings verdict as Success">
-    The re-audit task&apos;s Success bar is the explicit zero-findings verdict itself, so the one task is not complete until the audit comes back clean.
-    <advantage>Completing the task literally proves the milestone&apos;s zero-findings goal — the proof is encoded in one task&apos;s Success with no separate convergence step to reason about.</advantage>
-    <drawback>It contradicts the task model: complete-task cannot mark the task done while findings remain, and its diagnose-fix-retry path would either wedge the task or collapse auditing and fixing into one task, violating atomic scope and the recorded &quot;findings drop into follow-up tasks&quot; decision.</drawback>
-  </alternative>
-  <alternative id="Self-propagating audit task">
-    The re-audit task&apos;s Success is report-delivered as in the first option, but on findings its completion additionally authors the follow-up fix tasks and a successor re-audit task, so the repeat-until-clean loop propagates automatically instead of being re-authored by hand.
-    <advantage>Keeps every audit task completable while making the loop self-sustaining, needing no manual re-authoring of fix tasks or a successor audit between rounds.</advantage>
-    <drawback>It overloads completion with task-authoring that belongs to submit-task/derive-tasks — the complete-task procedure carries out and closes one task and never authors new ones — so it bends the model&apos;s completion-vs-authoring role split.</drawback>
-  </alternative>
-  <recommendation option="Report delivered; iterate to clean">Only a report-delivered Success bar is objectively checkable and completable in a single complete-task invocation as the task model requires, and it honors the recorded decision that findings drop into follow-up tasks, with the zero-findings bar proven by the final re-audit run returning clean.</recommendation>
-</open-question>
