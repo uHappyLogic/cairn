@@ -38,3 +38,19 @@ Sweep `shared/submit-procedure.md` — the single-source task-authoring procedur
 
 ---
 
+## Neutralize Task-Layer Agent Personas
+
+Sweep the two task-layer agent definitions `agents/submit-task.md` and `agents/complete-task.md` so both become work-type-agnostic. Each currently opens with a "You are a **Software Engineer** …" persona statement; replace those with work-type-neutral persona statements, and neutralize any residual software-engineering phrasing elsewhere in the two files in the same pass. This is the shallowest (agent-persona) layer of the sweep; the two shared procedures these agents run are neutralized by their own sibling tasks.
+
+**Notes:**
+- The change is confined to persona/framing wording. Each agent's reference to its shared procedure via `${CLAUDE_PLUGIN_ROOT}` (`shared/submit-procedure.md` for the submit agent, `shared/complete-procedure.md` for the complete agent), the `DONE`/`FAILED` return protocol, and the never-commit rule must stay intact — do not reword or restructure them.
+- The submit agent's persona line ("turning one high-level task brief into a well-scoped task … your detailed technical reasoning never pollutes the caller's memory") and the complete agent's persona line ("completing one task from the project's task list") are the primary targets; scan the rest of each file for lighter SE-flavored phrasing (e.g. "technical reasoning") and neutralize it too.
+- Do not touch the YAML frontmatter's `description` fields' behavioral meaning; these describe the agents' dispatch role, not the user's work type.
+
+**Success:**
+- No software-engineer-specific phrasing remains in either `agents/submit-task.md` or `agents/complete-task.md` — neither opens with a "You are a Software Engineer" persona, and no residual SE-flavored wording remains, verifiable by reading both files.
+- Each file's shared-procedure reference (via `${CLAUDE_PLUGIN_ROOT}`) and its `DONE`/`FAILED` return protocol are present and unchanged.
+- The never-commit rule is still present in both files (submit agent's "Do not commit."; complete agent's "Do not commit — committing is the orchestrator's job.").
+
+---
+
