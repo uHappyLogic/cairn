@@ -50,29 +50,13 @@ Neutralized examples use one canonical work-type-neutral worked example — conc
 
 The recurring "tech stack, build/test commands, MCP tools, conventions" environment-context phrase — across its seven reader files and the corresponding CLAUDE.md invariant — is replaced item-for-item with a plain-English neutral enumeration that keeps the enumerated shape: the project's domain context, working conventions, available tools, and how work is verified as done. Keeping the enumeration (rather than collapsing to an abstract umbrella phrase) preserves the concrete grounding — each reader is still pointed at the verification convention and the available tools, foregrounding how "done" is verified. A reworded, generalized `/init` pointer survives for non-software projects: `/init` is a genuine Claude Code built-in that inspects and documents any project regardless of work type, so the setup pointer is retained rather than dropped.
 
+### Verification fallback without conventions
+
+When a consuming project's CLAUDE.md defines no done-verification convention, the reframed completion procedure falls back to direct inspection of the deliverable against the task's always-present Success section — checking it criterion-by-criterion, using whatever means each criterion itself names (read the artifact, or run a command only where a criterion specifies one). This is the only fallback that stays work-type-agnostic: it leans solely on the Success section that every task carries, needing no build, no test runner, and no user. The stronger alternatives are rejected — requiring active exercise of the deliverable reintroduces the executable-deliverable assumption the milestone is removing, and escalating to the user breaks the unattended batch-completion path where no user is present.
+
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Verification fallback without conventions" status="deferred">
-  <question>When a consuming project&apos;s CLAUDE.md defines no done-verification convention, what should the reframed completion procedure fall back to — direct inspection of the deliverable against the task&apos;s Success criteria, or something stronger?</question>
-  <alternative id="Inspect against Success criteria">
-    The completer falls back to examining the produced deliverable directly and checking it criterion-by-criterion against the task&apos;s always-present Success section, using whatever means each criterion itself names (read the artifact, or run a command only where a criterion specifies one).
-    <advantage>Always applicable and fully work-type-agnostic — it leans only on the Success section, which shared/submit-procedure.md guarantees every task carries, so it needs no build, no test runner, and no assumption about what the deliverable is.</advantage>
-    <drawback>The check is only as rigorous as the Success criteria are concrete — a vague or subjective Success bar yields a correspondingly weak verification, with no independent signal beyond the criteria themselves.</drawback>
-  </alternative>
-  <alternative id="Require active exercise">
-    Fall back to something stronger than inspection — require the completer to actively exercise the deliverable or produce independent evidence it works (a dry run, a sample execution, a re-derived cross-check) before accepting it.
-    <advantage>Catches faults that static inspection can miss, giving a stronger done-signal when the project supplied no verification convention of its own.</advantage>
-    <drawback>&quot;Exercise it&quot; presumes a runnable, executable deliverable — reintroducing exactly the software-build assumption this milestone is removing, since a document, plan, or recipe cannot be &quot;run,&quot; so the fallback would misfit most non-software work.</drawback>
-  </alternative>
-  <alternative id="Escalate to the user">
-    When no verification convention exists, stop and ask the user to define or perform the verification step rather than applying any automatic fallback.
-    <advantage>Surfaces the missing convention explicitly and secures an authoritative human check instead of silently accepting a possibly weak criteria set.</advantage>
-    <drawback>Breaks unattended completion — the complete-task agent runs in isolation under the complete-all-tasks orchestrator with no user to ask, so a hard stop on every convention-less project would cripple the batch path.</drawback>
-  </alternative>
-  <recommendation option="Inspect against Success criteria">Direct inspection against the always-present Success section is the only fallback that stays work-type-agnostic — each criterion checked by the means it names needs no build and no user, whereas the stronger alternatives either presume an executable deliverable or a user that isolated batch completion does not have.</recommendation>
-</open-question>
 
 <open-question id="Re-audit execution form" status="deferred">
   <question>How is the final independent re-audit executed so it is genuinely independent of the sweep (e.g. a fresh-context agent auditing the whole plugin against the decided finding criteria), and in what form does it report its findings?</question>
