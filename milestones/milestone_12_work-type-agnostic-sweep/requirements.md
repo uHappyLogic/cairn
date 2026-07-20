@@ -54,26 +54,10 @@ The recurring "tech stack, build/test commands, MCP tools, conventions" environm
 
 When a consuming project's CLAUDE.md defines no done-verification convention, the reframed completion procedure falls back to direct inspection of the deliverable against the task's always-present Success section — checking it criterion-by-criterion, using whatever means each criterion itself names (read the artifact, or run a command only where a criterion specifies one). This is the only fallback that stays work-type-agnostic: it leans solely on the Success section that every task carries, needing no build, no test runner, and no user. The stronger alternatives are rejected — requiring active exercise of the deliverable reintroduces the executable-deliverable assumption the milestone is removing, and escalating to the user breaks the unattended batch-completion path where no user is present.
 
+### Re-audit execution form
+
+The final independent re-audit is executed as a final milestone task whose completion dispatches a single fresh-context subagent, given only the decided finding criteria plus the full file set (skills/, agents/, shared/, README.md, CLAUDE.md) with no access to the sweep's reasoning. It returns a structured per-finding list (file path, location, offending phrase, which criterion/layer it violates) plus an explicit zero-findings verdict when clean. This is the only form that satisfies both the goal's "independent" requirement and its measurable "zero findings" bar, and it reuses Cairn's own agent-dispatch idiom so a clean pass is objectively checkable and any finding drops straight into a follow-up task.
+
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Re-audit execution form" status="deferred">
-  <question>How is the final independent re-audit executed so it is genuinely independent of the sweep (e.g. a fresh-context agent auditing the whole plugin against the decided finding criteria), and in what form does it report its findings?</question>
-  <alternative id="Fresh-context audit subagent">
-    A final milestone task whose completion dispatches a single fresh-context subagent (Cairn&apos;s own read-only agent-dispatch idiom) given only the decided finding criteria from &quot;SE-assumption audit boundary&quot; plus the full file set — skills/, agents/, shared/, README.md, CLAUDE.md — with no access to the sweep&apos;s reasoning, and it returns a structured per-finding list (file path, location, offending phrase, which criterion/layer it violates) plus an explicit zero-findings verdict when clean.
-    <advantage>Delivers both properties the goal names at once: a context genuinely separate from the sweep&apos;s rationalizations, and a greppable itemized report that maps one-to-one onto the &quot;zero findings&quot; bar — so a clean pass is objectively checkable and any finding is directly actionable as a follow-up task.</advantage>
-    <drawback>A subagent shares the sweep&apos;s underlying model and training priors, so its independence is bounded to different-context misses and does not cover blind spots inherent to the model itself.</drawback>
-  </alternative>
-  <alternative id="Inline manual re-audit">
-    A final task completed inline in the same working context that did the sweep, walking each file against the finding criteria and reporting a pass/fail verdict in prose.
-    <advantage>Simplest possible form — no dispatch machinery, and the full milestone context stays available for immediate correction of anything found.</advantage>
-    <drawback>It is not independent: the same context that performed the sweep audits its own output, which directly defeats the goal&apos;s &quot;independent re-audit&quot; requirement and tends to inherit the sweep&apos;s blind spots.</drawback>
-  </alternative>
-  <alternative id="Out-of-band human review">
-    The re-audit is performed outside the milestone machinery entirely — a human reviewer or a separate Claude session with no milestone context inspects the plugin and reports findings however they choose.
-    <advantage>Maximally independent — a wholly separate reviewer can catch framing the model itself is prone to normalize.</advantage>
-    <drawback>It sits outside the workflow, so it cannot be a task-completion checkpoint with an enforceable Success bar, its report form is unstructured, and it is not reliably repeatable as the milestone&apos;s objective proof.</drawback>
-  </alternative>
-  <recommendation option="Fresh-context audit subagent">A fresh-context subagent auditing the whole file set against the decided finding criteria and returning a structured per-finding list (file, location, phrase, violated criterion) with an explicit zero-findings verdict is the only form that satisfies both the goal&apos;s &quot;independent&quot; and its measurable &quot;zero findings&quot; requirements, and it reuses Cairn&apos;s own agent-dispatch idiom so a clean pass is objectively checkable and any finding drops straight into a follow-up task.</recommendation>
-</open-question>
