@@ -17,14 +17,14 @@ Facilitates a structured conversation to sharpen a vague or incomplete milestone
 
 **Example:**
 ```
-/discuss-milestone-goal add a shooting mechanic where the player can fire at enemies
+/discuss-milestone-goal add a getting-started guide that walks a new user through their first session
 ```
 
 ## Workflow
 
 ### 1. Read project context
 
-Read `CLAUDE.md` to understand the current milestone, tech stack, and project overview. Read `milestones/README.md` to understand what has already been built in past milestones. This grounds all questions in the real project state.
+Read `CLAUDE.md` to understand the current milestone, the project's domain context, and project overview. Read `milestones/README.md` to understand what has already been built in past milestones. This grounds all questions in the real project state.
 
 ### 2. Analyze the goal
 

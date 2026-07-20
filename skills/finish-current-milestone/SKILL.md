@@ -1,11 +1,11 @@
 ---
 name: finish-current-milestone
-description: Mark the current milestone as done — records accomplishments in milestones/README.md, clears the current-milestone pointer to "none" in milestones/README.md, and updates CLAUDE.md only for lasting tech-stack or structural changes.
+description: Mark the current milestone as done — records accomplishments in milestones/README.md, clears the current-milestone pointer to "none" in milestones/README.md, and updates CLAUDE.md only for lasting changes to the project's environment context.
 ---
 
 # finish-current-milestone
 
-Wraps up the current milestone — verifies all tasks are done, records accomplishments in `milestones/README.md`, clears the current-milestone pointer to "none" in `milestones/README.md`, and updates `CLAUDE.md` only if the milestone introduced lasting technical changes. Run this when all tasks are complete. After this, run `/define-milestone-goal` to define the next milestone, then `/goto-next-milestone` to activate it.
+Wraps up the current milestone — verifies all tasks are done, records accomplishments in `milestones/README.md`, clears the current-milestone pointer to "none" in `milestones/README.md`, and updates `CLAUDE.md` only if the milestone introduced lasting changes to the project's environment context. Run this when all tasks are complete. After this, run `/define-milestone-goal` to define the next milestone, then `/goto-next-milestone` to activate it.
 
 ## Usage
 
@@ -40,7 +40,7 @@ Write a short summary (3–8 bullet points) of what was accomplished. Draw from:
 - The completed tasks in `TASKS_DONE.md`
 - Any significant decisions recorded in `requirements.md`
 
-Keep each bullet to one sentence. Focus on what now exists in the game/codebase, not on process.
+Keep each bullet to one sentence. Focus on what now exists in the project, not on process.
 
 ### 5. Update milestones/README.md — history
 
@@ -74,11 +74,11 @@ Current milestone: none
 
 Leave the `## Current Milestone` heading and all other content in `milestones/README.md` unchanged.
 
-### 7. Update CLAUDE.md only for lasting technical changes
+### 7. Update CLAUDE.md only for lasting environment-context changes
 
-Scan the completed tasks and requirements for changes that affect how future milestones are developed — new packages added to the tech stack, new MCP servers integrated, new documentation locations, or structural changes to the repository layout. If any such changes exist, update the relevant section of `CLAUDE.md` (e.g. `## Tech Stack`, `## Repository Layout`). Do **not** add a milestone history section or accomplishment bullets to `CLAUDE.md`.
+Scan the completed tasks and requirements for changes that affect how future milestones are worked — new tools now available, new working conventions adopted, new documentation locations, or structural changes to how the project is organized. If any such changes exist, update the relevant section of `CLAUDE.md`. Do **not** add a milestone history section or accomplishment bullets to `CLAUDE.md`.
 
-If nothing in the milestone changes the tech stack, tooling, or project structure, skip this step entirely.
+If nothing in the milestone changes the project's environment context or structure, skip this step entirely.
 
 ### 8. Commit the finish
 

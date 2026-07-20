@@ -83,7 +83,7 @@ This project uses the milestone-driven workflow. Each milestone lives at
 is current. Never advance the pointer without first running `/finish-current-milestone`.
 ```
 
-After creating it, suggest the user run `/init` to enrich `CLAUDE.md` with full codebase documentation — tech stack, build/test commands, file organization, and conventions. The workflow skills read this environment context from `CLAUDE.md`.
+After creating it, suggest the user run `/init` to document the project in `CLAUDE.md` — its domain context, working conventions, available tools, and how work is verified as done. The workflow skills read this environment context from `CLAUDE.md`.
 
 **If `CLAUDE.md` already exists**, update it without disturbing existing content:
 
@@ -96,7 +96,7 @@ Report:
 - Which items were created (`milestones/`, `milestones/README.md`, `CLAUDE.md` sections) vs. already present and left untouched.
 - The current-milestone pointer in `milestones/README.md` is initialized to `none`.
 - Suggested next steps, in order:
-  1. `/init` — enrich `CLAUDE.md` with the project's tech stack, tooling, and conventions (run once, if not already documented).
+  1. `/init` — document the project in `CLAUDE.md`: its domain context, working conventions, available tools, and how work is verified as done (run once, if not already documented).
   2. `/define-milestone-goal <goal>` — define the first milestone.
 
 ## Rules
@@ -105,5 +105,5 @@ Report:
 - Never overwrite or rewrite an existing `milestones/README.md` or `CLAUDE.md` — only create missing files and append missing sections.
 - The current-milestone pointer lives only in `milestones/README.md`; do not write a pointer into `CLAUDE.md`.
 - Do not create any `milestone_<N>_<slug>/` directory — that is `/define-milestone-goal`'s job.
-- Do not document the tech stack or conventions in `CLAUDE.md` — that is `/init`'s job; only recommend it.
+- Do not document the project's environment context in `CLAUDE.md` — that is `/init`'s job; only recommend it.
 - Do not commit — leave staging to the user.
