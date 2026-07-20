@@ -38,6 +38,10 @@ Milestone 3 ("Generic Naming Refactor") already retired coding-flavored *vocabul
 
 ## Decisions
 
+### SE-specific finding boundary
+
+A software-engineer-specific finding — the target the sweep neutralizes and the thing the final re-audit counts toward its zero-findings bar — is any text that assumes the user's own deliverable or domain is software engineering: personas, "the code/codebase," insertion points, build/test verification, code examples, and the like. Cairn's own operating mechanics are exempt as domain-uniform plugin infrastructure and Claude Code conventions — git commits and git-log greps, path-scoped staging, the CLAUDE.md/README.md file names, and the consuming project being a git repository — reusing the goal's own migrate-workspace exclusion logic (this is plugin infrastructure, not a claim about the user's work type). The named exemptions are illustrative, not exhaustive: the independent re-auditor applies the "does this assume the user's deliverable is software?" test as a generalizable rule to cases the initial audit did not foresee.
+
 ## Out of Scope
 
 ## Open questions
@@ -61,26 +65,6 @@ Milestone 3 ("Generic Naming Refactor") already retired coding-flavored *vocabul
   </alternative>
   <applied-principle>Prefer domain-neutral terms</applied-principle>
   <recommendation option="Canonical neutral example">One concrete-but-domain-generic worked example reused everywhere keeps the consistency and teaching value a placeholder set loses, while the domain-neutral principle tips decisively against naming any concrete industry — so examples may stay concrete but must not name a specific domain.</recommendation>
-</open-question>
-
-<open-question id="SE-assumption audit boundary" status="open">
-  <question>What counts as a software-engineer-specific finding for the sweep and the final re-audit — in particular, are Cairn&apos;s own operating mechanics (git commits and git-log greps, path-scoped staging, the CLAUDE.md and README.md file names, the consuming project being a git repository) exempt plugin infrastructure or findings to neutralize? Without a decided boundary the &quot;zero findings&quot; success bar is unmeasurable.</question>
-  <alternative id="Exempt infrastructure by user-work test">
-    Define an SE-specific finding as any text that assumes the user&apos;s own deliverable or domain is software engineering (personas, &quot;the code/codebase,&quot; insertion points, build/test verification, code examples), and exempt Cairn&apos;s own operating mechanics — git commits and git-log greps, path-scoped staging, the CLAUDE.md/README.md file names, the git-repository requirement — as domain-uniform plugin infrastructure and Claude Code conventions.
-    <advantage>Reuses the goal&apos;s own already-stated exclusion logic (migrate-workspace is out of scope because it is &quot;plugin history, not the user&apos;s work type&quot;), giving one durable criterion that classifies even cases the audit did not foresee, and leaves the git-based committing architecture the whole CLAUDE.md invariant set depends on intact.</advantage>
-    <drawback>The infrastructure-vs-user-work line still needs a judgment call at the margin (e.g. whether &quot;build/test commands&quot; in the environment-context read is an infra mention or a user-work assumption), so &quot;zero findings&quot; is not a purely mechanical check.</drawback>
-  </alternative>
-  <alternative id="Neutralize git mechanics too">
-    Treat Cairn&apos;s git-dependence itself as an SE assumption to abstract away, so the sweep also neutralizes the commit mechanics, the git-log greps, and the git-repository requirement.
-    <advantage>Yields maximal domain-neutrality — a non-technical user (say an event planner) arguably finds &quot;git commit&quot; as alien as &quot;the codebase.&quot;</advantage>
-    <drawback>Out of all proportion to the goal and destructive: it would gut shared/commit-procedure.md, capture&apos;s ^Manual-answer: git-log grep, and path-scoped staging — the persistence substrate the entire invariant set is built on — when git is the tool&apos;s storage layer, not a claim about the user&apos;s work type.</drawback>
-  </alternative>
-  <alternative id="Closed exemption allowlist">
-    Pin an explicit closed list of exempt items in requirements.md (git commit mechanics, git-log greps, path-scoped staging, CLAUDE.md/README.md file names, the git-repo requirement) and treat every other software-flavored token as a finding.
-    <advantage>Makes the &quot;zero findings&quot; bar maximally measurable — the final re-audit checks each candidate against a written list with minimal interpretation.</advantage>
-    <drawback>A closed list is brittle: anything the audit meets that was not foreseen (a future MCP-tool mention, an &quot;exit code 0&quot; success model) has no home and forces re-litigation, front-loading enumeration effort while still risking omissions.</drawback>
-  </alternative>
-  <recommendation option="Exempt infrastructure by user-work test">Adopt the &quot;does this assume the user&apos;s deliverable is software?&quot; criterion and exempt Cairn&apos;s git mechanics and Claude Code file conventions as infrastructure — it reuses the goal&apos;s own migrate-workspace exclusion logic and gives the independent re-auditor a generalizable rule (with the named items as illustrative, not exhaustive, exemptions), which beats the closed allowlist&apos;s brittleness and rightly rejects gutting the git substrate.</recommendation>
 </open-question>
 
 <open-question id="Environment-context replacement wording" status="open">
