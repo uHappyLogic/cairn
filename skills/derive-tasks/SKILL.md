@@ -32,7 +32,7 @@ Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILE
 
 ### 1. Read source documents
 
-Read `CLAUDE.md` at the workspace root for the project's tech stack, file organization, and conventions. If it carries no such description, suggest the user run `/init` first — decomposition is sharper when grounded in the real environment — then proceed.
+Read `CLAUDE.md` at the workspace root for the project's domain context, working conventions, available tools, and how work is verified as done. If it lacks that context, suggest the user run `/init` first — decomposition is sharper when grounded in the real environment — then proceed.
 
 Read `<MILESTONE_DIR>/requirements.md` in full, plus any files referenced in its **Relevant starting state** section, so you understand the exact starting point.
 
@@ -55,7 +55,7 @@ Break the milestone into discrete, independently-completable task briefs. A **br
 Apply these rules:
 
 - **Atomic scope** — each brief must be completable in a single `/complete-task` invocation, with no mid-task decisions. "Do X and Y" is two briefs when X and Y can be built and verified independently.
-- **One system per brief** — group by the technology boundary or layer it touches, as defined by the file organization in `CLAUDE.md` (e.g. backend API / frontend component / DB schema; or for Unity: scripts / prefabs / scene hierarchy). Do not mix layers unless they are inseparable.
+- **One area per brief** — group by the natural boundary or area of the work, as defined by the project's organization in `CLAUDE.md`. Do not mix distinct areas unless they are inseparable.
 - **No "nice to have" briefs** — only what the spec states. Do not pad the task list.
 
 ### 4. Prove coverage (requirement → task matrix)
@@ -68,15 +68,15 @@ This is the step that most directly fixes "the task list missed something." Re-r
 | ...                            | <brief title>    |
 ```
 
-- Every requirement must map to ≥1 brief. If a requirement maps to none, you have a gap — add a brief (or note why it's already satisfied by existing code per the **Relevant starting state**).
-- If a requirement is already satisfied by the existing code, mark it so and do not create a brief for it.
+- Every requirement must map to ≥1 brief. If a requirement maps to none, you have a gap — add a brief (or note why it's already satisfied by the project's existing state per the **Relevant starting state**).
+- If a requirement is already satisfied by what already exists, mark it so and do not create a brief for it.
 - Do not invent requirements that aren't in the spec.
 
 Do not proceed until the matrix has no unexplained gaps.
 
 ### 5. Order the briefs by dependency
 
-Order briefs so each one's prerequisites come first: a brief that creates a module, schema, or shared utility must precede any brief that imports or references it. The top of `TASKS_TODO.md` is the highest priority / done first.
+Order briefs so each one's prerequisites come first: a brief that produces something other briefs build on or refer to must precede any brief that depends on it. The top of `TASKS_TODO.md` is the highest priority / done first.
 
 ### 6. Present the plan, then initialize the file
 
@@ -127,6 +127,6 @@ The shared procedure owns the path-scoped staging, the dirty-own-path no-op guar
 
 - Your output is briefs + ordering + coverage. Do not write task bodies — the contract surface, notes, file paths, or success criteria — yourself; that is the agent's job, and duplicating it both pollutes your context and risks diverging from the shared task template the agent uses.
 - Never invent requirements not present in the spec; never omit one that is.
-- Do not create tasks for work already in `TASKS_DONE.md`, or for requirements already satisfied by the existing code (note these in the report instead).
+- Do not create tasks for work already in `TASKS_DONE.md`, or for requirements already satisfied by what already exists (note these in the report instead).
 - Submit briefs in dependency order with `POSITION: append`; let the agent own task wording and the caller (you) own order.
 - Spawn authoring agents sequentially, one at a time. Stop on the first `FAILED`.
