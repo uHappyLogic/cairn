@@ -46,6 +46,10 @@ A software-engineer-specific finding — the target the sweep neutralizes and th
 
 Neutralized examples use one canonical work-type-neutral worked example — concrete but domain-generic (a task producing a deliverable with a checkable Success bar) — reused consistently everywhere the current software-specific illustrations appear (the Creep tower-defense example, RailCameraSnapper, and the recurring Arc-drive/swing question titles). A rewritten example may stay concrete but must not name a specific domain: keeping one reused concrete illustration preserves the consistency and teaching value that abstract placeholders lose, while the domain-neutral stance rules out naming any concrete industry.
 
+### Canonical example content
+
+The one canonical work-type-neutral worked example is a written-guide section: a task such as "Draft the Getting Started section of the user guide," whose deliverable is a Markdown/document file, whose Provides is the named `## Getting Started` heading later sections cross-link to, whose Notes gotcha is that the auto-generated table of contents keys off `##` headings so a section added without one is silently dropped, and whose Success bar is inspection-checkable (the guide file exists at its path, contains a `## Getting Started` heading, stays under the agreed length) with an optional command criterion (the doc-lint check passes). The recurring example-question title becomes a document-design question such as "Getting-started section order." Document authoring is the most work-type-universal knowledge-work activity, so it reads as domain-silent while still supplying a real Provides surface, a genuine Notes gotcha, and a Success bar that maps cleanly onto the three criterion models being replaced.
+
 ### Environment-context replacement wording
 
 The recurring "tech stack, build/test commands, MCP tools, conventions" environment-context phrase — across its seven reader files and the corresponding CLAUDE.md invariant — is replaced item-for-item with a plain-English neutral enumeration that keeps the enumerated shape: the project's domain context, working conventions, available tools, and how work is verified as done. Keeping the enumeration (rather than collapsing to an abstract umbrella phrase) preserves the concrete grounding — each reader is still pointed at the verification convention and the available tools, foregrounding how "done" is verified. A reworded, generalized `/init` pointer survives for non-software projects: `/init` is a genuine Claude Code built-in that inspects and documents any project regardless of work type, so the setup pointer is retained rather than dropped.
@@ -61,27 +65,6 @@ The final independent re-audit is executed as a final milestone task whose compl
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Canonical example content" status="deferred">
-  <question>What the single canonical work-type-neutral worked example actually is — the concrete deliverable, task framing, and checkable Success bar that will be reused everywhere the Creep tower-defense, RailCameraSnapper, and Arc-drive/swing illustrations are replaced.</question>
-  <alternative id="Guide document section">
-    A written-document deliverable: a task like &quot;Draft the Getting Started section of the user guide,&quot; whose deliverable is a Markdown/document file, whose Provides is the named `## Getting Started` heading later sections cross-link to, whose Notes gotcha is that the auto-generated table of contents keys off `##` headings so a section added without one is silently dropped, and whose Success bar is inspection-checkable (the guide file exists at its path, contains a `## Getting Started` heading, stays under the agreed length) with an optional command criterion (the doc-lint check passes). The recurring example question title becomes a document-design question such as &quot;Getting-started section order.&quot;
-    <advantage>Producing a written document is the single most work-type-universal knowledge-work activity — every project across software, legal, research, marketing, or operations writes documents — so it reads as domain-neutral rather than as any named industry, while still yielding a real Provides surface, a genuine non-obvious Notes gotcha, and a Success bar that maps almost one-for-one onto the three models being replaced (file exists / contains heading / passes a check).</advantage>
-    <drawback>A document heading is a softer, less vivid public contract than the original Creep example&apos;s method signature, so the Provides teaching point lands a shade less sharply; and because this milestone&apos;s own deliverables are Markdown, the example sits close to the plugin&apos;s real files.</drawback>
-  </alternative>
-  <alternative id="Structured list artifact">
-    A structured-data deliverable: a task like &quot;Compile the regional contact roster,&quot; whose deliverable is a structured list/table file, whose Provides is the per-entry field schema (name, region, contact) siblings depend on, whose Notes gotcha is that an empty roster still passes validation so a downstream merge task runs against zero entries on the next pass, and whose Success bar is that the file exists, each entry carries the required fields, and validation passes.
-    <advantage>Maps most faithfully to the original&apos;s structure — a real public surface plus an emptiness/timing gotcha that directly mirrors the Creep `AllCreepsDead()`-returns-true-on-empty behavior — so the maximum teaching value of the worked example is preserved.</advantage>
-    <drawback>&quot;Roster / schema / validation&quot; carries a faint data-or-ops connotation, making it marginally less universally plain-English than plain document authoring, and it needs slightly more setup prose to introduce.</drawback>
-  </alternative>
-  <alternative id="Everyday physical deliverable">
-    A tangible everyday deliverable: a task producing a concrete physical or hands-on item (assembling, preparing, or arranging something), chosen to be unmistakably non-software.
-    <advantage>Maximally vivid and instantly readable as outside the software frame, leaving no doubt the plugin is work-type-agnostic.</advantage>
-    <drawback>Any concrete physical example implicitly names a domain (cooking, carpentry, logistics), which fights the decision&apos;s &quot;must not name a specific domain&quot; constraint, and such deliverables tend toward human-judged Success checks (&quot;looks right&quot;) rather than the automatable, inspection-checkable bar the template requires.</drawback>
-  </alternative>
-  <applied-principle>Prefer domain-neutral terms</applied-principle>
-  <recommendation option="Guide document section">Anchor the canonical example on a written-guide section: document authoring is the most work-type-universal activity, so it reads as domain-silent while still supplying a Provides surface, a real Notes gotcha, and a Success bar that maps cleanly onto the three criterion models being replaced — Structured list artifact is a close runner-up preserving more of the original gotcha but carrying a faint data-domain tint, and Everyday physical deliverable is ruled out for implying a domain and for weak checkable Success.</recommendation>
-</open-question>
 
 <open-question id="Re-audit task success wording" status="deferred">
   <question>How the final re-audit task is authored when the audit may return findings: whether its Success bar is the delivered structured report or the zero-findings verdict itself, and how a repeat audit is sequenced after follow-up fix tasks so the milestone's zero-findings bar is ultimately proven.</question>
