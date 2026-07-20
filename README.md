@@ -15,15 +15,15 @@
 # Cairn
 
 **Mark the path from idea to shipped.**
-Milestone-driven development for any stack.
+Milestone-driven development for any kind of work.
 
 ## Why Cairn?
 
-Large-scale software projects fail in predictable ways: the goal drifts during planning, ambiguities pile up before coding starts, the task list grows unbounded, and there's no clear line between "working on it" and "done."
+Large, ambitious projects fail in predictable ways: the goal drifts during planning, ambiguities pile up before the work starts, the task list grows unbounded, and there's no clear line between "working on it" and "done."
 
-Cairn gives Claude Code a structured, repeatable process for moving an idea from rough goal to shipped code — one milestone at a time. Each milestone is a self-contained unit: you clarify the goal, resolve every open question, derive an ordered task list, complete the tasks, and close out the milestone before moving on. Nothing falls through the cracks because every decision is recorded and every requirement maps to a task.
+Cairn gives Claude Code a structured, repeatable process for moving an idea from rough goal to finished deliverable — one milestone at a time. Each milestone is a self-contained unit: you clarify the goal, resolve every open question, derive an ordered task list, complete the tasks, and close out the milestone before moving on. Nothing falls through the cracks because every decision is recorded and every requirement maps to a task.
 
-It works with any tech stack. Skills read your project's environment (tooling, conventions, build commands) from `CLAUDE.md`, so the workflow adapts to whatever you're building.
+It works with any kind of project. Skills read your project's environment — its domain context, working conventions, available tools, and how work is verified as done — from `CLAUDE.md`, so the workflow adapts to whatever you're producing.
 
 ## Installation
 
@@ -39,7 +39,7 @@ Then bootstrap the milestones scaffold once in your project root:
 /init-milestone-base-workflow
 ```
 
-Run `/init` to document your project's tech stack and tooling in `CLAUDE.md` so skills can read the environment context.
+Run `/init` to document your project — its domain context, working conventions, available tools, and how work is verified as done — in `CLAUDE.md` so skills can read the environment context.
 
 ## How it works
 
@@ -57,7 +57,7 @@ The workflow runs as a stack of six phases. Each phase is its own diagram below,
 
 ### One-time setup
 
-Run once per project, before any milestone work. `/init` records the tech stack and tooling in `CLAUDE.md`; `/init-milestone-base-workflow` creates the `milestones/` scaffold and seeds the current-milestone pointer — leaving the workflow scaffold ready.
+Run once per project, before any milestone work. `/init` records the project's domain context, working conventions, available tools, and how work is verified as done in `CLAUDE.md`; `/init-milestone-base-workflow` creates the `milestones/` scaffold and seeds the current-milestone pointer — leaving the workflow scaffold ready.
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'fontFamily':'ui-sans-serif, system-ui','lineColor':'#94a3b8','primaryBorderColor':'#475569'},'flowchart':{'wrappingWidth':9999,'curve':'basis'}}}%%
@@ -101,7 +101,7 @@ flowchart TD
 
 ### Iterating milestone requirements
 
-Drive `requirements.md` to convergence. Open questions live as `<open-question>` XML blocks under the `## Open questions` section — raw structured data rather than clean-rendering Markdown, a deliberate trade for deterministic queryability and future UI-parseability: the open-question skills locate, extract, and remove blocks through a dependency-free line-oriented CLI (`awk`/`sed`/`grep` keyed on the block boundary lines, never `xmllint`) and read the whole document only when an operation reasons across it (cascade analysis, reconciliation) — the query-where-it-pays convention. `/specify-milestone-starting-state` fills the starting state from the codebase, then `/review-milestone-requirements` authors each new question as an `<open-question>` block and runs each pass to reconcile, surface new gaps, and check convergence (repeat until satisfied). Questions are explored with `/discuss-open-question` and recorded with `/answer-open-question`, which commits each answer with its rationale in the commit body (the reusable principle behind it is distilled later, at milestone finish). When a discussion concludes the milestone goal itself must shift, `/discuss-open-question` offers `/modify-milestone-goal` to revise the `## Goal` (then loop back through review to reconcile). The optional `/recommend-all-open-questions` sweep is the batch form of `/discuss-open-question`: it embeds an alternatives-and-recommendation set of XML sub-elements into every open/deferred question's `<open-question>` block, whose `<recommendation>` element `/answer-open-question-with-recommendation` then lifts and records for a single question — or `/answer-all-open-questions-with-recommendation` records for every annotated question at once. To record a *different* embedded option than the recommended one, `/answer-open-question-with-alternative` lifts an `<alternative>` you name by its id instead. A wrong recorded answer is corrected by reverting its commit (which reopens the question) and re-recording — repeat until every open question is resolved.
+Drive `requirements.md` to convergence. Open questions live as `<open-question>` XML blocks under the `## Open questions` section — raw structured data rather than clean-rendering Markdown, a deliberate trade for deterministic queryability and future UI-parseability: the open-question skills locate, extract, and remove blocks through a dependency-free line-oriented CLI (`awk`/`sed`/`grep` keyed on the block boundary lines, never `xmllint`) and read the whole document only when an operation reasons across it (cascade analysis, reconciliation) — the query-where-it-pays convention. `/specify-milestone-starting-state` fills the starting state from the project's existing state, then `/review-milestone-requirements` authors each new question as an `<open-question>` block and runs each pass to reconcile, surface new gaps, and check convergence (repeat until satisfied). Questions are explored with `/discuss-open-question` and recorded with `/answer-open-question`, which commits each answer with its rationale in the commit body (the reusable principle behind it is distilled later, at milestone finish). When a discussion concludes the milestone goal itself must shift, `/discuss-open-question` offers `/modify-milestone-goal` to revise the `## Goal` (then loop back through review to reconcile). The optional `/recommend-all-open-questions` sweep is the batch form of `/discuss-open-question`: it embeds an alternatives-and-recommendation set of XML sub-elements into every open/deferred question's `<open-question>` block, whose `<recommendation>` element `/answer-open-question-with-recommendation` then lifts and records for a single question — or `/answer-all-open-questions-with-recommendation` records for every annotated question at once. To record a *different* embedded option than the recommended one, `/answer-open-question-with-alternative` lifts an `<alternative>` you name by its id instead. A wrong recorded answer is corrected by reverting its commit (which reopens the question) and re-recording — repeat until every open question is resolved.
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'fontFamily':'ui-sans-serif, system-ui','lineColor':'#94a3b8','primaryBorderColor':'#475569'},'flowchart':{'wrappingWidth':9999,'curve':'basis'}}}%%
@@ -228,7 +228,7 @@ Creates a new `milestones/milestone_<N>_<slug>/` directory with `requirements.md
 
 ### `specify-milestone-starting-state <milestone_id>`
 
-Reads the milestone goal, explores the project using the environment documented in `CLAUDE.md`, and writes a concise technical summary into the `## Relevant starting state` section of `requirements.md`. Sets up the context needed to make informed decisions.
+Reads the milestone goal, explores the project's existing state using the environment documented in `CLAUDE.md`, and writes a concise summary into the `## Relevant starting state` section of `requirements.md`. Sets up the context needed to make informed decisions.
 
 ### `review-milestone-requirements`
 
@@ -306,11 +306,11 @@ Completes a single named task from `TASKS_TODO.md` **inline, in the current conv
 
 ### `ask-in-milestone-context <question>`
 
-Answers a free-form, informational question about the current milestone — its goal, recorded decisions, done and pending tasks, and the actual code those tasks produced — grounding the answer in the live files and source rather than memory. **Read-only and conversational**, usable any time: use it to look back on finished work ("how did task X end up handling Y?", "where did we put Z?"), to take stock ("what's left and why?"), or to surface context before deciding what to do next. When the answer reveals a concrete next step, it offers the right skill — `/discuss-open-question`, `/submit-task` or `/discuss-new-task`, `/discuss-milestone-goal`, `/complete-task` — but performs none of their work itself.
+Answers a free-form, informational question about the current milestone — its goal, recorded decisions, done and pending tasks, and the actual deliverables those tasks produced — grounding the answer in the live files and artifacts rather than memory. **Read-only and conversational**, usable any time: use it to look back on finished work ("how did task X end up handling Y?", "where did we put Z?"), to take stock ("what's left and why?"), or to surface context before deciding what to do next. When the answer reveals a concrete next step, it offers the right skill — `/discuss-open-question`, `/submit-task` or `/discuss-new-task`, `/discuss-milestone-goal`, `/complete-task` — but performs none of their work itself.
 
 ### `finish-current-milestone`
 
-Verifies all tasks are done, writes a completion summary to `milestones/README.md`, and updates `CLAUDE.md` only for lasting tech-stack or structural changes. Clears the current-milestone pointer — run `/goto-next-milestone` after.
+Verifies all tasks are done, writes a completion summary to `milestones/README.md`, and updates `CLAUDE.md` only for lasting changes to the project's environment context. Clears the current-milestone pointer — run `/goto-next-milestone` after.
 
 ### `goto-next-milestone <number> <title>`
 
