@@ -14,8 +14,9 @@ describes only the work itself; it says nothing about how the outcome is signall
 ## Project context
 
 The project being worked on documents its environment in the workspace root `CLAUDE.md`
-(and `README.md`): tech stack, available MCP tools, build/test commands, and conventions.
-This procedure reads that file; it never assumes a stack.
+(and `README.md`): the project's domain context, working conventions, available tools, and
+how work is verified as done. This procedure reads that file; it never assumes a particular
+kind of work.
 
 ## Procedure
 
@@ -38,17 +39,18 @@ and the **Success** section. There is no steps section — you derive the flow y
 
 Read the workspace root `CLAUDE.md` and hold in context:
 
-- Available MCP tools — what tools exist and what they are for.
-- Build & test commands — how to verify changes after editing.
-- Conventions — post-edit verification steps to always follow.
+- The project's domain context — what the project is and the material it works with.
+- Working conventions — the practices to follow while doing and finishing the work.
+- Available tools — what tools exist and what they are for.
+- How work is verified as done — the checks that confirm a deliverable meets its bar.
 
 ### 3. Carry out the task
 
 **The task gives you the goal, not a procedure — you own the design.**
 Derive the flow yourself from the **Description** and **Success** criteria, then translate
-it into concrete edits: the exact files and insertion points, the precise statements, the
-assertion wording, the helper structure. Ground every decision in the live codebase (read
-the real source you are touching) and in the conventions from `CLAUDE.md`, not in
+it into concrete edits: the exact files and where within them the work lands, the precise
+wording, the structure. Ground every decision in the live material you are changing (read
+the real artifacts you are touching) and in the conventions from `CLAUDE.md`, not in
 assumptions.
 
 Honor the two optional sections for what they are:
@@ -64,9 +66,9 @@ If the goal leaves genuine ambiguity, resolve it the way the **Description**, th
 are your target; whatever satisfies them faithfully is correct. Do not pause to widen
 scope or invent requirements the task did not ask for.
 
-**After creating or modifying any source file**, follow the post-edit conventions
-documented in `CLAUDE.md`. At minimum, run the relevant verification command and fix any
-errors before continuing.
+**After creating or modifying any file**, follow the finishing conventions documented in
+`CLAUDE.md`. At minimum, apply the project's way of verifying the change and fix any
+problems before continuing.
 
 **Record the paths you touch.** As you create or edit each file while carrying out the
 task, keep an explicit running list of those paths — recorded as each edit is made, never
@@ -81,11 +83,18 @@ touched. Recording paths as you go is neither committing nor content inspection.
 
 ### 4. Verify success criteria
 
-Re-read the task's **Success** section. For each criterion:
+Re-read the task's **Success** section and verify the deliverable against it, however the
+project's conventions define done. If `CLAUDE.md` documents a done-verification convention
+(a check, review, or command that confirms work is complete), apply it. When it defines no
+such convention, fall back to direct inspection of the deliverable against the **Success**
+section, checking it criterion-by-criterion using whatever means each criterion itself names
+— read the artifact, or run a command only where a criterion specifies one.
 
-- Source-file criteria: check the file contents with `Read`.
+For each criterion:
+
+- Deliverable-content criteria: check the artifact's contents with `Read`.
 - Command-output criteria: run the specified command via `Bash` and check the output.
-- Structural criteria: use `find` or `Bash` to confirm files or exports exist where expected.
+- Structural criteria: use `find` or `Bash` to confirm the expected artifacts exist where expected.
 - MCP-based criteria: use the relevant MCP tool documented in `CLAUDE.md`.
 
 Do not proceed to step 5 until every criterion passes.
@@ -101,7 +110,7 @@ Do not proceed to step 5 until every criterion passes.
 
 ## Rules
 
-- Always follow the conventions from `CLAUDE.md` — never skip post-edit verification.
+- Always follow the conventions from `CLAUDE.md` — never skip the project's way of verifying the work.
 - Never treat a task as done until every success criterion is confirmed (step 4).
 - Never move a task to `TASKS_DONE.md` until step 4 passes completely.
 - Never carry out a task that is not present in `<MILESTONE_DIR>/TASKS_TODO.md`.
