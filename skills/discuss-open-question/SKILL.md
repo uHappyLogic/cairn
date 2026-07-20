@@ -17,7 +17,7 @@ The `<Short Title>` must match (case-insensitive) the `id` of an existing `<open
 
 **Example:**
 ```
-/discuss-open-question Arc drive technique
+/discuss-open-question Getting-started section order
 ```
 
 ## Workflow
@@ -38,7 +38,7 @@ If no block's `id` case-folds equal to the title, report the mismatch and list t
 
 ### 2. Gather context
 
-Before forming a view, read any source files, scripts, or design documents that bear on the question. Prefer reading the actual code over reasoning from memory. The goal is to ground the discussion in the real project state. This grounding is reason-across work, so read `requirements.md` and the bearing source files **whole** rather than querying via the CLI — the CLI is reserved for the deterministic locate in step 1, while forming a genuine view means taking in the surrounding document and code.
+Before forming a view, read any project artifacts — deliverables, documents, or design notes — that bear on the question. Prefer reading the real project state over reasoning from memory. The goal is to ground the discussion in what the project actually contains. This grounding is reason-across work, so read `requirements.md` and the bearing artifacts **whole** rather than querying via the CLI — the CLI is reserved for the deterministic locate in step 1, while forming a genuine view means taking in the surrounding documents and deliverables.
 
 ### 3. Present the discussion
 

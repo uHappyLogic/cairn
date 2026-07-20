@@ -19,12 +19,12 @@ The answer text is recorded literally. The one reserved answer text is the retir
 
 **Example (literal answer):**
 ```
-/answer-open-question Arc drive technique. Use approach B — two Cinemachine virtual cameras per rail axis, blended by Cinemachine's built-in blend system. RailCameraSnapper will activate the appropriate virtual camera on rail switch rather than calling ForceCameraPosition.
+/answer-open-question Getting-started section order. Use approach B — open the "Draft the Getting Started section of the user guide" deliverable with the install-and-run walkthrough, then follow it with the conceptual overview, so a new reader reaches a working setup before the background material.
 ```
 
 **Example (retired sentinel — redirected, records nothing):**
 ```
-/answer-open-question Arc drive technique. record the recommendation
+/answer-open-question Getting-started section order. record the recommendation
 ```
 
 ## Workflow

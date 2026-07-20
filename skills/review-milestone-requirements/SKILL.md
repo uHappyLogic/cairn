@@ -110,7 +110,7 @@ Author every block to this exact shape — these conventions are the contract th
 - **`<question>` indented 2 spaces.** The child is nested one level — 2 spaces — under the opening tag. (Two-space-per-level indentation is the block's convention; you author only the one `<question>` child here — the `<alternative>` / `<applied-principle>` / `<recommendation>` children are added later by the recommend path, not by this skill.)
 - **Entity-escape everything.** Both the element text (inside `<question>`) and the attribute values (`id` and `status`) are XML-escaped using the five predefined entities — `&amp;` for `&`, `&lt;` for `<`, `&gt;` for `>`, `&quot;` for `"`, `&apos;` for `'`. Escape any of these characters wherever they appear in the Short Title or the question text.
 
-The `id` is the **Short Title**: a 2–5 word phrase that uniquely identifies the question within the document (e.g. "Arc drive technique", "Player input during swing"). It is the stable handle the question is cited by in conversation and located by in the answering and recommendation skills, which match it **case-insensitively** — so keep every Short Title unique across all `<open-question>` blocks even ignoring case.
+The `id` is the **Short Title**: a 2–5 word phrase that uniquely identifies the question within the document (e.g. "Getting-started section order", "Glossary term scope"). It is the stable handle the question is cited by in conversation and located by in the answering and recommendation skills, which match it **case-insensitively** — so keep every Short Title unique across all `<open-question>` blocks even ignoring case.
 
 Do not restructure or rewrite existing content — only append the new `<open-question>` blocks and apply the reconcile edits from step 2.
 
