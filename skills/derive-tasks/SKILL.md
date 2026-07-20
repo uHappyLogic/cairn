@@ -7,7 +7,7 @@ description: Convert the current milestone's requirements.md into a complete, de
 
 Reads the current milestone requirements and derives a complete, dependency-ordered list of tasks into `TASKS_TODO.md`, ready for AI-driven completion via `/complete-task`.
 
-Your job here is **decomposition and coverage**, not task authoring. You split the milestone into high-level task briefs and prove that those briefs cover every requirement — that whole-milestone view is the thing most likely to break if you get lost in file-paths and method names. The detailed, per-task technical authoring (the contract surface, notes, exact paths, success criteria) is delegated, one task at a time, to the `submit-task` agent. That keeps each task's technical reasoning out of your context so your attention stays on completeness and ordering.
+Your job here is **decomposition and coverage**, not task authoring. You split the milestone into high-level task briefs and prove that those briefs cover every requirement — that whole-milestone view is the thing most likely to break if you get lost in file paths and low-level details. The detailed, per-task technical authoring (the contract surface, notes, exact paths, success criteria) is delegated, one task at a time, to the `submit-task` agent. That keeps each task's technical reasoning out of your context so your attention stays on completeness and ordering.
 
 This mirrors the completion side: `complete-all-tasks` orchestrates and `complete-task` does the per-task work in a clean context. Here, you orchestrate and `submit-task` (the agent) does the per-task authoring.
 
@@ -50,7 +50,7 @@ Run /answer-open-question for each one, then re-run /derive-tasks.
 
 ### 3. Decompose into high-level task briefs
 
-Break the milestone into discrete, independently-completable task briefs. A **brief** is high-level — it names the affected system, the desired behavior, and how it would be verified. It does **not** contain file paths, method names, contract surface, or success criteria; that detail is the agent's job. Keeping briefs high-level is deliberate: it lets you hold many more of them in mind at once and reason about whether they cover everything.
+Break the milestone into discrete, independently-completable task briefs. A **brief** is high-level — it names the affected system, the desired behavior, and how it would be verified. It does **not** contain file paths, low-level details, contract surface, or success criteria; that detail is the agent's job. Keeping briefs high-level is deliberate: it lets you hold many more of them in mind at once and reason about whether they cover everything.
 
 Apply these rules:
 

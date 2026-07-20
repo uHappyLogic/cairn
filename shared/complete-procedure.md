@@ -54,7 +54,7 @@ the real artifacts you are touching) and in the conventions from `CLAUDE.md`, no
 assumptions.
 
 Honor the two optional sections for what they are:
-- **Provides** lists the names other tasks depend on — files, methods, classes, fields,
+- **Provides** lists the names other tasks depend on — files, sections, named artifacts,
   thresholds. Treat these as a fixed contract: honor the names exactly, design everything
   around them freely.
 - **Notes** are advisory facts the author surfaced to save you a discovery round (a
