@@ -18,6 +18,7 @@ The project's GitHub description currently reflects single-platform support and 
 ## Decisions
 
 - The GitHub project description will be updated programmatically via a task running `gh repo edit --description "..."` since the GitHub CLI is already configured locally.
+- The local transpilation step instructions will be documented in both `CLAUDE.md` and a new development section in `README.md`.
 
 
 ## Out of Scope
@@ -59,23 +60,4 @@ The project's GitHub description currently reflects single-platform support and 
   <recommendation option="Enforce source frontmatter">Because Antigravity relies entirely on the description field to trigger skills, a dummy fallback description defeats the purpose of the integration, so strict source enforcement is necessary.</recommendation>
 </open-question>
 
-<open-question id="Transpilation docs placement" status="open">
-  <question>Where should the local transpilation step instructions be documented (e.g., a new section in README.md, added to CLAUDE.md, or elsewhere)?</question>
-  <alternative id="Add to CLAUDE.md">
-    Document the transpilation step in a new section within CLAUDE.md alongside the existing skill-editing invariants.
-    <advantage>Consolidates all contributor-facing architectural constraints and build steps in one place, keeping the public README focused on adoption.</advantage>
-    <drawback>Human contributors might overlook CLAUDE.md, assuming it contains only AI-specific prompts rather than manual build steps.</drawback>
-  </alternative>
-  <alternative id="Add to README.md">
-    Add a &quot;Development&quot; or &quot;Contributing&quot; section to the bottom of the project&apos;s README.md to house the instructions.
-    <advantage>Places the instructions in the most universally expected location for open-source human contributors.</advantage>
-    <drawback>Clutters an otherwise clean, adoption-focused user manual with contributor-specific build commands.</drawback>
-  </alternative>
-  <alternative id="Create CONTRIBUTING.md">
-    Create a new root-level CONTRIBUTING.md file dedicated to local development and transpilation instructions.
-    <advantage>Cleanly separates contributor documentation from both the user manual (README.md) and AI guidance (CLAUDE.md).</advantage>
-    <drawback>Introduces a new root document just to host the instructions for a single script.</drawback>
-  </alternative>
-  <recommendation option="Add to CLAUDE.md">CLAUDE.md already serves as the de facto contributor guide by hosting the extensive skill-editing invariants, making it the natural home for the post-edit transpilation step without polluting the public README.</recommendation>
-</open-question>
 
