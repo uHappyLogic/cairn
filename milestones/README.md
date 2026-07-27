@@ -10,9 +10,15 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_13_agy-integration-polish/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 13 — agy-integration-polish
+
+- Updated the `scripts/migrate_skills_to_agy.py` script to strictly enforce YAML frontmatter (`name` and `description`) on legacy source skills, failing fast instead of injecting dummy fallbacks.
+- Documented the local transpilation build step for Google Antigravity in both `CLAUDE.md` and a new development section in `README.md`.
+- Updated the GitHub repository description to explicitly reflect dual-platform support for Claude Code and Google Antigravity.
 
 ### Milestone 12 — Work-Type-Agnostic Sweep
 
@@ -140,3 +146,4 @@ Current milestone: `milestones/milestone_13_agy-integration-polish/`
 | 10 | Skill-Layer Commits | `milestones/milestone_10_skill-layer-commits/` |
 | 11 | Terse Skill Reporting | `milestones/milestone_11_terse-skill-reporting/` |
 | 12 | Work-Type-Agnostic Sweep | `milestones/milestone_12_work-type-agnostic-sweep/` |
+| 13 | agy-integration-polish | `milestones/milestone_13_agy-integration-polish/` |
