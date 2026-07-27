@@ -21,26 +21,13 @@ The project's GitHub description currently reflects single-platform support and 
 - The local transpilation step instructions will be documented in both `CLAUDE.md` and a new development section in `README.md`.
 - No changes are required for agent format compatibility: the existing flat `.md` files parse correctly for internal dispatch in Google Antigravity while naturally staying hidden from the public registry, preserving their encapsulated design.
 - The transpilation script will enforce source frontmatter (requiring `name` and `description` to be present in legacy source skills) rather than injecting dummy fallbacks, ensuring Antigravity's semantic intent matching works.
+- When the transpilation script encounters a legacy source skill missing its required frontmatter, it will abort with a hard error. A silently missing skill in the transpiled plugin creates confusing runtime failures in Antigravity, so failing fast at build time safely enforces the new frontmatter requirement.
 
 
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Missing frontmatter behavior" status="open">
-  <question>When the transpilation script encounters a legacy source skill missing its required frontmatter, should it abort with a hard error or skip the file with a warning?</question>
-  <alternative id="Abort with a hard error">
-    The script immediately fails and halts transpilation if any SKILL.md lacks frontmatter.
-    <advantage>It guarantees the resulting plugin is never deployed with silently missing skills, forcing the developer to supply the required semantic intent data.</advantage>
-    <drawback>It interrupts the migration process on the first failure, potentially requiring multiple runs to discover all non-compliant skills.</drawback>
-  </alternative>
-  <alternative id="Skip the file with a warning">
-    The script logs a warning for the non-compliant skill and skips transpiling it, continuing with the rest of the directory.
-    <advantage>It allows the developer to see all missing-frontmatter warnings across the whole codebase in a single run.</advantage>
-    <drawback>It produces an incomplete, seemingly successful plugin build that will fail at runtime if a user tries to invoke the silently skipped skill.</drawback>
-  </alternative>
-  <recommendation option="Abort with a hard error">A silently missing skill in the transpiled plugin creates confusing runtime failures in Antigravity, so failing fast at build time safely enforces the new frontmatter requirement.</recommendation>
-</open-question>
 
 <open-question id="GitHub description wording" status="deferred">
   <question>What exact text should be used for the new GitHub project description to reflect dual-support for both Claude Code and Google Antigravity?</question>
