@@ -1,6 +1,7 @@
 import os
 import shutil
 import json
+import sys
 
 def migrate_to_agy_plugin(plugin_name="cairn", src_skills="skills", src_agents="agents", src_mcp=".mcp.json"):
     plugin_dir = os.path.join(".agents", "plugins", plugin_name)
@@ -65,24 +66,36 @@ def migrate_to_agy_plugin(plugin_name="cairn", src_skills="skills", src_agents="
                     
                 import yaml
                 if not content.startswith('---'):
-                    print(f"Warning: {skill_name} is missing YAML frontmatter in SKILL.md")
-                    content = f"---\nname: {skill_name}\ndescription: Transpiled from {src_skills}\n---\n\n" + content
-                else:
-                    parts = content.split('---', 2)
-                    if len(parts) == 3:
-                        frontmatter_str = parts[1]
+                    print(f"Error: {skill_name} is missing YAML frontmatter in SKILL.md", file=sys.stderr)
+                    sys.exit(1)
+                
+                parts = content.split('---', 2)
+                if len(parts) == 3:
+                    frontmatter_str = parts[1]
+                    try:
+                        fm = yaml.safe_load(frontmatter_str)
+                    except yaml.YAMLError:
+                        lines = frontmatter_str.split('\n')
+                        for i, line in enumerate(lines):
+                            if line.startswith('description: '):
+                                desc = line[len('description: '):].strip()
+                                if not desc.startswith('"') and not desc.startswith("'"):
+                                    desc = desc.replace('"', '\\"')
+                                    lines[i] = f'description: "{desc}"'
+                        new_fm = '\n'.join(lines)
+                        content = f"---{new_fm}---{parts[2]}"
                         try:
-                            yaml.safe_load(frontmatter_str)
+                            fm = yaml.safe_load(new_fm)
                         except yaml.YAMLError:
-                            lines = frontmatter_str.split('\n')
-                            for i, line in enumerate(lines):
-                                if line.startswith('description: '):
-                                    desc = line[len('description: '):].strip()
-                                    if not desc.startswith('"') and not desc.startswith("'"):
-                                        desc = desc.replace('"', '\\"')
-                                        lines[i] = f'description: "{desc}"'
-                            new_fm = '\n'.join(lines)
-                            content = f"---{new_fm}---{parts[2]}"
+                            print(f"Error: {skill_name} has invalid YAML frontmatter in SKILL.md", file=sys.stderr)
+                            sys.exit(1)
+                    
+                    if not fm or 'name' not in fm or 'description' not in fm:
+                        print(f"Error: {skill_name} is missing 'name' or 'description' in YAML frontmatter in SKILL.md", file=sys.stderr)
+                        sys.exit(1)
+                else:
+                    print(f"Error: {skill_name} has malformed YAML frontmatter in SKILL.md", file=sys.stderr)
+                    sys.exit(1)
                     
                 with open(dest_skill_md_path, 'w', encoding='utf-8') as f:
                     f.write(content)
