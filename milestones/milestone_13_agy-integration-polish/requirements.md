@@ -17,6 +17,9 @@ The project's GitHub description currently reflects single-platform support and 
 
 ## Decisions
 
+- The GitHub project description will be updated programmatically via a task running `gh repo edit --description "..."` since the GitHub CLI is already configured locally.
+
+
 ## Out of Scope
 
 ## Open questions
@@ -76,17 +79,3 @@ The project's GitHub description currently reflects single-platform support and 
   <recommendation option="Add to CLAUDE.md">CLAUDE.md already serves as the de facto contributor guide by hosting the extensive skill-editing invariants, making it the natural home for the post-edit transpilation step without polluting the public README.</recommendation>
 </open-question>
 
-<open-question id="GitHub description update method" status="open">
-  <question>How should the GitHub project description update be delivered? (e.g. Should we just draft the new text for manual update, or is there an API/scripted way we should use?)</question>
-  <alternative id="Draft text for manual update">
-    Draft the new description text and provide it in a task or requirements file for the user to manually copy and paste into the GitHub web UI.
-    <advantage>Simplest approach that avoids the overhead of managing GitHub CLI authentication for a single string change.</advantage>
-    <drawback>Requires the user to remember to apply the change manually outside of the local task workflow.</drawback>
-  </alternative>
-  <alternative id="Scripted update via GitHub CLI">
-    Author a task to run `gh repo edit --description &quot;...&quot;` to apply the update programmatically using the GitHub CLI.
-    <advantage>Automates the update entirely within the project&apos;s task execution flow without manual web UI interaction.</advantage>
-    <drawback>Requires the user to have the GitHub CLI installed, authenticated, and configured with adequate permissions for a one-off settings change.</drawback>
-  </alternative>
-  <recommendation option="Draft text for manual update">Drafting text is better because automating a one-off metadata change via the GitHub CLI introduces unnecessary authentication and dependency overhead that outweighs the effort of a manual copy-paste.</recommendation>
-</open-question>
