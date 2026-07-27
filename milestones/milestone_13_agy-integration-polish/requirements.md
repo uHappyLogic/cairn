@@ -19,31 +19,12 @@ The project's GitHub description currently reflects single-platform support and 
 
 - The GitHub project description will be updated programmatically via a task running `gh repo edit --description "..."` since the GitHub CLI is already configured locally.
 - The local transpilation step instructions will be documented in both `CLAUDE.md` and a new development section in `README.md`.
+- No changes are required for agent format compatibility: the existing flat `.md` files parse correctly for internal dispatch in Google Antigravity while naturally staying hidden from the public registry, preserving their encapsulated design.
 
 
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Agent format compatibility" status="open">
-  <question>Do the copied agent `.md` files require any Google Antigravity-specific formatting (e.g. YAML frontmatter, different extension, or structural changes) to function correctly as subagents in the transpiled plugin?</question>
-  <alternative id="No changes required">
-    Keep the migration script's direct copy of the flat `.md` files without adding Antigravity-specific directory structures or frontmatter flags.
-    <advantage>The flat files already parse perfectly for internal orchestrator dispatch, and their non-canonical structure naturally keeps these internal subagents hidden from the user-facing public registry.</advantage>
-    <drawback>Relies on undocumented platform behavior (parsing flat `.md` files) rather than explicitly adhering to the canonical `agent.md` format.</drawback>
-  </alternative>
-  <alternative id="Restructure to canonical agent.md">
-    Modify the migration script to convert flat `agents/&lt;name&gt;.md` files into the documented `agents/&lt;name&gt;/agent.md` structure.
-    <advantage>Aligns strictly with Antigravity's documented agent format, ensuring future-proof compatibility with the platform's parser.</advantage>
-    <drawback>May inadvertently expose internal subagents to the platform's public plugin registry, encouraging direct invocation that violates their design.</drawback>
-  </alternative>
-  <alternative id="Inject explicit visibility flags">
-    Modify the migration script to parse the YAML frontmatter and inject `subagent: true` or `visibility: private` flags.
-    <advantage>Uses explicit metadata to control platform routing and visibility rather than relying on directory structure quirks.</advantage>
-    <drawback>Adds YAML-parsing complexity to the migration script for agents when the flat files already achieve the desired behavior out-of-the-box.</drawback>
-  </alternative>
-  <recommendation option="No changes required">The existing flat files parse correctly for internal dispatch while naturally staying hidden from the public registry, preserving their encapsulated design with zero migration effort.</recommendation>
-</open-question>
 
 <open-question id="Skill frontmatter requirements" status="open">
   <question>What specific YAML frontmatter fields does Google Antigravity require for skills, and does the current script inject all of them?</question>
