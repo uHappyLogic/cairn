@@ -316,6 +316,18 @@ Verifies all tasks are done, writes a completion summary to `milestones/README.m
 
 Creates the next milestone directory with empty starter files and updates the current-milestone pointer in `milestones/README.md`. Only runnable after `/finish-current-milestone` has cleared the active pointer.
 
+## Development
+
+This project supports both Claude Code and Google Antigravity. The canonical source files (e.g., `skills/`, `agents/`) are authored at the repository root and are written for Claude Code.
+
+To build the plugin for Google Antigravity, run the local transpilation step from the repository root:
+
+```bash
+python3 scripts/migrate_skills_to_agy.py
+```
+
+This will parse the Claude Code plugin source and generate the Antigravity-compatible version under `.agents/plugins/cairn/`.
+
 ## Self-dogfooding
 
 This repository runs its own workflow on itself. The `milestones/` directory and `milestones/README.md` are live workflow artifacts produced by Cairn's own skills — the requirements, task list, and completed tasks for the current milestone are all right there in the repo. If you want to see what a real milestone looks like end-to-end, look no further.

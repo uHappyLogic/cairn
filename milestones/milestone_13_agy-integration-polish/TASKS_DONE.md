@@ -14,3 +14,18 @@ Update the `scripts/migrate_skills_to_agy.py` script to enforce that every legac
 - Running the script against valid skills transpiles them correctly.
 
 ---
+## Document Transpilation Build Step
+
+Add instructions for running the local transpilation step to both `CLAUDE.md` and a new development section in `README.md` so contributors know how to build the plugin for both platforms.
+
+**Provides:**
+- A new development section in `README.md` detailing the build process.
+
+**Notes:**
+- The transpilation script is `scripts/migrate_skills_to_agy.py`.
+
+**Success:**
+- `CLAUDE.md` contains instructions for running the transpilation step.
+- `README.md` contains a new development section with instructions for running the transpilation step.
+
+---

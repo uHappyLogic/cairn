@@ -110,6 +110,15 @@ Each active milestone lives at `milestones/milestone_<N>_<slug>/` and contains e
 - Both shared procedures (`shared/submit-procedure.md` and `shared/complete-procedure.md`) always resolve `<MILESTONE_DIR>` by following `shared/get-current-milestone.md` (which reads `milestones/README.md`) — they must never use a hardcoded task-list path.
 - Task altitude is split, and the dividing line is **what can be re-derived at completion time**. The shared submit procedure authors only what *cannot* be reconstructed from the goal + the live project: the `Description` (intent), the `Success` bar, the optional `Provides` (the forward contract — names/thresholds sibling tasks reference before this task is built), and the optional `Notes` (non-obvious gotchas that would cost the completer a discovery round). The shared completion procedure owns everything re-derivable — the flow itself and the **detailed design** (the concrete design decisions, decided fresh against the live project and its deliverables). The submit procedure must **not** author a step-by-step flow under any heading (no `Steps`); `Provides`/`Notes` are omitted entirely when empty. Keep task bodies minimal to save tokens; never push line-by-line design detail — or a re-narration of the flow — back into authored tasks.
 
+## Development
+
+This project supports both Claude Code and Google Antigravity. The canonical source files (e.g. `skills/`, `agents/`) are authored at the repository root and are written for Claude Code.
+
+To build the plugin for Google Antigravity, run the local transpilation step from the repository root:
+`python3 scripts/migrate_skills_to_agy.py`
+
+This will parse the Claude Code plugin source and generate the Antigravity-compatible version under `.agents/plugins/cairn/`.
+
 ## Milestone Workflow
 
 This project uses the milestone-driven workflow. Each milestone lives at
