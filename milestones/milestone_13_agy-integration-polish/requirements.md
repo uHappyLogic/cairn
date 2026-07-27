@@ -27,5 +27,10 @@ The project's GitHub description currently reflects single-platform support and 
 
 ## Open questions
 
+<open-question id="Missing frontmatter behavior" status="open">
+  <question>When the transpilation script encounters a legacy source skill missing its required frontmatter, should it abort with a hard error or skip the file with a warning?</question>
+</open-question>
 
-
+<open-question id="GitHub description wording" status="deferred">
+  <question>What exact text should be used for the new GitHub project description to reflect dual-support for both Claude Code and Google Antigravity?</question>
+</open-question>
