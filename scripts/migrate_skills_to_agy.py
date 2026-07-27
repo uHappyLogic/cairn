@@ -63,9 +63,26 @@ def migrate_to_agy_plugin(plugin_name="cairn", src_skills="skills", src_agents="
                 with open(skill_md_path, 'r', encoding='utf-8') as f:
                     content = f.read()
                     
+                import yaml
                 if not content.startswith('---'):
                     print(f"Warning: {skill_name} is missing YAML frontmatter in SKILL.md")
                     content = f"---\nname: {skill_name}\ndescription: Transpiled from {src_skills}\n---\n\n" + content
+                else:
+                    parts = content.split('---', 2)
+                    if len(parts) == 3:
+                        frontmatter_str = parts[1]
+                        try:
+                            yaml.safe_load(frontmatter_str)
+                        except yaml.YAMLError:
+                            lines = frontmatter_str.split('\n')
+                            for i, line in enumerate(lines):
+                                if line.startswith('description: '):
+                                    desc = line[len('description: '):].strip()
+                                    if not desc.startswith('"') and not desc.startswith("'"):
+                                        desc = desc.replace('"', '\\"')
+                                        lines[i] = f'description: "{desc}"'
+                            new_fm = '\n'.join(lines)
+                            content = f"---{new_fm}---{parts[2]}"
                     
                 with open(dest_skill_md_path, 'w', encoding='utf-8') as f:
                     f.write(content)
