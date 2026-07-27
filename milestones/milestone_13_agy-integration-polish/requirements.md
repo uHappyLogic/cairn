@@ -20,25 +20,12 @@ The project's GitHub description currently reflects single-platform support and 
 - The GitHub project description will be updated programmatically via a task running `gh repo edit --description "..."` since the GitHub CLI is already configured locally.
 - The local transpilation step instructions will be documented in both `CLAUDE.md` and a new development section in `README.md`.
 - No changes are required for agent format compatibility: the existing flat `.md` files parse correctly for internal dispatch in Google Antigravity while naturally staying hidden from the public registry, preserving their encapsulated design.
+- The transpilation script will enforce source frontmatter (requiring `name` and `description` to be present in legacy source skills) rather than injecting dummy fallbacks, ensuring Antigravity's semantic intent matching works.
 
 
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Skill frontmatter requirements" status="open">
-  <question>What specific YAML frontmatter fields does Google Antigravity require for skills, and does the current script inject all of them?</question>
-  <alternative id="Accept current injection">
-    Conclude that Antigravity requires `name` and `description` and the script successfully injects these fields as fallback values when missing.
-    <advantage>Requires zero modifications to the current transpilation script.</advantage>
-    <drawback>The fallback &quot;Transpiled from...&quot; description destroys Antigravity&apos;s semantic intent matching, leaving those skills undiscoverable by the agent.</drawback>
-  </alternative>
-  <alternative id="Enforce source frontmatter">
-    Conclude that Antigravity requires `name` and `description` for discovery, and the script should be updated to fail on missing frontmatter rather than injecting dummy fallbacks.
-    <advantage>Guarantees all transpiled skills have accurate descriptions, ensuring they are discoverable and usable by the Antigravity agent.</advantage>
-    <drawback>Requires a manual pass to author frontmatter for any legacy source skills before the transpilation will succeed.</drawback>
-  </alternative>
-  <recommendation option="Enforce source frontmatter">Because Antigravity relies entirely on the description field to trigger skills, a dummy fallback description defeats the purpose of the integration, so strict source enforcement is necessary.</recommendation>
-</open-question>
 
 
