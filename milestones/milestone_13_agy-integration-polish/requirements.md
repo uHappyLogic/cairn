@@ -17,7 +17,7 @@ The project's GitHub description currently reflects single-platform support and 
 
 ## Decisions
 
-- The GitHub project description will be updated programmatically via a task running `gh repo edit --description "..."` since the GitHub CLI is already configured locally.
+- The GitHub project description will be updated programmatically via a task running `gh repo edit --description "Milestone-driven development workflow for Claude Code and Google Antigravity."` since the GitHub CLI is already configured locally. This provides the clearest, most direct signal of dual-support for users searching for either specific platform without unnecessary padding.
 - The local transpilation step instructions will be documented in both `CLAUDE.md` and a new development section in `README.md`.
 - No changes are required for agent format compatibility: the existing flat `.md` files parse correctly for internal dispatch in Google Antigravity while naturally staying hidden from the public registry, preserving their encapsulated design.
 - The transpilation script will enforce source frontmatter (requiring `name` and `description` to be present in legacy source skills) rather than injecting dummy fallbacks, ensuring Antigravity's semantic intent matching works.
@@ -29,22 +29,3 @@ The project's GitHub description currently reflects single-platform support and 
 ## Open questions
 
 
-<open-question id="GitHub description wording" status="deferred">
-  <question>What exact text should be used for the new GitHub project description to reflect dual-support for both Claude Code and Google Antigravity?</question>
-  <alternative id="Direct replacement">
-    Replace the single-platform mention with both names: &quot;Milestone-driven development workflow for Claude Code and Google Antigravity.&quot;
-    <advantage>Directly and concisely answers the dual-support requirement by naming both platforms upfront for maximum discoverability.</advantage>
-    <drawback>Couples the high-level project summary entirely to third-party product names rather than what the tool actually does.</drawback>
-  </alternative>
-  <alternative id="Appended to tagline">
-    Append the platforms to the established tagline: &quot;Mark the path from idea to shipped. Supported on Claude Code and Google Antigravity.&quot;
-    <advantage>Preserves the project&apos;s established brand identity while still explicitly fulfilling the requirement to surface both platforms.</advantage>
-    <drawback>The longer text pushes the critical platform keywords toward the end where they might be truncated in some UI views.</drawback>
-  </alternative>
-  <alternative id="Category with specific tools">
-    Use a broad category with explicit examples: &quot;Milestone-driven development workflow for AI agents (Claude Code, Google Antigravity).&quot;
-    <advantage>Frames the tool generically for any future platforms while retaining the required specific keywords for search visibility.</advantage>
-    <drawback>The parenthetical list adds visual clutter to a field meant for a punchy, high-level summary.</drawback>
-  </alternative>
-  <recommendation option="Direct replacement">It provides the clearest, most direct signal of dual-support for users searching for either specific platform without unnecessary padding.</recommendation>
-</open-question>
