@@ -11,16 +11,17 @@ later version of Cairn changes the shape of those artifacts (a renamed heading, 
 reworded structural blurb), this skill is the standing mechanism that brings an
 already-adopted workspace in step.
 
-It is the **inverse** of the plugin's own refactors: those rename the plugin's source
-(skills, agents, shared procedures); a consumer holds no copies of that source, only
-the generated `milestones/` tree. So the migration surface is exactly:
+A consumer holds no copies of the plugin's own source (skills, agents, shared
+procedures), only the generated `milestones/` tree, so the migration surface is
+exactly:
 
 - every `requirements.md` under `milestones/` — **including historical and completed
   milestone directories**, not just the active one, and
 - `milestones/README.md`.
 
 Nothing else in a consuming workspace is a Cairn-owned artifact, so nothing else is
-touched.
+touched — never the plugin's own source. This skill does not commit: it leaves the
+migrated files staged for the user to review.
 
 ## Usage
 
@@ -135,26 +136,3 @@ After running, the workspace should satisfy:
 - The `milestones/README.md` blurb line reads
   `… goal, relevant starting state, decisions, open questions`.
 - A second consecutive run reports no changes (idempotent).
-
-## Adding a future migration
-
-When a later milestone changes a workspace artifact:
-
-1. Add one entry to **Registered migrations** with its `Targets`, `Detect`
-   (line-anchored on the retired structural line), and `Rewrite to` (pointing at the
-   live template that now defines the destination).
-2. Do **not** touch the workflow — it already applies whatever the catalog holds.
-3. Keep detection structural: migrate heading/blurb lines, never incidental prose that
-   merely mentions the same words.
-
-## Rules
-
-- Operate **only** on the consuming workspace's `milestones/` artifacts —
-  `requirements.md` files and `milestones/README.md`. Never edit plugin source.
-- Migrate **all** milestone directories, completed history included — a consumer needs
-  its whole history normalized.
-- Detect, don't assume: rewrite a retired pattern only where it actually appears, so
-  re-runs and partial states are no-ops.
-- Keep edits line-anchored to structural headings/blurbs; never rewrite prose that
-  incidentally contains a retired word.
-- Do not commit — leave the migrated files staged for the user to review.
