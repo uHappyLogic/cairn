@@ -50,16 +50,85 @@ The single source of truth for completing one task, consumed by the `complete-ta
 
 <open-question id="Brief template home" status="open">
   <question>With the submit-task agent retired, two skills still author the brief-level task format (derive-tasks writing its briefs directly, and the leaned-down submit-task skill). Where does the brief-level task template and its authoring guidance live: a slimmed shared file (the successor of shared/submit-procedure.md, keeping the ≥2-runners shared-file convention satisfied), or inlined separately into each of the two skills?</question>
+  <alternative id="Slimmed shared file">
+    Keep a shared file as the successor of shared/submit-procedure.md, stripped down to just the brief-level template and its authoring guidelines (dropping the milestone-resolution, context-loading, and POSITION-insertion steps that the two skills now handle differently), referenced via ${CLAUDE_PLUGIN_ROOT} by both derive-tasks and the leaned-down submit-task skill.
+    <advantage>One home for the format keeps the two authoring paths byte-identical, which is exactly the milestone goal of one consistent altitude in TASKS_TODO.md, and it satisfies the project&apos;s shared-is-source-of-truth-across-at-least-two-runners convention that derive-tasks becoming a direct author re-establishes.</advantage>
+    <drawback>A very small shared file (a heading, a few description sentences, a separator, and a handful of guidelines) costs an extra indirection hop for every reader and every runner, and its name must be re-earned since it no longer describes a submit procedure.</drawback>
+  </alternative>
+  <alternative id="Inline in both skills">
+    Delete shared/submit-procedure.md outright and write the brief template plus its authoring guidance separately into skills/derive-tasks/SKILL.md and skills/submit-task/SKILL.md.
+    <advantage>Each skill becomes self-contained and readable end-to-end with no indirection, and each can phrase the guidance for its own situation — batch decomposition versus a single triaged issue.</advantage>
+    <drawback>It duplicates the one thing that must not diverge: two copies of a format that a third file (shared/complete-procedure.md) parses, so any later edit to one copy silently splits the task list into two altitudes.</drawback>
+  </alternative>
+  <alternative id="Single-owner cross-reference">
+    Inline the template and guidelines into exactly one skill (the natural owner being the leaned-down submit-task skill) and have the other skill point at that section as the format definition rather than restating it.
+    <advantage>Avoids both duplication and a near-empty shared file, keeping the total file count down while still leaving exactly one authoritative copy of the format.</advantage>
+    <drawback>It makes derive-tasks depend on the internals of a sibling skill, a coupling direction the plugin uses nowhere else (skills reference shared/ files, never each other&apos;s bodies), and it leaves the format owned by the lower-traffic of the two authors.</drawback>
+  </alternative>
+  <recommendation option="Slimmed shared file">Two runners author the format and a third parses it, so the at-least-two-runners condition for a shared file is met and drift between the batch and ad-hoc paths is the one failure this milestone cannot tolerate; the file should be renamed to describe the task format rather than a submit procedure, since the insertion and positioning steps no longer live in it.</recommendation>
 </open-question>
 
 <open-question id="Brief body contents" status="open">
   <question>What exactly does a brief-level task section contain beyond the ## heading, the description sentences, and the trailing --- separator? Specifically: does the brief keep its loose "how it would be verified" line as part of the body (the completer derives the formal acceptance bar either way), and which of the current authoring guidelines (atomic scope, no open decisions, quote numeric values from requirements.md, unique 4-8 word titles) carry over to brief authoring?</question>
+  <alternative id="Prose-embedded verification">
+    The body is the 1-3 sentence description alone, with the loose how-it-would-be-verified clause folded into those sentences as prose rather than a labeled section, and all four current authoring guidelines (atomic scope, no open decisions, quote numeric values from requirements.md, unique 4-8 word titles) carry over unchanged.
+    <advantage>It matches the brief definition derive-tasks and discuss-new-task already use, so a brief maps 1:1 onto the task body with no new vocabulary, while the completer still gets the author intent about done-ness for free.</advantage>
+    <drawback>The verification cue is unlabeled prose, so nothing structurally distinguishes a deliberate done-signal from ordinary description, and a later author may drift back toward a criteria list.</drawback>
+  </alternative>
+  <alternative id="Verification dropped">
+    The body describes only the affected system and desired behavior; the how-it-would-be-verified clause is stripped at authoring time and the acceptance bar is derived wholly by the completer from the description plus requirements.md.
+    <advantage>Exactly one source for the acceptance bar, with no half-formal author bar competing with the derived one.</advantage>
+    <drawback>It discards the one piece of author intent that is genuinely hard to re-derive, and forces edits to derive-tasks step 3 and to discuss-new-task, whose brief shape already names verification.</drawback>
+  </alternative>
+  <alternative id="Labeled verification line">
+    The body keeps the description plus one explicitly labeled lightweight verification line, short of the retired Success criteria list.
+    <advantage>Makes the loose bar explicit and greppable, so the completer knows exactly where author intent about done-ness lives.</advantage>
+    <drawback>It reintroduces a structured section under a new name, which is precisely the Success-section gravity the milestone goal retires, and such a line tends to regrow into a criteria list.</drawback>
+  </alternative>
+  <alternative id="Trimmed guideline set">
+    As with prose-embedded verification, but only the two altitude-defining guidelines (atomic scope, no open decisions) carry over; quoting numeric values and the unique 4-8 word title shape are dropped as re-derivable by the completer.
+    <advantage>Shrinks the authoring guidance to just the rules that define what a task is, matching the leaner body.</advantage>
+    <drawback>Title uniqueness is load-bearing rather than cosmetic — the completion procedure locates a task by case-insensitive partial heading match, so colliding titles break completion outright.</drawback>
+  </alternative>
+  <recommendation option="Prose-embedded verification">The brief definition already used by derive-tasks and discuss-new-task names verification as part of the prose, so keeping it there maps a brief onto the task body 1:1 with no structured section left to regrow, and all four guidelines survive because each is format-independent — title uniqueness in particular is load-bearing for heading-match completion.</recommendation>
 </open-question>
 
 <open-question id="Legacy rich-task handling" status="open">
   <question>Consuming workspaces may hold TASKS_TODO.md files with rich-format tasks (Provides/Notes/Success sections) authored before this change. Should the reworked shared/complete-procedure.md still honor those sections when present (treating them as advisory input alongside the derived acceptance bar), and should migrate-workspace cover old-format task lists, or is the rich format simply left to drain naturally since the ##/--- section mechanics are unchanged?</question>
+  <alternative id="Tolerant drain">
+    Rework shared/complete-procedure.md to derive the acceptance bar from the description plus requirements.md, but keep a short clause honoring any Provides/Notes/Success sections still present as authored input alongside the derived bar; leave migrate-workspace untouched and let the rich format drain as queues empty.
+    <advantage>In-flight task lists — including this milestone&apos;s own rich-format tasks, which the reworked procedure will execute mid-run — still complete against the criteria their author actually wrote, at the cost of one paragraph and no data rewriting.</advantage>
+    <drawback>The rich-format coupling this milestone set out to remove survives as a documented second input path in the completion contract, with no stated point at which it is removed.</drawback>
+  </alternative>
+  <alternative id="Clean cutover">
+    Rework shared/complete-procedure.md to know only the brief-level shape: legacy Provides/Notes/Success sections are read as ordinary body prose feeding the derived bar with no privileged status, and migrate-workspace is untouched.
+    <advantage>A single-path completion contract that matches the flattened design exactly, with no legacy branch to maintain or explain.</advantage>
+    <drawback>An explicit Success criterion an author wrote stops being binding the moment the rework lands, so a partly-drained legacy list can be completed against a derived bar that quietly omits it.</drawback>
+  </alternative>
+  <alternative id="Migrate task lists">
+    Add a migrate-workspace catalog entry that strips the rich sections out of existing TASKS_TODO.md files (and optionally TASKS_DONE.md), so no old-format task survives anywhere.
+    <advantage>One format everywhere, so neither the completion procedure nor a human reader ever meets a legacy task shape.</advantage>
+    <drawback>migrate-workspace&apos;s entire mechanism is line-anchored detect-and-rewrite over requirements.md and milestones/README.md; whole-section deletion of authored acceptance criteria is not expressible in that catalog, expands its declared surface, and destroys content in a queue that drains by itself.</drawback>
+  </alternative>
+  <recommendation option="Tolerant drain">One advisory clause preserves the authored acceptance bar for lists already in flight while the format disappears on its own, and it keeps migrate-workspace&apos;s line-anchored catalog free of a whole-section content rewrite it cannot express.</recommendation>
 </open-question>
 
 <open-question id="Acceptance-bar record" status="deferred">
   <question>Whether the completer records the acceptance bar it derived from the description plus requirements.md anywhere durable (the TASKS_DONE.md entry or the commit body) or leaves it ephemeral — best decided while reworking shared/complete-procedure.md.</question>
+  <alternative id="Ephemeral">
+    The completer derives the acceptance bar, verifies against it, and never writes it down — the bar lives only in the completion context and disappears with it.
+    <advantage>Zero new machinery: the TODO-to-DONE move stays a verbatim section move, no wrapper changes, and it matches the project rule that the committed diff and git log are the durable record.</advantage>
+    <drawback>This milestone retires the authored Success section, so nothing outside one throwaway context ever states what done meant; a completer that quietly lowers its own bar leaves no trace, and later grounding has only the diff to infer intent from.</drawback>
+  </alternative>
+  <alternative id="Done-entry record">
+    shared/complete-procedure.md step 5 appends the derived acceptance bar to the section it moves into TASKS_DONE.md, so the finished entry carries the brief plus the bar the work was actually verified against.
+    <advantage>Restores the independent statement of done that the retired Success section provided, in the one file the completion procedure already writes and that finished-work grounding already reads, as a single-file change with no wrapper contract.</advantage>
+    <drawback>The TODO and DONE sections stop being identical (the move becomes move-plus-augment), and the DONE file grows a Success-like section back, which a later reader could mistake for the rich format returning.</drawback>
+  </alternative>
+  <alternative id="Commit-body record">
+    The completer hands the derived bar back to its wrapper, which writes it into the Task-completion or Tasklist-completion commit body alongside the task heading.
+    <advantage>Puts the bar in git next to the exact diff it certifies, mirroring how the answer skills preserve rationale in commit bodies, and leaves both task files at pure brief altitude.</advantage>
+    <drawback>Requires a new hand-back contract threaded through three wrappers (agent return protocol, inline skill, orchestrator commit step) purely for provenance, while the shared procedure must stay commit-free — the highest cost of the three for the least visible payoff.</drawback>
+  </alternative>
+  <recommendation option="Done-entry record">Cheapest way to keep a durable statement of what done meant once the authored Success section is gone, landing in the file the completion procedure already writes and later milestone grounding already reads.</recommendation>
 </open-question>
