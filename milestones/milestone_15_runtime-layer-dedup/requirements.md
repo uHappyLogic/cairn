@@ -64,6 +64,10 @@ The per-file constraint-preservation check is recorded in the pipeline's own `**
 
 README.md is touched only where a sweep edit makes an existing claim false: a verification pass over its skill reference and workflow prose that edits solely on a confirmed falsification and adds no new prose. The sweep is behavior-neutral, so the only honest README work is confirming that no existing claim went stale. No sentence describing the runtime-files-never-restate-invariants rule is added — that rule is an authoring convention whose single home is the CLAUDE.md invariant, and repeating it in a user-facing README would recreate the very duplication this milestone removes.
 
+### Editing route
+
+Every runtime-file edit in this milestone is made directly against the `skills/*/SKILL.md`, `agents/*.md`, and `shared/*.md` files with the ordinary editing tools; edits are not routed through the `skill-creator:skill-creator` skill, whose milestone-9 mandate is treated as scoped to that milestone rather than standing. This sweep is precision deletion of existing prose, proved by its own per-file constraint-preservation ledger and the fresh-context re-audit loop rather than by authoring quality, and direct editing is the established practice of every milestone since 9. The rule is uniform across all three directories — `shared/*.md` files are not skills at all — so each editing task's description can state it in one sentence.
+
 ## Out of Scope
 
 ## Open questions
@@ -91,26 +95,6 @@ README.md is touched only where a sweep edit makes an existing claim false: a ve
     <drawback>The auditor must classify each finding as well as report it, and the tiering could be misused to wave through real residuals under a thin reason.</drawback>
   </alternative>
   <recommendation option="Loss blocking, residual triaged">The two classes carry genuinely different consequences — a lost constraint is a defect the ledger exists to prevent, a residual is a missed cut that can be honestly accepted — so tiering them is what lets the recorded fix-or-register rule bound the loop without letting a preservation regression be registered away.</recommendation>
-</open-question>
-
-<open-question id="Skill-creator routing" status="open">
-  <question>Milestone 9 mandated that every skill/agent edit go through the `skill-creator:skill-creator` skill and later milestones did not repeat it. Do this milestone&apos;s runtime-file editing tasks route through skill-creator, or edit the `SKILL.md`/agent/shared files directly? The answer applies sweep-wide, so each editing task&apos;s description can state it.</question>
-  <alternative id="Direct Edits">
-    Every runtime-file edit in this milestone is made directly against the `skills/*/SKILL.md`, `agents/*.md`, and `shared/*.md` files with the ordinary editing tools, and the milestone-9 skill-creator mandate is treated as scoped to that milestone rather than standing.
-    <advantage>It matches what every milestone since 9 actually did — including milestone 12, the closest analog, whose layer-wide behavior-neutral prose sweep edited directly — and gives one uniform rule across all three directories, which matters because `shared/*.md` files are not skills and were already carved out of the milestone-9 mandate by that milestone&apos;s own task notes.</advantage>
-    <drawback>It retires a documented mandate without an external authoring check, so a cut that damages a file&apos;s structure or frontmatter has only this milestone&apos;s own ledger and re-audit loop to catch it.</drawback>
-  </alternative>
-  <alternative id="Route Through Skill-Creator">
-    Milestone 9&apos;s mandate is reaffirmed sweep-wide: every `skills/` and `agents/` edit goes through the `skill-creator:skill-creator` skill, with `shared/*.md` edited directly under the same carve-out milestone 9 recorded.
-    <advantage>It restores an external structure and description-quality check over the layer&apos;s highest-traffic files and keeps continuity with the one milestone that stated a routing rule at all.</advantage>
-    <drawback>Skill-creator is an authoring and scaffolding tool for creating and improving skills, not an instrument for verbatim-precise deletion of named sentences with a per-imperative preservation ledger; it adds ceremony, forces a split rule across the three directories the sweep treats as one layer, and its instinct to rewrite prose works against the behavior-neutrality and word-count accounting this milestone is verified on.</drawback>
-  </alternative>
-  <alternative id="Direct Edits Plus Skill-Creator Review">
-    Edits are made directly, then a skill-creator pass reviews the changed `skills/` and `agents/` files for structural or triggering damage before the fresh-context re-audit.
-    <advantage>It keeps deletion precision while adding a second, differently-shaped check over the files whose format is load-bearing.</advantage>
-    <drawback>It overlaps the verification this milestone already decided — the per-file constraint-preservation ledger and the fix-and-re-audit loop — while supplying no criterion for what a review pass is allowed to change under a behavior-neutral sweep, so its findings would have no defined disposition.</drawback>
-  </alternative>
-  <recommendation option="Direct Edits">This sweep is precision deletion of existing prose, proved by its own ledger and re-audit loop rather than by authoring quality, so direct editing is both the honest fit and the established practice of every milestone since 9, and it keeps one rule across `skills/`, `agents/`, and `shared/` — the last of which are not skills at all.</recommendation>
 </open-question>
 
 <open-question id="Step-less rule placement" status="deferred">
