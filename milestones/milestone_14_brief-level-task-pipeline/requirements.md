@@ -44,6 +44,10 @@ The single source of truth for completing one task, consumed by the `complete-ta
 
 ## Decisions
 
+### Legacy task-list handling
+
+The reworked shared/complete-procedure.md knows only the brief-level task shape (clean cutover): legacy Provides/Notes/Success sections in existing task lists carry no privileged status and are read as ordinary body prose feeding the derived acceptance bar. migrate-workspace stays untouched — old-format task lists drain naturally, since the ##/--- section mechanics are unchanged.
+
 ## Out of Scope
 
 ## Open questions
@@ -91,26 +95,6 @@ The single source of truth for completing one task, consumed by the `complete-ta
     <drawback>Title uniqueness is load-bearing rather than cosmetic — the completion procedure locates a task by case-insensitive partial heading match, so colliding titles break completion outright.</drawback>
   </alternative>
   <recommendation option="Prose-embedded verification">The brief definition already used by derive-tasks and discuss-new-task names verification as part of the prose, so keeping it there maps a brief onto the task body 1:1 with no structured section left to regrow, and all four guidelines survive because each is format-independent — title uniqueness in particular is load-bearing for heading-match completion.</recommendation>
-</open-question>
-
-<open-question id="Legacy rich-task handling" status="open">
-  <question>Consuming workspaces may hold TASKS_TODO.md files with rich-format tasks (Provides/Notes/Success sections) authored before this change. Should the reworked shared/complete-procedure.md still honor those sections when present (treating them as advisory input alongside the derived acceptance bar), and should migrate-workspace cover old-format task lists, or is the rich format simply left to drain naturally since the ##/--- section mechanics are unchanged?</question>
-  <alternative id="Tolerant drain">
-    Rework shared/complete-procedure.md to derive the acceptance bar from the description plus requirements.md, but keep a short clause honoring any Provides/Notes/Success sections still present as authored input alongside the derived bar; leave migrate-workspace untouched and let the rich format drain as queues empty.
-    <advantage>In-flight task lists — including this milestone&apos;s own rich-format tasks, which the reworked procedure will execute mid-run — still complete against the criteria their author actually wrote, at the cost of one paragraph and no data rewriting.</advantage>
-    <drawback>The rich-format coupling this milestone set out to remove survives as a documented second input path in the completion contract, with no stated point at which it is removed.</drawback>
-  </alternative>
-  <alternative id="Clean cutover">
-    Rework shared/complete-procedure.md to know only the brief-level shape: legacy Provides/Notes/Success sections are read as ordinary body prose feeding the derived bar with no privileged status, and migrate-workspace is untouched.
-    <advantage>A single-path completion contract that matches the flattened design exactly, with no legacy branch to maintain or explain.</advantage>
-    <drawback>An explicit Success criterion an author wrote stops being binding the moment the rework lands, so a partly-drained legacy list can be completed against a derived bar that quietly omits it.</drawback>
-  </alternative>
-  <alternative id="Migrate task lists">
-    Add a migrate-workspace catalog entry that strips the rich sections out of existing TASKS_TODO.md files (and optionally TASKS_DONE.md), so no old-format task survives anywhere.
-    <advantage>One format everywhere, so neither the completion procedure nor a human reader ever meets a legacy task shape.</advantage>
-    <drawback>migrate-workspace&apos;s entire mechanism is line-anchored detect-and-rewrite over requirements.md and milestones/README.md; whole-section deletion of authored acceptance criteria is not expressible in that catalog, expands its declared surface, and destroys content in a queue that drains by itself.</drawback>
-  </alternative>
-  <recommendation option="Tolerant drain">One advisory clause preserves the authored acceptance bar for lists already in flight while the format disappears on its own, and it keeps migrate-workspace&apos;s line-anchored catalog free of a whole-section content rewrite it cannot express.</recommendation>
 </open-question>
 
 <open-question id="Acceptance-bar record" status="deferred">
