@@ -70,20 +70,110 @@ README.md is touched only where a sweep edit makes an existing claim false: a ve
 
 <open-question id="Re-audit finding scope" status="open">
   <question>What counts as a finding for the fresh-context re-audit whose clean verdict proves the milestone: only lost constraints (an imperative removed from a runtime file with no surviving home, or a `**Verified:**` ledger claim that does not hold against the live file), or also residual restatement the sweep missed (a remaining `## Rules` heading, editor-facing rationale still in a runtime file, cross-file narration beyond the one sentence the contract needs)? The choice fixes what &quot;clean&quot; means and how many fix-and-re-audit rounds the loop can take.</question>
+  <alternative id="Loss only">
+    A finding is exclusively a preservation regression — an imperative removed from a runtime file with no surviving home, or a `**Verified:**` ledger bullet whose claim does not hold against the live file — checked against git history, with residual restatement explicitly out of scope.
+    <advantage>Every finding is a falsifiable claim against a fixed reference (the pre-sweep text in git plus the ledger), so the audit is objective, cheap to adjudicate, and converges in the fewest rounds.</advantage>
+    <drawback>A clean verdict would prove only that nothing was broken, not that the sweep did its job — a run that removed almost none of the three restatement classes would still pass, leaving the milestone&apos;s actual objective unverified.</drawback>
+  </alternative>
+  <alternative id="Loss plus mechanical check">
+    The re-audit reports only lost constraints, and completeness is covered separately by mechanical checks the repo already supports — a `grep` for surviving `## Rules` headings and a `wc -w` delta against the 32,758-word baseline.
+    <advantage>Splits the objective, machine-checkable part of completeness away from judgment-heavy reading, keeping the audit bounded while still catching the one cut class that has a crisp textual signature.</advantage>
+    <drawback>The two classes that actually need reading — editor-facing rationale still sitting in a runtime file, and cross-file narration beyond the one sentence the contract needs — have no grep signature, so most of the completeness surface stays unverified.</drawback>
+  </alternative>
+  <alternative id="Both classes uniform">
+    Both lost constraints and residual restatement count as findings of equal weight, and clean means the run returned neither, with the already-decided `temp/milestone_15_findings.md` valve applying uniformly to any finding of either class.
+    <advantage>The clean verdict proves the milestone end to end — nothing lost and nothing missed — with a single criterion the fresh-context auditor can be handed verbatim, exactly as milestone 12 handed over its one criterion.</advantage>
+    <drawback>The uniform valve lets a genuine preservation regression be registered with a reason rather than fixed, which quietly undercuts the constraint-preservation guarantee the ledger exists to provide.</drawback>
+  </alternative>
+  <alternative id="Loss blocking, residual triaged">
+    Both classes are findings, but with different dispositions: a lost constraint or false ledger claim must be fixed and cannot be registered away, while a residual-restatement finding is reported and then either fixed or registered in `temp/milestone_15_findings.md` with its reason; clean means zero loss findings and no unregistered residuals.
+    <advantage>Gives the clean verdict the full meaning the goal asks for — no regression and no missed restatement — while capping the round count, since the judgment-heavy class can be honestly accepted with a stated reason instead of forcing another fix-and-re-audit cycle.</advantage>
+    <drawback>The auditor must classify each finding as well as report it, and the tiering could be misused to wave through real residuals under a thin reason.</drawback>
+  </alternative>
+  <recommendation option="Loss blocking, residual triaged">The two classes carry genuinely different consequences — a lost constraint is a defect the ledger exists to prevent, a residual is a missed cut that can be honestly accepted — so tiering them is what lets the recorded fix-or-register rule bound the loop without letting a preservation regression be registered away.</recommendation>
 </open-question>
 
 <open-question id="Skill-creator routing" status="open">
   <question>Milestone 9 mandated that every skill/agent edit go through the `skill-creator:skill-creator` skill and later milestones did not repeat it. Do this milestone&apos;s runtime-file editing tasks route through skill-creator, or edit the `SKILL.md`/agent/shared files directly? The answer applies sweep-wide, so each editing task&apos;s description can state it.</question>
+  <alternative id="Direct Edits">
+    Every runtime-file edit in this milestone is made directly against the `skills/*/SKILL.md`, `agents/*.md`, and `shared/*.md` files with the ordinary editing tools, and the milestone-9 skill-creator mandate is treated as scoped to that milestone rather than standing.
+    <advantage>It matches what every milestone since 9 actually did — including milestone 12, the closest analog, whose layer-wide behavior-neutral prose sweep edited directly — and gives one uniform rule across all three directories, which matters because `shared/*.md` files are not skills and were already carved out of the milestone-9 mandate by that milestone&apos;s own task notes.</advantage>
+    <drawback>It retires a documented mandate without an external authoring check, so a cut that damages a file&apos;s structure or frontmatter has only this milestone&apos;s own ledger and re-audit loop to catch it.</drawback>
+  </alternative>
+  <alternative id="Route Through Skill-Creator">
+    Milestone 9&apos;s mandate is reaffirmed sweep-wide: every `skills/` and `agents/` edit goes through the `skill-creator:skill-creator` skill, with `shared/*.md` edited directly under the same carve-out milestone 9 recorded.
+    <advantage>It restores an external structure and description-quality check over the layer&apos;s highest-traffic files and keeps continuity with the one milestone that stated a routing rule at all.</advantage>
+    <drawback>Skill-creator is an authoring and scaffolding tool for creating and improving skills, not an instrument for verbatim-precise deletion of named sentences with a per-imperative preservation ledger; it adds ceremony, forces a split rule across the three directories the sweep treats as one layer, and its instinct to rewrite prose works against the behavior-neutrality and word-count accounting this milestone is verified on.</drawback>
+  </alternative>
+  <alternative id="Direct Edits Plus Skill-Creator Review">
+    Edits are made directly, then a skill-creator pass reviews the changed `skills/` and `agents/` files for structural or triggering damage before the fresh-context re-audit.
+    <advantage>It keeps deletion precision while adding a second, differently-shaped check over the files whose format is load-bearing.</advantage>
+    <drawback>It overlaps the verification this milestone already decided — the per-file constraint-preservation ledger and the fix-and-re-audit loop — while supplying no criterion for what a review pass is allowed to change under a behavior-neutral sweep, so its findings would have no defined disposition.</drawback>
+  </alternative>
+  <recommendation option="Direct Edits">This sweep is precision deletion of existing prose, proved by its own ledger and re-audit loop rather than by authoring quality, so direct editing is both the honest fit and the established practice of every milestone since 9, and it keeps one rule across `skills/`, `agents/`, and `shared/` — the last of which are not skills at all.</recommendation>
 </open-question>
 
 <open-question id="Step-less rule placement" status="deferred">
   <question>When a retired `## Rules` section carries a unique rule that constrains the whole skill rather than any one numbered step (e.g. discuss-milestone-goal&apos;s &quot;Do not create any files&quot;), where in the file does it survive — the opening description, the step whose output it most constrains, or a single sentence at the point the file first could violate it — without regrowing a Rules-like list under a different heading?</question>
+  <alternative id="Opening description">
+    Fold each step-less rule into the file&apos;s existing opening description paragraph as prose — one sentence continuing the blurb that already states what the skill does and does not do — never as a bullet list.
+    <advantage>Scope matches scope: a constraint on the whole skill lands in the one place that already states the whole skill&apos;s boundaries, and several files (`discuss-milestone-goal`&apos;s &quot;not a document yet&quot;, `define-milestone-goal`&apos;s &quot;Does not populate the remaining sections&quot;) already carry a near-identical sentence there, so the relocation extends existing prose instead of inventing a home.</advantage>
+    <drawback>The opening paragraph becomes the accumulation site for every step-less rule in a file, so a skill with three or four of them risks a run-on scope blurb that is a Rules list in prose clothing unless the no-bullet-list constraint is enforced per file.</drawback>
+  </alternative>
+  <alternative id="Nearest step">
+    Attach each step-less rule to the numbered step whose output it most constrains, matching the goal&apos;s stated default of relocating a surviving rule into the step where it acts.
+    <advantage>One uniform relocation rule for the whole sweep — no separate step-less category, and the point-of-use discipline already decided for the terse-reporting steps applies unchanged.</advantage>
+    <drawback>It misstates the constraint&apos;s scope: pinning &quot;Do not create any files&quot; to one step of a five-step conversational skill implies the other four are unconstrained, and choosing which step it &quot;most&quot; constrains is an arbitrary per-file call that a re-audit cannot check against anything.</drawback>
+  </alternative>
+  <alternative id="First-violation point">
+    Place each step-less rule as a single sentence at the earliest point in the file where the skill could first violate it.
+    <advantage>Gives a deterministic, mechanically checkable placement rule that puts the prohibition ahead of the behavior it forbids.</advantage>
+    <drawback>For most of the real cases the first violation point is step 1 or earlier — a purely conversational skill could create a file at any step — so the rule collapses into the opening description anyway while adding a per-file judgment that has to be made and defended.</drawback>
+  </alternative>
+  <alternative id="Per-file judgment">
+    Fix no placement rule; let each editing task pick whichever of the three homes fits that rule, with only the no-Rules-like-list constraint binding sweep-wide.
+    <advantage>Mirrors the precedent already set for the terse-reporting steps and the reference tails, where the milestone accepted a per-file read over a sweep-wide substitution.</advantage>
+    <drawback>Placement here has no per-file signal to judge on the way a reporting step does, so the freedom buys nothing and costs consistency: the same class of rule ends up in three different places across 29 files, and the fresh-context re-audit gets no fixed target to verify against.</drawback>
+  </alternative>
+  <recommendation option="Opening description">A rule that constrains the whole skill belongs where the whole skill&apos;s boundaries are already stated, and the opening blurb is that place — it is one named location the re-audit can check, it needs no arbitrary &quot;which step&quot; call, and in the named examples it merely extends a sentence the file already has; the no-Rules-list requirement is met by pinning the form as prose folded into the existing paragraph, never a bullet list under any heading.</recommendation>
 </open-question>
 
 <open-question id="Word-count shortfall handling" status="deferred">
   <question>If applying the three cut classes under the cut rule (a sentence goes only when its content survives elsewhere) removes materially fewer than the roughly 11,000 words the goal targets, is the shortfall reported and accepted as the honest result, or are further cuts sought? The cut rule, not the count, is the stated constraint, so the count&apos;s role at verification time should be pinned.</question>
+  <alternative id="Report the shortfall">
+    The roughly 11,000-word figure is a non-binding estimate: the sweep applies the three cut classes under the cut rule, the actual removal is measured with `wc -w` over the three directories and reported (per class and in total) alongside the per-file constraint-preservation ledgers, and whatever number results is the honest outcome — a shortfall is never a trigger for additional cuts.
+    <advantage>It keeps the goal&apos;s own stated hierarchy intact — the cut rule is the constraint and the count is a target — so no edit is ever made because a number was missed, which is the only way the sweep stays behavior-neutral by construction.</advantage>
+    <drawback>Nothing in the count itself distinguishes &quot;the rule genuinely yields less&quot; from &quot;the sweep was applied incompletely&quot;, so a large shortfall leans entirely on the fresh-context re-audit loop to catch a timid pass.</drawback>
+  </alternative>
+  <alternative id="Shortfall triggers a completeness re-check">
+    A materially short measured total triggers one bounded re-pass over the layer that re-applies the same three cut classes under the same unchanged cut rule to confirm nothing in scope was missed; whatever survives that re-check is then reported and accepted, with no new cut class and no relaxed rule.
+    <advantage>It separates a genuine low yield from an incomplete sweep without loosening the deletion rule by a single clause.</advantage>
+    <drawback>It adds a conditional verification pass that largely duplicates the already-decided fresh-context re-audit loop, and putting a numeric trigger on it quietly re-introduces the count as a forcing function on the editor.</drawback>
+  </alternative>
+  <alternative id="Cut until the target is met">
+    The roughly 11,000 words is treated as a floor: if the three classes under the cut rule fall short, further cuts are sought beyond those classes (or the survives-elsewhere rule is relaxed) until the count is reached.
+    <advantage>The milestone delivers the headline number its goal states, so the stated objective is met exactly as written.</advantage>
+    <drawback>It inverts the goal&apos;s own constraint — the count becomes binding and the cut rule negotiable — which licenses removing point-of-use constraints, worked examples, or templates whose content survives nowhere, making the sweep no longer behavior-neutral.</drawback>
+  </alternative>
+  <recommendation option="Report the shortfall">The goal names the cut rule as the constraint and the count only as a rough target, so the measured removal is reported, never enforced; sweep completeness is already owned by the fresh-context re-audit loop and its findings ledger, which is where a timid pass should surface rather than in a word-count trigger that would pressure edits the cut rule does not license.</recommendation>
 </open-question>
 
 <open-question id="Frontmatter description scope" status="deferred">
   <question>Are the YAML frontmatter `description` fields of the `SKILL.md` and agent files inside the sweep, or left untouched? They are the triggering surface Claude Code and the Antigravity transpile read, so trimming them is not behavior-neutral even where the text restates the body.</question>
+  <alternative id="Excluded Entirely">
+    Declare the YAML frontmatter blocks out of scope sweep-wide, so every editing task edits only the body below the closing frontmatter delimiter and no description text changes.
+    <advantage>Guarantees the triggering surface is untouched by construction, which is the cheapest possible proof the sweep stayed behavior-neutral in the one place this repository has no way to verify it — nothing here exercises Claude Code skill selection or Antigravity triggering.</advantage>
+    <drawback>Freezes 1,570 of the layer&apos;s 32,758 words, and defines no handling for the one honest edge case: a description whose claim a body cut makes false.</drawback>
+  </alternative>
+  <alternative id="Falsification-Only Sync">
+    Frontmatter stays outside the three cut classes, but each editing task confirms the file&apos;s own description still holds against the edited body and edits it only on a confirmed falsification, adding no new prose and removing no invocation or use-when vocabulary — the same rule the recorded README sync scope decision already applies.
+    <advantage>Keeps the triggering surface behavior-neutral while closing the one gap in pure exclusion, and reuses a scope rule this milestone has already decided, so every editing task can state it in one identical sentence.</advantage>
+    <drawback>Adds a per-file judgment call, and a ledger line recording its result, to every editing task for a case expected to be rare or empty, so most tasks pay the check and make no edit.</drawback>
+  </alternative>
+  <alternative id="In Scope With Trigger Check">
+    Descriptions are swept like body prose under the cut rule, with each cut additionally passing a triggering-preservation check that keeps every invocation phrase, use-when clause, and dispatch-routing sentence.
+    <advantage>Recovers real words from the descriptions that genuinely restate their bodies — the four largest run 152, 146, 132 and 125 words in `review-milestone-requirements`, `discuss-new-task`, `capture-milestone-principle-updates` and `recommend-all-open-questions` — helping the roughly 11,000-word target.</advantage>
+    <drawback>The check is unverifiable in this repository, so behavior neutrality degrades from a property to a claim across the whole triggering surface, in exchange for at most about 5% of the layer.</drawback>
+  </alternative>
+  <recommendation option="Falsification-Only Sync">Frontmatter is the one surface whose neutrality this repository cannot verify, so cut nothing there; the already-recorded README sync scope decision supplies the honest exception — edit only on a confirmed false claim — and reusing that rule verbatim keeps the sweep-wide instruction to one sentence per editing task.</recommendation>
 </open-question>
