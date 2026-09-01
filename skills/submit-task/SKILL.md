@@ -13,11 +13,8 @@ It does two things the agent can't: the triage and positioning that need the **w
 task list in view** — checking for duplicates and deciding where the task belongs — and then
 it authors and inserts the task **inline, in this conversation**. Running the authoring
 inline is deliberate: the contract surface, notes, and success criteria you just wrote stay
-in context, so the user can immediately ask why a choice was made or request a tweak. For
-bulk authoring, `derive-tasks` instead spawns the `submit-task` **agent**, which
-runs the same shared procedure in isolation so N tasks' reasoning never lands in its
-context. If the issue is still vague or might be several tasks, use
-`/discuss-new-task` first.
+in context, so the user can immediately ask why a choice was made or request a tweak. If the
+issue is still vague or might be several tasks, use `/discuss-new-task` first.
 
 ## Invocation
 
@@ -61,9 +58,8 @@ in this conversation** (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve 
 with the issue as the BRIEF and the POSITION you chose in step 3. It owns the task template,
 the authoring guidelines, and the insertion logic — follow it exactly.
 
-Do **not** spawn the `submit-task` agent — that would discard the authoring context
-this skill exists to keep. (You already read `requirements.md` and `TASKS_TODO.md` in
-step 1, so reuse them rather than re-reading.)
+(You already read `requirements.md` and `TASKS_TODO.md` in step 1, so reuse them rather
+than re-reading.)
 
 ### 5. Commit the inserted task
 
@@ -96,8 +92,6 @@ and suggest `/discuss-new-task` to sharpen it first.
 ## Rules
 
 - Triage and position from the whole-task-list view (that is the skill's job), then author and
-  insert via the shared procedure — never delegate this skill to the `submit-task`
-  agent. (The shared file is the single source of truth, so the authored task is identical
-  either way; only the context differs.)
+  insert via the shared procedure.
 - Never queue a duplicate of an existing pending or completed task.
 - For vague issues or ones that may span several tasks, route through `/discuss-new-task` first.

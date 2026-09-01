@@ -46,3 +46,26 @@ Rewrite `skills/derive-tasks/SKILL.md` so it writes its ordered briefs into `<MI
 - Its YAML frontmatter still carries `name` and `description`, and the `description` no longer mentions delegating authoring to the agent.
 
 ---
+
+## Retire The Submit-Task Agent
+
+Delete `agents/submit-task.md`, the bulk per-brief authoring subagent. Its sole caller was the `derive-tasks` dispatch loop, which "Rewrite Derive-Tasks To Write Briefs Directly" removes, so no consumer remains once that task lands. Only the root source file goes here; the generated twin and the `CLAUDE.md`/`README.md` prose are reconciled by later sibling tasks.
+
+**Provides:**
+- The absence of `agents/submit-task.md` — later tasks (the Antigravity transpile re-run and the documentation reconciliation) assume the root source file is already gone.
+- `agents/complete-task.md` as the only remaining skill+agent pair in the plugin, which the documentation tasks describe.
+
+**Notes:**
+- The checked-in generated twin `.agents/plugins/cairn/agents/submit-task.md` is regenerated (rmtree-and-copy of `agents/`) by `scripts/migrate_skills_to_agy.py`; do **not** hand-edit or delete the generated tree here — a later task re-runs the script for the whole milestone.
+- `CLAUDE.md` and `README.md` still describe the agent (layout entry, the "submit-task exists as both skill and agent" invariant, the `derive-tasks` skill-reference line). Leave them — later sibling tasks own that reconciliation.
+- Two residual agent references live under `skills/` and are dangling pointers to the deleted file once this task lands; remove exactly those passages and nothing else, leaving the rest of each file to its own sibling task: `skills/submit-task/SKILL.md` (the "for bulk authoring, `derive-tasks` instead spawns the `submit-task` **agent**" paragraph and the two "never spawn / never delegate to the `submit-task` agent" prohibitions), and `skills/answer-open-question-with-recommendation/SKILL.md` (the "like `complete-task`/`submit-task`" SKILL+AGENT-pair analogy, which must drop `submit-task` since only `complete-task` remains such a pair).
+- `shared/submit-procedure.md` — whose header names the agent as one of its two runners — is already gone by this point, replaced by `shared/task-format.md` in an earlier task.
+- Legitimate references to the user-facing `/submit-task` **skill** (in `discuss-new-task`, `ask-in-milestone-context`, and the skill's own body) stay; only agent references are being retired.
+
+**Success:**
+- `agents/submit-task.md` does not exist.
+- No file under `skills/` or `shared/` contains the string `subagent_type` paired with `submit-task`.
+- No file under `skills/` or `shared/` refers to a `submit-task` agent — no "`submit-task` agent" phrase, no spawn/delegate-to-the-agent prohibition, and no listing of `submit-task` as a skill+agent pair.
+- `agents/` contains only `complete-task.md`, `recommend-open-question.md`, and `answer-open-question-with-recommendation.md`.
+
+---
