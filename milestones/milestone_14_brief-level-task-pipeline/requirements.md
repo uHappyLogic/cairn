@@ -48,29 +48,13 @@ The single source of truth for completing one task, consumed by the `complete-ta
 
 The reworked shared/complete-procedure.md knows only the brief-level task shape (clean cutover): legacy Provides/Notes/Success sections in existing task lists carry no privileged status and are read as ordinary body prose feeding the derived acceptance bar. migrate-workspace stays untouched — old-format task lists drain naturally, since the ##/--- section mechanics are unchanged.
 
+### Brief template home
+
+The brief-level task template and its authoring guidance live in a single shared file — the slimmed successor of `shared/submit-procedure.md`, stripped to just the template and its authoring guidelines (the milestone-resolution, context-loading, and POSITION-insertion steps drop out, since the two skills now handle those differently) — referenced via `${CLAUDE_PLUGIN_ROOT}` by both `derive-tasks` and the leaned-down `submit-task` skill. Two runners author the format and a third (`shared/complete-procedure.md`) parses it, so the shared-is-source-of-truth-across-at-least-two-runners convention is satisfied and drift between the batch and ad-hoc authoring paths is ruled out by construction. The file is renamed to describe the task format rather than a submit procedure, since the insertion and positioning steps no longer live in it.
+
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Brief template home" status="open">
-  <question>With the submit-task agent retired, two skills still author the brief-level task format (derive-tasks writing its briefs directly, and the leaned-down submit-task skill). Where does the brief-level task template and its authoring guidance live: a slimmed shared file (the successor of shared/submit-procedure.md, keeping the ≥2-runners shared-file convention satisfied), or inlined separately into each of the two skills?</question>
-  <alternative id="Slimmed shared file">
-    Keep a shared file as the successor of shared/submit-procedure.md, stripped down to just the brief-level template and its authoring guidelines (dropping the milestone-resolution, context-loading, and POSITION-insertion steps that the two skills now handle differently), referenced via ${CLAUDE_PLUGIN_ROOT} by both derive-tasks and the leaned-down submit-task skill.
-    <advantage>One home for the format keeps the two authoring paths byte-identical, which is exactly the milestone goal of one consistent altitude in TASKS_TODO.md, and it satisfies the project&apos;s shared-is-source-of-truth-across-at-least-two-runners convention that derive-tasks becoming a direct author re-establishes.</advantage>
-    <drawback>A very small shared file (a heading, a few description sentences, a separator, and a handful of guidelines) costs an extra indirection hop for every reader and every runner, and its name must be re-earned since it no longer describes a submit procedure.</drawback>
-  </alternative>
-  <alternative id="Inline in both skills">
-    Delete shared/submit-procedure.md outright and write the brief template plus its authoring guidance separately into skills/derive-tasks/SKILL.md and skills/submit-task/SKILL.md.
-    <advantage>Each skill becomes self-contained and readable end-to-end with no indirection, and each can phrase the guidance for its own situation — batch decomposition versus a single triaged issue.</advantage>
-    <drawback>It duplicates the one thing that must not diverge: two copies of a format that a third file (shared/complete-procedure.md) parses, so any later edit to one copy silently splits the task list into two altitudes.</drawback>
-  </alternative>
-  <alternative id="Single-owner cross-reference">
-    Inline the template and guidelines into exactly one skill (the natural owner being the leaned-down submit-task skill) and have the other skill point at that section as the format definition rather than restating it.
-    <advantage>Avoids both duplication and a near-empty shared file, keeping the total file count down while still leaving exactly one authoritative copy of the format.</advantage>
-    <drawback>It makes derive-tasks depend on the internals of a sibling skill, a coupling direction the plugin uses nowhere else (skills reference shared/ files, never each other&apos;s bodies), and it leaves the format owned by the lower-traffic of the two authors.</drawback>
-  </alternative>
-  <recommendation option="Slimmed shared file">Two runners author the format and a third parses it, so the at-least-two-runners condition for a shared file is met and drift between the batch and ad-hoc paths is the one failure this milestone cannot tolerate; the file should be renamed to describe the task format rather than a submit procedure, since the insertion and positioning steps no longer live in it.</recommendation>
-</open-question>
 
 <open-question id="Brief body contents" status="open">
   <question>What exactly does a brief-level task section contain beyond the ## heading, the description sentences, and the trailing --- separator? Specifically: does the brief keep its loose "how it would be verified" line as part of the body (the completer derives the formal acceptance bar either way), and which of the current authoring guidelines (atomic scope, no open decisions, quote numeric values from requirements.md, unique 4-8 word titles) carry over to brief authoring?</question>
