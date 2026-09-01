@@ -60,28 +60,11 @@ A brief-level task section is the `##` heading, a 1–3 sentence description, an
 
 The completer records the acceptance bar it derived from the task description plus `requirements.md` in the `TASKS_DONE.md` entry: `shared/complete-procedure.md`'s TODO→DONE move becomes move-plus-augment, appending the derived bar to the section it writes into `TASKS_DONE.md`, so each finished entry carries the brief plus the bar the work was actually verified against. This keeps a durable statement of what done meant once the authored Success section is retired, in the one file the completion procedure already writes and later milestone grounding already reads — a single-file change with no wrapper contract, so the completion wrappers' return protocols and commit mechanics are unaffected.
 
+### Done-entry bar rendering
+
+The completer appends the derived acceptance bar to the `TASKS_DONE.md` entry as a bold-labeled bullet list under the brief's description — one bullet per criterion, inside the same `##`/`---` section the TODO→DONE move writes — under a label distinct from the retired template's `**Success:**` (e.g. `**Verified:**`). A bullet per criterion preserves `shared/complete-procedure.md`'s step-4 criterion-by-criterion verification as an auditable record where folded prose would compress it, and the distinct label keeps the completion record from being read as the authoring contract and regrowing a labeled done-ness section in `TASKS_TODO.md`.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Done-entry bar rendering" status="deferred">
-  <question>When the reworked shared/complete-procedure.md appends the derived acceptance bar to a finished task&apos;s TASKS_DONE.md entry, what rendering shape does the appended bar take (e.g. a labeled criteria list under the description vs. folded prose), so finished entries stay consistently readable for later milestone grounding?</question>
-  <alternative id="Labeled criteria list">
-    The completer appends the derived bar as a bold-labeled bullet list under the brief&apos;s description — one bullet per criterion, under a label distinct from the retired template&apos;s (e.g. **Verified:**), inside the same ##/--- section it moves into TASKS_DONE.md.
-    <advantage>It is a lossless, one-to-one transcript of the criterion-by-criterion check step 4 of shared/complete-procedure.md actually performed, so a later reader can audit exactly what each bullet was confirmed against rather than re-inferring it from compressed prose.</advantage>
-    <drawback>It is structurally the same shape as the retired authored Success section, so it leans on the distinct label alone to stop a reader from treating a DONE entry as the authoring exemplar and regrowing a labeled done-ness section in TASKS_TODO.md.</drawback>
-  </alternative>
-  <alternative id="Folded prose">
-    The completer appends the derived bar as one short paragraph of prose after the description, stating in sentences what the work was verified against, with no label and no bullets.
-    <advantage>It cannot be mistaken for a template section at all, so the regrowth the &quot;Brief body contents&quot; decision guards against is ruled out by construction, and the entry stays at the same prose altitude as the brief it augments.</advantage>
-    <drawback>Compressing a multi-criterion bar into a sentence loses the per-criterion granularity that makes the record auditable, and unlabeled prose blurs the boundary between the authored brief and the completer&apos;s added bar.</drawback>
-  </alternative>
-  <alternative id="Reuse Success label">
-    The completer appends the derived bar under the exact **Success:** label and bullet shape the retired task template used, so new DONE entries render identically to the existing ones.
-    <advantage>It introduces no new vocabulary and keeps historic and new DONE entries uniform, so later milestone grounding reads one consistent shape across the whole task history.</advantage>
-    <drawback>It revives the precise label this milestone retires, in the artifact most likely to be copied as a model, overloading a word already reserved for the authored contract and making a regrown Success section in TASKS_TODO.md the likeliest failure.</drawback>
-  </alternative>
-  <applied-principle>Prefer domain-neutral terms</applied-principle>
-  <applied-principle>Name by distinctive function</applied-principle>
-  <recommendation option="Labeled criteria list">A bullet per criterion preserves the step-4 verification as an auditable record where prose would compress it, and a label distinct from the retired **Success:** keeps the completion record from being read as the authoring contract.</recommendation>
-</open-question>
