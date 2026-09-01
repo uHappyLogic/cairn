@@ -1,29 +1,5 @@
 # TASKS TODO
 
-## Rewrite Derive-Tasks To Write Briefs Directly
-
-Rewrite `skills/derive-tasks/SKILL.md` so it writes its ordered briefs into `<MILESTONE_DIR>/TASKS_TODO.md` itself in the brief-level format defined by `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md`, retiring the per-brief `submit-task` agent dispatch loop and every reference to that agent and to `POSITION: append`. The skill keeps everything else it owns — decomposition, the requirement→task coverage matrix, dependency ordering, plan presentation, the coverage advisory, the terse success line, and its once-at-end-of-run commit. This is what makes `derive-tasks` the single writer on the derivation path, at one consistent altitude with the leaned-down `submit-task` skill.
-
-**Provides:**
-- `skills/derive-tasks/SKILL.md` as the sole author of `TASKS_TODO.md` on the derivation path, writing brief-level sections per `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md` with no delegation step.
-- Its precondition step keyed on `<open-question>` XML blocks, with `status="open"` blocks blocking derivation.
-- `agents/submit-task.md` left with no remaining caller, so a sibling task can retire it.
-
-**Notes:**
-- The stale `> **Open question` scan in step 2 predates the milestone-9 XML format; the current form is an `<open-question id="..." status="open|deferred">` block, and only `status="open"` blocks block derivation — `status="deferred"` blocks may carry forward.
-- The agent is named in the YAML frontmatter `description` as well as in the body prose (the delegation rationale, the `complete-all-tasks` mirror analogy, step 7, and two Rules bullets); the frontmatter must keep both `name` and `description` keys, since `scripts/migrate_skills_to_agy.py` hard-errors without them.
-- Step 6's initialize-to-a-bare-`# TASKS TODO`-header move is still worth keeping — it is what makes the once-at-end path-scoped commit and its dirty-own-path no-op guard behave — but its "so the agent has an empty file to append into" rationale goes.
-- Re-running the transpilation script to regenerate `.agents/plugins/cairn/` is a milestone-wide sweep, not part of this task.
-
-**Success:**
-- `skills/derive-tasks/SKILL.md` contains no occurrence of `submit-task`, `POSITION`, or `subagent_type`, and no agent-dispatch step.
-- It references `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md` as the format for the task sections it writes.
-- Its precondition step scans for `<open-question` blocks rather than `> **Open question`.
-- It still contains the decomposition step, the requirement→task traceability matrix, the dependency-ordering step, the plan-presentation step, the untraceable-requirement coverage advisory, the terse `Tasks derived.` success line, its no-op message, and the commit step supplying `<MILESTONE_DIR>/TASKS_TODO.md` and `Task-derivation: <milestone_id>` to `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`.
-- Its YAML frontmatter still carries `name` and `description`, and the `description` no longer mentions delegating authoring to the agent.
-
----
-
 ## Retire The Submit-Task Agent
 
 Delete `agents/submit-task.md`, the bulk per-brief authoring subagent. Its sole caller was the `derive-tasks` dispatch loop, which "Rewrite Derive-Tasks To Write Briefs Directly" removes, so no consumer remains once that task lands. Only the root source file goes here; the generated twin and the `CLAUDE.md`/`README.md` prose are reconciled by later sibling tasks.
