@@ -60,26 +60,10 @@ The per-file constraint-preservation check is recorded in the pipeline's own `**
 
 `scripts/migrate_skills_to_agy.py` gains a `shared/` copy into the generated tree, mirroring the wholesale `agents/` copytree it already performs, so that every `${CLAUDE_PLUGIN_ROOT}/shared/<name>.md` reference in the generated skills and agents resolves to a file that is actually present. This is in scope because the sweep deletes prose on the grounds that its content survives in a referenced shared procedure, and shipping a regenerated tree whose procedures are absent would undercut the milestone's own deletion rule; the change is small, in the shape of code already in the script, and verifiable here by inspecting the regenerated file list. Rewriting the `${CLAUDE_PLUGIN_ROOT}` reference text itself to an Antigravity-resolvable path stays out of scope — there is no Antigravity runtime, test, or known-good target path in this repository to verify such a transform against — and is recorded as a follow-up.
 
+### README sync scope
+
+README.md is touched only where a sweep edit makes an existing claim false: a verification pass over its skill reference and workflow prose that edits solely on a confirmed falsification and adds no new prose. The sweep is behavior-neutral, so the only honest README work is confirming that no existing claim went stale. No sentence describing the runtime-files-never-restate-invariants rule is added — that rule is an authoring convention whose single home is the CLAUDE.md invariant, and repeating it in a user-facing README would recreate the very duplication this milestone removes.
+
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="README sync scope" status="deferred">
-  <question>README.md never mentions the Rules sections, but its skill reference and workflow prose describe each skill and the referenced-never-restated doctrine. Does this milestone touch README.md at all, and if so only where the sweep falsifies an existing claim, or does it also add a sentence describing the new runtime-files-never-restate-invariants rule?</question>
-  <alternative id="README untouched">
-    Declare README.md entirely out of scope for this milestone, on the grounds that the sweep is behavior-neutral by construction, and leave every existing claim as it stands.
-    <advantage>Zero cost and zero churn in a user-facing document that a behavior-neutral prose sweep has no reason to invalidate.</advantage>
-    <drawback>It assumes rather than checks: README&apos;s skill-reference entries already narrate internals (which shared procedure owns which mechanics, which sub-elements the recommend subagent returns, what a file&apos;s sections contain), so a sweep edit could silently falsify one with nobody looking.</drawback>
-  </alternative>
-  <alternative id="Falsification-only sync">
-    Touch README.md only where a sweep edit makes an existing claim false — a verification pass over the skill reference and workflow prose that edits solely on a confirmed falsification and adds no new prose.
-    <advantage>Keeps the public document truthful with the smallest possible blast radius, and covers the one real risk — README describes runtime internals per skill — without importing a contributor-only authoring convention into a document written for plugin users.</advantage>
-    <drawback>Spends a verification pass whose expected outcome is no edit at all, and leaves the new never-restate-invariants rule documented nowhere a contributor reading only README would find it.</drawback>
-  </alternative>
-  <alternative id="Sync plus doctrine sentence">
-    Do the falsification sync and additionally add a sentence to README describing the new runtime-files-never-restate-invariants rule, alongside the existing How-skills-commit convention prose.
-    <advantage>Makes the authoring rule discoverable to a contributor who reads only README, giving the milestone&apos;s central doctrine a public statement rather than a repository-internal one.</advantage>
-    <drawback>Restates an editor-facing invariant in a third place — precisely the class of duplication this milestone exists to remove — inside a user-facing document whose readers never author runtime files, and creates a new sentence that must itself be kept in sync with the CLAUDE.md invariant.</drawback>
-  </alternative>
-  <recommendation option="Falsification-only sync">The sweep is behavior-neutral, so the only honest README work is confirming no existing claim went stale; the never-restate rule is an authoring convention whose single home is the CLAUDE.md invariant, and repeating it in a user-facing README would recreate the very duplication this milestone removes.</recommendation>
-</open-question>
