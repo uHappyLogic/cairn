@@ -54,6 +54,8 @@ The fresh-context re-audit audits but never fixes. Its findings become follow-up
 
 Any finding the planned fix tasks do not address is recorded in `temp/milestone_15_findings.md` together with the reason it was not fixed. The loop terminates when a re-audit returns no findings other than those already recorded there: a finding is either fixed, or registered with a stated reason, and there is no third state in which one is silently tolerated.
 
+The per-file constraint-preservation check is recorded in the pipeline's own `**Verified:**` channel — the `TASKS_DONE.md` entry of the task that edited the file — and no separate checklist artifact is added under the milestone directory, which stays at its three files. The shape is pinned rather than left to the completer: the entry carries the check as an explicit ledger with one bullet per imperative removed or relocated, naming where that imperative now survives (its point of use in the same file, the referenced shared procedure, or the CLAUDE.md invariant). Each editing task's description must therefore pin this ledger shape, since the completer otherwise derives its own bar. Git history supplies the original text the ledger is a claim about, so the re-audit can check each claim against the live file.
+
 ## Out of Scope
 
 ## Open questions
@@ -76,26 +78,6 @@ Any finding the planned fix tasks do not address is recorded in `temp/milestone_
     <drawback>It introduces a generated-vs-source content divergence and a text transform whose correctness cannot be verified in this repository — there is no Antigravity runtime, no test, and no known-good target path — turning a Markdown milestone into unverifiable tooling work.</drawback>
   </alternative>
   <recommendation option="Copy shared into tree">Fixing is in scope but only to the extent this milestone can prove correct: the sweep deletes prose on the grounds that it survives in a referenced shared procedure, so shipping a regenerated tree whose procedures are absent would undercut the milestone&apos;s own deletion rule, while copying shared/ is a small change in the shape of the script&apos;s existing agents/ copy and is checkable by inspection — the unverifiable reference rewrite stays out of scope and is recorded as a follow-up.</recommendation>
-</open-question>
-
-<open-question id="Constraint-check record form" status="deferred">
-  <question>The per-file constraint-preservation check must show that every imperative in a file&apos;s original text survives at its point of use, in a referenced shared procedure, or in a CLAUDE.md invariant. Where does the evidence of that check land: only as Verified bullets in the TASKS_DONE entry of the task that edited the file, or as a committed checklist artifact under the milestone directory that the re-audit can read?</question>
-  <alternative id="Verified bullets only">
-    The constraint-preservation evidence lands solely as the completer&apos;s derived `**Verified:**` bullets in the TASKS_DONE.md entry of the task that edited each file, in whatever shape the completer derives from the task description plus requirements.md.
-    <advantage>Adds nothing to the pipeline — it reuses the one evidence channel `shared/complete-procedure.md` already writes and later milestones already read, so there is no new artifact, no new writer, and no risk of a record drifting from the files it describes.</advantage>
-    <drawback>Leaves the shape unpinned: a completer may satisfy it with a single coarse bullet asserting that all constraints survived, which proves nothing a fresh-context re-audit could check imperative by imperative.</drawback>
-  </alternative>
-  <alternative id="Verified bullets as constraint ledger">
-    Same channel and same file, but the milestone pins the shape: each edited file&apos;s TASKS_DONE.md entry carries the constraint check as an explicit ledger — one bullet per imperative removed or relocated, naming where it now survives (its point of use in the same file, the referenced shared procedure, or the CLAUDE.md invariant).
-    <advantage>Gives the re-audit a checkable per-imperative claim to verify against the live file while staying inside the existing three-file milestone structure and the existing `**Verified:**` label, with git history supplying the original text the ledger is a claim about.</advantage>
-    <drawback>Makes some TASKS_DONE.md entries long for the heavily-edited hot files, and depends on the editing task&apos;s description pinning the ledger shape since the completer otherwise derives the bar freely.</drawback>
-  </alternative>
-  <alternative id="Committed checklist artifact">
-    A separate committed file under the milestone directory (e.g. a per-file constraint checklist) collects every imperative and its surviving destination across the whole sweep, and the fresh-context re-audit reads that file.
-    <advantage>Concentrates the whole sweep&apos;s preservation evidence in one place, readable end-to-end without walking every TASKS_DONE.md entry, and survives as a standalone audit trail.</advantage>
-    <drawback>Introduces a fourth file into a milestone directory that CLAUDE.md says contains exactly three, with no skill that writes, updates, or reads it — so it is hand-maintained and free to drift — and feeding the sweep&apos;s own record to the re-audit works against the independence milestone 12 established by giving its auditor only the criteria and the file set.</drawback>
-  </alternative>
-  <recommendation option="Verified bullets as constraint ledger">Keep the evidence in the pipeline&apos;s own `**Verified:**` channel rather than inventing an unowned fourth milestone file, but pin it to one bullet per relocated imperative naming its destination, so the re-audit has a claim it can check against the live file and git-recoverable original instead of a bare assertion.</recommendation>
 </open-question>
 
 <open-question id="README sync scope" status="deferred">
