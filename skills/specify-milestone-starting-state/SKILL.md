@@ -45,7 +45,7 @@ Using the goal as a filter, investigate the areas the project documents in `CLAU
 - **Existing artifacts relevant to the goal** — find the artifacts, sections, and components whose names or responsibilities overlap with the goal. Read what they expose — their outward-facing surface. Skip internal detail.
 - **Existing capabilities** — if the goal builds on something that already exists, describe its current state and how other work connects to it.
 - **Supporting materials** — note any settings, reference data, or structures the milestone will likely touch.
-- **Known gaps** — if the goal requires something that clearly does not exist yet, state it as a gap.
+- **Known gaps** — if the goal requires something that clearly does not exist yet, state it as a gap in one sentence and move on; do not design its replacement here.
 
 Do not exhaustively catalog everything — stay goal-relevant. Depth over breadth: a precise description of one related area is more useful than a surface mention of ten.
 
@@ -67,7 +67,7 @@ Draft the `## Relevant starting state` section. Structure it as named subsection
 ...
 ```
 
-Keep each subsection tight. The audience is someone who will use this to make decisions — they need facts, not commentary.
+Write only what currently exists in the project: no intended behavior, no speculation about future state. Keep each subsection tight. The audience is someone who will use this to make decisions — they need facts, not commentary.
 
 ### 5. Update the file
 
@@ -80,7 +80,7 @@ Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/com
 - **PATHS** — this skill's own change set: `milestones/<milestone_id>/requirements.md` (the file whose `## Relevant starting state` section it just filled).
 - **SUBJECT** — `Starting-state: <milestone_id>`.
 
-The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit; do not restate those mechanics here.
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
 
 ### 7. Confirm
 
@@ -90,13 +90,6 @@ On the success path — the commit in step 6 recorded the filled-in starting sta
 Starting state recorded.
 ```
 
-Do not add the milestone id, the count of systems documented, or a next-step pointer; the committed diff and git log are the durable record.
+Do not add the milestone id, the count of systems documented, or a next-step pointer.
 
 If instead the step-6 dirty-own-path guard fired (`requirements.md` was unchanged, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the starting state was already up to date; nothing committed.`
-
-## Rules
-
-- Only write what currently exists in the project. Do not describe intended behavior or speculate about future state.
-- Do not propose decisions — that is for `/review-milestone-requirements` and `/discuss-open-question`.
-- If a system is missing entirely, say so in one sentence and move on. Do not design its replacement here.
-- Do not overwrite `## Goal`, `## Decisions`, or `## Out of Scope`.

@@ -5,7 +5,7 @@ description: Create a new milestone directory with initialized requirements.md (
 
 # define-milestone-goal
 
-Creates a new milestone directory under `milestones/` with a `requirements.md` pre-filled with the goal, plus empty `TASKS_TODO.md` and `TASKS_DONE.md`. Does not populate the remaining sections — those are filled by subsequent skills (`/specify-milestone-starting-state`, `/review-milestone-requirements`, etc.).
+Creates a new milestone directory under `milestones/` with a `requirements.md` pre-filled with the goal, plus empty `TASKS_TODO.md` and `TASKS_DONE.md`. Does not populate the remaining sections — those are filled by subsequent skills (`/specify-milestone-starting-state`, `/review-milestone-requirements`, etc.). Defining a milestone does not activate it: this skill never updates `CLAUDE.md` or `milestones/README.md`, which change only when the milestone becomes the *current* active one via `/goto-next-milestone`.
 
 ## Usage
 
@@ -79,7 +79,7 @@ Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/com
 - **PATHS** — this skill's own change set: the three files it just created — `milestones/milestone_<NN>_<slug>/requirements.md`, `milestones/milestone_<NN>_<slug>/TASKS_TODO.md`, and `milestones/milestone_<NN>_<slug>/TASKS_DONE.md`.
 - **SUBJECT** — `Milestone-definition: milestone_<NN>_<slug>`.
 
-The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit; do not restate those mechanics here.
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
 
 ### 6. Confirm
 
@@ -89,13 +89,6 @@ On the success path — the commit in step 5 recorded the new milestone — prin
 Milestone defined.
 ```
 
-Do not add the created directory path, the goal text, or a next-step pointer; the committed diff and git log are the durable record.
+Do not add the created directory path, the goal text, or a next-step pointer.
 
 If instead the step-5 dirty-own-path guard fired (none of the three files changed, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the milestone files already existed; nothing committed.`
-
-## Rules
-
-- Do not update `CLAUDE.md` or `milestones/README.md` — those are only updated when the milestone becomes the *current* active milestone via `/goto-next-milestone`.
-- Do not populate `## Relevant starting state`, `## Decisions`, or `## Out of Scope` — leave them empty for later skills.
-- Do not assign the milestone as current — defining a milestone does not activate it.
-- Never overwrite an existing milestone directory.

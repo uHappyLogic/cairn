@@ -7,7 +7,7 @@ description: One-time bootstrap for the milestone workflow in a project — crea
 
 Bootstraps the milestone-driven workflow inside a project. It creates the `milestones/` directory and `milestones/README.md` (with the grep-able `Current milestone:` pointer line), and ensures `CLAUDE.md` contains the `## Milestone Workflow` guidance. Run this **once** per project, before any other workflow skill.
 
-This skill is additive and idempotent: it creates missing scaffolding and inserts missing sections into existing files, but never overwrites or rewrites content that is already there.
+This skill is additive and idempotent: it creates missing scaffolding and inserts missing sections into existing files, but never overwrites or rewrites content that is already there. It does not commit — staging is left to the user.
 
 ## Usage
 
@@ -31,7 +31,7 @@ Use these findings to decide which steps below are no-ops. If **all** of the fol
 
 ### 2. Create the milestones/ directory
 
-If `milestones/` does not exist, create it.
+If `milestones/` does not exist, create it. Create no `milestone_<N>_<slug>/` directory inside it — that is `/define-milestone-goal`'s job.
 
 ### 3. Create milestones/README.md
 
@@ -90,6 +90,8 @@ After creating it, suggest the user run `/init` to document the project in `CLAU
 - If it has **no** `## Milestone Workflow` section, append the `## Milestone Workflow` section (the paragraph shown above) to the end of the file.
 - If the section already exists, leave it exactly as-is — do not rewrite or re-template it.
 
+Never write a current-milestone pointer into `CLAUDE.md`; the pointer lives only in `milestones/README.md`. Never document the project's environment context in `CLAUDE.md` yourself either — recommending `/init` is as far as this skill goes.
+
 ### 5. Confirm
 
 Report:
@@ -98,12 +100,3 @@ Report:
 - Suggested next steps, in order:
   1. `/init` — document the project in `CLAUDE.md`: its domain context, working conventions, available tools, and how work is verified as done (run once, if not already documented).
   2. `/define-milestone-goal <goal>` — define the first milestone.
-
-## Rules
-
-- Run once per project. If the project is already initialized (presence of `milestones/` and `milestones/README.md` with a `Current milestone:` line is sufficient), stop and report — do not re-scaffold.
-- Never overwrite or rewrite an existing `milestones/README.md` or `CLAUDE.md` — only create missing files and append missing sections.
-- The current-milestone pointer lives only in `milestones/README.md`; do not write a pointer into `CLAUDE.md`.
-- Do not create any `milestone_<N>_<slug>/` directory — that is `/define-milestone-goal`'s job.
-- Do not document the project's environment context in `CLAUDE.md` — that is `/init`'s job; only recommend it.
-- Do not commit — leave staging to the user.

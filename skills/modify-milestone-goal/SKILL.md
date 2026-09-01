@@ -5,9 +5,7 @@ description: Revise the `## Goal` of the current milestone's requirements.md whe
 
 # modify-milestone-goal
 
-Replaces the `## Goal` of the current milestone's `requirements.md` with a revised goal statement, then surfaces what the change may have invalidated downstream — leaving those follow-up edits to the user.
-
-This is the only skill that edits the Goal of an *already-defined* milestone. `define-milestone-goal` writes the Goal once at creation; `discuss-milestone-goal` only shapes a goal conversationally before creation. When a milestone is live and its objective needs to move, this is the skill that records it. It is deliberately invisible to `answer-open-question` — recording a decision and reshaping the milestone's objective are different acts, and the autonomous answer/principle path must never reach goal mutation.
+Replaces the `## Goal` of the current milestone's `requirements.md` with a revised goal statement, then surfaces what the change may have invalidated downstream — leaving those follow-up edits to the user. It is the only skill that edits the Goal of an *already-defined* milestone.
 
 ## Usage
 
@@ -61,7 +59,7 @@ Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/com
 - **PATHS** — this skill's own change set: `<MILESTONE_DIR>/requirements.md` (the file whose `## Goal` section it just revised).
 - **SUBJECT** — `Goal-revision: <milestone_id>`.
 
-The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit — do not restate those mechanics here.
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
 
 ### 6. Confirm
 
@@ -71,13 +69,6 @@ On the success path — the commit in step 5 recorded the revised goal — print
 Goal revised.
 ```
 
-Do not add the before → after goal text, the downstream-impact analysis from step 3, the milestone id, or a next-step pointer; the committed diff and git log are the durable record. (The step-3 analysis still runs — it informs your own reasoning — but it is no longer printed.)
+Do not add the before → after goal text, the downstream-impact analysis from step 3, the milestone id, or a next-step pointer. (The step-3 analysis still runs — it informs your own reasoning — but is not printed.)
 
 If instead the step-5 dirty-own-path guard fired (the `## Goal` section was unchanged, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the revised goal matched the existing one; nothing committed.`
-
-## Rules
-
-- Edit **only** the `## Goal` section. This skill never records decisions, answers questions, edits Out-of-Scope, or touches the task lists.
-- **Surface, never cascade.** The downstream consequences of a goal change are for the user to resolve (via `/review-milestone-requirements` and the answer/task skills) — never auto-apply them. The blast radius of a goal change is too large to fold in silently.
-- A goal change is not an answering decision and produces no reusable answering principle — this skill never feeds into principle capture.
-- Confirm the revised wording with the user when the intended change is ambiguous; the Goal is load-bearing.
