@@ -54,6 +54,8 @@ The fresh-context re-audit audits but never fixes. Its findings become follow-up
 
 Any finding the planned fix tasks do not address is recorded in `temp/milestone_15_findings.md` together with the reason it was not fixed. The loop terminates when a re-audit returns no findings other than those already recorded there: a finding is either fixed, or registered with a stated reason, and there is no third state in which one is silently tolerated.
 
+Findings come in two classes with different dispositions. A lost constraint — an imperative removed from a runtime file with no surviving home, or a `**Verified:**` ledger claim that does not hold against the live file — is blocking: it must be fixed and cannot be registered away. A residual restatement the sweep missed — a remaining `## Rules` heading, editor-facing rationale still sitting in a runtime file, cross-file narration beyond the one sentence the contract needs — is reported and then either fixed or registered with its reason, so the register valve applies to that class only. A clean verdict therefore means zero loss findings and no unregistered residuals, and the auditor classifies each finding as well as reporting it.
+
 The per-file constraint-preservation check is recorded in the pipeline's own `**Verified:**` channel — the `TASKS_DONE.md` entry of the task that edited the file — and no separate checklist artifact is added under the milestone directory, which stays at its three files. The shape is pinned rather than left to the completer: the entry carries the check as an explicit ledger with one bullet per imperative removed or relocated, naming where that imperative now survives (its point of use in the same file, the referenced shared procedure, or the CLAUDE.md invariant). Each editing task's description must therefore pin this ledger shape, since the completer otherwise derives its own bar. Git history supplies the original text the ledger is a claim about, so the re-audit can check each claim against the live file.
 
 ### Antigravity transpile tree
@@ -75,31 +77,6 @@ Every runtime-file edit in this milestone is made directly against the `skills/*
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Re-audit finding scope" status="open">
-  <question>What counts as a finding for the fresh-context re-audit whose clean verdict proves the milestone: only lost constraints (an imperative removed from a runtime file with no surviving home, or a `**Verified:**` ledger claim that does not hold against the live file), or also residual restatement the sweep missed (a remaining `## Rules` heading, editor-facing rationale still in a runtime file, cross-file narration beyond the one sentence the contract needs)? The choice fixes what &quot;clean&quot; means and how many fix-and-re-audit rounds the loop can take.</question>
-  <alternative id="Loss only">
-    A finding is exclusively a preservation regression — an imperative removed from a runtime file with no surviving home, or a `**Verified:**` ledger bullet whose claim does not hold against the live file — checked against git history, with residual restatement explicitly out of scope.
-    <advantage>Every finding is a falsifiable claim against a fixed reference (the pre-sweep text in git plus the ledger), so the audit is objective, cheap to adjudicate, and converges in the fewest rounds.</advantage>
-    <drawback>A clean verdict would prove only that nothing was broken, not that the sweep did its job — a run that removed almost none of the three restatement classes would still pass, leaving the milestone&apos;s actual objective unverified.</drawback>
-  </alternative>
-  <alternative id="Loss plus mechanical check">
-    The re-audit reports only lost constraints, and completeness is covered separately by mechanical checks the repo already supports — a `grep` for surviving `## Rules` headings and a `wc -w` delta against the 32,758-word baseline.
-    <advantage>Splits the objective, machine-checkable part of completeness away from judgment-heavy reading, keeping the audit bounded while still catching the one cut class that has a crisp textual signature.</advantage>
-    <drawback>The two classes that actually need reading — editor-facing rationale still sitting in a runtime file, and cross-file narration beyond the one sentence the contract needs — have no grep signature, so most of the completeness surface stays unverified.</drawback>
-  </alternative>
-  <alternative id="Both classes uniform">
-    Both lost constraints and residual restatement count as findings of equal weight, and clean means the run returned neither, with the already-decided `temp/milestone_15_findings.md` valve applying uniformly to any finding of either class.
-    <advantage>The clean verdict proves the milestone end to end — nothing lost and nothing missed — with a single criterion the fresh-context auditor can be handed verbatim, exactly as milestone 12 handed over its one criterion.</advantage>
-    <drawback>The uniform valve lets a genuine preservation regression be registered with a reason rather than fixed, which quietly undercuts the constraint-preservation guarantee the ledger exists to provide.</drawback>
-  </alternative>
-  <alternative id="Loss blocking, residual triaged">
-    Both classes are findings, but with different dispositions: a lost constraint or false ledger claim must be fixed and cannot be registered away, while a residual-restatement finding is reported and then either fixed or registered in `temp/milestone_15_findings.md` with its reason; clean means zero loss findings and no unregistered residuals.
-    <advantage>Gives the clean verdict the full meaning the goal asks for — no regression and no missed restatement — while capping the round count, since the judgment-heavy class can be honestly accepted with a stated reason instead of forcing another fix-and-re-audit cycle.</advantage>
-    <drawback>The auditor must classify each finding as well as report it, and the tiering could be misused to wave through real residuals under a thin reason.</drawback>
-  </alternative>
-  <recommendation option="Loss blocking, residual triaged">The two classes carry genuinely different consequences — a lost constraint is a defect the ledger exists to prevent, a residual is a missed cut that can be honestly accepted — so tiering them is what lets the recorded fix-or-register rule bound the loop without letting a preservation regression be registered away.</recommendation>
-</open-question>
 
 <open-question id="Step-less rule placement" status="deferred">
   <question>When a retired `## Rules` section carries a unique rule that constrains the whole skill rather than any one numbered step (e.g. discuss-milestone-goal&apos;s &quot;Do not create any files&quot;), where in the file does it survive — the opening description, the step whose output it most constrains, or a single sentence at the point the file first could violate it — without regrowing a Rules-like list under a different heading?</question>
