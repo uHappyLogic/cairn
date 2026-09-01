@@ -64,3 +64,6 @@ The completer records the acceptance bar it derived from the task description pl
 
 ## Open questions
 
+<open-question id="Done-entry bar rendering" status="deferred">
+  <question>When the reworked shared/complete-procedure.md appends the derived acceptance bar to a finished task&apos;s TASKS_DONE.md entry, what rendering shape does the appended bar take (e.g. a labeled criteria list under the description vs. folded prose), so finished entries stay consistently readable for later milestone grounding?</question>
+</open-question>
