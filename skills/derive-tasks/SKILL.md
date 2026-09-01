@@ -7,9 +7,7 @@ description: Convert the current milestone's requirements.md into a complete, de
 
 Reads the current milestone requirements and derives a complete, dependency-ordered list of tasks into `TASKS_TODO.md`, ready for AI-driven completion via `/complete-task`.
 
-Your job here is **decomposition and coverage**. You split the milestone into high-level task briefs, prove that those briefs cover every requirement, order them by dependency, and write them into `TASKS_TODO.md` yourself — you are the single writer on the derivation path. That whole-milestone view is the thing most likely to break if you get lost in file paths and low-level details, and it is exactly why the task sections you write stay at brief altitude: a task states *what* is to be achieved, and the completer derives the flow and the formal acceptance bar itself from the description plus `requirements.md`, against the live project.
-
-Because a brief and a finished task section are the same altitude, there is no authoring step beyond writing the brief down in the shared format. Nothing is delegated.
+Your job here is **decomposition and coverage**. You split the milestone into high-level task briefs, prove that those briefs cover every requirement, order them by dependency, and write them into `TASKS_TODO.md` yourself — you are the single writer on the derivation path, and nothing here is delegated. Keep every task section at brief altitude: a task states *what* is to be achieved, and the completer derives the flow and the formal acceptance bar itself from the description plus `requirements.md`, against the live project.
 
 ## Usage
 
@@ -32,11 +30,11 @@ Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILE
 
 ### 1. Read source documents
 
-Read `CLAUDE.md` at the workspace root for the project's domain context, working conventions, available tools, and how work is verified as done. If it lacks that context, suggest the user run `/init` first — decomposition is sharper when grounded in the real environment — then proceed.
+Read `CLAUDE.md` at the workspace root for the project's domain context, working conventions, available tools, and how work is verified as done. If it lacks that context, suggest the user run `/init` first, then proceed.
 
 Read `<MILESTONE_DIR>/requirements.md` in full, plus any files referenced in its **Relevant starting state** section, so you understand the exact starting point.
 
-Read the shared task format at `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path). It is the single source of truth for the shape of every task section you write in step 7 — the template and its authoring guidelines. Do not restate or re-derive that format here.
+Read the shared task format at `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path). That file owns the shape of every task section you write in step 7 — its template and authoring guidelines.
 
 ### 2. Check for unresolved open questions
 
@@ -54,7 +52,7 @@ A block with `status="deferred"` does **not** block derivation — deferred ques
 
 ### 3. Decompose into high-level task briefs
 
-Break the milestone into discrete, independently-completable task briefs. A **brief** is high-level — it names the affected system, the desired behavior, and how it would be verified. It does **not** spell out the flow, the low-level design, or a structured done-ness section; all of that is re-derivable by the completer against the live project, so authoring it here is wasted work that would also go stale. Keeping briefs high-level is deliberate: it lets you hold many more of them in mind at once and reason about whether they cover everything.
+Break the milestone into discrete, independently-completable task briefs. A **brief** is high-level — it names the affected system, the desired behavior, and how it would be verified. It does **not** spell out the flow, the low-level design, a contract surface, or a structured done-ness section; the completer derives all of that against the live project.
 
 Apply these rules:
 
@@ -64,7 +62,7 @@ Apply these rules:
 
 ### 4. Prove coverage (requirement → task matrix)
 
-This is the step that most directly fixes "the task list missed something." Re-read `requirements.md` bullet by bullet and build a traceability matrix mapping **every** requirement, constraint, and behavioral detail to at least one brief:
+Re-read `requirements.md` bullet by bullet and build a traceability matrix mapping **every** requirement, constraint, and behavioral detail to at least one brief:
 
 ```
 | Requirement (quote/paraphrase) | Covered by brief |
@@ -73,7 +71,7 @@ This is the step that most directly fixes "the task list missed something." Re-r
 ```
 
 - Every requirement must map to ≥1 brief. If a requirement maps to none, you have a gap — add a brief (or note why it's already satisfied by the project's existing state per the **Relevant starting state**).
-- If a requirement is already satisfied by what already exists, mark it so and do not create a brief for it.
+- If a requirement is already satisfied by what already exists — or by work already recorded in `<MILESTONE_DIR>/TASKS_DONE.md` — mark it so and do not create a brief for it; note it in the report instead.
 - Do not invent requirements that aren't in the spec.
 
 Do not proceed until the matrix has no unexplained gaps.
@@ -81,8 +79,6 @@ Do not proceed until the matrix has no unexplained gaps.
 ### 5. Order the briefs by dependency
 
 Order briefs so each one's prerequisites come first: a brief that produces something other briefs build on or refer to must precede any brief that depends on it. The top of `TASKS_TODO.md` is the highest priority / done first.
-
-Ordering matters beyond priority: the completer resolves a task's references to sibling work by reading the prior tasks' live deliverables, so a dependency must already be done by the time the task that leans on it runs.
 
 ### 6. Present the plan, then initialize the file
 
@@ -94,23 +90,19 @@ Initialize `<MILESTONE_DIR>/TASKS_TODO.md` to a clean header:
 # TASKS TODO
 ```
 
-Initializing here is what makes step 9's once-at-end path-scoped commit and its dirty-own-path no-op guard behave: the file this run owns starts from a known state, so what the commit records is exactly this run's derivation.
-
 ### 7. Write the briefs into the task list, in order
 
 Write each brief into `<MILESTONE_DIR>/TASKS_TODO.md` as one task section, **in dependency order**, appending each after the last so the finished file reads top-to-bottom in that order.
 
-Use the template and the authoring guidelines from `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md` exactly — the `##` title heading, the 1–3 sentence description with the "how it would be verified" clause folded in as prose, and the mandatory trailing `---` separator, and nothing else. The brief you decomposed in step 3 *is* the task body; writing it down is a transcription into that format, not a second authoring pass that adds detail.
-
-If a brief turns out to contain two independently-buildable pieces, do not silently split or merge it: write the one that matches its primary intent, and surface the leftover to the user so ordering and scope stay yours to correct.
+Use the template and the authoring guidelines from `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md` exactly. The brief you decomposed in step 3 *is* the task body; writing it down is a transcription into that format, not a second authoring pass that adds detail.
 
 ### 8. Verify coverage and report
 
 Re-read the finished `<MILESTONE_DIR>/TASKS_TODO.md` and confirm every brief from the matrix produced a task section.
 
-On the success path, print exactly one fixed terse status line for the whole run — `Tasks derived.` — with no list of the ordered task titles and no next-step pointer; the committed `TASKS_TODO.md` and `git log` are the durable record. **Alongside** that terse line, keep the one git-absent advisory this step owns: explicitly flag any requirement you could not trace to a task (flag as a gap — never silently omit). A coverage gap is decision-critical and the commit never captures it, so it is preserved beside the terse line rather than collapsed into it.
+On the success path, print exactly one fixed terse status line for the whole run — `Tasks derived.` — with no list of the ordered task titles and no next-step pointer. **Alongside** that terse line, keep the one git-absent advisory this step owns: explicitly flag any requirement you could not trace to a task (flag as a gap — never silently omit).
 
-If the run derived nothing — `TASKS_TODO.md` gained no task section, so step 9's dirty-own-path no-op guard will fire and nothing is committed — do not print the terse success line; instead print a distinct one-line message stating that nothing changed and why (no tasks were derived), since git holds no durable record of a no-op.
+If the run derived nothing — `TASKS_TODO.md` gained no task section, so step 9's dirty-own-path no-op guard will fire and nothing is committed — do not print the terse success line; instead print a distinct one-line message stating that nothing changed and why (no tasks were derived).
 
 ### 9. Commit the derived task list
 
@@ -119,12 +111,4 @@ You commit **once at the end of the run** — here, after every brief has been w
 - **PATHS** — this run's own change set: `<MILESTONE_DIR>/TASKS_TODO.md` (the file this skill initialized in step 6 and wrote into in step 7).
 - **SUBJECT** — `Task-derivation: <milestone_id>`.
 
-The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard (a run that derived nothing into `TASKS_TODO.md` stages and commits nothing), and the commit; do not restate those mechanics here.
-
-## Rules
-
-- Your output is briefs + ordering + coverage, written down in the shared task format. Keep every task section at brief altitude — never add a flow, a low-level design, a contract surface, or a structured done-ness section; the completer derives all of that against the live project.
-- Take the task section's shape from `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md` — never restate or vary that template here.
-- Never invent requirements not present in the spec; never omit one that is.
-- Do not create tasks for work already in `TASKS_DONE.md`, or for requirements already satisfied by what already exists (note these in the report instead).
-- Write the task sections in dependency order, top-to-bottom; ordering is yours to own and must not be left implicit.
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard (a run that derived nothing into `TASKS_TODO.md` stages and commits nothing), and the commit.
