@@ -36,6 +36,12 @@ The repository has no build, tests, or dependencies; correctness of skill edits 
 
 ## Decisions
 
+### Verification
+
+The fresh-context re-audit audits but never fixes. Its findings become follow-up fix tasks, and a further fresh-context re-audit over the whole runtime layer is queued after those fixes, repeating until a run returns a clean verdict — the audited final state of the files, not the pre-fix state, is what proves the milestone.
+
+Any finding the planned fix tasks do not address is recorded in `temp/milestone_15_findings.md` together with the reason it was not fixed. The loop terminates when a re-audit returns no findings other than those already recorded there: a finding is either fixed, or registered with a stated reason, and there is no third state in which one is silently tolerated.
+
 ## Out of Scope
 
 ## Open questions
@@ -144,31 +150,6 @@ The repository has no build, tests, or dependencies; correctness of skill edits 
     <drawback>Introduces a fourth file into a milestone directory that CLAUDE.md says contains exactly three, with no skill that writes, updates, or reads it — so it is hand-maintained and free to drift — and feeding the sweep&apos;s own record to the re-audit works against the independence milestone 12 established by giving its auditor only the criteria and the file set.</drawback>
   </alternative>
   <recommendation option="Verified bullets as constraint ledger">Keep the evidence in the pipeline&apos;s own `**Verified:**` channel rather than inventing an unowned fourth milestone file, but pin it to one bullet per relocated imperative naming its destination, so the re-audit has a claim it can check against the live file and git-recoverable original instead of a bare assertion.</recommendation>
-</open-question>
-
-<open-question id="Re-audit follow-up policy" status="deferred">
-  <question>Milestone 12 ran a first fresh-context re-audit, fixed the residuals it found, then ran a second re-audit that returned zero findings. If this milestone&apos;s fresh-context re-audit finds residual duplication or a lost constraint, is a second zero-findings re-audit required after the fixes, or is one audit plus fixes sufficient?</question>
-  <alternative id="Iterate to a clean re-audit">
-    Adopt milestone 12&apos;s pattern verbatim: the fresh-context re-audit audits but never fixes, findings become follow-up fix tasks, and a further fresh-context re-audit over the whole runtime layer is queued after them, repeating until one run returns an explicit zero-findings verdict that stands as the milestone&apos;s proof.
-    <advantage>It is the only arrangement where the evidence covers the final state of the files: this milestone&apos;s fixes are themselves prose edits — re-inserting a dropped constraint or cutting further restatement — so the fixes carry exactly the same failure mode the audit exists to catch, and an unaudited fix round leaves the delivered layer unproven.</advantage>
-    <drawback>Each extra round costs a full fresh-context pass over the 33-file layer plus a task-authoring round, and an unlucky sequence of small findings can stretch the milestone&apos;s tail well past the sweep itself.</drawback>
-  </alternative>
-  <alternative id="One audit plus fixes">
-    Run exactly one fresh-context re-audit; its findings become fix tasks whose own completion-time verification (the per-file constraint-preservation check recorded in each TASKS_DONE entry) is accepted as sufficient evidence, and no second audit is queued.
-    <advantage>Cheapest and strictly bounded — the milestone ends a known number of tasks after the audit, and each fix already carries a per-file check of its own, so the marginal audit is arguably re-proving work that was just verified.</advantage>
-    <drawback>The fix round is verified only by the same context that made the fixes, which forfeits the independence that is the entire point of a fresh-context re-audit, and the goal&apos;s &quot;verified by ... a fresh-context re-audit&quot; would be satisfied by a run whose verdict was known to be dirty.</drawback>
-  </alternative>
-  <alternative id="Scoped follow-up re-audit">
-    Require a second fresh-context re-audit but narrow it to the files the fix tasks touched, rather than re-auditing the whole runtime layer.
-    <advantage>Keeps independent verification of the fixes while cutting the follow-up round to a fraction of the file set, which matters when the first audit surfaces a handful of residuals in a few files.</advantage>
-    <drawback>It is blind to this milestone&apos;s characteristic cross-file failure: a constraint cut from one file on the premise that it survives in a shared procedure or a CLAUDE.md invariant is only checkable by looking at both ends, so a file-scoped pass can return clean on a genuinely lost constraint.</drawback>
-  </alternative>
-  <alternative id="Conditional on finding class">
-    Make the follow-up re-audit mandatory only when the first audit reports a lost constraint (a correctness finding), and optional when it reports only residual duplication (a thoroughness finding).
-    <advantage>Spends the expensive round only on the failure class that actually changes runtime behavior, matching effort to risk instead of treating a missed leftover sentence like a dropped imperative.</advantage>
-    <drawback>It puts an unaudited classification judgment on the critical path — deciding whether a finding is &quot;merely&quot; duplication is precisely the call the sweep already got wrong once — and replaces a bright-line completion bar with one that has to be argued each time.</drawback>
-  </alternative>
-  <recommendation option="Iterate to a clean re-audit">Fixes here are the same kind of prose deletion the audit exists to police, so only a fresh pass over the whole layer after the last fix proves the delivered state — and milestone 12 showed the cost is a single subagent dispatch per round against a first audit that found seven real residuals.</recommendation>
 </open-question>
 
 <open-question id="README sync scope" status="deferred">
