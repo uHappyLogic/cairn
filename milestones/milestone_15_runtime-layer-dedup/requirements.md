@@ -67,3 +67,23 @@ README.md is touched only where a sweep edit makes an existing claim false: a ve
 ## Out of Scope
 
 ## Open questions
+
+<open-question id="Re-audit finding scope" status="open">
+  <question>What counts as a finding for the fresh-context re-audit whose clean verdict proves the milestone: only lost constraints (an imperative removed from a runtime file with no surviving home, or a `**Verified:**` ledger claim that does not hold against the live file), or also residual restatement the sweep missed (a remaining `## Rules` heading, editor-facing rationale still in a runtime file, cross-file narration beyond the one sentence the contract needs)? The choice fixes what &quot;clean&quot; means and how many fix-and-re-audit rounds the loop can take.</question>
+</open-question>
+
+<open-question id="Skill-creator routing" status="open">
+  <question>Milestone 9 mandated that every skill/agent edit go through the `skill-creator:skill-creator` skill and later milestones did not repeat it. Do this milestone&apos;s runtime-file editing tasks route through skill-creator, or edit the `SKILL.md`/agent/shared files directly? The answer applies sweep-wide, so each editing task&apos;s description can state it.</question>
+</open-question>
+
+<open-question id="Step-less rule placement" status="deferred">
+  <question>When a retired `## Rules` section carries a unique rule that constrains the whole skill rather than any one numbered step (e.g. discuss-milestone-goal&apos;s &quot;Do not create any files&quot;), where in the file does it survive — the opening description, the step whose output it most constrains, or a single sentence at the point the file first could violate it — without regrowing a Rules-like list under a different heading?</question>
+</open-question>
+
+<open-question id="Word-count shortfall handling" status="deferred">
+  <question>If applying the three cut classes under the cut rule (a sentence goes only when its content survives elsewhere) removes materially fewer than the roughly 11,000 words the goal targets, is the shortfall reported and accepted as the honest result, or are further cuts sought? The cut rule, not the count, is the stated constraint, so the count&apos;s role at verification time should be pinned.</question>
+</open-question>
+
+<open-question id="Frontmatter description scope" status="deferred">
+  <question>Are the YAML frontmatter `description` fields of the `SKILL.md` and agent files inside the sweep, or left untouched? They are the triggering surface Claude Code and the Antigravity transpile read, so trimming them is not behavior-neutral even where the text restates the body.</question>
+</open-question>
