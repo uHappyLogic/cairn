@@ -74,34 +74,13 @@ The YAML frontmatter `description` fields of the `SKILL.md` and agent files stay
 
 Every runtime-file edit in this milestone is made directly against the `skills/*/SKILL.md`, `agents/*.md`, and `shared/*.md` files with the ordinary editing tools; edits are not routed through the `skill-creator:skill-creator` skill, whose milestone-9 mandate is treated as scoped to that milestone rather than standing. This sweep is precision deletion of existing prose, proved by its own per-file constraint-preservation ledger and the fresh-context re-audit loop rather than by authoring quality, and direct editing is the established practice of every milestone since 9. The rule is uniform across all three directories — `shared/*.md` files are not skills at all — so each editing task's description can state it in one sentence.
 
+### Step-less rule placement
+
+A rule from a retired `## Rules` section that constrains the whole skill rather than any one numbered step is folded into the file's existing opening description paragraph as prose — one sentence continuing the blurb that already states what the skill does and does not do — never as a bullet list under any heading. The whole skill's boundaries are already stated there, so the placement needs no arbitrary judgment about which step the rule "most" constrains, gives the fresh-context re-audit one named location to check, and in cases like `discuss-milestone-goal`'s "Do not create any files" merely extends a sentence the file already carries.
+
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Step-less rule placement" status="deferred">
-  <question>When a retired `## Rules` section carries a unique rule that constrains the whole skill rather than any one numbered step (e.g. discuss-milestone-goal&apos;s &quot;Do not create any files&quot;), where in the file does it survive — the opening description, the step whose output it most constrains, or a single sentence at the point the file first could violate it — without regrowing a Rules-like list under a different heading?</question>
-  <alternative id="Opening description">
-    Fold each step-less rule into the file&apos;s existing opening description paragraph as prose — one sentence continuing the blurb that already states what the skill does and does not do — never as a bullet list.
-    <advantage>Scope matches scope: a constraint on the whole skill lands in the one place that already states the whole skill&apos;s boundaries, and several files (`discuss-milestone-goal`&apos;s &quot;not a document yet&quot;, `define-milestone-goal`&apos;s &quot;Does not populate the remaining sections&quot;) already carry a near-identical sentence there, so the relocation extends existing prose instead of inventing a home.</advantage>
-    <drawback>The opening paragraph becomes the accumulation site for every step-less rule in a file, so a skill with three or four of them risks a run-on scope blurb that is a Rules list in prose clothing unless the no-bullet-list constraint is enforced per file.</drawback>
-  </alternative>
-  <alternative id="Nearest step">
-    Attach each step-less rule to the numbered step whose output it most constrains, matching the goal&apos;s stated default of relocating a surviving rule into the step where it acts.
-    <advantage>One uniform relocation rule for the whole sweep — no separate step-less category, and the point-of-use discipline already decided for the terse-reporting steps applies unchanged.</advantage>
-    <drawback>It misstates the constraint&apos;s scope: pinning &quot;Do not create any files&quot; to one step of a five-step conversational skill implies the other four are unconstrained, and choosing which step it &quot;most&quot; constrains is an arbitrary per-file call that a re-audit cannot check against anything.</drawback>
-  </alternative>
-  <alternative id="First-violation point">
-    Place each step-less rule as a single sentence at the earliest point in the file where the skill could first violate it.
-    <advantage>Gives a deterministic, mechanically checkable placement rule that puts the prohibition ahead of the behavior it forbids.</advantage>
-    <drawback>For most of the real cases the first violation point is step 1 or earlier — a purely conversational skill could create a file at any step — so the rule collapses into the opening description anyway while adding a per-file judgment that has to be made and defended.</drawback>
-  </alternative>
-  <alternative id="Per-file judgment">
-    Fix no placement rule; let each editing task pick whichever of the three homes fits that rule, with only the no-Rules-like-list constraint binding sweep-wide.
-    <advantage>Mirrors the precedent already set for the terse-reporting steps and the reference tails, where the milestone accepted a per-file read over a sweep-wide substitution.</advantage>
-    <drawback>Placement here has no per-file signal to judge on the way a reporting step does, so the freedom buys nothing and costs consistency: the same class of rule ends up in three different places across 29 files, and the fresh-context re-audit gets no fixed target to verify against.</drawback>
-  </alternative>
-  <recommendation option="Opening description">A rule that constrains the whole skill belongs where the whole skill&apos;s boundaries are already stated, and the opening blurb is that place — it is one named location the re-audit can check, it needs no arbitrary &quot;which step&quot; call, and in the named examples it merely extends a sentence the file already has; the no-Rules-list requirement is met by pinning the form as prose folded into the existing paragraph, never a bullet list under any heading.</recommendation>
-</open-question>
 
 <open-question id="Word-count shortfall handling" status="deferred">
   <question>If applying the three cut classes under the cut rule (a sentence goes only when its content survives elsewhere) removes materially fewer than the roughly 11,000 words the goal targets, is the shortfall reported and accepted as the honest result, or are further cuts sought? The cut rule, not the count, is the stated constraint, so the count&apos;s role at verification time should be pinned.</question>
