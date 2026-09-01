@@ -64,6 +64,10 @@ The per-file constraint-preservation check is recorded in the pipeline's own `**
 
 README.md is touched only where a sweep edit makes an existing claim false: a verification pass over its skill reference and workflow prose that edits solely on a confirmed falsification and adds no new prose. The sweep is behavior-neutral, so the only honest README work is confirming that no existing claim went stale. No sentence describing the runtime-files-never-restate-invariants rule is added — that rule is an authoring convention whose single home is the CLAUDE.md invariant, and repeating it in a user-facing README would recreate the very duplication this milestone removes.
 
+### Frontmatter description scope
+
+The YAML frontmatter `description` fields of the `SKILL.md` and agent files stay outside the three cut classes: no description text is cut for restating its body, keeping the triggering surface Claude Code and the Antigravity transpile read behavior-neutral by construction, since it is the one surface this repository cannot verify. The single exception is falsification: each editing task confirms its file's own description still holds against the edited body and edits it only on a confirmed false claim, adding no new prose and removing no invocation or use-when vocabulary — the same rule the README sync scope decision already applies, so each editing task can state it in one sentence.
+
 ### Editing route
 
 Every runtime-file edit in this milestone is made directly against the `skills/*/SKILL.md`, `agents/*.md`, and `shared/*.md` files with the ordinary editing tools; edits are not routed through the `skill-creator:skill-creator` skill, whose milestone-9 mandate is treated as scoped to that milestone rather than standing. This sweep is precision deletion of existing prose, proved by its own per-file constraint-preservation ledger and the fresh-context re-audit loop rather than by authoring quality, and direct editing is the established practice of every milestone since 9. The rule is uniform across all three directories — `shared/*.md` files are not skills at all — so each editing task's description can state it in one sentence.
@@ -140,24 +144,4 @@ Every runtime-file edit in this milestone is made directly against the `skills/*
     <drawback>It inverts the goal&apos;s own constraint — the count becomes binding and the cut rule negotiable — which licenses removing point-of-use constraints, worked examples, or templates whose content survives nowhere, making the sweep no longer behavior-neutral.</drawback>
   </alternative>
   <recommendation option="Report the shortfall">The goal names the cut rule as the constraint and the count only as a rough target, so the measured removal is reported, never enforced; sweep completeness is already owned by the fresh-context re-audit loop and its findings ledger, which is where a timid pass should surface rather than in a word-count trigger that would pressure edits the cut rule does not license.</recommendation>
-</open-question>
-
-<open-question id="Frontmatter description scope" status="deferred">
-  <question>Are the YAML frontmatter `description` fields of the `SKILL.md` and agent files inside the sweep, or left untouched? They are the triggering surface Claude Code and the Antigravity transpile read, so trimming them is not behavior-neutral even where the text restates the body.</question>
-  <alternative id="Excluded Entirely">
-    Declare the YAML frontmatter blocks out of scope sweep-wide, so every editing task edits only the body below the closing frontmatter delimiter and no description text changes.
-    <advantage>Guarantees the triggering surface is untouched by construction, which is the cheapest possible proof the sweep stayed behavior-neutral in the one place this repository has no way to verify it — nothing here exercises Claude Code skill selection or Antigravity triggering.</advantage>
-    <drawback>Freezes 1,570 of the layer&apos;s 32,758 words, and defines no handling for the one honest edge case: a description whose claim a body cut makes false.</drawback>
-  </alternative>
-  <alternative id="Falsification-Only Sync">
-    Frontmatter stays outside the three cut classes, but each editing task confirms the file&apos;s own description still holds against the edited body and edits it only on a confirmed falsification, adding no new prose and removing no invocation or use-when vocabulary — the same rule the recorded README sync scope decision already applies.
-    <advantage>Keeps the triggering surface behavior-neutral while closing the one gap in pure exclusion, and reuses a scope rule this milestone has already decided, so every editing task can state it in one identical sentence.</advantage>
-    <drawback>Adds a per-file judgment call, and a ledger line recording its result, to every editing task for a case expected to be rare or empty, so most tasks pay the check and make no edit.</drawback>
-  </alternative>
-  <alternative id="In Scope With Trigger Check">
-    Descriptions are swept like body prose under the cut rule, with each cut additionally passing a triggering-preservation check that keeps every invocation phrase, use-when clause, and dispatch-routing sentence.
-    <advantage>Recovers real words from the descriptions that genuinely restate their bodies — the four largest run 152, 146, 132 and 125 words in `review-milestone-requirements`, `discuss-new-task`, `capture-milestone-principle-updates` and `recommend-all-open-questions` — helping the roughly 11,000-word target.</advantage>
-    <drawback>The check is unverifiable in this repository, so behavior neutrality degrades from a property to a claim across the whole triggering surface, in exchange for at most about 5% of the layer.</drawback>
-  </alternative>
-  <recommendation option="Falsification-Only Sync">Frontmatter is the one surface whose neutrality this repository cannot verify, so cut nothing there; the already-recorded README sync scope decision supplies the honest exception — edit only on a confirmed false claim — and reusing that rule verbatim keeps the sweep-wide instruction to one sentence per editing task.</recommendation>
 </open-question>
