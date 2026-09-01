@@ -163,3 +163,35 @@ Rewrite every `CLAUDE.md` layout entry, skills-pipeline listing line, and invari
 - Only `CLAUDE.md` changed: `git status --porcelain` reports `M CLAUDE.md` and nothing else, and no transpile re-run was needed since the script copies only `skills/` and `agents/`.
 
 ---
+
+## Reconcile README With Flattened Pipeline
+
+Rewrite every passage of the repo-root `README.md` that the flattened brief-level task pipeline invalidates, so the plugin's public documentation describes the design as the prior tasks actually implemented it. That covers the skill-reference entries for `derive-tasks` (currently "delegates detailed task authoring to the `submit-task` agent"), `submit-task`, and `discuss-new-task`, the *Automated one-shot task derivation and completion* section's prose and diagram, and the *How it works* `TASKS_DONE.md` line — leaving no mention of the retired `submit-task` agent or of per-brief delegation anywhere in the file.
+
+**Notes:**
+- `README.md` has no repository-layout listing, so the stale references are confined to the *How it works* file list, the pipeline sections, and the `## Skill reference` entries — a full-file grep for `submit-task`, `agent`, and `deleg` is the reliable sweep.
+- The *Automated one-shot task derivation and completion* diagram already has no delegation node; its prose is the part to check. Do not restructure the six per-phase diagrams or their `D0`–`D5` seam nodes — they are a deliberate milestone-4 design.
+- Not every `submit-task` mention is stale: the user-facing `/submit-task` **skill** references (in the follow-up pipeline section and diagram, the `discuss-new-task` and `ask-in-milestone-context` entries, and the commit section's `Task-submission:` subject) stay. Only agent-implying and full-template wording goes.
+- The commit-convention section's "**Dispatched subagents never commit**" rule and its `/derive-tasks` "once at the end of the run" granularity both remain true and correct — `derive-tasks` still commits once at the end, it just no longer dispatches anything.
+- The `CLAUDE.md` reconciliation sibling task fixes the same design in the project instructions; mirror its wording — `shared/task-format.md` as the brief-level template's single home, `derive-tasks` and the `submit-task` skill as its two authoring runners, and `complete-task` as the plugin's only remaining skill+agent pair.
+- `scripts/migrate_skills_to_agy.py` copies only `skills/` and `agents/`; `README.md` has no generated twin, so this task needs no transpile re-run.
+- This task edits `README.md` only.
+
+**Success:**
+- `README.md` contains no occurrence of `submit-procedure`, no phrase describing a `submit-task` agent, and no statement that task authoring is delegated per brief to an agent.
+- Its `derive-tasks` skill-reference entry states that the skill writes the ordered brief-level tasks into `TASKS_TODO.md` itself, with no delegation step.
+- Its `submit-task` and `discuss-new-task` entries describe brief-level output and promise no `Provides`, `Notes`, or `Success` section, nor any other structured done-ness section.
+- The *Automated one-shot task derivation and completion* section's prose and diagram describe derivation as a single writing step — no delegation clause, node, or edge.
+- The `TASKS_DONE.md` bullet in *How it works* states that a completed entry carries the acceptance bar the completer derived, recorded as a `**Verified:**` bullet list.
+- Every agent `README.md` names exists under `agents/`, and its `## Skill reference` contains exactly one `submit-task` entry (the skill).
+
+**Verified:**
+
+- `README.md` contains no occurrence of `submit-procedure`, no phrase describing a `submit-task` agent, and no statement that task authoring is delegated per brief to an agent (grep for `submit-procedure`, `deleg`, and every `submit-task` mention returns only user-facing `/submit-task` skill references).
+- The `derive-tasks` skill-reference entry states that the skill writes the ordered brief-level briefs into `TASKS_TODO.md` itself as the finished task sections, with no delegation step and no second authoring pass.
+- The `submit-task` and `discuss-new-task` entries describe brief-level output (a `##` title, a 1–3 sentence description, a trailing `---`, and nothing else) and promise no `Provides`, `Notes`, `Success`, or any other structured done-ness section — a full-file grep for those labels returns nothing.
+- The *Automated one-shot task derivation and completion* section's prose describes derivation as a single writing step ("writing them into the task list itself, in one pass, with no second authoring step"), and its diagram carries only `D2 --> AI1 --> AI2 --> D3` with no delegation node or edge.
+- The `TASKS_DONE.md` bullet in *How it works* states that a completed entry is augmented with the acceptance bar the completer derived and verified against, recorded as a `**Verified:**` bullet list, one bullet per criterion.
+- Every agent `README.md` names (`answer-open-question-with-recommendation`, `recommend-open-question`, and the per-task completion subagent) exists under `agents/`, and `## Skill reference` contains exactly one `submit-task` entry — the skill.
+
+---

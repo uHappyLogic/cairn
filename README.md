@@ -47,7 +47,7 @@ Each milestone lives in `milestones/milestone_<N>_<slug>/` and contains three fi
 
 - `requirements.md` — goal, relevant starting state, decisions, and open questions
 - `TASKS_TODO.md` — pending tasks ordered by priority (highest first)
-- `TASKS_DONE.md` — completed tasks appended in the same format
+- `TASKS_DONE.md` — completed tasks in the same section format, each entry augmented with the acceptance bar the completer derived and verified the work against, recorded as a `**Verified:**` bullet list (one bullet per criterion)
 
 `milestones/README.md` is the source of truth for which milestone is active. Skills read and write the current-milestone pointer there; it is never ambiguous which milestone is open.
 
@@ -137,7 +137,7 @@ flowchart TD
 
 ### Automated one-shot task derivation and completion
 
-Hands-off execution. `/derive-tasks` converts the finalized `requirements.md` into an ordered `TASKS_TODO.md`, and `/complete-all-tasks` works through the list, committing after each task — leaving the ordered task list completed.
+Hands-off execution. `/derive-tasks` converts the finalized `requirements.md` into an ordered `TASKS_TODO.md` — decomposing the milestone into briefs and writing them into the task list itself, in one pass, with no second authoring step — and `/complete-all-tasks` works through the list, committing after each task — leaving the ordered task list completed.
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'fontFamily':'ui-sans-serif, system-ui','lineColor':'#94a3b8','primaryBorderColor':'#475569'},'flowchart':{'wrappingWidth':9999,'curve':'basis'}}}%%
@@ -286,15 +286,15 @@ Read-only recommendation subagent dispatched once per question by `/recommend-al
 
 ### `derive-tasks`
 
-Converts the current milestone's `requirements.md` into `TASKS_TODO.md` — a complete, dependency-ordered list of atomic, AI-executable tasks. Decomposes the milestone into high-level briefs, proves every requirement is covered, then delegates detailed task authoring to the `submit-task` agent. Requires all open questions to be resolved first.
+Converts the current milestone's `requirements.md` into `TASKS_TODO.md` — a complete, dependency-ordered list of atomic, AI-completable **brief-level** tasks. Decomposes the milestone into high-level briefs, proves every requirement is covered with a traceability matrix, orders them by dependency, and writes those briefs into `TASKS_TODO.md` itself, in order, as the finished task sections. A brief and a task section are the same altitude, so writing the brief down *is* the authoring step: there is no second pass and nothing is handed off. Each section is a `##` title, a 1–3 sentence description of what is to be achieved, why the milestone needs it, and how it would be verified, and a trailing `---` — the completer derives the flow and the formal acceptance bar itself. Requires all open questions to be resolved first.
 
 ### `discuss-new-task <issue description>`
 
-Clarifies a rough or oversized issue discovered mid-flight into one or more clear, task-sized briefs through a short conversation, then hands each off to `/submit-task`. Use it when the affected system, desired behavior, or verification isn't yet clear, or when one issue is really several tasks.
+Clarifies a rough or oversized issue discovered mid-flight into one or more clear, task-sized briefs through a short conversation, then hands each off to `/submit-task`. Because tasks are brief-level, each brief maps near-1:1 onto the task section `/submit-task` writes — a title and a few sentences, with no further fleshing out. Use it when the affected system, desired behavior, or verification isn't yet clear, or when one issue is really several tasks.
 
 ### `submit-task <issue description>`
 
-Adds a single, already-clear issue to `TASKS_TODO.md`. Triages for duplicates and decides where the task belongs, then authors and inserts the task **inline, in the current conversation** so the authoring context stays available for follow-up tweaks, and commits the inserted task path-scoped under a `Task-submission:` subject. For vague or multi-task issues, route through `/discuss-new-task` first.
+Adds a single, already-clear issue to `TASKS_TODO.md` as a **brief-level task section** — a `##` title, a 1–3 sentence description of what is to be achieved, why it is needed, and how it would be verified, and a trailing `---`, and nothing else. Triages for duplicates and decides where the task belongs, then authors and inserts the task **inline, in the current conversation** so the authoring context stays available for follow-up tweaks, and commits the inserted task path-scoped under a `Task-submission:` subject. It is the same format `/derive-tasks` writes, so every task in the list sits at one altitude. For vague or multi-task issues, route through `/discuss-new-task` first.
 
 ### `complete-all-tasks`
 
