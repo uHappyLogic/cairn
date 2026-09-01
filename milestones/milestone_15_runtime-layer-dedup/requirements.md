@@ -36,6 +36,10 @@ The repository has no build, tests, or dependencies; correctness of skill edits 
 
 ## Decisions
 
+### Shared-procedure reference tails
+
+Shared-procedure reference tails and the shared files' own boundary statements are split by audience, clause by clause. The runner-facing delegation clause — what the referenced file owns, normalized to one short fixed form alongside the inputs the caller supplies — stays, as does every file-specific sentence such as which clean-stop or no-op case the guard covers. The editor-facing imperatives ("do not restate those mechanics here", "never restate them here") and the shared files' editor-addressed boundary paragraphs are cut, after verifying their content is present in the matching CLAUDE.md invariant. This requires a per-file read rather than one sweep-wide substitution. If the per-file constraint-preservation check later shows the normalized owns-X clause delivers nothing the reference sentence and the shared file do not already give the runner, that clause may collapse to the bare reference as a follow-up.
+
 ### Verification
 
 The fresh-context re-audit audits but never fixes. Its findings become follow-up fix tasks, and a further fresh-context re-audit over the whole runtime layer is queued after those fixes, repeating until a run returns a clean verdict — the audited final state of the files, not the pre-fix state, is what proves the milestone.
@@ -45,26 +49,6 @@ Any finding the planned fix tasks do not address is recorded in `temp/milestone_
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Reference-tail treatment" status="open">
-  <question>Around 26 runtime files reference a shared procedure with a sentence tail of the form: the shared procedure owns the staging, the guard, and the commit; do not restate those mechanics here. The shared files likewise open and close with boundary statements addressed to editors (this file holds only the commit logic; resolving the milestone dir and parsing arguments are the wrappers&apos; job; never restate them here). Are these tails and boundary statements editor-facing restatement to be cut down to the bare reference sentence (with their content living in the CLAUDE.md shared-procedure invariants), or point-of-use instructions the runner needs that must stay?</question>
-  <alternative id="Cut to bare reference">
-    Treat every &quot;the shared procedure owns X; do not restate those mechanics here&quot; tail and every shared-file editor-addressed boundary paragraph as restatement, deleting them wholesale so each reference collapses to the bare follow-this-file sentence plus its inputs, with the division of labour living only in the CLAUDE.md shared-procedure invariants.
-    <advantage>One mechanical rule applied uniformly across all ~26 referencing files and the shared headers, with no per-file judgement call, and it removes the intra-file duplication where a shared file states its own boundary twice (header paragraph and closing rule).</advantage>
-    <drawback>Several tails are not boilerplate — they name which of this skill&apos;s clean-stop or no-op cases the guard covers — so a blanket cut destroys point-of-use content the goal explicitly protects, and it strips the delegation cue that stops a runner from improvising commit mechanics inline.</drawback>
-  </alternative>
-  <alternative id="Keep tails as point-of-use">
-    Classify the tails and boundary statements as instructions the runner acts on at the moment of delegation, declaring them out of scope for this sweep and leaving all ~26 sites untouched.
-    <advantage>Zero behavioural risk in exactly the files that are loaded most often and whose mechanics (path-scoped staging, the no-op guard, never git add -A) are the ones with real consequences if a runner ad-libs them.</advantage>
-    <drawback>Leaves ~26 near-identical copies of a sentence whose second clause is addressed to a file editor rather than the runner, plus the shared files&apos; doubled self-boundary statements — precisely the restatement class the milestone goal names, forfeiting the recovery with no compensating gain.</drawback>
-  </alternative>
-  <alternative id="Split the tail by audience">
-    Apply an audience test clause by clause: keep the runner-facing delegation clause (what the referenced file owns, normalized to one short fixed form alongside the inputs the caller supplies) and every file-specific sentence such as which clean-stop or no-op case the guard covers, and cut the editor-facing imperative (&quot;do not restate those mechanics here&quot;, &quot;never restate them here&quot;) plus the shared files&apos; editor-addressed boundary paragraphs, verifying their content is present in the matching CLAUDE.md invariant first.
-    <advantage>Cuts exactly the sentences whose reader is a future editor of the file — a runner executing a skill never writes text into that skill, so &quot;here&quot; can only address an editor — while preserving every clause a runner acts on, which is the goal&apos;s own stated dividing line.</advantage>
-    <drawback>Recovers fewer words than a wholesale cut and needs a per-file read rather than one sweep-wide substitution, since the surviving delegation clause has to be normalized and the file-specific tails distinguished from the boilerplate ones by judgement.</drawback>
-  </alternative>
-  <recommendation option="Split the tail by audience">The goal already fixes the test — editor-facing rationale moves to CLAUDE.md, point-of-use constraints stay — and these tails straddle it: &quot;do not restate those mechanics here&quot; can only be addressed to an editor, while the owns-X clause and the file-specific no-op and clean-stop sentences are what the runner acts on; if the per-file constraint-preservation check later shows the normalized owns-X clause delivers nothing the reference sentence and the shared file do not already give the runner, that clause can collapse to the bare reference as a follow-up.</recommendation>
-</open-question>
 
 <open-question id="Reporting-step trim depth" status="open">
   <question>Every committing skill&apos;s final step carries the terse-reporting convention in full: the fixed line to print, the list of things not to add, the sentence that the committed diff and git log are the durable record, and the distinct no-op line with its rationale. The CLAUDE.md terse-reporting invariant says the convention is authored inline in each SKILL.md&apos;s final step because there is deliberately no shared report procedure. How far may this milestone trim those steps: down to the bare print instructions (the success line and the no-op line) with all rationale moved to the invariant, or must the fuller convention text stay inline in each file as that invariant currently implies?</question>
