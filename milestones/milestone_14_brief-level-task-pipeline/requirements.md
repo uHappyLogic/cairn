@@ -56,26 +56,11 @@ The brief-level task template and its authoring guidance live in a single shared
 
 A brief-level task section is the `##` heading, a 1–3 sentence description, and the trailing `---` separator — nothing else. The loose "how it would be verified" clause stays part of the body as prose folded into those sentences rather than a labeled section, so no structured done-ness section survives to regrow (the completer still derives the formal acceptance bar from the description plus `requirements.md`). All four current authoring guidelines carry over to brief authoring unchanged — atomic scope, no open decisions, quote numeric values from `requirements.md`, and unique 4–8 word titles — since each is format-independent; title uniqueness in particular is load-bearing, because the completion procedure locates a task by case-insensitive partial heading match.
 
+### Acceptance-bar record
+
+The completer records the acceptance bar it derived from the task description plus `requirements.md` in the `TASKS_DONE.md` entry: `shared/complete-procedure.md`'s TODO→DONE move becomes move-plus-augment, appending the derived bar to the section it writes into `TASKS_DONE.md`, so each finished entry carries the brief plus the bar the work was actually verified against. This keeps a durable statement of what done meant once the authored Success section is retired, in the one file the completion procedure already writes and later milestone grounding already reads — a single-file change with no wrapper contract, so the completion wrappers' return protocols and commit mechanics are unaffected.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Acceptance-bar record" status="deferred">
-  <question>Whether the completer records the acceptance bar it derived from the description plus requirements.md anywhere durable (the TASKS_DONE.md entry or the commit body) or leaves it ephemeral — best decided while reworking shared/complete-procedure.md.</question>
-  <alternative id="Ephemeral">
-    The completer derives the acceptance bar, verifies against it, and never writes it down — the bar lives only in the completion context and disappears with it.
-    <advantage>Zero new machinery: the TODO-to-DONE move stays a verbatim section move, no wrapper changes, and it matches the project rule that the committed diff and git log are the durable record.</advantage>
-    <drawback>This milestone retires the authored Success section, so nothing outside one throwaway context ever states what done meant; a completer that quietly lowers its own bar leaves no trace, and later grounding has only the diff to infer intent from.</drawback>
-  </alternative>
-  <alternative id="Done-entry record">
-    shared/complete-procedure.md step 5 appends the derived acceptance bar to the section it moves into TASKS_DONE.md, so the finished entry carries the brief plus the bar the work was actually verified against.
-    <advantage>Restores the independent statement of done that the retired Success section provided, in the one file the completion procedure already writes and that finished-work grounding already reads, as a single-file change with no wrapper contract.</advantage>
-    <drawback>The TODO and DONE sections stop being identical (the move becomes move-plus-augment), and the DONE file grows a Success-like section back, which a later reader could mistake for the rich format returning.</drawback>
-  </alternative>
-  <alternative id="Commit-body record">
-    The completer hands the derived bar back to its wrapper, which writes it into the Task-completion or Tasklist-completion commit body alongside the task heading.
-    <advantage>Puts the bar in git next to the exact diff it certifies, mirroring how the answer skills preserve rationale in commit bodies, and leaves both task files at pure brief altitude.</advantage>
-    <drawback>Requires a new hand-back contract threaded through three wrappers (agent return protocol, inline skill, orchestrator commit step) purely for provenance, while the shared procedure must stay commit-free — the highest cost of the three for the least visible payoff.</drawback>
-  </alternative>
-  <recommendation option="Done-entry record">Cheapest way to keep a durable statement of what done meant once the authored Success section is gone, landing in the file the completion procedure already writes and later milestone grounding already reads.</recommendation>
-</open-question>
