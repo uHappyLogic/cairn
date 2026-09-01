@@ -1,18 +1,11 @@
 # Recommendation procedure (shared core)
 
 This is the single source of truth for producing alternatives and a recommendation for one
-open question in the current milestone. It is followed in two ways:
-
-- **Inline**, by the `discuss-open-question` skill, which runs it directly in the user's
-  conversation as the analytical spine of an interactive deliberation.
-- **By a read-only subagent**, `recommend-open-question`, which runs the same core once per
-  question during a `recommend-all-open-questions` sweep and returns the result for the
-  orchestrator to embed.
-
-The wrappers add their own framing (conversation vs. one-shot return, how the result is
-rendered, and where it goes). This file describes only the analytical work itself — ground,
-enumerate honest alternatives, recommend one — and says nothing about how callers present or
-record the result.
+open question in the current milestone. It is followed inline by the `discuss-open-question`
+skill as the analytical spine of an interactive deliberation, and once per question by the
+read-only `recommend-open-question` subagent during a sweep. The caller supplies the one
+input below and renders the result; this file describes only the analytical work itself —
+ground, enumerate honest alternatives, recommend one.
 
 ## Inputs
 
@@ -36,17 +29,13 @@ forming a recommendation changes nothing.
 
 Part of that grounding is the project-wide answering-principle store
 `milestones/answer_decision_principles.md` — a fixed path at the `milestones/` root, above
-any one milestone. Read it in place (name that path directly; the confirmed principles are
-not a caller-supplied input alongside QUESTION) and note any confirmed principle that bears
-on this question. Presence of a principle in that file means it is user-confirmed. How a
-bearing principle shapes the recommendation is covered in step 3.
+any one milestone. Read it in place and note any confirmed principle that bears on this
+question. Presence of a principle in that file means it is user-confirmed.
 
 Grounding is not the same as coupling to other questions. Reading `requirements.md`
 incidentally surfaces the sibling questions, but a recommendation for this question is
 formed in isolation from any *other* question's recommendation — never treat another
-question's recommendation as an input to this one. That isolation is a constraint the caller
-enforces across questions; it never narrows the honest grounding you do for the question at
-hand.
+question's recommendation as an input to this one.
 
 ### 2. Enumerate the alternatives
 
@@ -79,22 +68,3 @@ The alternatives and the recommendation together form one contiguous, self-conta
 that stays attached to the question it answers — it reads as a single coherent block about
 that one question, not scattered commentary. How that unit is laid out, marked up, and either
 shown to the user or handed back for embedding is the wrapper's concern, not this file's.
-
-## Rules
-
-- Ground in the real project state before forming a view — the live project over memory — and read
-  the project-wide principle store `milestones/answer_decision_principles.md` in place as
-  part of that grounding.
-- Two to four alternatives, no strawmen and no padding; each carrying what-it-is / key
-  advantage / key drawback.
-- Exactly one recommendation, stated directly with no hedging; on a genuine tie, say so and
-  name what breaks it.
-- A confirmed principle that bears on the question is a weighted advisory default in favor of
-  its supported option — overridable only for a stated reason, never a veto that drops a
-  candidate — and any principle that influenced the pick must be cited. When no principle
-  bears, the recommendation is produced exactly as before.
-- Isolation is a cross-question constraint on the caller: never build one question's
-  recommendation on another's. It never restricts the read-only grounding you do for the
-  question at hand.
-- Produce only the alternatives and the recommendation as one contiguous, self-contained
-  unit — nothing about how the result is rendered, recorded, or committed.
