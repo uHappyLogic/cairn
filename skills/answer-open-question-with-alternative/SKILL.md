@@ -7,25 +7,16 @@ model: opus
 # answer-open-question-with-alternative
 
 Records a **named `<alternative>`** from one open question's embedded analysis as its answer
-**inline, in the current conversation** — not in a subagent. Running inline is the whole
-point: the recording reasoning (which block was resolved, which alternative was chosen, what
-decision was folded in, what cascaded) stays in context, so you can follow up right after —
-ask why that alternative read the way it did, tweak the recorded decision, or answer the next
-question — without the context being thrown away.
+**inline, in the current conversation** — never in a subagent — so the recording reasoning
+(which block was resolved, which alternative was chosen, what decision was folded in, what
+cascaded) stays in context for follow-up.
 
-This is the sibling of `answer-open-question-with-recommendation`. That skill lifts the one
-`<recommendation>` the recommend sweep picked; **this** skill lifts an `<alternative>` **you**
-name by its `id` — which lets you record a decision that *overrides* the recommendation, or
-resolve a question the sweep left genuinely tied. Both read the same recommend-sweep
-annotations and both compose over the same recording core
-(`${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md`); they differ only in **which** embedded
-element becomes the answer.
-
-There is deliberately **no** batch/agent form of this skill (no
-`answer-all-open-questions-with-alternative`, no per-question agent). Choosing *which*
-alternative wins is per-question human judgment — there is no rule an orchestrator could apply
-to pick one, so unlike the recommendation path there is nothing to sweep. If you want every
-recommendation-bearing question recorded at its *recommended* option unattended, that is
+This is the sibling of `answer-open-question-with-recommendation`: same recommend-sweep
+annotations, same recording core, but the answer is the `<alternative>` **you** name by its
+`id` rather than the one `<recommendation>` the sweep picked — which lets you record a
+decision that *overrides* the recommendation, or resolve a question the sweep left genuinely
+tied. There is deliberately **no** batch or agent form of this skill; to record every
+recommendation-bearing question at its *recommended* option unattended, use
 `/answer-all-open-questions-with-recommendation`.
 
 ## Invocation
@@ -88,10 +79,6 @@ either lookup fails:
 - The block has alternatives but **none** whose `id` case-folds equal to `<Alternative Id>`
   (list that block's available alternative ids so the user can retry).
 
-This mirrors `shared/answer-procedure.md`'s clean stop on a Short-Title mismatch: nothing is
-recorded. This locating is a **read** to derive the answer — it is not the recording core's
-own locate/remove step, which runs later inside the delegated procedure.
-
 ### 3. Lift the alternative into the answer
 
 Within the chosen `<alternative id="...">` element, read two things as a single-element CLI
@@ -107,19 +94,18 @@ Both are stored **entity-escaped**, so reverse the five-predefined-entity substi
 recover clean unescaped text. Derive **ANSWER** by recombining the un-escaped `id` with the
 un-escaped what-it-is text as "`<id>` — `<what-it-is>`" (the id, then a spaced em dash, then
 the what-it-is sentence). That string is the answer text — the same anchor form the
-recommendation path uses for "`<option>` — `<rationale>`".
+recommendation path uses for "`<option>` — `<rationale>`". Never invent answer text.
 
 ### 4. Record the answer via the shared recording core
 
 Hand the resolved **`<Short Title>`** and the derived **ANSWER** to
 `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` and follow it unchanged **yourself, in this
-conversation** (its own step 1 re-resolves the milestone you already found — harmless). It is
-the single source of truth for the recording work — locate the block, analyse, remove the
-whole `<open-question …>`…`</open-question>` block, fold the decision into `## Decisions` as
-clean prose, and cascade to any mooted siblings. Do **not** restate its steps here.
+conversation** (its own step 1 re-resolves the milestone you already found — harmless). That
+procedure owns the recording work — locate, analyse, remove the whole
+`<open-question …>`…`</open-question>` block, fold the decision into `## Decisions` as clean
+prose, and cascade to any mooted siblings.
 
-Do **not** spawn any subagent — there is no `answer-open-question-with-alternative` agent, and
-running inline is what keeps the recording context for follow-up.
+Do **not** spawn any subagent — there is no `answer-open-question-with-alternative` agent.
 
 ### 5. Commit the alternative answer
 
@@ -130,19 +116,15 @@ need to resolve the path), carrying out its steps yourself. Supply it these inpu
 
 - **PATHS** — this skill's own edit: `<MILESTONE_DIR>/requirements.md`.
 - **SUBJECT** — exactly `Alternative-answer: <Short Title>` (the answered question's handle).
-  This distinct subject keeps the commit out of finish-time
-  `/capture-milestone-principle-updates`: it does **not** match capture's `^Manual-answer:`
-  grep, so capture never harvests it. The rationale matches recommendation-answers — the
-  recorded body is the analyst's alternative text, not user-deliberated reasoning — so it stays
-  outside the capture grep with **no** change to capture's logic. The distinct subject is the
-  honest git-log provenance discriminator.
+  This distinct subject does **not** match `/capture-milestone-principle-updates`'s
+  `^Manual-answer:` grep, so capture never harvests it.
 - **Body** — the lifted alternative content (the `<id>` — `<what-it-is>` answer text derived in
   step 3, with XML entities un-escaped) — the answer that was recorded.
 
-The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the
-commit — do not restate those mechanics here. Its no-op guard also covers this skill's
-clean-stop cases: if the guard in step 2 fired or the recording core in step 4 stopped on a
-mismatch, `requirements.md` is unchanged, so nothing is staged and nothing is committed.
+That procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
+Its no-op guard also covers this skill's clean-stop cases: if the guard in step 2 fired or the
+recording core in step 4 stopped on a mismatch, `requirements.md` is unchanged, so nothing is
+staged and nothing is committed.
 
 ### 6. Report findings
 
@@ -156,41 +138,14 @@ Answer recorded.
 
 Do **not** re-narrate which question resolved, which alternative you recorded (its id or how it
 read), or how the document changed (the resolved block, the decision folded into
-`## Decisions`, any cascading resolutions) — the committed diff and `git log` are the durable
-record of that. Alongside the terse line keep only the one piece of genuinely git-absent
-advisory output: any new open questions the recorded decision may have introduced — surface
-these but do **not** add them to the document without user confirmation.
+`## Decisions`, any cascading resolutions). Alongside the terse line keep only the one piece of
+genuinely git-absent advisory output: any new open questions the recorded decision may have
+introduced — surface these but do **not** add them to the document without user confirmation.
 
 **No-op case:** if step 5's dirty-own-path guard fired — nothing was committed because
 `requirements.md` was unchanged (the step 2 guard fired, or the recording core in step 4
 stopped on a mismatch) — do **not** print the terse success line. Instead print a single line
-stating that nothing was recorded and briefly why, since git holds no durable record of a
-no-op.
+stating that nothing was recorded and briefly why.
 
 Then stay available: the user may now ask follow-up questions or request adjustments, with the
 full recording context still in hand.
-
-## Rules
-
-- Split the argument on the **first `.`** — `<Short Title>` before it, `<Alternative Id>`
-  after — and trim both; this mirrors `answer-open-question`.
-- Derive ANSWER **only** from the chosen `<alternative>` — its `id` recombined with its
-  what-it-is text as "`<id>` — `<what-it-is>`" — never from its `<advantage>`/`<drawback>`
-  children (trade-off analysis, not the decision) and never invent answer text.
-- The lift lives here; the recording (locate / analyse / remove whole block / fold into
-  `## Decisions` / cascade) lives **only** in `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md`.
-  Never duplicate or restate folding into `## Decisions` or cascading here.
-- Run everything **inline** — there is no agent form of this skill, and no batch
-  `answer-all-open-questions-with-alternative` (picking which alternative wins is per-question
-  human judgment, not a rule an orchestrator could sweep).
-- Both guards are clean stops that change and commit nothing: no matching question id, a block
-  with no `<alternative>` elements, or no alternative matching `<Alternative Id>`. On a stop,
-  list the available ids (question ids, or that block's alternative ids) so the user can retry.
-- Commit via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, supplying only the path
-  `<MILESTONE_DIR>/requirements.md` and the subject `Alternative-answer: <Short Title>` (which
-  stays outside `/capture-milestone-principle-updates`'s `^Manual-answer:` grep); never restate
-  its path-scoped-staging, no-op-guard, or subject-convention mechanics here.
-- The commit carries the lifted alternative content in its **body**. The shared procedure's
-  dirty-own-path no-op guard subsumes the old "commit only if recorded" conditional: if the
-  step 2 guard fired or the recording core stopped on a mismatch, `requirements.md` is
-  unchanged, so nothing is committed.
