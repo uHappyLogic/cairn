@@ -52,34 +52,13 @@ The reworked shared/complete-procedure.md knows only the brief-level task shape 
 
 The brief-level task template and its authoring guidance live in a single shared file — the slimmed successor of `shared/submit-procedure.md`, stripped to just the template and its authoring guidelines (the milestone-resolution, context-loading, and POSITION-insertion steps drop out, since the two skills now handle those differently) — referenced via `${CLAUDE_PLUGIN_ROOT}` by both `derive-tasks` and the leaned-down `submit-task` skill. Two runners author the format and a third (`shared/complete-procedure.md`) parses it, so the shared-is-source-of-truth-across-at-least-two-runners convention is satisfied and drift between the batch and ad-hoc authoring paths is ruled out by construction. The file is renamed to describe the task format rather than a submit procedure, since the insertion and positioning steps no longer live in it.
 
+### Brief body contents
+
+A brief-level task section is the `##` heading, a 1–3 sentence description, and the trailing `---` separator — nothing else. The loose "how it would be verified" clause stays part of the body as prose folded into those sentences rather than a labeled section, so no structured done-ness section survives to regrow (the completer still derives the formal acceptance bar from the description plus `requirements.md`). All four current authoring guidelines carry over to brief authoring unchanged — atomic scope, no open decisions, quote numeric values from `requirements.md`, and unique 4–8 word titles — since each is format-independent; title uniqueness in particular is load-bearing, because the completion procedure locates a task by case-insensitive partial heading match.
+
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Brief body contents" status="open">
-  <question>What exactly does a brief-level task section contain beyond the ## heading, the description sentences, and the trailing --- separator? Specifically: does the brief keep its loose "how it would be verified" line as part of the body (the completer derives the formal acceptance bar either way), and which of the current authoring guidelines (atomic scope, no open decisions, quote numeric values from requirements.md, unique 4-8 word titles) carry over to brief authoring?</question>
-  <alternative id="Prose-embedded verification">
-    The body is the 1-3 sentence description alone, with the loose how-it-would-be-verified clause folded into those sentences as prose rather than a labeled section, and all four current authoring guidelines (atomic scope, no open decisions, quote numeric values from requirements.md, unique 4-8 word titles) carry over unchanged.
-    <advantage>It matches the brief definition derive-tasks and discuss-new-task already use, so a brief maps 1:1 onto the task body with no new vocabulary, while the completer still gets the author intent about done-ness for free.</advantage>
-    <drawback>The verification cue is unlabeled prose, so nothing structurally distinguishes a deliberate done-signal from ordinary description, and a later author may drift back toward a criteria list.</drawback>
-  </alternative>
-  <alternative id="Verification dropped">
-    The body describes only the affected system and desired behavior; the how-it-would-be-verified clause is stripped at authoring time and the acceptance bar is derived wholly by the completer from the description plus requirements.md.
-    <advantage>Exactly one source for the acceptance bar, with no half-formal author bar competing with the derived one.</advantage>
-    <drawback>It discards the one piece of author intent that is genuinely hard to re-derive, and forces edits to derive-tasks step 3 and to discuss-new-task, whose brief shape already names verification.</drawback>
-  </alternative>
-  <alternative id="Labeled verification line">
-    The body keeps the description plus one explicitly labeled lightweight verification line, short of the retired Success criteria list.
-    <advantage>Makes the loose bar explicit and greppable, so the completer knows exactly where author intent about done-ness lives.</advantage>
-    <drawback>It reintroduces a structured section under a new name, which is precisely the Success-section gravity the milestone goal retires, and such a line tends to regrow into a criteria list.</drawback>
-  </alternative>
-  <alternative id="Trimmed guideline set">
-    As with prose-embedded verification, but only the two altitude-defining guidelines (atomic scope, no open decisions) carry over; quoting numeric values and the unique 4-8 word title shape are dropped as re-derivable by the completer.
-    <advantage>Shrinks the authoring guidance to just the rules that define what a task is, matching the leaner body.</advantage>
-    <drawback>Title uniqueness is load-bearing rather than cosmetic — the completion procedure locates a task by case-insensitive partial heading match, so colliding titles break completion outright.</drawback>
-  </alternative>
-  <recommendation option="Prose-embedded verification">The brief definition already used by derive-tasks and discuss-new-task names verification as part of the prose, so keeping it there maps a brief onto the task body 1:1 with no structured section left to regrow, and all four guidelines survive because each is format-independent — title uniqueness in particular is load-bearing for heading-match completion.</recommendation>
-</open-question>
 
 <open-question id="Acceptance-bar record" status="deferred">
   <question>Whether the completer records the acceptance bar it derived from the description plus requirements.md anywhere durable (the TASKS_DONE.md entry or the commit body) or leaves it ephemeral — best decided while reworking shared/complete-procedure.md.</question>
