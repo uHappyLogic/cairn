@@ -1,29 +1,5 @@
 # TASKS TODO
 
-## Lean Down The Submit-Task Skill
-
-Rewrite the authoring core of `skills/submit-task/SKILL.md` so the ad-hoc path produces brief-level tasks: instead of running the retired `shared/submit-procedure.md`, the skill authors the task section in the format defined by `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md` and then locates the insertion point and inserts the section itself, since the POSITION-insertion step no longer lives in the shared file. Everything format-independent stays as it is — the triage, the position decision, and the `Task-submission: <task title>` commit wrapper. This is what keeps every entry in `TASKS_TODO.md` at one consistent brief-level altitude whichever path authored it.
-
-**Provides:**
-- `skills/submit-task/SKILL.md` as a brief-level author referencing `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md`, with the insertion step (position anchors and the mandatory trailing `---`) owned by the skill itself.
-
-**Notes:**
-- The insertion semantics moving into this skill are the ones dropped from the shared file: `append` adds at the end, `before: <Title>` inserts immediately before that section's `##` heading line, `after: <Title>` inserts immediately after that section's trailing `---`, an unfound anchor falls back to appending (and says so), existing sections are never modified or reordered, and the `---` separator is mandatory because `shared/complete-procedure.md` parses sections by it.
-- "Retire The Submit-Task Agent" already strips this file's agent references (the "for bulk authoring… spawns the `submit-task` **agent**" paragraph and the two never-spawn/never-delegate prohibitions), so the inline-never-spawn-the-agent stance is moot by the time this task runs — do not reintroduce it, and drop any surviving "the agent can't"/"only the context differs" framing for the inline authoring rationale (keeping the inline context for follow-up is still the reason, just no longer stated as a contrast with an agent).
-- The intro prose and the YAML `description` both promise a "fully-specified"/"properly formatted task" with contract surface and success criteria; both need to read brief-level. The frontmatter must keep its `name` and `description` keys — `scripts/migrate_skills_to_agy.py` hard-errors without them.
-- Steps 0–3 (milestone resolution, triage reads, duplicate/scope triage, position decision) and steps 5–6 (the commit hand-off to `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, the terse `Task submitted.` line, the no-op message, and the too-vague → `/discuss-new-task` stop) are format-independent and stay behaviourally unchanged.
-- Re-running the transpilation script to regenerate `.agents/plugins/cairn/` is a milestone-wide sweep, not part of this task.
-
-**Success:**
-- `skills/submit-task/SKILL.md` references `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md` and contains no occurrence of `submit-procedure`.
-- It contains no reference to a `submit-task` agent and no spawn/delegate prohibition.
-- It carries an insertion step covering `append`, `before: <Title>`, `after: <Title>`, the unfound-anchor append fallback, and the mandatory trailing `---`.
-- Neither its authored-output description nor its YAML `description` promises `Provides`, `Notes`, or `Success` sections, or any other structured done-ness section.
-- It still contains the duplicate/scope triage step, the position-decision step, the commit step supplying `<MILESTONE_DIR>/TASKS_TODO.md` and `Task-submission: <task title>` to `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, the terse `Task submitted.` line, and its no-op message.
-- Its YAML frontmatter still carries both `name` and `description`.
-
----
-
 ## Rework Completion Procedure For Brief Tasks
 
 Rework `shared/complete-procedure.md` so it knows only the brief-level task shape: it derives each task's formal acceptance bar itself from the task description plus `<MILESTONE_DIR>/requirements.md` (replacing the retired authored **Success** section as the step-4 verification gate), and resolves cross-task references by reading prior tasks' live deliverables rather than an authored **Provides** contract. Its TODO→DONE move becomes move-plus-augment, appending the derived bar to the `TASKS_DONE.md` entry so each finished entry records what done actually meant. This is what makes the completion path self-sufficient once tasks carry brief-level detail only.
