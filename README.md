@@ -323,7 +323,7 @@ This project supports both Claude Code and Google Antigravity. The canonical sou
 To build the plugin for Google Antigravity, run the local transpilation step from the repository root:
 
 ```bash
-python3 scripts/migrate_skills_to_agy.py
+uv run scripts/migrate_skills_to_agy.py
 ```
 
 This will parse the Claude Code plugin source and generate the Antigravity-compatible version under `.agents/plugins/cairn/`.
