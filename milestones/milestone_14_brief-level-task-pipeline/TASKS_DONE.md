@@ -93,3 +93,38 @@ Rewrite the authoring core of `skills/submit-task/SKILL.md` so the ad-hoc path p
 - Its YAML frontmatter still carries both `name` and `description`.
 
 ---
+
+## Rework Completion Procedure For Brief Tasks
+
+Rework `shared/complete-procedure.md` so it knows only the brief-level task shape: it derives each task's formal acceptance bar itself from the task description plus `<MILESTONE_DIR>/requirements.md` (replacing the retired authored **Success** section as the step-4 verification gate), and resolves cross-task references by reading prior tasks' live deliverables rather than an authored **Provides** contract. Its TODO→DONE move becomes move-plus-augment, appending the derived bar to the `TASKS_DONE.md` entry so each finished entry records what done actually meant. This is what makes the completion path self-sufficient once tasks carry brief-level detail only.
+
+**Provides:**
+- `shared/complete-procedure.md` as the brief-level completion contract: acceptance bar derived from description + `requirements.md`, cross-task references resolved from prior tasks' live deliverables.
+- The `**Verified:**` bold label introducing the per-criterion bullet list appended to each `TASKS_DONE.md` entry — the label later milestone grounding reads, deliberately distinct from the retired template's `**Success:**`.
+
+**Notes:**
+- Clean cutover per the recorded decision: legacy **Provides**/**Notes**/**Success** sections in existing task lists get **no** privileged parsing — they are read as ordinary body prose feeding the derived bar. Do not add a compatibility branch, and leave `migrate-workspace` untouched.
+- The section-location mechanics are format-independent and stay exactly as they are: the `##` heading through its trailing `---`, case-insensitive partial heading match, and the clean stop listing available headings on a miss.
+- The whole "Honor the two optional sections" block in step 3 goes, along with step 1's parse-Provides/Notes/Success instruction and step 4's re-read-the-**Success**-section framing; step 4 stays criterion-by-criterion and still applies `CLAUDE.md`'s done-verification convention when one exists.
+- Step 3's recorded-paths running list stays as-is — the wrappers read that set — as does the file's execution-neutrality (no commit steps, no `DONE`/`FAILED` protocol).
+- Wrapper contracts are untouched by this task: `skills/complete-task/SKILL.md`, `agents/complete-task.md`, and `skills/complete-all-tasks/SKILL.md` couple to the task format only through this file, so do not edit them.
+- `scripts/migrate_skills_to_agy.py` copies only `agents/` and `skills/` into `.agents/plugins/cairn/`; `shared/` has no generated twin, so this change needs no transpile re-run.
+
+**Success:**
+- `shared/complete-procedure.md` contains no instruction to parse or honor a **Provides**, **Notes**, or **Success** section, and no other privileged handling of them.
+- It states that the acceptance bar is derived from the task description plus `<MILESTONE_DIR>/requirements.md`, and step 4 verifies against that derived bar criterion-by-criterion, still applying `CLAUDE.md`'s done-verification convention when one exists.
+- It states that cross-task references are resolved by reading prior tasks' live deliverables, given that tasks run in order.
+- Its TODO→DONE step appends the derived bar to the `TASKS_DONE.md` entry as a bold-labeled bullet list under the description — one bullet per criterion, inside the same `##`/`---` section — under a label distinct from `**Success:**`.
+- It still locates the task by case-insensitive partial `##`-heading match and still stops cleanly listing the available headings on a miss.
+- It still contains no commit step and no `DONE`/`FAILED` return protocol.
+
+**Verified:**
+
+- `shared/complete-procedure.md` contains no instruction to parse or honor a **Provides**, **Notes**, or **Success** section, and no other privileged handling of them — a grep for those labels returns nothing, and the new "The task shape" section states that no part of a task body gets privileged parsing.
+- It states that the acceptance bar is derived from the task description plus `<MILESTONE_DIR>/requirements.md` (step 2), and step 4 verifies against that derived bar criterion-by-criterion, still applying `CLAUDE.md`'s done-verification convention when one exists with direct inspection as the fallback.
+- It states that cross-task references are resolved by reading prior tasks' live deliverables, given that tasks run in order (the task-shape section and step 3).
+- Its TODO→DONE step (step 5) is a move-plus-augment that appends the derived bar to the `TASKS_DONE.md` entry as a `**Verified:**`-labeled bullet list under the description — one bullet per criterion, inside the same `##`/`---` section — a label distinct from the retired `**Success:**`.
+- It still locates the task by case-insensitive partial `##`-heading match, from the `##` heading through its trailing `---`, and still stops cleanly listing the available headings on a miss.
+- It still contains no commit step and no `DONE`/`FAILED` return protocol; the only remaining mentions of committing are the pre-existing wrapper-framing disclaimer and the record-paths clarification.
+
+---

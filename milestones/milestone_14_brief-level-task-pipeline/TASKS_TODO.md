@@ -1,31 +1,5 @@
 # TASKS TODO
 
-## Rework Completion Procedure For Brief Tasks
-
-Rework `shared/complete-procedure.md` so it knows only the brief-level task shape: it derives each task's formal acceptance bar itself from the task description plus `<MILESTONE_DIR>/requirements.md` (replacing the retired authored **Success** section as the step-4 verification gate), and resolves cross-task references by reading prior tasks' live deliverables rather than an authored **Provides** contract. Its TODO→DONE move becomes move-plus-augment, appending the derived bar to the `TASKS_DONE.md` entry so each finished entry records what done actually meant. This is what makes the completion path self-sufficient once tasks carry brief-level detail only.
-
-**Provides:**
-- `shared/complete-procedure.md` as the brief-level completion contract: acceptance bar derived from description + `requirements.md`, cross-task references resolved from prior tasks' live deliverables.
-- The `**Verified:**` bold label introducing the per-criterion bullet list appended to each `TASKS_DONE.md` entry — the label later milestone grounding reads, deliberately distinct from the retired template's `**Success:**`.
-
-**Notes:**
-- Clean cutover per the recorded decision: legacy **Provides**/**Notes**/**Success** sections in existing task lists get **no** privileged parsing — they are read as ordinary body prose feeding the derived bar. Do not add a compatibility branch, and leave `migrate-workspace` untouched.
-- The section-location mechanics are format-independent and stay exactly as they are: the `##` heading through its trailing `---`, case-insensitive partial heading match, and the clean stop listing available headings on a miss.
-- The whole "Honor the two optional sections" block in step 3 goes, along with step 1's parse-Provides/Notes/Success instruction and step 4's re-read-the-**Success**-section framing; step 4 stays criterion-by-criterion and still applies `CLAUDE.md`'s done-verification convention when one exists.
-- Step 3's recorded-paths running list stays as-is — the wrappers read that set — as does the file's execution-neutrality (no commit steps, no `DONE`/`FAILED` protocol).
-- Wrapper contracts are untouched by this task: `skills/complete-task/SKILL.md`, `agents/complete-task.md`, and `skills/complete-all-tasks/SKILL.md` couple to the task format only through this file, so do not edit them.
-- `scripts/migrate_skills_to_agy.py` copies only `agents/` and `skills/` into `.agents/plugins/cairn/`; `shared/` has no generated twin, so this change needs no transpile re-run.
-
-**Success:**
-- `shared/complete-procedure.md` contains no instruction to parse or honor a **Provides**, **Notes**, or **Success** section, and no other privileged handling of them.
-- It states that the acceptance bar is derived from the task description plus `<MILESTONE_DIR>/requirements.md`, and step 4 verifies against that derived bar criterion-by-criterion, still applying `CLAUDE.md`'s done-verification convention when one exists.
-- It states that cross-task references are resolved by reading prior tasks' live deliverables, given that tasks run in order.
-- Its TODO→DONE step appends the derived bar to the `TASKS_DONE.md` entry as a bold-labeled bullet list under the description — one bullet per criterion, inside the same `##`/`---` section — under a label distinct from `**Success:**`.
-- It still locates the task by case-insensitive partial `##`-heading match and still stops cleanly listing the available headings on a miss.
-- It still contains no commit step and no `DONE`/`FAILED` return protocol.
-
----
-
 ## Reconcile CLAUDE.md With Flattened Pipeline
 
 Rewrite every `CLAUDE.md` layout entry, skills-pipeline listing line, and invariant that the flattened brief-level task pipeline invalidates, so the repo's own project instructions describe the design as the prior tasks actually implemented it. That covers the layout entries for the deleted `agents/submit-task.md` and for the renamed `shared/task-format.md`, the pipeline lines for `derive-tasks`/`submit-task`/`discuss-new-task`, and the invariants for derive-tasks' delegation, the task-body template, task altitude, and the retired submit-task skill+agent pair.
