@@ -40,6 +40,10 @@ The repository has no build, tests, or dependencies; correctness of skill edits 
 
 Shared-procedure reference tails and the shared files' own boundary statements are split by audience, clause by clause. The runner-facing delegation clause — what the referenced file owns, normalized to one short fixed form alongside the inputs the caller supplies — stays, as does every file-specific sentence such as which clean-stop or no-op case the guard covers. The editor-facing imperatives ("do not restate those mechanics here", "never restate them here") and the shared files' editor-addressed boundary paragraphs are cut, after verifying their content is present in the matching CLAUDE.md invariant. This requires a per-file read rather than one sweep-wide substitution. If the per-file constraint-preservation check later shows the normalized owns-X clause delivers nothing the reference sentence and the shared file do not already give the runner, that clause may collapse to the bare reference as a follow-up.
 
+### CLAUDE.md Invariants section
+
+The runtime-layer sweep runs append-or-extend only against a frozen Invariants section: rationale moved out of a runtime file extends the matching invariant or is appended as a new bullet, and no existing bullet is reshaped while the sweep is in progress, so every cut stays justified against a stable reference target. Consolidation of the Invariants section itself happens once, in a single dedicated task after the sweep completes and before the fresh-context re-audit, rewriting the section as a whole to merge overlapping bullets and absorb the newly moved rationale with the full post-move content visible. Because that pass rewrites bullets the completed cuts depend on, it carries its own constraint-preservation check over CLAUDE.md rather than inheriting the runtime layer's.
+
 ### Verification
 
 The fresh-context re-audit audits but never fixes. Its findings become follow-up fix tasks, and a further fresh-context re-audit over the whole runtime layer is queued after those fixes, repeating until a run returns a clean verdict — the audited final state of the files, not the pre-fix state, is what proves the milestone.
@@ -73,27 +77,6 @@ Any finding the planned fix tasks do not address is recorded in `temp/milestone_
     <drawback>Contradicts the standing CLAUDE.md invariant that there is deliberately no such file, reopens an architectural decision this milestone did not scope, and buys little — each skill gains a reference sentence while the per-run read reintroduces most of the words.</drawback>
   </alternative>
   <recommendation option="Cut rationale, keep prohibitions">The justification sentences are the only part whose content already lives in the CLAUDE.md invariant and therefore the only part the Goal licenses cutting, whereas the &quot;and nothing more&quot; prohibitions are point-of-use constraints the Goal protects and that a consuming project could never recover, since it never loads CLAUDE.md.</recommendation>
-</open-question>
-
-<open-question id="Invariants section growth" status="open">
-  <question>Moving rationale out of runtime files into CLAUDE.md will grow the Invariants section, already 35 bullets and about 4,839 words, and several of those bullets already restate each other. Does this milestone only append or extend the matching invariant when moving rationale in (leaving the section&apos;s existing shape alone), or does it also consolidate the Invariants section itself so CLAUDE.md does not become the new duplication sink?</question>
-  <alternative id="Append only">
-    Move each piece of runtime-file rationale into the matching CLAUDE.md invariant by extending that bullet or appending a new one, and leave the Invariants section&apos;s existing shape, ordering, and cross-bullet overlap exactly as they are.
-    <advantage>Keeps the milestone&apos;s blast radius entirely on the runtime layer, where the ~11,000-word target, the per-file constraint-preservation check, and the fresh-context re-audit all live, and costs plugin consumers nothing since CLAUDE.md never loads outside this repository.</advantage>
-    <drawback>Ships exactly the duplication the milestone exists to remove, merely relocated: a 35-bullet, 4,841-word section that is already 76% of CLAUDE.md and already restates itself across the answer/recommend cluster grows further, so the next session in this repo pays the cost the runtime layer stopped paying.</drawback>
-  </alternative>
-  <alternative id="Consolidate inline">
-    Treat consolidation as part of each move: whenever rationale lands in an invariant, also merge or rewrite the neighbouring bullets it overlaps, so the section is de-duplicated continuously as the sweep proceeds.
-    <advantage>Each invariant is touched exactly once, needs no extra task, and the person merging has the runtime file&apos;s original wording in hand at the moment of the merge.</advantage>
-    <drawback>Makes the sweep&apos;s own reference target move underneath it — every cut is justified by &quot;this survives in a CLAUDE.md invariant&quot;, so rewriting those invariants mid-sweep means earlier cuts point at bullets that no longer read as they did when the cut was justified, and both the per-file check and the re-audit must chase a mutating target.</drawback>
-  </alternative>
-  <alternative id="Consolidate in a final pass">
-    Run the runtime-layer sweep append-or-extend only, against a frozen Invariants section, then close the milestone with one dedicated consolidation task that rewrites the whole section — merging the overlapping bullets and absorbing the newly moved rationale — before the fresh-context re-audit.
-    <advantage>Gets both properties: the sweep runs against a stable, additive-only reference target, and the section is consolidated once with the full post-move content visible, so merges are made against what the invariants actually say at the end rather than guessed at mid-flight.</advantage>
-    <drawback>Adds a task and a second editing regime, and because that pass rewrites bullets the just-completed cuts depend on, it must carry its own constraint-preservation check over CLAUDE.md rather than inheriting the runtime layer&apos;s.</drawback>
-  </alternative>
-  <applied-principle>Mutate live machinery last</applied-principle>
-  <recommendation option="Consolidate in a final pass">The Invariants section is the reference every cut in this sweep is justified against, so it must stay frozen while the sweep runs and be consolidated once afterwards — which de-duplicates CLAUDE.md without the milestone&apos;s own verification chasing a moving target.</recommendation>
 </open-question>
 
 <open-question id="Antigravity shared-procedure gap" status="open">
