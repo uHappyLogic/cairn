@@ -56,29 +56,13 @@ Any finding the planned fix tasks do not address is recorded in `temp/milestone_
 
 The per-file constraint-preservation check is recorded in the pipeline's own `**Verified:**` channel — the `TASKS_DONE.md` entry of the task that edited the file — and no separate checklist artifact is added under the milestone directory, which stays at its three files. The shape is pinned rather than left to the completer: the entry carries the check as an explicit ledger with one bullet per imperative removed or relocated, naming where that imperative now survives (its point of use in the same file, the referenced shared procedure, or the CLAUDE.md invariant). Each editing task's description must therefore pin this ledger shape, since the completer otherwise derives its own bar. Git history supplies the original text the ledger is a claim about, so the re-audit can check each claim against the live file.
 
+### Antigravity transpile tree
+
+`scripts/migrate_skills_to_agy.py` gains a `shared/` copy into the generated tree, mirroring the wholesale `agents/` copytree it already performs, so that every `${CLAUDE_PLUGIN_ROOT}/shared/<name>.md` reference in the generated skills and agents resolves to a file that is actually present. This is in scope because the sweep deletes prose on the grounds that its content survives in a referenced shared procedure, and shipping a regenerated tree whose procedures are absent would undercut the milestone's own deletion rule; the change is small, in the shape of code already in the script, and verifiable here by inspecting the regenerated file list. Rewriting the `${CLAUDE_PLUGIN_ROOT}` reference text itself to an Antigravity-resolvable path stays out of scope — there is no Antigravity runtime, test, or known-good target path in this repository to verify such a transform against — and is recorded as a follow-up.
+
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Antigravity shared-procedure gap" status="open">
-  <question>The transpile script that regenerates the Antigravity tree copies skills and agents but not the shared directory, and leaves the CLAUDE_PLUGIN_ROOT references verbatim, so the generated skills point at procedure files that do not exist in that tree. This gap predates the milestone. Is fixing it (copying shared into the generated tree, or rewriting the references) in scope, or does the milestone only regenerate the tree as-is and record the gap as out of scope?</question>
-  <alternative id="Out of scope, recorded">
-    Regenerate the Antigravity tree exactly as the current script produces it, and record the missing-shared gap under &quot;## Out of Scope&quot; (optionally as a follow-up milestone item) without touching scripts/migrate_skills_to_agy.py.
-    <advantage>Keeps a prose-dedup milestone entirely inside the Markdown runtime layer, changing no tooling and adding no verification burden the repository (no build, no tests) is equipped to carry.</advantage>
-    <drawback>The sweep&apos;s own deletion rule permits cutting a sentence when its content &quot;survives in a referenced shared procedure&quot; — a premise that is false in the generated tree, so this milestone knowingly makes the Antigravity output materially worse than the tree it regenerates.</drawback>
-  </alternative>
-  <alternative id="Copy shared into tree">
-    Add a shared/ copy to the transpile script mirroring the existing wholesale agents/ copytree, regenerate, and leave the ${CLAUDE_PLUGIN_ROOT} reference text untouched in both trees.
-    <advantage>A roughly four-line change in the same shape as code already in the script makes every referenced procedure file actually present in the generated tree, restoring the &quot;content survives in the shared procedure&quot; premise the dedup depends on, and it is verifiable here by inspecting the regenerated file list.</advantage>
-    <drawback>It fixes only file presence, not path resolution: if Antigravity does not expand ${CLAUDE_PLUGIN_ROOT}, the tree still cannot load the procedures, so the gap may be closed only halfway while looking closed.</drawback>
-  </alternative>
-  <alternative id="Copy and rewrite references">
-    Copy shared/ into the generated tree and additionally rewrite each ${CLAUDE_PLUGIN_ROOT}/shared/&lt;name&gt;.md reference in the 22 generated skill and agent files to a path the Antigravity tree resolves.
-    <advantage>The only option that produces an end-to-end loadable Antigravity plugin, closing a pre-existing defect completely rather than partially.</advantage>
-    <drawback>It introduces a generated-vs-source content divergence and a text transform whose correctness cannot be verified in this repository — there is no Antigravity runtime, no test, and no known-good target path — turning a Markdown milestone into unverifiable tooling work.</drawback>
-  </alternative>
-  <recommendation option="Copy shared into tree">Fixing is in scope but only to the extent this milestone can prove correct: the sweep deletes prose on the grounds that it survives in a referenced shared procedure, so shipping a regenerated tree whose procedures are absent would undercut the milestone&apos;s own deletion rule, while copying shared/ is a small change in the shape of the script&apos;s existing agents/ copy and is checkable by inspection — the unverifiable reference rewrite stays out of scope and is recorded as a follow-up.</recommendation>
-</open-question>
 
 <open-question id="README sync scope" status="deferred">
   <question>README.md never mentions the Rules sections, but its skill reference and workflow prose describe each skill and the referenced-never-restated doctrine. Does this milestone touch README.md at all, and if so only where the sweep falsifies an existing claim, or does it also add a sentence describing the new runtime-files-never-restate-invariants rule?</question>
