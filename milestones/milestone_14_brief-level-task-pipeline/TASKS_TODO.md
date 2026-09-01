@@ -1,29 +1,5 @@
 # TASKS TODO
 
-## Reconcile CLAUDE.md With Flattened Pipeline
-
-Rewrite every `CLAUDE.md` layout entry, skills-pipeline listing line, and invariant that the flattened brief-level task pipeline invalidates, so the repo's own project instructions describe the design as the prior tasks actually implemented it. That covers the layout entries for the deleted `agents/submit-task.md` and for the renamed `shared/task-format.md`, the pipeline lines for `derive-tasks`/`submit-task`/`discuss-new-task`, and the invariants for derive-tasks' delegation, the task-body template, task altitude, and the retired submit-task skill+agent pair.
-
-**Provides:**
-- `CLAUDE.md` as the reconciled description of the flattened pipeline — the wording a sibling `README.md` reconciliation mirrors: `shared/task-format.md` as the brief-level template's single home, `derive-tasks` and the `submit-task` skill as its two authoring runners with `shared/complete-procedure.md` as its parser, and `complete-task` as the plugin's only remaining skill+agent pair.
-
-**Notes:**
-- Three `submit-procedure`/agent references sit **outside** the brief's enumeration and are easy to miss: the commit invariant's commit-free shared-procedure list (which names `submit-procedure.md`), the "Both shared procedures … always resolve `<MILESTONE_DIR>` by following `shared/get-current-milestone.md`" invariant (`shared/task-format.md` no longer resolves anything — milestone resolution now lives in `derive-tasks` and the `submit-task` skill), and the `shared/submit-procedure.md` layout line's "followed inline by the skill and in isolation by the agent" framing.
-- Not every `submit-task` mention is stale: references to the user-facing `/submit-task` **skill** (e.g. in the `ask-in-milestone-context` invariant and the commit invariant's per-skill subject list, where `Task-submission: <task title>` is unchanged) stay. Only agent-implying wording goes.
-- The recorded decisions fix the replacement wording: clean cutover on legacy `Provides`/`Notes`/`Success` sections (no compatibility branch, `migrate-workspace` untouched), the brief template's home in the shared file referenced by both authoring runners, and the completer recording its derived bar as a `**Verified:**` bullet list in the `TASKS_DONE.md` entry.
-- `scripts/migrate_skills_to_agy.py` copies only `skills/` and `agents/`; `CLAUDE.md` has no generated twin, so this task needs no transpile re-run.
-- This task edits `CLAUDE.md` only — `README.md` and the generated `.agents/` tree belong to sibling tasks.
-
-**Success:**
-- `CLAUDE.md` contains no occurrence of `submit-procedure` and no occurrence of `agents/submit-task.md`.
-- It contains no phrase describing a `submit-task` agent — no "submit-task agent", no spawn/dispatch-per-brief step, and no listing of `submit-task` as a skill+agent pair.
-- Its repository-layout section lists `shared/task-format.md`, and every `shared/` and `agents/` path it names exists on disk.
-- Its skills-pipeline listing contains exactly one `submit-task` line (the skill), and its `derive-tasks` line says the skill writes the briefs into `TASKS_TODO.md` itself.
-- Its task-template invariant names `shared/task-format.md` as the single home of a brief-level template (`##` title, 1–3 sentence description, trailing `---`) with the four carried-over authoring guidelines, and describes no authored `Provides`, `Notes`, or `Success` section.
-- Its task-altitude invariant states that the completer derives the acceptance bar from the task description plus `requirements.md`, resolves cross-task references from prior tasks' live deliverables, and records the bar as a `**Verified:**` bullet list in the `TASKS_DONE.md` entry.
-
----
-
 ## Reconcile README With Flattened Pipeline
 
 Rewrite every passage of the repo-root `README.md` that the flattened brief-level task pipeline invalidates, so the plugin's public documentation describes the design as the prior tasks actually implemented it. That covers the skill-reference entries for `derive-tasks` (currently "delegates detailed task authoring to the `submit-task` agent"), `submit-task`, and `discuss-new-task`, the *Automated one-shot task derivation and completion* section's prose and diagram, and the *How it works* `TASKS_DONE.md` line — leaving no mention of the retired `submit-task` agent or of per-brief delegation anywhere in the file.
