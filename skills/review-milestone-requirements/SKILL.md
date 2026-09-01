@@ -7,13 +7,13 @@ description: Run a review pass over the current milestone's requirements.md to d
 
 The current "work in progress" requirements for the planned milestone live in the current milestone's `requirements.md`. The overall goal is to make that file ready enough for the work to begin — it's fine to leave some decisions to settle while doing the work if they're better solved there.
 
-This skill is the **repeatable engine** of the requirements-iteration loop. You don't run it once; you run it each time around the loop:
+This skill is the **repeatable engine** of the requirements-iteration loop — run it each time around:
 
 ```
 review → (discuss) → answer → review → answer → … → converged → derive-tasks
 ```
 
-Answering a question almost always exposes the next one, and folding a decision into the document can leave the open-questions section out of date. So each pass does three jobs: **reconcile** the existing questions against what's now decided, **surface** the new gaps, and report whether the document has **converged**. Run it as many times as the loop takes.
+Each pass does three jobs: **reconcile** the existing questions against what's now decided, **surface** the new gaps, and report whether the document has **converged**.
 
 ## review-milestone-requirements
 
@@ -44,7 +44,7 @@ The structure of `requirements.md` is as follows:
 <any open questions, each a `<open-question>` XML block>
 ```
 
-The `## Goal`, `## Relevant starting state`, `## Decisions`, and `## Out of Scope` sections stay prose Markdown. The `## Open questions` section is different: it holds raw, structured `<open-question>` XML blocks (one per question, never inline next to a requirement) — deliberately traded away from clean Markdown rendering so the blocks are deterministically queryable by line-oriented CLI (`awk`/`sed`/`grep` on the block boundary lines) and parseable by future tooling. All `<open-question>` blocks live under this one section.
+The `## Goal`, `## Relevant starting state`, `## Decisions`, and `## Out of Scope` sections stay prose Markdown. The `## Open questions` section is different: it holds raw, structured `<open-question>` XML blocks (one per question, never inline next to a requirement), queried by line-oriented CLI (`awk`/`sed`/`grep` on the block boundary lines). All `<open-question>` blocks live under this one section.
 
 ## Workflow
 
@@ -79,13 +79,13 @@ Now look for questions the document doesn't yet capture — paying special atten
 - Are there dependencies on systems not yet described?
 - Are there constraints implied but not stated?
 
-Add only genuinely new questions — don't re-raise anything already present (you just inventoried them in step 1). Categorise each new finding:
+Add only genuinely new questions — don't re-raise anything already present (you just inventoried them in step 1), and do not invent requirements: only annotate gaps relative to what is already written. Categorise each new finding:
 
-**Blocking** — would force a wrong approach or a rewrite if left unanswered. Must be resolved before the work begins.
+**Blocking** — would force a wrong approach or a rewrite if left unanswered. Must be resolved before the work begins. Do not mark something blocking if a reasonable, low-risk-to-reverse choice exists.
 
 **Deferred** — better decided while doing the work (e.g. tuning a value, choosing a specific curve). Note it so it isn't forgotten, but it does not block.
 
-Author each new finding as an `<open-question>` XML block, appended under the single `## Open questions` section (create that section if it does not yet exist). These blocks are **not** placed inline next to the requirement they concern — they all live together in `## Open questions` so the four prose sections stay clean Markdown and the whole question set sits in one bounded region the answering and recommendation skills can query deterministically. Because a block no longer sits next to its originating requirement, **each `<question>` must stand on its own** — write it so it is fully understandable without the surrounding context that inline placement used to supply.
+Author each new finding as an `<open-question>` XML block, appended under the single `## Open questions` section (create that section if it does not yet exist). These blocks are **not** placed inline next to the requirement they concern — they all live together in `## Open questions`. Because a block does not sit next to its originating requirement, **each `<question>` must stand on its own** — write it brief, self-contained, and question-shaped, fully understandable without the surrounding context that inline placement used to supply, never a design proposal.
 
 A block you author has exactly three lines: the opening boundary tag, one `<question>` child, and the closing boundary tag. For a blocking (open) question:
 
@@ -105,9 +105,9 @@ For a deferred decision, only the `status` value and the child text change:
 
 Author every block to this exact shape — these conventions are the contract the recommendation and answer skills match against, so hold to them precisely:
 
-- **Single-line opening tag, id first.** The `<open-question …>` opening tag is written on one physical line that never wraps, with attributes in id-first order: `id` then `status`, both double-quoted — `<open-question id="…" status="open">`. Downstream tooling extracts each attribute by name (a regex like `id="([^"]*)"`), so order is a convention you follow, not something the matcher depends on.
+- **Single-line opening tag, id first.** The `<open-question …>` opening tag is written on one physical line that never wraps, with attributes in id-first order: `id` then `status`, both double-quoted — `<open-question id="…" status="open">`.
 - **Boundary tags at the base column.** The `<open-question …>` and `</open-question>` lines both sit at the section's base column (no leading indent under `## Open questions`).
-- **`<question>` indented 2 spaces.** The child is nested one level — 2 spaces — under the opening tag. (Two-space-per-level indentation is the block's convention; you author only the one `<question>` child here — the `<alternative>` / `<applied-principle>` / `<recommendation>` children are added later by the recommend path, not by this skill.)
+- **`<question>` indented 2 spaces.** The child is nested one level — 2 spaces — under the opening tag. You author only this one child; the `<alternative>` / `<applied-principle>` / `<recommendation>` children are added later by the recommend path.
 - **Entity-escape everything.** Both the element text (inside `<question>`) and the attribute values (`id` and `status`) are XML-escaped using the five predefined entities — `&amp;` for `&`, `&lt;` for `<`, `&gt;` for `>`, `&quot;` for `"`, `&apos;` for `'`. Escape any of these characters wherever they appear in the Short Title or the question text.
 
 The `id` is the **Short Title**: a 2–5 word phrase that uniquely identifies the question within the document (e.g. "Getting-started section order", "Glossary term scope"). It is the stable handle the question is cited by in conversation and located by in the answering and recommendation skills, which match it **case-insensitively** — so keep every Short Title unique across all `<open-question>` blocks even ignoring case.
@@ -121,11 +121,11 @@ Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/com
 - **PATHS** — this skill's own change set: `<MILESTONE_DIR>/requirements.md` (the file whose `## Open questions` section it reconciled and surfaced into).
 - **SUBJECT** — `Requirements-review: <milestone_id>`.
 
-This is the milestone's flagship no-op-pass case, and the shared procedure's dirty-own-path guard handles it for you: a pass that reconciled, pruned, and surfaced nothing leaves `requirements.md` unchanged, so the guard stages nothing and commits nothing; a pass that reshaped the questions section commits that reshaping. The shared procedure owns the path-scoped staging, the no-op guard, and the commit — do not restate those mechanics here.
+The shared procedure owns the no-op guard, the path-scoped staging, and the commit. Its dirty-own-path guard covers this skill's no-op case: a pass that reconciled, pruned, and surfaced nothing leaves `requirements.md` unchanged, so nothing is staged and nothing is committed; a pass that reshaped the questions section commits that reshaping.
 
 ### 5. Report convergence
 
-On the success path, print exactly one fixed terse status line — `Requirements reviewed.` — carrying no identifier (no milestone id, no count, no commit subject). The committed diff and `git log` are the durable record of what this pass reshaped, so do **not** re-narrate it: there is no "What changed this pass" summary (blocks pruned, repeats merged, new questions raised, "possibly resolved — confirm" flags) and no handoff pointer toward `/discuss-open-question` or `/answer-open-question`.
+On the success path, print exactly one fixed terse status line — `Requirements reviewed.` — carrying no identifier (no milestone id, no count, no commit subject). Do **not** re-narrate what the pass reshaped: there is no "What changed this pass" summary (blocks pruned, repeats merged, new questions raised, "possibly resolved — confirm" flags) and no handoff pointer toward `/discuss-open-question` or `/answer-open-question`.
 
 Follow that terse line with only the two pieces of decision-critical state git never captures, so the user knows whether to loop again or move on:
 
@@ -134,13 +134,4 @@ Follow that terse line with only the two pieces of decision-critical state git n
   - If any `status="open"` block remains → the requirements are **not** ready; the next loop step is to answer them, then re-run this skill.
   - If none remain → say explicitly that the requirements look **ready for `/derive-tasks`**, noting any `status="deferred"` blocks that will be settled during the work.
 
-**No-op pass.** When the step-4 dirty-own-path guard fires — this pass reconciled, pruned, and surfaced nothing, so `requirements.md` is unchanged and nothing was committed — do **not** print `Requirements reviewed.` Instead print a single distinct line stating that nothing changed and briefly why (e.g. "No changes — the question set already matched the recorded decisions and no new gaps surfaced."), because git holds no durable record of a no-op. Still report the still-open list and convergence verdict above, since that state is unchanged but the user still needs it to decide the next loop step.
-
-## Rules
-
-- Do not invent requirements — only annotate gaps relative to what is already written.
-- Do not mark something as blocking if a reasonable, low-risk-to-reverse choice exists.
-- Do not resolve open questions or record decisions yourself — surface and shape them for the answering skills to decide.
-- Remove an `<open-question>` block only when a recorded decision covers it (cite it) or it's an exact duplicate; otherwise flag, don't delete. A removal deletes the whole block, `<open-question …>` through `</open-question>`.
-- Keep each `<question>` brief, self-contained, and question-shaped; avoid writing design proposals inside the document.
-- If a pass finds nothing to reconcile and no new gaps, say so — and state whether the document has converged.
+**No-op pass.** When the step-4 dirty-own-path guard fires — this pass reconciled, pruned, and surfaced nothing, so `requirements.md` is unchanged and nothing was committed — do **not** print `Requirements reviewed.` Instead print a single distinct line stating that nothing changed and briefly why (e.g. "No changes — the question set already matched the recorded decisions and no new gaps surfaced."). Still report the still-open list and convergence verdict above, since that state is unchanged but the user still needs it to decide the next loop step.
