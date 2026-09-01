@@ -46,3 +46,20 @@ The single source of truth for completing one task, consumed by the `complete-ta
 
 ## Out of Scope
 
+## Open questions
+
+<open-question id="Brief template home" status="open">
+  <question>With the submit-task agent retired, two skills still author the brief-level task format (derive-tasks writing its briefs directly, and the leaned-down submit-task skill). Where does the brief-level task template and its authoring guidance live: a slimmed shared file (the successor of shared/submit-procedure.md, keeping the ≥2-runners shared-file convention satisfied), or inlined separately into each of the two skills?</question>
+</open-question>
+
+<open-question id="Brief body contents" status="open">
+  <question>What exactly does a brief-level task section contain beyond the ## heading, the description sentences, and the trailing --- separator? Specifically: does the brief keep its loose "how it would be verified" line as part of the body (the completer derives the formal acceptance bar either way), and which of the current authoring guidelines (atomic scope, no open decisions, quote numeric values from requirements.md, unique 4-8 word titles) carry over to brief authoring?</question>
+</open-question>
+
+<open-question id="Legacy rich-task handling" status="open">
+  <question>Consuming workspaces may hold TASKS_TODO.md files with rich-format tasks (Provides/Notes/Success sections) authored before this change. Should the reworked shared/complete-procedure.md still honor those sections when present (treating them as advisory input alongside the derived acceptance bar), and should migrate-workspace cover old-format task lists, or is the rich format simply left to drain naturally since the ##/--- section mechanics are unchanged?</question>
+</open-question>
+
+<open-question id="Acceptance-bar record" status="deferred">
+  <question>Whether the completer records the acceptance bar it derived from the description plus requirements.md anywhere durable (the TASKS_DONE.md entry or the commit body) or leaves it ephemeral — best decided while reworking shared/complete-procedure.md.</question>
+</open-question>
