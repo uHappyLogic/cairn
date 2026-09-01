@@ -1,17 +1,12 @@
 # Task format (shared)
 
 This is the single source of truth for the **brief-level** format of one task section in a
-milestone's `TASKS_TODO.md`. It is referenced (never restated) by the two runners that
-author task sections — the `derive-tasks` skill, which writes its ordered briefs directly,
-and the `submit-task` skill, which authors one ad-hoc task — and the sections it defines are
-what `shared/complete-procedure.md` parses.
+milestone's `TASKS_TODO.md`. The `derive-tasks` and `submit-task` skills author sections in
+this format, and `shared/complete-procedure.md` parses them.
 
-A task states *what* is to be achieved, not how to achieve it. The completer derives the
-flow and the formal acceptance bar itself, from the task description plus the milestone's
-`requirements.md`, against the live project — so anything re-derivable there is wasted here.
-
-This file holds the format only. Where the task list lives, what context an author loads
-before writing, and where in the file a section is placed all belong to the runners.
+A task states *what* is to be achieved, not how to achieve it: the completer derives the
+flow and the acceptance bar itself against the live project, so anything re-derivable there
+is wasted here.
 
 ## Task template
 
@@ -30,10 +25,9 @@ That is the whole section: the `##` title heading, the 1–3 sentence descriptio
 trailing `---` separator. Fold the "how it would be verified" clause into the description as
 prose — it is part of those sentences, never a labeled section of its own.
 
-Nothing else belongs in a task section. There is no steps section, no `Provides` section, no
+Nothing else belongs in a task section: there is no steps section, no `Provides` section, no
 `Notes` section, no `Success` section, and no other structured done-ness heading under any
-name: the completer derives the acceptance bar and resolves cross-task references from the
-prior tasks' live deliverables, so none of that can be authored ahead of the work.
+name.
 
 The trailing `---` separator after every task section is mandatory —
 `shared/complete-procedure.md` parses sections by it.

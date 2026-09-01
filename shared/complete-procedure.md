@@ -1,15 +1,10 @@
 # Complete-task procedure (shared core)
 
 This is the single source of truth for completing one named task from the current
-milestone's task list. It is followed in two ways:
-
-- **Inline**, by the `complete-task` skill, which runs these steps directly in
-  the user's conversation so the work context survives for follow-up.
-- **In isolation**, by the `complete-task` agent, which runs the same steps in a
-  throwaway subagent context for the `complete-all-tasks` orchestrator.
-
-The wrappers add their own framing (return protocol, follow-up, committing). This file
-describes only the work itself; it says nothing about how the outcome is signalled.
+milestone's task list: the `complete-task` skill follows these steps inline, the
+`complete-task` agent follows them in isolation. The wrappers add their own framing; this
+file describes only the work itself. If a step fails, diagnose the root cause with the
+available tools, fix it, and retry — never skip a step or record partial work as done.
 
 ## The task shape
 
@@ -44,7 +39,7 @@ kind of work.
 
 ### 1. Find and read the task
 
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`.
 
 Read `<MILESTONE_DIR>/TASKS_TODO.md`. Locate the `##` section whose heading matches the
 given task name (case-insensitive, partial match is fine). If no section matches, **stop
@@ -110,8 +105,7 @@ problems before continuing.
 **Record the paths you touch.** As you create or edit each file while carrying out the
 task, keep an explicit running list of those paths — recorded as each edit is made, never
 reconstructed afterwards by diffing the working tree. This recorded set is the task's real
-change set; a wrapper reads it from here when it needs to know exactly which files this task
-touched. Recording paths as you go is neither committing nor content inspection.
+change set.
 
 **Tool patterns:**
 - Read or edit a file: `Read` then `Edit`.
@@ -167,13 +161,3 @@ the work was actually verified against.
    Write the criteria as they stood when they passed in step 4 — the same bar, neither
    re-derived nor summarized into prose. The `**Verified:**` label is the completion record
    and is deliberately distinct from any label a task list uses to author work.
-
-## Rules
-
-- Always follow the conventions from `CLAUDE.md` — never skip the project's way of verifying the work.
-- Never treat a task as done until every criterion of the derived bar is confirmed (step 4).
-- Never move a task to `TASKS_DONE.md` until step 4 passes completely, and never move it
-  without the `**Verified:**` bullet list.
-- Never carry out a task that is not present in `<MILESTONE_DIR>/TASKS_TODO.md`.
-- If a step fails, diagnose the root cause with the available tools, fix it, and retry. Do
-  not skip steps or mark partial work as done.
