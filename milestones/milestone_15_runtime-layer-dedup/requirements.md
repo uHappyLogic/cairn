@@ -42,28 +42,151 @@ The repository has no build, tests, or dependencies; correctness of skill edits 
 
 <open-question id="Reference-tail treatment" status="open">
   <question>Around 26 runtime files reference a shared procedure with a sentence tail of the form: the shared procedure owns the staging, the guard, and the commit; do not restate those mechanics here. The shared files likewise open and close with boundary statements addressed to editors (this file holds only the commit logic; resolving the milestone dir and parsing arguments are the wrappers&apos; job; never restate them here). Are these tails and boundary statements editor-facing restatement to be cut down to the bare reference sentence (with their content living in the CLAUDE.md shared-procedure invariants), or point-of-use instructions the runner needs that must stay?</question>
+  <alternative id="Cut to bare reference">
+    Treat every &quot;the shared procedure owns X; do not restate those mechanics here&quot; tail and every shared-file editor-addressed boundary paragraph as restatement, deleting them wholesale so each reference collapses to the bare follow-this-file sentence plus its inputs, with the division of labour living only in the CLAUDE.md shared-procedure invariants.
+    <advantage>One mechanical rule applied uniformly across all ~26 referencing files and the shared headers, with no per-file judgement call, and it removes the intra-file duplication where a shared file states its own boundary twice (header paragraph and closing rule).</advantage>
+    <drawback>Several tails are not boilerplate — they name which of this skill&apos;s clean-stop or no-op cases the guard covers — so a blanket cut destroys point-of-use content the goal explicitly protects, and it strips the delegation cue that stops a runner from improvising commit mechanics inline.</drawback>
+  </alternative>
+  <alternative id="Keep tails as point-of-use">
+    Classify the tails and boundary statements as instructions the runner acts on at the moment of delegation, declaring them out of scope for this sweep and leaving all ~26 sites untouched.
+    <advantage>Zero behavioural risk in exactly the files that are loaded most often and whose mechanics (path-scoped staging, the no-op guard, never git add -A) are the ones with real consequences if a runner ad-libs them.</advantage>
+    <drawback>Leaves ~26 near-identical copies of a sentence whose second clause is addressed to a file editor rather than the runner, plus the shared files&apos; doubled self-boundary statements — precisely the restatement class the milestone goal names, forfeiting the recovery with no compensating gain.</drawback>
+  </alternative>
+  <alternative id="Split the tail by audience">
+    Apply an audience test clause by clause: keep the runner-facing delegation clause (what the referenced file owns, normalized to one short fixed form alongside the inputs the caller supplies) and every file-specific sentence such as which clean-stop or no-op case the guard covers, and cut the editor-facing imperative (&quot;do not restate those mechanics here&quot;, &quot;never restate them here&quot;) plus the shared files&apos; editor-addressed boundary paragraphs, verifying their content is present in the matching CLAUDE.md invariant first.
+    <advantage>Cuts exactly the sentences whose reader is a future editor of the file — a runner executing a skill never writes text into that skill, so &quot;here&quot; can only address an editor — while preserving every clause a runner acts on, which is the goal&apos;s own stated dividing line.</advantage>
+    <drawback>Recovers fewer words than a wholesale cut and needs a per-file read rather than one sweep-wide substitution, since the surviving delegation clause has to be normalized and the file-specific tails distinguished from the boilerplate ones by judgement.</drawback>
+  </alternative>
+  <recommendation option="Split the tail by audience">The goal already fixes the test — editor-facing rationale moves to CLAUDE.md, point-of-use constraints stay — and these tails straddle it: &quot;do not restate those mechanics here&quot; can only be addressed to an editor, while the owns-X clause and the file-specific no-op and clean-stop sentences are what the runner acts on; if the per-file constraint-preservation check later shows the normalized owns-X clause delivers nothing the reference sentence and the shared file do not already give the runner, that clause can collapse to the bare reference as a follow-up.</recommendation>
 </open-question>
 
 <open-question id="Reporting-step trim depth" status="open">
   <question>Every committing skill&apos;s final step carries the terse-reporting convention in full: the fixed line to print, the list of things not to add, the sentence that the committed diff and git log are the durable record, and the distinct no-op line with its rationale. The CLAUDE.md terse-reporting invariant says the convention is authored inline in each SKILL.md&apos;s final step because there is deliberately no shared report procedure. How far may this milestone trim those steps: down to the bare print instructions (the success line and the no-op line) with all rationale moved to the invariant, or must the fuller convention text stay inline in each file as that invariant currently implies?</question>
+  <alternative id="Bare print instructions">
+    Trim every reporting step down to the fixed success line, the no-op line, and any file-specific git-absent advisory, relocating the prohibition list and all rationale into the CLAUDE.md terse-reporting invariant.
+    <advantage>Largest saving of the four across the roughly fifteen skills carrying the convention (their reporting steps total well over 1,500 words), and leaves exactly one home for the convention instead of fifteen paraphrases.</advantage>
+    <drawback>It strips the &quot;and nothing more / no identifier / no next-step pointer&quot; prohibitions, which are the only run-time instruction resisting a model&apos;s default urge to narrate what it just did; a consuming project never loads CLAUDE.md, so the relocated text is invisible where the skill actually executes and the layer&apos;s most drift-prone convention loses its guardrail.</drawback>
+  </alternative>
+  <alternative id="Cut rationale, keep prohibitions">
+    Cut only the justification sentences — that the committed diff and git log are the durable record, and that git holds no durable record of a no-op — whose content the CLAUDE.md invariant already carries, while keeping inline the fixed line string, the file-specific list of what must not be printed, the no-op branch with its per-file trigger, and any git-absent advisory that step owns.
+    <advantage>Removes precisely the class the Goal defines as cuttable (rationale whose content survives in a CLAUDE.md invariant) while every imperative that actually shapes the printed output stays at its point of use, which the Goal explicitly protects.</advantage>
+    <drawback>Saves less than a full trim and still leaves a per-file instantiation of the convention in every committing skill, so each edit needs a judgment call about where the prohibition ends and the justification begins.</drawback>
+  </alternative>
+  <alternative id="Leave reporting steps untouched">
+    Treat the whole reporting step as point-of-use instruction and exclude it from this milestone&apos;s sweep entirely.
+    <advantage>Zero behavior risk on the convention most likely to regress, and no per-file judgment calls to get wrong.</advantage>
+    <drawback>Forfeits several hundred words that demonstrably survive in the CLAUDE.md invariant, contradicting the milestone&apos;s own stated cut criterion out of caution rather than evidence.</drawback>
+  </alternative>
+  <alternative id="Shared report procedure">
+    Extract the convention into a new `shared/report-procedure.md` referenced by each committing skill, as 26 files already reference the other shared procedures.
+    <advantage>Deduplicates the convention structurally rather than by trimming, so it is stated once and still reaches every runner at run time, including in consuming projects.</advantage>
+    <drawback>Contradicts the standing CLAUDE.md invariant that there is deliberately no such file, reopens an architectural decision this milestone did not scope, and buys little — each skill gains a reference sentence while the per-run read reintroduces most of the words.</drawback>
+  </alternative>
+  <recommendation option="Cut rationale, keep prohibitions">The justification sentences are the only part whose content already lives in the CLAUDE.md invariant and therefore the only part the Goal licenses cutting, whereas the &quot;and nothing more&quot; prohibitions are point-of-use constraints the Goal protects and that a consuming project could never recover, since it never loads CLAUDE.md.</recommendation>
 </open-question>
 
 <open-question id="Invariants section growth" status="open">
   <question>Moving rationale out of runtime files into CLAUDE.md will grow the Invariants section, already 35 bullets and about 4,839 words, and several of those bullets already restate each other. Does this milestone only append or extend the matching invariant when moving rationale in (leaving the section&apos;s existing shape alone), or does it also consolidate the Invariants section itself so CLAUDE.md does not become the new duplication sink?</question>
+  <alternative id="Append only">
+    Move each piece of runtime-file rationale into the matching CLAUDE.md invariant by extending that bullet or appending a new one, and leave the Invariants section&apos;s existing shape, ordering, and cross-bullet overlap exactly as they are.
+    <advantage>Keeps the milestone&apos;s blast radius entirely on the runtime layer, where the ~11,000-word target, the per-file constraint-preservation check, and the fresh-context re-audit all live, and costs plugin consumers nothing since CLAUDE.md never loads outside this repository.</advantage>
+    <drawback>Ships exactly the duplication the milestone exists to remove, merely relocated: a 35-bullet, 4,841-word section that is already 76% of CLAUDE.md and already restates itself across the answer/recommend cluster grows further, so the next session in this repo pays the cost the runtime layer stopped paying.</drawback>
+  </alternative>
+  <alternative id="Consolidate inline">
+    Treat consolidation as part of each move: whenever rationale lands in an invariant, also merge or rewrite the neighbouring bullets it overlaps, so the section is de-duplicated continuously as the sweep proceeds.
+    <advantage>Each invariant is touched exactly once, needs no extra task, and the person merging has the runtime file&apos;s original wording in hand at the moment of the merge.</advantage>
+    <drawback>Makes the sweep&apos;s own reference target move underneath it — every cut is justified by &quot;this survives in a CLAUDE.md invariant&quot;, so rewriting those invariants mid-sweep means earlier cuts point at bullets that no longer read as they did when the cut was justified, and both the per-file check and the re-audit must chase a mutating target.</drawback>
+  </alternative>
+  <alternative id="Consolidate in a final pass">
+    Run the runtime-layer sweep append-or-extend only, against a frozen Invariants section, then close the milestone with one dedicated consolidation task that rewrites the whole section — merging the overlapping bullets and absorbing the newly moved rationale — before the fresh-context re-audit.
+    <advantage>Gets both properties: the sweep runs against a stable, additive-only reference target, and the section is consolidated once with the full post-move content visible, so merges are made against what the invariants actually say at the end rather than guessed at mid-flight.</advantage>
+    <drawback>Adds a task and a second editing regime, and because that pass rewrites bullets the just-completed cuts depend on, it must carry its own constraint-preservation check over CLAUDE.md rather than inheriting the runtime layer&apos;s.</drawback>
+  </alternative>
+  <applied-principle>Mutate live machinery last</applied-principle>
+  <recommendation option="Consolidate in a final pass">The Invariants section is the reference every cut in this sweep is justified against, so it must stay frozen while the sweep runs and be consolidated once afterwards — which de-duplicates CLAUDE.md without the milestone&apos;s own verification chasing a moving target.</recommendation>
 </open-question>
 
 <open-question id="Antigravity shared-procedure gap" status="open">
   <question>The transpile script that regenerates the Antigravity tree copies skills and agents but not the shared directory, and leaves the CLAUDE_PLUGIN_ROOT references verbatim, so the generated skills point at procedure files that do not exist in that tree. This gap predates the milestone. Is fixing it (copying shared into the generated tree, or rewriting the references) in scope, or does the milestone only regenerate the tree as-is and record the gap as out of scope?</question>
+  <alternative id="Out of scope, recorded">
+    Regenerate the Antigravity tree exactly as the current script produces it, and record the missing-shared gap under &quot;## Out of Scope&quot; (optionally as a follow-up milestone item) without touching scripts/migrate_skills_to_agy.py.
+    <advantage>Keeps a prose-dedup milestone entirely inside the Markdown runtime layer, changing no tooling and adding no verification burden the repository (no build, no tests) is equipped to carry.</advantage>
+    <drawback>The sweep&apos;s own deletion rule permits cutting a sentence when its content &quot;survives in a referenced shared procedure&quot; — a premise that is false in the generated tree, so this milestone knowingly makes the Antigravity output materially worse than the tree it regenerates.</drawback>
+  </alternative>
+  <alternative id="Copy shared into tree">
+    Add a shared/ copy to the transpile script mirroring the existing wholesale agents/ copytree, regenerate, and leave the ${CLAUDE_PLUGIN_ROOT} reference text untouched in both trees.
+    <advantage>A roughly four-line change in the same shape as code already in the script makes every referenced procedure file actually present in the generated tree, restoring the &quot;content survives in the shared procedure&quot; premise the dedup depends on, and it is verifiable here by inspecting the regenerated file list.</advantage>
+    <drawback>It fixes only file presence, not path resolution: if Antigravity does not expand ${CLAUDE_PLUGIN_ROOT}, the tree still cannot load the procedures, so the gap may be closed only halfway while looking closed.</drawback>
+  </alternative>
+  <alternative id="Copy and rewrite references">
+    Copy shared/ into the generated tree and additionally rewrite each ${CLAUDE_PLUGIN_ROOT}/shared/&lt;name&gt;.md reference in the 22 generated skill and agent files to a path the Antigravity tree resolves.
+    <advantage>The only option that produces an end-to-end loadable Antigravity plugin, closing a pre-existing defect completely rather than partially.</advantage>
+    <drawback>It introduces a generated-vs-source content divergence and a text transform whose correctness cannot be verified in this repository — there is no Antigravity runtime, no test, and no known-good target path — turning a Markdown milestone into unverifiable tooling work.</drawback>
+  </alternative>
+  <recommendation option="Copy shared into tree">Fixing is in scope but only to the extent this milestone can prove correct: the sweep deletes prose on the grounds that it survives in a referenced shared procedure, so shipping a regenerated tree whose procedures are absent would undercut the milestone&apos;s own deletion rule, while copying shared/ is a small change in the shape of the script&apos;s existing agents/ copy and is checkable by inspection — the unverifiable reference rewrite stays out of scope and is recorded as a follow-up.</recommendation>
 </open-question>
 
 <open-question id="Constraint-check record form" status="deferred">
   <question>The per-file constraint-preservation check must show that every imperative in a file&apos;s original text survives at its point of use, in a referenced shared procedure, or in a CLAUDE.md invariant. Where does the evidence of that check land: only as Verified bullets in the TASKS_DONE entry of the task that edited the file, or as a committed checklist artifact under the milestone directory that the re-audit can read?</question>
+  <alternative id="Verified bullets only">
+    The constraint-preservation evidence lands solely as the completer&apos;s derived `**Verified:**` bullets in the TASKS_DONE.md entry of the task that edited each file, in whatever shape the completer derives from the task description plus requirements.md.
+    <advantage>Adds nothing to the pipeline — it reuses the one evidence channel `shared/complete-procedure.md` already writes and later milestones already read, so there is no new artifact, no new writer, and no risk of a record drifting from the files it describes.</advantage>
+    <drawback>Leaves the shape unpinned: a completer may satisfy it with a single coarse bullet asserting that all constraints survived, which proves nothing a fresh-context re-audit could check imperative by imperative.</drawback>
+  </alternative>
+  <alternative id="Verified bullets as constraint ledger">
+    Same channel and same file, but the milestone pins the shape: each edited file&apos;s TASKS_DONE.md entry carries the constraint check as an explicit ledger — one bullet per imperative removed or relocated, naming where it now survives (its point of use in the same file, the referenced shared procedure, or the CLAUDE.md invariant).
+    <advantage>Gives the re-audit a checkable per-imperative claim to verify against the live file while staying inside the existing three-file milestone structure and the existing `**Verified:**` label, with git history supplying the original text the ledger is a claim about.</advantage>
+    <drawback>Makes some TASKS_DONE.md entries long for the heavily-edited hot files, and depends on the editing task&apos;s description pinning the ledger shape since the completer otherwise derives the bar freely.</drawback>
+  </alternative>
+  <alternative id="Committed checklist artifact">
+    A separate committed file under the milestone directory (e.g. a per-file constraint checklist) collects every imperative and its surviving destination across the whole sweep, and the fresh-context re-audit reads that file.
+    <advantage>Concentrates the whole sweep&apos;s preservation evidence in one place, readable end-to-end without walking every TASKS_DONE.md entry, and survives as a standalone audit trail.</advantage>
+    <drawback>Introduces a fourth file into a milestone directory that CLAUDE.md says contains exactly three, with no skill that writes, updates, or reads it — so it is hand-maintained and free to drift — and feeding the sweep&apos;s own record to the re-audit works against the independence milestone 12 established by giving its auditor only the criteria and the file set.</drawback>
+  </alternative>
+  <recommendation option="Verified bullets as constraint ledger">Keep the evidence in the pipeline&apos;s own `**Verified:**` channel rather than inventing an unowned fourth milestone file, but pin it to one bullet per relocated imperative naming its destination, so the re-audit has a claim it can check against the live file and git-recoverable original instead of a bare assertion.</recommendation>
 </open-question>
 
 <open-question id="Re-audit follow-up policy" status="deferred">
   <question>Milestone 12 ran a first fresh-context re-audit, fixed the residuals it found, then ran a second re-audit that returned zero findings. If this milestone&apos;s fresh-context re-audit finds residual duplication or a lost constraint, is a second zero-findings re-audit required after the fixes, or is one audit plus fixes sufficient?</question>
+  <alternative id="Iterate to a clean re-audit">
+    Adopt milestone 12&apos;s pattern verbatim: the fresh-context re-audit audits but never fixes, findings become follow-up fix tasks, and a further fresh-context re-audit over the whole runtime layer is queued after them, repeating until one run returns an explicit zero-findings verdict that stands as the milestone&apos;s proof.
+    <advantage>It is the only arrangement where the evidence covers the final state of the files: this milestone&apos;s fixes are themselves prose edits — re-inserting a dropped constraint or cutting further restatement — so the fixes carry exactly the same failure mode the audit exists to catch, and an unaudited fix round leaves the delivered layer unproven.</advantage>
+    <drawback>Each extra round costs a full fresh-context pass over the 33-file layer plus a task-authoring round, and an unlucky sequence of small findings can stretch the milestone&apos;s tail well past the sweep itself.</drawback>
+  </alternative>
+  <alternative id="One audit plus fixes">
+    Run exactly one fresh-context re-audit; its findings become fix tasks whose own completion-time verification (the per-file constraint-preservation check recorded in each TASKS_DONE entry) is accepted as sufficient evidence, and no second audit is queued.
+    <advantage>Cheapest and strictly bounded — the milestone ends a known number of tasks after the audit, and each fix already carries a per-file check of its own, so the marginal audit is arguably re-proving work that was just verified.</advantage>
+    <drawback>The fix round is verified only by the same context that made the fixes, which forfeits the independence that is the entire point of a fresh-context re-audit, and the goal&apos;s &quot;verified by ... a fresh-context re-audit&quot; would be satisfied by a run whose verdict was known to be dirty.</drawback>
+  </alternative>
+  <alternative id="Scoped follow-up re-audit">
+    Require a second fresh-context re-audit but narrow it to the files the fix tasks touched, rather than re-auditing the whole runtime layer.
+    <advantage>Keeps independent verification of the fixes while cutting the follow-up round to a fraction of the file set, which matters when the first audit surfaces a handful of residuals in a few files.</advantage>
+    <drawback>It is blind to this milestone&apos;s characteristic cross-file failure: a constraint cut from one file on the premise that it survives in a shared procedure or a CLAUDE.md invariant is only checkable by looking at both ends, so a file-scoped pass can return clean on a genuinely lost constraint.</drawback>
+  </alternative>
+  <alternative id="Conditional on finding class">
+    Make the follow-up re-audit mandatory only when the first audit reports a lost constraint (a correctness finding), and optional when it reports only residual duplication (a thoroughness finding).
+    <advantage>Spends the expensive round only on the failure class that actually changes runtime behavior, matching effort to risk instead of treating a missed leftover sentence like a dropped imperative.</advantage>
+    <drawback>It puts an unaudited classification judgment on the critical path — deciding whether a finding is &quot;merely&quot; duplication is precisely the call the sweep already got wrong once — and replaces a bright-line completion bar with one that has to be argued each time.</drawback>
+  </alternative>
+  <recommendation option="Iterate to a clean re-audit">Fixes here are the same kind of prose deletion the audit exists to police, so only a fresh pass over the whole layer after the last fix proves the delivered state — and milestone 12 showed the cost is a single subagent dispatch per round against a first audit that found seven real residuals.</recommendation>
 </open-question>
 
 <open-question id="README sync scope" status="deferred">
   <question>README.md never mentions the Rules sections, but its skill reference and workflow prose describe each skill and the referenced-never-restated doctrine. Does this milestone touch README.md at all, and if so only where the sweep falsifies an existing claim, or does it also add a sentence describing the new runtime-files-never-restate-invariants rule?</question>
+  <alternative id="README untouched">
+    Declare README.md entirely out of scope for this milestone, on the grounds that the sweep is behavior-neutral by construction, and leave every existing claim as it stands.
+    <advantage>Zero cost and zero churn in a user-facing document that a behavior-neutral prose sweep has no reason to invalidate.</advantage>
+    <drawback>It assumes rather than checks: README&apos;s skill-reference entries already narrate internals (which shared procedure owns which mechanics, which sub-elements the recommend subagent returns, what a file&apos;s sections contain), so a sweep edit could silently falsify one with nobody looking.</drawback>
+  </alternative>
+  <alternative id="Falsification-only sync">
+    Touch README.md only where a sweep edit makes an existing claim false — a verification pass over the skill reference and workflow prose that edits solely on a confirmed falsification and adds no new prose.
+    <advantage>Keeps the public document truthful with the smallest possible blast radius, and covers the one real risk — README describes runtime internals per skill — without importing a contributor-only authoring convention into a document written for plugin users.</advantage>
+    <drawback>Spends a verification pass whose expected outcome is no edit at all, and leaves the new never-restate-invariants rule documented nowhere a contributor reading only README would find it.</drawback>
+  </alternative>
+  <alternative id="Sync plus doctrine sentence">
+    Do the falsification sync and additionally add a sentence to README describing the new runtime-files-never-restate-invariants rule, alongside the existing How-skills-commit convention prose.
+    <advantage>Makes the authoring rule discoverable to a contributor who reads only README, giving the milestone&apos;s central doctrine a public statement rather than a repository-internal one.</advantage>
+    <drawback>Restates an editor-facing invariant in a third place — precisely the class of duplication this milestone exists to remove — inside a user-facing document whose readers never author runtime files, and creates a new sentence that must itself be kept in sync with the CLAUDE.md invariant.</drawback>
+  </alternative>
+  <recommendation option="Falsification-only sync">The sweep is behavior-neutral, so the only honest README work is confirming no existing claim went stale; the never-restate rule is an authoring convention whose single home is the CLAUDE.md invariant, and repeating it in a user-facing README would recreate the very duplication this milestone removes.</recommendation>
 </open-question>
