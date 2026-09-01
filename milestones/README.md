@@ -10,9 +10,18 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_14_brief-level-task-pipeline/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 14 — Brief-level task pipeline
+
+- Flattened the task pipeline to a single brief-level altitude: every entry in `TASKS_TODO.md` is now a `##` title plus a 1–3 sentence description and a trailing `---`, with no `Provides`/`Notes`/`Success` sections, whichever path authored it.
+- Replaced `shared/submit-procedure.md` with `shared/task-format.md`, holding only the brief-level template and its four authoring guidelines — referenced via `${CLAUDE_PLUGIN_ROOT}` by both authoring runners (`derive-tasks` and the `submit-task` skill) and parsed by `shared/complete-procedure.md`.
+- Made `derive-tasks` the single writer on the derivation path: it now writes its ordered briefs into `TASKS_TODO.md` itself, retiring the per-brief dispatch loop and deleting the `submit-task` agent, leaving `complete-task` as the plugin's only remaining skill+agent pair.
+- Leaned down the `submit-task` skill to author the same brief-level format inline and own the position-anchored insertion itself, keeping its triage, position decision, and `Task-submission:` commit unchanged.
+- Reworked `shared/complete-procedure.md` to be self-sufficient at brief altitude: it derives each task's acceptance bar from the description plus `requirements.md`, resolves cross-task references by reading prior tasks' live deliverables, and records the derived bar in the `TASKS_DONE.md` entry as a `**Verified:**` bullet list.
+- Reconciled `CLAUDE.md` and `README.md` with the flattened design (layout, pipeline listing, skill reference, diagrams, and the derivation/altitude/template invariants) and regenerated the checked-in Antigravity plugin tree under `.agents/plugins/cairn/`.
 
 ### Milestone 13 — agy-integration-polish
 
@@ -147,3 +156,4 @@ Current milestone: `milestones/milestone_14_brief-level-task-pipeline/`
 | 11 | Terse Skill Reporting | `milestones/milestone_11_terse-skill-reporting/` |
 | 12 | Work-Type-Agnostic Sweep | `milestones/milestone_12_work-type-agnostic-sweep/` |
 | 13 | agy-integration-polish | `milestones/milestone_13_agy-integration-polish/` |
+| 14 | Brief-level task pipeline | `milestones/milestone_14_brief-level-task-pipeline/` |
