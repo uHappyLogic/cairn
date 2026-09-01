@@ -13,7 +13,7 @@ context, so you can follow up right after — ask why the recommendation read th
 the recorded decision, or answer the next question — without the context being thrown away.
 
 This is the single-question, inline twin of the `answer-open-question-with-recommendation`
-agent, completing the SKILL + AGENT pair (like `complete-task`/`submit-task`). For sweeping
+agent, completing the SKILL + AGENT pair (like `complete-task`). For sweeping
 **every** open question that carries an embedded recommendation unattended, use
 `/answer-all-open-questions-with-recommendation` instead — that orchestrator dispatches the
 file-editing agent per question and each dispatch commits its own answer.

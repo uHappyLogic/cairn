@@ -1,15 +1,15 @@
 ---
 name: derive-tasks
-description: Convert the current milestone's requirements.md into a complete, dependency-ordered TASKS_TODO.md. Decomposes the milestone into high-level task briefs, proves every requirement is covered, then delegates the detailed authoring of each task to the submit-task agent.
+description: Convert the current milestone's requirements.md into a complete, dependency-ordered TASKS_TODO.md. Decomposes the milestone into high-level task briefs, proves every requirement is covered, then writes those briefs directly into the task list as brief-level task sections.
 ---
 
 # derive-tasks
 
 Reads the current milestone requirements and derives a complete, dependency-ordered list of tasks into `TASKS_TODO.md`, ready for AI-driven completion via `/complete-task`.
 
-Your job here is **decomposition and coverage**, not task authoring. You split the milestone into high-level task briefs and prove that those briefs cover every requirement — that whole-milestone view is the thing most likely to break if you get lost in file paths and low-level details. The detailed, per-task technical authoring (the contract surface, notes, exact paths, success criteria) is delegated, one task at a time, to the `submit-task` agent. That keeps each task's technical reasoning out of your context so your attention stays on completeness and ordering.
+Your job here is **decomposition and coverage**. You split the milestone into high-level task briefs, prove that those briefs cover every requirement, order them by dependency, and write them into `TASKS_TODO.md` yourself — you are the single writer on the derivation path. That whole-milestone view is the thing most likely to break if you get lost in file paths and low-level details, and it is exactly why the task sections you write stay at brief altitude: a task states *what* is to be achieved, and the completer derives the flow and the formal acceptance bar itself from the description plus `requirements.md`, against the live project.
 
-This mirrors the completion side: `complete-all-tasks` orchestrates and `complete-task` does the per-task work in a clean context. Here, you orchestrate and `submit-task` (the agent) does the per-task authoring.
+Because a brief and a finished task section are the same altitude, there is no authoring step beyond writing the brief down in the shared format. Nothing is delegated.
 
 ## Usage
 
@@ -21,7 +21,7 @@ No arguments. The skill always reads from and writes to the current milestone di
 
 ## Preconditions
 
-- All open questions in the current milestone's `requirements.md` must be resolved (no `> **Open question` blocks remain).
+- All open questions in the current milestone's `requirements.md` must be resolved (no `<open-question` block with `status="open"` remains; `status="deferred"` blocks may carry forward).
 - `TASKS_TODO.md` should be empty or contain only stale tasks from a previous milestone; this skill replaces its contents.
 
 ## Workflow
@@ -36,9 +36,11 @@ Read `CLAUDE.md` at the workspace root for the project's domain context, working
 
 Read `<MILESTONE_DIR>/requirements.md` in full, plus any files referenced in its **Relevant starting state** section, so you understand the exact starting point.
 
+Read the shared task format at `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path). It is the single source of truth for the shape of every task section you write in step 7 — the template and its authoring guidelines. Do not restate or re-derive that format here.
+
 ### 2. Check for unresolved open questions
 
-Scan `requirements.md` for any `> **Open question` blocks. If any exist, stop immediately and output:
+Scan `requirements.md` for `<open-question` blocks carrying `status="open"`. If any exist, stop immediately and output:
 
 ```
 Cannot derive tasks: the following open questions must be resolved first:
@@ -48,9 +50,11 @@ Cannot derive tasks: the following open questions must be resolved first:
 Run /answer-open-question for each one, then re-run /derive-tasks.
 ```
 
+A block with `status="deferred"` does **not** block derivation — deferred questions may carry forward past this point.
+
 ### 3. Decompose into high-level task briefs
 
-Break the milestone into discrete, independently-completable task briefs. A **brief** is high-level — it names the affected system, the desired behavior, and how it would be verified. It does **not** contain file paths, low-level details, contract surface, or success criteria; that detail is the agent's job. Keeping briefs high-level is deliberate: it lets you hold many more of them in mind at once and reason about whether they cover everything.
+Break the milestone into discrete, independently-completable task briefs. A **brief** is high-level — it names the affected system, the desired behavior, and how it would be verified. It does **not** spell out the flow, the low-level design, or a structured done-ness section; all of that is re-derivable by the completer against the live project, so authoring it here is wasted work that would also go stale. Keeping briefs high-level is deliberate: it lets you hold many more of them in mind at once and reason about whether they cover everything.
 
 Apply these rules:
 
@@ -78,33 +82,27 @@ Do not proceed until the matrix has no unexplained gaps.
 
 Order briefs so each one's prerequisites come first: a brief that produces something other briefs build on or refer to must precede any brief that depends on it. The top of `TASKS_TODO.md` is the highest priority / done first.
 
+Ordering matters beyond priority: the completer resolves a task's references to sibling work by reading the prior tasks' live deliverables, so a dependency must already be done by the time the task that leans on it runs.
+
 ### 6. Present the plan, then initialize the file
 
-Show the user the ordered brief list and the coverage matrix (or a short summary of it, flagging anything already-satisfied or any residual gap). This is the cheap moment to correct ordering or scope — before authoring N tasks. Then proceed (the user can interrupt to adjust).
+Show the user the ordered brief list and the coverage matrix (or a short summary of it, flagging anything already-satisfied or any residual gap). This is the cheap moment to correct ordering or scope — before writing N tasks. Then proceed (the user can interrupt to adjust).
 
-Initialize `<MILESTONE_DIR>/TASKS_TODO.md` to a clean header so the agent has an empty file to append into:
+Initialize `<MILESTONE_DIR>/TASKS_TODO.md` to a clean header:
 
 ```markdown
 # TASKS TODO
 ```
 
-### 7. Delegate authoring, one brief at a time, in order
+Initializing here is what makes step 9's once-at-end path-scoped commit and its dirty-own-path no-op guard behave: the file this run owns starts from a known state, so what the commit records is exactly this run's derivation.
 
-For each brief, **in dependency order**, spawn the `submit-task` agent with the `Agent` tool (`subagent_type: "submit-task"`). Send the brief and `POSITION: append` — because you submit in dependency order, appending each task yields the correct final order, and the agent never has to re-derive ordering:
+### 7. Write the briefs into the task list, in order
 
-```
-Author and insert one task.
+Write each brief into `<MILESTONE_DIR>/TASKS_TODO.md` as one task section, **in dependency order**, appending each after the last so the finished file reads top-to-bottom in that order.
 
-BRIEF:
-<the high-level brief: affected system, desired behavior, how to verify>
+Use the template and the authoring guidelines from `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md` exactly — the `##` title heading, the 1–3 sentence description with the "how it would be verified" clause folded in as prose, and the mandatory trailing `---` separator, and nothing else. The brief you decomposed in step 3 *is* the task body; writing it down is a transcription into that format, not a second authoring pass that adds detail.
 
-POSITION: append
-```
-
-**Run these sequentially, never in parallel** — every agent mutates the same `TASKS_TODO.md`, so concurrent runs would clobber each other. Wait for each agent to return before spawning the next.
-
-- If an agent returns `FAILED: <reason>`, stop, report which brief failed and why, and do not continue. Never author the task yourself as a fallback.
-- If an agent's final line flags a leftover piece (it judged the brief to contain two tasks), decide whether to spawn a follow-up agent for the remainder or fold it in, then continue.
+If a brief turns out to contain two independently-buildable pieces, do not silently split or merge it: write the one that matches its primary intent, and surface the leftover to the user so ordering and scope stay yours to correct.
 
 ### 8. Verify coverage and report
 
@@ -116,17 +114,17 @@ If the run derived nothing — `TASKS_TODO.md` gained no task section, so step 9
 
 ### 9. Commit the derived task list
 
-You are the orchestrator, so you commit **once at the end of the run** — here, after the whole sequential per-brief agent loop (step 7) has returned and coverage is verified (step 8), never inside the loop. Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these two inputs:
+You commit **once at the end of the run** — here, after every brief has been written (step 7) and coverage is verified (step 8), never after each individual task section. Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these two inputs:
 
-- **PATHS** — this run's own change set: `<MILESTONE_DIR>/TASKS_TODO.md` (the file this skill initialized in step 6 and its agents appended into in step 7).
+- **PATHS** — this run's own change set: `<MILESTONE_DIR>/TASKS_TODO.md` (the file this skill initialized in step 6 and wrote into in step 7).
 - **SUBJECT** — `Task-derivation: <milestone_id>`.
 
 The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard (a run that derived nothing into `TASKS_TODO.md` stages and commits nothing), and the commit; do not restate those mechanics here.
 
 ## Rules
 
-- Your output is briefs + ordering + coverage. Do not write task bodies — the contract surface, notes, file paths, or success criteria — yourself; that is the agent's job, and duplicating it both pollutes your context and risks diverging from the shared task template the agent uses.
+- Your output is briefs + ordering + coverage, written down in the shared task format. Keep every task section at brief altitude — never add a flow, a low-level design, a contract surface, or a structured done-ness section; the completer derives all of that against the live project.
+- Take the task section's shape from `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md` — never restate or vary that template here.
 - Never invent requirements not present in the spec; never omit one that is.
 - Do not create tasks for work already in `TASKS_DONE.md`, or for requirements already satisfied by what already exists (note these in the report instead).
-- Submit briefs in dependency order with `POSITION: append`; let the agent own task wording and the caller (you) own order.
-- Spawn authoring agents sequentially, one at a time. Stop on the first `FAILED`.
+- Write the task sections in dependency order, top-to-bottom; ordering is yours to own and must not be left implicit.
