@@ -58,6 +58,10 @@ Findings come in two classes with different dispositions. A lost constraint — 
 
 The per-file constraint-preservation check is recorded in the pipeline's own `**Verified:**` channel — the `TASKS_DONE.md` entry of the task that edited the file — and no separate checklist artifact is added under the milestone directory, which stays at its three files. The shape is pinned rather than left to the completer: the entry carries the check as an explicit ledger with one bullet per imperative removed or relocated, naming where that imperative now survives (its point of use in the same file, the referenced shared procedure, or the CLAUDE.md invariant). Each editing task's description must therefore pin this ledger shape, since the completer otherwise derives its own bar. Git history supplies the original text the ledger is a claim about, so the re-audit can check each claim against the live file.
 
+### Word-count target
+
+The roughly 11,000-word removal figure is a non-binding target, not a floor. The sweep applies the three cut classes under the cut rule, the actual removal is measured with `wc -w` over the three directories and reported per class and in total alongside the per-file constraint-preservation ledgers, and whatever number results is the honest outcome. A shortfall against the target is never a trigger for additional cuts, a new cut class, or a relaxed survives-elsewhere rule; sweep completeness is owned by the fresh-context re-audit loop and its findings ledger, which is where a timid pass surfaces.
+
 ### Antigravity transpile tree
 
 `scripts/migrate_skills_to_agy.py` gains a `shared/` copy into the generated tree, mirroring the wholesale `agents/` copytree it already performs, so that every `${CLAUDE_PLUGIN_ROOT}/shared/<name>.md` reference in the generated skills and agents resolves to a file that is actually present. This is in scope because the sweep deletes prose on the grounds that its content survives in a referenced shared procedure, and shipping a regenerated tree whose procedures are absent would undercut the milestone's own deletion rule; the change is small, in the shape of code already in the script, and verifiable here by inspecting the regenerated file list. Rewriting the `${CLAUDE_PLUGIN_ROOT}` reference text itself to an Antigravity-resolvable path stays out of scope — there is no Antigravity runtime, test, or known-good target path in this repository to verify such a transform against — and is recorded as a follow-up.
@@ -82,22 +86,3 @@ A rule from a retired `## Rules` section that constrains the whole skill rather 
 
 ## Open questions
 
-<open-question id="Word-count shortfall handling" status="deferred">
-  <question>If applying the three cut classes under the cut rule (a sentence goes only when its content survives elsewhere) removes materially fewer than the roughly 11,000 words the goal targets, is the shortfall reported and accepted as the honest result, or are further cuts sought? The cut rule, not the count, is the stated constraint, so the count&apos;s role at verification time should be pinned.</question>
-  <alternative id="Report the shortfall">
-    The roughly 11,000-word figure is a non-binding estimate: the sweep applies the three cut classes under the cut rule, the actual removal is measured with `wc -w` over the three directories and reported (per class and in total) alongside the per-file constraint-preservation ledgers, and whatever number results is the honest outcome — a shortfall is never a trigger for additional cuts.
-    <advantage>It keeps the goal&apos;s own stated hierarchy intact — the cut rule is the constraint and the count is a target — so no edit is ever made because a number was missed, which is the only way the sweep stays behavior-neutral by construction.</advantage>
-    <drawback>Nothing in the count itself distinguishes &quot;the rule genuinely yields less&quot; from &quot;the sweep was applied incompletely&quot;, so a large shortfall leans entirely on the fresh-context re-audit loop to catch a timid pass.</drawback>
-  </alternative>
-  <alternative id="Shortfall triggers a completeness re-check">
-    A materially short measured total triggers one bounded re-pass over the layer that re-applies the same three cut classes under the same unchanged cut rule to confirm nothing in scope was missed; whatever survives that re-check is then reported and accepted, with no new cut class and no relaxed rule.
-    <advantage>It separates a genuine low yield from an incomplete sweep without loosening the deletion rule by a single clause.</advantage>
-    <drawback>It adds a conditional verification pass that largely duplicates the already-decided fresh-context re-audit loop, and putting a numeric trigger on it quietly re-introduces the count as a forcing function on the editor.</drawback>
-  </alternative>
-  <alternative id="Cut until the target is met">
-    The roughly 11,000 words is treated as a floor: if the three classes under the cut rule fall short, further cuts are sought beyond those classes (or the survives-elsewhere rule is relaxed) until the count is reached.
-    <advantage>The milestone delivers the headline number its goal states, so the stated objective is met exactly as written.</advantage>
-    <drawback>It inverts the goal&apos;s own constraint — the count becomes binding and the cut rule negotiable — which licenses removing point-of-use constraints, worked examples, or templates whose content survives nowhere, making the sweep no longer behavior-neutral.</drawback>
-  </alternative>
-  <recommendation option="Report the shortfall">The goal names the cut rule as the constraint and the count only as a rough target, so the measured removal is reported, never enforced; sweep completeness is already owned by the fresh-context re-audit loop and its findings ledger, which is where a timid pass should surface rather than in a word-count trigger that would pressure edits the cut rule does not license.</recommendation>
-</open-question>
