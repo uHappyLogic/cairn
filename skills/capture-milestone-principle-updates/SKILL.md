@@ -1,6 +1,6 @@
 ---
 name: capture-milestone-principle-updates
-description: Distill reusable answering principles from a just-finished milestone's recorded decisions into the project-wide principle store. This is the optional finish-time follow-up that /finish-current-milestone recommends — run it right after finishing a milestone to harvest everything that milestone's manual answers taught. It walks the milestone's `Manual-answer:` commits, extracts the generalizable keep/eliminate rules behind them, dedups the candidates against each other, then confirms each with you one at a time (revise an overlapping existing principle, or add a new one) against the live store. Use it whenever the user says things like "capture the principles from this milestone", "distill what we learned", "harvest the answering principles", "update the principle store from this milestone", or "run principle capture for the milestone we just finished". It is the new sole writer of milestones/answer_decision_principles.md.
+description: Distill reusable answering principles from a just-finished milestone's recorded decisions into the project-wide principle store. This is the optional finish-time follow-up to /finish-current-milestone — run it right after finishing a milestone to harvest everything that milestone's manual answers taught. It walks the milestone's `Manual-answer:` commits, extracts the generalizable keep/eliminate rules behind them, dedups the candidates against each other, then confirms each with you one at a time (revise an overlapping existing principle, or add a new one) against the live store. Use it whenever the user says things like "capture the principles from this milestone", "distill what we learned", "harvest the answering principles", "update the principle store from this milestone", or "run principle capture for the milestone we just finished". It is the new sole writer of milestones/answer_decision_principles.md.
 ---
 
 # capture-milestone-principle-updates
@@ -8,8 +8,7 @@ description: Distill reusable answering principles from a just-finished mileston
 This is the finish-time harvester of the answer-principle-learning loop. Over a milestone, each
 `/answer-open-question` records a decision and commits it with the decision's **rationale in the
 commit body** (subject `Manual-answer: <Short Title>`). Those commit bodies are where the reusable
-reasoning lives — the alternatives weighed, the trade-off accepted — because the recorded
-`## Decisions` prose is deliberately citation-free and provenance-free. This skill reads that finite,
+reasoning lives — the alternatives weighed, the trade-off accepted. This skill reads that finite,
 known-up-front set of commits **once the milestone is finished** and distills from them the
 generalizable answering principles that the recommendation advisor can apply.
 
@@ -17,13 +16,8 @@ It is the **sole writer** of `milestones/answer_decision_principles.md` (a singl
 the `milestones/` root, **above** any one milestone, so principles accumulate across milestones).
 Presence of an entry means it is confirmed — there is no status field.
 
-The value is restraint plus user confirmation. A principle informs *every* future recommendation,
-so a wrong or sloppy one corrupts the highest-value artifact in the loop. This skill therefore
-captures only genuinely reusable rules, and never writes the store without the user's explicit
-say-so. What changes from the old per-answer capture is the **shape** of the work: instead of judging
-one decision the instant it is made, this skill judges a whole milestone's worth of decisions at once
-— so it must also dedup the new candidates **against each other**, a problem single-decision capture
-never had.
+It captures only genuinely reusable rules, and never writes the store without the user's explicit
+say-so.
 
 ## Usage
 
@@ -33,7 +27,6 @@ never had.
 
 Takes no arguments. It is an **optional** follow-up run *after* `/finish-current-milestone` has
 already recorded the milestone and cleared the current-milestone pointer to `none`.
-`/finish-current-milestone` **recommends** it (never auto-runs it); the user invokes it on purpose.
 
 > This skill writes **only** the principle store at the fixed path
 > `milestones/answer_decision_principles.md`. It does **not** touch any milestone's `requirements.md`.
@@ -48,7 +41,7 @@ By the time this skill runs, `/finish-current-milestone` has already cleared the
 pointer to `none`, so the usual `shared/get-current-milestone.md` resolution would find no active
 milestone. **Do not call `get-current-milestone`.** Instead, resolve the target milestone from the
 **last row of the `## Completed Milestones` table** in `milestones/README.md` — the row
-`/finish-current-milestone` appended immediately before recommending this skill.
+`/finish-current-milestone` appended for the milestone it just finished.
 
 Read `milestones/README.md`, find the `## Completed Milestones` table, and take its **last** row. The
 backtick-quoted path in that row is `<MILESTONE_DIR>` (e.g. `` `milestones/milestone_05_…/` ``). That
@@ -95,11 +88,9 @@ bodies into a clean, deduped set of principle candidates.
      a property a hard invariant over one that only enforces it best-effort." A test applicable to an
      unrelated future question's candidates.
 
-3. **Cluster the survivors against each other (cross-candidate dedup).** This is the structurally new
-   step batch mode introduces — the retired single-decision capture only ever saw one candidate at a
-   time and never had to dedup new candidates among themselves. Where several commits express the
-   **same** underlying rule, merge them into one candidate (carrying the strongest phrasing and the
-   originating examples). The output of phase 1 is the deduped set of surviving candidates, ranked
+3. **Cluster the survivors against each other (cross-candidate dedup).** Where several commits
+   express the **same** underlying rule, merge them into one candidate (carrying the strongest
+   phrasing and the originating examples). The output of phase 1 is the deduped set of surviving candidates, ranked
    **strongest first** (most clearly generalizable / most load-bearing for future recommendations).
 
 If phase 1 leaves **no** surviving candidate (commits existed but none generalize), go to step 6 —
@@ -131,14 +122,12 @@ Walk the surviving candidates **strongest-first**. For **each** candidate, befor
 4. **Re-scan the remaining pool before the next candidate.** Because the write you just made mutated the
    live store, a later candidate that overlapped *this* one may now be best expressed as a **revision of
    what you just wrote** rather than a fresh add. Re-evaluating between every write — not approving a
-   static batch — is the whole reason this is an iterating loop. (This is why writes go one at a time:
-   per-candidate confirmation honors this re-scan by construction; grouped-per-round would only be safe
-   if the group were proven mutually independent, which a handful of principles rarely repays proving.)
+   static batch — is the whole reason this is an iterating loop.
 
 **Termination is deterministic.** The candidate pool is the finite, known-up-front set of surviving
 candidates from phase 1. Each confirmation resolves one (add / revise / decline) and removes it, so the
 pool shrinks monotonically. The loop ends when every commit's rationale has been considered and every
-surviving candidate is resolved with no pending merges. There is no fuzzy "are we done?" judgment.
+surviving candidate is resolved with no pending merges.
 
 #### 4a. Entry schema (carried forward verbatim)
 
@@ -170,7 +159,7 @@ Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/com
 - **PATHS** — this skill's own change set: the fixed-path store `milestones/answer_decision_principles.md` (a `milestones/`-root artifact, **not** any `<MILESTONE_DIR>` file — this skill writes only that store).
 - **SUBJECT** — `Principle-capture: <milestone_id>` (the `<MILESTONE_DIR>` resolved in step 1), the marker naming this skill's distinctive principle-capture function.
 
-This is the milestone's second named no-op-pass case (alongside `review-milestone-requirements`), and the shared procedure's dirty-own-path guard handles it for you: a pass that distilled no new principle — the empty commit range, in-range commits that none generalize, or the user declining every candidate — leaves `milestones/answer_decision_principles.md` unchanged, so the guard stages nothing and commits nothing; a pass whose confirmed revise/add actually edited the store commits that edit. The shared procedure owns the path-scoped staging, the no-op guard, and the commit — do not restate those mechanics here.
+A pass that distilled no new principle — the empty commit range, in-range commits that none generalize, or the user declining every candidate — leaves `milestones/answer_decision_principles.md` unchanged; a pass whose confirmed revise/add actually edited the store commits that edit. The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
 
 ### 6. Report
 
@@ -180,40 +169,9 @@ This is the milestone's second named no-op-pass case (alongside `review-mileston
   `Principles captured.`
 
   Carry no principle `### <Short Title>`, no add/revision breakdown, and no commit subject, and print
-  no next-step or recommendation-advisor pointer. The principle-store edit is committed under this
-  skill's `Principle-capture:` subject (step 5), which is the durable record.
+  no next-step or recommendation-advisor pointer.
 - **If nothing was captured** — the empty commit range (step 2) **or** in-range commits that none
   generalize (step 3) **or** the user declined every candidate — report it in a **single line**: there
   are no `Manual-answer` principles in range to distill (write nothing, commit nothing). This is the
-  distinct one-line no-op message for a pass whose dirty-own-path guard fired (git holds no durable
-  record of a no-op) — keep it rather than collapsing it into `Principles captured.`. These cases
-  **converge on the identical terminal report** rather than branching into a distinct empty-range
-  message; the empty range is simply the natural floor of the normal flow.
-
-## Rules
-
-- This skill is the **sole writer** of `milestones/answer_decision_principles.md`. Never write it
-  without explicit user confirmation of the revise-or-add choice for each candidate (step 4.2).
-- **Resolve `<MILESTONE_DIR>` from the last row of the `## Completed Milestones` table in
-  `milestones/README.md` — explicitly NOT via `shared/get-current-milestone.md`.** The current-milestone
-  pointer is already `none` when this skill runs.
-- Walk **only** `git log --grep='^Manual-answer: ' -- <MILESTONE_DIR>/requirements.md`. Read the
-  commit **bodies** for the rationale.
-- Phase 1 is **internal** (extract → drop non-generalizable → cross-candidate dedup, no user); phase 2
-  is **strongest-first, per-candidate** revise-vs-add against the **live** store with a **re-scan of the
-  remaining pool after every write**. Confirm and write **one candidate at a time** — never
-  grouped-per-round. Display granularity (an optional up-front pool preview) is separate from write
-  granularity.
-- A captured principle must be a **generalizable keep/eliminate directive**, not a restatement of one
-  decision. The commit→principle mapping is many-to-many; a decision with no articulated rationale
-  yields nothing — that empty result is correct, not a gap to fill.
-- Carry the entry schema forward verbatim: `### <Short Title>` heading + prose keep/eliminate directive
-  + optional `*Origin:*` line; **presence means confirmed; no status field.**
-- An **empty commit range is a normal exit**, reported with the **same** single-line "nothing to
-  distill" message as the "commits exist but none generalize" case — not a distinct branch.
-- Write **only** `milestones/answer_decision_principles.md`. **Never** touch any `requirements.md`, and
-  never resolve `<MILESTONE_DIR>` via `get-current-milestone`.
-- **Commit the principle-store edit** via `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (step 5)
-  under subject `Principle-capture: <milestone_id>` — path-scoped to `milestones/answer_decision_principles.md`
-  (never `git add -A`). A pass that distilled no new principle changes no file, so the shared
-  dirty-own-path guard stages nothing and commits nothing.
+  distinct one-line no-op message for a pass whose dirty-own-path guard fired, never a collapse into
+  `Principles captured.`; all three cases **converge on this identical terminal report**.
