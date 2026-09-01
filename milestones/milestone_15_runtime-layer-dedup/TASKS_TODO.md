@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Consolidate CLAUDE.md Invariants Section
-
-Rewrite the `## Invariants to preserve when editing skills` section of `CLAUDE.md` as a whole, once and only after every runtime-file deduplication task above has finished, merging overlapping bullets and absorbing the rationale those tasks appended or extended, so that every cut the sweep justified against an invariant still has its survival home in the consolidated text. This single pass replaces the append-or-extend-only freeze the sweep worked under and must precede the fresh-context re-audit. Verified by its own constraint-preservation ledger over `CLAUDE.md` in this task's `TASKS_DONE.md` entry — one `**Verified:**` bullet per invariant merged or reshaped, naming the consolidated bullet where its content now lives — rather than by the runtime layer's ledgers.
-
----
-
 ## Verify README Claims Against Swept Layer
 
 Run a verification pass over `README.md`'s skill reference and workflow prose against the deduplicated runtime layer and consolidated `CLAUDE.md`, editing only where a sweep edit made an existing claim false and adding no new prose — in particular, no sentence describing the runtime-files-never-restate-invariants authoring convention, whose single home is the CLAUDE.md invariant. Verified by a `**Verified:**` list in this task's `TASKS_DONE.md` entry naming each README claim checked and, for any edit made, the runtime change that falsified it.
