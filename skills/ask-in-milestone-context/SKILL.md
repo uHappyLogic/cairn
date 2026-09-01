@@ -1,6 +1,6 @@
 ---
 name: ask-in-milestone-context
-description: Use when the user is asking a question about the current milestone rather than trying to change it. Triggers: status checks ("what's done vs still pending?", "what's left and why?"), dependency/ordering questions ("what's blocking task X — is it waiting on something earlier?", "why is it ordered this way?"), recall of recorded decisions ("what did we already decide about Y — was it written down?"), and follow-ups on finished work ("how did the X task actually turn out?", "did it really dedupe Z?", "where did we put W?", "which files did the rename touch?"). Answers are read-only and grounded in the milestone's goal, decisions, task lists, and the deliverables those tasks produced; when a concrete next step surfaces it offers the right cairn skill but does nothing itself. Do NOT use to settle an open question (/discuss-open-question), file a task (/submit-task, /discuss-new-task), or reshape the goal (/discuss-milestone-goal) — those change state; this only reports it.
+description: Use when the user is asking a question about the current milestone rather than trying to change it.
 ---
 
 # ask-in-milestone-context
