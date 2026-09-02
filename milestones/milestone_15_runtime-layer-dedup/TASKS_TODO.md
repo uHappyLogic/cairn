@@ -1,23 +1,5 @@
 # TASKS TODO
 
-## Correct Three False Ledger Claims
-
-Fix the three `**Verified:**` ledger claims in `TASKS_DONE.md` that the fresh-context re-audit
-proved false against the live tree: the "Verify README Claims Against Swept Layer" entry's
-runtime-layer scope line, which says the pass read "all 33 runtime files (23 `skills/*/SKILL.md`,
-3 `agents/*.md`, 7 `shared/*.md`)" when the layer is 32 files and 22 skills; its
-`## How skills commit` bullet, which certifies that "all 24 references to it remain" when 16
-`${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` references remain across 16 files; and its
-`### ask-in-milestone-context` bullet, which attributes the sentence "the task→commit mapping is
-best-effort, not keyed on the heading in the subject line" to `README.md` when that sentence lives
-in `skills/ask-in-milestone-context/SKILL.md` and appears nowhere in `README.md`. A ledger claim
-that does not hold is a blocking loss finding under the milestone's verification decision, so each
-must be corrected to state what is actually true without weakening the check it records, and the
-milestone cannot converge while they stand. Verified by re-running each claim's check against the
-live tree and confirming the corrected wording matches the measured result.
-
----
-
 ## Relocate Migrate-Workspace Maintainer Prose
 
 Move the two maintainer-facing sentences left in `skills/migrate-workspace/SKILL.md`'s
