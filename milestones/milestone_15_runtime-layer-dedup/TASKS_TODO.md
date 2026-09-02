@@ -1,20 +1,16 @@
 # TASKS TODO
 
-## Re-Audit Runtime Layer After Fixes
+## Clear Four Residual Restatements From Layer
 
-In a fresh context, repeat the whole-layer audit over every `skills/*/SKILL.md`, `agents/*.md`, and
-`shared/*.md` file plus the sweep tasks' `**Verified:**` ledgers (checking each ledger claim against
-the live file, with git history supplying the original text) once the two fix tasks above have
-landed, reporting findings without fixing anything and classifying each as a blocking lost
-constraint or a residual restatement, exactly as the first re-audit did. Exclude residuals already
-registered with a reason in `temp/milestone_15_findings.md`, and return a clean verdict only when
-there are zero loss findings and no unregistered residuals; findings that are not clean become
-further fix tasks queued ahead of the two remaining tasks, followed by another whole-layer
-re-audit, repeating until a run is clean. Verified by the classified findings list and verdict
-recorded in this task's `TASKS_DONE.md` entry.
+Cut or register the four residual restatements the second whole-layer re-audit found: `shared/recommend-procedure.md:18`'s "Rendering the result and any side-effects are the caller's job." (which restates the head paragraph's own "The caller supplies the one input below and renders the result" clause the sweep itself introduced), `skills/recommend-all-open-questions/SKILL.md:69-71`'s "There is deliberately **no** `refresh`/selectable mode — this delete-and-re-run hatch covers staleness and keeps the skill argument-free." (design justification carried verbatim in the CLAUDE.md recommend-sweep invariant, whose runner-facing content already stands at the file's opening "It is **argument-free**" and its Usage section's "Takes no arguments"), `skills/migrate-workspace/SKILL.md:37`'s heading annotation "(the extension point)" (maintainer framing the CLAUDE.md migration-catalog invariant explicitly places outside the runtime file), and `skills/capture-milestone-principle-updates/SKILL.md:132`'s heading parenthetical "(carried forward verbatim)" (provenance about a retired skill that names nothing a runner can act on). Each is cut only after confirming its content survives at its point of use in the same file or in a CLAUDE.md invariant, or else registered in `temp/milestone_15_findings.md` with the reason it was not fixed, since the milestone cannot converge while an unregistered residual stands. Verified by a per-file constraint-preservation ledger carrying one bullet per passage cut or registered, naming where that content now survives, together with confirmation that no runner-facing instruction was removed and no frontmatter `description` was edited.
 
 ---
 
+## Re-Audit Runtime Layer After Residual Cleanup
+
+In a fresh context, repeat the whole-layer audit over every `skills/*/SKILL.md`, `agents/*.md`, and `shared/*.md` file plus the sweep tasks' `**Verified:**` ledgers (checking each ledger claim against the live file, with git history supplying the original text) once the residual-cleanup task above has landed, reporting findings without fixing anything and classifying each as a blocking lost constraint or a residual restatement, exactly as the two prior re-audits did. Exclude residuals already registered with a reason in `temp/milestone_15_findings.md`, and return a clean verdict only when there are zero loss findings and no unregistered residuals; findings that are not clean become further fix tasks queued ahead of the two remaining tasks, followed by another whole-layer re-audit, repeating until a run is clean. Verified by the classified findings list and verdict recorded in this task's `TASKS_DONE.md` entry.
+
+---
 
 ## Measure And Report Word-Count Removal
 
