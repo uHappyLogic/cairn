@@ -14,10 +14,6 @@ generalizable answering principles that the recommendation advisor can apply.
 
 It is the **sole writer** of `milestones/answer_decision_principles.md` (a single project-wide file at
 the `milestones/` root, **above** any one milestone, so principles accumulate across milestones).
-Presence of an entry means it is confirmed — there is no status field.
-
-It captures only genuinely reusable rules, and never writes the store without the user's explicit
-say-so.
 
 ## Usage
 
@@ -129,7 +125,7 @@ candidates from phase 1. Each confirmation resolves one (add / revise / decline)
 pool shrinks monotonically. The loop ends when every commit's rationale has been considered and every
 surviving candidate is resolved with no pending merges.
 
-#### 4a. Entry schema (carried forward verbatim)
+#### 4a. Entry schema
 
 Each entry is one principle per subsection:
 

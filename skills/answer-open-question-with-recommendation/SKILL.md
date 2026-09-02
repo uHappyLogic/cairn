@@ -36,8 +36,7 @@ Read and follow the shared procedure at
 composing over `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md`, which owns the
 locate/analyse/remove/fold/cascade recording.
 
-Do **not** spawn the `answer-open-question-with-recommendation` agent — that would discard the
-recording context this skill exists to keep.
+Do **not** spawn the `answer-open-question-with-recommendation` agent.
 
 The shared procedure resolves `<MILESTONE_DIR>` in its step 1 — hold that value; you need it
 for the commit below.
