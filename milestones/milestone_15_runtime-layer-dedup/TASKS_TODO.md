@@ -1,24 +1,5 @@
 # TASKS TODO
 
-## Relocate Migrate-Workspace Maintainer Prose
-
-Move the two maintainer-facing sentences left in `skills/migrate-workspace/SKILL.md`'s
-`## Migration catalog (the extension point)` section — "**Each future milestone that changes a
-workspace artifact appends one entry here**; the workflow below applies whatever the catalog
-contains, so the procedure never changes — only this list grows" and "If a template later changes,
-update the matching catalog entry's `Rewrite to` so the destination tracks it" — into a matching
-`CLAUDE.md` invariant first and then cut them from the runtime file, since both address someone
-registering a future migration rather than the runner executing one and neither changes what a
-`/migrate-workspace` run does. Because that same prose is the survival home the completed sweep's
-ledger cited when cutting the file's `## Adding a future migration` section, the corresponding
-`TASKS_DONE.md` bullet must be repointed at the new `CLAUDE.md` home in the same pass so no ledger
-claim is falsified by the cut. Verified by confirming the two sentences are absent from the
-`SKILL.md`, present in the `CLAUDE.md` invariant, and cited there by the repointed ledger bullet,
-with the runner-facing "Treat those templates as the authority for the target state" instruction
-and every catalog entry left intact.
-
----
-
 ## Re-Audit Runtime Layer After Fixes
 
 In a fresh context, repeat the whole-layer audit over every `skills/*/SKILL.md`, `agents/*.md`, and

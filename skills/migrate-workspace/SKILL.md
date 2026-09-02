@@ -36,10 +36,7 @@ only what still carries a retired pattern.
 
 ## Migration catalog (the extension point)
 
-This catalog is the skill's single source of registered migrations. **Each future
-milestone that changes a workspace artifact appends one entry here**; the workflow
-below applies whatever the catalog contains, so the procedure never changes — only
-this list grows.
+This catalog is the skill's single source of registered migrations.
 
 The **destination** of every migration is whatever the **live templates emit**, not a
 string frozen into this file:
@@ -49,9 +46,8 @@ string frozen into this file:
 - `init-milestone-base-workflow`'s `milestones/README.md` blurb — currently the line
   `- \`requirements.md\` — goal, relevant starting state, decisions, open questions`.
 
-Treat those templates as the authority for the target state. If a template later
-changes, update the matching catalog entry's "Rewrite to" so the destination tracks it;
-the retired-pattern detection below is what each entry adds on top.
+Treat those templates as the authority for the target state; the retired-pattern
+detection below is what each entry adds on top.
 
 Each entry is line-anchored on purpose: it matches a **structural heading or blurb
 line**, never an incidental prose mention of the same words. A milestone's Goal or
