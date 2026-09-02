@@ -66,9 +66,7 @@ each gathered block for one:
 recommendation has gone stale, the user **deletes that block's embedded sub-elements** — the
 `<alternative>` / `<applied-principle>` / `<recommendation>` children — leaving the
 `<open-question>` wrapper and its `<question>` element intact, and re-runs. The block now lacks a
-`<recommendation>` element, so skip regenerates it. There is deliberately **no**
-`refresh`/selectable mode — this delete-and-re-run hatch covers staleness and keeps the skill
-argument-free.
+`<recommendation>` element, so skip regenerates it.
 
 ### 3. Dispatch the read-only subagent per surviving question
 
