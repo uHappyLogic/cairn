@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Repoint Three Stale Ledger Citations
-
-Rewrite the three `**Verified:**` ledger claims in `TASKS_DONE.md` that the residual cleanups falsified, since a ledger claim that does not hold against the live file is a blocking loss finding the milestone cannot register away: `:71`'s citation of `shared/recommend-procedure.md`'s now-cut Inputs-scope home "Rendering the result and any side-effects are the caller's job.", `:306`'s claim that "Add no `refresh`/selectable mode" survives at its point of use in `skills/recommend-all-open-questions/SKILL.md` step 2's escape-hatch paragraph, and `:462`'s quotation of the live heading as `## Migration catalog (the extension point)`; fix in the same pass the two off-by-one citations at `:670` (`:70-72`) and `:687` (`:68-69`), both of which now name a line past the end of the 68-line `shared/recommend-procedure.md`. Each bullet is rewritten to name a home actually in force against the live tree — the surviving same-file sentence, the matching `CLAUDE.md` invariant, or both — without weakening the claim or touching any other ledger text, and the same repointing is applied to any further ledger citation the preceding residual-cleanup task newly invalidates. Verified by re-reading each rewritten bullet against the live files it cites and confirming every quoted fragment resolves and every named survival home is in force.
-
----
-
 ## Third Whole-Layer Runtime Re-Audit Pass
 
 In a fresh context, repeat the whole-layer audit over every `skills/*/SKILL.md`, `agents/*.md`, and `shared/*.md` file plus the sweep tasks' `**Verified:**` ledgers (checking each ledger claim against the live file, with git history supplying the original text) once the two fix tasks above have landed, reporting findings without fixing anything and classifying each as a blocking lost constraint or a residual restatement, exactly as the three prior re-audits did. Exclude residuals already registered with a reason in `temp/milestone_15_findings.md`, and return a clean verdict only when there are zero loss findings and no unregistered residuals; findings that are not clean become further fix tasks queued ahead of the two remaining tasks, followed by another whole-layer re-audit, repeating until a run is clean. Verified by the classified findings list and verdict recorded in this task's `TASKS_DONE.md` entry.
