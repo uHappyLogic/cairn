@@ -159,5 +159,4 @@ the work was actually verified against.
    ```
 
    Write the criteria as they stood when they passed in step 4 — the same bar, neither
-   re-derived nor summarized into prose. The `**Verified:**` label is the completion record
-   and is deliberately distinct from any label a task list uses to author work.
+   re-derived nor summarized into prose.

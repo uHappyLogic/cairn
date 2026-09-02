@@ -11,9 +11,8 @@ milestone's `TASKS_TODO.md`. This skill is the user-facing entry point
 
 It owns the triage and positioning that need the **whole task list in view** — checking for
 duplicates and deciding where the task belongs — and then it authors and inserts the task
-**inline, in this conversation**. Never queue a duplicate of an existing pending or
-completed task. If the issue is still vague or might be several tasks, use
-`/discuss-new-task` first.
+**inline, in this conversation**. If the issue is still vague or might be several tasks,
+use `/discuss-new-task` first.
 
 ## Invocation
 

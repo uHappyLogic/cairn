@@ -15,8 +15,6 @@ This procedure produces a recommendation for one question the caller supplies:
   text). The caller has already selected it; forming the alternatives and the single
   recommendation for it is this procedure's job.
 
-Rendering the result and any side-effects are the caller's job.
-
 ## Procedure
 
 ### 1. Ground in the real project state
@@ -66,5 +64,4 @@ single-recommendation contract is unchanged from a project with no principles at
 
 The alternatives and the recommendation together form one contiguous, self-contained unit
 that stays attached to the question it answers — it reads as a single coherent block about
-that one question, not scattered commentary. How that unit is laid out, marked up, and either
-shown to the user or handed back for embedding is the wrapper's concern, not this file's.
+that one question, not scattered commentary.

@@ -84,10 +84,6 @@ Wait for the agent to return before dispatching the next one. **Dispatch strictl
 never in parallel**: every dispatch lifts, records, and cascades against the same
 `requirements.md`, and you commit each answer between dispatches.
 
-The agent owns **all** document mutation but does **not** commit — it records the answer and hands
-the recorded-but-uncommitted edit back. You commit it (step 2c) before dispatching the next
-question, so one commit = one answer.
-
 **c. Handle the agent's return.** The agent returns `DONE` or `FAILED: <reason>`:
 
 - **`DONE`** — the agent recorded the answer, leaving the `requirements.md` edit uncommitted, and
