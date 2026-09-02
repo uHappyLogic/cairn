@@ -1,10 +1,57 @@
 # TASKS TODO
 
-## Run Fresh-Context Runtime Layer Re-Audit
+## Correct Three False Ledger Claims
 
-In a fresh context, audit every `skills/*/SKILL.md`, `agents/*.md`, and `shared/*.md` file plus the sweep tasks' `**Verified:**` ledgers (checking each ledger claim against the live file, with git history supplying the original text) and report findings without fixing anything, classifying each as a blocking lost constraint (an imperative removed with no surviving home, or a ledger claim that does not hold) or a residual restatement (a remaining `## Rules` heading, editor-facing rationale still in a runtime file, or cross-file narration beyond the one contract sentence). Exclude residuals already registered with a reason in `temp/milestone_15_findings.md`, and return a clean verdict only when there are zero loss findings and no unregistered residuals; findings that are not clean become follow-up fix tasks queued ahead of the two tasks below, followed by a further whole-layer re-audit, repeating until a run is clean. Verified by the classified findings list and verdict recorded in this task's `TASKS_DONE.md` entry.
+Fix the three `**Verified:**` ledger claims in `TASKS_DONE.md` that the fresh-context re-audit
+proved false against the live tree: the "Verify README Claims Against Swept Layer" entry's
+runtime-layer scope line, which says the pass read "all 33 runtime files (23 `skills/*/SKILL.md`,
+3 `agents/*.md`, 7 `shared/*.md`)" when the layer is 32 files and 22 skills; its
+`## How skills commit` bullet, which certifies that "all 24 references to it remain" when 16
+`${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` references remain across 16 files; and its
+`### ask-in-milestone-context` bullet, which attributes the sentence "the task→commit mapping is
+best-effort, not keyed on the heading in the subject line" to `README.md` when that sentence lives
+in `skills/ask-in-milestone-context/SKILL.md` and appears nowhere in `README.md`. A ledger claim
+that does not hold is a blocking loss finding under the milestone's verification decision, so each
+must be corrected to state what is actually true without weakening the check it records, and the
+milestone cannot converge while they stand. Verified by re-running each claim's check against the
+live tree and confirming the corrected wording matches the measured result.
 
 ---
+
+## Relocate Migrate-Workspace Maintainer Prose
+
+Move the two maintainer-facing sentences left in `skills/migrate-workspace/SKILL.md`'s
+`## Migration catalog (the extension point)` section — "**Each future milestone that changes a
+workspace artifact appends one entry here**; the workflow below applies whatever the catalog
+contains, so the procedure never changes — only this list grows" and "If a template later changes,
+update the matching catalog entry's `Rewrite to` so the destination tracks it" — into a matching
+`CLAUDE.md` invariant first and then cut them from the runtime file, since both address someone
+registering a future migration rather than the runner executing one and neither changes what a
+`/migrate-workspace` run does. Because that same prose is the survival home the completed sweep's
+ledger cited when cutting the file's `## Adding a future migration` section, the corresponding
+`TASKS_DONE.md` bullet must be repointed at the new `CLAUDE.md` home in the same pass so no ledger
+claim is falsified by the cut. Verified by confirming the two sentences are absent from the
+`SKILL.md`, present in the `CLAUDE.md` invariant, and cited there by the repointed ledger bullet,
+with the runner-facing "Treat those templates as the authority for the target state" instruction
+and every catalog entry left intact.
+
+---
+
+## Re-Audit Runtime Layer After Fixes
+
+In a fresh context, repeat the whole-layer audit over every `skills/*/SKILL.md`, `agents/*.md`, and
+`shared/*.md` file plus the sweep tasks' `**Verified:**` ledgers (checking each ledger claim against
+the live file, with git history supplying the original text) once the two fix tasks above have
+landed, reporting findings without fixing anything and classifying each as a blocking lost
+constraint or a residual restatement, exactly as the first re-audit did. Exclude residuals already
+registered with a reason in `temp/milestone_15_findings.md`, and return a clean verdict only when
+there are zero loss findings and no unregistered residuals; findings that are not clean become
+further fix tasks queued ahead of the two remaining tasks, followed by another whole-layer
+re-audit, repeating until a run is clean. Verified by the classified findings list and verdict
+recorded in this task's `TASKS_DONE.md` entry.
+
+---
+
 
 ## Measure And Report Word-Count Removal
 
