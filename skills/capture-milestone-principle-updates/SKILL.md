@@ -7,10 +7,9 @@ description: Distill reusable answering principles from a just-finished mileston
 
 This is the finish-time harvester of the answer-principle-learning loop. Over a milestone, each
 `/answer-open-question` records a decision and commits it with the decision's **rationale in the
-commit body** (subject `Manual-answer: <Short Title>`). Those commit bodies are where the reusable
-reasoning lives — the alternatives weighed, the trade-off accepted. This skill reads that finite,
-known-up-front set of commits **once the milestone is finished** and distills from them the
-generalizable answering principles that the recommendation advisor can apply.
+commit body** (subject `Manual-answer: <Short Title>`). This skill reads that finite, known-up-front
+set of commits **once the milestone is finished** and distills from them the generalizable answering
+principles that the recommendation advisor can apply.
 
 It is the **sole writer** of `milestones/answer_decision_principles.md` (a single project-wide file at
 the `milestones/` root, **above** any one milestone, so principles accumulate across milestones).
