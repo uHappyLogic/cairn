@@ -10,9 +10,20 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_15_runtime-layer-dedup/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 15 — Runtime layer de-duplication
+
+- De-duplicated the whole 32-file runtime layer (`skills/*/SKILL.md`, `agents/*.md`, `shared/*.md`) across eleven per-file sweep tasks, removing 7,597 words (32,758 → 25,161, −23.2% of the layer) under the rule that a sentence may be cut only where its content survives earlier in the same file, in a referenced shared procedure, or in a `CLAUDE.md` invariant.
+- Retired the `## Rules` heading across the layer (−3,221 words), relocating each surviving unique rule into the step it constrains or, for rules constraining the whole skill, into the file's opening description paragraph as prose.
+- Moved editor-facing rationale out of the runtime files into the `CLAUDE.md` invariants (−2,772 words), trimmed cross-file narration of counterparts to the one sentence each contract needs (−1,303 words), and rendered the `recommend-open-question` agent's `<open-question>` XML sub-element template once instead of twice (−68 words).
+- Consolidated the `CLAUDE.md` `## Invariants to preserve when editing skills` section in a single post-sweep pass — merging ten overlapping bullets and absorbing the relocated rationale (35 bullets / 4,839 words → 25 bullets / 5,255 words) — under its own constraint-preservation ledger.
+- Recorded every cut in the pipeline's own `**Verified:**` channel, one ledger bullet per imperative removed or relocated naming where that imperative now survives, adding no separate checklist artifact under the milestone directory.
+- Verified `README.md`'s skill reference and workflow prose against the swept layer and found no sweep-caused falsification, so `README.md` was left unedited; two pre-existing stale claims (`goto-next-milestone`'s arguments and `finish-current-milestone`'s next-step pointer) were recorded as follow-ups rather than fixed.
+- Ran seven fresh-context whole-layer re-audits with fix tasks between them: the runtime layer returned zero lost constraints for the last five passes and zero residual restatements for the last three, while the remaining findings were false evidence inside `TASKS_DONE.md` ledger bullets — the milestone ends without a clean overall verdict, the queued eighth re-audit pass having been removed from the task list.
+- Extended `scripts/migrate_skills_to_agy.py` to copy `shared/` into the generated Antigravity tree, mirroring its existing `agents/` copytree, and regenerated `.agents/plugins/cairn/` against the final layer, leaving the `${CLAUDE_PLUGIN_ROOT}` path rewrite as a recorded follow-up.
 
 ### Milestone 14 — Brief-level task pipeline
 
@@ -157,3 +168,4 @@ Current milestone: `milestones/milestone_15_runtime-layer-dedup/`
 | 12 | Work-Type-Agnostic Sweep | `milestones/milestone_12_work-type-agnostic-sweep/` |
 | 13 | agy-integration-polish | `milestones/milestone_13_agy-integration-polish/` |
 | 14 | Brief-level task pipeline | `milestones/milestone_14_brief-level-task-pipeline/` |
+| 15 | Runtime layer de-duplication | `milestones/milestone_15_runtime-layer-dedup/` |
