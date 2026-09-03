@@ -34,3 +34,33 @@ Two invariants bear directly on this milestone. The **Skill Frontmatter** invari
 
 ## Out of Scope
 
+
+## Open questions
+
+<open-question id="Word cap enforcement" status="open">
+  <question>Is the 25-word figure a hard pass/fail bar that every one of the 24 descriptions must meet, or a target a description may exceed when a shorter wording would stop distinguishing it from a sibling skill?</question>
+</open-question>
+
+<open-question id="Sentence shape bar" status="open">
+  <question>Beyond word count, what structural constraints does &quot;a single short sentence&quot; impose — is an em-dash or colon continuation clause, a semicolon, or a parenthetical allowed inside the one sentence, or must it be a single plain clause?</question>
+</open-question>
+
+<open-question id="CLAUDE.md invariant update" status="open">
+  <question>Does this milestone amend the CLAUDE.md invariants — the &quot;Skill Frontmatter&quot; invariant and the milestone-15 sentence exempting frontmatter descriptions as &quot;the triggering surface, edited only to correct a claim the body has falsified&quot; — to record the one-sentence rule, or does the rule live only in the edited files?</question>
+</open-question>
+
+<open-question id="Parallel doc surfaces scope" status="open">
+  <question>Are README.md&apos;s per-skill reference entries and CLAUDE.md&apos;s workflow map left completely untouched, or must they be checked for claims the shortened descriptions falsify?</question>
+</open-question>
+
+<open-question id="Antigravity tree regeneration" status="open">
+  <question>Is regenerating the checked-in Antigravity tree at .agents/plugins/cairn/ by re-running scripts/migrate_skills_to_agy.py part of this milestone&apos;s deliverable, or is it left for a later run?</question>
+</open-question>
+
+<open-question id="YAML plain scalar requirement" status="open">
+  <question>Must every rewritten description parse as a plain unquoted YAML scalar — no colon-space, no leading quote character — so the transpiler&apos;s re-quoting fallback stops being exercised, or is staying within that fallback acceptable?</question>
+</open-question>
+
+<open-question id="Agent invocation contract retention" status="open">
+  <question>When an agent description compresses to one sentence, must it still name the expected prompt payload (for example complete-task&apos;s &quot;##&quot; heading text), or is the payload contract dropped because the dispatching orchestrator already specifies it?</question>
+</open-question>
