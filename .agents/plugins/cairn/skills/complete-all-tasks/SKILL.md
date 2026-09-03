@@ -5,7 +5,7 @@ description: Complete all tasks from the current milestone's TASKS_TODO.md one b
 
 # complete-all-tasks
 
-Pure orchestrator. Reads the current milestone's task list and spawns one isolated subagent per task. Each subagent gets a clean context and completes exactly one task.
+Pure orchestrator. Reads the current milestone's task list and spawns one isolated subagent per task, each with a clean context and exactly one task to complete. Never complete a task directly here, even as a fallback when a subagent fails.
 
 ## Invocation
 
@@ -54,7 +54,7 @@ After the subagent returns `DONE` (success confirmed and the task moved to `<MIL
 - **PATHS** — this task's exact change set: the created/edited paths the subagent handed back in its `DONE` return, **plus** the two milestone task-list files `<MILESTONE_DIR>/TASKS_TODO.md` (the task left it) and `<MILESTONE_DIR>/TASKS_DONE.md` (the task joined it). Name each path explicitly — never `git add -A`.
 - **SUBJECT** — `Tasklist-completion: <descriptor>` (e.g. `Tasklist-completion: complete one milestone task`), the marker naming this orchestrator's task-list-completion function. Put the task's `##` heading text (without the `##` prefix) in the commit **body** (a second `-m`), not in the subject.
 
-The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit itself; do not restate those mechanics here. Commit once per task — the per-task granularity is unchanged.
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit itself. Commit once per task.
 
 #### 2d. Continue
 
@@ -62,13 +62,6 @@ Go back to 2a and process the next task.
 
 ### 3. Report completion
 
-On the success path, when `<MILESTONE_DIR>/TASKS_TODO.md` contains no more `##` sections, print exactly one fixed terse status line for the whole run — `All tasks completed.` — and nothing more: no list of the tasks that were completed and no next-step pointer. The per-task commits and `git log` are the durable record of what was done.
+On the success path, when `<MILESTONE_DIR>/TASKS_TODO.md` contains no more `##` sections, print exactly one fixed terse status line for the whole run — `All tasks completed.` — and nothing more: no list of the tasks that were completed and no next-step pointer.
 
-If the run committed nothing — every per-task commit in step 2c hit its dirty-own-path no-op guard, so no files changed across the whole run — do not print the terse success line; instead print a distinct one-line message stating that nothing changed and why (nothing was committed this run), since git holds no durable record of a no-op.
-
-## Rules
-
-- Re-read `TASKS_TODO.md` at the start of every iteration — do not cache the task list across iterations.
-- Never commit partial work. Commit only after the subagent returns `DONE` and the task has been moved to `TASKS_DONE.md`, staging only that task's explicit path set (never `git add -A`) per `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`.
-- If any task fails, stop the loop immediately and report which task failed and why.
-- This file is the orchestrator only — **never complete tasks directly here, even as a fallback when a subagent fails.**
+If the run committed nothing — every per-task commit in step 2c hit its dirty-own-path no-op guard, so no files changed across the whole run — do not print the terse success line; instead print a distinct one-line message stating that nothing changed and why (nothing was committed this run).

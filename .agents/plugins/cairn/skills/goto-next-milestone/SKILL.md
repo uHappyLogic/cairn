@@ -5,7 +5,7 @@ description: Activate an already-defined milestone — scans milestones/ for a d
 
 # goto-next-milestone
 
-Activates an already-defined milestone by updating `milestones/README.md` to point to it as the current milestone. The milestone directory must already exist (created by `/define-milestone-goal`). Run this after `/finish-current-milestone` has cleared the current pointer to "none".
+Activates an already-defined milestone by updating `milestones/README.md` to point to it as the current milestone. The milestone directory must already exist (created by `/define-milestone-goal`); this skill creates no files or directories. Run this after `/finish-current-milestone` has cleared the current pointer to "none".
 
 ## Usage
 
@@ -41,7 +41,7 @@ In `milestones/README.md`, overwrite the `Current milestone:` line with:
 Current milestone: `milestones/milestone_<number>_<slug>/`
 ```
 
-Leave the `## Current Milestone` heading, the `## Milestone History` section, and all other content unchanged.
+Leave the `## Current Milestone` heading, the `## Milestone History` section, and all other content unchanged; update `milestones/README.md` only — never write the pointer into `CLAUDE.md`.
 
 ### 4. Commit the activation
 
@@ -50,7 +50,7 @@ Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/com
 - **PATHS** — this skill's own change set: `milestones/README.md` (the file whose `Current milestone:` pointer it just overwrote).
 - **SUBJECT** — `Milestone-activation: milestone_<number>_<slug>`.
 
-The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit; do not restate those mechanics here.
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
 
 ### 5. Confirm
 
@@ -60,12 +60,6 @@ On the success path — the commit in step 4 recorded the activation — print e
 Milestone activated.
 ```
 
-Do not add the activated milestone's path or title, or a next-step pointer; the committed diff and git log are the durable record.
+Do not add the activated milestone's path or title, or a next-step pointer.
 
 If instead the step-4 dirty-own-path guard fired (the `Current milestone:` pointer was unchanged, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the pointer already named that milestone; nothing committed.`
-
-## Rules
-
-- Do not run if the `Current milestone:` line in `milestones/README.md` is not `none` — always require `/finish-current-milestone` to have been run first.
-- Do not create any files or directories — the milestone directory must already exist.
-- Update `milestones/README.md` only — do not write the pointer into `CLAUDE.md`.

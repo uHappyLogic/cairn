@@ -5,7 +5,7 @@ description: Analyze an overall goal description and ask clarifying questions to
 
 # discuss-milestone-goal
 
-Facilitates a structured conversation to sharpen a vague or incomplete milestone goal into a clear, actionable statement ready for `/define-milestone-goal`. The output is a refined goal description — not a document yet.
+Facilitates a structured conversation to sharpen a vague or incomplete milestone goal into a clear, actionable statement ready for `/define-milestone-goal`. The output is a refined goal description — not a document yet: this skill is purely conversational, creates no files, and assigns no milestone number (that is the user's decision).
 
 ## Usage
 
@@ -54,7 +54,7 @@ After each user answer, either:
 - Ask the next most important clarifying question, or
 - Confirm that the goal is now clear enough to define
 
-Do not ask questions for their own sake. Stop when the goal is specific enough that `/define-milestone-goal` could fill `requirements.md` without further guessing.
+Ask questions one at a time when the user seems overwhelmed; batch them when context is thin and answers are likely short. Keep each response short after the opening — the conversation should move fast. Do not ask questions for their own sake. Stop when the goal is specific enough that `/define-milestone-goal` could fill `requirements.md` without further guessing.
 
 ### 5. Propose the refined goal
 
@@ -64,11 +64,3 @@ When the conversation reaches a natural close, present a refined goal statement:
 > <one to three sentences that could go directly into the `## Goal` section of requirements.md>
 
 Invite the user to adjust the wording. Once they confirm, suggest invoking `/define-milestone-goal "<refined goal>"` to create the milestone.
-
-## Rules
-
-- Do not create any files. This skill is purely conversational.
-- Do not assign a milestone number — that is the user's decision.
-- Ask questions one at a time when the user seems overwhelmed; batch them when context is thin and answers are likely short.
-- Make a real judgment about what matters: do not list every possible edge case as a question.
-- Keep each response short after the opening; the conversation should move fast.

@@ -11,27 +11,11 @@ a read-only subagent — the non-interactive twin of `/discuss-open-question` �
 **alternatives + a single recommendation** as the `<open-question>` block's XML sub-elements.
 The orchestrator is the **sole document mutator**: it embeds each returned set of sub-elements
 inside the existing `<open-question>` block, leaving the block's `<open-question …>` /
-`</open-question>` boundary tags and its `<question>` element untouched.
-
-It is **argument-free** and **deliberately simple**, because it records **no decisions** and
-triggers **no cascades** — it only annotates. Because the question set never shrinks under it,
-four pieces of machinery a decision-recording sweep would need are all unnecessary here:
-
-- **No gather-order.** Ordering questions most-significant → least is a cascade-parent-first
-  proxy; there are no cascades here, so ordering buys nothing. Gather once, walk straight through.
-- **No per-question live-re-check / skip against a mutating document.** A decision-recording sweep
-  re-reads the document before each question because a prior answer's cascade may have removed it.
-  Nothing removes a question here, so the gathered set stays valid start to finish.
-- **No outer re-gather loop.** Nothing adds or removes questions mid-sweep, so a single pass
-  is the fixed point.
-- **No clean-working-tree precondition.** A sweep that commits per answer needs one to keep
-  "one commit = one answer"; this sweep commits once at the end and records no decisions, so it
-  needs no per-answer discipline and no clean tree.
-
-Each embedded recommendation is later consumed (the `<recommendation>` element is lifted and its
-block removed) by the `/answer-open-question-with-recommendation` skill/agent pair (or the
-`/answer-all-open-questions-with-recommendation` batch sweep) when it is recorded as an answer.
-The sweep commits its own annotations once at the end of the run (step 5).
+`</open-question>` boundary tags and its `<question>` element untouched. It is **argument-free**,
+records **no decisions**, and triggers **no cascades** — it only annotates. Each embedded
+recommendation is consumed later, when it is recorded as an answer, by
+`/answer-open-question-with-recommendation` or the
+`/answer-all-open-questions-with-recommendation` sweep.
 
 ## Usage
 
@@ -65,10 +49,9 @@ Keep the full text of each gathered block (from this same pass) in hand — the 
 rewrites the whole block via an exact-string Edit and needs the block's current text as the match
 target.
 
-You gather this set **once** and walk it straight through (step 3). There is **no**
-gather-order and **no** outer re-gather loop: because the sweep records no decisions and
-triggers no cascades, the question set never shrinks under it, so the gathered list stays valid
-for the whole run.
+Gather this set **once** and walk it straight through (step 3): **no** gather-order, **no**
+per-question live-re-check/skip against the document, and **no** outer re-gather loop. The
+gathered list stays valid for the whole run.
 
 ### 2. Skip already-recommended blocks (re-run idempotency)
 
@@ -76,25 +59,20 @@ A block already carries a recommendation when it **contains a `<recommendation>`
 each gathered block for one:
 
 - **Skip** any block that already contains a `<recommendation>` element — do not dispatch a
-  subagent and do not re-annotate it. This makes the sweep idempotent and cheap and preserves
-  any hand-edits to an existing recommendation.
-- **Annotate only** blocks that lack one. The primary re-run motive — questions newly surfaced
-  by a later `/review-milestone-requirements` pass — is exactly this un-annotated set.
+  subagent and do not re-annotate it.
+- **Annotate only** blocks that lack one.
 
 **Escape hatch for a stale recommendation:** to force a fresh recommendation on a block whose
 recommendation has gone stale, the user **deletes that block's embedded sub-elements** — the
 `<alternative>` / `<applied-principle>` / `<recommendation>` children — leaving the
 `<open-question>` wrapper and its `<question>` element intact, and re-runs. The block now lacks a
-`<recommendation>` element, so skip regenerates it. There is deliberately **no**
-`refresh`/selectable mode — this delete-and-re-run hatch covers staleness and keeps the skill
-argument-free.
+`<recommendation>` element, so skip regenerates it.
 
 ### 3. Dispatch the read-only subagent per surviving question
 
 For each **surviving** question (gathered, not skipped), dispatch one read-only subagent. These
-dispatches are **independent** — a recommendation decides nothing, so nothing may build on one.
-**Never feed one question's recommendation into another.** Because they are independent, they
-may be run in parallel.
+dispatches are **independent**: **never feed one question's recommendation into another.** Because
+they are independent, they may be run in parallel.
 
 Use the `Agent` tool with `subagent_type: "recommend-open-question"` (singular — the
 per-question subagent), one dispatch per surviving question. Pass it that question's **Short
@@ -109,10 +87,9 @@ Context:
 <the question's full <open-question> block, plus relevant surrounding requirements>
 ```
 
-The subagent is **read-only** — it reads `requirements.md` and the live project to ground its
-alternatives but mutates nothing. It returns the ready-to-embed XML sub-elements as its final
-message — one `<alternative id="...">` element per option (each with child `<advantage>` and
-`<drawback>`), zero or more sibling `<applied-principle>` elements, and one
+The subagent is **read-only** — it mutates nothing. It returns the ready-to-embed XML sub-elements
+as its final message — one `<alternative id="...">` element per option (each with child
+`<advantage>` and `<drawback>`), zero or more sibling `<applied-principle>` elements, and one
 `<recommendation option="...">` element — and **only** those child elements, never the
 `<open-question>` wrapper or the `<question>` element. The orchestrator does **all** the writing.
 
@@ -129,10 +106,6 @@ returned children inserted between the `<question>` element and the closing `</o
 tag. Insert the children at a **2-space indent per nesting level** relative to the block's base
 column, matching the depth of the existing `<question>` child, so the wrapper's boundary tags and
 `<question>` element stay byte-for-byte unchanged.
-
-The CLI is deliberately scoped to locate/extract (step 1) and never used to splice mid-block:
-constructing correctly-indented nested children is structural construction the read-whole Edit
-idiom handles cleanly, where escaping-heavy line-oriented insertion is weakest.
 
 The block after embedding looks like:
 
@@ -170,45 +143,20 @@ to resolve the path), carrying out its steps yourself. Supply it these two input
 - **SUBJECT** — `Recommendation-annotation: <milestone_id>`.
 
 The shared procedure owns the path-scoped staging (never `git add -A`), the dirty-own-path no-op
-guard, and the commit; do not restate those mechanics here. Because the guard is dirty-own-path,
-a sweep that annotated nothing — every gathered block already carried a `<recommendation>`
-element, so step 4 changed no bytes — stages and commits nothing. This sweep requires **no** clean
-working tree: it commits once at the end and records no decisions, so it needs no
-one-commit-per-answer discipline.
+guard, and the commit. Because that guard is dirty-own-path, a sweep that annotated nothing — every
+gathered block already carried a `<recommendation>` element, so step 4 changed no bytes — stages
+and commits nothing. This sweep requires **no** clean working tree.
 
 ### 6. Report
 
 On the success path, print exactly one fixed terse status line for the whole run —
 `Recommendations embedded.` — and nothing more: no annotated-vs-skipped breakdown, no per-question
 listing, and no consumer pointer to the `/answer-open-question-with-recommendation` /
-`/answer-all-open-questions-with-recommendation` skills. The committed annotations and `git log` are
-the durable record.
+`/answer-all-open-questions-with-recommendation` skills.
 
 If the sweep committed nothing — its step-5 dirty-own-path no-op guard fired because every gathered
 block already carried a `<recommendation>` element, so step 4 changed no bytes — do not print the
 terse success line; instead print a distinct one-line message stating that nothing changed and why
-(no un-annotated questions remained to recommend on), since git holds no durable record of a no-op.
+(no un-annotated questions remained to recommend on).
 
 If there were no open/deferred questions at all, say so and stop (step 1) — nothing to report.
-
-## Rules
-
-- Takes **no arguments** — sweeps every `<open-question>` block (`status="open"` and
-  `status="deferred"`). Add no `refresh`/selectable mode.
-- Gather the questions **once** via the boundary-line CLI and walk straight through: **no**
-  gather-order, **no** outer re-gather loop, **no** per-question live-re-check/skip against the
-  document. The set never shrinks under this sweep.
-- **Skip** any block that already contains a `<recommendation>` element; annotate **only** blocks
-  that lack one.
-- Dispatch **one** read-only `recommend-open-question` subagent per surviving question; treat it
-  as read-only (it returns the XML sub-elements, the orchestrator does all writing). The dispatches
-  are independent — never feed one question's recommendation into another.
-- The orchestrator is the **sole document mutator**: embed each returned set of sub-elements inside
-  the existing `<open-question>` block by whole-block-replacement `Edit` (not a CLI splice),
-  inserting the children at 2-space-per-level indent and leaving the `<open-question …>` /
-  `</open-question>` boundary tags and the `<question>` element unchanged.
-- **Commit once at the end**: after all sub-elements are embedded, commit this sweep's own
-  path-scoped edit to `<MILESTONE_DIR>/requirements.md` (never `git add -A`) under subject
-  `Recommendation-annotation: <milestone_id>` via
-  `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, behind its dirty-own-path no-op guard (a
-  sweep that annotated nothing commits nothing). Require **no** clean working tree.

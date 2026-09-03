@@ -5,7 +5,7 @@ description: Clarify a rough or ambiguous issue surfaced mid-flight into one or 
 
 # discuss-new-task
 
-Facilitates a short, focused conversation that turns a half-formed issue — the kind that surfaces mid-flight — into a description concrete enough to become a task. This skill is the conversational front-end for `/submit-task`: it clarifies just enough, then proposes the handoff. It never writes to the task list itself.
+Facilitates a short, focused conversation that turns a half-formed issue — the kind that surfaces mid-flight — into a description concrete enough to become a task. This skill is the conversational front-end for `/submit-task`: it clarifies just enough, then proposes the handoff. It never creates or edits any files, including the task list — producing the task(s) is `submit-task`'s job.
 
 Most issues are a single task. But some are a bigger chunk of work that only makes sense as **several** tasks — the user may flag this up front ("this might be a few entries"), or it may become apparent mid-discussion that one "issue" is really two or three independent pieces. When that happens, this skill helps draw the boundaries and produces an ordered set of task-sized descriptions, then hands each off in turn.
 
@@ -17,7 +17,7 @@ The bar to clear is **conceptual clarity**, not full design detail. For each tas
 
 When the work splits into several tasks, one more thing must be clear: **where the boundaries are** — each piece should be independently completable, and their order (what depends on what) should be evident.
 
-Once those are clear, `submit-task` fills in the file- and step-level specifics for each task. That is its job, not yours — keep what you produce high-level. Don't push the conversation, or the descriptions you write, past conceptual clarity.
+Once those are clear, `submit-task` takes over — keep what you produce high-level. Don't push the conversation, or the descriptions you write, past conceptual clarity.
 
 ## Usage
 
@@ -70,9 +70,9 @@ Treat it as several tasks when any of these hold:
 - The work spans multiple systems, or mixes an immediate fix with follow-on improvements.
 - There are parts that could be completed and verified on their own, in sequence.
 
-Lean toward a single task when in doubt — splitting has a cost, and `submit-task` can still position a lone task correctly. Don't manufacture extra tasks to look thorough.
+Lean toward a single task when in doubt — splitting has a cost. Don't manufacture extra tasks to look thorough.
 
-If it's several, sketch a **provisional** breakdown into atomic, ordered pieces — just a working title or one-line gist per piece. You're finding the task boundaries here, not writing the tasks; resist any detail (file paths, contract surface, success criteria) that belongs to `submit-task`.
+If it's several, sketch a **provisional** breakdown into atomic, ordered pieces — just a working title or one-line gist per piece. You're finding the task boundaries here, not writing the tasks; resist any detail that belongs to `submit-task`.
 
 ### 4. Clarify the ambiguities
 
@@ -99,7 +99,7 @@ Reach for `/discuss-open-question` instead if the ambiguity is really an open de
 
 ### 5. Propose the handoff
 
-When the readiness checks are satisfied, synthesize what you've learned into refined, self-contained issue description(s) — each at the high level `submit-task` expects as input, **not** a fleshed-out task. Naming the affected system, the desired behavior, and how to verify it is enough; leave the contract surface, file paths, and success criteria to `submit-task`.
+When the readiness checks are satisfied, synthesize what you've learned into refined, self-contained issue description(s) — each at the high level `submit-task` expects as input, **not** a fleshed-out task. Naming the affected system, the desired behavior, and how to verify it is enough.
 
 **If it's a single task**, propose one handoff:
 
@@ -114,16 +114,6 @@ Then offer to invoke `/submit-task "<refined issue>"`.
 1. **<short title>** — <1–3 sentence high-level description: system, desired behavior, verification.>
 2. **<short title>** — <...>
 
-Confirm the breakdown reads right — number, ordering, and scope of the pieces. On the user's confirmation, invoke `/submit-task "<description>"` **once per task, in dependency order (prerequisites first)**. Submitting in order lets each task be positioned correctly relative to the ones already inserted. After all are submitted, give a one-line summary of what was added.
+Confirm the breakdown reads right — number, ordering, and scope of the pieces. On the user's confirmation, invoke `/submit-task "<description>"` **once per task, in dependency order (prerequisites first)**. After all are submitted, give a one-line summary of what was added.
 
 In either case, if the user wants to adjust wording, ordering, or the split, incorporate the change and re-offer before handing off.
-
-## Rules
-
-- Do not create or edit any files, and do not write to the task list. Producing the task(s) is `submit-task`'s job; this skill only clarifies and hands off.
-- Keep your output high-level. The refined description(s) you pass to `submit-task` should name the system, behavior, and verification — and stop there. Don't write the contract surface, file paths, or success criteria; duplicating that work slows the user down and steps on `submit-task`.
-- Don't over-interrogate, and don't over-split. Stop at conceptual clarity, and prefer fewer tasks when a split isn't clearly warranted — each task should be independently completable in a single `/complete-task` invocation.
-- For a multi-task chunk, confirm the ordered breakdown with the user before submitting, then hand off one task at a time in dependency order.
-- Ground questions in the files you read, not in assumptions. Prefer the project's real names for systems and files.
-- If the issue (or part of it) duplicates tracked work, stop and point to it rather than starting a discussion.
-- Keep each response tight after the opening restatement; this should feel like a quick clarifying exchange, not an interview.

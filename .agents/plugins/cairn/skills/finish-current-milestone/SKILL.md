@@ -5,7 +5,7 @@ description: Mark the current milestone as done — records accomplishments in m
 
 # finish-current-milestone
 
-Wraps up the current milestone — verifies all tasks are done, records accomplishments in `milestones/README.md`, clears the current-milestone pointer to "none" in `milestones/README.md`, and updates `CLAUDE.md` only if the milestone introduced lasting changes to the project's environment context. Run this when all tasks are complete. After this, run `/define-milestone-goal` to define the next milestone, then `/goto-next-milestone` to activate it.
+Wraps up the current milestone — verifies all tasks are done, records accomplishments in `milestones/README.md`, clears the current-milestone pointer to "none" in `milestones/README.md`, and updates `CLAUDE.md` only if the milestone introduced lasting changes to the project's environment context. It creates or modifies no files in `<MILESTONE_DIR>/`, and it never invokes `/capture-milestone-principle-updates`. Run this when all tasks are complete. After this, run `/define-milestone-goal` to define the next milestone, then `/goto-next-milestone` to activate it.
 
 ## Usage
 
@@ -40,11 +40,11 @@ Write a short summary (3–8 bullet points) of what was accomplished. Draw from:
 - The completed tasks in `TASKS_DONE.md`
 - Any significant decisions recorded in `requirements.md`
 
-Keep each bullet to one sentence. Focus on what now exists in the project, not on process.
+Keep each bullet to one sentence, factual and grounded in the requirements and completed tasks — never an invented accomplishment. Focus on what now exists in the project, not on process.
 
 ### 5. Update milestones/README.md — history
 
-In `milestones/README.md`, add the finished milestone to the `## Milestone History` section. Prepend a new entry using this format:
+In `milestones/README.md`, add the finished milestone to the `## Milestone History` section. Prepend a new entry using this format, never rewriting existing entries:
 
 ```markdown
 ### Milestone N — Title
@@ -62,7 +62,7 @@ Then add a one-line index entry to the `## Completed Milestones` table — appen
 | N | Title | `milestones/milestone_<NN>_<slug>/` |
 ```
 
-Append the row in ascending milestone-number order (after any existing rows). If the `## Completed Milestones` section or its table header does not exist, create it after `## Milestone History`.
+Append the row in ascending milestone-number order (after any existing rows), altering no existing row. If the `## Completed Milestones` section or its table header does not exist, create it after `## Milestone History`.
 
 ### 6. Clear the current milestone pointer
 
@@ -72,7 +72,7 @@ In `milestones/README.md`, overwrite the `Current milestone:` line with the lite
 Current milestone: none
 ```
 
-Leave the `## Current Milestone` heading and all other content in `milestones/README.md` unchanged.
+Leave the `## Current Milestone` heading and all other content in `milestones/README.md` unchanged, and do not write the pointer into `CLAUDE.md`.
 
 ### 7. Update CLAUDE.md only for lasting environment-context changes
 
@@ -87,7 +87,7 @@ Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/com
 - **PATHS** — this skill's own change set: **always** `milestones/README.md` (it carries both the completion summary from steps 4–5 and the `Current milestone: none` pointer cleared in step 6, in the same edit), and **additionally** `CLAUDE.md` **only on passes where step 7 actually edited it**. If step 7 was skipped, `CLAUDE.md` is not in the set and the commit covers `milestones/README.md` alone. This conditional inclusion is keyed on whether this skill's step 7 edited the file — decided as the edit is (or is not) made, never by diffing or inspecting content.
 - **SUBJECT** — `Milestone-finish: milestone_<NN>_<slug>`.
 
-Because the pointer-clear rides inside the same `milestones/README.md` edit, the committed README already carries `Current milestone: none`, so `goto-next-milestone`'s none-pointer precondition is recorded in git rather than left in a dirty tree. The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit; do not restate those mechanics here.
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
 
 ### 9. Confirm
 
@@ -97,19 +97,10 @@ On the success path, print exactly one fixed terse status line and nothing else:
 Milestone finished.
 ```
 
-Do not restate the milestone name, the tasks-completed count, the accomplishment bullets written into `milestones/README.md`, the pointer clear, any `CLAUDE.md` sections touched, or the commit — the committed diff and `git log` are the durable record. Do not print any next-step or handoff pointer; the finish→capture and finish→`/define-milestone-goal` handoffs live only in `CLAUDE.md`/`README.md`, not in this runtime output.
+Do not restate the milestone name, the tasks-completed count, the accomplishment bullets written into `milestones/README.md`, the pointer clear, any `CLAUDE.md` sections touched, or the commit. Do not print any next-step or handoff pointer.
 
-If step 8's dirty-own-path no-op guard fired (the pass changed no files, so nothing was committed), do not print the terse success line. Instead print a distinct one-line message stating that nothing changed and briefly why — because git holds no durable record of a no-op — for example:
+If step 8's dirty-own-path no-op guard fired (the pass changed no files, so nothing was committed), do not print the terse success line. Instead print a distinct one-line message stating that nothing changed and briefly why, for example:
 
 ```
 Nothing to finish — no changes to commit.
 ```
-
-## Rules
-
-- Do not mark the milestone done if `TASKS_TODO.md` still has tasks with `##` headings.
-- Do not rewrite existing `## Milestone History` entries — only prepend the new one. Likewise only append the new row to the `## Completed Milestones` table; do not alter existing rows.
-- Keep the summary factual and grounded in the requirements and tasks — do not invent accomplishments.
-- Do not create or modify any files in `<MILESTONE_DIR>/`.
-- Clear the current-milestone pointer only in `milestones/README.md` — overwrite the `Current milestone:` line to `Current milestone: none`. Do not modify `CLAUDE.md`'s pointer section.
-- `/finish-current-milestone` never invokes `/capture-milestone-principle-updates`. Step 9 no longer prints a runtime recommendation of it; the finish→capture handoff is documented in `CLAUDE.md`/`README.md` as an optional follow-up a user runs after finishing.

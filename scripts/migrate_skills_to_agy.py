@@ -3,7 +3,7 @@ import shutil
 import json
 import sys
 
-def migrate_to_agy_plugin(plugin_name="cairn", src_skills="skills", src_agents="agents", src_mcp=".mcp.json"):
+def migrate_to_agy_plugin(plugin_name="cairn", src_skills="skills", src_agents="agents", src_shared="shared", src_mcp=".mcp.json"):
     plugin_dir = os.path.join(".agents", "plugins", plugin_name)
     
     print(f"Creating agy plugin '{plugin_name}' at '{plugin_dir}'...")
@@ -131,6 +131,16 @@ def migrate_to_agy_plugin(plugin_name="cairn", src_skills="skills", src_agents="
         print(f"Successfully migrated agents to {dest_agents_dir}")
     else:
         print(f"No source agents found at {src_agents}")
+
+    # 5. Migrate shared procedures
+    if os.path.exists(src_shared):
+        dest_shared_dir = os.path.join(plugin_dir, "shared")
+        if os.path.exists(dest_shared_dir):
+            shutil.rmtree(dest_shared_dir)
+        shutil.copytree(src_shared, dest_shared_dir)
+        print(f"Successfully migrated shared procedures to {dest_shared_dir}")
+    else:
+        print(f"No source shared procedures found at {src_shared}")
 
 if __name__ == "__main__":
     migrate_to_agy_plugin()
