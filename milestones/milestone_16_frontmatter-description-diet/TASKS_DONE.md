@@ -28,3 +28,18 @@ Rewrite the frontmatter `description` of the nine skills currently over the cap 
 - Each of the nine files' raw frontmatter loads under `yaml.safe_load` with the `description:` line left unquoted (plain scalar, no leading quote).
 
 ---
+
+## Audit Six Short Skill Descriptions
+
+Bring the six skill descriptions already at or under the cap — `answer-open-question`, `specify-milestone-starting-state`, `discuss-milestone-goal`, `define-milestone-goal`, `ask-in-milestone-context`, `complete-all-tasks` — up to the same bar, rewording only where a description still carries mechanics, sequencing, cross-skill references, or a semicolon or colon, and leaving descriptions already written with em-dash or parenthetical apposition alone on punctuation grounds. Verified when each of the six descriptions is a single independent clause of 25 words or fewer, contains no semicolon or colon, names only what the skill does, and its raw frontmatter loads under `yaml.safe_load` with the `description:` line left unquoted.
+
+**Verified:**
+
+- Each of the six descriptions (`answer-open-question`, `specify-milestone-starting-state`, `discuss-milestone-goal`, `define-milestone-goal`, `ask-in-milestone-context`, `complete-all-tasks`) is a single independent clause of 25 words or fewer — 18, 22, 21, 18, 20, 15 respectively.
+- None of the six descriptions contains a semicolon or a colon.
+- Each of the six names only what the skill does, with the remaining mechanics reworded away — `answer-open-question` lost "committing the manual-answer edit", `complete-all-tasks` lost "committing after each completed task", and `ask-in-milestone-context`'s "Use when…" framing was replaced with a statement of what the skill does.
+- The three descriptions carrying no mechanics, sequencing, cross-skill reference, semicolon, or colon (`specify-milestone-starting-state`, `discuss-milestone-goal`, `define-milestone-goal`) were left byte-for-byte unchanged, including `define-milestone-goal`'s parenthetical apposition, which is not grounds for a rewrite.
+- Each of the six files' raw frontmatter loads under `yaml.safe_load` with the `description:` line left unquoted (plain scalar, no leading quote indicator).
+- Each file's `name` key is unchanged and none of the six carries a `model` key — the diff is three files, one `description:` line each, three insertions and three deletions.
+
+---

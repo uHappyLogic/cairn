@@ -1,6 +1,6 @@
 ---
 name: answer-open-question
-description: Answer a named open question in the current milestone requirements document, recording the decision and its downstream implications and committing the manual-answer edit.
+description: Answer a named open question in the current milestone's requirements.md by recording the supplied answer as the decision.
 ---
 
 # answer-open-question

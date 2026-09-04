@@ -1,6 +1,6 @@
 ---
 name: complete-all-tasks
-description: Complete all tasks from the current milestone's TASKS_TODO.md one by one, committing after each completed task.
+description: Complete every task in the current milestone's TASKS_TODO.md one by one, moving each to TASKS_DONE.md.
 ---
 
 # complete-all-tasks
