@@ -10,9 +10,20 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_16_frontmatter-description-diet/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 16 — Frontmatter Description Diet
+
+- Cut all 24 plugin frontmatter descriptions (21 `skills/*/SKILL.md`, 3 `agents/*.md`) to a single independent clause of 25 words or fewer naming only what that skill or agent does, taking the always-on description budget from 1,411 words to 452 (−68%) and the longest single description from 149 words to 23.
+- Restructured the six heaviest descriptions from scratch and shortened the nine mid-weight ones, deleting their trigger-phrase lists, mechanics, commit subjects, sequencing, cross-skill references, "Use when…" framing, and design provenance outright — descriptions are routing labels, never a record, so nothing cut was relocated.
+- Audited the six descriptions already at or under the cap to the same bar, leaving byte-for-byte unchanged the three that carried no mechanics, sequencing, cross-skill reference, or banned punctuation.
+- Compressed the three agent descriptions into that same one-clause shape while keeping each invocation contract as a short clause naming what the prompt carries (the task's heading text, the question's Short Title), and deleted the separate "dispatched by X, not called directly by the user" note.
+- Enforced two machine-checkable bars across the set — no semicolon or colon in any description, and every raw frontmatter loads under `yaml.safe_load` with its `description:` line left unquoted — so the transpiler's re-quoting fallback survives as an unexercised net (`review-milestone-requirements` was the one file that tripped it).
+- Extended `CLAUDE.md`'s **Skill Frontmatter** invariant into the single home of every rule governing the frontmatter `description` key, and revised milestone 15's runtime-prose bullet so it no longer exempts descriptions as "the triggering surface" — no new standalone invariant bullet was added.
+- Ran the bounded falsification-only pass over `README.md`'s `## Skill reference` and `CLAUDE.md`'s workflow map and recorded it as a no-op: the rewrites changed one `description:` line per file and no skill or agent body, so no claim on either surface was falsified (`goto-next-milestone`'s stale README entry remains the pre-existing follow-up milestone 15 recorded).
+- Regenerated the checked-in Antigravity tree at `.agents/plugins/cairn/` in a single closing run of `scripts/migrate_skills_to_agy.py`, with each of the 24 generated files byte-identical to its source and no transpiler source touched.
 
 ### Milestone 15 — Runtime layer de-duplication
 
@@ -169,3 +180,4 @@ Current milestone: `milestones/milestone_16_frontmatter-description-diet/`
 | 13 | agy-integration-polish | `milestones/milestone_13_agy-integration-polish/` |
 | 14 | Brief-level task pipeline | `milestones/milestone_14_brief-level-task-pipeline/` |
 | 15 | Runtime layer de-duplication | `milestones/milestone_15_runtime-layer-dedup/` |
+| 16 | Frontmatter Description Diet | `milestones/milestone_16_frontmatter-description-diet/` |
