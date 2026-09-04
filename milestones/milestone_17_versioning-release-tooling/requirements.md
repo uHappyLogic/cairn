@@ -32,29 +32,14 @@ Every committing skill stages path-scoped and commits under a `<Marker>: <descri
 
 ## Decisions
 
+### Version surface set
+
+The version script writes every version literal in the repo — four surfaces: `.claude-plugin/plugin.json`, the generated `.agents/plugins/cairn/plugin.json`, a `version` field on the single `plugins[]` entry in `.claude-plugin/marketplace.json` (which carries none today), and `pyproject.toml`, whose `cairn-tooling` version moves off its independent `0.1.0` onto the plugin version so the whole repo carries one number. A release therefore bumps every version literal in the tree, leaving no per-file judgement call about which surfaces are in scope.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Version surface set" status="open">
-  <question>Beyond `.claude-plugin/plugin.json` and the generated Antigravity manifest, which other in-repo surfaces does the version script write — does the plugin entry in `.claude-plugin/marketplace.json` gain a version field, and does the `pyproject.toml` tooling version track the plugin version or stay independent?</question>
-  <alternative id="Plugin manifests only">
-    The script writes exactly two surfaces — `.claude-plugin/plugin.json` and the generated `.agents/plugins/cairn/plugin.json` — leaving `.claude-plugin/marketplace.json` without a version field and `pyproject.toml`&apos;s `cairn-tooling` version independent.
-    <advantage>Keeps the plugin version to a single authoritative literal per distribution channel, so there is no third copy that a hand edit or a script bug could desync from `plugin.json`.</advantage>
-    <drawback>The marketplace manifest — the file a `/plugin marketplace add uHappyLogic/cairn` consumer reads first — still states no version, which leaves a plugin-facing surface that carries none, exactly the gap the goal&apos;s audit was meant to close.</drawback>
-  </alternative>
-  <alternative id="Both plugin manifests plus marketplace entry">
-    The script writes `.claude-plugin/plugin.json`, the generated Antigravity manifest, and a new `version` field on the single `plugins[]` entry in `.claude-plugin/marketplace.json`; `pyproject.toml` stays independent as tooling-only versioning.
-    <advantage>Every surface that describes the plugin to a consumer states the release version, and because one script writes all three in a single run they cannot drift in practice — which is precisely what automating the bump buys over the hand-alignment of commit `503cb27`.</advantage>
-    <drawback>Adds a third copy of the same literal to a file that carries none today, and for a `source: "."` entry that version is strictly redundant with `plugin.json`, so any path that edits one manifest without running the script reintroduces the drift risk.</drawback>
-  </alternative>
-  <alternative id="Every version literal in the repo">
-    The script writes all four surfaces, additionally moving `pyproject.toml` from its independent `0.1.0` onto the plugin version so the whole repo carries one number.
-    <advantage>Removes the judgement call entirely — a release bumps every version literal in the tree, and no maintainer has to remember which files are in scope.</advantage>
-    <drawback>Conflates two artifacts that evolve independently: `cairn-tooling` is dev-only and non-packaged (`package = false`), versions the transpiler rather than the plugin, and has never moved — so a plugin patch release would announce a tooling change that did not happen.</drawback>
-  </alternative>
-  <recommendation option="Both plugin manifests plus marketplace entry">The version belongs on every surface that describes the plugin to a consumer — and the marketplace entry is one — while `pyproject.toml` describes a different artifact and must stay independent; the script being the sole writer is what makes the added marketplace copy safe.</recommendation>
-</open-question>
 <open-question id="Generated manifest version source" status="open">
   <question>Since the transpiler rewrites the Antigravity manifest from a hard-coded dict on every run, how does that generated manifest get its version — does the transpiler read it from `.claude-plugin/plugin.json` at generation time, take it as an argument, or does the version script write the generated file directly with the transpiler preserving it?</question>
   <alternative id="Transpiler reads plugin.json">
