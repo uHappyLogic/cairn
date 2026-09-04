@@ -1,6 +1,6 @@
 ---
 name: answer-open-question-with-recommendation
-description: Records one open question's embedded recommendation as its answer in the current milestone's requirements.md, leaving the edit uncommitted for the orchestrator to commit. Invoke with the target question's Short Title as the prompt. Dispatched per-question by the answer-all-open-questions-with-recommendation sweep; not called directly by the user.
+description: Records one open question's embedded recommendation as its answer in the current milestone's requirements.md, invoked with that question's Short Title as the prompt.
 color: green
 model: opus
 ---

@@ -1,6 +1,6 @@
 ---
 name: answer-all-open-questions-with-recommendation
-description: Autonomously sweep the current milestone's requirements for open and deferred questions that already carry an embedded recommendation and record each one's recommendation as its answer — by dispatching the file-editing answer-open-question-with-recommendation agent once per question, strictly sequentially, and committing each answer itself after the agent returns. Use this after a recommend sweep has annotated the questions (via /recommend-all-open-questions) and you want every recommendation-bearing question recorded at once without answering each by hand. Trigger it whenever the user says things like "answer all the recommendations", "record every embedded recommendation", "run the recommendation-answer sweep", "sweep the recommendations", or "accept all the recommended answers". Recommendation-less questions are the recommend sweep's job and are left untouched.
+description: Record the embedded recommendation as the answer for every open and deferred question in the current milestone's requirements that carries one.
 ---
 
 # answer-all-open-questions-with-recommendation

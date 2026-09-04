@@ -115,3 +115,20 @@ Run one bounded pass over `README.md`'s `## Skill reference` entries and `CLAUDE
 - The per-entry check is recorded in this `**Verified:**` ledger, one bullet per checked entry, with no separate checklist artifact added under the milestone directory.
 
 ---
+
+## Regenerate Antigravity Tree After Rewrites
+
+Run `uv run scripts/migrate_skills_to_agy.py` exactly once, after every description rewrite has landed, to regenerate the checked-in Antigravity tree at `.agents/plugins/cairn/` so the description savings reach that surface, touching no transpiler source. Verified when the transpiler exits cleanly without exercising its re-quoting fallback, a whole-set check confirms all 24 descriptions are 25 words or fewer with no semicolon or colon and every raw frontmatter loads under `yaml.safe_load` unquoted, and the regenerated tree's descriptions match the source files.
+
+**Verified:**
+
+- All six description-rewrite tasks had landed before the run: `TASKS_TODO.md` held only this closing task, and `TASKS_DONE.md` carried Restructure Six Heaviest, Shorten Nine Mid-Weight, Audit Six Short, Compress Three Agent, Amend Skill Frontmatter Invariant and Falsification Pass.
+- Whole-set pre-check over all 24 source descriptions (21 `skills/*/SKILL.md` + 3 `agents/*.md`): every one is 25 words or fewer (range 13–23, no file at the cap boundary failing), and none contains a semicolon or a colon.
+- Every one of the 24 raw frontmatter blocks loads under `yaml.safe_load` with its `description:` line left unquoted — parsed straight from the source bytes, with no re-quoting applied.
+- `uv run scripts/migrate_skills_to_agy.py` was run exactly once, exited 0, and printed no `Error:` line; it migrated 21 skills plus the `agents/` and `shared/` trees.
+- The re-quoting fallback was never exercised: each of the 24 generated files is byte-identical to its source (`filecmp.cmp(..., shallow=False)`), and every generated `description:` line is still unquoted, which the fallback would have changed.
+- The regenerated tree's descriptions match the source files: `yaml.safe_load` of each generated frontmatter yields the same `description` string as its source counterpart, for all 24.
+- No transpiler source was touched: `git status --short` after the run lists only files under `.agents/plugins/cairn/`, and `scripts/migrate_skills_to_agy.py` is unmodified.
+- The regeneration diff is confined to the description surface: `git diff --stat` shows 21 generated files changed, one line inserted and one deleted in each, and `shared/` and `plugin.json` came out unchanged (already in sync).
+
+---

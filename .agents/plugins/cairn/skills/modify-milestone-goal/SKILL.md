@@ -1,6 +1,6 @@
 ---
 name: modify-milestone-goal
-description: Revise the `## Goal` of the current milestone's requirements.md when a discussion reveals the goal itself — not just an open question — needs to change. Use when the user wants to reshape, broaden, narrow, or correct the objective of an already-defined milestone (e.g. "the goal should also cover X", "drop Y from the goal", "the goal is really about Z"). This is the only skill that mutates an existing milestone's Goal; it edits the Goal section only and surfaces — never auto-cascades — the downstream impact. It is offered by /discuss-open-question when a deliberation concludes the goal must shift, and is also directly invocable.
+description: Revise the Goal section of the current milestone's requirements.md when the objective itself needs to be reshaped, broadened, narrowed, or corrected.
 ---
 
 # modify-milestone-goal

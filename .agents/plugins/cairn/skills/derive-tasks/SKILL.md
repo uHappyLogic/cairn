@@ -1,6 +1,6 @@
 ---
 name: derive-tasks
-description: Convert the current milestone's requirements.md into a complete, dependency-ordered TASKS_TODO.md. Decomposes the milestone into high-level task briefs, proves every requirement is covered, then writes those briefs directly into the task list as brief-level task sections.
+description: Convert the current milestone's requirements.md into a complete, dependency-ordered TASKS_TODO.md of brief-level task sections.
 ---
 
 # derive-tasks

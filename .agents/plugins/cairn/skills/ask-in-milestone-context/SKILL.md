@@ -1,6 +1,6 @@
 ---
 name: ask-in-milestone-context
-description: Use when the user is asking a question about the current milestone rather than trying to change it.
+description: Answer an informational question about the current milestone from its goal, decisions, task lists, and live deliverables, without editing anything.
 ---
 
 # ask-in-milestone-context
