@@ -36,30 +36,14 @@ Two invariants bear directly on this milestone. The **Skill Frontmatter** invari
 
 The 25-word figure is a hard pass/fail bar: every one of the 24 descriptions (21 `skills/*/SKILL.md`, 3 `agents/*.md`) must be 25 words or fewer, with no exceptions and no escape clause. A description that does not fit is reworded until it does. Because cairn is invoked only by explicit slash command, sibling-skill collision carries no runtime cost and is not grounds for overage; distinguishing a skill from its siblings is a wording problem to solve within the cap. The bar is mechanically verifiable by word count.
 
+### Sentence shape
+
+"A single short sentence" means one independent clause. Qualifying riders set off by commas, an em dash, or parentheses are allowed; the semicolon and the colon are banned outright, because those two marks introduce a second statement or an enumeration and are the route by which deleted mechanics and trigger lists would return under the word cap. The semicolon/colon ban is greppable and pass/fail; the permissive half is judged per description. Descriptions already written with em-dash or parenthetical apposition are not rewritten for punctuation alone.
+
 ## Out of Scope
 
 
 ## Open questions
-
-<open-question id="Sentence shape bar" status="open">
-  <question>Beyond word count, what structural constraints does &quot;a single short sentence&quot; impose — is an em-dash or colon continuation clause, a semicolon, or a parenthetical allowed inside the one sentence, or must it be a single plain clause?</question>
-  <alternative id="Terminal period only">
-    Define &quot;a single short sentence&quot; as exactly one sentence-terminating period and nothing more, leaving all internal punctuation (em-dash, colon, semicolon, parenthetical) unconstrained and letting the word cap plus the Goal&apos;s four content deletions do the whole job.
-    <advantage>Adds no rule that is not already load-bearing — the mechanics, provenance, trigger-list and cross-reference bans already forbid the material a tail clause would carry — so the 24 rewrites stay focused on cutting content rather than policing style, and descriptions that already meet the intent (define-milestone-goal&apos;s parenthetical, finish-current-milestone&apos;s em-dash) pass untouched.</advantage>
-    <drawback>An em-dash or semicolon tail is precisely how deleted mechanics creep back in under the cap, and this bar offers no independent check against it — a reviewer has only the content ban, which is a judgment call, where a punctuation bar would have been a grep.</drawback>
-  </alternative>
-  <alternative id="Single plain clause">
-    Require one independent clause with no em-dash, colon, semicolon, or parenthetical at all — commas permitted only to separate list items — so every description is a bare subject-verb-object statement.
-    <advantage>Maximally mechanical and pass/fail checkable across all 24 files (a single grep for the banned marks), and it structurally forecloses the tail-clause route by which cut mechanics would return.</advantage>
-    <drawback>Over-constrains for no token payoff: it forces punctuation-only rewrites of descriptions that already satisfy the milestone&apos;s intent, removes the cheapest way to distinguish near-sibling skills (define- vs modify-milestone-goal, the three answer-open-question variants), and bans em-dash apposition, which is the established voice of every prose surface in this repo.</drawback>
-  </alternative>
-  <alternative id="One statement, riders allowed">
-    Require one independent clause that may carry qualifying riders set off by commas, an em-dash, or parentheses, while banning the semicolon and the colon outright — the two marks whose job is to introduce a second statement or an enumeration, and the ones that would reopen the door to a mechanics or trigger-list tail.
-    <advantage>Puts a greppable, unambiguous ban exactly where the smuggling risk is (semicolon and colon), while staying permissive about the em-dash apposition the project already writes in, so no already-conforming description is rewritten for style alone; the colon ban has a second, independent mechanical payoff on the YAML surface, which its own open question can settle without contradicting this bar.</advantage>
-    <drawback>The permissive half is a judgment call rather than a test — how long a rider may run, and whether an em-dash tail is a qualifier or a second statement in disguise, still has to be adjudicated per file, so near-miss cases are argued rather than checked.</drawback>
-  </alternative>
-  <recommendation option="One statement, riders allowed">It is mechanical exactly where enforcement pays (a grep-checkable ban on the two sentence-joining marks that would let cut mechanics back in) and permissive exactly where the repo&apos;s own voice already lives (em-dash and parenthetical apposition), so the bar constrains content creep without generating punctuation-only churn in the descriptions that already meet the intent.</recommendation>
-</open-question>
 
 <open-question id="CLAUDE.md invariant update" status="open">
   <question>Does this milestone amend the CLAUDE.md invariants — the &quot;Skill Frontmatter&quot; invariant and the milestone-15 sentence exempting frontmatter descriptions as &quot;the triggering surface, edited only to correct a claim the body has falsified&quot; — to record the one-sentence rule, or does the rule live only in the edited files?</question>
