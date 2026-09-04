@@ -48,36 +48,14 @@ Every one of the 24 rewritten descriptions must parse as a plain unquoted YAML s
 
 Each of the three `agents/*.md` descriptions keeps its invocation contract, compressed into the same single sentence as a short clause naming what the prompt carries — for example the task's heading text, or the question's Short Title — rather than left as a second dedicated sentence. That clause costs about five words, so all three agent descriptions still land under the 25-word cap, and it keeps the payload on the only agent-facing surface a dispatcher reads before the agent body loads. The separate "dispatched by X; not called directly by the user" note is provenance and is deleted.
 
+### CLAUDE.md invariant home
+
+The milestone amends `CLAUDE.md`. The existing **Skill Frontmatter** invariant is extended to carry the one-short-sentence description rule — what a description must name, what is deleted from it, and that descriptions are routing labels rather than a record — so every rule about the frontmatter `description` key lives in that one bullet. The milestone-15 sentence exempting frontmatter descriptions as "the triggering surface, edited only to correct a claim the body has falsified" is revised so it no longer makes that claim and instead points at the Skill Frontmatter bullet as the frontmatter rule's home. No new standalone invariant bullet is added.
+
 ## Out of Scope
 
 
 ## Open questions
-
-<open-question id="CLAUDE.md invariant update" status="open">
-  <question>Does this milestone amend the CLAUDE.md invariants — the &quot;Skill Frontmatter&quot; invariant and the milestone-15 sentence exempting frontmatter descriptions as &quot;the triggering surface, edited only to correct a claim the body has falsified&quot; — to record the one-sentence rule, or does the rule live only in the edited files?</question>
-  <alternative id="Extend Skill Frontmatter invariant">
-    Amend both bearing invariants: extend the existing Skill Frontmatter bullet so it carries the one-short-sentence description rule (what to name, what to delete, and that descriptions are routing labels rather than a record), and revise the milestone-15 sentence so it no longer claims descriptions are edited only to correct a falsified claim, pointing instead at the Skill Frontmatter bullet as the frontmatter rule&apos;s home.
-    <advantage>Every rule about the frontmatter description key ends up in exactly one bullet, and the stale milestone-15 exemption — which would otherwise instruct a future editor to leave descriptions alone — is corrected in the same pass.</advantage>
-    <drawback>The Skill Frontmatter bullet grows from a narrow schema requirement (name and description must exist) into a schema-plus-style rule, mixing a transpiler hard-fail constraint with an authoring convention.</drawback>
-  </alternative>
-  <alternative id="New standalone invariant">
-    Add a new standalone invariant bullet for the description diet (its own cross-cutting authoring rule, in the style of the terse-reporting and no-editor-facing-prose bullets), leave the Skill Frontmatter schema bullet as-is, and revise the milestone-15 exemption sentence to defer to the new bullet.
-    <advantage>Follows the established shape for cross-cutting authoring conventions, which each earn their own bullet, and keeps the transpiler-driven schema requirement cleanly separate from the style rule.</advantage>
-    <drawback>Creates a second invariant bullet governing the same frontmatter key, so a later editor must read both to know the full contract — exactly the split-home duplication milestone 15 spent its effort removing.</drawback>
-  </alternative>
-  <alternative id="Correct the exemption only">
-    Touch CLAUDE.md only to remove or narrow the milestone-15 exemption sentence, without stating the positive one-sentence rule anywhere; the rewritten descriptions themselves are the only expression of the standard.
-    <advantage>Minimal CLAUDE.md churn while still eliminating the one sentence this milestone actually falsifies.</advantage>
-    <drawback>Leaves no written rule for the next skill author, who must infer the standard by sampling 24 existing descriptions and will predictably regrow trigger lists and mechanics in the first new skill.</drawback>
-  </alternative>
-  <alternative id="No CLAUDE.md change">
-    Leave both invariants untouched; the diet lives only in the edited skills/*/SKILL.md and agents/*.md files as an implicit example.
-    <advantage>Zero risk of the invariants list drifting from what the files actually say, and the smallest possible milestone footprint.</advantage>
-    <drawback>The milestone-15 sentence stays actively wrong — it would tell a future editor that descriptions are edited only to correct a falsified claim, contradicting a milestone that rewrote all 24 of them for length alone.</drawback>
-  </alternative>
-  <applied-principle>Mutate live machinery last</applied-principle>
-  <recommendation option="Extend Skill Frontmatter invariant">The milestone-15 exemption sentence is falsified by this milestone and cannot be left standing, and folding the one-sentence rule into the existing Skill Frontmatter bullet gives the frontmatter surface a single invariant home rather than a second bullet about the same key.</recommendation>
-</open-question>
 
 <open-question id="Parallel doc surfaces scope" status="open">
   <question>Are README.md&apos;s per-skill reference entries and CLAUDE.md&apos;s workflow map left completely untouched, or must they be checked for claims the shortened descriptions falsify?</question>
