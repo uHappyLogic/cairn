@@ -32,36 +32,14 @@ Two invariants bear directly on this milestone. The **Skill Frontmatter** invari
 
 ## Decisions
 
+### Description length
+
+The 25-word figure is a hard pass/fail bar: every one of the 24 descriptions (21 `skills/*/SKILL.md`, 3 `agents/*.md`) must be 25 words or fewer, with no exceptions and no escape clause. A description that does not fit is reworded until it does. Because cairn is invoked only by explicit slash command, sibling-skill collision carries no runtime cost and is not grounds for overage; distinguishing a skill from its siblings is a wording problem to solve within the cap. The bar is mechanically verifiable by word count.
+
 ## Out of Scope
 
 
 ## Open questions
-
-<open-question id="Word cap enforcement" status="open">
-  <question>Is the 25-word figure a hard pass/fail bar that every one of the 24 descriptions must meet, or a target a description may exceed when a shorter wording would stop distinguishing it from a sibling skill?</question>
-  <alternative id="Hard cap">
-    Treat 25 words as a pass/fail bar every one of the 24 descriptions must meet, with no exceptions and no escape clause; a description that cannot fit is reworded until it does.
-    <advantage>It is mechanically verifiable — a task can assert &quot;all 24 descriptions are 25 words or fewer&quot; and a completer can check it with a word count, so the six heaviest descriptions (149–105 words) cannot negotiate their way to a partial trim, which is the exact failure mode the milestone Goal singles out.</advantage>
-    <drawback>A few descriptions in tight sibling clusters (the four answer-open-question* skills, complete-task skill vs. agent, recommend-all-open-questions vs. the recommend-open-question agent) must carry their distinguishing trait in very compressed wording, and one or two may read tersely as a result.</drawback>
-  </alternative>
-  <alternative id="Target with sibling exception">
-    Treat 25 words as a target a description may exceed when a shorter wording would stop distinguishing it from a sibling skill, with the author judging each case.
-    <advantage>It preserves distinguishability wherever a cluster is genuinely tight, and matches the Goal&apos;s own literal wording (&quot;target: 25 words or fewer&quot;) without reinterpreting it.</advantage>
-    <drawback>The exception is self-judged and unbounded — there is no ceiling on the overage and no test a reviewer can apply — and the descriptions most likely to claim it are precisely the six heavy ones carrying 57% of the word budget, so the milestone&apos;s central cut becomes a per-description negotiation.</drawback>
-  </alternative>
-  <alternative id="Bounded overage ceiling">
-    Keep 25 words as the default hard bar but allow a named, hard ceiling (e.g. 35 words) for a description that states a specific sibling-collision reason.
-    <advantage>It bounds the escape hatch, so the total always-on budget stays predictable while a genuinely cramped description gets room.</advantage>
-    <drawback>It carries two numbers and a per-description justification step, reopening the &quot;does this one qualify?&quot; argument the flat bar exists to end, for a saving measured in a handful of words across at most two or three files.</drawback>
-  </alternative>
-  <alternative id="Sentence bar only">
-    Enforce &quot;a single sentence naming what the skill does&quot; as the real bar and demote 25 words to a non-binding guide.
-    <advantage>It enforces the Goal&apos;s actual stated shape rather than a proxy for it, and never forces an awkward truncation.</advantage>
-    <drawback>A single sentence can still run 60+ words, so it does not bound the always-on token cost that motivates the milestone at all — and it leaves the word figure in the Goal with no operative meaning.</drawback>
-  </alternative>
-  <applied-principle>Name by distinctive function</applied-principle>
-  <recommendation option="Hard cap">Descriptions here never route anything — cairn is invoked only by explicit slash command, as the Goal and the starting state both record — so sibling collision carries no runtime cost, while a flat pass/fail bar is the only form of the rule the six heaviest descriptions cannot argue their way past; distinctiveness is a wording problem, not a length problem, and every cluster&apos;s separating trait fits inside 25 words.</recommendation>
-</open-question>
 
 <open-question id="Sentence shape bar" status="open">
   <question>Beyond word count, what structural constraints does &quot;a single short sentence&quot; impose — is an em-dash or colon continuation clause, a semicolon, or a parenthetical allowed inside the one sentence, or must it be a single plain clause?</question>
