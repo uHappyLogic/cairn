@@ -36,6 +36,10 @@ Every committing skill stages path-scoped and commits under a `<Marker>: <descri
 
 The version script writes every version literal in the repo — four surfaces: `.claude-plugin/plugin.json`, the generated `.agents/plugins/cairn/plugin.json`, a `version` field on the single `plugins[]` entry in `.claude-plugin/marketplace.json` (which carries none today), and `pyproject.toml`, whose `cairn-tooling` version moves off its independent `0.1.0` onto the plugin version so the whole repo carries one number. A release therefore bumps every version literal in the tree, leaving no per-file judgement call about which surfaces are in scope.
 
+### Release process documentation
+
+The release procedure is documented in exactly one place — the release skill's own `SKILL.md` under `.claude/skills/` — and nowhere else; discovery is via the slash-command list. Neither `CLAUDE.md` nor `README.md` gains a release paragraph, so the executable steps have a single source of truth with no prose copy to drift.
+
 ## Out of Scope
 
 ## Open questions
@@ -310,28 +314,4 @@ The version script writes every version literal in the repo — four surfaces: `
     <drawback>It turns a one-sentence guard into a two-case rule that a maintainer must remember, and the extra-entry direction can also mean a fabricated or duplicated entry — which it then publishes.</drawback>
   </alternative>
   <recommendation option="Stop and report">Stop before any git or `gh` mutation and report both sides, because the release is the one irreversible artifact in the run while the cost of a false stop is a single README edit and a re-run — and if the extra-entry direction proves routinely benign in practice, that is the signal to relax the guard into the asymmetric form.</recommendation>
-</open-question>
-<open-question id="Release process documentation" status="deferred">
-  <question>Where is the maintainer-facing release procedure documented — the Development section of CLAUDE.md, README.md, or only the skill itself?</question>
-  <alternative id="Skill only">
-    The release procedure lives entirely in `.claude/skills/&lt;release-skill&gt;/SKILL.md` and nowhere else; discovery is via the slash-command list.
-    <advantage>Single source of truth with zero drift risk — the steps are read by whoever executes them, exactly like every other cairn skill, and a change to the process is one edit.</advantage>
-    <drawback>Nothing in `CLAUDE.md` or `README.md` records that releases are automated at all, so an agent reasoning about the repo (or the maintainer months later) has no signpost to the skill and may hand-cut a release the way `503cb27` was done.</drawback>
-  </alternative>
-  <alternative id="CLAUDE.md pointer">
-    The skill holds the full procedure; `CLAUDE.md`&apos;s `## Development` section gains a short paragraph naming the release skill, its version argument, and the surfaces it touches — a signpost, not a restatement of the steps.
-    <advantage>Puts the release path where this repo&apos;s maintainer-facing acts already live (the `## Development` transpile note, the `migrate-workspace` catalog registration rule), so the agent operating in this repo finds it, while the executable steps stay unduplicated in the skill.</advantage>
-    <drawback>Adds a second place that must be touched when the release flow changes, and `CLAUDE.md` is loaded into every session in this repo, so the paragraph costs context on every run regardless of relevance.</drawback>
-  </alternative>
-  <alternative id="README Development">
-    The procedure is documented in `README.md`&apos;s `## Development` section, next to the existing `uv run scripts/migrate_skills_to_agy.py` build step.
-    <advantage>Sits beside the one other maintainer-only repo command already documented there, and is visible to outside contributors browsing the project on GitHub.</advantage>
-    <drawback>`README.md` is the consuming-project user&apos;s doc — an installer of the plugin can never cut a cairn release (it needs `gh` auth to `uHappyLogic`), so the section becomes noise for its primary audience, and the agent that actually runs the skill does not read `README.md` by default.</drawback>
-  </alternative>
-  <alternative id="Both CLAUDE.md and README">
-    Mirror a short release note in both `CLAUDE.md`&apos;s and `README.md`&apos;s `## Development` sections, as the Antigravity transpilation step is mirrored today.
-    <advantage>Matches the existing precedent exactly — the one comparable maintainer-only command is already written in both places — so it needs no new judgment about which file wins.</advantage>
-    <drawback>Triples the surfaces that drift when the release flow changes (skill plus two prose copies), and the existing mirrored transpile text has already diverged in wording between the two files, showing the duplication is not maintained in practice.</drawback>
-  </alternative>
-  <recommendation option="CLAUDE.md pointer">The executable steps belong only in the skill, but a repo whose agent-facing conventions live in `CLAUDE.md` needs the release path signposted there — a short `## Development` paragraph naming the skill, its version argument, and the surfaces it writes; `README.md` stays a user-and-contributor doc, since only the maintainer can release.</recommendation>
 </open-question>
