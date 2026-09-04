@@ -1,6 +1,6 @@
 ---
 name: complete-task
-description: Completes a single named task from the current milestone's TASKS_TODO.md, verifies success criteria, and updates the task list. Invoke with the task's ## heading text as the prompt.
+description: Completes one named task from the current milestone's task list, invoked with that task's heading text as the prompt.
 color: green
 model: opus
 ---

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Compress Three Agent Descriptions
-
-Rewrite the frontmatter `description` of the three agents — `agents/complete-task.md`, `agents/recommend-open-question.md`, `agents/answer-open-question-with-recommendation.md` — into a single independent clause of 25 words or fewer that names what the agent does and folds its invocation contract in as a short clause naming what the prompt carries (the task's heading text, or the question's Short Title), deleting the separate "dispatched by X; not called directly by the user" note and all mechanics and provenance. Verified when each of the three descriptions is 25 words or fewer, contains no semicolon or colon, still names the prompt payload, keeps the `name`, `model`, and `color` keys untouched, and its raw frontmatter loads under `yaml.safe_load` with the `description:` line left unquoted.
-
----
-
 ## Amend Skill Frontmatter Invariant In CLAUDE.md
 
 Extend the existing **Skill Frontmatter** bullet under `## Invariants to preserve when editing skills` in `CLAUDE.md` to carry the one-short-sentence description rule — a single clause of 25 words or fewer naming only what the skill or agent does, with provenance, mechanics, sequencing, cross-skill references, and trigger lists deleted, semicolon and colon banned, plain-YAML-scalar parsing required, and descriptions treated as routing labels rather than a record — and revise the milestone-15 "runtime files carry no editor-facing prose" bullet's sentence exempting frontmatter descriptions as "the triggering surface, edited only to correct a claim the body has falsified" so it instead points at the Skill Frontmatter bullet as the home of the frontmatter rule. Verified when every rule about the `description` key lives in the Skill Frontmatter bullet, the old exemption claim no longer appears, and no new standalone invariant bullet was added.

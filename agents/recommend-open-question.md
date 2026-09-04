@@ -1,6 +1,6 @@
 ---
 name: recommend-open-question
-description: Read-only recommendation subagent for a single open question — the non-interactive twin of discuss-open-question. Given one question's Short Title plus context, it grounds in the live project read-only, produces the alternatives + a single recommendation, and returns them as the `<open-question>` block's XML sub-elements (one `<alternative>` per option, zero or more `<applied-principle>`, and one `<recommendation>`) for the orchestrator to embed into the existing block. Dispatched once per question by the recommend-all-open-questions orchestrator; not user-triggered. Mutates nothing.
+description: Produces alternatives and a single recommendation for one open question, invoked with that question's Short Title as the prompt.
 color: teal
 model: opus
 ---

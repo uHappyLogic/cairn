@@ -43,3 +43,18 @@ Bring the six skill descriptions already at or under the cap — `answer-open-qu
 - Each file's `name` key is unchanged and none of the six carries a `model` key — the diff is three files, one `description:` line each, three insertions and three deletions.
 
 ---
+
+## Compress Three Agent Descriptions
+
+Rewrite the frontmatter `description` of the three agents — `agents/complete-task.md`, `agents/recommend-open-question.md`, `agents/answer-open-question-with-recommendation.md` — into a single independent clause of 25 words or fewer that names what the agent does and folds its invocation contract in as a short clause naming what the prompt carries (the task's heading text, or the question's Short Title), deleting the separate "dispatched by X; not called directly by the user" note and all mechanics and provenance. Verified when each of the three descriptions is 25 words or fewer, contains no semicolon or colon, still names the prompt payload, keeps the `name`, `model`, and `color` keys untouched, and its raw frontmatter loads under `yaml.safe_load` with the `description:` line left unquoted.
+
+**Verified:**
+
+- Each of the three rewritten agent descriptions (`agents/complete-task.md`, `agents/recommend-open-question.md`, `agents/answer-open-question-with-recommendation.md`) is 25 words or fewer — 19, 19, 23 respectively.
+- None of the three descriptions contains a semicolon or a colon.
+- Each is a single independent clause naming what the agent does, with the separate "dispatched by X / not called directly by the user" note, the mechanics (verification/task-list update, uncommitted-edit hand-back, read-only grounding, XML sub-element rendering), and the provenance ("non-interactive twin of discuss-open-question", "Mutates nothing") deleted and preserved nowhere.
+- Each still names its prompt payload, folded into the same clause — "invoked with that task's heading text as the prompt" and, for both question agents, "invoked with that question's Short Title as the prompt".
+- Each file's `name`, `model`, and `color` keys are unchanged — the diff touches exactly one `description:` line per file, three files, three insertions and three deletions.
+- Each of the three files' raw frontmatter loads under `yaml.safe_load` with the `description:` line left unquoted (plain scalar, no leading quote indicator), and the parsed value round-trips byte-for-byte to the text after `description:` — including `agents/complete-task.md`, whose old ` ##` would have been swallowed as a YAML comment.
+
+---
