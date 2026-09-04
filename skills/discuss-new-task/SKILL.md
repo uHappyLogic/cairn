@@ -1,6 +1,6 @@
 ---
 name: discuss-new-task
-description: Clarify a rough or ambiguous issue surfaced mid-flight into one or more clear tasks, then hand off to /submit-task. Use this whenever the user reports a problem, gap, or "we should also..." idea mid-flight but the description is too vague to act on, or whenever they want to talk through an issue before adding it to the milestone task list. Also use it when the user flags that something is a bigger chunk of work that may need several task entries, or when a single reported issue turns out to be too large for one task — this skill will break it into an ordered set of task-sized pieces before handing each off. Prefer this over jumping straight to /submit-task when the affected system, desired behavior, or how to verify it is unclear, or when the right number of tasks isn't obvious yet.
+description: Clarify a rough or ambiguous issue into one or more well-defined, task-sized pieces ready to add to the current milestone's task list.
 ---
 
 # discuss-new-task

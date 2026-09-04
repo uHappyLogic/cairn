@@ -1,6 +1,6 @@
 ---
 name: capture-milestone-principle-updates
-description: Distill reusable answering principles from a just-finished milestone's recorded decisions into the project-wide principle store. This is the optional finish-time follow-up to /finish-current-milestone — run it right after finishing a milestone to harvest everything that milestone's manual answers taught. It walks the milestone's `Manual-answer:` commits, extracts the generalizable keep/eliminate rules behind them, dedups the candidates against each other, then confirms each with you one at a time (revise an overlapping existing principle, or add a new one) against the live store. Use it whenever the user says things like "capture the principles from this milestone", "distill what we learned", "harvest the answering principles", "update the principle store from this milestone", or "run principle capture for the milestone we just finished". It is the new sole writer of milestones/answer_decision_principles.md.
+description: Distill reusable answering principles from a just-finished milestone's recorded decisions into the project-wide principle store.
 ---
 
 # capture-milestone-principle-updates

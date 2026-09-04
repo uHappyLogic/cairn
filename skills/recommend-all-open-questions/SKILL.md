@@ -1,6 +1,6 @@
 ---
 name: recommend-all-open-questions
-description: Non-interactively sweep the current milestone's requirements for open and deferred questions and annotate each one with an embedded recommendation — alternatives plus a single recommended option — produced by dispatching one read-only recommend-open-question subagent per question. Use this to batch the per-question /discuss-open-question deliberation across every question at once, typically right after a /review-milestone-requirements pass, so the questions arrive at /answer-open-question-with-recommendation with a recommendation ready to record. Trigger it whenever the user says things like "recommend on the open questions", "sweep recommendations", "run the recommend sweep", "annotate every question with a recommendation", or "give me a recommendation for each open question". Records no decisions and requires no clean working tree — it only annotates and commits those annotations once at the end.
+description: Annotate every open and deferred question in the current milestone's requirements with alternatives and a single recommended option.
 ---
 
 # recommend-all-open-questions

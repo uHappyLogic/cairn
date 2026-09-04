@@ -1,6 +1,6 @@
 ---
 name: review-milestone-requirements
-description: Run a review pass over the current milestone's requirements.md to drive its open-questions loop forward — reconcile the existing question set against what's already been decided (prune blocks an existing decision now covers, dedup repeats), surface genuinely new gaps the latest decisions exposed, and report whether the document has converged enough to derive tasks. This is the repeatable engine of the "iterate the requirements" loop: run it after define/specify to open the questions, and re-run it after every answer or two to clean up, raise what the answers newly exposed, and check for convergence. Use it whenever the user wants to "review the requirements", "check what's still open", "see what questions are left", "tidy up the open questions", or "find out if requirements are ready for /derive-tasks". It never answers questions or records decisions itself — it shapes and reports the open-questions state for the answering skills to resolve.
+description: Review the current milestone's requirements.md to reconcile its open questions against recorded decisions, surface new gaps, and report whether it has converged.
 ---
 
 # review-milestone-requirements
