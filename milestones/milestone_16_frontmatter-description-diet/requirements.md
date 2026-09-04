@@ -44,6 +44,10 @@ The 25-word figure is a hard pass/fail bar: every one of the 24 descriptions (21
 
 Every one of the 24 rewritten descriptions must parse as a plain unquoted YAML scalar — no colon-space, no leading indicator character (quote, `#`, `[`, `{`, `&`, `*`, `%`, `@`), no trailing colon. The bar is defined as "the raw frontmatter loads under `yaml.safe_load` with the `description:` line left unquoted", not as a punctuation checklist, and is verified per file plus by a clean `uv run scripts/migrate_skills_to_agy.py`. A short plain declarative sentence satisfies it by default, and the one file that trips it today is being rewritten anyway, so the constraint is close to free while giving the milestone a machine-checkable acceptance criterion. The transpiler's re-quoting fallback stays in place as a net but is never exercised; no transpiler source is touched.
 
+### Agent invocation contract
+
+Each of the three `agents/*.md` descriptions keeps its invocation contract, compressed into the same single sentence as a short clause naming what the prompt carries — for example the task's heading text, or the question's Short Title — rather than left as a second dedicated sentence. That clause costs about five words, so all three agent descriptions still land under the 25-word cap, and it keeps the payload on the only agent-facing surface a dispatcher reads before the agent body loads. The separate "dispatched by X; not called directly by the user" note is provenance and is deleted.
+
 ## Out of Scope
 
 
@@ -114,24 +118,4 @@ Every one of the 24 rewritten descriptions must parse as a plain unquoted YAML s
   </alternative>
   <applied-principle>Mutate live machinery last</applied-principle>
   <recommendation option="Regenerate as final task">Regeneration is in scope: the tree is checked into git and currently in sync, so skipping it is an active regression, and milestone 15 already proved a single closing transpiler task is the cheap, correct shape — one run at the end rather than per task, because the transpiler rewrites the whole tree every time and the generated copy is never the machinery executing this milestone, so no in-flight breakage can occur mid-run.</recommendation>
-</open-question>
-
-<open-question id="Agent invocation contract retention" status="open">
-  <question>When an agent description compresses to one sentence, must it still name the expected prompt payload (for example complete-task&apos;s &quot;##&quot; heading text), or is the payload contract dropped because the dispatching orchestrator already specifies it?</question>
-  <alternative id="Compress into the sentence">
-    Keep the payload contract but fold it into the single sentence as a short clause naming what the prompt carries (for example &quot;…given the task&apos;s heading text&quot; or &quot;…for the question named by its Short Title&quot;), while deleting the separate &quot;Dispatched by X; not called directly by the user&quot; note as the provenance this milestone targets.
-    <advantage>It is what the Goal already states agent descriptions must do (&quot;Agent descriptions compress their invocation contract into that same one sentence&quot;), it costs about five words so all three agents still land well under 25, and it keeps the payload on the only agent-facing surface a dispatcher sees before it forms a prompt — the agent body&apos;s Input section is not loaded until after dispatch.</advantage>
-    <drawback>It adds a second clause to every agent sentence, which pushes the three agent descriptions toward whatever multi-clause shape the sibling Sentence shape bar question settles, and it spends words on a contract that all three current orchestrators already hard-code in their dispatch templates.</drawback>
-  </alternative>
-  <alternative id="Drop the contract">
-    Cut the payload contract entirely, leaving each agent description as a bare what-it-does sentence, on the grounds that the dispatching orchestrator&apos;s SKILL.md already specifies the exact prompt and the agent body restates the input.
-    <advantage>It is the shortest result and the redundancy is real — complete-all-tasks, recommend-all-open-questions, and answer-all-open-questions-with-recommendation each embed a literal prompt template, so no live dispatch path reads the payload out of the description.</advantage>
-    <drawback>It contradicts the milestone Goal&apos;s explicit sentence about agent descriptions, so adopting it would require a goal revision first; and it leaves the routing surface silent about the payload for any dispatch that is not one of the three templated ones — a hand-dispatch, a future orchestrator, or a maintainer reading the agent list.</drawback>
-  </alternative>
-  <alternative id="Exempt agents from one sentence">
-    Let the three agent descriptions keep a second, dedicated contract sentence (the current &quot;Invoke with … as the prompt.&quot; form), exempting agents from the one-sentence rule the 21 skills follow.
-    <advantage>Nothing is lost or reworded, and the contract stays a distinct, greppable statement rather than a subordinate clause.</advantage>
-    <drawback>It carves an exception into the milestone&apos;s central rule for 3 of 24 files, and the live evidence is against it: a trailing contract sentence is exactly what gets clipped — in this session&apos;s own agent listing complete-task renders as &quot;Invoke with the task&apos;s&quot; with the payload cut off, whereas a clause inside the main sentence sits early enough to survive.</drawback>
-  </alternative>
-  <recommendation option="Compress into the sentence">Keep it, folded into the one sentence: the Goal already mandates compressing the invocation contract rather than dropping it, the payload name costs about five words, and the description is the only agent-facing surface a dispatcher reads before the agent body loads — while the &quot;dispatched by X; not called directly&quot; note is provenance and goes.</recommendation>
 </open-question>
