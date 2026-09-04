@@ -52,30 +52,14 @@ Each of the three `agents/*.md` descriptions keeps its invocation contract, comp
 
 The milestone amends `CLAUDE.md`. The existing **Skill Frontmatter** invariant is extended to carry the one-short-sentence description rule — what a description must name, what is deleted from it, and that descriptions are routing labels rather than a record — so every rule about the frontmatter `description` key lives in that one bullet. The milestone-15 sentence exempting frontmatter descriptions as "the triggering surface, edited only to correct a claim the body has falsified" is revised so it no longer makes that claim and instead points at the Skill Frontmatter bullet as the frontmatter rule's home. No new standalone invariant bullet is added.
 
+### Parallel documentation surfaces
+
+`README.md`'s per-skill reference entries and `CLAUDE.md`'s workflow map are left untouched by default, with one bounded falsification-only pass over them: an entry is edited only where a shortened description has made an existing claim demonstrably false. No new prose is added and no general tidying is done. This reuses the "README sync scope" rule milestone 15 confirmed for a behavior-neutral sweep — the description diet changes no behavior, so the pass is expected to resolve to a no-op — and it is deliberately not a sync of the two surfaces to the new description length, since README.md and CLAUDE.md are the intended homes for the mechanics, sequencing, and provenance being deleted from descriptions.
+
 ## Out of Scope
 
 
 ## Open questions
-
-<open-question id="Parallel doc surfaces scope" status="open">
-  <question>Are README.md&apos;s per-skill reference entries and CLAUDE.md&apos;s workflow map left completely untouched, or must they be checked for claims the shortened descriptions falsify?</question>
-  <alternative id="Leave untouched">
-    Declare README.md&apos;s skill reference and CLAUDE.md&apos;s workflow map explicitly out of scope, on the grounds that shortening a routing label changes no behavior and neither surface quotes or characterizes frontmatter description text.
-    <advantage>Cheapest and most honest about the change: the diet is behavior-neutral, so nothing either document asserts about what a skill does can go stale.</advantage>
-    <drawback>Zero verification means a genuinely falsified claim would ship unnoticed, and it silently departs from the precedent milestone 15 set for exactly this situation.</drawback>
-  </alternative>
-  <alternative id="Falsification-only pass">
-    Leave both surfaces untouched by default but run one bounded verification pass over them, editing only where a shortened description has made an existing claim demonstrably false, adding no new prose and doing no general tidying.
-    <advantage>Reuses milestone 15&apos;s already-confirmed &quot;README sync scope&quot; rule verbatim, so the bound is precedent-tested and one sentence long, and it converts &quot;probably nothing went stale&quot; from an assumption into a checked result at near-zero cost.</advantage>
-    <drawback>Very likely a no-op that still consumes a task slot, and an unbounded reader could drift into rewriting README prose that was never falsified.</drawback>
-  </alternative>
-  <alternative id="Sync both surfaces">
-    Actively bring the parallel surfaces into line with the new descriptions — trimming or rewriting README entries and workflow-map lines that now say more than the description does, or documenting the one-sentence rule there.
-    <advantage>Would leave a single uniform level of detail across every documentation surface.</advantage>
-    <drawback>Inverts the milestone&apos;s own premise: README and CLAUDE.md are the deliberate homes for the mechanics, sequencing, and provenance being deleted from descriptions, so trimming them would destroy content with no other home, at a blast radius far outside the goal.</drawback>
-  </alternative>
-  <recommendation option="Falsification-only pass">Both surfaces document behavior and this milestone changes none, so the honest scope is not-touched-by-default plus one bounded falsification check — the exact rule milestone 15 already confirmed for a behavior-neutral sweep, costing one sentence to state and almost certainly resolving to a no-op.</recommendation>
-</open-question>
 
 <open-question id="Antigravity tree regeneration" status="open">
   <question>Is regenerating the checked-in Antigravity tree at .agents/plugins/cairn/ by re-running scripts/migrate_skills_to_agy.py part of this milestone&apos;s deliverable, or is it left for a later run?</question>
