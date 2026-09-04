@@ -1,6 +1,6 @@
 ---
 name: init-milestone-base-workflow
-description: One-time bootstrap for the milestone workflow in a project — creates the milestones/ directory and milestones/README.md with the Current Milestone pointer, and ensures CLAUDE.md carries the Milestone Workflow guidance. Safe to run on an existing project; never overwrites existing files.
+description: Bootstrap the milestone workflow in a project by creating the milestones/ directory and milestones/README.md, and ensuring CLAUDE.md carries the workflow guidance.
 ---
 
 # init-milestone-base-workflow

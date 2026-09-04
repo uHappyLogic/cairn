@@ -1,6 +1,6 @@
 ---
 name: goto-next-milestone
-description: Activate an already-defined milestone — scans milestones/ for a defined-but-not-yet-active directory and updates milestones/README.md to point to it as the current milestone. Requires finish-current-milestone to have been run first (current pointer must be "none").
+description: Activate an already-defined milestone by pointing milestones/README.md at it as the current milestone.
 ---
 
 # goto-next-milestone

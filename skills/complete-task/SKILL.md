@@ -1,6 +1,6 @@
 ---
 name: complete-task
-description: Complete a single named task from the current milestone's TASKS_TODO.md inline in this conversation, then move it to TASKS_DONE.md. Use for one ad-hoc task you want to stay available to discuss and tweak afterwards.
+description: Complete a single named task from the current milestone's TASKS_TODO.md inline in this conversation and move it to TASKS_DONE.md.
 ---
 
 # complete-task

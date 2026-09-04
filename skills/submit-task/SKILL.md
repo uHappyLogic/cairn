@@ -1,6 +1,6 @@
 ---
 name: submit-task
-description: Add a single issue (surfaced during development) to the current milestone's TASKS_TODO.md as a brief-level task section. Use when the user reports a concrete bug, gap, or "we should also..." that is already clear enough to queue. Triages for duplicates, decides where the task belongs, then authors and inserts the task inline.
+description: Add a single already-clear issue to the current milestone's TASKS_TODO.md as a brief-level task section.
 ---
 
 # submit-task

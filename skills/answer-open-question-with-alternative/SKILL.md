@@ -1,6 +1,6 @@
 ---
 name: answer-open-question-with-alternative
-description: Record a chosen `<alternative>` from an open question's embedded analysis as its answer in the current milestone's requirements.md inline in this conversation, then commit that answer on its own. Use when the recommend sweep has annotated a question with alternatives and you want to accept a specific alternative — named by its id, not necessarily the recommended one — as the decision for a single named question you want to stay available to discuss afterwards.
+description: Record a chosen alternative from an open question's embedded analysis as that question's answer in the current milestone's requirements.md.
 model: opus
 ---
 

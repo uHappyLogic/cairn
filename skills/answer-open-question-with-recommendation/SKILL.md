@@ -1,6 +1,6 @@
 ---
 name: answer-open-question-with-recommendation
-description: Record one open question's embedded recommendation as its answer in the current milestone's requirements.md inline in this conversation, then commit that answer on its own. Use when the recommend sweep has annotated a question with a recommendation and you want to accept and record that recommendation as the decision for a single named question you want to stay available to discuss afterwards.
+description: Record an open question's embedded recommendation as that question's answer in the current milestone's requirements.md.
 model: opus
 ---
 

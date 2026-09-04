@@ -1,6 +1,6 @@
 ---
 name: discuss-open-question
-description: Start a structured conversation about a named open question in the current milestone requirements — surfaces alternatives, trade-offs, and a recommendation to help the user reach a decision.
+description: Discuss a named open question in the current milestone requirements, surfacing alternatives, trade-offs, and a recommendation to help the user decide.
 ---
 
 # discuss-open-question

@@ -14,3 +14,17 @@ Rewrite the frontmatter `description` of the six heaviest skills — `review-mil
 - `skills/review-milestone-requirements/SKILL.md` no longer trips the transpiler's re-quoting fallback — its raw frontmatter now parses under `yaml.safe_load` without the colon-space that previously raised.
 
 ---
+
+## Shorten Nine Mid-Weight Skill Descriptions
+
+Rewrite the frontmatter `description` of the nine skills currently over the cap — `answer-open-question-with-alternative`, `answer-open-question-with-recommendation`, `submit-task`, `init-milestone-base-workflow`, `derive-tasks`, `goto-next-milestone`, `complete-task`, `finish-current-milestone`, `discuss-open-question` — into a single independent clause of 25 words or fewer naming only what the skill does, deleting mechanics, commit subjects, sequencing, cross-skill references, and provenance outright. Verified when each of the nine descriptions is 25 words or fewer, contains no semicolon or colon, keeps the `name` key and any `model` key untouched, and its raw frontmatter loads under `yaml.safe_load` with the `description:` line left unquoted.
+
+**Verified:**
+
+- Each of the nine rewritten descriptions (`answer-open-question-with-alternative`, `answer-open-question-with-recommendation`, `submit-task`, `init-milestone-base-workflow`, `derive-tasks`, `goto-next-milestone`, `complete-task`, `finish-current-milestone`, `discuss-open-question`) is 25 words or fewer — 19, 15, 15, 21, 14, 13, 19, 21, 21 respectively.
+- Each of the nine descriptions contains no semicolon and no colon.
+- Each of the nine is a single independent clause naming only what the skill does, with its mechanics (commit subjects, staging, triage/insertion steps, "never overwrites existing files"), sequencing (`goto-next-milestone`'s finish-first precondition), cross-skill references, "Use when…" framing, and provenance deleted and preserved nowhere.
+- Each file's `name` key is unchanged, and the `model: opus` key on `answer-open-question-with-alternative` and `answer-open-question-with-recommendation` is unchanged — the diff touches exactly one `description:` line per file, nine files, nine insertions and nine deletions.
+- Each of the nine files' raw frontmatter loads under `yaml.safe_load` with the `description:` line left unquoted (plain scalar, no leading quote).
+
+---

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Shorten Nine Mid-Weight Skill Descriptions
-
-Rewrite the frontmatter `description` of the nine skills currently over the cap — `answer-open-question-with-alternative`, `answer-open-question-with-recommendation`, `submit-task`, `init-milestone-base-workflow`, `derive-tasks`, `goto-next-milestone`, `complete-task`, `finish-current-milestone`, `discuss-open-question` — into a single independent clause of 25 words or fewer naming only what the skill does, deleting mechanics, commit subjects, sequencing, cross-skill references, and provenance outright. Verified when each of the nine descriptions is 25 words or fewer, contains no semicolon or colon, keeps the `name` key and any `model` key untouched, and its raw frontmatter loads under `yaml.safe_load` with the `description:` line left unquoted.
-
----
-
 ## Audit Six Short Skill Descriptions
 
 Bring the six skill descriptions already at or under the cap — `answer-open-question`, `specify-milestone-starting-state`, `discuss-milestone-goal`, `define-milestone-goal`, `ask-in-milestone-context`, `complete-all-tasks` — up to the same bar, rewording only where a description still carries mechanics, sequencing, cross-skill references, or a semicolon or colon, and leaving descriptions already written with em-dash or parenthetical apposition alone on punctuation grounds. Verified when each of the six descriptions is a single independent clause of 25 words or fewer, contains no semicolon or colon, names only what the skill does, and its raw frontmatter loads under `yaml.safe_load` with the `description:` line left unquoted.

@@ -1,6 +1,6 @@
 ---
 name: finish-current-milestone
-description: Mark the current milestone as done — records accomplishments in milestones/README.md, clears the current-milestone pointer to "none" in milestones/README.md, and updates CLAUDE.md only for lasting changes to the project's environment context.
+description: Mark the current milestone as done, recording its accomplishments in milestones/README.md, clearing the current-milestone pointer, and updating CLAUDE.md for lasting changes.
 ---
 
 # finish-current-milestone
