@@ -34,3 +34,47 @@ Every committing skill stages path-scoped and commits under a `<Marker>: <descri
 
 ## Out of Scope
 
+## Open questions
+
+<open-question id="Version surface set" status="open">
+  <question>Beyond `.claude-plugin/plugin.json` and the generated Antigravity manifest, which other in-repo surfaces does the version script write — does the plugin entry in `.claude-plugin/marketplace.json` gain a version field, and does the `pyproject.toml` tooling version track the plugin version or stay independent?</question>
+</open-question>
+<open-question id="Generated manifest version source" status="open">
+  <question>Since the transpiler rewrites the Antigravity manifest from a hard-coded dict on every run, how does that generated manifest get its version — does the transpiler read it from `.claude-plugin/plugin.json` at generation time, take it as an argument, or does the version script write the generated file directly with the transpiler preserving it?</question>
+</open-question>
+<open-question id="Pre-publish confirmation" status="open">
+  <question>Does the release skill pause to show the maintainer the composed release notes and the version before it pushes, tags, and creates the GitHub release, or does it run unattended end to end once invoked?</question>
+</open-question>
+<open-question id="Empty release range behavior" status="open">
+  <question>When no milestone history entry has been added since the last release (only non-finish commits in the range), does the release skill refuse to release, or compose the notes from the commit range alone?</question>
+</open-question>
+<open-question id="Release commit subject" status="deferred">
+  <question>What Marker-colon-descriptor commit subject does the release commit carry for the version bump plus regenerated Antigravity tree, and is its path set exactly those files?</question>
+</open-question>
+<open-question id="Last release anchor" status="deferred">
+  <question>How does the skill identify the last release given the mixed legacy tag formats — the latest tag reachable from HEAD, the GitHub latest release, or the highest version-sorted tag?</question>
+</open-question>
+<open-question id="Version argument validation" status="deferred">
+  <question>Beyond requiring a bare MAJOR.MINOR.PATCH literal, does the skill also refuse a version that is not strictly greater than the last release or that already exists as a tag?</question>
+</open-question>
+<open-question id="Release preconditions scope" status="deferred">
+  <question>Besides a clean tracked working tree, does the skill also require being on the main branch, having no untracked files, and not being behind origin before it proceeds?</question>
+</open-question>
+<open-question id="Partial failure resumption" status="deferred">
+  <question>If a step fails after the release commit exists (push, tag push, or release creation), what state does the skill leave behind, and can a re-run with the same version resume from it?</question>
+</open-question>
+<open-question id="Stale generated tree handling" status="deferred">
+  <question>If regenerating the Antigravity tree changes files beyond the manifest version because a runtime edit was never regenerated, does the release commit absorb those changes or does the skill stop and report?</question>
+</open-question>
+<open-question id="Release skill name" status="deferred">
+  <question>What is the release skill named and invoked as, given it takes the version as its sole argument?</question>
+</open-question>
+<open-question id="Release note fidelity" status="deferred">
+  <question>Are the release notes the history entries&apos; bullets verbatim, or condensed rewrites matching the shape of the existing 0.9.8 and 0.9.9 release bodies?</question>
+</open-question>
+<open-question id="Cross-check mismatch handling" status="deferred">
+  <question>When the history entries added since the last release disagree with the commit range (a finish commit with no matching entry, or the reverse), does the skill stop, warn and continue, or reconcile automatically?</question>
+</open-question>
+<open-question id="Release process documentation" status="deferred">
+  <question>Where is the maintainer-facing release procedure documented — the Development section of CLAUDE.md, README.md, or only the skill itself?</question>
+</open-question>
