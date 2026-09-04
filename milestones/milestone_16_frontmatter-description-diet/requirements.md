@@ -56,28 +56,12 @@ The milestone amends `CLAUDE.md`. The existing **Skill Frontmatter** invariant i
 
 `README.md`'s per-skill reference entries and `CLAUDE.md`'s workflow map are left untouched by default, with one bounded falsification-only pass over them: an entry is edited only where a shortened description has made an existing claim demonstrably false. No new prose is added and no general tidying is done. This reuses the "README sync scope" rule milestone 15 confirmed for a behavior-neutral sweep — the description diet changes no behavior, so the pass is expected to resolve to a no-op — and it is deliberately not a sync of the two surfaces to the new description length, since README.md and CLAUDE.md are the intended homes for the mechanics, sequencing, and provenance being deleted from descriptions.
 
+### Antigravity tree regeneration
+
+Regenerating the checked-in Antigravity tree at `.agents/plugins/cairn/` is part of this milestone's deliverable. The tree is checked into git and currently in sync with its source, so leaving it stale would be an active regression, and it is the only route by which the description savings reach the Antigravity surface. Regeneration is a single closing task that re-runs `scripts/migrate_skills_to_agy.py` once, after every description rewrite has landed, and commits the regenerated tree — not a per-task re-run, because the transpiler rewrites `skills/`, `agents/`, and `shared/` wholesale on every invocation, so the end state is identical while per-task runs would bury each commit's description changes under a mechanical generated-file diff. The generated copy is never the machinery executing this milestone, so a single run at the end cannot break work in flight.
+
 ## Out of Scope
 
 
 ## Open questions
 
-<open-question id="Antigravity tree regeneration" status="open">
-  <question>Is regenerating the checked-in Antigravity tree at .agents/plugins/cairn/ by re-running scripts/migrate_skills_to_agy.py part of this milestone&apos;s deliverable, or is it left for a later run?</question>
-  <alternative id="Regenerate as final task">
-    Make regeneration part of this milestone&apos;s deliverable as one closing task that re-runs scripts/migrate_skills_to_agy.py after every description rewrite has landed, committing the regenerated tree.
-    <advantage>The checked-in tree never ships contradicting its source: it is in sync today, milestone 15 already established exactly this in-milestone regeneration task, and the run is a single deterministic command whose cost is near zero next to the milestone&apos;s own editing work — and it is what actually delivers the milestone&apos;s token savings to the Antigravity surface rather than only to Claude Code.</advantage>
-    <drawback>Adds one task producing a large mechanical diff across 24+ generated files, and any later touch-up to a description silently re-staleing the tree unless the regeneration is genuinely last.</drawback>
-  </alternative>
-  <alternative id="Defer to a later run">
-    Leave .agents/plugins/cairn/ untouched this milestone, edit only the source frontmatter, and record regeneration as follow-up work for a later run.
-    <advantage>Keeps the milestone&apos;s committed diff purely about the 24 source descriptions, so the before/after word-count evidence reads cleanly with no generated noise mixed in.</advantage>
-    <drawback>Ships a checked-in artifact that knowingly contradicts its source — Antigravity consumers keep loading the ~1411-word descriptions the milestone exists to remove — and it regresses a tree that is currently in sync, converting a solved condition into new debt with no forcing function to repay it.</drawback>
-  </alternative>
-  <alternative id="Regenerate per description task">
-    Re-run the transpiler at the end of every description-editing task so each commit leaves source and generated tree self-consistent.
-    <advantage>Every committed state is internally consistent, so no intermediate commit can be checked out with a stale tree.</advantage>
-    <drawback>Buys nothing over a single closing run — the transpiler rmtree&apos;s and rewrites skills/, agents/, and shared/ wholesale on each invocation, so the end state is identical — while multiplying the mechanical generated-file diff across every commit in the milestone and burying the description changes the commits are supposed to show.</drawback>
-  </alternative>
-  <applied-principle>Mutate live machinery last</applied-principle>
-  <recommendation option="Regenerate as final task">Regeneration is in scope: the tree is checked into git and currently in sync, so skipping it is an active regression, and milestone 15 already proved a single closing transpiler task is the cheap, correct shape — one run at the end rather than per task, because the transpiler rewrites the whole tree every time and the generated copy is never the machinery executing this milestone, so no in-flight breakage can occur mid-run.</recommendation>
-</open-question>
