@@ -58,3 +58,20 @@ Rewrite the frontmatter `description` of the three agents — `agents/complete-t
 - Each of the three files' raw frontmatter loads under `yaml.safe_load` with the `description:` line left unquoted (plain scalar, no leading quote indicator), and the parsed value round-trips byte-for-byte to the text after `description:` — including `agents/complete-task.md`, whose old ` ##` would have been swallowed as a YAML comment.
 
 ---
+
+## Amend Skill Frontmatter Invariant In CLAUDE.md
+
+Extend the existing **Skill Frontmatter** bullet under `## Invariants to preserve when editing skills` in `CLAUDE.md` to carry the one-short-sentence description rule — a single clause of 25 words or fewer naming only what the skill or agent does, with provenance, mechanics, sequencing, cross-skill references, and trigger lists deleted, semicolon and colon banned, plain-YAML-scalar parsing required, and descriptions treated as routing labels rather than a record — and revise the milestone-15 "runtime files carry no editor-facing prose" bullet's sentence exempting frontmatter descriptions as "the triggering surface, edited only to correct a claim the body has falsified" so it instead points at the Skill Frontmatter bullet as the home of the frontmatter rule. Verified when every rule about the `description` key lives in the Skill Frontmatter bullet, the old exemption claim no longer appears, and no new standalone invariant bullet was added.
+
+**Verified:**
+
+- The **Skill Frontmatter** bullet under `## Invariants to preserve when editing skills` in `CLAUDE.md` now carries the one-short-sentence rule: a description is one short sentence of 25 words or fewer naming only what that skill or agent does, across all `skills/*/SKILL.md` and all `agents/*.md`.
+- That bullet states the shape rule (a single independent clause, comma/em-dash/parenthetical riders allowed) and bans the semicolon and the colon outright, with the reason they are banned.
+- That bullet states the plain-YAML-scalar parsing bar (raw frontmatter loads under `yaml.safe_load` with the `description:` line left unquoted) and that the transpiler's re-quoting fallback stays as an unexercised net.
+- That bullet states that design provenance, mechanics, sequencing, cross-skill references, "Use when…" framing, and trigger-phrase lists are deleted outright rather than relocated, that a description is a routing label and never a record, and that the 25-word cap is a hard pass/fail bar with no exceptions.
+- That bullet states the agent-description invocation contract compressed into the same sentence, and that the "dispatched by X, not called directly by the user" note is deleted.
+- The milestone-15 **Runtime files carry no editor-facing prose** bullet's closing sentence no longer claims descriptions are "the triggering surface, edited only to correct a claim the body has falsified" and instead points at the **Skill Frontmatter** invariant above as the home of every rule governing them; `grep -c "triggering surface" CLAUDE.md` returns 0.
+- Every rule about the frontmatter `description` key lives in the Skill Frontmatter bullet — `grep -n '`description`' CLAUDE.md` inside the invariants section returns only that bullet plus the runtime bullet's pointer sentence.
+- No new standalone invariant bullet was added — the `^- ` bullet count under `## Invariants to preserve when editing skills` is 27 both before and after the edit.
+
+---

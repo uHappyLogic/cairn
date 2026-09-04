@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Amend Skill Frontmatter Invariant In CLAUDE.md
-
-Extend the existing **Skill Frontmatter** bullet under `## Invariants to preserve when editing skills` in `CLAUDE.md` to carry the one-short-sentence description rule — a single clause of 25 words or fewer naming only what the skill or agent does, with provenance, mechanics, sequencing, cross-skill references, and trigger lists deleted, semicolon and colon banned, plain-YAML-scalar parsing required, and descriptions treated as routing labels rather than a record — and revise the milestone-15 "runtime files carry no editor-facing prose" bullet's sentence exempting frontmatter descriptions as "the triggering surface, edited only to correct a claim the body has falsified" so it instead points at the Skill Frontmatter bullet as the home of the frontmatter rule. Verified when every rule about the `description` key lives in the Skill Frontmatter bullet, the old exemption claim no longer appears, and no new standalone invariant bullet was added.
-
----
-
 ## Falsification Pass Over Parallel Doc Surfaces
 
 Run one bounded pass over `README.md`'s `## Skill reference` entries and `CLAUDE.md`'s per-skill workflow map, editing an entry only where a shortened description has made an existing claim demonstrably false, adding no new prose and doing no general tidying, since both surfaces are the intended homes for the mechanics and provenance deleted from descriptions. Verified by a recorded per-entry check of both surfaces against the rewritten descriptions that either lists each falsified claim and its correction or reports a no-op with nothing edited.
