@@ -40,6 +40,10 @@ The 25-word figure is a hard pass/fail bar: every one of the 24 descriptions (21
 
 "A single short sentence" means one independent clause. Qualifying riders set off by commas, an em dash, or parentheses are allowed; the semicolon and the colon are banned outright, because those two marks introduce a second statement or an enumeration and are the route by which deleted mechanics and trigger lists would return under the word cap. The semicolon/colon ban is greppable and pass/fail; the permissive half is judged per description. Descriptions already written with em-dash or parenthetical apposition are not rewritten for punctuation alone.
 
+### YAML plain scalar bar
+
+Every one of the 24 rewritten descriptions must parse as a plain unquoted YAML scalar — no colon-space, no leading indicator character (quote, `#`, `[`, `{`, `&`, `*`, `%`, `@`), no trailing colon. The bar is defined as "the raw frontmatter loads under `yaml.safe_load` with the `description:` line left unquoted", not as a punctuation checklist, and is verified per file plus by a clean `uv run scripts/migrate_skills_to_agy.py`. A short plain declarative sentence satisfies it by default, and the one file that trips it today is being rewritten anyway, so the constraint is close to free while giving the milestone a machine-checkable acceptance criterion. The transpiler's re-quoting fallback stays in place as a net but is never exercised; no transpiler source is touched.
+
 ## Out of Scope
 
 
@@ -110,31 +114,6 @@ The 25-word figure is a hard pass/fail bar: every one of the 24 descriptions (21
   </alternative>
   <applied-principle>Mutate live machinery last</applied-principle>
   <recommendation option="Regenerate as final task">Regeneration is in scope: the tree is checked into git and currently in sync, so skipping it is an active regression, and milestone 15 already proved a single closing transpiler task is the cheap, correct shape — one run at the end rather than per task, because the transpiler rewrites the whole tree every time and the generated copy is never the machinery executing this milestone, so no in-flight breakage can occur mid-run.</recommendation>
-</open-question>
-
-<open-question id="YAML plain scalar requirement" status="open">
-  <question>Must every rewritten description parse as a plain unquoted YAML scalar — no colon-space, no leading quote character — so the transpiler&apos;s re-quoting fallback stops being exercised, or is staying within that fallback acceptable?</question>
-  <alternative id="Hard plain-scalar bar">
-    Every one of the 24 rewritten descriptions must parse as a plain unquoted YAML scalar — no colon-space, no leading indicator character (quote, #, [, {, &amp;, *, %, @), no trailing colon — verified by loading each file&apos;s raw frontmatter with yaml.safe_load and by a clean uv run scripts/migrate_skills_to_agy.py, leaving the transpiler&apos;s re-quoting fallback present but never exercised.
-    <advantage>The constraint is close to free — a 25-word plain declarative sentence satisfies it by default, and the single file that trips it today is being rewritten anyway — while converting an otherwise unverifiable prose goal into a deterministic one-command pass/fail gate that also covers the three agents/*.md files the transpiler never parses at all.</advantage>
-    <drawback>&quot;No colon-space, no leading quote&quot; is an incomplete statement of YAML plain-scalar rules, so the bar has to be defined as &quot;parses under yaml.safe_load with the line unquoted&quot; rather than as that two-item checklist, and it forecloses a few natural phrasings (any X: Y construction in a description).</drawback>
-  </alternative>
-  <alternative id="Fallback acceptable">
-    Rewrite descriptions for brevity only and impose no YAML constraint, letting the transpiler&apos;s existing re-quoting fallback absorb any description that still fails to parse plainly.
-    <advantage>Keeps the milestone purely a prose diet with zero added mechanics, and the fallback demonstrably works today on the one file that needs it.</advantage>
-    <drawback>Leaves a fragile safety net load-bearing — the fallback only matches a single-line description: prefix and naively escapes quotes without handling backslashes — and forfeits a free verification gate on a milestone that otherwise has almost no objective acceptance criteria, since the sole offending description is being rewritten regardless.</drawback>
-  </alternative>
-  <alternative id="Quote every description">
-    Require each rewritten description to be wrapped in explicit double quotes, making it parse regardless of punctuation.
-    <advantage>Uniformly parse-safe with no need to reason about plain-scalar indicator rules at all, and the fallback skips already-quoted lines by construction.</advantage>
-    <drawback>Breaks the existing house style — all 24 descriptions are unquoted today — and forces backslash-escaping in the several descriptions that legitimately contain a double quote, adding exactly the kind of mechanical noise this milestone is trying to remove.</drawback>
-  </alternative>
-  <alternative id="Bar plus fallback removal">
-    Impose the plain-scalar bar and additionally delete the re-quoting branch from scripts/migrate_skills_to_agy.py, so a non-plain description hard-fails the transpiler.
-    <advantage>Enforcement by construction — the rule can never silently regress, because the build breaks the moment a future description violates it.</advantage>
-    <drawback>Expands the milestone from frontmatter prose into transpiler source, which the Goal does not cover, and removes a tolerance net that a consuming project or fork may still rely on.</drawback>
-  </alternative>
-  <recommendation option="Hard plain-scalar bar">Require it: a short plain sentence already satisfies the bar, the one violating file is being rewritten anyway, and it buys the milestone a real machine-checkable acceptance criterion — while leaving the fallback in place as a net rather than dragging transpiler surgery into a prose diet.</recommendation>
 </open-question>
 
 <open-question id="Agent invocation contract retention" status="open">
