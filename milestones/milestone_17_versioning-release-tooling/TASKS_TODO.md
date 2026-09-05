@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Version Script Writes Every Version Surface
-
-Add a version script under `scripts/` that takes one bare `MAJOR.MINOR.PATCH` literal as its argument, refuses anything else, and writes it into `.claude-plugin/plugin.json`, a new `version` field on the single `plugins[]` entry in `.claude-plugin/marketplace.json`, and `pyproject.toml` (moving `cairn-tooling` off its independent `0.1.0`), keeping the matching `cairn-tooling` version line in `uv.lock` in step; it never touches the generated `.agents/plugins/cairn/plugin.json`, git, or `gh`. The milestone needs one command that bumps every source version literal so a release leaves no per-file judgement call. Verified by running it with a test version, confirming exactly those files changed with the literal in each, and reverting.
-
----
-
 ## Transpiler Copies Plugin Version Into Manifest
 
 Change `scripts/migrate_skills_to_agy.py` so the manifest dict it writes to `.agents/plugins/cairn/plugin.json` carries a `version` key read from `.claude-plugin/plugin.json` at generation time, so the generated tree is correct on every regeneration path including a bare standalone `uv run scripts/migrate_skills_to_agy.py`. The milestone needs the generated manifest to carry a version while keeping the source manifest the single source of truth. Verified by regenerating the tree and confirming the generated manifest's `version` equals the source manifest's `0.9.9`, with no other generated file changing.
