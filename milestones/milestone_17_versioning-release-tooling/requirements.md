@@ -48,6 +48,10 @@ The release procedure is documented in exactly one place — the release skill's
 
 The release skill is named `release-plugin`, living at `.claude/skills/release-plugin/SKILL.md` and invoked as `/release-plugin <MAJOR.MINOR.PATCH>`. The name keeps the verb-object grammar every shipped skill uses while its object noun states the distinctive responsibility — releasing the versioned plugin, not the separately-versioned Python tooling.
 
+### Last release anchor
+
+The skill identifies the last release as the nearest tag reachable from HEAD, resolved with `git describe --tags --abbrev=0` and used as the literal tag string for both the `<last-tag>..HEAD` commit range and the compare-link endpoint. Both jobs the anchor serves are ancestry questions, so no version string is ever parsed or compared and the mixed legacy tag formats are irrelevant to it; resolution stays local, with no network or `gh` dependency.
+
 ## Out of Scope
 
 ## Open questions
@@ -114,30 +118,6 @@ The release skill is named `release-plugin`, living at `.claude/skills/release-p
   </alternative>
   <applied-principle>Name by distinctive function</applied-principle>
   <recommendation option="Release marker, single commit">One commit under `Release: MAJOR.MINOR.PATCH`, path-scoped to exactly the version-script-written files plus the regenerated `.agents/plugins/cairn/` tree (never `git add -A`) — the marker names why the commit exists rather than the mechanism it uses, and keeping it a single commit keeps the tag pointing at one complete, self-consistent release state.</recommendation>
-</open-question>
-<open-question id="Last release anchor" status="deferred">
-  <question>How does the skill identify the last release given the mixed legacy tag formats — the latest tag reachable from HEAD, the GitHub latest release, or the highest version-sorted tag?</question>
-  <alternative id="Reachable tag from HEAD">
-    Anchor on the nearest tag reachable from HEAD via `git describe --tags --abbrev=0`, taking whatever literal tag string it returns as the previous release.
-    <advantage>It is format-agnostic by construction — it never parses or compares version strings, so the `v.0.9.x` / `v0.9.7` / bare `0.9.x` split is simply invisible to it — and it answers the ancestry question the skill actually has, since both uses of the anchor (the `&lt;last-tag&gt;..HEAD` commit range for the `Milestone-finish:` cross-check, and the `compare/&lt;prev&gt;...&lt;new&gt;` link endpoint) are about history, not about which number is biggest; verified on this repo today it returns `0.9.9`, and it needs no network.</advantage>
-    <drawback>It trusts the local repo alone: a tag pushed from another machine and not yet fetched, or a tag that exists locally but was never published as a GitHub release, would silently anchor the range to the wrong point, and it reports nothing when HEAD has no reachable tag beyond a bare failure.</drawback>
-  </alternative>
-  <alternative id="GitHub latest release">
-    Anchor on the publishing system of record, reading the latest release&apos;s tag with `gh release list --limit 1 --json tagName -q &apos;.[0].tagName&apos;` (or the `releases/latest` API).
-    <advantage>It names what was actually published rather than what happens to be tagged locally — the same thing the README release badge already displays — and is equally format-agnostic, so the skill&apos;s notion of &quot;last release&quot; matches the page the notes will be posted next to.</advantage>
-    <drawback>It adds a network and auth dependency to a step that is otherwise purely local, and GitHub&apos;s &quot;latest&quot; is chosen by publish date or an explicit flag with no guarantee the tag is an ancestor of HEAD, so the derived commit range can be wrong or empty even when the call succeeds.</drawback>
-  </alternative>
-  <alternative id="Highest version-sorted tag">
-    Normalize the legacy prefixes off every tag, version-sort the results, and take the highest, mapping back to the original tag string for the compare link.
-    <advantage>It depends on neither history topology nor the network, so it still yields the semantically highest version after a rebase, a shallow clone, or a tag made on a side branch.</advantage>
-    <drawback>The naive form is demonstrably wrong on this repo — `git tag --sort=-v:refname` ranks `v0.9.7` above `0.9.9` because of the prefix split — so it requires bespoke normalization plus a name-mapping step back to the literal tag, the most code of any option, and &quot;highest version&quot; is not the same question as &quot;last released&quot; anyway.</drawback>
-  </alternative>
-  <alternative id="Reachable tag verified against GitHub">
-    Take `git describe --tags --abbrev=0` as the anchor, then compare it against the latest GitHub release tag and stop with a report if the two disagree.
-    <advantage>It keeps the ancestry-correct local anchor while catching the one failure mode that anchor cannot see — a release published elsewhere, or a local tag never released — before the skill composes notes against a wrong range.</advantage>
-    <drawback>It reintroduces the network dependency into anchor resolution and adds a second stop condition to a skill that already carries several preconditions, for a mismatch that a single-maintainer repo with linear history rarely produces.</drawback>
-  </alternative>
-  <recommendation option="Reachable tag from HEAD">Both jobs the anchor serves are ancestry questions, and `git describe --tags --abbrev=0` answers them in one local command that never parses a version string, so the three legacy tag formats cost nothing — it already returns `0.9.9` correctly here, whereas version-sorting returns `v0.9.7` and needs bespoke normalization to fix.</recommendation>
 </open-question>
 <open-question id="Version argument validation" status="deferred">
   <question>Beyond requiring a bare MAJOR.MINOR.PATCH literal, does the skill also refuse a version that is not strictly greater than the last release or that already exists as a tag?</question>
