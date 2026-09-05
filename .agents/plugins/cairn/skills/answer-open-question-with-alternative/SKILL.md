@@ -1,7 +1,6 @@
 ---
 name: answer-open-question-with-alternative
 description: Record a chosen alternative from an open question's embedded analysis as that question's answer in the current milestone's requirements.md.
-model: opus
 ---
 
 # answer-open-question-with-alternative

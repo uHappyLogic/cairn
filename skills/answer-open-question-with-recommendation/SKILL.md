@@ -1,7 +1,6 @@
 ---
 name: answer-open-question-with-recommendation
 description: Record an open question's embedded recommendation as that question's answer in the current milestone's requirements.md.
-model: opus
 ---
 
 # answer-open-question-with-recommendation
