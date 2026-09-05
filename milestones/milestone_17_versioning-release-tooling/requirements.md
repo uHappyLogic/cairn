@@ -40,6 +40,10 @@ The version script writes every version literal in the repo — four surfaces: `
 
 The release procedure is documented in exactly one place — the release skill's own `SKILL.md` under `.claude/skills/` — and nowhere else; discovery is via the slash-command list. Neither `CLAUDE.md` nor `README.md` gains a release paragraph, so the executable steps have a single source of truth with no prose copy to drift.
 
+### Release skill name
+
+The release skill is named `release-plugin`, living at `.claude/skills/release-plugin/SKILL.md` and invoked as `/release-plugin <MAJOR.MINOR.PATCH>`. The name keeps the verb-object grammar every shipped skill uses while its object noun states the distinctive responsibility — releasing the versioned plugin, not the separately-versioned Python tooling.
+
 ## Out of Scope
 
 ## Open questions
@@ -245,32 +249,6 @@ The release procedure is documented in exactly one place — the release skill's
     <drawback>Adds conditional commit machinery and a second commit subject to a skill whose commit shape is otherwise fixed, for a distinction that matters only in the rare stale case.</drawback>
   </alternative>
   <recommendation option="Absorb and report">The generated tree is a pure deterministic derivative of `skills/`, `agents/`, and `shared/` — regenerating it can only ever produce what the already-committed sources say, so there is nothing to review and nothing to lose by absorbing it, and the skill&apos;s clean-working-tree precondition means the whole diff is self-generated and unambiguous; the printed advisory covers the one thing the commit alone would not tell the maintainer.</recommendation>
-</open-question>
-<open-question id="Release skill name" status="deferred">
-  <question>What is the release skill named and invoked as, given it takes the version as its sole argument?</question>
-  <alternative id="release-plugin">
-    A verb-object kebab-case name matching the shipped grammar exactly, invoked as `/release-plugin 1.0.0` from `.claude/skills/release-plugin/SKILL.md`.
-    <advantage>It reads in the same verb-object shape as every one of the 21 shipped skills (`derive-tasks`, `finish-current-milestone`, `submit-task`), and its object noun is the repo&apos;s established word for the versioned artifact (`.claude-plugin/`, `plugin.json`), so it names precisely what is being released and distinguishes it from the independently-versioned `cairn-tooling` `pyproject.toml`.</advantage>
-    <drawback>Two words where one might do, and &quot;plugin&quot; is a slightly redundant qualifier inside a repo that is nothing but a plugin.</drawback>
-  </alternative>
-  <alternative id="release">
-    The bare name with the object dropped, invoked as `/release 1.0.0`.
-    <advantage>Shortest possible thing to type for the one maintainer who will ever run it, and the version argument makes the intent unmistakable at the call site.</advantage>
-    <drawback>It is the only skill in the repo that is not verb-object, and as a maximally generic slash-command token it is the name most likely to collide with a skill from another plugin loaded in the same maintainer session.</drawback>
-  </alternative>
-  <alternative id="cut-release">
-    The standard release-engineering idiom as verb-object, invoked as `/cut-release 1.0.0`.
-    <advantage>&quot;Cut a release&quot; is the phrase maintainers already use for exactly this end-to-end act, so the name needs no explanation.</advantage>
-    <drawback>&quot;Cut&quot; is release-tooling jargon that appears nowhere else in the repo&apos;s vocabulary, and its object &quot;release&quot; names the event rather than the artifact, which breaks the object-noun consistency the other skill names keep.</drawback>
-  </alternative>
-  <alternative id="publish-release">
-    Verb-object naming the publication step, invoked as `/publish-release 1.0.0`.
-    <advantage>&quot;Publish&quot; names the irreversible, outward-facing half of the job — push, tag, GitHub release — which is the part a maintainer most needs the name to warn them about.</advantage>
-    <drawback>It understates the skill&apos;s full responsibility: it also writes the version literals, regenerates the Antigravity tree, and commits, so the name describes only the last stage of what it does.</drawback>
-  </alternative>
-  <applied-principle>Name by distinctive function</applied-principle>
-  <applied-principle>Drop-vs-replace by ambiguity</applied-principle>
-  <recommendation option="release-plugin">It keeps the verb-object grammar every shipped skill uses while its object noun states the distinctive responsibility — releasing the versioned plugin, not the separately-versioned Python tooling — which neither the bare verb nor the event-noun variants convey.</recommendation>
 </open-question>
 <open-question id="Release note fidelity" status="deferred">
   <question>Are the release notes the history entries&apos; bullets verbatim, or condensed rewrites matching the shape of the existing 0.9.8 and 0.9.9 release bodies?</question>
