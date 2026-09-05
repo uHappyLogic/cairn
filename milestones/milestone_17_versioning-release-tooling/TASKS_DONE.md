@@ -72,3 +72,25 @@ Extend the release skill with a note-composition step that gathers the `Mileston
 - The skill's frontmatter still loads under `yaml.safe_load` with an unquoted 22-word `description`, and the file stays under `.claude/skills/`, outside the transpiled `skills/` tree.
 
 ---
+
+## Release Skill Local Release Commit
+
+Extend the release skill so that after the gates and note composition it runs the version script, regenerates the Antigravity tree, prints a one-line advisory naming how many files beyond `.agents/plugins/cairn/plugin.json` changed when the regeneration reveals drift, and records exactly one commit under `Release: MAJOR.MINOR.PATCH` staged path-scoped to the files the version script wrote plus `.agents/plugins/cairn/`, never `git add -A`. The milestone needs the release to be a single self-consistent commit the tag can point at, produced unattended. Verified by reviewing the step against the recorded decisions and confirming the named paths match the version script's and transpiler's live write sets.
+
+**Verified:**
+
+- `.claude/skills/release-plugin/SKILL.md` gains step 6, placed after the pre-flight/version gates (steps 2 and 3) and the note-composition step (step 5) and before any push, tag, or publish step, and remains the sole documented home of the release procedure — a grep of `CLAUDE.md` and `README.md` for `release-plugin` and `Release: ` returns nothing.
+- Step 6a runs the version script as `uv run scripts/set_version.py <VERSION>` and stops the release on a non-zero exit; run live with test version `9.9.9` it wrote exactly the four surfaces it owns.
+- Step 6b regenerates the Antigravity tree with `uv run scripts/migrate_skills_to_agy.py` and states the ordering constraint that it must follow 6a; run live after 6a the generated `.agents/plugins/cairn/plugin.json` carried `"version": "9.9.9"`, confirming the ordering is what makes the generated manifest correct.
+- Step 6c counts the generated files changed beyond `.agents/plugins/cairn/plugin.json` with a `git status --porcelain --untracked-files=all -- .agents/plugins/cairn/` piped through a `grep -v` of that manifest path, and prints a one-line advisory naming the drift and the count when that produces output; run live after the regeneration it produced no lines, so the ordinary no-drift path prints nothing.
+- Step 6c proceeds unconditionally after the advisory — it is explicitly never a stop and never a review prompt, and the full regeneration result is absorbed into the release commit.
+- Step 6e records exactly one commit under the subject `Release: <VERSION>` with the bare literal, forbidding a split between the version bump and the regeneration and forbidding a later amend.
+- Step 6d stages path-scoped by explicitly named paths and bans both `git add -A` and `git add .`; run live, `git add --` over the five named paths staged exactly those five and left an unrelated dirty file (`.claude/skills/release-plugin/SKILL.md`) unstaged.
+- The four version-script paths named in 6d — `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `pyproject.toml`, `uv.lock` — match `scripts/set_version.py`'s live `RENDERERS` write set exactly, in the same order and with no path missing or extra.
+- The fifth named path `.agents/plugins/cairn/` matches `scripts/migrate_skills_to_agy.py`'s live write set: every write it makes (the manifest, `mcp_config.json`, `skills/`, `agents/`, `shared/`) is under its `plugin_dir` of `.agents/plugins/cairn`.
+- The claim in 6d that a path-scoped `git add` also records removals holds on the live git (2.50.1): in a scratch repo `git add -- d/` after deleting `d/y` staged `D d/y`.
+- Step 6e's post-commit completeness check (`git status --porcelain --untracked-files=no` must be empty, otherwise stop) is present, and the step ends by carrying `<VERSION>`, `<LAST_TAG>`, and `<RELEASE_BODY>` forward without creating the tag.
+- The skill's frontmatter still loads under `yaml.safe_load` with an unquoted `name: release-plugin` and a 22-word `description` free of colons and semicolons.
+- The rehearsal was fully reverted: `git status --porcelain --untracked-files=all` afterwards lists only the edited `SKILL.md`, with `.claude-plugin/plugin.json` and the generated manifest both back at `0.9.9`.
+
+---

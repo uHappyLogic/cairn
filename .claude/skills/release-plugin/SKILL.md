@@ -231,3 +231,86 @@ the release series consistent.
 ```
 
 `<LAST_TAG>` is used literally, whatever its format; `<VERSION>` is the tag this run creates.
+
+### 6. Apply the version, regenerate, and record the release commit
+
+Everything so far has been read-only. This step is where the run first writes, and it
+produces **exactly one commit** — the complete, self-consistent state the tag will point at.
+Run it unattended: nothing here pauses for the maintainer.
+
+**a. Write the version into every source surface.**
+
+```bash
+uv run scripts/set_version.py <VERSION>
+```
+
+The script takes the bare literal and writes it into the four source surfaces it owns —
+`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `pyproject.toml`, and
+`uv.lock` — leaving every file untouched if any one of them fails. A non-zero exit stops the
+release; report what the script printed. The script never touches git, `gh`, or anything
+under `.agents/`.
+
+**b. Regenerate the Antigravity tree.**
+
+```bash
+uv run scripts/migrate_skills_to_agy.py
+```
+
+This rewrites `.agents/plugins/cairn/` from `skills/`, `agents/`, and `shared/`, and copies
+the version just written into `.claude-plugin/plugin.json` through to the generated
+`.agents/plugins/cairn/plugin.json`. Order matters: the regeneration must follow (a), or the
+generated manifest carries the previous version. A non-zero exit stops the release.
+
+**c. Report generated-tree drift, then proceed.**
+
+In the ordinary case the regeneration changes only the generated manifest's version line.
+When it changes more, a runtime edit reached `main` without being regenerated. Count the
+generated files that changed beyond the manifest:
+
+```bash
+git status --porcelain --untracked-files=all -- .agents/plugins/cairn/ \
+  | grep -v '\.agents/plugins/cairn/plugin\.json$'
+```
+
+If that produces output, print a **one-line advisory** naming the drift and how many files it
+covers, for example:
+
+```
+Generated tree drift: 3 files beyond .agents/plugins/cairn/plugin.json changed on regeneration; absorbed into the release commit.
+```
+
+Then **proceed**. This is an advisory, never a stop and never a review prompt: the generated
+tree is a pure deterministic derivative of already-committed sources, so the regeneration can
+only produce what those sources say, and step 2a's clean tree makes the whole diff
+self-generated. The advisory carries the one fact the commit alone would not surface.
+
+**d. Stage exactly the written paths.** Name them explicitly — the four surfaces the version
+script writes plus the regenerated tree:
+
+```bash
+git add -- \
+  .claude-plugin/plugin.json \
+  .claude-plugin/marketplace.json \
+  pyproject.toml \
+  uv.lock \
+  .agents/plugins/cairn/
+```
+
+**Never `git add -A`** and never `git add .`. A path-scoped `git add` records additions,
+modifications, and removals under those paths, so a regeneration that deletes a generated
+file is staged too. Nothing else in the repo may enter the release commit.
+
+**e. Commit once.** The subject is exactly:
+
+```
+Release: <VERSION>
+```
+
+with `<VERSION>` the bare literal, and the body following the repository's commit conventions.
+One release is one commit — never split the version bump and the regeneration, and never
+amend a later step into it.
+
+Then confirm the staging was complete: `git status --porcelain --untracked-files=no` must be
+empty. Any tracked change left behind means a written path was missed; stop and report it
+rather than tagging a partial state. The tag is not created here — the run holds `<VERSION>`,
+`<LAST_TAG>`, and `<RELEASE_BODY>` and carries them into the publish step.
