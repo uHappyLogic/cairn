@@ -76,6 +76,10 @@ The release notes are condensed rewrites of the milestone history entries, not v
 
 When regenerating the Antigravity tree changes files beyond the manifest version — because a runtime edit was never regenerated — the release skill absorbs the full result into the release commit and prints a one-line advisory naming the drift (that files beyond `.agents/plugins/cairn/plugin.json` changed, and how many) before it proceeds. The generated tree is a pure deterministic derivative of `skills/`, `agents/`, and `shared/`, so regenerating it can only ever produce what the already-committed sources say and there is nothing to review; the clean-working-tree precondition makes the whole diff self-generated and unambiguous, and the advisory carries the one fact the commit alone would not surface.
 
+### Release commit subject
+
+A release produces exactly one commit, under the subject `Release: MAJOR.MINOR.PATCH`, staged path-scoped to exactly the files the version script wrote plus the regenerated `.agents/plugins/cairn/` tree, never `git add -A`. The marker names why the commit exists rather than the mechanism it uses, and keeping the release a single commit keeps the tag pointing at one complete, self-consistent release state.
+
 ## Out of Scope
 
 ## Open questions
@@ -103,26 +107,6 @@ When regenerating the Antigravity tree changes files beyond the manifest version
     <drawback>Four prompts for one workflow trains the maintainer to rubber-stamp them, which defeats the review that matters; the early steps are locally revertible anyway, so gating them buys control that costs more attention than it protects.</drawback>
   </alternative>
   <recommendation option="Confirm once before publishing">One gate at the point where a local, revertible commit becomes a public tag and release is the least interaction that still lets a human veto generated release notes before they are permanent.</recommendation>
-</open-question>
-<open-question id="Release commit subject" status="deferred">
-  <question>What Marker-colon-descriptor commit subject does the release commit carry for the version bump plus regenerated Antigravity tree, and is its path set exactly those files?</question>
-  <alternative id="Release marker, single commit">
-    One commit under the subject `Release: MAJOR.MINOR.PATCH`, staging exactly the files the version script wrote plus the regenerated `.agents/plugins/cairn/` tree, named explicitly per `shared/commit-procedure.md`.
-    <advantage>The marker names the commit&apos;s distinctive responsibility — it is the one commit a release run creates and the point the tag lands on — and the version literal as descriptor makes `git log --oneline` read as a release history; it also explains why 32 regenerated files ride along, which a bare version bump would not.</advantage>
-    <drawback>`Release:` is a bare marker where every existing cairn marker is a two-word `Object-function` compound (`Task-derivation:`, `Milestone-finish:`), and it names an operation broader than the commit itself, since the tag and the GitHub release are separate acts the commit does not contain.</drawback>
-  </alternative>
-  <alternative id="Version-bump marker, single commit">
-    One commit under `Version-bump: MAJOR.MINOR.PATCH` over the same path set, continuing the shape of the one-off `Manifest-version:` bump in `503cb27`.
-    <advantage>Literally accurate about what the commit changes, and its compound `Object-function` shape matches the established marker family exactly.</advantage>
-    <drawback>&quot;Bump&quot; states the generic mechanism rather than the distinctive function, and it understates the commit — the regenerated Antigravity tree is not a version bump, so a reader seeing the whole generated tree in a `Version-bump:` diff has to reconstruct why.</drawback>
-  </alternative>
-  <alternative id="Split bump and regeneration">
-    Two commits per release — the version-bearing files under one subject, the regenerated `.agents/plugins/cairn/` tree under a separate regeneration subject.
-    <advantage>Each commit&apos;s diff is self-consistent and the generated-tree churn stays out of the version diff, matching the existing finish-ritual habit of a standalone regeneration commit.</advantage>
-    <drawback>Breaks the one-release-one-commit mapping the tag depends on: the tag can only point at one of the two, and a run that dies between them leaves a repo whose checked-in generated tree and manifest version disagree.</drawback>
-  </alternative>
-  <applied-principle>Name by distinctive function</applied-principle>
-  <recommendation option="Release marker, single commit">One commit under `Release: MAJOR.MINOR.PATCH`, path-scoped to exactly the version-script-written files plus the regenerated `.agents/plugins/cairn/` tree (never `git add -A`) — the marker names why the commit exists rather than the mechanism it uses, and keeping it a single commit keeps the tag pointing at one complete, self-consistent release state.</recommendation>
 </open-question>
 <open-question id="Partial failure resumption" status="deferred">
   <question>If a step fails after the release commit exists (push, tag push, or release creation), what state does the skill leave behind, and can a re-run with the same version resume from it?</question>
