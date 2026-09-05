@@ -68,6 +68,10 @@ When no `Milestone-finish:` commit falls in the range since the last release, th
 
 When the history entries added since the last release disagree with the commit range — a `Milestone-finish:` commit in the range with no matching history entry, or a history entry with no matching finish commit — the release skill stops before any git or `gh` mutation, prints both sides of the mismatch, changes nothing, and exits so the maintainer can fix the source and re-run. The release is the one irreversible artifact in the run, while the cost of a false stop is a single `milestones/README.md` edit and a re-run; if the extra-entry direction proves routinely benign in practice, that is the signal to relax the guard so only the missing-entry direction blocks.
 
+### Release note fidelity
+
+The release notes are condensed rewrites of the milestone history entries, not verbatim copies: the skill rewrites each milestone's `milestones/README.md` bullets down to the user-facing changes, matching the shape the published `0.9.8` and `0.9.9` bodies already set — one `## <Title> (milestone <N>)` section per milestone, a short bulleted summary, then the Full Changelog compare link. Those two bodies are themselves condensed rewrites with milestone-internal process bullets cut, so matching that shape keeps the release series consistent and keeps engineering-process detail out of a consumer-facing note.
+
 ## Out of Scope
 
 ## Open questions
@@ -158,23 +162,4 @@ When the history entries added since the last release disagree with the commit r
     <drawback>Adds conditional commit machinery and a second commit subject to a skill whose commit shape is otherwise fixed, for a distinction that matters only in the rare stale case.</drawback>
   </alternative>
   <recommendation option="Absorb and report">The generated tree is a pure deterministic derivative of `skills/`, `agents/`, and `shared/` — regenerating it can only ever produce what the already-committed sources say, so there is nothing to review and nothing to lose by absorbing it, and the skill&apos;s clean-working-tree precondition means the whole diff is self-generated and unambiguous; the printed advisory covers the one thing the commit alone would not tell the maintainer.</recommendation>
-</open-question>
-<open-question id="Release note fidelity" status="deferred">
-  <question>Are the release notes the history entries&apos; bullets verbatim, or condensed rewrites matching the shape of the existing 0.9.8 and 0.9.9 release bodies?</question>
-  <alternative id="Verbatim transplant">
-    The skill copies each `### Milestone &lt;N&gt; — &lt;Title&gt;` entry&apos;s bullets out of `milestones/README.md` unchanged into the release body, rewriting only the heading into the `## &lt;Title&gt; (milestone &lt;N&gt;)` form and appending the Full Changelog link.
-    <advantage>Fully deterministic and cheap — the release note is a mechanical extraction, so it never invents, omits, or softens a claim, and the published notes provably match the project&apos;s own history record.</advantage>
-    <drawback>The history entries are an internal engineering record and carry bullets a consumer-facing release note should not: process meta-commentary (re-audit pass counts, ledger channels, no-op falsification passes), which is exactly the material the hand-written 0.9.8 and 0.9.9 bodies dropped.</drawback>
-  </alternative>
-  <alternative id="Condensed rewrite">
-    The skill composes the release body by rewriting each milestone&apos;s history bullets down to the user-facing changes, matching the shape the existing 0.9.8 and 0.9.9 bodies already set — one `## &lt;Title&gt; (milestone &lt;N&gt;)` section per milestone, a short bulleted summary, then the Full Changelog compare link.
-    <advantage>It reproduces the established, already-published house style exactly, and it is the only option that can drop milestone-internal process bullets and merge overlapping ones — the transformation the 0.9.9 body demonstrably applied (eight history bullets condensed to six, self-critical and no-op bullets cut).</advantage>
-    <drawback>The body is model-composed prose rather than a mechanical copy, so it is reproducible only up to the quality of that composition pass and can drift in tone or drop a genuinely user-visible change without any automatic check catching it.</drawback>
-  </alternative>
-  <alternative id="Filtered verbatim">
-    The skill copies bullets verbatim but applies a stated selection rule — keep bullets describing a change to the shipped plugin, drop bullets describing only the milestone&apos;s own process — so the text is never rewritten, only chosen.
-    <advantage>Keeps the extraction&apos;s no-invention guarantee while removing the worst of the internal-record noise, giving most of the condensation benefit at a fraction of the composition risk.</advantage>
-    <drawback>The keep/drop rule is a judgement call in disguise and does not survive contact with the real entries — milestone 15&apos;s and 16&apos;s bullets mix shipped changes with process detail inside single sentences, which selection alone cannot separate, and verbatim bullets are written at internal-record length and density.</drawback>
-  </alternative>
-  <recommendation option="Condensed rewrite">The two already-published release bodies are themselves condensed rewrites with a different heading form and the milestone-internal bullets cut, so matching that shape keeps the release series consistent and keeps engineering-process detail out of a consumer-facing note; what would flip this is wanting the release body diffable against `milestones/README.md`.</recommendation>
 </open-question>
