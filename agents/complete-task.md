@@ -2,7 +2,6 @@
 name: complete-task
 description: Completes one named task from the current milestone's task list, invoked with that task's heading text as the prompt.
 color: green
-model: opus
 ---
 
 You are an agent completing one task from the project's task list in an isolated
