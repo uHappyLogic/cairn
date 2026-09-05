@@ -15,8 +15,8 @@ job, not this one's). It requires **no** clean-working-tree precondition.
 
 It is an **orchestrator**. It does not record answers itself: for each recommendation-bearing
 question it dispatches the agent, which lifts the `<recommendation>` element, folds the decision
-into `## Decisions`, cascades to mooted siblings, and hands the recorded-but-**uncommitted** edit
-back. The orchestrator **commits each answer itself** — once per successful agent return, before
+into `## Decisions`, cascades to mooted siblings, and leaves that edit **staged but uncommitted**.
+The orchestrator **commits that staged index itself** — once per successful agent return, before
 dispatching the next. Because every dispatch mutates the same `requirements.md`, the dispatches run
 **strictly sequentially, never in parallel**.
 
@@ -64,11 +64,18 @@ re-gather loop** — there is no such loop, and adding one is a defect.
 
 For each question in the gathered order:
 
-**a. Re-check against the live document.** With the same line-oriented boundary-line CLI, confirm
-the block whose `id` case-folds equal to this question's Short Title **still exists and still
-contains a `<recommendation>` element**. A prior answer's cascade may have already removed the
-block; if it is gone — or its `<recommendation>` element is gone — **skip it** and move on. This is
-a cheap deterministic locate/extract check keyed on the boundary lines, not a whole-document read.
+**a. Re-check against the live document, and lift the commit body.** With the same line-oriented
+boundary-line CLI, confirm the block whose `id` case-folds equal to this question's Short Title
+**still exists and still contains a `<recommendation>` element**. A prior answer's cascade may have
+already removed the block; if it is gone — or its `<recommendation>` element is gone — **skip it**
+and move on. This is a cheap deterministic locate/extract check keyed on the boundary lines, not a
+whole-document read.
+
+From that same surviving block, **lift the recommendation text now**, while it is still in the
+document: recombine the `<recommendation>` element's `option` attribute value with the element's
+text as `<option> — <rationale>`, un-escaping XML entities — the same answer form the agent records.
+Hold it for this question's commit body in **c**; the agent hands nothing back, and after it runs
+the block is gone, so lifting it here is the only chance.
 
 **b. Dispatch the file-editing agent.** Use the `Agent` tool with `subagent_type` set to the
 namespaced registry name of the `answer-open-question-with-recommendation` agent under this
@@ -87,20 +94,20 @@ never in parallel**: every dispatch lifts, records, and cascades against the sam
 
 **c. Handle the agent's return.** The agent returns `DONE` or `FAILED: <reason>`:
 
-- **`DONE`** — the agent recorded the answer, leaving the `requirements.md` edit uncommitted, and
-  handed back the **lifted recommendation content** (the `<option>` — `<rationale>` answer text).
-  **Commit this answer now, before dispatching the next question**, by reading and following the
-  shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run
-  `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path). Supply it these inputs, using the
-  `<MILESTONE_DIR>` resolved in step 0:
-  - **PATHS** — this answer's only edit: `<MILESTONE_DIR>/requirements.md` (never `git add -A`).
-  - **SUBJECT** — exactly `Recommendation-answer: <Short Title>` (the answered question's handle).
-  - **Body** — the lifted recommendation content the agent handed back (the recorded answer). The
-    orchestrator does not re-derive the lift — it uses what the agent returned.
+- **`DONE`** — the agent recorded the answer and left its `requirements.md` edit **staged but
+  uncommitted**, returning no payload. **Commit that staged index now, before dispatching the next
+  question** — stage nothing yourself (the agent already staged path-scoped, so never `git add` and
+  never `git add -A`):
+  - **No-op guard** — check whether anything is actually staged (for example
+    `git diff --cached --quiet`). If nothing is, this answer produced no committable change: commit
+    nothing, create no empty commit, and continue to the next question.
+  - **Commit** — commit the staged index under exactly the subject
+    `Recommendation-answer: <Short Title>` (the answered question's handle), with the recommendation
+    text you lifted in **a** as the commit **body** — `git commit -m "<subject>" -m "<body>"` with no
+    pathspec, since the staged index is exactly this answer's edit.
 
-  The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit
-  itself. Commit once per answer — the per-answer granularity is the point. Then continue to the
-  next question.
+  Commit once per answer — the per-answer granularity is the point. Then continue to the next
+  question.
 - **`FAILED: <reason>`** — stop the loop, report the question's Short Title and the failure
   reason, and stop. Do not commit anything for this question and do not dispatch any further
   questions. Treat it as a real failure to report-and-stop on, not a benign skip. **Never record

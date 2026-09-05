@@ -45,16 +45,16 @@ Wait for the agent to return.
 
 - If the agent reports FAILED, stop the loop, report the task name and the failure reason to the user, and stop. Do not proceed to 2c.
 - If the agent returns without an explicit DONE or FAILED status (e.g. it returned early, produced no output, or gave an ambiguous result), treat this as FAILED. Report what was returned, stop the loop, and do not proceed to 2c. **Never attempt to complete the task yourself as a fallback.**
-- On `DONE`, the agent also hands back the explicit set of paths it created or edited while carrying out the task (its recorded change set). Collect those paths — you commit them in 2c.
+- On `DONE`, the agent has already **staged** its task's change set path-scoped — the paths it created or edited, plus the two milestone task-list files. You commit that staged index in 2c; you stage nothing yourself and the agent hands back nothing to collect.
 
-#### 2c. Commit the changes
+#### 2c. Commit the staged change set
 
-After the subagent returns `DONE` (success confirmed and the task moved to `<MILESTONE_DIR>/TASKS_DONE.md`), commit that task by reading and following the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path). Supply it these two inputs:
+After the subagent returns `DONE` (success confirmed, the task moved to `<MILESTONE_DIR>/TASKS_DONE.md`, and its change set staged), commit **the index the agent staged**. Stage nothing here yourself — the agent already did the path-scoped staging, so never `git add` and never `git add -A`:
 
-- **PATHS** — this task's exact change set: the created/edited paths the subagent handed back in its `DONE` return, **plus** the two milestone task-list files `<MILESTONE_DIR>/TASKS_TODO.md` (the task left it) and `<MILESTONE_DIR>/TASKS_DONE.md` (the task joined it). Name each path explicitly — never `git add -A`.
-- **SUBJECT** — `Tasklist-completion: <descriptor>` (e.g. `Tasklist-completion: complete one milestone task`), the marker naming this orchestrator's task-list-completion function. Put the task's `##` heading text (without the `##` prefix) in the commit **body** (a second `-m`), not in the subject.
+1. **No-op guard.** Check whether anything is actually staged (for example `git diff --cached --quiet`). If nothing is staged, this task produced no committable change: commit nothing, create no empty commit (there is no `--allow-empty` here), and go on to 2d.
+2. **Commit.** Commit the staged index under the subject `Tasklist-completion: <descriptor>` (e.g. `Tasklist-completion: complete one milestone task`), the marker naming this orchestrator's task-list-completion function — `git commit -m "<subject>" -m "<body>"` with no pathspec, since the staged index is exactly this task's change set. Put the task's `##` heading text (without the `##` prefix) in the commit **body**, not in the subject.
 
-The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit itself. Commit once per task.
+Commit once per task.
 
 #### 2d. Continue
 
@@ -64,4 +64,4 @@ Go back to 2a and process the next task.
 
 On the success path, when `<MILESTONE_DIR>/TASKS_TODO.md` contains no more `##` sections, print exactly one fixed terse status line for the whole run — `All tasks completed.` — and nothing more: no list of the tasks that were completed and no next-step pointer.
 
-If the run committed nothing — every per-task commit in step 2c hit its dirty-own-path no-op guard, so no files changed across the whole run — do not print the terse success line; instead print a distinct one-line message stating that nothing changed and why (nothing was committed this run).
+If the run committed nothing — every per-task commit in step 2c hit its no-op guard, so nothing was staged across the whole run — do not print the terse success line; instead print a distinct one-line message stating that nothing changed and why (nothing was committed this run).

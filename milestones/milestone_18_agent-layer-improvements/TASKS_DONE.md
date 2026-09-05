@@ -113,3 +113,21 @@ Change the dispatch prompt in `skills/recommend-all-open-questions/SKILL.md` ste
 - `uv run scripts/migrate_skills_to_agy.py` ran clean, and `.agents/plugins/cairn/agents/recommend-open-question.md` and `.agents/plugins/cairn/skills/recommend-all-open-questions/SKILL.md` differ from their sources only by the script's documented `${CLAUDE_PLUGIN_ROOT}` path rewrite and resolve-hint drop.
 
 ---
+
+## Agent Stages Own Change Set Before Return
+
+Change the two file-editing agents so each path-scoped `git add`s its own change set and returns only `DONE` or `FAILED: <reason>` with no hand-back payload: `agents/complete-task.md` stages the paths recorded while carrying out the task plus `<MILESTONE_DIR>/TASKS_TODO.md` and `<MILESTONE_DIR>/TASKS_DONE.md` (dropping its path hand-back section), and `agents/answer-open-question-with-recommendation.md` stages `<MILESTONE_DIR>/requirements.md` (dropping its lifted-recommendation hand-back), while `skills/complete-all-tasks/SKILL.md` and `skills/answer-all-open-questions-with-recommendation/SKILL.md` commit the already-staged index under their existing subjects, the answer orchestrator lifting the `<recommendation>` text for its commit body from the block during its pre-dispatch re-check rather than from the agent, and the `CLAUDE.md` invariants describing the hand-back are updated to the stage-then-return arrangement, with `shared/commit-procedure.md` and `shared/complete-procedure.md` left execution-neutral. Staging is not committing, so the agents-never-commit rule holds. Verified when neither agent file mentions handing back paths or recommendation text, both orchestrators commit without a hand-back input, and the regenerated `.agents/plugins/cairn/` tree is byte-identical to the source.
+
+**Verified:**
+
+- `agents/complete-task.md` carries a staging step that `git add`s the recorded created/edited paths plus `<MILESTONE_DIR>/TASKS_TODO.md` and `<MILESTONE_DIR>/TASKS_DONE.md`, naming each explicitly and never `git add -A`, on the success path only.
+- Its path hand-back section is gone and its `DONE` line carries no payload; the `FAILED` line still leaves partial work in the tree, unstaged and uncommitted.
+- `agents/answer-open-question-with-recommendation.md` carries a staging step that `git add`s `<MILESTONE_DIR>/requirements.md` path-scoped, its lifted-recommendation hand-back is gone, and its `DONE` line carries no payload.
+- Neither agent file mentions handing back paths or recommendation text (`grep` for hand-back phrasing over `agents/*.md` returns nothing), and neither commits — both state that staging is not committing and that the orchestrator commits the index they leave.
+- `skills/complete-all-tasks/SKILL.md` step 2c commits the already-staged index under `Tasklist-completion: <descriptor>` with the task heading in the commit body, behind a nothing-staged no-op guard, taking no hand-back input and staging nothing itself.
+- `skills/answer-all-open-questions-with-recommendation/SKILL.md` step 2a lifts the `<recommendation>` text as `<option> — <rationale>` during the pre-dispatch re-check, and step 2c commits the already-staged index under `Recommendation-answer: <Short Title>` with that lifted text as the body, behind a nothing-staged no-op guard.
+- `CLAUDE.md`'s repository-layout line, the `answer-with-recommendation-procedure` invariant, the sweep invariant, and the skill-layer commit invariant all describe the stage-then-return arrangement; no `CLAUDE.md` or `README.md` prose still says an agent hands paths or recommendation text back.
+- `shared/commit-procedure.md` and `shared/complete-procedure.md` are unmodified (`git status --porcelain shared/` is empty), so both stay execution-neutral.
+- `uv run scripts/migrate_skills_to_agy.py` ran clean and regenerated exactly the four affected files under `.agents/plugins/cairn/`, which differ from their sources only by the script's documented `${CLAUDE_PLUGIN_ROOT}` path rewrite and resolve-hint drop.
+
+---
