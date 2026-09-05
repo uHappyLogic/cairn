@@ -10,9 +10,20 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_18_agent-layer-improvements/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 18 — Agent Layer Improvements
+
+- Dropped the pinned `model: opus` frontmatter line from the three `agents/*.md` files and the two skills that carried it (`answer-open-question-with-recommendation`, `answer-open-question-with-alternative`), so nothing in the plugin pins a model and every dispatched agent inherits the session model.
+- Recolored the agents `red` (`complete-task`), `yellow` (`answer-open-question-with-recommendation`), and `blue` (`recommend-open-question`) — three distinct, luminance-separated values that stay tellable apart on a grayscale display, replacing the old `green`/`green`/`teal` set.
+- Closed the recommend sweep's return-contract gap: `recommend-open-question` returns `FAILED: <reason>` on failure, and `recommend-all-open-questions` shape-checks every return (first text `<alternative`, last text `</recommendation>`) and skips rather than splices a malformed or failed one, leaving that block untouched and printing the skipped Short Titles with reasons as a git-absent advisory.
+- Orchestrators now address dispatched agents by their namespaced registry name (`cairn:complete-task`, `cairn:recommend-open-question`, `cairn:answer-open-question-with-recommendation`), phrased descriptively at the dispatch site, and the recommend dispatch prompt carries `<MILESTONE_DIR>` so the agent grounds itself by reading that milestone's `requirements.md` instead of the orchestrator feeding it surrounding context.
+- Replaced `complete-task`'s unimplementable untouched-tree-on-failure promise with a resumable contract: a failed or interrupted run leaves its partial work uncommitted, and `shared/complete-procedure.md`'s carry-out step treats already-uncommitted changes as a previous run's partial work to continue from rather than redo.
+- The two file-editing agents path-scope `git add` their own change set and return a bare `DONE`/`FAILED: <reason>` with no hand-back payload; `complete-all-tasks` and `answer-all-open-questions-with-recommendation` commit that staged index, the latter lifting the `<recommendation>` text for its commit body during its pre-dispatch re-check while the block still stands.
+- Reordered `shared/answer-procedure.md` so the decision is folded into `## Decisions` before the `<open-question>` block is removed, so an interruption between the two edits leaves a recoverable superset instead of a silently lost question.
+- `scripts/migrate_skills_to_agy.py` now rewrites every `${CLAUDE_PLUGIN_ROOT}/shared/<name>.md` reference in the generated tree to `.agents/plugins/cairn/shared/<name>.md` and drops the `echo "$CLAUDE_PLUGIN_ROOT"` resolve hint, closing the milestone-15 follow-up under which those references resolved nowhere under Antigravity.
 
 ### Milestone 17 — Versioning And Release Tooling
 
@@ -191,3 +202,4 @@ Current milestone: `milestones/milestone_18_agent-layer-improvements/`
 | 15 | Runtime layer de-duplication | `milestones/milestone_15_runtime-layer-dedup/` |
 | 16 | Frontmatter Description Diet | `milestones/milestone_16_frontmatter-description-diet/` |
 | 17 | Versioning And Release Tooling | `milestones/milestone_17_versioning-release-tooling/` |
+| 18 | Agent Layer Improvements | `milestones/milestone_18_agent-layer-improvements/` |
