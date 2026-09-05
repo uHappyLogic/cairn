@@ -33,5 +33,6 @@ Because you run in an isolated context, the orchestrator sees only the message y
 - `FAILED: <reason>` — the procedure could not complete. Use this for the no-matching-task
   case too: `FAILED: no task matching "<name>" found in <MILESTONE_DIR>/TASKS_TODO.md`.
 
-`DONE` or `FAILED` must be the very last line you output. A `FAILED` return leaves the
-working tree exactly as it found it.
+`DONE` or `FAILED` must be the very last line you output. A `FAILED` return leaves whatever
+partial work it managed uncommitted in the working tree — never revert or clean it up — so a
+later run of this agent resumes from it instead of starting over.

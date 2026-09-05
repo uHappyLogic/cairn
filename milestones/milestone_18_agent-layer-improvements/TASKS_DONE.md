@@ -67,3 +67,17 @@ Rewrite the `subagent_type` dispatch instruction in the three orchestrator skill
 - `uv run scripts/migrate_skills_to_agy.py` regenerated `.agents/plugins/cairn/`, and `diff -r --exclude='*-workspace' skills .agents/plugins/cairn/skills`, `diff -r agents .agents/plugins/cairn/agents`, and `diff -r shared .agents/plugins/cairn/shared` all exit 0.
 
 ---
+## Resumable Failed Task Completion Contract
+
+Replace the `FAILED` return promise in `agents/complete-task.md` that a failed run leaves the working tree exactly as it found it (unimplementable once the task has edited files) with a resumable contract: a failed or interrupted run leaves its partial work uncommitted in the tree, and the carry-out step of `shared/complete-procedure.md` states that any already-uncommitted changes are the previous interrupted run's partial work to continue from rather than redo. The answer agent and the orchestrators stay untouched. Verified when no file under `agents/` or `shared/complete-procedure.md` promises an untouched tree on failure, the resume assumption appears in the carry-out step, and the regenerated `.agents/plugins/cairn/` tree is byte-identical to the source.
+
+**Verified:**
+
+- `agents/complete-task.md` no longer promises an untouched tree on failure: its closing return-protocol sentence now states that a `FAILED` return leaves whatever partial work it managed uncommitted in the working tree, never reverted or cleaned up, so a later run resumes from it instead of starting over.
+- The carry-out step (`### 3. Carry out the task`) of `shared/complete-procedure.md` opens with the resume assumption: uncommitted changes already in the tree may be a previous failed or interrupted run's partial work, to be read, continued from, and carried in the running list of touched paths rather than redone or reverted, with unrelated uncommitted changes left alone.
+- The added paragraph keeps `shared/complete-procedure.md` execution-neutral — it describes the state of the tree only, and still mentions no return protocol, no commit step, and no follow-up.
+- No file under `agents/` and no line of `shared/complete-procedure.md` promises an untouched tree on failure for the completion path: `grep -rn 'exactly as it found it\|exactly as you found it' agents/ shared/complete-procedure.md` returns only `agents/answer-open-question-with-recommendation.md`'s pre-edit clean-stop instruction, which the task holds out of scope ("the answer agent and the orchestrators stay untouched") and which stays implementable because that agent's failure modes fire before it edits anything.
+- The answer agent, the recommend agent, and the three orchestrator skills are unmodified: `git status --porcelain` lists exactly `agents/complete-task.md`, `shared/complete-procedure.md`, and their two generated counterparts.
+- `uv run scripts/migrate_skills_to_agy.py` regenerated `.agents/plugins/cairn/`, and `diff -r agents .agents/plugins/cairn/agents` and `diff -r shared .agents/plugins/cairn/shared` both exit 0 — the generated tree is byte-identical to the source.
+
+---

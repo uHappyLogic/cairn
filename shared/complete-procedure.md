@@ -81,6 +81,13 @@ there.
 
 ### 3. Carry out the task
 
+**Uncommitted changes already in the tree may be a previous run's partial work.** A run of
+this procedure can be resuming an earlier one that failed or was interrupted part-way, which
+leaves its partial work uncommitted in the working tree. Before editing anything, inspect
+what is already uncommitted: whatever bears on this task is work already done — read it,
+continue from it, and carry its paths in the running list below — rather than redoing or
+reverting it. Uncommitted changes that do not bear on this task are not yours to touch.
+
 **The task gives you the goal, not a procedure — you own the design.**
 Derive the flow yourself from the task's description and the acceptance bar you derived in
 step 2, then translate it into concrete edits: the exact files and where within them the
