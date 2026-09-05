@@ -1,7 +1,7 @@
 ---
 name: answer-open-question-with-recommendation
 description: Records one open question's embedded recommendation as its answer in the current milestone's requirements.md, invoked with that question's Short Title as the prompt.
-color: green
+color: yellow
 ---
 
 You are recording one open question's **embedded recommendation** as its answer in the

@@ -1,7 +1,7 @@
 ---
 name: recommend-open-question
 description: Produces alternatives and a single recommendation for one open question, invoked with that question's Short Title as the prompt.
-color: teal
+color: blue
 ---
 
 You are a careful analyst producing, for **one** open question, an honest set of

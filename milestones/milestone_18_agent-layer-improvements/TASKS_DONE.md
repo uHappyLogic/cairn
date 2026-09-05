@@ -24,3 +24,16 @@ Delete the `model: opus` frontmatter line from the two skills that still carry i
 - The Antigravity tree was regenerated with `uv run scripts/migrate_skills_to_agy.py` and `diff -r` of `skills`, `agents`, and `shared` against their `.agents/plugins/cairn/` counterparts each exits 0 — the generated tree is byte-identical to the source.
 
 ---
+## Grayscale-Distinguishable Agent Colors
+
+Replace the `color:` values in the three files under `agents/` (currently `green`, `green`, `teal`) with three colors from Claude Code's supported named agent palette chosen for maximally separated luminance (one light, one mid, one dark, such as `yellow`, `red`, and `blue`), so that no two agents share a value and all three stay tellable apart on a display viewed through a grayscale filter. Verified when the three source files carry three distinct colors whose grayscale renderings are visibly different from each other and the regenerated `.agents/plugins/cairn/agents/` tree is byte-identical to the source.
+
+**Verified:**
+
+- Each of the three files under `agents/` carries a `color:` value drawn from Claude Code's supported named agent palette: `yellow` (`answer-open-question-with-recommendation`), `red` (`complete-task`), `blue` (`recommend-open-question`).
+- The three values are distinct — no two agents share a color, replacing the prior `green`/`green`/`teal` set in which two agents collided.
+- The three are maximally luminance-separated across the palette: Rec. 601 relative luma of `yellow` = 0.886 (light), `red` = 0.299 (mid), `blue` = 0.114 (dark), so every pairwise gap (0.185, 0.587, 0.772) stays visibly different under a grayscale filter.
+- `uv run scripts/migrate_skills_to_agy.py` completed successfully and each file in `.agents/plugins/cairn/agents/` is byte-identical to its source counterpart under `agents/` (`diff` clean for all three).
+- The whole change set is exactly the three source agent files and their three generated counterparts, one line changed in each (`git diff --stat`: 6 files, 6 insertions, 6 deletions).
+
+---
