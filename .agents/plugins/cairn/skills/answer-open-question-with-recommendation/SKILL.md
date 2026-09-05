@@ -32,7 +32,7 @@ Read and follow the shared procedure at
 **yourself, in this conversation**. Pass it the `<Short Title>` from the invocation as its
 `SHORT TITLE` input. That procedure owns the find-milestone → locate → lift → delegate work,
 composing over `.agents/plugins/cairn/shared/answer-procedure.md`, which owns the
-locate/analyse/remove/fold/cascade recording.
+locate/analyse/fold/remove/cascade recording.
 
 Do **not** spawn the `answer-open-question-with-recommendation` agent.
 

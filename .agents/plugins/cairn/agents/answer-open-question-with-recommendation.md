@@ -23,7 +23,7 @@ Follow the shared procedure at
 `.agents/plugins/cairn/shared/answer-with-recommendation-procedure.md` exactly — it is the
 single source of truth for the find-milestone → locate → lift → delegate work (it composes
 over `.agents/plugins/cairn/shared/answer-procedure.md`, which owns the
-locate/analyse/remove/fold/cascade recording). Read it first, then carry out every step against the SHORT TITLE in your
+locate/analyse/fold/remove/cascade recording). Read it first, then carry out every step against the SHORT TITLE in your
 prompt.
 
 ## Staging contract (subagent only)

@@ -66,5 +66,5 @@ the rationale). That string is the answer text.
 
 Hand the resolved **SHORT TITLE** and the derived **ANSWER** to
 `.agents/plugins/cairn/shared/answer-procedure.md` and follow it unchanged. That procedure
-owns the recording work (locate, analyse, remove, fold, cascade); this procedure only lifts
+owns the recording work (locate, analyse, fold, remove, cascade); this procedure only lifts
 and delegates.

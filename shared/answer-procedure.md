@@ -4,7 +4,7 @@ This is the single source of truth for recording an answer to one open question 
 current milestone's `requirements.md`. It is followed inline by the `answer-open-question`
 skill and once per resolved question by an orchestrator sweeping several. The caller
 supplies the two inputs below and wraps the result; this file describes only the recording
-work itself — locate, analyse, remove, fold, cascade.
+work itself — locate, analyse, fold, remove, cascade.
 
 ## Inputs
 
@@ -61,17 +61,7 @@ the document. Do not invent implications the answer text does not directly suppo
 the answer is ambiguous or incomplete, remove what is clearly resolved and surface the rest
 rather than guessing — never add a brand-new question block to the document.
 
-### 4. Remove the matched block
-
-Delete the located block from the document — from its `<open-question …>` opening boundary
-line through and including its `</open-question>` closing boundary line, the boundary-token
-pair found in step 2. This is a deterministic line-range removal, so drive it with the
-line-oriented CLI (delete the opening-through-closing line span), not by hand-matching prose.
-
-The same opening-through-closing removal clears the whole block whether or not it carries
-embedded `<alternative>` / `<applied-principle>` / `<recommendation>` children.
-
-### 5. Fold the decision into `## Decisions`
+### 4. Fold the decision into `## Decisions`
 
 Add a concise statement under `## Decisions` — in the relevant existing
 subsection, or a new subsection if none fits — capturing what was decided and any
@@ -79,13 +69,28 @@ constraint it imposes. Write it as **clean prose with no citation marker**: the 
 records the decision itself, not where it came from. Match the live document's section
 names.
 
+Write this edit **before** removing the answered block in step 5; the recorded decision
+always lands first.
+
+### 5. Remove the answered block
+
+Delete the block located in step 2 from the document — from its `<open-question …>` opening
+boundary line through and including its `</open-question>` closing boundary line. The step 4
+fold has shifted the line numbers step 2 reported, so re-run that same boundary-line query
+first to get the block's current opening and closing lines, then delete that span. This is a
+deterministic line-range removal, so drive it with the line-oriented CLI (delete the
+opening-through-closing line span), not by hand-matching prose.
+
+The same opening-through-closing removal clears the whole block whether or not it carries
+embedded `<alternative>` / `<applied-principle>` / `<recommendation>` children.
+
 ### 6. Cascade to mooted entries
 
-If the decision moots another open or deferred entry or forces its answer, remove that
-entry too and fold any implied constraint into `## Decisions` the same way.
+If the decision moots another open or deferred entry or forces its answer, fold any implied
+constraint into `## Decisions` the same way and remove that entry too.
 Then the document is left in the now-updated state for any further work.
 
-Make steps 4–6 as separate, targeted edits — one per logical change (removal, fold,
+Make steps 4–6 as separate, targeted edits — one per logical change (fold, removal,
 cascade) — rather than one large rewrite of a long file, and do not otherwise rewrite or
 restructure existing content: only remove the answered entry and any it moots, and add the
 decisions they produce.

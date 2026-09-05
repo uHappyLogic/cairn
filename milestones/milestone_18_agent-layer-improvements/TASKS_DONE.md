@@ -131,3 +131,20 @@ Change the two file-editing agents so each path-scoped `git add`s its own change
 - `uv run scripts/migrate_skills_to_agy.py` ran clean and regenerated exactly the four affected files under `.agents/plugins/cairn/`, which differ from their sources only by the script's documented `${CLAUDE_PLUGIN_ROOT}` path rewrite and resolve-hint drop.
 
 ---
+
+## Fold Decision Before Removing Question Block
+
+Reorder the recording core in `shared/answer-procedure.md` so the decision is folded into `## Decisions` (currently step 5) before the matched `<open-question>` block is removed (currently step 4), keeping the cascade step last and the three edits separate, and update the step references in `shared/answer-with-recommendation-procedure.md` and the `CLAUDE.md` invariant that narrate the locate → remove → fold → cascade order. Today a failure or interruption between the removal and the fold leaves the block gone and the decision unrecorded, so the next sweep no longer gathers the question and it is silently lost; folding first leaves a harmless superset state instead. Verified by reading the procedure to confirm the fold precedes the removal, confirming no runtime or invariant text still states remove-then-fold, and regenerating the Antigravity tree with `uv run scripts/migrate_skills_to_agy.py` so `.agents/plugins/cairn/` stays byte-identical to the source.
+
+**Verified:**
+
+- `shared/answer-procedure.md` step 4 is "Fold the decision into `## Decisions`" and step 5 is "Remove the answered block", so the fold precedes the removal in the recording core.
+- Step 5 removes the same `<open-question …>`…`</open-question>` boundary-line span located in step 2 and instructs re-running the boundary-line query first, because the step 4 fold shifted those line numbers.
+- Step 6 is still the cascade and remains last, and the closing paragraph still requires steps 4–6 as three separate targeted edits (fold, removal, cascade).
+- The procedure's own summary line reads "locate, analyse, fold, remove, cascade".
+- `shared/answer-with-recommendation-procedure.md` step 4 narrates the delegated recording work as "(locate, analyse, fold, remove, cascade)".
+- The `CLAUDE.md` repository-layout line and the answer-recording invariant both narrate locate → fold → remove → cascade, and the invariant states the fold-before-removal order is deliberate, why (interruption leaves a harmless superset instead of a silently lost question), and that removal re-queries the shifted boundary lines.
+- No runtime file (`skills/`, `agents/`, `shared/`) or `CLAUDE.md`/`README.md` prose still states remove-then-fold: the three other narration sites (`skills/answer-open-question/SKILL.md`, `skills/answer-open-question-with-recommendation/SKILL.md`, `agents/answer-open-question-with-recommendation.md`) now read "fold/remove", and `skills/answer-open-question-with-alternative/SKILL.md` names the fold before the block removal.
+- `uv run scripts/migrate_skills_to_agy.py` ran clean, and each regenerated file under `.agents/plugins/cairn/` differs from its source only by the script's documented `${CLAUDE_PLUGIN_ROOT}` path rewrite.
+
+---

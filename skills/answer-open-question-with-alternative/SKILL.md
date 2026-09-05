@@ -100,9 +100,9 @@ recommendation path uses for "`<option>` — `<rationale>`". Never invent answer
 Hand the resolved **`<Short Title>`** and the derived **ANSWER** to
 `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` and follow it unchanged **yourself, in this
 conversation** (its own step 1 re-resolves the milestone you already found — harmless). That
-procedure owns the recording work — locate, analyse, remove the whole
-`<open-question …>`…`</open-question>` block, fold the decision into `## Decisions` as clean
-prose, and cascade to any mooted siblings.
+procedure owns the recording work — locate, analyse, fold the decision into `## Decisions`
+as clean prose, remove the whole `<open-question …>`…`</open-question>` block, and cascade to
+any mooted siblings.
 
 Do **not** spawn any subagent — there is no `answer-open-question-with-alternative` agent.
 
