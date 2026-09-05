@@ -72,6 +72,10 @@ When the history entries added since the last release disagree with the commit r
 
 The release notes are condensed rewrites of the milestone history entries, not verbatim copies: the skill rewrites each milestone's `milestones/README.md` bullets down to the user-facing changes, matching the shape the published `0.9.8` and `0.9.9` bodies already set — one `## <Title> (milestone <N>)` section per milestone, a short bulleted summary, then the Full Changelog compare link. Those two bodies are themselves condensed rewrites with milestone-internal process bullets cut, so matching that shape keeps the release series consistent and keeps engineering-process detail out of a consumer-facing note.
 
+### Stale generated tree handling
+
+When regenerating the Antigravity tree changes files beyond the manifest version — because a runtime edit was never regenerated — the release skill absorbs the full result into the release commit and prints a one-line advisory naming the drift (that files beyond `.agents/plugins/cairn/plugin.json` changed, and how many) before it proceeds. The generated tree is a pure deterministic derivative of `skills/`, `agents/`, and `shared/`, so regenerating it can only ever produce what the already-committed sources say and there is nothing to review; the clean-working-tree precondition makes the whole diff self-generated and unambiguous, and the advisory carries the one fact the commit alone would not surface.
+
 ## Out of Scope
 
 ## Open questions
@@ -138,28 +142,4 @@ The release notes are condensed rewrites of the milestone history entries, not v
     <drawback>Unwinding already-pushed refs is destructive and can itself fail, making the failure handler the riskiest part of the skill.</drawback>
   </alternative>
   <recommendation option="Idempotent resume">The post-commit steps are each checkable with a one-line git or gh query, so check-then-do makes &quot;re-run with the same version&quot; the whole recovery story, with a stop-on-mismatch guard covering the cases where resuming would be wrong.</recommendation>
-</open-question>
-<open-question id="Stale generated tree handling" status="deferred">
-  <question>If regenerating the Antigravity tree changes files beyond the manifest version because a runtime edit was never regenerated, does the release commit absorb those changes or does the skill stop and report?</question>
-  <alternative id="Absorb silently">
-    The skill regenerates the Antigravity tree as a normal step and folds whatever it produces — manifest version plus any files a missed regeneration left behind — into the release commit without comment.
-    <advantage>Simplest possible rule with no conditional branch: the shipped tree is guaranteed to match the source at the tag, every time, and a mechanical catch-up never interrupts a release.</advantage>
-    <drawback>A large drift lands in the release commit with nothing in the console or the release notes hinting that this release also shipped previously-unregenerated runtime edits.</drawback>
-  </alternative>
-  <alternative id="Absorb and report">
-    The skill regenerates, folds the full result into the release commit, and prints a one-line advisory naming the drift (that files beyond `.agents/plugins/cairn/plugin.json` changed, and how many) before it proceeds.
-    <advantage>Keeps the release unblocked and the shipped tree correct while making the one fact git alone would not surface — that this release absorbed a stale-tree catch-up — visible to the maintainer at the moment it happens.</advantage>
-    <drawback>The advisory is informational only, so a maintainer who wanted to inspect the drift before it was committed must still revert or amend after the fact.</drawback>
-  </alternative>
-  <alternative id="Stop and report">
-    The skill regenerates, compares the result against the checked-in tree, and aborts before any commit when anything beyond the manifest version changed, telling the maintainer to run `uv run scripts/migrate_skills_to_agy.py`, commit that separately, and re-invoke.
-    <advantage>The release commit stays minimal and auditable by construction, and the catch-up regeneration gets its own reviewable commit with honest provenance.</advantage>
-    <drawback>Blocks a release on a purely mechanical, deterministic condition the skill just fixed in its own working tree, forcing the maintainer to re-run the identical command by hand and start over.</drawback>
-  </alternative>
-  <alternative id="Separate regeneration commit">
-    The skill regenerates and, when the diff exceeds the manifest version, commits the catch-up as its own commit ahead of the release commit, leaving the release commit to carry only the version bump and manifest.
-    <advantage>Nothing blocks and the git history stays honest — the drift is separable and revertible on its own, and the release commit reads as exactly one thing.</advantage>
-    <drawback>Adds conditional commit machinery and a second commit subject to a skill whose commit shape is otherwise fixed, for a distinction that matters only in the rare stale case.</drawback>
-  </alternative>
-  <recommendation option="Absorb and report">The generated tree is a pure deterministic derivative of `skills/`, `agents/`, and `shared/` — regenerating it can only ever produce what the already-committed sources say, so there is nothing to review and nothing to lose by absorbing it, and the skill&apos;s clean-working-tree precondition means the whole diff is self-generated and unambiguous; the printed advisory covers the one thing the commit alone would not tell the maintainer.</recommendation>
 </open-question>
