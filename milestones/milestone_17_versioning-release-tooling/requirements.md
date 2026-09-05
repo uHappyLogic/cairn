@@ -52,6 +52,10 @@ The release skill is named `release-plugin`, living at `.claude/skills/release-p
 
 The skill identifies the last release as the nearest tag reachable from HEAD, resolved with `git describe --tags --abbrev=0` and used as the literal tag string for both the `<last-tag>..HEAD` commit range and the compare-link endpoint. Both jobs the anchor serves are ancestry questions, so no version string is ever parsed or compared and the mixed legacy tag formats are irrelevant to it; resolution stays local, with no network or `gh` dependency.
 
+### Release preconditions scope
+
+The release skill applies four hard pre-flight stops before it commits, tags, or pushes anything: the tracked working tree is clean, HEAD is on `main`, `main` is not behind `origin/main` (checked after a fetch), and there are no untracked files under the transpiler's source paths `skills/`, `agents/`, and `shared/`. Untracked files elsewhere in the repo are tolerated, since path-scoped staging cannot pick them up. Each of the four blocks a route by which unmerged or uncommitted content would reach a published tag, and the scoped untracked check keeps the gate from firing on files that are harmless by construction.
+
 ## Out of Scope
 
 ## Open questions
@@ -142,30 +146,6 @@ The skill identifies the last release as the nearest tag reachable from HEAD, re
     <drawback>Adds an interactive branch to a validation step whose whole value is being unattended and deterministic, and a confirmation prompt in the same run as the release itself is exactly the prompt a maintainer clicks through, so it degrades to no check at all.</drawback>
   </alternative>
   <recommendation option="Full precondition check">Every check is cheap and runs before the first mutation, and this skill spends one argument across file edits, a commit, a push, a tag, and a published GitHub release in one irreversible sweep — so a version caught late costs a revert and a force-push while catching it costs a tag lookup and a tuple comparison; a maintainer who genuinely needs a non-monotonic release still has the manual tag path outside the skill.</recommendation>
-</open-question>
-<open-question id="Release preconditions scope" status="deferred">
-  <question>Besides a clean tracked working tree, does the skill also require being on the main branch, having no untracked files, and not being behind origin before it proceeds?</question>
-  <alternative id="Clean tree only">
-    The skill checks only that tracked files are unmodified, exactly as the goal states, and proceeds regardless of branch, upstream position, or untracked files.
-    <advantage>Smallest possible gate: nothing beyond the already-decided requirement, no extra git commands, and no precondition that can block a legitimate release on an unrelated local condition.</advantage>
-    <drawback>The two failure modes git does not warn about land badly — a release cut from a feature branch tags and publishes unmerged work silently, and a HEAD behind origin only fails at the push, after the release commit already exists, which is precisely the partial state the skill would then have to unwind.</drawback>
-  </alternative>
-  <alternative id="Branch and sync gate">
-    Adds two pre-flight hard stops to the clean-tracked-tree check — HEAD is on main, and after a fetch main is not behind origin/main — while tolerating untracked files anywhere.
-    <advantage>Blocks exactly the conditions that are either invisible to git (wrong branch) or detected too late to be cheap (behind origin), using two commands run before any commit, tag, or push exists.</advantage>
-    <drawback>Leaves one real hole: the transpiler copies `skills/`, `agents/`, and `shared/` off disk, so a wholly-untracked new skill directory is swept into the regenerated Antigravity tree and published in the release commit even though it was never committed as source.</drawback>
-  </alternative>
-  <alternative id="Scoped untracked gate">
-    The Branch and sync gate plus one more scoped check — no untracked files under the transpiler&apos;s source paths (`skills/`, `agents/`, `shared/`) — with untracked files elsewhere in the repo tolerated.
-    <advantage>Closes the only route by which uncommitted content reaches a published artifact, at the cost of a single path-scoped status command, without ever firing on scratch files, local notes, or build leftovers that the path-scoped release commit could not have picked up anyway.</advantage>
-    <drawback>A fourth condition to specify, explain, and keep aligned with the transpiler&apos;s copy list — if that list ever grows a directory, the check silently stops covering it.</drawback>
-  </alternative>
-  <alternative id="Strict full clean">
-    Requires all four: on main, not behind origin, no modified tracked files, and no untracked files anywhere in the repo.
-    <advantage>Gives the strongest single guarantee — the released tree is byte-identical to what origin/main holds plus the version bump — and is stated in one sentence with no carve-outs to reason about.</advantage>
-    <drawback>Blocks releases on conditions that cannot affect the release at all, since staging is path-scoped, so any stray untracked file forces the maintainer to clean or stash unrelated work and trains them toward bypassing the gate.</drawback>
-  </alternative>
-  <recommendation option="Scoped untracked gate">Require clean tracked tree, on main, and not behind origin as hard pre-flight stops, plus no untracked files under `skills/`, `agents/`, and `shared/` — each of the four blocks a way unmerged or uncommitted content reaches a published tag, and the scoping keeps the untracked check from firing on files that path-scoped staging already makes harmless.</recommendation>
 </open-question>
 <open-question id="Partial failure resumption" status="deferred">
   <question>If a step fails after the release commit exists (push, tag push, or release creation), what state does the skill leave behind, and can a re-run with the same version resume from it?</question>
