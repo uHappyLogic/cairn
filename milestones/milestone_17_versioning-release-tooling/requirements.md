@@ -36,6 +36,10 @@ Every committing skill stages path-scoped and commits under a `<Marker>: <descri
 
 The version script writes every version literal in the repo — four surfaces: `.claude-plugin/plugin.json`, the generated `.agents/plugins/cairn/plugin.json`, a `version` field on the single `plugins[]` entry in `.claude-plugin/marketplace.json` (which carries none today), and `pyproject.toml`, whose `cairn-tooling` version moves off its independent `0.1.0` onto the plugin version so the whole repo carries one number. A release therefore bumps every version literal in the tree, leaving no per-file judgement call about which surfaces are in scope.
 
+### Generated manifest version source
+
+The transpiler reads `.claude-plugin/plugin.json` at generation time and copies its `version` value into the dict it writes to `.agents/plugins/cairn/plugin.json`, so the version script writes only the source manifest. This keeps a single source of truth and makes the generated tree correct for every regeneration path, including a bare standalone `uv run scripts/migrate_skills_to_agy.py`, without ordering the version script and the transpiler against each other.
+
 ### Release process documentation
 
 The release procedure is documented in exactly one place — the release skill's own `SKILL.md` under `.claude/skills/` — and nowhere else; discovery is via the slash-command list. Neither `CLAUDE.md` nor `README.md` gains a release paragraph, so the executable steps have a single source of truth with no prose copy to drift.
@@ -48,30 +52,6 @@ The release skill is named `release-plugin`, living at `.claude/skills/release-p
 
 ## Open questions
 
-<open-question id="Generated manifest version source" status="open">
-  <question>Since the transpiler rewrites the Antigravity manifest from a hard-coded dict on every run, how does that generated manifest get its version — does the transpiler read it from `.claude-plugin/plugin.json` at generation time, take it as an argument, or does the version script write the generated file directly with the transpiler preserving it?</question>
-  <alternative id="Transpiler reads plugin.json">
-    The transpiler reads `.claude-plugin/plugin.json` at generation time and copies its `version` value into the dict it writes to `.agents/plugins/cairn/plugin.json`, so the version script writes only the source manifest.
-    <advantage>Keeps exactly one version-bearing source of truth and makes the generated manifest correct after any transpiler run — including a bare `uv run scripts/migrate_skills_to_agy.py` — regardless of whether the version script ran first, last, or at all.</advantage>
-    <drawback>The transpiler gains a read dependency on the Claude-side manifest and needs a defined behavior when that file or its `version` key is missing, and the version script no longer literally writes the generated surface, satisfying the goal indirectly.</drawback>
-  </alternative>
-  <alternative id="Version passed as transpiler argument">
-    The transpiler takes the version as a command-line argument (e.g. `--version 1.0.0`) and emits whatever it is given, with the release skill or version script supplying it.
-    <advantage>Makes the version an explicit input the caller controls, leaving the transpiler with no knowledge of any other manifest and no file-reading fallback logic.</advantage>
-    <drawback>The habitual bare invocation documented in `CLAUDE.md` now either fails or needs a default, which is precisely the drift the milestone is trying to eliminate, and it moves correctness into whichever caller remembers to pass the flag.</drawback>
-  </alternative>
-  <alternative id="Transpiler preserves generated version">
-    The version script writes the version directly into `.agents/plugins/cairn/plugin.json`, and the transpiler is changed to merge rather than overwrite — reading any existing generated manifest and carrying its `version` key forward.
-    <advantage>The version script literally writes every version-bearing surface, matching the goal&apos;s framing of the generated manifest as one of the files it edits.</advantage>
-    <drawback>It makes the generated tree partly stateful — a regeneration into a fresh or deleted `.agents/` tree silently produces a version-less manifest — which contradicts the tree&apos;s defining property of being fully reproducible from source.</drawback>
-  </alternative>
-  <alternative id="Version script edits transpiler literal">
-    The version script rewrites the version literal inside `scripts/migrate_skills_to_agy.py` itself, and the transpiler emits that hard-coded value on every run.
-    <advantage>Every surface the version script touches is a uniform literal-in-file edit, and regeneration reproduces the version deterministically with no cross-file read and no argument.</advantage>
-    <drawback>It makes executable source a version-bearing surface edited by another script, which is fragile to reformatting and leaves the transpiler carrying a version it does not own.</drawback>
-  </alternative>
-  <recommendation option="Transpiler reads plugin.json">Deriving the generated manifest&apos;s version from `.claude-plugin/plugin.json` at generation time keeps a single source of truth and makes the generated tree correct for every regeneration path, including a bare standalone run, without ordering the version script and the transpiler against each other.</recommendation>
-</open-question>
 <open-question id="Pre-publish confirmation" status="open">
   <question>Does the release skill pause to show the maintainer the composed release notes and the version before it pushes, tags, and creates the GitHub release, or does it run unattended end to end once invoked?</question>
   <alternative id="Confirm once before publishing">
