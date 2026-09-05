@@ -74,9 +74,11 @@ For each **surviving** question (gathered, not skipped), dispatch one read-only 
 dispatches are **independent**: **never feed one question's recommendation into another.** Because
 they are independent, they may be run in parallel.
 
-Use the `Agent` tool with `subagent_type: "recommend-open-question"` (singular — the
-per-question subagent), one dispatch per surviving question. Pass it that question's **Short
-Title** and full block plus surrounding context so it can enumerate honest alternatives:
+Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the
+`recommend-open-question` agent (singular — the per-question subagent) under this plugin's
+namespace — Claude Code lists it as `cairn:recommend-open-question` — one dispatch per surviving
+question. Pass it that question's **Short Title** and full block plus surrounding context so it
+can enumerate honest alternatives:
 
 ```
 Recommend on this single open question.

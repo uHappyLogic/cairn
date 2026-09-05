@@ -70,9 +70,10 @@ contains a `<recommendation>` element**. A prior answer's cascade may have alrea
 block; if it is gone — or its `<recommendation>` element is gone — **skip it** and move on. This is
 a cheap deterministic locate/extract check keyed on the boundary lines, not a whole-document read.
 
-**b. Dispatch the file-editing agent.** Use the `Agent` tool with
-`subagent_type: "answer-open-question-with-recommendation"`, one dispatch per question. Pass it
-the question's **Short Title** in the prompt:
+**b. Dispatch the file-editing agent.** Use the `Agent` tool with `subagent_type` set to the
+namespaced registry name of the `answer-open-question-with-recommendation` agent under this
+plugin's namespace — Claude Code lists it as `cairn:answer-open-question-with-recommendation` —
+one dispatch per question. Pass it the question's **Short Title** in the prompt:
 
 ```
 Record the embedded recommendation for this open question as its answer.

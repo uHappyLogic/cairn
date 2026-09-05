@@ -53,3 +53,17 @@ Give `agents/recommend-open-question.md` a failure return whose final line is `F
 - The Antigravity tree was regenerated with `uv run scripts/migrate_skills_to_agy.py`; `diff -r agents .agents/plugins/cairn/agents` and the per-file diff of the changed skill both exit 0.
 
 ---
+## Namespaced Agent Names In Orchestrator Dispatch
+
+Rewrite the `subagent_type` dispatch instruction in the three orchestrator skills (`complete-all-tasks`, `answer-all-open-questions-with-recommendation`, `recommend-all-open-questions`) to address each agent by its namespaced registry name, phrased descriptively (the `complete-task` agent under this plugin's namespace, listed by Claude Code as `cairn:complete-task`) rather than the bare name, so resolution stays correct if the plugin is renamed or run under another host, and add one sentence to the relevant `CLAUDE.md` invariant stating that orchestrators address dispatched agents by their namespaced registry name. Verified when all three dispatch sites use the namespaced form, `CLAUDE.md` carries the sentence, and the regenerated `.agents/plugins/cairn/` tree is byte-identical to the source skills.
+
+**Verified:**
+
+- `skills/complete-all-tasks/SKILL.md`'s dispatch step sets `subagent_type` to the namespaced registry name, phrased descriptively as the `complete-task` agent under this plugin's namespace, listed by Claude Code as `cairn:complete-task`.
+- `skills/answer-all-open-questions-with-recommendation/SKILL.md`'s step 2b does the same for `cairn:answer-open-question-with-recommendation`.
+- `skills/recommend-all-open-questions/SKILL.md`'s step 3 does the same for `cairn:recommend-open-question`, keeping its "(singular — the per-question subagent)" gloss.
+- `grep -rn subagent_type skills agents shared` returns only those three sites and no bare quoted agent name remains.
+- `CLAUDE.md`'s "Committing is a property of the skill layer" invariant — the one carrying the orchestrator/dispatched-agent layer contract — gained one **Dispatch naming** sentence stating that an orchestrator addresses each dispatched agent by its namespaced registry name, so resolution survives a plugin rename or another host.
+- `uv run scripts/migrate_skills_to_agy.py` regenerated `.agents/plugins/cairn/`, and `diff -r --exclude='*-workspace' skills .agents/plugins/cairn/skills`, `diff -r agents .agents/plugins/cairn/agents`, and `diff -r shared .agents/plugins/cairn/shared` all exit 0.
+
+---
