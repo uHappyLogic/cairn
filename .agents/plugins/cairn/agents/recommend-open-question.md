@@ -93,7 +93,7 @@ once per bearing principle, or not at all when none bore):
   character — the `<alternative>` / `<advantage>` / `<drawback>` / `<recommendation>` text and
   the `id` / `option` attribute values alike.
 
-### 4. Return the sub-elements only
+### 4. Return the sub-elements, or `FAILED`
 
 Your only output is the XML sub-elements the orchestrator embeds inside the existing
 `<open-question>` block. **End your session with those sub-elements as your final message**,
@@ -101,4 +101,12 @@ in exactly the shape rendered in step 3 — the `<alternative>` elements, then a
 `<applied-principle>` elements, then the single `<recommendation>` element. Do **not** include
 the `<open-question>` wrapper or the `<question>` element: the orchestrator owns those and
 inserts your children inside the existing wrapper. Nothing before your sub-elements, nothing
-after them.
+after them. There is **no `DONE` line** — the sub-elements themselves are the success return.
+
+If you cannot produce that set — the prompt carries no usable question, the context is too
+thin to enumerate honest alternatives, or any other error stops you — **end your session with
+`FAILED: <reason>` as its final line** and return nothing else: no partial sub-elements above
+it, no prose standing in for them. `FAILED: <reason>` is the only alternative to the
+sub-elements; a reply that is neither is unusable to the orchestrator, which reads only what
+you return. You mutate nothing either way, so a failure leaves the project exactly as you
+found it.

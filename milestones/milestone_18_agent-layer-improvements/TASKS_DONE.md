@@ -37,3 +37,19 @@ Replace the `color:` values in the three files under `agents/` (currently `green
 - The whole change set is exactly the three source agent files and their three generated counterparts, one line changed in each (`git diff --stat`: 6 files, 6 insertions, 6 deletions).
 
 ---
+
+## Recommend Sweep Failure Return And Shape Check
+
+Give `agents/recommend-open-question.md` a failure return whose final line is `FAILED: <reason>` while keeping its success return as the bare XML sub-elements with no `DONE` line, and make `skills/recommend-all-open-questions/SKILL.md` check each return before embedding — it must start with `<alternative` and end with `</recommendation>` — treating a `FAILED:` return or any return failing that shape as a per-question skip rather than a run stop: the block is left untouched, the surviving returns are embedded and committed as today, and the skipped Short Titles with their reasons are printed as a git-absent advisory alongside the terse status line. This closes the one asymmetry in the agent layer's return contracts, where a prose, partial, or explanatory subagent reply is currently spliced into `requirements.md` as XML. Verified by reading both files and confirming that a malformed or `FAILED:` return can no longer reach the whole-block-replacement Edit.
+
+**Verified:**
+
+- `agents/recommend-open-question.md` step 4 states the success return is the bare XML sub-elements with **no `DONE` line**, and adds a failure return whose final line is `FAILED: <reason>` with nothing else returned (no partial sub-elements, no prose standing in for them).
+- `skills/recommend-all-open-questions/SKILL.md` step 3 checks every return before embedding: usable only when its first non-whitespace text starts with `<alternative` and its last ends with `</recommendation>`.
+- A `FAILED:` return or any return failing that shape check is a per-question skip, not a run stop: nothing is embedded for it, its `<open-question>` block is left byte-for-byte untouched, and the sweep carries on with the other questions.
+- Surviving returns are embedded and committed as before: step 4's whole-block-replacement Edit and step 5's once-at-end path-scoped `Recommendation-annotation:` commit are otherwise unchanged, with step 5's no-op note extended to the all-skipped case.
+- Step 6 prints the skipped questions' Short Titles with their reasons as a git-absent advisory alongside the terse `Recommendations embedded.` line (and alongside the no-op line when the guard fired).
+- Reading both files confirms a malformed or `FAILED:` return can no longer reach step 4's whole-block-replacement Edit — step 3 states explicitly that such a return never reaches it.
+- The Antigravity tree was regenerated with `uv run scripts/migrate_skills_to_agy.py`; `diff -r agents .agents/plugins/cairn/agents` and the per-file diff of the changed skill both exit 0.
+
+---

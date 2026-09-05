@@ -93,11 +93,23 @@ as its final message — one `<alternative id="...">` element per option (each w
 `<recommendation option="...">` element — and **only** those child elements, never the
 `<open-question>` wrapper or the `<question>` element. The orchestrator does **all** the writing.
 
+**Check the shape of every return before it can be embedded.** A return is usable only when it
+is that bare sub-element set: its first non-whitespace text **starts with `<alternative`** and
+its last non-whitespace text **ends with `</recommendation>`**. Two returns fail here — one
+whose final line is `FAILED: <reason>`, and any return that fails the shape check (prose, a
+partial or explanatory reply, an `<open-question>` wrapper, commentary before or after the
+elements). Either one is a **skip of that question alone, never a run stop**: embed nothing for
+it, leave its `<open-question>` block byte-for-byte untouched, note its Short Title with the
+reason (the text after `FAILED:`, or what the shape check rejected) for the step-6 advisory,
+and carry on with the other questions. A return that fails this check never reaches step 4's
+Edit, so a prose or partial reply cannot be spliced into `requirements.md` as XML.
+
 ### 4. Embed each returned set of sub-elements
 
-The orchestrator is the sole mutator. Embed each returned set of sub-elements **inside the
-existing `<open-question>` block**, as children of its wrapper. Do this by **whole-block
-replacement**, not a line-oriented CLI splice: locate the target
+The orchestrator is the sole mutator. Only returns that passed step 3's shape check reach this
+step. Embed each such return's sub-elements **inside the existing `<open-question>` block**, as
+children of its wrapper. Do this by **whole-block replacement**, not a line-oriented CLI splice:
+locate the target
 `<open-question id="...">…</open-question>` in the block text the sweep already holds from its
 single gather pass, and replace it whole with an exact-string structural `Edit` — the `old_string`
 is the block as it stands (the `<open-question …>` boundary tag, its `<question>` element, and the
@@ -144,8 +156,8 @@ to resolve the path), carrying out its steps yourself. Supply it these two input
 
 The shared procedure owns the path-scoped staging (never `git add -A`), the dirty-own-path no-op
 guard, and the commit. Because that guard is dirty-own-path, a sweep that annotated nothing — every
-gathered block already carried a `<recommendation>` element, so step 4 changed no bytes — stages
-and commits nothing. This sweep requires **no** clean working tree.
+gathered block already carried a `<recommendation>` element, or every dispatched question was
+skipped in step 3, so step 4 changed no bytes — stages and commits nothing. This sweep requires **no** clean working tree.
 
 ### 6. Report
 
@@ -154,9 +166,17 @@ On the success path, print exactly one fixed terse status line for the whole run
 listing, and no consumer pointer to the `/answer-open-question-with-recommendation` /
 `/answer-all-open-questions-with-recommendation` skills.
 
-If the sweep committed nothing — its step-5 dirty-own-path no-op guard fired because every gathered
-block already carried a `<recommendation>` element, so step 4 changed no bytes — do not print the
-terse success line; instead print a distinct one-line message stating that nothing changed and why
-(no un-annotated questions remained to recommend on).
+Alongside that line, if step 3 skipped any question (a `FAILED:` return or one that failed the
+shape check), print the skipped questions as an advisory — each one's Short Title with its
+reason, one per line. This survives the terse-reporting rule because nothing else records it:
+the commit and the annotated `requirements.md` show only the questions that *were* annotated, so
+a question left un-annotated is git-absent and the console must carry it. Re-running the sweep
+retries exactly those blocks, since they still lack a `<recommendation>` element.
+
+If the sweep committed nothing — its step-5 dirty-own-path no-op guard fired because step 4
+changed no bytes — do not print the terse success line; instead print a distinct one-line message
+stating that nothing changed and why (every gathered block already carried a `<recommendation>`
+element, or every dispatched question was skipped in step 3), still followed by the skipped-question
+advisory when there was one.
 
 If there were no open/deferred questions at all, say so and stop (step 1) — nothing to report.
