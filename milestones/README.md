@@ -10,9 +10,18 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_17_versioning-release-tooling/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 17 — Versioning And Release Tooling
+
+- Added `scripts/set_version.py`, a one-argument `MAJOR.MINOR.PATCH` version script that writes every in-repo version literal — `.claude-plugin/plugin.json`, a new `version` field on `.claude-plugin/marketplace.json`'s single `plugins[]` entry, `pyproject.toml`, and `uv.lock`'s matching `cairn-tooling` line — and never touches git, `gh`, or the generated tree.
+- Taught `scripts/migrate_skills_to_agy.py` to read the source manifest's version at generation time and copy it into the generated `.agents/plugins/cairn/plugin.json`, so the generated manifest carries a version on every regeneration path while `.claude-plugin/plugin.json` stays the single source of truth.
+- Added the maintainer-only release skill at `.claude/skills/release-plugin/SKILL.md`, invoked as `/release-plugin <MAJOR.MINOR.PATCH>` — the sole documented home of the release procedure, outside the shipped `skills/` tree and the plugin's runtime-layer invariants.
+- Gated a release behind four hard pre-flight stops (clean tracked tree, HEAD on `main`, `main` not behind `origin/main`, no untracked files under `skills/`, `agents/`, or `shared/`) and three pre-mutation version refusals (malformed literal, a tag that already exists locally or remotely, and a version not strictly greater than the last release compared as a numeric tuple).
+- Gave the skill a note-composition step that derives release notes from the `Milestone-finish:` commits since the last release, cross-checks them against the `### Milestone` headings added to `milestones/README.md` over the same range and stops on a mismatch in either direction, and on an empty range shows commit-range-derived notes and proceeds only on explicit confirmation.
+- Made the local half of a release exactly one `Release: <VERSION>` commit staged path-scoped over the version script's and the transpiler's write sets, followed by a single pre-publish pause showing the full composed body before the check-then-do branch push, bare `MAJOR.MINOR.PATCH` tag, and `gh` release creation, so a re-run with the same version resumes from the first incomplete step.
 
 ### Milestone 16 — Frontmatter Description Diet
 
@@ -181,3 +190,4 @@ Current milestone: `milestones/milestone_17_versioning-release-tooling/`
 | 14 | Brief-level task pipeline | `milestones/milestone_14_brief-level-task-pipeline/` |
 | 15 | Runtime layer de-duplication | `milestones/milestone_15_runtime-layer-dedup/` |
 | 16 | Frontmatter Description Diet | `milestones/milestone_16_frontmatter-description-diet/` |
+| 17 | Versioning And Release Tooling | `milestones/milestone_17_versioning-release-tooling/` |

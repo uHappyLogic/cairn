@@ -109,6 +109,8 @@ To build the plugin for Google Antigravity, run the local transpilation step fro
 
 This will parse the Claude Code plugin source and generate the Antigravity-compatible version under `.agents/plugins/cairn/`. The script copies `skills/`, `agents/`, and `shared/` into the generated tree, so every `${CLAUDE_PLUGIN_ROOT}/shared/<name>.md` reference resolves to a file that is present; those reference strings themselves are copied verbatim and are not yet rewritten to an Antigravity-resolvable path (known follow-up).
 
+The generated manifest's `version` is read from `.claude-plugin/plugin.json` at generation time, so that source manifest is the single source of truth for the plugin version. Every in-repo version literal — `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `pyproject.toml`, and `uv.lock` — is written by `uv run scripts/set_version.py <MAJOR.MINOR.PATCH>`, which edits files only and never touches git or `gh`.
+
 ## Milestone Workflow
 
 This project uses the milestone-driven workflow. Each milestone lives at
