@@ -19,6 +19,20 @@ passed and the release notes have been composed. The pre-flight and version gate
 and 3) are hard stops: on failure, report the specific reason and exit, having changed
 nothing. Never work around a gate, and never ask the maintainer to waive one.
 
+**Resuming an interrupted release.** Re-running with the same version after a failed run is
+the whole recovery story — there is no rollback of already-published refs and no hand-run
+recovery command. A resumption is detected once, up front:
+
+```bash
+git log -1 --format='%s' HEAD
+```
+
+If that prints exactly `Release: <VERSION>`, this version's release commit is already
+recorded and the run is a **resumption**. When it is, step 1 excludes `<VERSION>` from the
+last-release lookup, step 3b tolerates a tag that points at HEAD, and step 6 is skipped whole
+— the commit it would produce already exists. Every other step runs unchanged, and step 8's
+per-artifact checks pick the run up from the first step that did not complete.
+
 ## Usage
 
 ```
@@ -53,6 +67,12 @@ version is the monotonicity check in step 3.
 
 If the command fails (no tag is reachable from HEAD), stop and report that the last release
 could not be resolved.
+
+On a **resumption**, exclude this run's own tag so the anchor stays the *previous* release:
+
+```bash
+git describe --tags --abbrev=0 --exclude=<VERSION>
+```
 
 ### 2. Pre-flight stops
 
@@ -120,6 +140,11 @@ git ls-remote --tags origin "refs/tags/<VERSION>"
 Output from either means the tag is taken. Stop and report which side already has it. This
 is an exact-name lookup, not a pattern search — a tag whose name merely contains `<VERSION>`
 is not a match.
+
+**Resumption exception.** On a resumption the tag may already exist because an earlier run
+pushed it before failing. A tag on either side that resolves to HEAD is that tag: leave it,
+continue, and let step 8b re-check it. A tag resolving to any other commit is a genuine
+collision and stops the run as above.
 
 **c. The version is strictly greater than the last release.** Compare as a **numeric
 tuple**, never by tag-name sort:
@@ -238,6 +263,11 @@ Everything so far has been read-only. This step is where the run first writes, a
 produces **exactly one commit** — the complete, self-consistent state the tag will point at.
 Run it unattended: nothing here pauses for the maintainer.
 
+**Skip this whole step on a resumption.** The `Release: <VERSION>` commit at HEAD is the
+commit this step produces: the version script and the regeneration would rewrite the same
+values, and the commit would find nothing staged. Carry `<VERSION>`, `<LAST_TAG>`, and
+`<RELEASE_BODY>` straight into step 7.
+
 **a. Write the version into every source surface.**
 
 ```bash
@@ -314,3 +344,110 @@ Then confirm the staging was complete: `git status --porcelain --untracked-files
 empty. Any tracked change left behind means a written path was missed; stop and report it
 rather than tagging a partial state. The tag is not created here — the run holds `<VERSION>`,
 `<LAST_TAG>`, and `<RELEASE_BODY>` and carries them into the publish step.
+
+### 7. Confirm before publishing
+
+This is the run's **single pause**. Everything before it is local work a `git reset` undoes;
+everything after it is public and permanent. Show the maintainer both facts they need in
+order to veto:
+
+1. `<VERSION>` — the version about to be tagged and released.
+2. `<RELEASE_BODY>` — the **full** composed body, verbatim, exactly as step 8c will publish
+   it. Never a summary, an excerpt, or a description of it.
+
+Then ask whether to publish, and proceed only on an **explicit** affirmative answer. Anything
+else — a refusal, a question, an edit request, an ambiguous reply — stops the run here with
+nothing pushed. Say that the release commit stays at HEAD, unpushed and revertible, and that
+re-running `/release-plugin <VERSION>` resumes from this point.
+
+Step 5d's empty-range question is a different one — whether commit-derived notes are an
+acceptable substitute, asked before anything is written — so an empty-range run answers both.
+This gate is the only pause between the release commit and publication, and it is never
+skipped.
+
+### 8. Publish: push `main`, push the tag, create the GitHub release
+
+Three steps in this order: the branch must carry the commit before a tag can name it, and the
+tag must exist on the remote before a release can attach to it.
+
+Every one is **check-then-do** — query the artifact first, skip the step when it already
+matches the expected state, and **stop and report** when it exists but disagrees with that
+state rather than resuming past it. That is what makes a re-run with the same version resume
+instead of duplicate: it picks up from the first step that did not complete. Never delete,
+move, or force past an artifact to push a step through.
+
+**a. Push `main`.** Check whether the release commit already landed:
+
+```bash
+git fetch origin main
+git rev-parse origin/main
+```
+
+- Equal to `git rev-parse HEAD` → already pushed. Skip to (b).
+- Not equal, and `git merge-base --is-ancestor origin/main HEAD` succeeds → `origin/main` is
+  simply behind HEAD, the ordinary case. Push:
+
+  ```bash
+  git push origin main
+  ```
+
+- Not equal and that ancestry check fails → `origin/main` carries a commit HEAD does not;
+  something was pushed since the step 2c pre-flight. **Stop and report**, naming both SHAs.
+  Never force-push.
+
+**b. Push the tag.** The tag is the bare `<VERSION>` literal — no `v` prefix, no suffix.
+Check the remote by exact name:
+
+```bash
+git ls-remote --tags origin "refs/tags/<VERSION>"
+```
+
+- **No output** → the tag is not published. Create it on the release commit and push it:
+
+  ```bash
+  git tag <VERSION> HEAD
+  git push origin "refs/tags/<VERSION>"
+  ```
+
+  The tag is lightweight, matching `0.9.8` and `0.9.9`. If a local tag of that name already
+  exists (an earlier run created it, then failed before pushing), skip the `git tag` and push
+  the existing one — but only once `git rev-parse <VERSION>` confirms it is HEAD; if it is
+  not, stop and report.
+
+- **Output whose SHA is `git rev-parse HEAD`** → already pushed. Skip to (c). (An annotated
+  tag would also print a `refs/tags/<VERSION>^{}` line; that peeled line is the commit to
+  compare.)
+- **Output whose SHA is anything else** → the tag is published against a different commit.
+  **Stop and report** both SHAs. Never move or delete a published tag, and never
+  `git push --force` one.
+
+The legacy `v.0.9.x` and `v0.9.7` tags are not read, written, moved, or deleted anywhere in
+this step.
+
+**c. Create the GitHub release.** Check by exact tag name:
+
+```bash
+gh release view <VERSION> --repo uHappyLogic/cairn --json tagName,isDraft
+```
+
+- **Non-zero exit** (`release not found`) → not published. Write `<RELEASE_BODY>` to a
+  temporary file so it survives verbatim, then create the release from it:
+
+  ```bash
+  gh release create <VERSION> --repo uHappyLogic/cairn \
+    --title <VERSION> --verify-tag --notes-file <BODY_FILE>
+  ```
+
+  `--title` is the bare version, matching the published `0.9.8` and `0.9.9` releases;
+  `--verify-tag` aborts if (b) did not land the tag. The release is neither a draft nor a
+  prerelease — pass neither flag. Delete `<BODY_FILE>` afterwards.
+
+- **JSON with `"tagName": "<VERSION>"` and `"isDraft": false`** → already published. Skip.
+- **Any other existing release** — a draft, or one whose `tagName` differs → **stop and
+  report** what was found. Never edit or delete a published release to make the run pass.
+
+With (a), (b), and (c) each skipped or done, the release is live. Report its URL and stop:
+
+```bash
+gh release view <VERSION> --repo uHappyLogic/cairn --json url --jq .url
+```

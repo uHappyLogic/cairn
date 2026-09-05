@@ -94,3 +94,24 @@ Extend the release skill so that after the gates and note composition it runs th
 - The rehearsal was fully reverted: `git status --porcelain --untracked-files=all` afterwards lists only the edited `SKILL.md`, with `.claude-plugin/plugin.json` and the generated manifest both back at `0.9.9`.
 
 ---
+
+## Release Skill Confirmation And Publish
+
+Extend the release skill with the single pre-publish pause that shows the maintainer the version and the full composed release body, then on approval pushes `main`, pushes a bare `MAJOR.MINOR.PATCH` tag, and creates the GitHub release via `gh` with that body, each step check-then-do (`git rev-parse`, `git ls-remote --tags`, `gh release view`) so a re-run with the same version skips what already succeeded and stops on an artifact that exists but disagrees with the expected state; legacy `v.0.9.x` tags are never touched. The milestone needs one human veto point before anything becomes public and a re-run as the whole recovery story. Verified by reviewing the step against the recorded decisions and confirming each check command resolves correctly against the live `0.9.9` tag and release.
+
+**Verified:**
+
+- `.claude/skills/release-plugin/SKILL.md` gains step 7 as the run's single pre-publish pause, placed after step 6 (the release commit) and before every push, tag, and publish action, and the skill remains the sole documented home of the release procedure — a grep of `CLAUDE.md` and `README.md` for `release-plugin` and `Release: ` returns nothing.
+- Step 7 shows the maintainer both `<VERSION>` and the **full** `<RELEASE_BODY>` verbatim (never a summary or excerpt), proceeds only on an explicit affirmative, and treats a refusal, question, edit request, or ambiguous reply as a stop with nothing pushed.
+- Step 7 is the only pause between the release commit and publication: step 6 still states it runs unattended, and step 7 distinguishes itself from step 5d's pre-mutation empty-range question so the two are not collapsed.
+- Step 8 pushes `main`, then pushes a bare `MAJOR.MINOR.PATCH` tag (no `v` prefix, lightweight, matching `0.9.8`/`0.9.9`), then creates the GitHub release via `gh` with `<RELEASE_BODY>`, and states why that order is forced.
+- Each of the three publish sub-steps is check-then-do against the one-line query the decision names, and each check resolves correctly against the live `0.9.9` tag and release: `git rev-parse origin/main` printed `2358950` against `HEAD` `e85d085` with `git merge-base --is-ancestor origin/main HEAD` succeeding (the ordinary push case); `git ls-remote --tags origin refs/tags/0.9.9` printed `2358950 refs/tags/0.9.9`, matching `git rev-parse 0.9.9` with no `^{}` peel line; `gh release view 0.9.9 --repo uHappyLogic/cairn --json tagName,isDraft` returned `{"isDraft":false,"tagName":"0.9.9"}` at exit 0.
+- The not-yet-published branch of each check resolves too: `git ls-remote --tags origin refs/tags/9.9.9` printed nothing and `gh release view 9.9.9` printed `release not found` at exit 1, so the create paths trigger exactly where intended.
+- The tag lookup is exact-name, not a pattern: `git ls-remote --tags origin refs/tags/0.9` printed nothing against the live `0.9.8`/`0.9.9` tags.
+- Every sub-step stops and reports on an artifact that exists but disagrees — a diverged `origin/main` (both SHAs named, never force-push), a remote tag on another commit (both SHAs named, never move or delete a published tag), and a draft release or one whose `tagName` differs (never edit or delete a published release).
+- A re-run with the same version resumes rather than being blocked: a resumption is detected once by `git log -1 --format='%s' HEAD` printing `Release: <VERSION>`, after which step 1 resolves the anchor with `git describe --tags --abbrev=0 --exclude=<VERSION>` (live: `--exclude=0.9.9` returns `0.9.8` where the plain form returns `0.9.9`), step 3b tolerates a tag that resolves to HEAD, and step 6 is skipped whole. No rollback of published refs and no hand-run recovery command is prescribed anywhere.
+- The `gh` flags step 8c relies on exist on the live `gh` 2.96.0: `--title`, `--verify-tag`, `-F/--notes-file`, and `--json url --jq .url` (which printed the live `0.9.9` release URL).
+- The legacy `v.0.9.x` and `v0.9.7` tags are never created, moved, or deleted by the added steps, stated explicitly in step 8b.
+- The skill's frontmatter still loads under `yaml.safe_load` with an unquoted `name: release-plugin` and a 22-word `description` carrying no colon or semicolon.
+
+---
