@@ -14,9 +14,10 @@ in `CLAUDE.md` or `README.md`. It is a maintainer-only, project-local skill: it 
 The going-forward tag format is a bare `MAJOR.MINOR.PATCH`. The legacy `v.0.9.x` and
 `v0.9.7` tags are never created, moved, or deleted by this skill.
 
-Every step below runs **before** anything is written, committed, pushed, tagged, or
-published. Each is a hard stop: on failure, report the specific reason and exit, having
-changed nothing. Never work around a stop, and never ask the maintainer to waive one.
+Nothing is written, committed, pushed, tagged, or published until every gate below has
+passed and the release notes have been composed. The pre-flight and version gates (steps 2
+and 3) are hard stops: on failure, report the specific reason and exit, having changed
+nothing. Never work around a gate, and never ask the maintainer to waive one.
 
 ## Usage
 
@@ -137,3 +138,96 @@ tuple**, never by tag-name sort:
 With every gate passed, the run holds two resolved values — `<VERSION>`, the validated
 version literal to release, and `<LAST_TAG>`, the last release anchor — and proceeds to the
 rest of the release with them.
+
+### 5. Compose the release notes
+
+This step still mutates nothing: it reads the range, cross-checks its two sides, and builds
+the release body in context. Call the finished text `<RELEASE_BODY>`; the later steps commit,
+tag, and publish with it.
+
+**a. Gather the finished milestones from the commit range.**
+
+Each finished milestone lands in exactly one `Milestone-finish: milestone_<NN>_<slug>` commit
+touching `milestones/README.md`:
+
+```bash
+git log --grep='^Milestone-finish: ' --format='%s' <LAST_TAG>..HEAD -- milestones/README.md
+```
+
+From each subject take `<NN>` — the milestone number, read as an integer so `06` and `6` are
+the same milestone. Call this set the **commit side**.
+
+**b. Gather the history entries added over the same range.** The tracked tree is clean by
+step 2b, so the working file is HEAD:
+
+```bash
+diff <(git show <LAST_TAG>:milestones/README.md | grep '^### Milestone ' | sort) \
+     <(grep '^### Milestone ' milestones/README.md | sort)
+```
+
+Every heading present at HEAD but not at `<LAST_TAG>` — the `>` lines — is an added entry.
+Take its number from `### Milestone <N> — <Title>`, again as an integer. Call this set the
+**history side**. A heading that exists at both ends but was reworded shows up as added here;
+the cross-check below is what turns that into a visible stop rather than a silent
+mis-numbering.
+
+**c. Cross-check the two sides.** They must name exactly the same set of milestone numbers.
+Any disagreement, in **either** direction, stops the run:
+
+- a milestone number on the commit side with no matching history entry — a
+  `/finish-current-milestone` whose `milestones/README.md` entry is missing or renumbered;
+- a milestone number on the history side with no matching finish commit — a history entry
+  added by hand, or a finish commit outside the range.
+
+On any mismatch, print **both sides** — the commit-side subjects and the history-side
+headings, with the unmatched numbers called out — state that nothing was changed, and exit.
+The maintainer fixes the source and re-runs. The release is the one irreversible artifact in
+the run, so a false stop costs a single `milestones/README.md` edit and a re-run.
+
+**d. Empty range.** When both sides are empty — no `Milestone-finish:` commit in the range
+and no history entry added — no milestone was finished since `<LAST_TAG>`. That is ambiguous
+between a forgotten `/finish-current-milestone` and a deliberate version-only patch release,
+and only the maintainer can tell the two apart, so:
+
+1. State plainly that no milestone was finished since `<LAST_TAG>`.
+2. Build **commit-range-derived notes** in place of the usual history-entry sections: read
+   the range's commits (`git log --format='%s' <LAST_TAG>..HEAD`, reading bodies where a
+   subject is not self-explanatory) and condense them into a single
+   `## Changes since <LAST_TAG>` section — a short bulleted summary of the user-facing
+   changes, under the same rewrite discipline as (e) below — then the Full Changelog link
+   from (f).
+3. Show the maintainer that full body and ask whether to release with it.
+4. Proceed only on an **explicit** affirmative answer. Anything else — a refusal, a question,
+   an ambiguous reply — stops the run with nothing changed.
+
+An empty range is the only path that reaches the rest of the release without history-entry
+sections, and it never takes itself silently.
+
+**e. Compose one section per finished milestone.** Otherwise, for each milestone on the
+(agreed) list, **highest number first**, read its `### Milestone <N> — <Title>` entry in
+`milestones/README.md` and rewrite it into:
+
+```markdown
+## <Title> (milestone <N>)
+
+- <condensed user-facing change>
+- <condensed user-facing change>
+```
+
+`<Title>` is the heading's title text; `<N>` is the milestone number as the heading writes it.
+
+The bullets are **condensed rewrites, never verbatim copies**. Keep what a consumer of the
+plugin would notice — what the release now does, what changed for them, what was added,
+renamed, or retired. Cut milestone-internal process detail: task counts, per-task ledgers,
+audit passes, re-audit verdicts, which sweep touched which file, and how the work was
+verified. Where several history bullets describe one user-facing change, merge them into one.
+This is the shape the published `0.9.8` and `0.9.9` bodies already set, and matching it keeps
+the release series consistent.
+
+**f. Close with the compare link.** The last line of `<RELEASE_BODY>` is always:
+
+```markdown
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/<LAST_TAG>...<VERSION>
+```
+
+`<LAST_TAG>` is used literally, whatever its format; `<VERSION>` is the tag this run creates.

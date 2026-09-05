@@ -52,3 +52,23 @@ Create the maintainer-only skill at `.claude/skills/release-plugin/SKILL.md`, in
 - Every gate runs pre-mutation and each failure stops the run reporting the specific reason while changing nothing, and legacy `v.0.9.x` tags are never touched.
 
 ---
+
+## Release Notes From Milestone History
+
+Extend the release skill with a note-composition step that gathers the `Milestone-finish:` commits in `<last-tag>..HEAD`, cross-checks them against the `### Milestone` headings added to `milestones/README.md` over that range, stops and prints both sides on any mismatch in either direction, and on an empty range shows commit-range-derived notes and proceeds only on explicit maintainer confirmation; otherwise it rewrites each milestone's history bullets into one condensed `## <Title> (milestone <N>)` section per milestone, closing with a `**Full Changelog**` compare link from the last tag to the new version. The milestone needs release notes composed from the history entries and matched to the shape of the published `0.9.8` and `0.9.9` bodies. Verified by reviewing the step against the recorded decisions and walking it against the live `0.9.9..HEAD` range, which must take the empty-range path.
+
+**Verified:**
+
+- `.claude/skills/release-plugin/SKILL.md` gains a note-composition step (step 5) that runs before any mutating step and remains the sole documented home of the release procedure, with no release prose added to `CLAUDE.md` or `README.md`.
+- Step 5a gathers the finished milestones from `git log --grep='^Milestone-finish: ' --format='%s' <LAST_TAG>..HEAD -- milestones/README.md`, reading each subject's `milestone_<NN>_` number as an integer.
+- Step 5b gathers the `### Milestone` headings added to `milestones/README.md` over the same range by diffing the sorted heading lists at `<LAST_TAG>` and HEAD, taking the added (`>`) lines' numbers as integers.
+- Step 5c requires the two sides to name the same set of milestone numbers and stops on a mismatch in either direction — a finish commit with no history entry, or a history entry with no finish commit — printing both sides and changing nothing.
+- Step 5d handles the empty range by stating plainly that no milestone was finished since `<LAST_TAG>`, building commit-range-derived notes (a single `## Changes since <LAST_TAG>` section plus the compare link) from `git log --format='%s' <LAST_TAG>..HEAD`, showing that full body, and proceeding only on an explicit affirmative answer.
+- Step 5e composes one `## <Title> (milestone <N>)` section per finished milestone, highest number first, as condensed rewrites of the history bullets rather than verbatim copies, cutting milestone-internal process detail — the shape the published `0.9.8` and `0.9.9` bodies set.
+- Step 5f closes `<RELEASE_BODY>` with `**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/<LAST_TAG>...<VERSION>`, using `<LAST_TAG>` literally whatever its format.
+- Walked live against `0.9.9..HEAD`: the commit side is empty and the heading diff is empty, so both sides agree and the run takes the empty-range path of step 5d, as the task requires.
+- Sanity-walked the non-empty case against `0.9.8..0.9.9`: the commit side returns milestones 16 and 15 and the heading diff returns exactly those two added entries, so the cross-check matches and the highest-number-first ordering reproduces the published `0.9.9` body's section order.
+- The step is read-only — every command it names is a `git log`, `git show`, `grep`, or `diff` — and `git status --porcelain` after the walk listed only the edited `SKILL.md`.
+- The skill's frontmatter still loads under `yaml.safe_load` with an unquoted 22-word `description`, and the file stays under `.claude/skills/`, outside the transpiled `skills/` tree.
+
+---
