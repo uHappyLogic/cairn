@@ -84,26 +84,11 @@ A release produces exactly one commit, under the subject `Release: MAJOR.MINOR.P
 
 The release skill does all local work unattended — version script, Antigravity regeneration, note composition, the release commit — then pauses exactly once to show the maintainer the version and the full composed release body, pushing, tagging, and creating the GitHub release only on approval. One gate at the point where a local, revertible commit becomes a public tag and release is the least interaction that still lets a human veto generated release notes before they are permanent.
 
+### Partial failure resumption
+
+Every post-commit step — branch push, tag push, GitHub release creation — is check-then-do, so a re-run with the same version skips whatever already succeeded and continues from the first incomplete step. Each check is a one-line query (`git rev-parse`, `git ls-remote --tags`, `gh release view`), and the skill stops and reports when it finds an artifact that exists but disagrees with the expected state rather than resuming past it. Re-running the release with the same version is therefore the whole recovery story: no rollback of already-published refs, no hand-run recovery commands.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Partial failure resumption" status="deferred">
-  <question>If a step fails after the release commit exists (push, tag push, or release creation), what state does the skill leave behind, and can a re-run with the same version resume from it?</question>
-  <alternative id="Idempotent resume">
-    Each post-commit step becomes check-then-do — is the version commit present, is the branch pushed, does the tag exist and point at that commit, does the GitHub release exist — so a re-run with the same version skips what already succeeded and continues from the first incomplete step, stopping only when it finds an artifact that exists but disagrees.
-    <advantage>One command recovers from any post-commit failure, and every check is a cheap query (`git rev-parse`, `git ls-remote --tags`, `gh release view`) the skill already partly needs to push local commits before the tag.</advantage>
-    <drawback>Every step gains detection plus a mismatch guard, and a resume that misreads state (tag pushed, branch since amended) could publish a release against a tree the maintainer no longer expects.</drawback>
-  </alternative>
-  <alternative id="Stop and report">
-    The skill leaves whatever succeeded exactly as it stands, prints which steps completed and the literal git/gh commands to finish by hand, and a same-version re-run is simply refused by its own tag-exists precondition.
-    <advantage>No state-detection machinery at all — the failure message is the entire recovery mechanism, matching the plugin&apos;s established clean-stop-and-point pattern.</advantage>
-    <drawback>Recovery is manual and unrehearsed in exactly the situation — a half-published release — where getting it wrong is most costly.</drawback>
-  </alternative>
-  <alternative id="Rollback on failure">
-    On any post-commit failure the skill unwinds its own work — deleting the local and, if pushed, the remote tag and resetting the release commit — so the repo returns to its pre-release state and a plain re-run starts clean.
-    <advantage>Only one entry state ever exists, so the happy path stays the only path and no resume branching is needed.</advantage>
-    <drawback>Unwinding already-pushed refs is destructive and can itself fail, making the failure handler the riskiest part of the skill.</drawback>
-  </alternative>
-  <recommendation option="Idempotent resume">The post-commit steps are each checkable with a one-line git or gh query, so check-then-do makes &quot;re-run with the same version&quot; the whole recovery story, with a stop-on-mismatch guard covering the cases where resuming would be wrong.</recommendation>
-</open-question>
