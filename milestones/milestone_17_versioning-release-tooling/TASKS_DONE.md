@@ -34,3 +34,21 @@ Change `scripts/migrate_skills_to_agy.py` so the manifest dict it writes to `.ag
 - Pointing the script at a source manifest carrying `3.4.5` produced a generated manifest with `"version": "3.4.5"`, confirming the value is read per run rather than fixed.
 
 ---
+
+## Release Skill Pre-Flight And Version Gates
+
+Create the maintainer-only skill at `.claude/skills/release-plugin/SKILL.md`, invoked as `/release-plugin <MAJOR.MINOR.PATCH>`, whose opening steps resolve the last release as the nearest tag reachable from HEAD via `git describe --tags --abbrev=0`, apply the four hard pre-flight stops (tracked working tree clean, HEAD on `main`, `main` not behind `origin/main` after a fetch, no untracked files under `skills/`, `agents/`, or `shared/`), and hard-refuse the version argument when it is malformed, when its tag already exists locally or remotely, or when it is not strictly greater than the last release compared as a numeric tuple. The milestone needs every route by which a bad version or unmerged content could reach a published tag closed before anything mutates, and this skill's `SKILL.md` is the only place the release procedure is documented. Verified by reviewing the skill against the recorded decisions and running its check commands against the live repo to confirm they resolve `0.9.9` and pass or stop as expected.
+
+**Verified:**
+
+- `.claude/skills/release-plugin/SKILL.md` exists as the sole documented home of the release procedure, with no release paragraph added to `CLAUDE.md` or `README.md`.
+- It carries YAML frontmatter that loads under `yaml.safe_load` with an unquoted `name: release-plugin` and a single-sentence 22-word `description` free of colons and semicolons.
+- It documents the invocation `/release-plugin <MAJOR.MINOR.PATCH>` with a bare, unprefixed version literal as the sole argument.
+- Its step 1 resolves the last release as the nearest tag reachable from HEAD via `git describe --tags --abbrev=0`, used literally for the `<LAST_TAG>..HEAD` range and the compare-link endpoint; run live it resolves `0.9.9`.
+- Its step 2 applies the four hard pre-flight stops — tracked working tree clean (`git status --porcelain --untracked-files=no`), HEAD on `main` (`git rev-parse --abbrev-ref HEAD`), `main` not behind `origin/main` after `git fetch origin main` (`git rev-list --count main..origin/main`), and no untracked files under `skills/`, `agents/`, `shared/` (`git ls-files --others --exclude-standard`), tolerating untracked files elsewhere; all four pass against the live repo (empty, `main`, `0`, empty).
+- Its step 3 hard-refuses a malformed version literal against `^[0-9]+\.[0-9]+\.[0-9]+$`, which accepts `1.0.0` and rejects `v1.0.0` when run live.
+- Its step 3 hard-refuses a version whose tag already exists by exact-name lookup locally (`git tag --list`) and remotely (`git ls-remote --tags origin refs/tags/<VERSION>`); run live both return `0.9.9` and neither returns `1.0.0`.
+- Its step 3 hard-refuses a version not strictly greater than the last release, comparing `(major, minor, patch)` as integers after normalizing a legacy `v`/`v.` prefix off `<LAST_TAG>`, never by tag-name sort.
+- Every gate runs pre-mutation and each failure stops the run reporting the specific reason while changing nothing, and legacy `v.0.9.x` tags are never touched.
+
+---
