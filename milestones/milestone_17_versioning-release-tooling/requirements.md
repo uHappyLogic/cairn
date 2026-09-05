@@ -60,6 +60,10 @@ The release skill applies four hard pre-flight stops before it commits, tags, or
 
 The release skill hard-refuses the version argument on all three grounds before it touches anything: a malformed literal, a version whose tag already exists (exact-name lookup against local and remote tags), and a version not strictly greater than the resolved last release, compared as a numeric tuple rather than by tag-name sort. All three checks run pre-mutation, where the cost of a bad version is an error message rather than reverting a pushed commit and deleting a published release; a maintainer who genuinely needs a non-monotonic or backfill release uses the manual tag path outside the skill.
 
+### Empty release range behavior
+
+When no `Milestone-finish:` commit falls in the range since the last release, the release skill stops before any mutating step, states plainly that no milestone was finished since that release, shows the commit-range-derived notes it would publish in place of the usual history-entry sections, and proceeds only on explicit maintainer confirmation. An empty history range is ambiguous between a forgotten `/finish-current-milestone` and a deliberate version-only patch release, and only the maintainer can tell the two apart, so the degraded note source stays possible but becomes an explicit choice rather than a blanket refusal or a silent fallback.
+
 ## Out of Scope
 
 ## Open questions
@@ -87,25 +91,6 @@ The release skill hard-refuses the version argument on all three grounds before 
     <drawback>Four prompts for one workflow trains the maintainer to rubber-stamp them, which defeats the review that matters; the early steps are locally revertible anyway, so gating them buys control that costs more attention than it protects.</drawback>
   </alternative>
   <recommendation option="Confirm once before publishing">One gate at the point where a local, revertible commit becomes a public tag and release is the least interaction that still lets a human veto generated release notes before they are permanent.</recommendation>
-</open-question>
-<open-question id="Empty release range behavior" status="open">
-  <question>When no milestone history entry has been added since the last release (only non-finish commits in the range), does the release skill refuse to release, or compose the notes from the commit range alone?</question>
-  <alternative id="Refuse to release">
-    The skill treats a range with zero `Milestone-finish:` commits as a clean stop: it reports the empty history range, names the last release tag, and exits before any commit, push, tag, or `gh release` step.
-    <advantage>Guarantees every published release body is composed from curated `milestones/README.md` history entries, and catches the most likely cause of an empty range in this repo — a maintainer who ran the release before `/finish-current-milestone` — at the only moment it is still cheap to fix.</advantage>
-    <drawback>Blocks a legitimate version-only or fix-only patch release outright; the repo already has exactly that shape today (`503cb27` plus milestone 17&apos;s definition and activation sit between `0.9.9` and HEAD with no finished milestone), leaving the maintainer to tag and write the release by hand.</drawback>
-  </alternative>
-  <alternative id="Commit-range fallback">
-    When no history entry was added since the last release, the skill silently falls back to composing the notes from the commit range alone, summarizing the `&lt;Marker&gt;: &lt;descriptor&gt;` subjects in that range and closing with the usual `**Full Changelog**` compare link.
-    <advantage>Costs nothing extra to build and never blocks a release — the commit range is already being read for the goal&apos;s cross-check, and the house commit-subject convention makes those subjects self-describing enough to summarize.</advantage>
-    <drawback>Publishes a release whose body silently departs from the established `## &lt;Milestone title&gt; (milestone &lt;N&gt;)` shape with no maintainer signal, so a forgotten `/finish-current-milestone` yields a permanently mis-shaped public release rather than an error.</drawback>
-  </alternative>
-  <alternative id="Confirmed commit-range fallback">
-    The skill detects the empty history range, stops to state plainly that no milestone was finished since the last release, shows the commit-range-derived notes it would publish, and proceeds only on explicit maintainer confirmation.
-    <advantage>Keeps the deliberate patch release possible while making the degraded, uncurated note source an explicit maintainer choice, so the forgot-to-finish mistake still gets caught without hard-coding a refusal the repo&apos;s own release history would already have tripped.</advantage>
-    <drawback>Introduces an interactive stop on this path, so the release skill cannot run fully unattended in the one case where a human is most likely absent, and it adds a second notes-composition shape the skill must maintain.</drawback>
-  </alternative>
-  <recommendation option="Confirmed commit-range fallback">An empty history range is ambiguous between a forgotten milestone finish and a deliberate patch release, and only the maintainer can tell them apart, so the skill should surface the degraded note source and let that call be made rather than guessing with a blanket refusal or a silent fallback.</recommendation>
 </open-question>
 <open-question id="Release commit subject" status="deferred">
   <question>What Marker-colon-descriptor commit subject does the release commit carry for the version bump plus regenerated Antigravity tree, and is its path set exactly those files?</question>
