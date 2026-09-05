@@ -40,8 +40,7 @@ The procedure resolves the current milestone itself, so nothing needs to be look
 
 ### 1. Find the current milestone
 
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`
-(run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path). Never use a hardcoded
+Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded
 task-list path. Hold `<MILESTONE_DIR>` — you need it for the delegated recording and the
 commit.
 
@@ -98,7 +97,7 @@ recommendation path uses for "`<option>` — `<rationale>`". Never invent answer
 ### 4. Record the answer via the shared recording core
 
 Hand the resolved **`<Short Title>`** and the derived **ANSWER** to
-`${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` and follow it unchanged **yourself, in this
+`.agents/plugins/cairn/shared/answer-procedure.md` and follow it unchanged **yourself, in this
 conversation** (its own step 1 re-resolves the milestone you already found — harmless). That
 procedure owns the recording work — locate, analyse, remove the whole
 `<open-question …>`…`</open-question>` block, fold the decision into `## Decisions` as clean
@@ -109,8 +108,7 @@ Do **not** spawn any subagent — there is no `answer-open-question-with-alterna
 ### 5. Commit the alternative answer
 
 Read and follow the shared commit procedure at
-`${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you
-need to resolve the path), carrying out its steps yourself. Supply it these inputs, using the
+`.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these inputs, using the
 `<MILESTONE_DIR>` from step 1:
 
 - **PATHS** — this skill's own edit: `<MILESTONE_DIR>/requirements.md`.

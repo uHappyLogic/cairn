@@ -74,7 +74,7 @@ Create `milestones/milestone_<NN>_<slug>/` with three files. Use the zero-padded
 
 ### 5. Commit the new milestone
 
-Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these two inputs:
+Read and follow the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set: the three files it just created — `milestones/milestone_<NN>_<slug>/requirements.md`, `milestones/milestone_<NN>_<slug>/TASKS_TODO.md`, and `milestones/milestone_<NN>_<slug>/TASKS_DONE.md`.
 - **SUBJECT** — `Milestone-definition: milestone_<NN>_<slug>`.

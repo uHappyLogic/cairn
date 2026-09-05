@@ -30,7 +30,7 @@ When the answer surfaces a concrete next step, this skill names the right cairn 
 
 ### 0. Find the current milestone
 
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 If the pointer is `none` (no active milestone), don't dead-end. Tell the user there's no open milestone, then answer from what *is* available — the `## Milestone History` and completed-milestone table in `milestones/README.md` — if the question is about past work. If they're clearly asking about active work that doesn't exist yet, say so and point them at `/define-milestone-goal` (or `/goto-next-milestone` if a milestone is defined but not active).
 

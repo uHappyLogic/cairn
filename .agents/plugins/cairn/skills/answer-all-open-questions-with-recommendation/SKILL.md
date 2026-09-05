@@ -34,7 +34,7 @@ Takes no arguments — it sweeps every `<open-question>` block (both `status="op
 
 ### 0. Find the current milestone
 
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 1. Gather and order the recommendation-bearing questions once
 
@@ -90,8 +90,7 @@ never in parallel**: every dispatch lifts, records, and cascades against the sam
 - **`DONE`** — the agent recorded the answer, leaving the `requirements.md` edit uncommitted, and
   handed back the **lifted recommendation content** (the `<option>` — `<rationale>` answer text).
   **Commit this answer now, before dispatching the next question**, by reading and following the
-  shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run
-  `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path). Supply it these inputs, using the
+  shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`. Supply it these inputs, using the
   `<MILESTONE_DIR>` resolved in step 0:
   - **PATHS** — this answer's only edit: `<MILESTONE_DIR>/requirements.md` (never `git add -A`).
   - **SUBJECT** — exactly `Recommendation-answer: <Short Title>` (the answered question's handle).

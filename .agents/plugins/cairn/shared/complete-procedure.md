@@ -9,7 +9,7 @@ available tools, fix it, and retry — never skip a step or record partial work 
 ## The task shape
 
 A task section in `TASKS_TODO.md` is **brief-level** — the format
-`${CLAUDE_PLUGIN_ROOT}/shared/task-format.md` defines: a `##` title heading, a 1–3 sentence
+`.agents/plugins/cairn/shared/task-format.md` defines: a `##` title heading, a 1–3 sentence
 description of what is to be achieved, why the milestone needs it, and how it would be
 verified, then a trailing `---` separator. That is the whole task.
 
@@ -39,7 +39,7 @@ kind of work.
 
 ### 1. Find and read the task
 
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`.
+Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`.
 
 Read `<MILESTONE_DIR>/TASKS_TODO.md`. Locate the `##` section whose heading matches the
 given task name (case-insensitive, partial match is fine). If no section matches, **stop

@@ -1,7 +1,43 @@
 import os
+import re
 import shutil
 import json
 import sys
+
+# `${CLAUDE_PLUGIN_ROOT}` is a Claude Code runtime variable that Antigravity does not
+# define, so every reference to it is rewritten at generation time into a path relative to
+# the workspace root, where the generated plugin tree lives.
+PLUGIN_ROOT_VAR = "${CLAUDE_PLUGIN_ROOT}"
+
+# The prose hint that tells a Claude Code runner it can resolve the variable with a shell
+# echo. Once the path is literal the hint is meaningless, so it is dropped along with the
+# whitespace in front of it (the sentence it sits in wraps, so the spacing varies).
+RESOLVE_HINT_RE = re.compile(
+    r'\s*\(run\s+`echo\s+"\$CLAUDE_PLUGIN_ROOT"`\s+if\s+you\s+need\s+to\s+resolve\s+the\s+path\)'
+)
+
+
+def rewrite_plugin_root(content, plugin_dir):
+    """Rewrite plugin-root references into paths that resolve in the generated tree."""
+    content = RESOLVE_HINT_RE.sub("", content)
+    return content.replace(PLUGIN_ROOT_VAR, plugin_dir.replace(os.sep, "/"))
+
+
+def rewrite_tree(dest_dir, plugin_dir):
+    """Apply rewrite_plugin_root to every text file already copied under dest_dir."""
+    for root, _dirs, files in os.walk(dest_dir):
+        for name in files:
+            path = os.path.join(root, name)
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+            except (UnicodeDecodeError, OSError):
+                continue
+            rewritten = rewrite_plugin_root(content, plugin_dir)
+            if rewritten != content:
+                with open(path, 'w', encoding='utf-8') as f:
+                    f.write(rewritten)
+
 
 def read_source_version(src_manifest):
     """Read the plugin version from the source Claude Code manifest.
@@ -146,6 +182,7 @@ def migrate_to_agy_plugin(plugin_name="cairn", src_skills="skills", src_agents="
             else:
                 print(f"Warning: No SKILL.md found in {skill_name}")
 
+        rewrite_tree(dest_skills_dir, plugin_dir)
         print(f"Successfully migrated {count} skills to {dest_skills_dir}")
     else:
         print(f"No source skills found at {src_skills}")
@@ -156,6 +193,7 @@ def migrate_to_agy_plugin(plugin_name="cairn", src_skills="skills", src_agents="
         if os.path.exists(dest_agents_dir):
             shutil.rmtree(dest_agents_dir)
         shutil.copytree(src_agents, dest_agents_dir)
+        rewrite_tree(dest_agents_dir, plugin_dir)
         print(f"Successfully migrated agents to {dest_agents_dir}")
     else:
         print(f"No source agents found at {src_agents}")
@@ -166,6 +204,7 @@ def migrate_to_agy_plugin(plugin_name="cairn", src_skills="skills", src_agents="
         if os.path.exists(dest_shared_dir):
             shutil.rmtree(dest_shared_dir)
         shutil.copytree(src_shared, dest_shared_dir)
+        rewrite_tree(dest_shared_dir, plugin_dir)
         print(f"Successfully migrated shared procedures to {dest_shared_dir}")
     else:
         print(f"No source shared procedures found at {src_shared}")

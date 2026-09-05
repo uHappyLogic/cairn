@@ -44,13 +44,13 @@ Compare the parsed answer text — **trimmed and lowercased** — against the re
 
 ### 3. Record the answer
 
-Read and follow the shared answer-recording procedure at `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out every step **yourself, in this conversation**. Pass it the **Short Title** parsed in step 1 and the **answer text** resolved in step 2 as its `SHORT TITLE` and `ANSWER` inputs.
+Read and follow the shared answer-recording procedure at `.agents/plugins/cairn/shared/answer-procedure.md`, carrying out every step **yourself, in this conversation**. Pass it the **Short Title** parsed in step 1 and the **answer text** resolved in step 2 as its `SHORT TITLE` and `ANSWER` inputs.
 
 That procedure owns resolving the current milestone (the `<MILESTONE_DIR>` referenced below) and the locate / analyse / remove / fold / cascade recording. If the Short Title matches no block, it stops without changes and reports the mismatch — relay that to the user so they can retry.
 
 ### 4. Commit the manual answer
 
-Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these inputs, using the same `<MILESTONE_DIR>` resolved while recording:
+Read and follow the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these inputs, using the same `<MILESTONE_DIR>` resolved while recording:
 
 - **PATHS** — this skill's own edit: `<MILESTONE_DIR>/requirements.md`.
 - **SUBJECT** — exactly `Manual-answer: <Short Title>` (the answered question's handle), so `/capture-milestone-principle-updates` can collect these with `git log --grep='^Manual-answer: '`.

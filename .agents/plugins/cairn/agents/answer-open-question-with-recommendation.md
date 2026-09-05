@@ -21,11 +21,10 @@ Your prompt contains the single input the shared procedure needs:
 ## How to record
 
 Follow the shared procedure at
-`${CLAUDE_PLUGIN_ROOT}/shared/answer-with-recommendation-procedure.md` exactly — it is the
+`.agents/plugins/cairn/shared/answer-with-recommendation-procedure.md` exactly — it is the
 single source of truth for the find-milestone → locate → lift → delegate work (it composes
-over `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md`, which owns the
-locate/analyse/remove/fold/cascade recording). Read it first (run `echo "$CLAUDE_PLUGIN_ROOT"`
-if you need to resolve the path), then carry out every step against the SHORT TITLE in your
+over `.agents/plugins/cairn/shared/answer-procedure.md`, which owns the
+locate/analyse/remove/fold/cascade recording). Read it first, then carry out every step against the SHORT TITLE in your
 prompt.
 
 As the shared procedure lifts the block's `<recommendation>` element, **capture the lifted

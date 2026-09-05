@@ -81,3 +81,21 @@ Replace the `FAILED` return promise in `agents/complete-task.md` that a failed r
 - `uv run scripts/migrate_skills_to_agy.py` regenerated `.agents/plugins/cairn/`, and `diff -r agents .agents/plugins/cairn/agents` and `diff -r shared .agents/plugins/cairn/shared` both exit 0 — the generated tree is byte-identical to the source.
 
 ---
+## Rewrite Plugin Root References For Antigravity
+
+Make `scripts/migrate_skills_to_agy.py` rewrite every `${CLAUDE_PLUGIN_ROOT}/shared/<name>.md` reference in the copied skills, agents, and shared files to a path resolvable relative to the generated `.agents/plugins/cairn/` tree, then regenerate that tree, closing the milestone-15 follow-up under which those references are copied verbatim and resolve nowhere. Verified when no file under `.agents/plugins/cairn/` contains the literal `${CLAUDE_PLUGIN_ROOT}` and every rewritten reference names a file that exists in the generated tree.
+
+**Verified:**
+
+- `scripts/migrate_skills_to_agy.py` rewrites plugin-root references on the copy: a module-level `rewrite_plugin_root()` replaces the literal `${CLAUDE_PLUGIN_ROOT}` with the generated tree's workspace-relative path (derived from the script's own `plugin_dir`, so it tracks the `plugin_name` argument), and `rewrite_tree()` applies it to every text file already copied under a destination directory.
+- The rewrite runs on all three copied trees: `rewrite_tree()` is called once for the skills destination (after the per-skill copy loop, so it covers non-`SKILL.md` files too), once for the agents copy, and once for the shared copy.
+- The generated tree was regenerated with `uv run scripts/migrate_skills_to_agy.py`, which completed successfully and rewrote 25 files under `.agents/plugins/cairn/`.
+- No file under `.agents/plugins/cairn/` contains the literal `${CLAUDE_PLUGIN_ROOT}`: `grep -rn 'CLAUDE_PLUGIN_ROOT}' .agents` returns nothing, and the stricter `grep -rn 'CLAUDE_PLUGIN_ROOT' .agents` (which also catches the bare `$CLAUDE_PLUGIN_ROOT` of the resolve hint) returns nothing either.
+- Every rewritten reference names a file that exists in the generated tree: each of the 7 distinct `.agents/plugins/cairn/shared/<name>.md` paths appearing in the generated files (`answer-procedure`, `answer-with-recommendation-procedure`, `commit-procedure`, `complete-procedure`, `get-current-milestone`, `recommend-procedure`, `task-format`) resolves to an existing file.
+- No reference was lost in the rewrite: the source trees hold 47 `${CLAUDE_PLUGIN_ROOT}/shared/` references and the generated tree holds 47 `.agents/plugins/cairn/shared/` references.
+- The now-meaningless `` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path) `` hint is dropped from the generated copies in the same pass, with its leading whitespace, so each of the 7 affected sentences still reads correctly across its line wrap.
+- The rewrite touches only the copy: `git status --porcelain` lists no file under `skills/`, `agents/`, or `shared/`, so the canonical sources still carry `${CLAUDE_PLUGIN_ROOT}` for Claude Code to resolve.
+- Generation is idempotent and the script still parses: a second `uv run scripts/migrate_skills_to_agy.py` leaves the same 25 modified files and no further diff, and `ast.parse` of the script succeeds.
+- `CLAUDE.md`'s Development section no longer records the verbatim copy as a known follow-up: it now states that the script rewrites those references to `.agents/plugins/cairn/shared/<name>.md`, drops the resolve hint, and does both only on the copy.
+
+---

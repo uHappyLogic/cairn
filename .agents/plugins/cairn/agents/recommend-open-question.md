@@ -38,10 +38,10 @@ fully; just don't couple to a sibling's recommendation.
 
 ### 2. Produce the alternatives and the single recommendation
 
-Follow the shared procedure at `${CLAUDE_PLUGIN_ROOT}/shared/recommend-procedure.md` exactly
+Follow the shared procedure at `.agents/plugins/cairn/shared/recommend-procedure.md` exactly
 — it is the single source of truth for the analytical core (enumerate the honest
 alternatives, each with what-it-is / key advantage / key drawback, then recommend one with a
-tie-break). Read it first (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path),
+tie-break). Read it first,
 and treat the question in your prompt as its **QUESTION** input. Its grounding step overlaps
 step 1 — reuse that reading rather than repeating it.
 

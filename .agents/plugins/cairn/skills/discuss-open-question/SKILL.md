@@ -24,7 +24,7 @@ The `<Short Title>` must match (case-insensitive) the `id` of an existing `<open
 
 ### 0. Find the current milestone
 
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 1. Locate the question
 
@@ -44,7 +44,7 @@ Before forming a view, read any project artifacts — deliverables, documents, o
 
 Open with a concise framing of what is actually at stake — one or two sentences: no preamble, no summary or restatement of the question, no meta-commentary about what you are about to do.
 
-For the analytical core — the realistic alternatives and the single recommendation — read and follow the shared procedure at `${CLAUDE_PLUGIN_ROOT}/shared/recommend-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), producing its output **inline in this conversation** as the spine of the deliberation. It owns enumerating the alternatives (each with what-it-is / key advantage / key drawback) and stating one direct recommendation with a tie-break; pass the located block as its **QUESTION** input. Its grounding step overlaps the context you already gathered in step 2 — reuse that reading rather than repeating it.
+For the analytical core — the realistic alternatives and the single recommendation — read and follow the shared procedure at `.agents/plugins/cairn/shared/recommend-procedure.md`, producing its output **inline in this conversation** as the spine of the deliberation. It owns enumerating the alternatives (each with what-it-is / key advantage / key drawback) and stating one direct recommendation with a tie-break; pass the located block as its **QUESTION** input. Its grounding step overlaps the context you already gathered in step 2 — reuse that reading rather than repeating it.
 
 Then add the layer that is this skill's own — not part of the shared core:
 

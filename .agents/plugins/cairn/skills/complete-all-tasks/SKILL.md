@@ -19,7 +19,7 @@ No arguments required.
 
 ### 0. Find the current milestone
 
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 1. Read the task list
 
@@ -49,7 +49,7 @@ Wait for the agent to return.
 
 #### 2c. Commit the changes
 
-After the subagent returns `DONE` (success confirmed and the task moved to `<MILESTONE_DIR>/TASKS_DONE.md`), commit that task by reading and following the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path). Supply it these two inputs:
+After the subagent returns `DONE` (success confirmed and the task moved to `<MILESTONE_DIR>/TASKS_DONE.md`), commit that task by reading and following the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`. Supply it these two inputs:
 
 - **PATHS** — this task's exact change set: the created/edited paths the subagent handed back in its `DONE` return, **plus** the two milestone task-list files `<MILESTONE_DIR>/TASKS_TODO.md` (the task left it) and `<MILESTONE_DIR>/TASKS_DONE.md` (the task joined it). Name each path explicitly — never `git add -A`.
 - **SUBJECT** — `Tasklist-completion: <descriptor>` (e.g. `Tasklist-completion: complete one milestone task`), the marker naming this orchestrator's task-list-completion function. Put the task's `##` heading text (without the `##` prefix) in the commit **body** (a second `-m`), not in the subject.

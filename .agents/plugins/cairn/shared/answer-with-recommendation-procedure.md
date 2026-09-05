@@ -28,12 +28,12 @@ it hands to `shared/answer-procedure.md`.
 
 ### 1. Find the current milestone
 
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 2. Locate the question and its embedded recommendation
 
 Locate the block whose `id` case-folds equal to SHORT TITLE exactly as
-`${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` step 2 specifies: the line-oriented CLI
+`.agents/plugins/cairn/shared/answer-procedure.md` step 2 specifies: the line-oriented CLI
 (`awk`/`sed`/`grep`) keyed on the `<open-question …>` / `</open-question>` boundary lines
 within the single `## Open questions` section of `<MILESTONE_DIR>/requirements.md`, the `id`
 attribute pulled by attribute-name-anchored regex, entity-unescaped, and case-folded against
@@ -65,6 +65,6 @@ the rationale). That string is the answer text.
 ### 4. Delegate to the recording core
 
 Hand the resolved **SHORT TITLE** and the derived **ANSWER** to
-`${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` and follow it unchanged. That procedure
+`.agents/plugins/cairn/shared/answer-procedure.md` and follow it unchanged. That procedure
 owns the recording work (locate, analyse, remove, fold, cascade); this procedure only lifts
 and delegates.

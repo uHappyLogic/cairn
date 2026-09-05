@@ -10,10 +10,9 @@ the orchestrator's job under the layer rule.
 
 ## How to complete the task
 
-Follow the shared procedure at `${CLAUDE_PLUGIN_ROOT}/shared/complete-procedure.md`
+Follow the shared procedure at `.agents/plugins/cairn/shared/complete-procedure.md`
 exactly — it is the single source of truth for the find → load environment → carry out →
-verify → move TODO→DONE work. Read it first (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need
-to resolve the path), then carry out every step against the task in your prompt.
+verify → move TODO→DONE work. Read it first, then carry out every step against the task in your prompt.
 
 ## Path hand-back contract (subagent only)
 

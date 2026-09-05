@@ -28,7 +28,7 @@ it are clear.
 
 ### 0. Find the current milestone
 
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 1. Read context for triage
 
@@ -51,8 +51,7 @@ You hold the whole task list, so you decide where the task goes:
 
 ### 4. Author the task section inline
 
-Read the shared task format at `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md` (run
-`echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path) and write the task section
+Read the shared task format at `.agents/plugins/cairn/shared/task-format.md` and write the task section
 **yourself, in this conversation**, following its template and authoring guidelines exactly.
 That file owns the shape of a task section.
 
@@ -81,7 +80,7 @@ section with its trailing `---` separator.
 
 ### 6. Commit the inserted task
 
-Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these two inputs:
+Read and follow the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set: `<MILESTONE_DIR>/TASKS_TODO.md` (the file it just inserted the task into).
 - **SUBJECT** — `Task-submission: <task title>`.

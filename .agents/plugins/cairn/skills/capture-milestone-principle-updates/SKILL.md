@@ -149,7 +149,7 @@ restatement of one past decision.>
 
 ### 5. Commit the principle-store update
 
-Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these two inputs:
+Read and follow the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set: the fixed-path store `milestones/answer_decision_principles.md` (a `milestones/`-root artifact, **not** any `<MILESTONE_DIR>` file — this skill writes only that store).
 - **SUBJECT** — `Principle-capture: <milestone_id>` (the `<MILESTONE_DIR>` resolved in step 1), the marker naming this skill's distinctive principle-capture function.

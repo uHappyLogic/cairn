@@ -30,7 +30,7 @@ Takes no arguments — it sweeps every `<open-question>` block (both `status="op
 
 ### 0. Find the current milestone
 
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`.
+Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`.
 Never use a hardcoded path.
 
 ### 1. Gather the questions once
@@ -149,8 +149,7 @@ bore; there are one or more `<alternative>` elements and exactly one `<recommend
 You are the orchestrator, so you commit **once at the end of the run** — here, after every
 per-question subagent (step 3) has returned and all their sub-elements are embedded (step 4),
 never inside the dispatch loop. Read and follow the shared commit procedure at
-`${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need
-to resolve the path), carrying out its steps yourself. Supply it these two inputs:
+`.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
 
 - **PATHS** — this run's own change set: `<MILESTONE_DIR>/requirements.md` (the file this sweep
   embedded the sub-elements into in step 4).

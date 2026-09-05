@@ -24,16 +24,14 @@ For completing the whole task list unattended, use `/complete-all-tasks` instead
 ### 1. Run the shared procedure inline
 
 Read and follow the shared procedure at
-`${CLAUDE_PLUGIN_ROOT}/shared/complete-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if
-you need to resolve the path), carrying out every step **yourself, in this conversation**.
+`.agents/plugins/cairn/shared/complete-procedure.md`, carrying out every step **yourself, in this conversation**.
 Never spawn the `complete-task` agent.
 
 ### 2. Commit the completion
 
 When the procedure finishes (success criteria verified, task moved to `TASKS_DONE.md`),
 read and follow the shared commit procedure at
-`${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you
-need to resolve the path), carrying out its steps yourself. Supply it these two inputs:
+`.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set: the exact paths the shared completion procedure
   recorded as it created or edited files while carrying out the task, plus the two

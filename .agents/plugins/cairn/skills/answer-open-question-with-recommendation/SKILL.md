@@ -28,11 +28,10 @@ milestone itself, so nothing needs to be looked up first.
 ### 1. Run the shared lift-then-delegate procedure inline
 
 Read and follow the shared procedure at
-`${CLAUDE_PLUGIN_ROOT}/shared/answer-with-recommendation-procedure.md` (run
-`echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out every step
+`.agents/plugins/cairn/shared/answer-with-recommendation-procedure.md`, carrying out every step
 **yourself, in this conversation**. Pass it the `<Short Title>` from the invocation as its
 `SHORT TITLE` input. That procedure owns the find-milestone → locate → lift → delegate work,
-composing over `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md`, which owns the
+composing over `.agents/plugins/cairn/shared/answer-procedure.md`, which owns the
 locate/analyse/remove/fold/cascade recording.
 
 Do **not** spawn the `answer-open-question-with-recommendation` agent.
@@ -50,8 +49,7 @@ Commit nothing — go no further.
 ### 2. Commit the recommendation answer
 
 Read and follow the shared commit procedure at
-`${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you
-need to resolve the path), carrying out its steps yourself. Supply it these inputs, using the
+`.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these inputs, using the
 same `<MILESTONE_DIR>` the shared recording procedure resolved:
 
 - **PATHS** — this skill's own edit: `<MILESTONE_DIR>/requirements.md`.

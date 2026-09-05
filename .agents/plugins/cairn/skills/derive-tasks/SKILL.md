@@ -26,7 +26,7 @@ No arguments. The skill always reads from and writes to the current milestone di
 
 ### 0. Find the current milestone
 
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 1. Read source documents
 
@@ -34,7 +34,7 @@ Read `CLAUDE.md` at the workspace root for the project's domain context, working
 
 Read `<MILESTONE_DIR>/requirements.md` in full, plus any files referenced in its **Relevant starting state** section, so you understand the exact starting point.
 
-Read the shared task format at `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path). That file owns the shape of every task section you write in step 7 — its template and authoring guidelines.
+Read the shared task format at `.agents/plugins/cairn/shared/task-format.md`. That file owns the shape of every task section you write in step 7 — its template and authoring guidelines.
 
 ### 2. Check for unresolved open questions
 
@@ -94,7 +94,7 @@ Initialize `<MILESTONE_DIR>/TASKS_TODO.md` to a clean header:
 
 Write each brief into `<MILESTONE_DIR>/TASKS_TODO.md` as one task section, **in dependency order**, appending each after the last so the finished file reads top-to-bottom in that order.
 
-Use the template and the authoring guidelines from `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md` exactly. The brief you decomposed in step 3 *is* the task body; writing it down is a transcription into that format, not a second authoring pass that adds detail.
+Use the template and the authoring guidelines from `.agents/plugins/cairn/shared/task-format.md` exactly. The brief you decomposed in step 3 *is* the task body; writing it down is a transcription into that format, not a second authoring pass that adds detail.
 
 ### 8. Verify coverage and report
 
@@ -106,7 +106,7 @@ If the run derived nothing — `TASKS_TODO.md` gained no task section, so step 9
 
 ### 9. Commit the derived task list
 
-You commit **once at the end of the run** — here, after every brief has been written (step 7) and coverage is verified (step 8), never after each individual task section. Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these two inputs:
+You commit **once at the end of the run** — here, after every brief has been written (step 7) and coverage is verified (step 8), never after each individual task section. Read and follow the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
 
 - **PATHS** — this run's own change set: `<MILESTONE_DIR>/TASKS_TODO.md` (the file this skill initialized in step 6 and wrote into in step 7).
 - **SUBJECT** — `Task-derivation: <milestone_id>`.
