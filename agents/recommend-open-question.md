@@ -16,12 +16,15 @@ never write** — never edit `requirements.md` or any other file.
 Your prompt contains the one question to recommend on:
 
 - **Short Title** — the question's 2–5 word handle.
-- **Context** — the question's full text and whatever surrounding detail the orchestrator
-  passed (the originating `requirements.md` block, related decisions). This is your primary
-  source. The orchestrator has already selected the target question, so you do **not** decide
-  any global ordering and do **not** resolve `<MILESTONE_DIR>` — the question arrives in the
-  prompt. You may read the project's `requirements.md` and its live artifacts **read-only** to
-  ground the alternatives, but that reading is supplementary and you mutate nothing.
+- **Milestone directory** — the already-resolved `<MILESTONE_DIR>` of the milestone the question
+  belongs to. You never resolve it yourself; you read `<MILESTONE_DIR>/requirements.md`
+  **read-only** from it to ground the alternatives in that milestone's goal, relevant starting
+  state, and recorded decisions.
+- **Question block** — the question's full `<open-question>` block. This is your primary source,
+  and it is the only requirements text the prompt carries; everything else you need from
+  `requirements.md` you read yourself under the milestone directory above. The orchestrator has
+  already selected the target question, so you do **not** decide any global ordering. You read
+  that file and the project's live artifacts **read-only** and mutate nothing.
 
 ## Workflow
 

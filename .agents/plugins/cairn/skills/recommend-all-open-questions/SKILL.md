@@ -77,17 +77,24 @@ they are independent, they may be run in parallel.
 Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the
 `recommend-open-question` agent (singular — the per-question subagent) under this plugin's
 namespace — Claude Code lists it as `cairn:recommend-open-question` — one dispatch per surviving
-question. Pass it that question's **Short Title** and full block plus surrounding context so it
-can enumerate honest alternatives:
+question. Pass it that question's **Short Title**, the `<MILESTONE_DIR>` resolved in step 0, and
+the question's full `<open-question>` block — the block text this sweep already holds from its
+single gather pass — so it can enumerate honest alternatives:
 
 ```
 Recommend on this single open question.
 
 Short Title: <Short Title>
 
-Context:
-<the question's full <open-question> block, plus relevant surrounding requirements>
+Milestone directory: <MILESTONE_DIR>
+
+Question block:
+<the question's full <open-question> block>
 ```
+
+The block is the only requirements text the prompt carries: the subagent reads
+`<MILESTONE_DIR>/requirements.md` itself, read-only, for whatever surrounding grounding it needs,
+so the orchestrator never reads the whole file to assemble context.
 
 The subagent is **read-only** — it mutates nothing. It returns the ready-to-embed XML sub-elements
 as its final message — one `<alternative id="...">` element per option (each with child

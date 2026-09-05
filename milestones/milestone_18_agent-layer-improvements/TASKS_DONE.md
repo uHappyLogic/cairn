@@ -99,3 +99,17 @@ Make `scripts/migrate_skills_to_agy.py` rewrite every `${CLAUDE_PLUGIN_ROOT}/sha
 - `CLAUDE.md`'s Development section no longer records the verbatim copy as a known follow-up: it now states that the script rewrites those references to `.agents/plugins/cairn/shared/<name>.md`, drops the resolve hint, and does both only on the copy.
 
 ---
+
+## Pass Milestone Directory To Recommend Agent
+
+Change the dispatch prompt in `skills/recommend-all-open-questions/SKILL.md` step 3 to carry the resolved `<MILESTONE_DIR>` alongside the Short Title and the question's full `<open-question>` block, dropping the "plus relevant surrounding requirements" clause so the orchestrator never reads the whole `requirements.md` to build context, and rewrite the Inputs section of `agents/recommend-open-question.md` to name `<MILESTONE_DIR>` as a prompt input the agent uses to read that milestone's `requirements.md` read-only for grounding, replacing the current instruction that it does not resolve the directory. This closes the contradiction where the agent is told not to resolve the directory while the shared recommend core it runs requires reading that milestone's `requirements.md`. Verified by reading both files to confirm the prompt template and the agent's Inputs section agree, and by regenerating the Antigravity tree with `uv run scripts/migrate_skills_to_agy.py` so `.agents/plugins/cairn/` stays byte-identical to the source.
+
+**Verified:**
+
+- `skills/recommend-all-open-questions/SKILL.md` step 3's dispatch prompt template carries `Milestone directory: <MILESTONE_DIR>` alongside `Short Title:` and the question's full `<open-question>` block.
+- That template no longer carries the "plus relevant surrounding requirements" clause, and the step states the block is the only requirements text the prompt carries, so the orchestrator never reads the whole `requirements.md` to assemble context.
+- `agents/recommend-open-question.md`'s Inputs section names `<MILESTONE_DIR>` as a prompt input the agent uses to read that milestone's `requirements.md` read-only for grounding, and the "do **not** resolve `<MILESTONE_DIR>`" instruction is gone.
+- The two files agree: every input the prompt template sends (Short Title, milestone directory, question block) is an input the agent's Inputs section names, and nothing more.
+- `uv run scripts/migrate_skills_to_agy.py` ran clean, and `.agents/plugins/cairn/agents/recommend-open-question.md` and `.agents/plugins/cairn/skills/recommend-all-open-questions/SKILL.md` differ from their sources only by the script's documented `${CLAUDE_PLUGIN_ROOT}` path rewrite and resolve-hint drop.
+
+---
