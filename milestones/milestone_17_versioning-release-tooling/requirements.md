@@ -64,6 +64,10 @@ The release skill hard-refuses the version argument on all three grounds before 
 
 When no `Milestone-finish:` commit falls in the range since the last release, the release skill stops before any mutating step, states plainly that no milestone was finished since that release, shows the commit-range-derived notes it would publish in place of the usual history-entry sections, and proceeds only on explicit maintainer confirmation. An empty history range is ambiguous between a forgotten `/finish-current-milestone` and a deliberate version-only patch release, and only the maintainer can tell the two apart, so the degraded note source stays possible but becomes an explicit choice rather than a blanket refusal or a silent fallback.
 
+### Cross-check mismatch handling
+
+When the history entries added since the last release disagree with the commit range — a `Milestone-finish:` commit in the range with no matching history entry, or a history entry with no matching finish commit — the release skill stops before any git or `gh` mutation, prints both sides of the mismatch, changes nothing, and exits so the maintainer can fix the source and re-run. The release is the one irreversible artifact in the run, while the cost of a false stop is a single `milestones/README.md` edit and a re-run; if the extra-entry direction proves routinely benign in practice, that is the signal to relax the guard so only the missing-entry direction blocks.
+
 ## Out of Scope
 
 ## Open questions
@@ -173,28 +177,4 @@ When no `Milestone-finish:` commit falls in the range since the last release, th
     <drawback>The keep/drop rule is a judgement call in disguise and does not survive contact with the real entries — milestone 15&apos;s and 16&apos;s bullets mix shipped changes with process detail inside single sentences, which selection alone cannot separate, and verbatim bullets are written at internal-record length and density.</drawback>
   </alternative>
   <recommendation option="Condensed rewrite">The two already-published release bodies are themselves condensed rewrites with a different heading form and the milestone-internal bullets cut, so matching that shape keeps the release series consistent and keeps engineering-process detail out of a consumer-facing note; what would flip this is wanting the release body diffable against `milestones/README.md`.</recommendation>
-</open-question>
-<open-question id="Cross-check mismatch handling" status="deferred">
-  <question>When the history entries added since the last release disagree with the commit range (a finish commit with no matching entry, or the reverse), does the skill stop, warn and continue, or reconcile automatically?</question>
-  <alternative id="Stop and report">
-    The skill treats any cross-check disagreement as a precondition failure: before it commits, pushes, tags, or creates the release it prints both sides of the mismatch (finish commits in the range with no matching history entry, and history entries with no matching finish commit), changes nothing, and exits so the maintainer can fix the source and re-run.
-    <advantage>It catches an incomplete release-note set before the one artifact that cannot be quietly re-cut — a pushed tag and a published GitHub release — exists, and it matches the posture the goal already gives this skill for the dirty-working-tree case, where an anomalous starting state means refuse rather than proceed.</advantage>
-    <drawback>A benign mismatch — a rebased or amended finish commit, a hand-written history entry — blocks the release until the maintainer edits `milestones/README.md`, and a skill taking only the version as its argument offers no override to push past it.</drawback>
-  </alternative>
-  <alternative id="Warn and continue">
-    The skill composes the notes from the history entries regardless, prints the discrepancies as an advisory, and proceeds through the commit, push, tag, and release steps.
-    <advantage>It never blocks a release on a discrepancy that is usually benign, while still putting the mismatch in front of the maintainer.</advantage>
-    <drawback>The warning scrolls past in the very run that publishes, so a genuinely missing entry becomes a published release with a whole milestone absent from its notes — repairable only by editing the release after the fact.</drawback>
-  </alternative>
-  <alternative id="Reconcile automatically">
-    The skill fills the gaps itself: for a finish commit with no history entry it synthesizes a note section from that commit&apos;s range, and it keeps an entry that has no matching finish commit, without maintainer involvement.
-    <advantage>It always produces complete-looking notes with no interruption to the release run.</advantage>
-    <drawback>It papers over the real defect — the missing entry stays missing in `milestones/README.md`, the durable history — and publishes machine-synthesized prose that will not match the hand-written shape of the 0.9.8 and 0.9.9 bodies.</drawback>
-  </alternative>
-  <alternative id="Asymmetric guard">
-    The skill splits the two directions: a finish commit with no history entry stops the run, while a history entry with no matching finish commit only warns and continues.
-    <advantage>It blocks exactly the direction that can silently drop a milestone from the notes, and lets the direction that is almost always a rebase artifact through.</advantage>
-    <drawback>It turns a one-sentence guard into a two-case rule that a maintainer must remember, and the extra-entry direction can also mean a fabricated or duplicated entry — which it then publishes.</drawback>
-  </alternative>
-  <recommendation option="Stop and report">Stop before any git or `gh` mutation and report both sides, because the release is the one irreversible artifact in the run while the cost of a false stop is a single README edit and a re-run — and if the extra-entry direction proves routinely benign in practice, that is the signal to relax the guard into the asymmetric form.</recommendation>
 </open-question>
