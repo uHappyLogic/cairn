@@ -56,6 +56,10 @@ The skill identifies the last release as the nearest tag reachable from HEAD, re
 
 The release skill applies four hard pre-flight stops before it commits, tags, or pushes anything: the tracked working tree is clean, HEAD is on `main`, `main` is not behind `origin/main` (checked after a fetch), and there are no untracked files under the transpiler's source paths `skills/`, `agents/`, and `shared/`. Untracked files elsewhere in the repo are tolerated, since path-scoped staging cannot pick them up. Each of the four blocks a route by which unmerged or uncommitted content would reach a published tag, and the scoped untracked check keeps the gate from firing on files that are harmless by construction.
 
+### Version argument validation
+
+The release skill hard-refuses the version argument on all three grounds before it touches anything: a malformed literal, a version whose tag already exists (exact-name lookup against local and remote tags), and a version not strictly greater than the resolved last release, compared as a numeric tuple rather than by tag-name sort. All three checks run pre-mutation, where the cost of a bad version is an error message rather than reverting a pushed commit and deleting a published release; a maintainer who genuinely needs a non-monotonic or backfill release uses the manual tag path outside the skill.
+
 ## Out of Scope
 
 ## Open questions
@@ -122,30 +126,6 @@ The release skill applies four hard pre-flight stops before it commits, tags, or
   </alternative>
   <applied-principle>Name by distinctive function</applied-principle>
   <recommendation option="Release marker, single commit">One commit under `Release: MAJOR.MINOR.PATCH`, path-scoped to exactly the version-script-written files plus the regenerated `.agents/plugins/cairn/` tree (never `git add -A`) — the marker names why the commit exists rather than the mechanism it uses, and keeping it a single commit keeps the tag pointing at one complete, self-consistent release state.</recommendation>
-</open-question>
-<open-question id="Version argument validation" status="deferred">
-  <question>Beyond requiring a bare MAJOR.MINOR.PATCH literal, does the skill also refuse a version that is not strictly greater than the last release or that already exists as a tag?</question>
-  <alternative id="Format only">
-    The skill validates only that the argument is a bare MAJOR.MINOR.PATCH literal and otherwise trusts the maintainer, letting git and gh surface a duplicate tag or a downgrade as a natural failure.
-    <advantage>Smallest possible validation surface — one regex, no dependency on resolving a last-release anchor, and no rule that could ever wrongly block a deliberate release.</advantage>
-    <drawback>The natural failure arrives too late: by the time `git tag` rejects an existing name the skill has already written the version into the files, committed, and pushed, leaving a published commit stamped with a version that will never be released and requiring a manual revert to clean up.</drawback>
-  </alternative>
-  <alternative id="Format and tag collision">
-    Beyond the literal, the skill refuses a version whose tag already exists (an exact-name lookup against local and remote tags), but applies no ordering rule.
-    <advantage>Catches the one genuinely destructive case before any file, commit, or push happens, at the cost of a single exact-match tag lookup that is immune to the repo&apos;s mixed `v.0.9.x` / `v0.9.7` / bare tag formats.</advantage>
-    <drawback>A transposition or downgrade typo that names an unused version — `0.9.10` typed as `0.9.1`&apos;s successor, or `1.0.0` typed as `0.1.0` — passes every check and is only visible after the GitHub release has published and demoted the latest-release badge.</drawback>
-  </alternative>
-  <alternative id="Full precondition check">
-    The skill hard-refuses on all three grounds before it touches anything: malformed literal, a version that already exists as a tag, and a version not strictly greater than the resolved last release.
-    <advantage>All three failure modes are caught pre-mutation, where the cost is an error message rather than a revert of a pushed commit and a deleted GitHub release, and the ordering check is the only guard against the typo class that a tag-existence check cannot see.</advantage>
-    <drawback>The ordering check needs a resolved last-release anchor and numeric-tuple comparison (the legacy prefixed tags make naive `-v:refname` sorting put `v0.9.7` above `0.9.9`), and it hard-blocks any out-of-order or backfill release without an in-skill escape hatch.</drawback>
-  </alternative>
-  <alternative id="Ordering as override prompt">
-    Format and tag collision are hard refusals, but a non-increasing version only produces a warning the maintainer must explicitly confirm before the skill proceeds.
-    <advantage>Keeps the typo caught at the moment it matters while leaving a deliberate out-of-order release possible without editing or bypassing the skill.</advantage>
-    <drawback>Adds an interactive branch to a validation step whose whole value is being unattended and deterministic, and a confirmation prompt in the same run as the release itself is exactly the prompt a maintainer clicks through, so it degrades to no check at all.</drawback>
-  </alternative>
-  <recommendation option="Full precondition check">Every check is cheap and runs before the first mutation, and this skill spends one argument across file edits, a commit, a push, a tag, and a published GitHub release in one irreversible sweep — so a version caught late costs a revert and a force-push while catching it costs a tag lookup and a tuple comparison; a maintainer who genuinely needs a non-monotonic release still has the manual tag path outside the skill.</recommendation>
 </open-question>
 <open-question id="Partial failure resumption" status="deferred">
   <question>If a step fails after the release commit exists (push, tag push, or release creation), what state does the skill leave behind, and can a re-run with the same version resume from it?</question>
