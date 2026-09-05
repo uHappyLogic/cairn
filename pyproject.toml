@@ -1,6 +1,6 @@
 [project]
 name = "cairn-tooling"
-version = "0.1.0"
+version = "1.0.1"
 description = "Development tooling for the cairn plugin (Antigravity transpilation)"
 requires-python = ">=3.11"
 dependencies = [

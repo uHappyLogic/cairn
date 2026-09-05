@@ -1,7 +1,7 @@
 {
   "name": "cairn",
   "description": "Milestone-driven development workflow — discuss goals, define milestones, derive and complete tasks, and archive milestones",
-  "version": "0.9.9",
+  "version": "1.0.1",
   "author": {
     "name": "Lukasz Kosiak"
   }

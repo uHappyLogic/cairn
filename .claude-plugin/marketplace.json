@@ -7,7 +7,8 @@
     {
       "name": "cairn",
       "source": ".",
-      "description": "Milestone-driven development for any stack."
+      "description": "Milestone-driven development for any stack.",
+      "version": "1.0.1"
     }
   ]
 }
