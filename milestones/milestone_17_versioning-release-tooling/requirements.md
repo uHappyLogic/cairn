@@ -80,34 +80,14 @@ When regenerating the Antigravity tree changes files beyond the manifest version
 
 A release produces exactly one commit, under the subject `Release: MAJOR.MINOR.PATCH`, staged path-scoped to exactly the files the version script wrote plus the regenerated `.agents/plugins/cairn/` tree, never `git add -A`. The marker names why the commit exists rather than the mechanism it uses, and keeping the release a single commit keeps the tag pointing at one complete, self-consistent release state.
 
+### Pre-publish confirmation
+
+The release skill does all local work unattended — version script, Antigravity regeneration, note composition, the release commit — then pauses exactly once to show the maintainer the version and the full composed release body, pushing, tagging, and creating the GitHub release only on approval. One gate at the point where a local, revertible commit becomes a public tag and release is the least interaction that still lets a human veto generated release notes before they are permanent.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Pre-publish confirmation" status="open">
-  <question>Does the release skill pause to show the maintainer the composed release notes and the version before it pushes, tags, and creates the GitHub release, or does it run unattended end to end once invoked?</question>
-  <alternative id="Confirm once before publishing">
-    The skill does all local work unattended — runs the version script, regenerates the Antigravity tree, composes the notes, makes the release commit — then stops once to show the maintainer the version and the full composed release body, and pushes, tags, and creates the GitHub release only on approval.
-    <advantage>Places the single gate exactly at the reversible/irreversible boundary: everything before it is a local commit the maintainer can amend or reset, everything after it is a public tag and release, and it gates the one artifact no precondition can validate mechanically — an LLM-composed notes body that condenses milestone history rather than copying it.</advantage>
-    <drawback>The skill is no longer a single fire-and-forget command: it cannot run non-interactively (a CI job or a headless invocation), and it costs the maintainer one review turn on every release even when the notes are obviously fine.</drawback>
-  </alternative>
-  <alternative id="Fully unattended">
-    Once invoked with a version, the skill runs end to end with no pause, relying on its argument validation and its preconditions (clean tree, version format, release range) as the only gates before it pushes, tags, and publishes.
-    <advantage>One command produces a finished release, keeping the skill scriptable and matching the plugin&apos;s existing unattended orchestrators (`complete-all-tasks`, `recommend-all-open-questions`) that dispatch and commit without asking.</advantage>
-    <drawback>The generated notes body reaches a public GitHub release before any human reads it, and correcting it means editing or deleting a published release — a class of error the preconditions structurally cannot catch, unlike the mechanical checks they do cover.</drawback>
-  </alternative>
-  <alternative id="Publish as draft for out-of-band review">
-    The skill runs unattended through push, tag, and `gh release create --draft`, then reports the draft URL and leaves the maintainer to review and publish the release in the GitHub UI.
-    <advantage>Keeps the invocation itself interaction-free while still putting a human between composition and publication, and the review happens where the notes actually render.</advantage>
-    <drawback>The tag and the release commit are already pushed before anyone looks, so the review can no longer prevent the irreversible part; it also splits ownership of a step the goal assigns wholly to the skill, leaving every release in a half-finished state that depends on a manual follow-up outside the tool.</drawback>
-  </alternative>
-  <alternative id="Confirm at every mutating step">
-    The skill pauses for approval before each state-changing action in turn — the release commit, the branch push, the tag push, and the release creation.
-    <advantage>Maximum control and precise failure isolation: the maintainer can stop at whichever step first looks wrong and knows exactly how far the run got.</advantage>
-    <drawback>Four prompts for one workflow trains the maintainer to rubber-stamp them, which defeats the review that matters; the early steps are locally revertible anyway, so gating them buys control that costs more attention than it protects.</drawback>
-  </alternative>
-  <recommendation option="Confirm once before publishing">One gate at the point where a local, revertible commit becomes a public tag and release is the least interaction that still lets a human veto generated release notes before they are permanent.</recommendation>
-</open-question>
 <open-question id="Partial failure resumption" status="deferred">
   <question>If a step fails after the release commit exists (push, tag push, or release creation), what state does the skill leave behind, and can a re-run with the same version resume from it?</question>
   <alternative id="Idempotent resume">
