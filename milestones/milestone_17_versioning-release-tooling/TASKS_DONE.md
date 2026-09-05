@@ -18,3 +18,19 @@ Add a version script under `scripts/` that takes one bare `MAJOR.MINOR.PATCH` li
 - Reverting the four files with `git checkout --` restored `0.9.9`/`0.1.0` and left the working tree carrying only the new script.
 
 ---
+
+## Transpiler Copies Plugin Version Into Manifest
+
+Change `scripts/migrate_skills_to_agy.py` so the manifest dict it writes to `.agents/plugins/cairn/plugin.json` carries a `version` key read from `.claude-plugin/plugin.json` at generation time, so the generated tree is correct on every regeneration path including a bare standalone `uv run scripts/migrate_skills_to_agy.py`. The milestone needs the generated manifest to carry a version while keeping the source manifest the single source of truth. Verified by regenerating the tree and confirming the generated manifest's `version` equals the source manifest's `0.9.9`, with no other generated file changing.
+
+**Verified:**
+
+- `scripts/migrate_skills_to_agy.py` reads `.claude-plugin/plugin.json` at generation time and copies its `version` value into the dict it writes to `.agents/plugins/cairn/plugin.json`.
+- No version literal is hard-coded in the transpiler: a repo-root grep for `[0-9]+\.[0-9]+\.[0-9]+` over the script returns nothing, so the source manifest is the sole source.
+- A bare `uv run scripts/migrate_skills_to_agy.py` from the repository root produced a generated manifest whose `version` is `"0.9.9"`, equal to the source manifest's value.
+- The generated manifest keeps its existing `$schema`, `name`, and `description` keys unchanged: `git diff` on it shows only the added `version` line.
+- After that regeneration `git status --porcelain` listed `.agents/plugins/cairn/plugin.json` as the only changed generated file (alongside the edited script), and a second run added no further changes.
+- A source manifest that is missing, unreadable, or carries no `version` value stops the run with a clear error and a non-zero exit before any generated manifest is written, rather than emitting a version-less manifest.
+- Pointing the script at a source manifest carrying `3.4.5` produced a generated manifest with `"version": "3.4.5"`, confirming the value is read per run rather than fixed.
+
+---

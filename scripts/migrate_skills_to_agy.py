@@ -3,21 +3,49 @@ import shutil
 import json
 import sys
 
-def migrate_to_agy_plugin(plugin_name="cairn", src_skills="skills", src_agents="agents", src_shared="shared", src_mcp=".mcp.json"):
+def read_source_version(src_manifest):
+    """Read the plugin version from the source Claude Code manifest.
+
+    That manifest is the single source of truth for the version, so the generated
+    Antigravity manifest is correct on every regeneration path without the version
+    script ever writing it.
+    """
+    if not os.path.exists(src_manifest):
+        print(f"Error: source manifest {src_manifest} not found (run this script from the repository root)", file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        with open(src_manifest, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except (json.JSONDecodeError, OSError) as e:
+        print(f"Error: could not read source manifest {src_manifest}: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    version = data.get("version")
+    if not isinstance(version, str) or not version:
+        print(f"Error: source manifest {src_manifest} has no 'version' value to copy", file=sys.stderr)
+        sys.exit(1)
+
+    return version
+
+
+def migrate_to_agy_plugin(plugin_name="cairn", src_skills="skills", src_agents="agents", src_shared="shared", src_mcp=".mcp.json", src_manifest=os.path.join(".claude-plugin", "plugin.json")):
     plugin_dir = os.path.join(".agents", "plugins", plugin_name)
-    
+
     print(f"Creating agy plugin '{plugin_name}' at '{plugin_dir}'...")
     os.makedirs(plugin_dir, exist_ok=True)
-    
+
     # 1. Create plugin.json
+    version = read_source_version(src_manifest)
     manifest_path = os.path.join(plugin_dir, "plugin.json")
     with open(manifest_path, 'w', encoding='utf-8') as f:
         json.dump({
             "$schema": "https://antigravity.google/schemas/v1/plugin.json",
             "name": plugin_name,
-            "description": f"Ported plugin for {plugin_name}"
+            "description": f"Ported plugin for {plugin_name}",
+            "version": version
         }, f, indent=2)
-    print(f"Created manifest at {manifest_path}")
+    print(f"Created manifest at {manifest_path} with version {version}")
 
     # 2. Migrate MCP config
     if os.path.exists(src_mcp):

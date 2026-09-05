@@ -1,5 +1,6 @@
 {
   "$schema": "https://antigravity.google/schemas/v1/plugin.json",
   "name": "cairn",
-  "description": "Ported plugin for cairn"
+  "description": "Ported plugin for cairn",
+  "version": "0.9.9"
 }

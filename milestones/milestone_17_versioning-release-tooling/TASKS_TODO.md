@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Transpiler Copies Plugin Version Into Manifest
-
-Change `scripts/migrate_skills_to_agy.py` so the manifest dict it writes to `.agents/plugins/cairn/plugin.json` carries a `version` key read from `.claude-plugin/plugin.json` at generation time, so the generated tree is correct on every regeneration path including a bare standalone `uv run scripts/migrate_skills_to_agy.py`. The milestone needs the generated manifest to carry a version while keeping the source manifest the single source of truth. Verified by regenerating the tree and confirming the generated manifest's `version` equals the source manifest's `0.9.9`, with no other generated file changing.
-
----
-
 ## Release Skill Pre-Flight And Version Gates
 
 Create the maintainer-only skill at `.claude/skills/release-plugin/SKILL.md`, invoked as `/release-plugin <MAJOR.MINOR.PATCH>`, whose opening steps resolve the last release as the nearest tag reachable from HEAD via `git describe --tags --abbrev=0`, apply the four hard pre-flight stops (tracked working tree clean, HEAD on `main`, `main` not behind `origin/main` after a fetch, no untracked files under `skills/`, `agents/`, or `shared/`), and hard-refuse the version argument when it is malformed, when its tag already exists locally or remotely, or when it is not strictly greater than the last release compared as a numeric tuple. The milestone needs every route by which a bad version or unmerged content could reach a published tag closed before anything mutates, and this skill's `SKILL.md` is the only place the release procedure is documented. Verified by reviewing the skill against the recorded decisions and running its check commands against the live repo to confirm they resolve `0.9.9` and pass or stop as expected.
