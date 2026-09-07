@@ -70,34 +70,14 @@ Capture runs against any milestone id whose `milestones/<milestone_id>/requireme
 
 Entry compactness is a soft numeric target held under the qualitative bar, not a hard cap. A directive should run roughly 40-80 words and is flagged for shortening when it exceeds about 100, while the goal's "as short as it can be while still reading as an intuitive rule" test remains the deciding standard, so a rule may keep a condition or corollary it genuinely needs. There is no ceiling on entry count; prune and merge by contradiction and overlap are the count control. The optional `*Origin:*` line survives as a single-line pointer to the originating question, because that case is what a revise-vs-salvage judgment and a human auditor read.
 
+### Salvage form for contradicted entries
+
+When current reasoning contradicts an existing entry, all four salvage forms are permitted and are attempted in a fixed preference order: narrow the entry's scope clause, generalize it so both the prior accepted citations and the override fit, replace it with a fresh directive when its premise is wrong, and delete it only when nothing survives. Narrowing leads because every entry already opens with an explicit scope clause, and the ladder as a whole is what the goal's mandate to prune, merge, generalize, and salvage what it can asks for. When two forms fit equally, the tie-break is whichever yields the shortest entry that still predicts both the prior accepted citations and the override. The chosen form is visible in the working-tree change the user reviews before the rewrite is committed.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Salvage form for contradicted entries" status="deferred">
-  <question>When current reasoning contradicts an existing entry that was cited and then overridden, what forms may the salvage take: narrow the entry&apos;s scope, generalize it so both cases fit, replace it, or delete it outright when nothing generalizes?</question>
-  <alternative id="Full salvage ladder">
-    All four forms are permitted, attempted in a fixed preference order — narrow the entry&apos;s scope clause, generalize it so both the accepted citations and the override fit, replace it with a fresh directive when its premise is wrong, and delete only when nothing survives — with the chosen form visible in the working-tree diff the user reviews before the rewrite is committed.
-    <advantage>Preserves the most validated knowledge: the store&apos;s entries already open with an explicit &quot;When a question…&quot; scope clause, so a single override usually only proves the rule mis-scoped rather than wrong, and the ladder lets capture keep what the entry&apos;s prior accepted citations confirmed while still honoring the goal&apos;s &quot;salvage what it can&quot; and &quot;shrink as well as grow&quot; mandate.</advantage>
-    <drawback>Four candidate moves per contradicted entry is the most judgment per entry, and repeated narrowing across milestones can accrete exception clauses that push the entry past the compactness bar unless each step is held to the shortest entry that still predicts both cases.</drawback>
-  </alternative>
-  <alternative id="Narrow or delete">
-    The salvage is binary: carve the overriding case out of the entry&apos;s scope clause, or remove the entry; no generalizing or replacing.
-    <advantage>Simplest and most deterministic — each edit is a small, recognizable diff to an existing entry, and the entry keeps its title, origin, and tie-breakers.</advantage>
-    <drawback>A single override almost never licenses deletion, so in practice every contradiction becomes another &quot;except when…&quot; clause, which is the exact bloat the goal&apos;s compactness aim forbids, and the form cannot express the case where the override reveals the deeper rule the old entry was only an instance of.</drawback>
-  </alternative>
-  <alternative id="Replace outright">
-    A contradicted entry is decommissioned and a new entry is written from the override&apos;s rationale, so the store always reflects the newest reasoning.
-    <advantage>Clean: no accreted exceptions, no stale tie-breakers, and the newest deliberated reasoning wins unambiguously, matching &quot;current reasoning takes precedence.&quot;</advantage>
-    <drawback>Over-weights one decision against a history of confirmed acceptances — entries such as Name by distinctive function have been cited and accepted many times — so it throws away validated scope and worked examples that the override never disputed.</drawback>
-  </alternative>
-  <alternative id="Generalize or delete">
-    Capture must restate the entry so both the original cases and the override fit, and deletes it when no such restatement exists; narrowing and replacing are not offered.
-    <advantage>Every surviving entry is the most reusable rule the evidence supports, with no case-specific carve-outs.</advantage>
-    <drawback>Forced generalization tends toward vagueness (&quot;prefer the better-fitting option&quot;) that fails the &quot;reads as an intuitive rule&quot; test, and it excludes the most common honest outcome — the principle is right in its domain and simply did not apply here — which narrowing expresses in one clause.</drawback>
-  </alternative>
-  <recommendation option="Full salvage ladder">Allow all four forms in the order narrow, generalize, replace, delete, because the store&apos;s entries already carry explicit scope clauses that make narrowing the natural first move while the goal explicitly asks capture to prune, merge, generalize and salvage what it can; when two forms fit equally, the tie-break is whichever yields the shortest entry that still predicts both the prior accepted citations and the override.</recommendation>
-</open-question>
 <open-question id="Skill framing after decoupling" status="deferred">
   <question>With a required milestone id, is capture still documented as the optional post-finish follow-up in README.md and CLAUDE.md, or reframed as an on-demand skill runnable for any milestone at any time?</question>
   <alternative id="Keep post-finish framing">
