@@ -63,3 +63,21 @@ Add a prompting step that asks the user why the alternative was preferred only f
 - `uv run scripts/migrate_skills_to_agy.py` regenerated `.agents/plugins/cairn/`; only the capture skill copy changed, and it differs from the source solely by the `${CLAUDE_PLUGIN_ROOT}` path rewrite and dropped `echo` hint.
 
 ---
+
+## Override Candidates And Acceptance Evidence
+
+Rework phase 1 so new principle candidates are distilled only from override commits — a deliberated or prompted override rationale, plus non-override and deliberated agreeing `Manual-answer:` bodies — keeping the non-generalizable filter and the cross-candidate dedup, while accepted recommendations and agreeing answers supply evidence only: each removed `<applied-principle>` reinforces its store entry and shields it from prune or narrowing in this pass, and an accepted rationale contradicting an existing entry flags that entry for the salvage path. Verified when the skill states that an accepted `Recommendation-answer:` never yields a candidate, that an agreeing `Alternative-answer:` yields none while a deliberated agreeing `Manual-answer:` still does, and that both evidence signals fall out of the diff read.
+
+**Verified:**
+
+- Phase 1 (step 5) step 1 states candidate sources exactly: an override commit's reasoning — its step-4 `override_rationale` when filled, otherwise its `body` when `body_class` = `deliberated` — plus every `non-override` `Manual-answer:` body and every deliberated agreeing `Manual-answer:` body; a skipped bare override yields none, and nothing else yields a candidate.
+- The skill states that an accepted `Recommendation-answer:` never yields a candidate (its body is the recommender's own lifted reasoning, so it cannot supply the guideline the recommender lacked).
+- The skill states that an agreeing `Alternative-answer:` yields no candidate (its body is only the chosen alternative's text) while a deliberated agreeing `Manual-answer:` still does through its body, with source eligibility governed by the reasoning a commit carries, never its subject alone.
+- The non-generalizable filter (restatement / bare cold answer drop, many-to-many mapping, with its drop/keep examples) and the cross-candidate dedup (cluster survivors, rank strongest-first) remain in phase 1 as steps 2 and 3.
+- Phase 1 step 4 states both evidence signals from the agreeing commits (every accepted `Recommendation-answer:`, plus any agreeing `Alternative-answer:`/`Manual-answer:`): each removed `<applied-principle>` reinforces the store entry it names and shields it from being pruned or narrowed in this pass (an agreeing manual/alternative answer reinforcing exactly as an accepted recommendation does), and an accepted rationale contradicting an existing entry flags that entry for the salvage path, with a reinforced-and-flagged entry keeping its shield.
+- The skill states that both signals fall out of the diff read: they are read from the `applied_principles` and `recommendation` fields the step-3 diff read already filled, with no further read of git or the store.
+- Phase 1's output names both the ranked candidate set and the evidence set (reinforced entries with their citing commits, flagged entries with the contradicting commit); phase 2 reads the evidence set — a revision never prunes or narrows a reinforced entry, and each unresolved flagged entry is walked after the candidates for a salvage decision — and the nothing-captured exit fires only with no surviving candidate and no flagged entry.
+- Frontmatter is unchanged and loads under `yaml.safe_load` (15-word description, no colon or semicolon); no `## Rules` section exists anywhere under `skills/`, `agents/`, or `shared/`.
+- `uv run scripts/migrate_skills_to_agy.py` regenerated `.agents/plugins/cairn/`; only the capture skill copy changed, and it differs from the source solely by the `${CLAUDE_PLUGIN_ROOT}` path rewrite and dropped `echo` hint.
+
+---

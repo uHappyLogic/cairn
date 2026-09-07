@@ -264,19 +264,41 @@ what step 5 reads as the commit's reasoning in place of its bare body, so an ove
 explained here yields candidates exactly as a deliberated `Manual-answer:` body does, while a skipped
 one stays a bare answer and is dropped by step 5's non-generalizable filter.
 
-### 5. Phase 1 — extract candidates and dedup them against each other (internal, no user yet)
+### 5. Phase 1 — extract override candidates, read acceptance evidence, dedup (internal, no user yet)
 
-This phase is entirely internal: no writes, no user prompts. Its job is to turn a pile of commit
-bodies into a clean, deduped set of principle candidates.
+This phase is entirely internal: no writes, no user prompts. It reads the per-commit records from
+steps 3 and 4 twice over, for two different outputs: **new principle candidates** come only from the
+commits that carry the user's own reasoning, while every commit that **accepted** the recommendation
+supplies **evidence about entries already in the store** and nothing else. Both outputs feed phase 2.
 
-1. **Extract candidate directives.** From each in-range `Manual-answer` commit body — or, for a commit
-   step 4 prompted, from its `override_rationale` in place of the bare body — pull the reusable
-   reasoning behind the decision: the realistic alternatives that were weighed, why one was chosen, the
-   trade-off accepted. Phrase each as a candidate **keep/eliminate directive** — a rule you could apply
-   as a binary in/out test against the candidate answers of a *different future* question.
+1. **Extract candidate directives — from override reasoning and deliberated manual bodies only.** A
+   candidate's source is the reasoning the recommender lacked, so a commit is a candidate source
+   exactly when it carries the user's reasoning, read from one of these places:
+
+   - an **override commit** (`agreement` = `overrides`) — its `override_rationale` when step 4 filled
+     one, otherwise its `body` when `body_class` = `deliberated` (a deliberated `Manual-answer:`
+     override); an override that was skipped in step 4 and has a bare body carries no reasoning and
+     yields no candidate;
+   - a **non-override `Manual-answer:`** (`agreement` = `non-override`) — its `body`: the recommender
+     never weighed in, so a decision it did not get to see is precisely a guideline it lacks;
+   - a **deliberated agreeing `Manual-answer:`** (`agreement` = `agrees`, `body_class` = `deliberated`)
+     — its `body`: agreement suppresses the override prompt, never source eligibility, and the
+     deliberated rationale the commit carries is still the user's own reasoning.
+
+   Nothing else yields a candidate. An **accepted `Recommendation-answer:` never yields a candidate**:
+   its body is the recommender's own reasoning, lifted verbatim, so it cannot supply the guideline the
+   recommender lacked. An **agreeing `Alternative-answer:` yields none** either: its body is only the
+   chosen alternative's text, and there was no override to explain — whereas a **deliberated agreeing
+   `Manual-answer:` still does**, through its body. Source eligibility is thus governed by the reasoning
+   a commit carries, never by its subject alone.
+
+   From each eligible source pull the reusable reasoning behind the decision: the realistic
+   alternatives that were weighed, why one was chosen, the trade-off accepted. Phrase each as a
+   candidate **keep/eliminate directive** — a rule you could apply as a binary in/out test against the
+   candidate answers of a *different future* question.
 
 2. **Drop the non-generalizable ones.** A principle must be a **reusable directive, not a restatement
-   of one past decision**. If a commit's rationale is one-off, situation-specific, or simply states no
+   of one past decision**. If a source's rationale is one-off, situation-specific, or simply states no
    reasoning at all (a bare cold answer), it yields **no** candidate — drop it. The commit→principle
    mapping is **many-to-many**: one commit may yield no candidate, and two commits may yield the same
    one.
@@ -289,11 +311,42 @@ bodies into a clean, deduped set of principle candidates.
 
 3. **Cluster the survivors against each other (cross-candidate dedup).** Where several commits
    express the **same** underlying rule, merge them into one candidate (carrying the strongest
-   phrasing and the originating examples). The output of phase 1 is the deduped set of surviving candidates, ranked
-   **strongest first** (most clearly generalizable / most load-bearing for future recommendations).
+   phrasing and the originating examples). The candidate output of phase 1 is the deduped set of
+   surviving candidates, ranked **strongest first** (most clearly generalizable / most load-bearing for
+   future recommendations).
 
-If phase 1 leaves **no** surviving candidate (commits existed but none generalize), go to step 8 —
-this converges on the **same** "nothing captured" report as the empty range.
+4. **Read acceptance evidence from the agreeing commits.** Every commit with `agreement` = `agrees` —
+   each accepted `Recommendation-answer:`, plus any `Alternative-answer:` or `Manual-answer:` that
+   recorded the recommended option — is **evidence only**: it is never mined for a candidate, but its
+   record says something about entries already in the store. Two signals, both read from fields the
+   step-3 diff read already filled — **no further read of git or the store is needed**:
+
+   - **Reinforcement — from `applied_principles`.** Each removed `<applied-principle>` line names a
+     store entry the recommender cited and the user then accepted: that citation **reinforces** the
+     entry and **shields it from being pruned or narrowed in this pass**. An agreeing
+     `Alternative-answer:` or `Manual-answer:` reinforces its cited entries exactly as an accepted
+     `Recommendation-answer:` does.
+   - **Contradiction — from `recommendation`.** The accepted recommendation's rationale is reasoning
+     the user endorsed. Where that accepted rationale **contradicts** an existing store entry — it
+     argues for what the entry's directive would eliminate, or against what it would keep — **flag**
+     that entry **for the salvage path** phase 2 applies to contradicted entries. An entry both
+     reinforced and flagged in the same pass keeps its shield: it is not pruned or narrowed, and the
+     salvage path must find a form that fits both.
+
+   An **override** commit's `applied_principles` are read against its reasoning by the same
+   contradiction test: a cited entry that steered the recommendation the user rejected is flagged
+   when the override rationale contradicts it, and untouched when the override turned on something
+   else.
+
+**Output.** Phase 1 hands phase 2 two sets: the ranked **candidate set** from steps 1–3, and the
+**evidence set** from step 4 — the store entries **reinforced** in this pass (each with the commits
+that cited it) and the entries **flagged** as contradicted (each with the commit whose reasoning
+contradicts it). Phase 2 never prunes or narrows a reinforced entry, and routes each flagged entry to
+the salvage path.
+
+If phase 1 leaves **no** surviving candidate **and** no flagged entry (commits existed but none
+generalize and none contradict the store), go to step 8 — this converges on the **same** "nothing
+captured" report as the empty range. Reinforcement alone changes nothing in the store.
 
 ### 6. Phase 2 — confirm and write one candidate at a time, against the live store
 
@@ -315,6 +368,9 @@ Walk the surviving candidates **strongest-first**. For **each** candidate, befor
    extracted alongside the overlapping existing entries, and let the user make the final call: **revise**
    one existing principle (and how), or **add** a new entry. If nothing overlaps, still present the new
    entry for confirmation before writing. Never auto-merge or auto-add without that confirmation.
+   Read the phase-1 **evidence set** alongside: a revision may not prune or narrow an entry
+   **reinforced** in this pass, and an entry **flagged** as contradicted is surfaced with the
+   contradicting commit so its salvage is decided here rather than left standing unexamined.
 
 3. **Write that one candidate** per the schema in step 6a, applying the user's confirmed choice (add a
    new `### <Short Title>` subsection, or edit an existing one in place).
@@ -323,6 +379,11 @@ Walk the surviving candidates **strongest-first**. For **each** candidate, befor
    live store, a later candidate that overlapped *this* one may now be best expressed as a **revision of
    what you just wrote** rather than a fresh add. Re-evaluating between every write — not approving a
    static batch — is the whole reason this is an iterating loop.
+
+After the candidates, walk each **flagged** entry from the phase-1 evidence set that no candidate's
+revision already resolved: surface it with the commit whose accepted or override reasoning
+contradicts it and let the user decide its salvage, under the same shield — an entry also reinforced
+in this pass is never pruned or narrowed. A flagged entry the user leaves as it stands changes nothing.
 
 **Termination is deterministic.** The candidate pool is the finite, known-up-front set of surviving
 candidates from phase 1. Each confirmation resolves one (add / revise / decline) and removes it, so the
@@ -372,6 +433,6 @@ A pass that distilled no new principle — the empty commit range, in-range comm
   no next-step or recommendation-advisor pointer.
 - **If nothing was captured** — the empty commit range (step 3) **or** in-range commits that none
   generalize (step 5) **or** the user declined every candidate — report it in a **single line**: there
-  are no `Manual-answer` principles in range to distill (write nothing, commit nothing). This is the
+  are no principle candidates in range to distill (write nothing, commit nothing). This is the
   distinct one-line no-op message for a pass whose dirty-own-path guard fired, never a collapse into
   `Principles captured.`; all three cases **converge on this identical terminal report**.

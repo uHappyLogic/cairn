@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Override Candidates And Acceptance Evidence
-
-Rework phase 1 so new principle candidates are distilled only from override commits — a deliberated or prompted override rationale, plus non-override and deliberated agreeing `Manual-answer:` bodies — keeping the non-generalizable filter and the cross-candidate dedup, while accepted recommendations and agreeing answers supply evidence only: each removed `<applied-principle>` reinforces its store entry and shields it from prune or narrowing in this pass, and an accepted rationale contradicting an existing entry flags that entry for the salvage path. Verified when the skill states that an accepted `Recommendation-answer:` never yields a candidate, that an agreeing `Alternative-answer:` yields none while a deliberated agreeing `Manual-answer:` still does, and that both evidence signals fall out of the diff read.
-
----
-
 ## Compose Whole-Store Rewrite In Place
 
 Replace the per-candidate confirm-and-write loop with a single composition of the entire proposed store — adds, revisions, prunes, merges, generalizations, and shortenings applied together over the baseline — written directly to `milestones/answer_decision_principles.md` after taking a snapshot of the store immediately before the first write, printing no diff and no store content to the conversation. Substantive change to an entry requires the harvested milestone's own evidence, while form-only hygiene may reach any entry: directives target roughly 40-80 words and are flagged for shortening past about 100 with the "as short as it can be while still reading as an intuitive rule" test deciding, plainly duplicate entries merge, there is no ceiling on entry count, and the optional `*Origin:*` line survives as a single-line pointer. Verified when the write step describes one in-place rewrite under these rules and the `### <Short Title>` entry schema is preserved.
