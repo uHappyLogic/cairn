@@ -78,29 +78,13 @@ When current reasoning contradicts an existing entry, all four salvage forms are
 
 Capture is documented as an on-demand skill — runnable for any milestone id at any time, with backfill over milestones already finished explicitly allowed — while keeping its home in the "Ending a milestone" stage behind the existing dashed optional edge. Finish is stated as the natural moment to run it, because a milestone's answer set is complete then, and never as a precondition. Every surface that mentions the placement, README.md and CLAUDE.md alike, must phrase it as a convention rather than a requirement, so the documented contract matches the required-id contract and does not drift back toward the pointer-none design.
 
+### Answer agreeing with recommendation
+
+A `Manual-answer:` or `Alternative-answer:` that records the same option the removed `<recommendation option>` named counts as an acceptance for the prompting and evidence steps only: no override prompt is shown, and its removed `<applied-principle>` lines reinforce the cited entries exactly as an accepted recommendation's do. Source eligibility is untouched by the agreement test and stays governed by the existing bare-cold-answer filter, so a deliberated agreeing `Manual-answer:` body still yields candidates while an agreeing `Alternative-answer:`, whose body is only the alternative text, yields none. Agreement is the common case for manual answers in this repo, so the false-premise prompt must be suppressed, but suppressing candidate extraction along with it would contradict the recorded "Non-override manual answers" decision and discard the deliberated rationale those commits carry. Capture therefore runs two tests per commit: agreement against the removed recommendation, then the deliberated-vs-bare body test.
+
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Answer agreeing with recommendation" status="deferred">
-  <question>When a Manual-answer or Alternative-answer records the same option the removed recommendation named, is it treated as an acceptance used only as evidence with no override prompt, or as an override by provenance alone?</question>
-  <alternative id="Acceptance by option match">
-    Compare each Manual-answer or Alternative-answer against the removed `&lt;recommendation option&gt;` and, when they name the same option, treat the commit exactly as a `Recommendation-answer:` — evidence about existing store entries only, with no override prompt and no new candidate mined from it.
-    <advantage>It never asks the user to explain an override that did not happen, and it keeps the store free of &quot;guidelines the recommender lacked&quot; distilled from a decision the recommender in fact got right.</advantage>
-    <drawback>It makes the override distinction govern source eligibility, which the recorded &quot;Non-override manual answers&quot; decision explicitly rules out, and it discards genuinely deliberated user rationale — in this milestone&apos;s own history, the agreeing Manual-answer bodies for &quot;Store rewrite confirmation granularity&quot; and &quot;Re-audit follow-up policy&quot; carry reasoning that is the user&apos;s, not the recommender&apos;s.</drawback>
-  </alternative>
-  <alternative id="Override by provenance alone">
-    The commit subject is the entire classification: every `Manual-answer:` and `Alternative-answer:` is an override, prompted and mined per the already-recorded prompting-scope rule, with no comparison against the removed recommendation for this purpose.
-    <advantage>It is the simplest rule in the milestone — no agreement test, no fuzzy match of a free-text commit body against an option name, and one uniform path through the diff read for both override provenances.</advantage>
-    <drawback>It misclassifies the empirically dominant case: of the six `Manual-answer:` commits in the repo whose removed block carried a recommendation, four record the recommended option (&quot;Directory name only&quot;, &quot;Warn and confirm&quot;, &quot;Whole-store rewrite&quot;, &quot;Iterate to a clean re-audit&quot;), so the run would offer false-premise guesses at why the user overrode a recommendation they accepted.</drawback>
-  </alternative>
-  <alternative id="Acceptance for prompting only">
-    Same-option agreement classifies the commit as an acceptance for the prompting and evidence steps — no override prompt, and its removed `&lt;applied-principle&gt;` lines reinforce the cited entries exactly as an accepted recommendation&apos;s do — while source eligibility stays governed by the existing bare-cold-answer filter, so a deliberated agreeing Manual-answer body still yields candidates and an agreeing Alternative-answer (whose body is only the alternative text) yields none.
-    <advantage>It removes the false-premise prompt while honoring the recorded rule that the override distinction shapes only the diff-comparison and prompting steps and never source eligibility, and it keeps the user-deliberated reasoning in the four agreeing manual bodies available to the harvest.</advantage>
-    <drawback>Capture must run two tests per commit rather than one — agreement against the removed recommendation, then the deliberated-vs-bare body test — and an agreeing body that merely echoes the recommender&apos;s own reasoning can still yield a near-duplicate candidate the composed store rewrite has to merge away.</drawback>
-  </alternative>
-  <recommendation option="Acceptance for prompting only">Agreement is the common case for manual answers in this repo (four of six annotated ones), so it must suppress the override prompt, but suppressing candidate extraction with it would both contradict the recorded &quot;Non-override manual answers&quot; decision and throw away the deliberated rationale those very commits carry; splitting the two keeps each rule on the signal that actually justifies it.</recommendation>
-</open-question>
 
 <open-question id="Untouched entry rewrite scope" status="deferred">
   <question>May the composed store rewrite shorten, merge, or generalize entries that no commit of the harvested milestone bore on, such as a pre-existing entry over the 100-word flag, or does it change only entries the evidence of that milestone reached plus new adds?</question>
