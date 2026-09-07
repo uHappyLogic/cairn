@@ -50,6 +50,10 @@ A repeat run of capture against a milestone that already has a `Principle-captur
 
 The required argument is the milestone directory name under `milestones/` (e.g. `milestone_19_principle-capture-by-milestone`), exactly as `specify-milestone-starting-state` takes it, resolved as `milestones/<milestone_id>/` with a clean stop when that directory has no `requirements.md`. The value is consumed verbatim in three places: the path-scoped git-log prefix, the `Principle-capture: <milestone_id>` commit subject, and the repeat-capture guard's anchored grep for that exact subject. No bare-number form is accepted and no number-to-directory resolution exists.
 
+### Non-override manual answers
+
+A `Manual-answer:` whose removed block carried no recommendation to override — every pre-sweep answer, and any question the recommend sweep never annotated — is still a principle source. Capture distills candidates from its body rationale alone, exactly as the current phase-1 extraction does, because a decision the recommender never got to weigh in on is precisely a guideline it lacks. The override distinction shapes only the diff-comparison and prompting steps, never source eligibility; the existing non-generalizable filter continues to drop bare cold answers.
+
 ## Out of Scope
 
 ## Open questions
@@ -96,25 +100,6 @@ The required argument is the milestone directory name under `milestones/` (e.g. 
     <drawback>Turns the harvester&apos;s highest-quality inputs into redundant interruptions — the user is asked to re-confirm at capture time what they deliberated and wrote when the context was fresh, which is exactly when their memory is weakest and the body is strongest.</drawback>
   </alternative>
   <recommendation option="Prompt only rationale-less overrides, with batch controls">A deliberated Manual-answer body is the user&apos;s override reason already, so prompting is worth it only where no reason exists (Alternative-answers and cold literal answers); the one-shot accept-all/skip-all breaks the tie against per-prompt-skip-only because the skill is now runnable against any past milestone, where the user often cannot answer from memory and every guess still lands in a working-tree rewrite the user reviews with git diff before it is committed.</recommendation>
-</open-question>
-<open-question id="Non-override manual answers" status="open">
-  <question>Does capture still distill candidates from a Manual-answer whose removed block carried no recommendation to override (every pre-sweep answer, and any question the sweep never annotated), using its body rationale alone as today, or does the reworked skill treat only overrides of a recommendation as principle sources?</question>
-  <alternative id="Overrides only">
-    Treat only answers whose removed block carried a recommendation the user departed from as principle sources, and skip any Manual-answer whose block had no recommendation (every pre-sweep answer and any question the sweep never annotated).
-    <advantage>Every candidate is a demonstrated recommender gap, so the diff-comparison and why-prompt machinery applies uniformly and the store only grows where the recommender was provably wrong.</advantage>
-    <drawback>It discards the richest deliberated rationale in the history (8 of the 17 manual answers, and the whole current store came from such answers) and makes a discuss-then-answer decision invisible to capture, even though a decision the recommender never got to weigh in on is still a rule it lacks.</drawback>
-  </alternative>
-  <alternative id="Rationale-alone distill">
-    Keep a Manual-answer with no recommendation in its removed block as a principle source and distill candidates from its body rationale alone, exactly as the current phase-1 extraction does, while the override-specific comparison and prompting apply only where a recommendation existed.
-    <advantage>No user-deliberated rationale is thrown away, the eligibility rule stays simple (a body with reasoning is a source), and the existing non-generalizable filter already drops bare cold answers so the class adds no noise.</advantage>
-    <drawback>These candidates lack the proof that the recommender would have gotten it wrong, so some may restate a rule the recommender already reaches, working against the compactness aim unless the store-side dedup and generalize moves hold them in check.</drawback>
-  </alternative>
-  <alternative id="Prompt as null override">
-    Treat a Manual-answer with no recommendation as an override of a null recommendation: capture asks the user what guideline the answer encodes, offering its best guess distilled from the body, instead of extracting from the body alone.
-    <advantage>One user-confirmed candidate path for every non-accepted answer, so the guideline is stated in the intuitive form the store wants rather than reverse-engineered from prose.</advantage>
-    <drawback>It multiplies prompts on precisely the answers whose bodies already carry the fullest rationale, making a milestone with many pre-sweep or discussed answers tedious to capture for little added signal.</drawback>
-  </alternative>
-  <recommendation option="Rationale-alone distill">A manual answer with no recommendation is a decision the recommender never got to make, so its rationale is exactly the guideline it lacks; overrides are the sharper signal, not the only one, and the override distinction should shape the comparison and prompting steps, never source eligibility.</recommendation>
 </open-question>
 <open-question id="Unfinished milestone allowed" status="deferred">
   <question>May capture run against a milestone that is not yet listed in the Completed Milestones table, including the current one, or does it stop unless the milestone is finished?</question>
