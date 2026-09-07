@@ -82,3 +82,22 @@ Capture is documented as an on-demand skill — runnable for any milestone id at
 
 ## Open questions
 
+<open-question id="Cascaded sibling evidence" status="deferred">
+  <question>When an answer commit also removes cascaded sibling blocks that were mooted rather than accepted or overridden, does capture ignore their removed recommendation and applied-principle lines, or count them as evidence about store entries?</question>
+</open-question>
+
+<open-question id="Answer agreeing with recommendation" status="deferred">
+  <question>When a Manual-answer or Alternative-answer records the same option the removed recommendation named, is it treated as an acceptance used only as evidence with no override prompt, or as an override by provenance alone?</question>
+</open-question>
+
+<open-question id="Untouched entry rewrite scope" status="deferred">
+  <question>May the composed store rewrite shorten, merge, or generalize entries that no commit of the harvested milestone bore on, such as a pre-existing entry over the 100-word flag, or does it change only entries the evidence of that milestone reached plus new adds?</question>
+</open-question>
+
+<open-question id="Capture commit body content" status="deferred">
+  <question>Does the Principle-capture commit carry a body naming which override drove each add, revision, prune, or merge, given the console prints nothing and the store keeps no changelog, or only the subject?</question>
+</open-question>
+
+<open-question id="Dirty store precondition" status="deferred">
+  <question>What does capture do when the principle store already carries uncommitted changes before the run, given the rewrite is written in place and a rejected rewrite restores the store from HEAD?</question>
+</open-question>
