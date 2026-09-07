@@ -82,10 +82,6 @@ Capture is documented as an on-demand skill — runnable for any milestone id at
 
 ## Open questions
 
-<open-question id="Cascaded sibling evidence" status="deferred">
-  <question>When an answer commit also removes cascaded sibling blocks that were mooted rather than accepted or overridden, does capture ignore their removed recommendation and applied-principle lines, or count them as evidence about store entries?</question>
-</open-question>
-
 <open-question id="Answer agreeing with recommendation" status="deferred">
   <question>When a Manual-answer or Alternative-answer records the same option the removed recommendation named, is it treated as an acceptance used only as evidence with no override prompt, or as an override by provenance alone?</question>
   <alternative id="Acceptance by option match">
