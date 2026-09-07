@@ -90,31 +90,11 @@ Substantive change to an entry — adding, pruning, narrowing, generalizing, or 
 
 Capture imposes no clean-store precondition. When `milestones/answer_decision_principles.md` already carries uncommitted changes at the start of a run, capture prints a one-line notice and asks once whether to proceed — the same notice-plus-single-confirmation shape as the repeat-capture guard, never a stop — so the documented hand-edit escape hatch for pulling an actively-wrong principle stays usable. On proceed, the working-tree file rather than `HEAD` is the baseline the whole-store rewrite composes over, and capture takes a snapshot of the store immediately before its first write. The rejection path restores that snapshot instead of restoring from `HEAD`, refining the "Store rewrite confirmation" decision so rejection is lossless in the dirty and clean cases alike (in the clean case the snapshot simply equals `HEAD`), and it then exits explicitly without committing rather than falling through to `shared/commit-procedure.md`'s dirty-own-path guard, which would otherwise commit the user's surviving edits under `Principle-capture:`.
 
+### Capture commit body content
+
+The `Principle-capture: <milestone_id>` commit carries a body of one short line per store change, each naming the change kind — add, revision, prune, merge, or generalization — and the Short Title of the override answer commit that drove it. With the console silent and the store keeping no changelog, the commit body is the only surviving place for the why behind a prune or merge, and this project already uses commit bodies for exactly that kind of non-diff-derivable context. The rule is flat rather than scoped to the change kinds the store does not self-record: the redundancy it costs is one line per add, whose `*Origin:*` line already names its question, while the ambiguity it avoids — adjudicating whether a merge that folds a new override into an existing entry counts as an add or a retirement — is real. Because the store change is composed as a single whole-store rewrite the user may revise over several `git diff` rounds, the body is composed at commit time against the final rewrite so it cannot drift from the diff it describes.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Capture commit body content" status="deferred">
-  <question>Does the Principle-capture commit carry a body naming which override drove each add, revision, prune, or merge, given the console prints nothing and the store keeps no changelog, or only the subject?</question>
-  <alternative id="Subject only">
-    The `Principle-capture: milestone_id` commit carries no body at all, leaving the store diff as the whole record of the pass.
-    <advantage>Cheapest and most uniform with the plugin&apos;s other run-scoped committers (`Requirements-review:`, `Recommendation-annotation:`, `Task-derivation:`, `Goal-revision:`), and for adds the record is not actually empty — each new entry&apos;s surviving `*Origin:*` line already names the question it came from.</advantage>
-    <drawback>The store may now shrink: for a prune, merge, generalization, or narrowing the diff shows only that text vanished, and with the console silent and the store carrying no changelog nothing anywhere names the override that forced it — a contradiction-driven retirement is indistinguishable from a sloppy deletion, and the one artifact that informs every future recommendation becomes unauditable exactly where it is most dangerous.</drawback>
-  </alternative>
-  <alternative id="Per-change body">
-    The commit carries a body of one short line per store change, each naming the change kind (add, revision, prune, merge, generalization) and the override answer commit&apos;s Short Title that drove it.
-    <advantage>It is the only durable record of *why* the store moved, placed where this project already puts exactly this kind of non-diff-derivable context — `answer-open-question` puts the decision&apos;s rationale in the body precisely so capture can distil it later, and `complete-all-tasks` puts the task heading there — and the line count is bounded by the handful of entries one run touches.</advantage>
-    <drawback>It is hand-composed prose no tooling consumes, and because the store change is confirmed as a single whole-store rewrite that the user may revise over several `git diff` rounds, the body must be recomposed to match at commit time or it silently drifts from the diff it describes.</drawback>
-  </alternative>
-  <alternative id="Harvest-set body">
-    The body names only the set of override commits the run harvested, with no mapping from override to store change.
-    <advantage>Bounded and mechanical to produce — it hands an auditor the exact evidence set to `git show` without requiring any per-entry attribution judgment.</advantage>
-    <drawback>It records almost nothing that is not already re-derivable by re-running the same path-scoped `git log` over that milestone&apos;s `requirements.md`, and it leaves the actually-lost fact — which override drove which prune or merge — exactly as unrecoverable as carrying no body.</drawback>
-  </alternative>
-  <alternative id="Scoped body">
-    The body carries lines only for the changes the store itself does not record — prunes, merges, generalizations, and revisions — with adds left to their `*Origin:*` line.
-    <advantage>Records the genuinely lost provenance while writing nothing that duplicates what the diff already carries, the leanest option that still closes the gap.</advantage>
-    <drawback>It is a conditional per-change-kind rule rather than a flat one, and its boundary is genuinely fuzzy: a merge that folds a new override into an existing entry is simultaneously an add and a retirement, so the runner must adjudicate which side of the rule it falls on every time.</drawback>
-  </alternative>
-  <recommendation option="Per-change body">With the console silent and the store keeping no changelog, the commit body is the only surviving place for the why behind a prune or merge, and this project already uses bodies for exactly that; a flat line-per-change beats the scoped variant because the redundancy it costs is one line per add while the ambiguity it avoids is real.</recommendation>
-</open-question>
