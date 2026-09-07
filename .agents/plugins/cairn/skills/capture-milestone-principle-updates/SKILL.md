@@ -348,47 +348,90 @@ If phase 1 leaves **no** surviving candidate **and** no flagged entry (commits e
 generalize and none contradict the store), go to step 8 — this converges on the **same** "nothing
 captured" report as the empty range. Reinforcement alone changes nothing in the store.
 
-### 6. Phase 2 — confirm and write one candidate at a time, against the live store
+### 6. Phase 2 — compose the whole-store rewrite and write it in place
 
-Now engage the user. You **may** first display the full surviving pool up front as a "what this
-milestone taught" review aid — but **writes still advance one candidate at a time**. Display
-granularity and write granularity are separate; never grouped-per-round approval.
+Phase 2 turns the two phase-1 sets into **one** proposed store and writes it **once**. There is no
+per-candidate loop: every change — add, revision, prune, merge, generalization, shortening — is
+composed together over the baseline and lands in a single in-place write of
+`milestones/answer_decision_principles.md`. The write is not the confirmation: the user reviews the
+resulting working-tree change with `git diff`, and the single confirmation that gates the commit is
+step 7's. This step prints **no diff and no store content** to the conversation — the working tree is
+the review surface.
 
-Walk the surviving candidates **strongest-first**. For **each** candidate, before writing the next:
+1. **Read the baseline whole.** Read the entire live `milestones/answer_decision_principles.md` as it
+   stands in the working tree — the baseline fixed in step 2, whether or not it matches `HEAD`. It is
+   small and grows slowly, so reading it whole is always feasible. If the file is absent or empty, the
+   baseline is the header paragraph alone with no entries, and the write below creates the file.
 
-1. **Read the entire live `milestones/answer_decision_principles.md`** as it stands in the working
-   tree — the baseline fixed in step 2, whether or not it matches `HEAD`. It is small and grows
-   slowly, so reading it whole is always feasible. If the file is absent or empty, there are no existing
-   principles and this candidate will be an add (the file is created on first write).
+2. **Compose the proposed store over the baseline.** Hold the baseline's entries in context and decide,
+   for the whole set at once, what the store should read after this milestone. Apply these moves
+   together, as one composition — never as a sequence of writes:
 
-2. **Decide revise-vs-add by semantic overlap, confirmed by the user — never by title alone, never
-   silently.** Find the principles whose *statements* (not just their `### <Short Title>` headings) bear
-   on this candidate. An exact (case-insensitive) **title collision is only a strong hint** that
-   pre-selects a likely revise target; the deciding test is semantic. Surface the candidate you
-   extracted alongside the overlapping existing entries, and let the user make the final call: **revise**
-   one existing principle (and how), or **add** a new entry. If nothing overlaps, still present the new
-   entry for confirmation before writing. Never auto-merge or auto-add without that confirmation.
-   Read the phase-1 **evidence set** alongside: a revision may not prune or narrow an entry
-   **reinforced** in this pass, and an entry **flagged** as contradicted is surfaced with the
-   contradicting commit so its salvage is decided here rather than left standing unexamined.
+   - **Place each candidate** from the phase-1 ranked set, strongest first. Find the baseline entries
+     whose *statements* (not just their `### <Short Title>` headings) bear on it; an exact
+     case-insensitive title collision is only a strong hint that pre-selects a likely revise target —
+     the deciding test is semantic overlap. Where an entry overlaps, the candidate becomes a
+     **revision** of that entry (its directive restated so it carries both); where none does, it
+     becomes an **add** as a new `### <Short Title>` entry. A candidate that overlaps an entry another
+     candidate is already revising folds into that same revision rather than adding a near-duplicate,
+     and two candidates that would each add the same rule become one add.
+   - **Resolve each flagged entry** from the phase-1 evidence set that no candidate's revision already
+     resolved. Current reasoning — the accepted or override rationale that flagged it — takes
+     precedence over the entry as it stands: salvage what the entry still predicts correctly, by
+     narrowing, generalizing, or replacing it, and **prune** it only when nothing survives, choosing
+     the form as part of this composition so it fits both the reasoning that flagged it and every
+     accepted citation it earned.
+   - **Honor the shield.** An entry **reinforced** in this pass is never pruned or narrowed — not by a
+     revision, not by a flagged-entry salvage; a reinforced-and-flagged entry must find a form that
+     fits both.
+   - **Merge plain duplicates.** Two entries — baseline, new, or one of each — that plainly state the
+     same rule become one entry carrying the stronger phrasing under one `### <Short Title>`.
+   - **Hold every directive to the compactness bar.** A directive should run roughly **40–80 words**.
+     One that exceeds about **100** words is flagged for shortening, and the deciding standard is the
+     qualitative test — **as short as it can be while still reading as an intuitive rule** — so a
+     directive keeps a condition or corollary it genuinely needs and sheds everything else. The
+     numbers are a soft target under that test, never a hard cap.
+   - **No ceiling on entry count.** Prune by contradiction and merge by overlap are the only count
+     control; never drop or merge an entry to hit a size.
 
-3. **Write that one candidate** per the schema in step 6a, applying the user's confirmed choice (add a
-   new `### <Short Title>` subsection, or edit an existing one in place).
+   **What may touch which entry.** A **substantive** change — adding an entry, or pruning, narrowing,
+   generalizing, or replacing what an entry *decides* — requires this milestone's own evidence: a
+   candidate that overlaps it or a flag that names it. **Form-only hygiene** — shortening a directive
+   past the ~100-word flag, and merging two entries that plainly duplicate each other — may reach
+   **any** entry, evidenced by this milestone or not, with the applied test unchanged: evidence gates
+   what a rule decides, not how tersely it is written. An entry that is neither evidenced, nor over
+   the bar, nor a duplicate passes through verbatim.
 
-4. **Re-scan the remaining pool before the next candidate.** Because the write you just made mutated the
-   live store, a later candidate that overlapped *this* one may now be best expressed as a **revision of
-   what you just wrote** rather than a fresh add. Re-evaluating between every write — not approving a
-   static batch — is the whole reason this is an iterating loop.
+   Every entry in the composed store follows the schema in step 6a: one `### <Short Title>` heading per
+   entry, the directive in prose, and — when kept — the `*Origin:*` line as a **single-line pointer**
+   to the originating question (a revised or merged entry keeps one such line, pointing at the question
+   a revise-vs-salvage judgment or a human auditor would read). The header paragraph above the first
+   entry is carried over unchanged.
 
-After the candidates, walk each **flagged** entry from the phase-1 evidence set that no candidate's
-revision already resolved: surface it with the commit whose accepted or override reasoning
-contradicts it and let the user decide its salvage, under the same shield — an entry also reinforced
-in this pass is never pruned or narrowed. A flagged entry the user leaves as it stands changes nothing.
+   If the composed store is **identical to the baseline** — every candidate resolved into an entry
+   that already says it, no flag changed an entry, and no hygiene applied — there is nothing to write:
+   take no snapshot, write nothing, and go to step 8 (a nothing-captured outcome, like the empty range).
 
-**Termination is deterministic.** The candidate pool is the finite, known-up-front set of surviving
-candidates from phase 1. Each confirmation resolves one (add / revise / decline) and removes it, so the
-pool shrinks monotonically. The loop ends when every commit's rationale has been considered and every
-surviving candidate is resolved with no pending merges.
+3. **Snapshot the store immediately before the first write.** Copy the baseline as it stands in the
+   working tree to a temporary file outside the repository and hold its path:
+
+   ```
+   SNAPSHOT="$(mktemp)" && cp milestones/answer_decision_principles.md "$SNAPSHOT"
+   ```
+
+   If the store does not exist yet, record the snapshot as *absent* instead. This snapshot — not
+   `HEAD` — is the restore point for the rewrite (in the clean case it simply equals `HEAD`; after a
+   dirty-store proceed it preserves the user's own edits), and nothing else is written before it is
+   taken.
+
+4. **Write the composed store in place, once.** Replace the full content of
+   `milestones/answer_decision_principles.md` with the composed store in a single write. Do not stage
+   or commit it, and print no diff and no store content to the conversation: the working-tree change
+   is what the user reviews with `git diff` before step 7's confirmation.
+
+**Termination is deterministic.** The composition is one pass over two finite sets fixed by phase 1 —
+the ranked candidates and the flagged entries — each resolved into the composed store, so the phase
+ends when the one write lands.
 
 #### 6a. Entry schema
 
@@ -407,10 +450,10 @@ restatement of one past decision.>
 - **`### <Short Title>` heading — the handle.** A 2–5 word unique name, mirroring the open-question
   Short-Title convention. This is the key this skill matches on for revise-vs-add. No separate ID scheme.
 - **Body — the directive in prose.** A generalizable keep/eliminate rule, not a restatement of the
-  originating decision.
-- **`*Origin:*` line — optional.** A pointer to the originating question or example, to aid human
-  auditing and future overlap judgments. Omit it when there is nothing useful to record. What is
-  applied is the *statement*, not the origin.
+  originating decision, held to step 6's compactness bar (roughly 40–80 words, flagged past about 100).
+- **`*Origin:*` line — optional, single-line.** A one-line pointer to the originating question or
+  example, to aid human auditing and future overlap judgments. Omit it when there is nothing useful to
+  record. What is applied is the *statement*, not the origin.
 - **No status field.** Presence in the file means confirmed.
 
 ### 7. Commit the principle-store update
@@ -420,11 +463,11 @@ Read and follow the shared commit procedure at `.agents/plugins/cairn/shared/com
 - **PATHS** — this skill's own change set: the fixed-path store `milestones/answer_decision_principles.md` (a `milestones/`-root artifact, **not** any `<MILESTONE_DIR>` file — this skill writes only that store).
 - **SUBJECT** — `Principle-capture: <milestone_id>`, with `<milestone_id>` the argument from step 1 used verbatim (e.g. `Principle-capture: milestone_12_user-guide`), the marker naming this skill's distinctive principle-capture function.
 
-A pass that distilled no new principle — the empty commit range, in-range commits that none generalize, or the user declining every candidate — wrote nothing to `milestones/answer_decision_principles.md`: skip the shared procedure entirely and go to step 8. The store may still carry the user's own uncommitted edits admitted by step 2's dirty-store guard, and the procedure's dirty-own-path guard would otherwise commit those under this subject; no empty commit is written to record such a run either. A pass whose confirmed revise/add actually edited the store commits that edit — over the working-tree baseline, so edits admitted in step 2 ride in the same commit. The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
+A pass that distilled no new principle — the empty commit range, in-range commits that none generalize, or a composed store identical to its baseline (step 6) — wrote nothing to `milestones/answer_decision_principles.md`: skip the shared procedure entirely and go to step 8. The store may still carry the user's own uncommitted edits admitted by step 2's dirty-store guard, and the procedure's dirty-own-path guard would otherwise commit those under this subject; no empty commit is written to record such a run either. A pass whose step-6 rewrite actually changed the store commits that rewrite — over the working-tree baseline, so edits admitted in step 2 ride in the same commit. The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
 
 ### 8. Report
 
-- **If at least one principle was written,** print exactly one fixed terse status line and nothing
+- **If the composed rewrite was written,** print exactly one fixed terse status line and nothing
   else:
 
   `Principles captured.`
@@ -432,7 +475,7 @@ A pass that distilled no new principle — the empty commit range, in-range comm
   Carry no principle `### <Short Title>`, no add/revision breakdown, and no commit subject, and print
   no next-step or recommendation-advisor pointer.
 - **If nothing was captured** — the empty commit range (step 3) **or** in-range commits that none
-  generalize (step 5) **or** the user declined every candidate — report it in a **single line**: there
+  generalize (step 5) **or** a composed store identical to its baseline (step 6) — report it in a **single line**: there
   are no principle candidates in range to distill (write nothing, commit nothing). This is the
   distinct one-line no-op message for a pass whose dirty-own-path guard fired, never a collapse into
   `Principles captured.`; all three cases **converge on this identical terminal report**.

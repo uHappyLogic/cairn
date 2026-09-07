@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Compose Whole-Store Rewrite In Place
-
-Replace the per-candidate confirm-and-write loop with a single composition of the entire proposed store — adds, revisions, prunes, merges, generalizations, and shortenings applied together over the baseline — written directly to `milestones/answer_decision_principles.md` after taking a snapshot of the store immediately before the first write, printing no diff and no store content to the conversation. Substantive change to an entry requires the harvested milestone's own evidence, while form-only hygiene may reach any entry: directives target roughly 40-80 words and are flagged for shortening past about 100 with the "as short as it can be while still reading as an intuitive rule" test deciding, plainly duplicate entries merge, there is no ceiling on entry count, and the optional `*Origin:*` line survives as a single-line pointer. Verified when the write step describes one in-place rewrite under these rules and the `### <Short Title>` entry schema is preserved.
-
----
-
 ## Contradicted Entry Salvage Ladder
 
 State in the rewrite composition how an entry contradicted by current reasoning is salvaged, attempted in this fixed order: narrow its scope clause, generalize it so the prior accepted citations and the override both fit, replace it with a fresh directive when its premise is wrong, and delete it only when nothing survives, breaking a tie between forms by whichever yields the shortest entry that still predicts both. Entries reinforced by a citation in the same pass stay shielded from prune or narrowing. Verified when the skill lists the four forms in this order with the tie-break and the shield, and notes the chosen form is visible in the working-tree change.
