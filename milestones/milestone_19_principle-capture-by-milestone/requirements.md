@@ -46,6 +46,10 @@ The store change is confirmed as a whole-store rewrite, once, at commit time. Af
 
 A repeat run of capture against a milestone that already has a `Principle-capture:` commit warns and confirms rather than stopping or silently re-walking. The `Principle-capture: <milestone_id>` commit subject is the record that a milestone was ingested: before the commit walk, capture greps the history for that exact subject, anchored on both ends, and on a hit prints a one-line notice naming the prior commit and asks once whether to proceed; with no hit it runs unchanged. No empty commit is written to record a no-op run, so a prior run that changed nothing (an empty commit range, a composed store identical to `HEAD`, or a rejected rewrite) is not detected; this gap is accepted as harmless.
 
+### Milestone id argument shape
+
+The required argument is the milestone directory name under `milestones/` (e.g. `milestone_19_principle-capture-by-milestone`), exactly as `specify-milestone-starting-state` takes it, resolved as `milestones/<milestone_id>/` with a clean stop when that directory has no `requirements.md`. The value is consumed verbatim in three places: the path-scoped git-log prefix, the `Principle-capture: <milestone_id>` commit subject, and the repeat-capture guard's anchored grep for that exact subject. No bare-number form is accepted and no number-to-directory resolution exists.
+
 ## Out of Scope
 
 ## Open questions
@@ -111,25 +115,6 @@ A repeat run of capture against a milestone that already has a `Principle-captur
     <drawback>It multiplies prompts on precisely the answers whose bodies already carry the fullest rationale, making a milestone with many pre-sweep or discussed answers tedious to capture for little added signal.</drawback>
   </alternative>
   <recommendation option="Rationale-alone distill">A manual answer with no recommendation is a decision the recommender never got to make, so its rationale is exactly the guideline it lacks; overrides are the sharper signal, not the only one, and the override distinction should shape the comparison and prompting steps, never source eligibility.</recommendation>
-</open-question>
-<open-question id="Milestone id argument shape" status="deferred">
-  <question>Is the required argument the directory name (milestone_19_principle-capture-by-milestone, matching the sibling skills that take a milestone id), a bare number, or either?</question>
-  <alternative id="Directory name only">
-    The required argument is the milestone directory name under milestones/ (e.g. milestone_19_principle-capture-by-milestone), exactly as specify-milestone-starting-state takes it, resolved as milestones/&lt;milestone_id&gt;/ with a stop-and-report when that directory has no requirements.md.
-    <advantage>One shape shared with the only live sibling that takes a milestone id, and the value is consumed verbatim as both the path-scoped git-log prefix and the Principle-capture: &lt;milestone_id&gt; commit-subject descriptor, so validation is a single file-existence test with no resolution logic.</advantage>
-    <drawback>The user must supply the full zero-padded slug rather than a short number, which is more to type or paste when invoking capture for an older milestone.</drawback>
-  </alternative>
-  <alternative id="Bare number only">
-    The required argument is the milestone number (e.g. 19), which the skill resolves to a directory by globbing milestones/milestone_&lt;NN&gt;_*/ after normalizing zero-padding.
-    <advantage>Shortest possible invocation, and the number is what the Completed Milestones table lists first, so it is easy to read off.</advantage>
-    <drawback>Requires a glob-plus-zero-padding resolution rule and a multiple-or-no-match stop in the runtime file, breaks parity with the sibling skill&apos;s argument, and still has to derive the directory name for the commit subject and the log path.</drawback>
-  </alternative>
-  <alternative id="Either form">
-    The argument may be the directory name or a bare number, with the skill detecting the form (all-digits means number) and resolving a number to its directory by glob.
-    <advantage>Accepts whichever the user has at hand, so neither the long slug nor the number is ever wrong.</advantage>
-    <drawback>Two parse paths and a form-detection rule for a small typing convenience, adding branching to a runtime file that must stay lean, and the numeric branch inherits every resolution edge case of the bare-number option.</drawback>
-  </alternative>
-  <recommendation option="Directory name only">The directory name is the shape the plugin already uses for a milestone-id argument and is what capture consumes verbatim for its path-scoped log walk and its commit subject, so it needs no resolution logic; the bare-number convenience is not worth adding glob and zero-padding rules to the runtime file.</recommendation>
 </open-question>
 <open-question id="Unfinished milestone allowed" status="deferred">
   <question>May capture run against a milestone that is not yet listed in the Completed Milestones table, including the current one, or does it stop unless the milestone is finished?</question>
