@@ -10,9 +10,20 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_19_principle-capture-by-milestone/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 19 — Principle Capture By Milestone
+
+- `capture-milestone-principle-updates` now takes a required `<milestone_id>` argument, validated only by the existence of `milestones/<milestone_id>/requirements.md`, replacing the last-row-of-Completed-Milestones resolution so any milestone — current, unfinished, or long finished — can be harvested on demand.
+- Its commit walk covers all three answer provenances (`Manual-answer:`, `Alternative-answer:`, `Recommendation-answer:`) and reconstructs from each commit's diff the recommendation, cited principles, and alternatives the user saw, classifying every commit by agreement against the removed recommendation and by deliberated-vs-bare body.
+- Manual and alternative overrides are the sole source of new principles, prompted for an override reason with a best guess where the body records none behind a one-shot accept-all/skip-all/review choice, while accepted recommendations are evidence only — reinforcing cited entries and flagging contradicted ones.
+- The per-candidate confirm-and-write loop was replaced by one whole-store rewrite composed in place over the working-tree baseline, so the store may shrink as well as grow through prunes, merges, generalizations, and shortenings under a soft 40–80-word compactness bar.
+- A contradicted entry is salvaged through a fixed ladder — narrow, generalize, replace, delete only when nothing survives — tie-broken by the shortest entry that still predicts both the prior citations and the override, with reinforced entries shielded.
+- Two start-of-run guards were added, each a one-line notice plus a single proceed confirmation: a repeat-capture guard grepping for the exact `Principle-capture: <milestone_id>` subject, and a dirty-store guard that makes the working-tree file the rewrite baseline.
+- A single confirmation now gates the commit rather than the write, with a pre-write snapshot restored on rejection (never `HEAD`) and an explicit exit that skips `shared/commit-procedure.md`, and the `Principle-capture:` commit carries one body line per store change composed at commit time.
+- `README.md`, `CLAUDE.md`, and the three answer skills were updated to record capture as an on-demand, milestone-id-driven harvester over all three provenances, with the finish-time run phrased as a convention and never a precondition.
 
 ### Milestone 18 — Agent Layer Improvements
 
@@ -203,3 +214,4 @@ Current milestone: `milestones/milestone_19_principle-capture-by-milestone/`
 | 16 | Frontmatter Description Diet | `milestones/milestone_16_frontmatter-description-diet/` |
 | 17 | Versioning And Release Tooling | `milestones/milestone_17_versioning-release-tooling/` |
 | 18 | Agent Layer Improvements | `milestones/milestone_18_agent-layer-improvements/` |
+| 19 | Principle Capture By Milestone | `milestones/milestone_19_principle-capture-by-milestone/` |
