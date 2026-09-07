@@ -47,3 +47,19 @@ Replace the `Manual-answer:`-only commit walk with a path-scoped `git log` over 
 - `uv run scripts/migrate_skills_to_agy.py` regenerated `.agents/plugins/cairn/`; only the capture skill copy changed, differing from the source solely by the step-6 `${CLAUDE_PLUGIN_ROOT}` path rewrite and dropped `echo` hint.
 
 ---
+
+## Override Rationale Prompts With Best Guesses
+
+Add a prompting step that asks the user why the alternative was preferred only for override commits carrying no user rationale — every non-agreeing `Alternative-answer:` and a non-agreeing `Manual-answer:` whose body is the bare literal answer — showing the skill's best guess derived from the removed alternatives, recommendation, and recorded option, skippable per prompt, with the run opening on a one-shot choice to accept every guess or skip every prompt; deliberated manual bodies and agreeing answers are never prompted. Verified when the prompt step states exactly these eligibility rules, the best-guess display, and the one-shot opener.
+
+**Verified:**
+
+- A new top-level `### 4. Prompt for override rationales` step sits between `### 3. Walk the milestone's answer commits` and phase 1; the former steps 4–7 (and 5a) are renumbered 5–8 (and 6a), and every intra-file step cross-reference (usage note, step 1, guards, empty-range and no-candidate exits, body-test pointer, schema pointer, commit and report steps) resolves to the renumbered step.
+- The step states the eligibility rule exactly: a commit is prompted only when its record has `agreement` = `overrides` and `body_class` = `bare` — every non-agreeing `Alternative-answer:` and a non-agreeing `Manual-answer:` whose body is the bare literal answer — and states that deliberated `Manual-answer:` bodies and agreeing answers (every `Recommendation-answer:`, plus any agreeing `Alternative-answer:`/`Manual-answer:`) are never prompted, with non-override manual answers likewise unprompted (no recommendation existed to prefer the answer over) while staying a principle source.
+- Each prompt shows the Short Title and question, the recommended option with its rationale digest, the recorded option, and the skill's best guess at the override reason derived from the removed alternatives, the removed recommendation, and the recorded option (or the recorded decision for a fresh option), and is skippable individually (accept the guess / state own reason / skip).
+- The prompting opens with a one-shot choice — accept every best guess, skip every prompt, or review one at a time — asked once and only when at least one commit is eligible; with none eligible the step prints nothing and asks nothing.
+- The step's output is an `override_rationale` field added to the step-3 per-commit record (accepted guess or typed reason; `none` when unprompted or skipped), and phase 1's extraction reads it in place of the bare body for a prompted commit.
+- Frontmatter is unchanged and loads under `yaml.safe_load` (15-word description, no colon or semicolon); no `## Rules` section exists anywhere under `skills/`, `agents/`, or `shared/`.
+- `uv run scripts/migrate_skills_to_agy.py` regenerated `.agents/plugins/cairn/`; only the capture skill copy changed, and it differs from the source solely by the `${CLAUDE_PLUGIN_ROOT}` path rewrite and dropped `echo` hint.
+
+---

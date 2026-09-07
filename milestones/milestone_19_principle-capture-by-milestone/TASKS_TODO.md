@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Override Rationale Prompts With Best Guesses
-
-Add a prompting step that asks the user why the alternative was preferred only for override commits carrying no user rationale — every non-agreeing `Alternative-answer:` and a non-agreeing `Manual-answer:` whose body is the bare literal answer — showing the skill's best guess derived from the removed alternatives, recommendation, and recorded option, skippable per prompt, with the run opening on a one-shot choice to accept every guess or skip every prompt; deliberated manual bodies and agreeing answers are never prompted. Verified when the prompt step states exactly these eligibility rules, the best-guess display, and the one-shot opener.
-
----
-
 ## Override Candidates And Acceptance Evidence
 
 Rework phase 1 so new principle candidates are distilled only from override commits — a deliberated or prompted override rationale, plus non-override and deliberated agreeing `Manual-answer:` bodies — keeping the non-generalizable filter and the cross-candidate dedup, while accepted recommendations and agreeing answers supply evidence only: each removed `<applied-principle>` reinforces its store entry and shields it from prune or narrowing in this pass, and an accepted rationale contradicting an existing entry flags that entry for the salvage path. Verified when the skill states that an accepted `Recommendation-answer:` never yields a candidate, that an agreeing `Alternative-answer:` yields none while a deliberated agreeing `Manual-answer:` still does, and that both evidence signals fall out of the diff read.
