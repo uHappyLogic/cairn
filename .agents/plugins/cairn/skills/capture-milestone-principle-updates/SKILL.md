@@ -1,15 +1,23 @@
 ---
 name: capture-milestone-principle-updates
-description: Distill reusable answering principles from a just-finished milestone's recorded decisions into the project-wide principle store.
+description: Distill reusable answering principles from a named milestone's recorded decisions into the project-wide principle store.
 ---
 
 # capture-milestone-principle-updates
 
-This is the finish-time harvester of the answer-principle-learning loop. Over a milestone, each
+This is the on-demand harvester of the answer-principle-learning loop. Over a milestone, each
 `/answer-open-question` records a decision and commits it with the decision's **rationale in the
 commit body** (subject `Manual-answer: <Short Title>`). This skill reads that finite, known-up-front
-set of commits **once the milestone is finished** and distills from them the generalizable answering
+set of commits for the milestone you name and distills from them the generalizable answering
 principles that the recommendation advisor can apply.
+
+It runs against **any** milestone id whose `milestones/<milestone_id>/requirements.md` exists — the
+current milestone, an unfinished one, or one already finished (backfill included). Because every
+answer commit lands during the requirements phase, the milestone's finish status carries no
+information the harvest needs: a run against a milestone whose questions are still being answered
+simply harvests what exists so far, and a later run re-walks the same path to pick up the rest.
+Running it right after `/finish-current-milestone` is the natural moment, since the milestone's
+answer set is complete by then, but it is never a precondition.
 
 It is the **sole writer** of `milestones/answer_decision_principles.md` (a single project-wide file at
 the `milestones/` root, **above** any one milestone, so principles accumulate across milestones).
@@ -17,11 +25,17 @@ the `milestones/` root, **above** any one milestone, so principles accumulate ac
 ## Usage
 
 ```
-/capture-milestone-principle-updates
+/capture-milestone-principle-updates <milestone_id>
 ```
 
-Takes no arguments. It is an **optional** follow-up run *after* `/finish-current-milestone` has
-already recorded the milestone and cleared the current-milestone pointer to `none`.
+- `<milestone_id>` (**required**): the milestone directory name under `milestones/`, e.g.
+  `milestone_12_user-guide` — exactly as `/specify-milestone-starting-state` takes it. No bare-number
+  form is accepted and no number-to-directory resolution exists; the value is used verbatim.
+
+**Example:**
+```
+/capture-milestone-principle-updates milestone_12_user-guide
+```
 
 > This skill writes **only** the principle store at the fixed path
 > `milestones/answer_decision_principles.md`. It does **not** touch any milestone's `requirements.md`.
@@ -30,30 +44,33 @@ already recorded the milestone and cleared the current-milestone pointer to `non
 
 ## Workflow
 
-### 1. Resolve the just-finished milestone — NOT via `get-current-milestone`
+### 1. Locate the milestone
 
-By the time this skill runs, `/finish-current-milestone` has already cleared the current-milestone
-pointer to `none`, so the usual `shared/get-current-milestone.md` resolution would find no active
-milestone. **Do not call `get-current-milestone`.** Instead, resolve the target milestone from the
-**last row of the `## Completed Milestones` table** in `milestones/README.md` — the row
-`/finish-current-milestone` appended for the milestone it just finished.
+If no `<milestone_id>` argument was given, stop and report that the milestone id is required, showing
+the usage above.
 
-Read `milestones/README.md`, find the `## Completed Milestones` table, and take its **last** row. The
-backtick-quoted path in that row is `<MILESTONE_DIR>` (e.g. `` `milestones/milestone_05_…/` ``). That
-same path feeds the commit walk in step 2.
+Resolve `<MILESTONE_DIR>` as `milestones/<milestone_id>/`. If `milestones/<milestone_id>/requirements.md`
+does not exist, **stop without changing anything** and report that the milestone was not found —
+list the `milestone_*` directories present under `milestones/` so the caller can retry with one of
+them. Directory existence is the only validation; nothing about the milestone's finish status is
+consulted.
+
+The same `<milestone_id>` feeds, verbatim, the path-scoped commit walk in step 2 and the commit
+subject in step 5.
 
 ### 2. Walk the milestone's `Manual-answer` commits
 
 Collect the manual-answer commits for this milestone with a **path-scoped** log, using the
-`<MILESTONE_DIR>` from step 1:
+`<milestone_id>` from step 1 verbatim in the path:
 
 ```
-git log --grep='^Manual-answer: ' -- <MILESTONE_DIR>/requirements.md
+git log --grep='^Manual-answer: ' -- milestones/<milestone_id>/requirements.md
 ```
 
-- **The path filter is itself the lower boundary.** `<MILESTONE_DIR>/requirements.md` does not exist
-  before `/define-milestone-goal` created it, so no earlier commit can touch it — there is no need
-  for a milestone-start marker or recorded base SHA.
+- **The path filter is itself the lower boundary.** `milestones/<milestone_id>/requirements.md` does
+  not exist before `/define-milestone-goal` created it, so no earlier commit can touch it — there is
+  no need for a milestone-start marker or recorded base SHA. It is also the only boundary on the
+  harvest: no finish marker or upper bound is applied.
 - **Read the commit bodies, not just the subjects.** The subject only names the answered question; the
   reusable reasoning is in the **body** (`git log` / `git show` of each commit). Phase-1 extraction
   works from those bodies.
@@ -152,7 +169,7 @@ restatement of one past decision.>
 Read and follow the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set: the fixed-path store `milestones/answer_decision_principles.md` (a `milestones/`-root artifact, **not** any `<MILESTONE_DIR>` file — this skill writes only that store).
-- **SUBJECT** — `Principle-capture: <milestone_id>` (the `<MILESTONE_DIR>` resolved in step 1), the marker naming this skill's distinctive principle-capture function.
+- **SUBJECT** — `Principle-capture: <milestone_id>`, with `<milestone_id>` the argument from step 1 used verbatim (e.g. `Principle-capture: milestone_12_user-guide`), the marker naming this skill's distinctive principle-capture function.
 
 A pass that distilled no new principle — the empty commit range, in-range commits that none generalize, or the user declining every candidate — leaves `milestones/answer_decision_principles.md` unchanged; a pass whose confirmed revise/add actually edited the store commits that edit. The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
 

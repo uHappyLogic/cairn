@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Capture Takes Required Milestone Id Argument
-
-Rework `skills/capture-milestone-principle-updates/SKILL.md` so it requires a `<milestone_id>` argument — the directory name under `milestones/` exactly as `specify-milestone-starting-state` takes it — resolved as `milestones/<milestone_id>/` with a clean stop when that directory has no `requirements.md`, replacing the last-row-of-Completed-Milestones resolution and the pointer-none framing, and consuming the id verbatim in the path-scoped git-log prefix and the `Principle-capture: <milestone_id>` subject. The skill's usage and opening prose describe it as on-demand for any milestone id whose `requirements.md` exists (current, unfinished, or already finished, with finish the natural but never required moment), and its frontmatter description is reworded within 25 words to drop the "just-finished" framing. Verified when the skill mentions no Completed Milestones table or current-milestone pointer, the description loads under `yaml.safe_load`, and the regenerated `.agents/plugins/cairn/` tree matches the source.
-
----
-
 ## Repeat Capture And Dirty Store Guards
 
 Add two start-of-run guards to the capture skill, each a one-line notice plus a single proceed confirmation and never a stop: before the commit walk, grep the history for the exact both-ends-anchored subject `Principle-capture: <milestone_id>` and on a hit name the prior commit; and when `milestones/answer_decision_principles.md` already carries uncommitted changes, notice-and-confirm, then use the working-tree file rather than `HEAD` as the baseline the rewrite composes over. Verified when the skill states both guards with their exact anchoring, runs unchanged on no hit, and writes no empty commit to record a no-op run.
