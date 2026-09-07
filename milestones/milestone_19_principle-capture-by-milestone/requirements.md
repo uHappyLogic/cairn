@@ -86,6 +86,10 @@ A `Manual-answer:` or `Alternative-answer:` that records the same option the rem
 
 Substantive change to an entry — adding, pruning, narrowing, generalizing, or replacing what it decides — still requires the harvested milestone's own evidence, but the composed whole-store rewrite may additionally apply form-only hygiene to any entry: shortening one past the roughly 100-word flag and merging two that plainly duplicate each other, with the applied test unchanged. Evidence gates what a rule decides, not how tersely it is written, and because the rewrite is already composed as one working-tree change the user reviews with `git diff` before the single commit confirmation, letting the compactness bar and the merge move reach untouched entries costs no extra mechanism while every substantive change stays anchored to a harvested override.
 
+### Dirty store precondition
+
+Capture imposes no clean-store precondition. When `milestones/answer_decision_principles.md` already carries uncommitted changes at the start of a run, capture prints a one-line notice and asks once whether to proceed — the same notice-plus-single-confirmation shape as the repeat-capture guard, never a stop — so the documented hand-edit escape hatch for pulling an actively-wrong principle stays usable. On proceed, the working-tree file rather than `HEAD` is the baseline the whole-store rewrite composes over, and capture takes a snapshot of the store immediately before its first write. The rejection path restores that snapshot instead of restoring from `HEAD`, refining the "Store rewrite confirmation" decision so rejection is lossless in the dirty and clean cases alike (in the clean case the snapshot simply equals `HEAD`), and it then exits explicitly without committing rather than falling through to `shared/commit-procedure.md`'s dirty-own-path guard, which would otherwise commit the user's surviving edits under `Principle-capture:`.
+
 ## Out of Scope
 
 ## Open questions
@@ -113,24 +117,4 @@ Substantive change to an entry — adding, pruning, narrowing, generalizing, or 
     <drawback>It is a conditional per-change-kind rule rather than a flat one, and its boundary is genuinely fuzzy: a merge that folds a new override into an existing entry is simultaneously an add and a retirement, so the runner must adjudicate which side of the rule it falls on every time.</drawback>
   </alternative>
   <recommendation option="Per-change body">With the console silent and the store keeping no changelog, the commit body is the only surviving place for the why behind a prune or merge, and this project already uses bodies for exactly that; a flat line-per-change beats the scoped variant because the redundancy it costs is one line per add while the ambiguity it avoids is real.</recommendation>
-</open-question>
-
-<open-question id="Dirty store precondition" status="deferred">
-  <question>What does capture do when the principle store already carries uncommitted changes before the run, given the rewrite is written in place and a rejected rewrite restores the store from HEAD?</question>
-  <alternative id="Clean-store precondition">
-    Capture checks `git status --porcelain -- milestones/answer_decision_principles.md` before anything else and stops cleanly when the store carries uncommitted changes, telling the user to commit or stash first.
-    <advantage>Makes both fragile mechanics sound by construction: the rejection path&apos;s restore-from-HEAD is then exactly a restore of the pre-run state, and `shared/commit-procedure.md`&apos;s dirty-own-path guard sees only bytes this pass wrote, so a no-op run can never commit a stranger&apos;s edits under `Principle-capture:`.</advantage>
-    <drawback>Introduces the plugin&apos;s only clean-tree precondition, and blocks precisely the state CLAUDE.md documents as legitimate — the user who hand-edited the store to pull an actively-wrong principle and now wants capture to run over it.</drawback>
-  </alternative>
-  <alternative id="Warn, confirm, snapshot">
-    Capture detects a dirty store, prints a one-line notice and asks once whether to proceed; on proceed the working-tree file is the baseline the whole-store rewrite composes over, and the rejection path restores a snapshot taken immediately before the first write rather than restoring from HEAD, exiting without commit.
-    <advantage>Preserves the user&apos;s uncommitted hand-edits instead of silently destroying them, reuses the exact shape this milestone already chose for the repeat-capture guard (notice plus one confirmation, never a stop), and the snapshot restore is correct in the clean case too, where the snapshot simply equals HEAD.</advantage>
-    <drawback>Adds mechanism the other decisions did not need — a pre-run copy of the store — and the rejection path must exit explicitly rather than falling through to the dirty-own-path guard, which would still see the user&apos;s surviving edits and commit them.</drawback>
-  </alternative>
-  <alternative id="Proceed silently">
-    Capture ignores the store&apos;s working-tree state entirely, composes the rewrite over whatever bytes are there, and leaves the rejection path restoring from HEAD as already decided.
-    <advantage>Costs nothing to specify and keeps the skill free of any precondition, matching the house norm that a dirty tree is never a sweep&apos;s business and matching the repeat-capture decision&apos;s willingness to name a gap and accept it.</advantage>
-    <drawback>A rejected rewrite destroys uncommitted work the run never authored, which is real data loss rather than an accepted harmless gap, and a run that composed nothing still trips the dirty-own-path guard and commits the user&apos;s unrelated edits under `Principle-capture:`.</drawback>
-  </alternative>
-  <recommendation option="Warn, confirm, snapshot">A dirty store is a foreseeable, documented state rather than an error, so warn-and-confirm keeps the hand-edit escape hatch usable in the same shape the repeat-capture guard already established, while the pre-run snapshot makes rejection lossless in the dirty and clean cases alike — restore-from-HEAD is only safe when nothing else was pending, which is the one assumption this question exists to remove.</recommendation>
 </open-question>
