@@ -82,29 +82,13 @@ Capture is documented as an on-demand skill — runnable for any milestone id at
 
 A `Manual-answer:` or `Alternative-answer:` that records the same option the removed `<recommendation option>` named counts as an acceptance for the prompting and evidence steps only: no override prompt is shown, and its removed `<applied-principle>` lines reinforce the cited entries exactly as an accepted recommendation's do. Source eligibility is untouched by the agreement test and stays governed by the existing bare-cold-answer filter, so a deliberated agreeing `Manual-answer:` body still yields candidates while an agreeing `Alternative-answer:`, whose body is only the alternative text, yields none. Agreement is the common case for manual answers in this repo, so the false-premise prompt must be suppressed, but suppressing candidate extraction along with it would contradict the recorded "Non-override manual answers" decision and discard the deliberated rationale those commits carry. Capture therefore runs two tests per commit: agreement against the removed recommendation, then the deliberated-vs-bare body test.
 
+### Untouched entry rewrite scope
+
+Substantive change to an entry — adding, pruning, narrowing, generalizing, or replacing what it decides — still requires the harvested milestone's own evidence, but the composed whole-store rewrite may additionally apply form-only hygiene to any entry: shortening one past the roughly 100-word flag and merging two that plainly duplicate each other, with the applied test unchanged. Evidence gates what a rule decides, not how tersely it is written, and because the rewrite is already composed as one working-tree change the user reviews with `git diff` before the single commit confirmation, letting the compactness bar and the merge move reach untouched entries costs no extra mechanism while every substantive change stays anchored to a harvested override.
+
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Untouched entry rewrite scope" status="deferred">
-  <question>May the composed store rewrite shorten, merge, or generalize entries that no commit of the harvested milestone bore on, such as a pre-existing entry over the 100-word flag, or does it change only entries the evidence of that milestone reached plus new adds?</question>
-  <alternative id="Evidence-scoped only">
-    The composed rewrite may change only entries this milestone&apos;s evidence actually reached — the override commits, the contradicting accepted rationales, the reinforcing applied-principle citations — plus new adds; every other entry is copied through byte-identical.
-    <advantage>Every store change is traceable to a specific harvested commit, so a run&apos;s diff is bounded and explainable, and the whole-store rewrite stays a pure function of the milestone it was pointed at.</advantage>
-    <drawback>The compactness bar and the merge move can never reach the store&apos;s oldest entries, which are exactly the stalest — the four entries written by the retired per-answer skill, one of them already past the 100-word flag, would stay untouched until some future milestone happens to contradict them.</drawback>
-  </alternative>
-  <alternative id="Form-only hygiene beyond evidence">
-    Substantive change — adding, pruning, narrowing, generalizing, replacing what an entry decides — still requires this milestone&apos;s evidence, but the composed rewrite may additionally apply form-only hygiene to any entry: shortening one past the roughly 100-word flag and merging two that plainly duplicate each other, with the applied test unchanged.
-    <advantage>It makes the compactness bar and overlap control enforceable across the whole file rather than only on the slice a given milestone happened to touch, at no extra mechanism cost — the rewrite already composes the entire store into one working-tree change the user reviews with git diff before the single commit confirmation.</advantage>
-    <drawback>The substantive-versus-form line is a judgment call, so a shortening meant as hygiene can quietly narrow or broaden what a rule decides, and a reviewer now has to read diff hunks on entries that have nothing to do with the milestone being harvested.</drawback>
-  </alternative>
-  <alternative id="Unrestricted rewrite">
-    The rewrite is bounded only by the goal&apos;s quality bar: capture may prune, merge, generalize, or reword any entry on its own current judgment, whether or not this milestone&apos;s commits bore on it.
-    <advantage>The store converges fastest on a compact, non-overlapping set, since every run is a full-store quality pass rather than a patch limited to one milestone&apos;s reach.</advantage>
-    <drawback>Capture would be overwriting user-confirmed directives with no evidence behind the change, which breaks the store&apos;s one guarantee that presence means confirmed and lets an unrelated run silently drift a rule that every future recommendation leans on.</drawback>
-  </alternative>
-  <recommendation option="Form-only hygiene beyond evidence">Evidence should gate what a rule decides, not how tersely it is written — and since the mechanism is already a whole-store compose reviewed as one git diff before commit, letting the compactness and merge moves reach untouched entries costs nothing while keeping every substantive change anchored to a harvested override.</recommendation>
-</open-question>
 
 <open-question id="Capture commit body content" status="deferred">
   <question>Does the Principle-capture commit carry a body naming which override drove each add, revision, prune, or merge, given the console prints nothing and the store keeps no changelog, or only the subject?</question>
