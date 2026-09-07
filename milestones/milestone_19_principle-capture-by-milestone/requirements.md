@@ -74,26 +74,11 @@ Entry compactness is a soft numeric target held under the qualitative bar, not a
 
 When current reasoning contradicts an existing entry, all four salvage forms are permitted and are attempted in a fixed preference order: narrow the entry's scope clause, generalize it so both the prior accepted citations and the override fit, replace it with a fresh directive when its premise is wrong, and delete it only when nothing survives. Narrowing leads because every entry already opens with an explicit scope clause, and the ladder as a whole is what the goal's mandate to prune, merge, generalize, and salvage what it can asks for. When two forms fit equally, the tie-break is whichever yields the shortest entry that still predicts both the prior accepted citations and the override. The chosen form is visible in the working-tree change the user reviews before the rewrite is committed.
 
+### Skill framing after decoupling
+
+Capture is documented as an on-demand skill — runnable for any milestone id at any time, with backfill over milestones already finished explicitly allowed — while keeping its home in the "Ending a milestone" stage behind the existing dashed optional edge. Finish is stated as the natural moment to run it, because a milestone's answer set is complete then, and never as a precondition. Every surface that mentions the placement, README.md and CLAUDE.md alike, must phrase it as a convention rather than a requirement, so the documented contract matches the required-id contract and does not drift back toward the pointer-none design.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Skill framing after decoupling" status="deferred">
-  <question>With a required milestone id, is capture still documented as the optional post-finish follow-up in README.md and CLAUDE.md, or reframed as an on-demand skill runnable for any milestone at any time?</question>
-  <alternative id="Keep post-finish framing">
-    Keep documenting capture in README.md and CLAUDE.md as the optional follow-up run after /finish-current-milestone, updating only the resolution sentence to say the milestone comes from the required id argument instead of the last Completed Milestones row.
-    <advantage>Smallest documentation change, and the finish moment stays the one canonical cue for when to run it, which is exactly when a milestone&apos;s answer set is guaranteed complete.</advantage>
-    <drawback>The docs would describe a constraint the skill no longer has: a required id is the whole point of decoupling, so framing it as post-finish-only hides the legitimate backfill run over milestones 6-18, which is the first real use the store will ever get.</drawback>
-  </alternative>
-  <alternative id="Reframe as on-demand skill">
-    Move capture out of the Ending a milestone stage into the on-demand family beside /ask-in-milestone-context, documented as runnable for any milestone id at any time with no reference to finish.
-    <advantage>Documentation matches the actual contract exactly, and backfilling the never-populated store across earlier milestones becomes discoverable rather than something a reader has to infer is allowed.</advantage>
-    <drawback>Loses the pipeline cue that tells a user when to run it, so capture is easy to forget entirely or to run on a milestone whose answers are still being recorded, harvesting a partial decision history.</drawback>
-  </alternative>
-  <alternative id="On-demand contract, finish as natural moment">
-    Document the contract as on-demand (any milestone id, any time, backfill explicitly allowed) while keeping its home in the Ending a milestone stage with the existing dashed optional edge, stating finish as the natural moment because the answer set is complete then, never as a precondition.
-    <advantage>States the true contract and keeps the when-to-run cue, mirroring how README already places the on-demand /ask-in-milestone-context inside a stage with an any-time note.</advantage>
-    <drawback>Two framings in one entry can read as hedging, and every surface must say post-finish is a convention rather than a precondition or the CLAUDE.md invariants drift back toward the pointer-none design.</drawback>
-  </alternative>
-  <recommendation option="On-demand contract, finish as natural moment">The required id makes the contract on-demand by construction and the store&apos;s first real run is a backfill, but finish remains the one moment a milestone&apos;s answer set is complete, so the docs keep that as the natural trigger while never stating it as a precondition.</recommendation>
-</open-question>
