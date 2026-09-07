@@ -50,6 +50,22 @@ The rule that capture harvests only `Manual-answer:` bodies is restated in: `CLA
 </open-question>
 <open-question id="Store rewrite confirmation granularity" status="open">
   <question>Now that a pass may prune, merge, generalize, and shorten existing entries as well as add, how is the store change confirmed with the user: one candidate at a time with revise/add/prune/merge as per-candidate choices, or as a single proposed rewrite of the whole store shown as a diff and confirmed once?</question>
+  <alternative id="Per-candidate moves">
+    Keep the milestone-5 loop shape and widen its per-candidate menu: walk the surviving candidates strongest-first and, for each, confirm one of add / revise / prune / merge / generalize against the live store, write that one change, and re-scan the remaining pool before the next.
+    <advantage>Every store write is preceded by an explicit, small user confirmation and followed by a re-scan by construction, so no rule enters or leaves the store without the user having judged that exact rule, matching the existing per-candidate-confirmation invariant.</advantage>
+    <drawback>Prune, merge, generalize, and shorten are cross-entry operations with no single candidate to hang on (a compaction of an entry no candidate touched has no prompt slot at all), so the loop either multiplies prompts over candidates plus existing entries or leaves the compactness bar unenforced, and the user never sees the final store shape until the last write lands.</drawback>
+  </alternative>
+  <alternative id="Whole-store rewrite diff">
+    After the per-override rationale prompts, the skill composes the entire proposed store (adds, revisions, prunes, merges, generalizations, and shortenings applied together), shows it to the user as a diff against the live file, and writes it once on acceptance, iterating on the proposal in conversation if the user asks for changes before accepting.
+    <advantage>Merges, prunes, and compaction are judged where they are actually visible, in the finished store as a whole, and the store is small (four entries today, growing slowly) so the whole diff fits one screen; composing all changes at once also dissolves the independence problem that made grouped writes unsafe, since nothing is written until the final state is settled.</advantage>
+    <drawback>Approval becomes one decision over a synthesis rather than a judgment per rule, so a bad prune or an over-generalized merge can ride in under an otherwise-good diff unless the user reads it entry by entry, and the existing per-candidate-confirmation invariant must be rewritten.</drawback>
+  </alternative>
+  <alternative id="Per-candidate decisions then final diff">
+    Confirm the disposition of each candidate and each contradicted entry one at a time without writing, then render the composed store once, show it as a diff, and write it on a single final acceptance.
+    <advantage>Keeps per-rule user judgment for every add, prune, and merge while still letting compaction and cross-entry coherence be reviewed on the finished file.</advantage>
+    <drawback>The user is effectively asked twice about the same changes, the two-stage flow is the most prose to specify and run, and a rejection at the final diff forces re-rendering decisions that were already confirmed, for a store small enough that the second stage alone would have sufficed.</drawback>
+  </alternative>
+  <recommendation option="Whole-store rewrite diff">The reworked pass edits the store as a whole (prune, merge, generalize, shorten), and those are properties of the finished file, not of one candidate; with per-override reasoning already gathered per item and a store small enough to review in one diff, a single confirmed rewrite, refined in conversation until accepted, is the leanest shape that lets the user judge the result they will actually live with.</recommendation>
 </open-question>
 <open-question id="Non-override manual answers" status="open">
   <question>Does capture still distill candidates from a Manual-answer whose removed block carried no recommendation to override (every pre-sweep answer, and any question the sweep never annotated), using its body rationale alone as today, or does the reworked skill treat only overrides of a recommendation as principle sources?</question>
@@ -68,6 +84,27 @@ The rule that capture harvests only `Manual-answer:` bodies is restated in: `CLA
 </open-question>
 <open-question id="Salvage form for contradicted entries" status="deferred">
   <question>When current reasoning contradicts an existing entry that was cited and then overridden, what forms may the salvage take: narrow the entry&apos;s scope, generalize it so both cases fit, replace it, or delete it outright when nothing generalizes?</question>
+  <alternative id="Full salvage ladder">
+    All four forms are permitted, attempted in a fixed preference order — narrow the entry&apos;s scope clause, generalize it so both the accepted citations and the override fit, replace it with a fresh directive when its premise is wrong, and delete only when nothing survives — with the chosen form shown to the user before the store is written.
+    <advantage>Preserves the most validated knowledge: the store&apos;s entries already open with an explicit &quot;When a question…&quot; scope clause, so a single override usually only proves the rule mis-scoped rather than wrong, and the ladder lets capture keep what the entry&apos;s prior accepted citations confirmed while still honoring the goal&apos;s &quot;salvage what it can&quot; and &quot;shrink as well as grow&quot; mandate.</advantage>
+    <drawback>Four candidate moves per contradicted entry is the most judgment per entry, and repeated narrowing across milestones can accrete exception clauses that push the entry past the compactness bar unless each step is held to the shortest entry that still predicts both cases.</drawback>
+  </alternative>
+  <alternative id="Narrow or delete">
+    The salvage is binary: carve the overriding case out of the entry&apos;s scope clause, or remove the entry; no generalizing or replacing.
+    <advantage>Simplest and most deterministic — each edit is a small, recognizable diff to an existing entry, and the entry keeps its title, origin, and tie-breakers.</advantage>
+    <drawback>A single override almost never licenses deletion, so in practice every contradiction becomes another &quot;except when…&quot; clause, which is the exact bloat the goal&apos;s compactness aim forbids, and the form cannot express the case where the override reveals the deeper rule the old entry was only an instance of.</drawback>
+  </alternative>
+  <alternative id="Replace outright">
+    A contradicted entry is decommissioned and a new entry is written from the override&apos;s rationale, so the store always reflects the newest reasoning.
+    <advantage>Clean: no accreted exceptions, no stale tie-breakers, and the newest deliberated reasoning wins unambiguously, matching &quot;current reasoning takes precedence.&quot;</advantage>
+    <drawback>Over-weights one decision against a history of confirmed acceptances — entries such as Name by distinctive function have been cited and accepted many times — so it throws away validated scope and worked examples that the override never disputed.</drawback>
+  </alternative>
+  <alternative id="Generalize or delete">
+    Capture must restate the entry so both the original cases and the override fit, and deletes it when no such restatement exists; narrowing and replacing are not offered.
+    <advantage>Every surviving entry is the most reusable rule the evidence supports, with no case-specific carve-outs.</advantage>
+    <drawback>Forced generalization tends toward vagueness (&quot;prefer the better-fitting option&quot;) that fails the &quot;reads as an intuitive rule&quot; test, and it excludes the most common honest outcome — the principle is right in its domain and simply did not apply here — which narrowing expresses in one clause.</drawback>
+  </alternative>
+  <recommendation option="Full salvage ladder">Allow all four forms in the order narrow, generalize, replace, delete, because the store&apos;s entries already carry explicit scope clauses that make narrowing the natural first move while the goal explicitly asks capture to prune, merge, generalize and salvage what it can; when two forms fit equally, the tie-break is whichever yields the shortest entry that still predicts both the prior accepted citations and the override.</recommendation>
 </open-question>
 <open-question id="Skill framing after decoupling" status="deferred">
   <question>With a required milestone id, is capture still documented as the optional post-finish follow-up in README.md and CLAUDE.md, or reframed as an on-demand skill runnable for any milestone at any time?</question>
