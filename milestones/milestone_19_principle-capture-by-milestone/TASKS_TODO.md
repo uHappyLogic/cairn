@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Answer Skills State Three-Provenance Harvest
-
-Update the commit-step prose of `answer-open-question`, `answer-open-question-with-recommendation`, and `answer-open-question-with-alternative`, and `answer-open-question`'s opening paragraph, so they no longer claim that only `Manual-answer:` is harvested: capture reads all three subjects, with manual and alternative answers as the override signal and recommendation answers as evidence only. Verified when no file under `skills/` or `agents/` states that capture harvests only `Manual-answer:`, `finish-current-milestone` still says it never invokes capture, and the regenerated `.agents/plugins/cairn/` tree matches the source.
-
----
-
 ## README Documents On-Demand Capture
 
 Rewrite the README surfaces — the "Ending a milestone" prose and its dashed optional diagram edge, the `## How skills commit` harvest sentence, the principle-learning and correction-loop bullets, and the skill-reference entries for capture and the three answer skills — so capture is an on-demand skill taking a required milestone id, harvesting all three answer provenances, prompting for override reasons, and composing a whole-store rewrite that may prune and merge, with finish phrased as the natural moment and never a precondition. Verified when README no longer mentions Completed Milestones table resolution or a `Manual-answer:`-only grep for capture and keeps the dashed edge in the "Ending a milestone" diagram.

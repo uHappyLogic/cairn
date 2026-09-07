@@ -113,8 +113,11 @@ Read and follow the shared commit procedure at
 
 - **PATHS** — this skill's own edit: `<MILESTONE_DIR>/requirements.md`.
 - **SUBJECT** — exactly `Alternative-answer: <Short Title>` (the answered question's handle).
-  This distinct subject does **not** match `/capture-milestone-principle-updates`'s
-  `^Manual-answer:` grep, so capture never harvests it.
+  This distinct subject marks an override of the embedded recommendation: when
+  `/capture-milestone-principle-updates` walks a milestone's answer commits across all three
+  subjects, it reads this one as an override signal, like `Manual-answer:`, and — because the
+  body below carries no user rationale — asks the user then why the alternative was preferred;
+  `Recommendation-answer:` commits are evidence about existing principles only.
 - **Body** — the lifted alternative content (the `<id>` — `<what-it-is>` answer text derived in
   step 3, with XML entities un-escaped) — the answer that was recorded.
 

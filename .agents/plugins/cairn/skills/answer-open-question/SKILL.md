@@ -5,7 +5,7 @@ description: Answer a named open question in the current milestone's requirement
 
 # answer-open-question
 
-Resolves a named open or deferred question in the current milestone's `requirements.md` by recording the user's answer, propagating its implications through the document, and committing that edit on its own with the decision's rationale in the commit body — establishing the `Manual-answer:` commit the finish-time `/capture-milestone-principle-updates` skill later distills into reusable principles. The answer text is recorded **literally**; the one reserved answer text is the retired sentinel `record the recommendation`, which this skill redirects instead of recording (step 2).
+Resolves a named open or deferred question in the current milestone's `requirements.md` by recording the user's answer, propagating its implications through the document, and committing that edit on its own with the decision's rationale in the commit body — establishing the `Manual-answer:` commit that `/capture-milestone-principle-updates` later reads, alongside `Alternative-answer:` and `Recommendation-answer:` commits, when it distills a milestone's answers into reusable principles: a manual answer is an override signal (a decision the recommender did not make), so its body rationale is what gets distilled. The answer text is recorded **literally**; the one reserved answer text is the retired sentinel `record the recommendation`, which this skill redirects instead of recording (step 2).
 
 ## Usage
 
@@ -53,7 +53,7 @@ That procedure owns resolving the current milestone (the `<MILESTONE_DIR>` refer
 Read and follow the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these inputs, using the same `<MILESTONE_DIR>` resolved while recording:
 
 - **PATHS** — this skill's own edit: `<MILESTONE_DIR>/requirements.md`.
-- **SUBJECT** — exactly `Manual-answer: <Short Title>` (the answered question's handle), so `/capture-milestone-principle-updates` can collect these with `git log --grep='^Manual-answer: '`.
+- **SUBJECT** — exactly `Manual-answer: <Short Title>` (the answered question's handle). The marker is the provenance `/capture-milestone-principle-updates` reads when it walks a milestone's answer commits across all three subjects: `Manual-answer:` and `Alternative-answer:` mark override signals it distills new principles from, while `Recommendation-answer:` marks evidence about existing principles only.
 - **Body** — the decision's rationale — but record only rationale that genuinely exists in this conversation. Never prompt the user for a rationale and never fabricate one. When `/discuss-open-question` deliberation is in context, the body captures that reasoning. On a cold answer (no deliberation), the body is the literal answer text — recorded verbatim, including any inline "because" clause the user typed; when the answer states no reasoning, the body holds the bare decision. The answer string is itself the cold path's rationale affordance — add no separate rationale prompt.
 
 That procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit. Its no-op guard also covers this skill's clean-stop cases: if step 3 stopped on a Short-Title mismatch, step 2's redirect guard fired on the retired sentinel, or step 1 hit a parse error, `requirements.md` is unchanged, so nothing is staged and nothing is committed.

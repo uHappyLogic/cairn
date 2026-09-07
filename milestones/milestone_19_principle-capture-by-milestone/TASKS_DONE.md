@@ -145,3 +145,18 @@ Make the `Principle-capture: <milestone_id>` commit carry a body of one short li
 - `uv run scripts/migrate_skills_to_agy.py` regenerated `.agents/plugins/cairn/`; only the capture skill copy changed, and it differs from the source solely by the step-7 `${CLAUDE_PLUGIN_ROOT}` path rewrite and dropped `echo` hint.
 
 ---
+
+## Answer Skills State Three-Provenance Harvest
+
+Update the commit-step prose of `answer-open-question`, `answer-open-question-with-recommendation`, and `answer-open-question-with-alternative`, and `answer-open-question`'s opening paragraph, so they no longer claim that only `Manual-answer:` is harvested: capture reads all three subjects, with manual and alternative answers as the override signal and recommendation answers as evidence only. Verified when no file under `skills/` or `agents/` states that capture harvests only `Manual-answer:`, `finish-current-milestone` still says it never invokes capture, and the regenerated `.agents/plugins/cairn/` tree matches the source.
+
+**Verified:**
+
+- `skills/answer-open-question/SKILL.md`: the opening paragraph no longer calls capture "finish-time" or frames `Manual-answer:` as the one commit it distills — it says `/capture-milestone-principle-updates` reads the commit alongside `Alternative-answer:` and `Recommendation-answer:` commits and treats a manual answer as an override signal whose body rationale is distilled; the step-4 SUBJECT bullet no longer says capture collects these with `git log --grep='^Manual-answer: '` and instead names the three-subject walk with manual/alternative as override signals and recommendation as evidence only.
+- `skills/answer-open-question-with-recommendation/SKILL.md` step 2: the "does not match `^Manual-answer:` grep, so capture never harvests it" sentence is replaced by prose stating capture reads `Recommendation-answer:` commits as evidence about principles already in the store only, never as a source of new principles, which come from the two override subjects.
+- `skills/answer-open-question-with-alternative/SKILL.md` step 5: the same "never harvests it" sentence is replaced by prose stating capture reads `Alternative-answer:` as an override signal like `Manual-answer:`, prompts the user for the override reason because the body carries no user rationale, and treats `Recommendation-answer:` as evidence only.
+- `grep -rn` over `skills/` and `agents/` for "harvests only", "never harvests", `grep='^Manual-answer`, "`Manual-answer:` grep", and "finish-time" returns nothing — no runtime file states capture harvests only `Manual-answer:`.
+- `skills/finish-current-milestone/SKILL.md` line 8 still reads "it never invokes `/capture-milestone-principle-updates`" (unchanged).
+- `uv run scripts/migrate_skills_to_agy.py` regenerated `.agents/plugins/cairn/`; only the three answer-skill copies changed, and each differs from its source solely by the `${CLAUDE_PLUGIN_ROOT}` path rewrite and dropped `echo` hint; all three frontmatter descriptions still load under `yaml.safe_load` at 15–19 words.
+
+---

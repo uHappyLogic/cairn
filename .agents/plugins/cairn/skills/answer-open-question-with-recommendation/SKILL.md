@@ -54,8 +54,11 @@ same `<MILESTONE_DIR>` the shared recording procedure resolved:
 
 - **PATHS** — this skill's own edit: `<MILESTONE_DIR>/requirements.md`.
 - **SUBJECT** — exactly `Recommendation-answer: <Short Title>` (the answered question's
-  handle). This distinct subject does **not** match `/capture-milestone-principle-updates`'s
-  `^Manual-answer:` grep, so capture never harvests it.
+  handle). This distinct subject marks an accepted recommendation: when
+  `/capture-milestone-principle-updates` walks a milestone's answer commits across all three
+  subjects, it reads this one as evidence about principles already in the store only, never as
+  a source of new principles — those come from the `Manual-answer:` and `Alternative-answer:`
+  override signals.
 - **Body** — the lifted recommendation content (the `<option>` — `<rationale>` answer text,
   derived from the block's `<recommendation>` element — its `option` attribute recombined with
   the element's text, with XML entities un-escaped) — the answer that was recorded.
