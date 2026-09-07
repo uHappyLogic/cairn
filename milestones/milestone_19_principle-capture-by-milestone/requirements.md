@@ -62,29 +62,14 @@ A `Manual-answer:` whose removed block carried no recommendation to override —
 
 Capture prompts for the override reason only where the commit body carries no user rationale: every `Alternative-answer:`, and a `Manual-answer:` whose body is the bare literal answer with no stated reason, judged by the same bare-cold-answer test phase 1 already applies. A deliberated `Manual-answer:` body is read as the user's own answer to the why and is never re-prompted. Each prompt shows the skill's best guess at the override reason and can be skipped individually, and the run opens with a one-shot choice to accept every guess or to skip every prompt, so a backfill run over an older milestone the user no longer remembers stays workable. Misclassifying a thin-but-real rationale as deliberated is accepted: the body still surfaces in the composed store rewrite the user reviews with `git diff` before the commit is confirmed.
 
+### Milestone eligibility
+
+Capture runs against any milestone id whose `milestones/<milestone_id>/requirements.md` exists, the current and any unfinished milestone included, and never consults the Completed Milestones table. The id is validated by directory existence exactly as the sibling milestone-id skills do, and the path-scoped git log is the only boundary on the harvest. Because every answer commit lands during the requirements phase, finish status carries no information the harvest needs; a run against a milestone whose questions are still being answered simply harvests what exists so far, and a later pass re-walks the same path to pick up the rest.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Unfinished milestone allowed" status="deferred">
-  <question>May capture run against a milestone that is not yet listed in the Completed Milestones table, including the current one, or does it stop unless the milestone is finished?</question>
-  <alternative id="Any defined milestone">
-    Capture accepts any milestone id whose milestones/&lt;milestone_id&gt;/requirements.md exists, the current milestone included, with the path-scoped git log as the only boundary and no check against the Completed Milestones table.
-    <advantage>Matches the goal exactly (argument-driven, last-completed-row resolution dropped) and the sibling milestone-id skills&apos; existence-only validation; because every answer commit lands during the requirements phase, the history is already complete before derive-tasks runs, so finish status carries no information the harvest needs and a user can capture as soon as the questions converge.</advantage>
-    <drawback>A run against a milestone still mid-requirements harvests a partial history, so any answers recorded afterwards need a later pass to be considered.</drawback>
-  </alternative>
-  <alternative id="Finished milestones only">
-    Capture resolves the id to a directory but stops with a clean-stop message unless that path appears as a row in the Completed Milestones table of milestones/README.md.
-    <advantage>Guarantees the answer history is frozen when harvested, so one capture per milestone is by construction the whole story.</advantage>
-    <drawback>Reintroduces the finish coupling the goal removes and adds a second README-table lookup to keep in sync, while blocking legitimate runs for no gain: finishing never adds answer commits, so the guard checks a state unrelated to what it protects.</drawback>
-  </alternative>
-  <alternative id="Advisory on unresolved questions">
-    Capture runs against any defined milestone but, when that requirements.md still carries status=&quot;open&quot; blocks, prints a one-line advisory that the answer set may still grow and asks whether to proceed.
-    <advantage>Keeps the flexibility of the existence-only rule while keying the warning on the signal that actually predicts more answers (unresolved questions) rather than the unrelated finish state.</advantage>
-    <drawback>Adds an interactive gate for a condition git already makes harmless (a later pass simply re-walks the same path), and it fires on exactly the new use case the rework enables, so it reads as noise more often than as a real warning.</drawback>
-  </alternative>
-  <recommendation option="Any defined milestone">The harvest is a path-scoped git log bounded only by the file&apos;s existence and every answer commit lands before derive-tasks, so a finished-only stop guards a state that never changes the harvest and would reintroduce the finish coupling the goal drops; validate the id by directory existence exactly as the sibling milestone-id skills do.</recommendation>
-</open-question>
 <open-question id="Entry compactness bar" status="deferred">
   <question>Is the compactness of a store entry expressed as a concrete cap (a word limit per entry, a ceiling on entry count) or only as the qualitative &quot;as short as still reads as an intuitive rule&quot; bar, and does the optional Origin line survive?</question>
   <alternative id="Qualitative bar only">
