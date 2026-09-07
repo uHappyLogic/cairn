@@ -54,34 +54,14 @@ The required argument is the milestone directory name under `milestones/` (e.g. 
 
 A `Manual-answer:` whose removed block carried no recommendation to override — every pre-sweep answer, and any question the recommend sweep never annotated — is still a principle source. Capture distills candidates from its body rationale alone, exactly as the current phase-1 extraction does, because a decision the recommender never got to weigh in on is precisely a guideline it lacks. The override distinction shapes only the diff-comparison and prompting steps, never source eligibility; the existing non-generalizable filter continues to drop bare cold answers.
 
+### Role of accepted recommendations
+
+`Recommendation-answer:` commits, where the user accepted the recommendation as-is, are used only as evidence about entries already in the store, never mined for new principle candidates. A removed `<applied-principle>` citation counts as reinforcement of that entry and shields it from being pruned or narrowed in the same pass, and an accepted rationale that contradicts an existing entry flags it for the prune, narrow, generalize, or salvage path. New principles continue to come solely from the override commits: an accepted recommendation carries the recommender's own reasoning, so it cannot supply the guideline the recommender lacked, while both evidence signals fall out of the per-commit diff read capture already performs.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Role of accepted recommendations" status="open">
-  <question>What does capture do with a milestone&apos;s Recommendation-answer commits, where the user accepted the recommendation as-is: treat each as a confirmation that reinforces any principle the removed block cited and leave it at that, mine its rationale for new principle candidates exactly like a manual answer, or use it only to detect a store entry the accepted reasoning contradicts?</question>
-  <alternative id="Confirmation only">
-    Each Recommendation-answer commit whose removed block carried an &lt;applied-principle&gt; citation counts as one user confirmation of that store entry, recorded as reinforcement evidence and nothing more; commits that cited no principle are ignored.
-    <advantage>Cheapest possible role that still respects the goal&apos;s framing — the override commits stay the only teaching signal, and a cited-and-accepted entry gets a concrete shield against being pruned or narrowed in the same pass.</advantage>
-    <drawback>The store has no weight or age field, so outside the prune step the reinforcement is inert, and a recommendation that overrode a bearing principle on merit and was accepted leaves that stale entry standing even though the goal says current reasoning takes precedence.</drawback>
-  </alternative>
-  <alternative id="Mine like manual">
-    Treat every Recommendation-answer body as a rationale to extract keep/eliminate candidates from, exactly as phase 1 does for a Manual-answer body.
-    <advantage>Harvests the largest pool by far (66 of the 87 answer commits) and never lets a genuinely generalizable rationale go uncaptured just because the user accepted it.</advantage>
-    <drawback>Those bodies are the recommender&apos;s own reasoning, so they can only teach the recommender what it already knows — the goal targets the guideline the recommender lacked — while flooding the store rewrite the user reviews with agent-authored candidates the user never deliberated, the exact provenance the distinct subject was created to keep out.</drawback>
-  </alternative>
-  <alternative id="Contradiction detection only">
-    Read each accepted rationale solely to check whether it contradicts an existing store entry — most sharply when the recommender overrode a bearing principle for a stated reason and the user accepted — and feed any hit into the prune, narrow, or generalize path; cited-and-accepted entries get no special standing.
-    <advantage>Directly serves the shrink-as-well-as-grow half of the goal by surfacing exactly the entries whose accepted counter-reasoning proves them wrong or too broad.</advantage>
-    <drawback>Discards the reinforcement signal, so the same pass can prune or narrow an entry that was cited and accepted this very milestone, and contradiction hits require the user to adjudicate agent-authored reasoning that nobody deliberated.</drawback>
-  </alternative>
-  <alternative id="Evidence for existing entries">
-    Use accepted recommendations only as evidence about entries already in the store — a removed &lt;applied-principle&gt; citation reinforces that entry and shields it from pruning in the same pass, and an accepted rationale that contradicts an entry flags it for the prune, narrow, or generalize path — but never mine them for new candidates.
-    <advantage>Covers both things an accepted recommendation can actually tell capture (which entries still earn their place, which the recommender has already outgrown) from the same per-commit diff read the goal already requires, while keeping the override commits the sole source of new principles.</advantage>
-    <drawback>Capture must reconstruct and read every Recommendation-answer diff, not just the override ones, and a flagged contradiction still asks the user to weigh a rationale they only rubber-stamped.</drawback>
-  </alternative>
-  <recommendation option="Evidence for existing entries">An accepted recommendation carries the recommender&apos;s own reasoning, so it can never supply the guideline the recommender lacked, but it is the only evidence the shrink half of the goal has for which store entries still earn their place and which the recommender has already outgrown — and the goal already requires reading every answer commit&apos;s diff, so both signals come for free.</recommendation>
-</open-question>
 <open-question id="Override rationale prompting scope" status="open">
   <question>When does capture ask the user why an answer overrode the recommendation: only for overrides whose commit body carries no user rationale (every Alternative-answer, and a cold Manual-answer that is just the literal answer), or for every override including a Manual-answer whose body already holds deliberated rationale, and does the user get a way to skip or answer all prompts at once?</question>
   <alternative id="Prompt only rationale-less overrides, with batch controls">
