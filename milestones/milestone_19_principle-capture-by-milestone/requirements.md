@@ -42,6 +42,10 @@ The rule that capture harvests only `Manual-answer:` bodies is restated in: `CLA
 
 The store change is confirmed as a whole-store rewrite, once, at commit time. After the per-override rationale prompts, capture composes the entire proposed store — adds, revisions, prunes, merges, generalizations, and shortenings applied together — and writes it directly to `milestones/answer_decision_principles.md` in place, printing no diff and no store content to the conversation. The user reviews the working-tree change with `git diff` and requests changes in conversation; the skill re-edits the file in place each round. The single confirmation gates the commit, not the write: on acceptance the skill commits the store path-scoped under `Principle-capture:`, and on explicit rejection it restores the store from `HEAD` and takes the existing no-op path. This replaces the former per-candidate write-confirmation invariant.
 
+### Repeat capture guard
+
+A repeat run of capture against a milestone that already has a `Principle-capture:` commit warns and confirms rather than stopping or silently re-walking. The `Principle-capture: <milestone_id>` commit subject is the record that a milestone was ingested: before the commit walk, capture greps the history for that exact subject, anchored on both ends, and on a hit prints a one-line notice naming the prior commit and asks once whether to proceed; with no hit it runs unchanged. No empty commit is written to record a no-op run, so a prior run that changed nothing (an empty commit range, a composed store identical to `HEAD`, or a rejected rewrite) is not detected; this gap is accepted as harmless.
+
 ## Out of Scope
 
 ## Open questions
@@ -145,30 +149,6 @@ The store change is confirmed as a whole-store rewrite, once, at commit time. Af
     <drawback>Adds an interactive gate for a condition git already makes harmless (a later pass simply re-walks the same path), and it fires on exactly the new use case the rework enables, so it reads as noise more often than as a real warning.</drawback>
   </alternative>
   <recommendation option="Any defined milestone">The harvest is a path-scoped git log bounded only by the file&apos;s existence and every answer commit lands before derive-tasks, so a finished-only stop guards a state that never changes the harvest and would reintroduce the finish coupling the goal drops; validate the id by directory existence exactly as the sibling milestone-id skills do.</recommendation>
-</open-question>
-<open-question id="Repeat capture on same milestone" status="deferred">
-  <question>What happens when capture is run again for a milestone that already has a Principle-capture commit: proceed and rely on store dedup, warn and ask before proceeding, or stop?</question>
-  <alternative id="Proceed and rely on dedup">
-    Treat capture as a repeatable pass with no memory of prior runs: walk the milestone&apos;s answer commits again and let the whole-store rewrite fold each already-captured candidate into the entry the earlier run wrote, so the composed store differs from HEAD only where the re-walk taught something new, with the dirty-own-path guard making a no-change run commit nothing.
-    <advantage>Matches the plugin&apos;s repeatable-engine pattern (review, recommend sweep, starting-state) and needs no detection step, no new prompt, and no special case in the skill.</advantage>
-    <drawback>The override-rationale prompts fire before any store comparison, so a repeat run re-asks the user why each manual or alternative answer was preferred — answers already given once and persisted nowhere — and only then discovers the candidates duplicate existing entries.</drawback>
-  </alternative>
-  <alternative id="Warn and confirm">
-    Before the commit walk, grep the history for `Principle-capture: &lt;milestone_id&gt;`; when a prior capture exists, print a one-line notice naming it and ask once whether to proceed, otherwise run unchanged.
-    <advantage>A cheap git check the skill already has the machinery for prevents an accidental re-walk and its repeated override prompts, while still allowing a deliberate re-harvest after a corrective re-answer or a shifted store.</advantage>
-    <drawback>Adds one more interactive gate to an already prompt-heavy skill, and the detection is a proxy — a prior run that captured nothing left no commit, so it goes unnoticed (harmlessly, since that case costs no more than a first run).</drawback>
-  </alternative>
-  <alternative id="Stop on prior capture">
-    Refuse to run when a `Principle-capture: &lt;milestone_id&gt;` commit already exists, printing a clean-stop message in the style of the Short-Title-mismatch stops.
-    <advantage>Simplest guarantee that a milestone is harvested exactly once, with no judgment call left to the user.</advantage>
-    <drawback>Blocks the legitimate reruns the goal implies — re-capturing after a revert-then-re-answer correction landed post-capture, or after the store changed under other milestones — with no escape hatch short of git surgery, and the proxy detection still misses no-op prior runs.</drawback>
-  </alternative>
-  <alternative id="Incremental re-walk">
-    Proceed automatically but narrow the walk to answer commits newer than the milestone&apos;s latest `Principle-capture:` commit, so a repeat run only harvests what landed since.
-    <advantage>Idempotent and prompt-free — a repeat with nothing new collapses to the empty-range no-op, and a corrective re-answer landing after capture is harvested without re-asking about the rest.</advantage>
-    <drawback>Contradicts the goal&apos;s whole-milestone reconstruction — pruning, merging, and generalizing entries needs the full override history in view — and because a finished milestone&apos;s answers nearly all predate its capture, a deliberate re-harvest silently yields nothing.</drawback>
-  </alternative>
-  <recommendation option="Warn and confirm">The reworked skill&apos;s override-rationale prompts run before any store dedup can catch a duplicate, so an unguarded repeat costs the user a full re-explanation of every override; a one-line notice plus a single proceed-or-stop question is the cheapest thing that prevents that by accident while keeping the deliberate re-harvest — after a corrective re-answer or a shifted store — that the goal&apos;s current-reasoning-takes-precedence rule requires and a hard stop would forbid.</recommendation>
 </open-question>
 <open-question id="Entry compactness bar" status="deferred">
   <question>Is the compactness of a store entry expressed as a concrete cap (a word limit per entry, a ceiling on entry count) or only as the qualitative &quot;as short as still reads as an intuitive rule&quot; bar, and does the optional Origin line survive?</question>
