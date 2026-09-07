@@ -66,34 +66,14 @@ Capture prompts for the override reason only where the commit body carries no us
 
 Capture runs against any milestone id whose `milestones/<milestone_id>/requirements.md` exists, the current and any unfinished milestone included, and never consults the Completed Milestones table. The id is validated by directory existence exactly as the sibling milestone-id skills do, and the path-scoped git log is the only boundary on the harvest. Because every answer commit lands during the requirements phase, finish status carries no information the harvest needs; a run against a milestone whose questions are still being answered simply harvests what exists so far, and a later pass re-walks the same path to pick up the rest.
 
+### Entry compactness bar
+
+Entry compactness is a soft numeric target held under the qualitative bar, not a hard cap. A directive should run roughly 40-80 words and is flagged for shortening when it exceeds about 100, while the goal's "as short as it can be while still reading as an intuitive rule" test remains the deciding standard, so a rule may keep a condition or corollary it genuinely needs. There is no ceiling on entry count; prune and merge by contradiction and overlap are the count control. The optional `*Origin:*` line survives as a single-line pointer to the originating question, because that case is what a revise-vs-salvage judgment and a human auditor read.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Entry compactness bar" status="deferred">
-  <question>Is the compactness of a store entry expressed as a concrete cap (a word limit per entry, a ceiling on entry count) or only as the qualitative &quot;as short as still reads as an intuitive rule&quot; bar, and does the optional Origin line survive?</question>
-  <alternative id="Qualitative bar only">
-    Keep the goal&apos;s &quot;as short as it can be while still reading as an intuitive rule&quot; as the sole compactness standard, with no per-entry word limit and no entry-count ceiling, and keep the optional *Origin:* line exactly as the 4a schema has it today.
-    <advantage>Never forces a lossy truncation of a rule that genuinely needs a condition or corollary (the 125-word Mutate live machinery last entry) and changes nothing in the schema the four existing entries already satisfy.</advantage>
-    <drawback>Gives the reworked skill no trigger for its new shorten move — with only a judgment call to lean on, a pass has no way to tell which entries are over the bar, so entries drift longer and the store the recommender reads on every question grows unchecked.</drawback>
-  </alternative>
-  <alternative id="Soft target plus qualitative bar">
-    State a numeric target as a heuristic — a directive of roughly 40–80 words, flagged for shortening when it exceeds about 100 — while the qualitative bar stays the deciding test, no ceiling on entry count (prune and merge by contradiction and overlap are the count control), and *Origin:* survives as an optional single-line pointer.
-    <advantage>Gives the skill a concrete flag that fires the shorten move on the entries that need it (one of the four today) while the qualitative bar still lets a rule keep the clause it needs, and the one-line Origin preserves the originating case that a revise-vs-salvage judgment and a human auditor rely on.</advantage>
-    <drawback>Two bars instead of one — a runner must hold both the number and the judgment, and a target phrased as &quot;roughly&quot; can be argued past in either direction when an entry sits near it.</drawback>
-  </alternative>
-  <alternative id="Hard caps, Origin dropped">
-    Enforce a fixed per-entry word limit and a fixed ceiling on entry count as pass/fail checks in the skill, mirroring the 25-word frontmatter-description cap, and drop the *Origin:* line since git history now carries the provenance.
-    <advantage>Deterministic and greppable — a pass either satisfies the limits or does not, so the store can never bloat and the recommender&apos;s grounding cost is bounded by construction.</advantage>
-    <drawback>A rule whose condition does not fit the limit gets truncated or split into two shallower entries, and a count ceiling forces an unrelated prune whenever a genuinely new principle arrives at capacity — the cap decides what survives, not the reasoning the goal says takes precedence.</drawback>
-  </alternative>
-  <alternative id="Qualitative bar, Origin dropped">
-    Keep the qualitative bar as the only standard and remove the *Origin:* line, relying on the answer commits&apos; diffs (which the reworked capture reconstructs anyway) as the sole record of where a principle came from.
-    <advantage>Shortest possible entries — every line the recommender reads is directive, none is provenance.</advantage>
-    <drawback>The originating case is what lets capture judge whether current reasoning contradicts an entry or merely narrows it, and a store entry with no pointer forces a git archaeology pass to recover it every time an entry is revised, salvaged, or audited by a human.</drawback>
-  </alternative>
-  <recommendation option="Soft target plus qualitative bar">A numeric target the skill can act on, held under the qualitative bar so a rule keeps the clause it needs, is what turns the goal&apos;s new shorten move into something a pass actually fires; Origin survives as one line because the originating case is what a salvage-vs-revise judgment reads, and an entry-count ceiling is unnecessary once prune and merge by contradiction already bound the store.</recommendation>
-</open-question>
 <open-question id="Salvage form for contradicted entries" status="deferred">
   <question>When current reasoning contradicts an existing entry that was cited and then overridden, what forms may the salvage take: narrow the entry&apos;s scope, generalize it so both cases fit, replace it, or delete it outright when nothing generalizes?</question>
   <alternative id="Full salvage ladder">
