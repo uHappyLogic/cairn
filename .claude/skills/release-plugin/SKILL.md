@@ -11,8 +11,9 @@ in `CLAUDE.md` or `README.md`. It is a maintainer-only, project-local skill: it 
 `.claude/skills/`, outside the shipped `skills/` tree, so it is never transpiled into
 `.agents/plugins/cairn/` and never reaches a consuming project.
 
-The going-forward tag format is a bare `MAJOR.MINOR.PATCH`. The legacy `v.0.9.x` and
-`v0.9.7` tags are never created, moved, or deleted by this skill.
+Every tag and release is a bare `MAJOR.MINOR.PATCH`, with no `v` prefix anywhere in the
+history — the legacy `v.0.9.x` and `v0.9.7` tags were renamed to their bare form on
+2026-09-07, and no `v`-prefixed tag remains on either side.
 
 Nothing is written, committed, pushed, tagged, or published until every gate below has
 passed and the release notes have been composed. The pre-flight and version gates (steps 2
@@ -61,9 +62,8 @@ git describe --tags --abbrev=0
 
 Call the exact tag string it prints `<LAST_TAG>`. Use it literally wherever the release run
 needs the previous release — the `<LAST_TAG>..HEAD` commit range and the compare-link
-endpoint alike. Both are ancestry questions, so the mixed legacy tag formats do not matter
-there and no version string is parsed for them; the one place `<LAST_TAG>` is read as a
-version is the monotonicity check in step 3.
+endpoint alike. Both are ancestry questions and parse no version string; the one place
+`<LAST_TAG>` is read as a version is the monotonicity check in step 3.
 
 If the command fails (no tag is reachable from HEAD), stop and report that the last release
 could not be resolved.
@@ -149,12 +149,11 @@ collision and stops the run as above.
 **c. The version is strictly greater than the last release.** Compare as a **numeric
 tuple**, never by tag-name sort:
 
-1. Normalize `<LAST_TAG>` to its numeric components: drop a leading `v` and any `.`
-   immediately after it, so `v.0.9.6`, `v0.9.7`, and `0.9.9` all reduce to `0.9.6`, `0.9.7`,
-   and `0.9.9`. If what remains is not three numeric components, stop and report that the
-   last release could not be compared.
-2. Split both `<VERSION>` and the normalized `<LAST_TAG>` on `.` and compare
-   `(major, minor, patch)` as integers, most significant first.
+1. Confirm `<LAST_TAG>` is three numeric components — every tag is bare
+   `MAJOR.MINOR.PATCH`, so it needs no normalization. If it is not, stop and report that
+   the last release could not be compared.
+2. Split both `<VERSION>` and `<LAST_TAG>` on `.` and compare `(major, minor, patch)` as
+   integers, most significant first.
 
 `<VERSION>` must be strictly greater. Equal or lower stops the run, reporting both versions.
 
@@ -420,9 +419,6 @@ git ls-remote --tags origin "refs/tags/<VERSION>"
 - **Output whose SHA is anything else** → the tag is published against a different commit.
   **Stop and report** both SHAs. Never move or delete a published tag, and never
   `git push --force` one.
-
-The legacy `v.0.9.x` and `v0.9.7` tags are not read, written, moved, or deleted anywhere in
-this step.
 
 **c. Create the GitHub release.** Check by exact tag name:
 
