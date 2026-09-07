@@ -40,3 +40,35 @@ The rule that capture harvests only `Manual-answer:` bodies is restated in: `CLA
 
 ## Out of Scope
 
+## Open questions
+
+<open-question id="Role of accepted recommendations" status="open">
+  <question>What does capture do with a milestone&apos;s Recommendation-answer commits, where the user accepted the recommendation as-is: treat each as a confirmation that reinforces any principle the removed block cited and leave it at that, mine its rationale for new principle candidates exactly like a manual answer, or use it only to detect a store entry the accepted reasoning contradicts?</question>
+</open-question>
+<open-question id="Override rationale prompting scope" status="open">
+  <question>When does capture ask the user why an answer overrode the recommendation: only for overrides whose commit body carries no user rationale (every Alternative-answer, and a cold Manual-answer that is just the literal answer), or for every override including a Manual-answer whose body already holds deliberated rationale, and does the user get a way to skip or answer all prompts at once?</question>
+</open-question>
+<open-question id="Store rewrite confirmation granularity" status="open">
+  <question>Now that a pass may prune, merge, generalize, and shorten existing entries as well as add, how is the store change confirmed with the user: one candidate at a time with revise/add/prune/merge as per-candidate choices, or as a single proposed rewrite of the whole store shown as a diff and confirmed once?</question>
+</open-question>
+<open-question id="Non-override manual answers" status="open">
+  <question>Does capture still distill candidates from a Manual-answer whose removed block carried no recommendation to override (every pre-sweep answer, and any question the sweep never annotated), using its body rationale alone as today, or does the reworked skill treat only overrides of a recommendation as principle sources?</question>
+</open-question>
+<open-question id="Milestone id argument shape" status="deferred">
+  <question>Is the required argument the directory name (milestone_19_principle-capture-by-milestone, matching the sibling skills that take a milestone id), a bare number, or either?</question>
+</open-question>
+<open-question id="Unfinished milestone allowed" status="deferred">
+  <question>May capture run against a milestone that is not yet listed in the Completed Milestones table, including the current one, or does it stop unless the milestone is finished?</question>
+</open-question>
+<open-question id="Repeat capture on same milestone" status="deferred">
+  <question>What happens when capture is run again for a milestone that already has a Principle-capture commit: proceed and rely on store dedup, warn and ask before proceeding, or stop?</question>
+</open-question>
+<open-question id="Entry compactness bar" status="deferred">
+  <question>Is the compactness of a store entry expressed as a concrete cap (a word limit per entry, a ceiling on entry count) or only as the qualitative &quot;as short as still reads as an intuitive rule&quot; bar, and does the optional Origin line survive?</question>
+</open-question>
+<open-question id="Salvage form for contradicted entries" status="deferred">
+  <question>When current reasoning contradicts an existing entry that was cited and then overridden, what forms may the salvage take: narrow the entry&apos;s scope, generalize it so both cases fit, replace it, or delete it outright when nothing generalizes?</question>
+</open-question>
+<open-question id="Skill framing after decoupling" status="deferred">
+  <question>With a required milestone id, is capture still documented as the optional post-finish follow-up in README.md and CLAUDE.md, or reframed as an on-demand skill runnable for any milestone at any time?</question>
+</open-question>
