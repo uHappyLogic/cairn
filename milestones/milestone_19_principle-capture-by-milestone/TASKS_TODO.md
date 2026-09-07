@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Capture Commit Body Lists Store Changes
-
-Make the `Principle-capture: <milestone_id>` commit carry a body of one short line per store change, each naming the change kind (add, revision, prune, merge, or generalization) and the Short Title of the override answer commit that drove it, composed at commit time against the final rewrite so it cannot drift from the diff. Verified when the skill's commit step supplies that body to the shared commit procedure and states the at-commit-time composition.
-
----
-
 ## Answer Skills State Three-Provenance Harvest
 
 Update the commit-step prose of `answer-open-question`, `answer-open-question-with-recommendation`, and `answer-open-question-with-alternative`, and `answer-open-question`'s opening paragraph, so they no longer claim that only `Manual-answer:` is harvested: capture reads all three subjects, with manual and alternative answers as the override signal and recommendation answers as evidence only. Verified when no file under `skills/` or `agents/` states that capture harvests only `Manual-answer:`, `finish-current-milestone` still says it never invokes capture, and the regenerated `.agents/plugins/cairn/` tree matches the source.

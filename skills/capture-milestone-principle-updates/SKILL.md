@@ -497,15 +497,32 @@ no diff after a round either; the user re-reads `git diff`. A reply that is neit
 acceptance nor an explicit rejection is a change request or a question: handle it and ask again.
 There is no round limit; the loop ends only on one of the two answers below.
 
-**On acceptance — commit.** Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these two inputs:
+**On acceptance — commit.** Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these three inputs:
 
 - **PATHS** — this skill's own change set: the fixed-path store `milestones/answer_decision_principles.md` (a `milestones/`-root artifact, **not** any `<MILESTONE_DIR>` file — this skill writes only that store).
 - **SUBJECT** — `Principle-capture: <milestone_id>`, with `<milestone_id>` the argument from step 1 used verbatim (e.g. `Principle-capture: milestone_12_user-guide`), the marker naming this skill's distinctive principle-capture function.
+- **Body** — **one short line per store change**, each naming the **change kind** — `add`,
+  `revision`, `prune`, `merge`, or `generalization` — and the **Short Title of the override answer
+  commit that drove it**, e.g. `prune: Mutate live machinery last — driven by Cascade parent order`.
+  **Compose the body at commit time, against the final rewrite**: only after the acceptance, read
+  the store as it stands after the last review round against the step-6 snapshot (the baseline it
+  was composed over) and write one line per change that comparison shows — never from the
+  step-6 composition as first written, which review rounds may have changed, so the body cannot
+  drift from the diff it describes. The rule is **flat**: every change gets its line, including an
+  add (whose `*Origin:*` line already names its question — that one line of redundancy is the
+  price of never adjudicating whether a merge that folds a new override into an existing entry is
+  an add or a retirement: it is one `merge` line). Map the salvage forms onto the five kinds — a
+  narrowed or replaced directive is a `revision`, a generalized one a `generalization`, a deleted
+  entry a `prune` — and a form-only shortening is a `revision`. Where the evidence that drove a
+  change was an accepted recommendation's flag rather than an override, name that commit's Short
+  Title; a form-only hygiene change no commit drove writes `hygiene` in place of the Short Title.
+  The body is the only surviving record of the why behind a prune or merge — the console is silent
+  (step 8) and the store keeps no changelog — so it is never printed to the conversation.
 
-The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
-The rewrite is committed as it stands after the last review round, over the working-tree baseline,
-so edits admitted in step 2 ride in the same commit. Once the commit lands, discard the snapshot
-(`rm -f "$SNAPSHOT"`) and go to step 8 (captured).
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit
+(`git commit -m "<SUBJECT>" -m "<Body>"`). The rewrite is committed as it stands after the last
+review round, over the working-tree baseline, so edits admitted in step 2 ride in the same commit.
+Once the commit lands, discard the snapshot (`rm -f "$SNAPSHOT"`) and go to step 8 (captured).
 
 **On explicit rejection — restore the snapshot and exit without committing.** Restore the store
 from the step-6 snapshot, **not from `HEAD`**:
@@ -530,8 +547,9 @@ it. No empty commit records the rejection. Go to step 8 (nothing captured).
 
   `Principles captured.`
 
-  Carry no principle `### <Short Title>`, no add/revision breakdown, and no commit subject, and print
-  no next-step or recommendation-advisor pointer. A rewrite that was written but not committed
+  Carry no principle `### <Short Title>`, no add/revision breakdown (that per-change list lives in
+  the commit body, step 7), and no commit subject, and print no next-step or recommendation-advisor
+  pointer. A rewrite that was written but not committed
   never earns this line.
 - **If nothing was captured**, report it in a **single line** — distinct from the terse success
   line, never a collapse into `Principles captured.` — stating that nothing was captured, that

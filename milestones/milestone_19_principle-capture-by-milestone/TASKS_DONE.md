@@ -129,3 +129,19 @@ Add the review loop after the in-place write: the user reviews the working-tree 
 - `uv run scripts/migrate_skills_to_agy.py` regenerated `.agents/plugins/cairn/`; only the capture skill copy changed, and it differs from the source solely by the step-7 `${CLAUDE_PLUGIN_ROOT}` path rewrite and dropped `echo` hint.
 
 ---
+
+## Capture Commit Body Lists Store Changes
+
+Make the `Principle-capture: <milestone_id>` commit carry a body of one short line per store change, each naming the change kind (add, revision, prune, merge, or generalization) and the Short Title of the override answer commit that drove it, composed at commit time against the final rewrite so it cannot drift from the diff. Verified when the skill's commit step supplies that body to the shared commit procedure and states the at-commit-time composition.
+
+**Verified:**
+
+- Step 7's "On acceptance — commit" passage in `skills/capture-milestone-principle-updates/SKILL.md` now supplies **three** inputs to `shared/commit-procedure.md` — PATHS, SUBJECT, and a new **Body** bullet — and names the commit form `git commit -m "<SUBJECT>" -m "<Body>"`, matching the procedure's "plus any body lines the caller supplies".
+- The Body bullet states one short line per store change, each naming the change kind from exactly the five kinds `add`, `revision`, `prune`, `merge`, `generalization` and the Short Title of the override answer commit that drove it, with a worked example line.
+- The bullet states the at-commit-time composition: the body is composed only after acceptance, by reading the store as it stands after the last review round against the step-6 snapshot (the baseline it was composed over), never from the step-6 composition as first written, so it cannot drift from the diff it describes.
+- The rule is stated as flat: every change gets a line including an add (whose `*Origin:*` already names its question), and a merge folding a new override into an existing entry is one `merge` line rather than an add-vs-retirement adjudication; the salvage forms and form-only shortening are mapped onto the five kinds, an accepted-recommendation flag names that commit's Short Title, and a hygiene change no commit drove writes `hygiene` in place of one.
+- The bullet states the body is never printed to the conversation, and step 8's console rule stays consistent — it still forbids an add/revision breakdown on the console, now noting that list lives in the commit body — so terse reporting is unchanged.
+- Frontmatter is unchanged and loads unquoted under `yaml.safe_load` (15-word description, no colon or semicolon); no `## Rules` section exists under `skills/`, `agents/`, or `shared/`; step headings still run 1–8 (with 6a) and every intra-file step reference resolves.
+- `uv run scripts/migrate_skills_to_agy.py` regenerated `.agents/plugins/cairn/`; only the capture skill copy changed, and it differs from the source solely by the step-7 `${CLAUDE_PLUGIN_ROOT}` path rewrite and dropped `echo` hint.
+
+---
