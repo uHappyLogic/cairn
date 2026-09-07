@@ -38,6 +38,10 @@ The rule that capture harvests only `Manual-answer:` bodies is restated in: `CLA
 
 ## Decisions
 
+### Store rewrite confirmation
+
+The store change is confirmed as a whole-store rewrite, once, at commit time. After the per-override rationale prompts, capture composes the entire proposed store — adds, revisions, prunes, merges, generalizations, and shortenings applied together — and writes it directly to `milestones/answer_decision_principles.md` in place, printing no diff and no store content to the conversation. The user reviews the working-tree change with `git diff` and requests changes in conversation; the skill re-edits the file in place each round. The single confirmation gates the commit, not the write: on acceptance the skill commits the store path-scoped under `Principle-capture:`, and on explicit rejection it restores the store from `HEAD` and takes the existing no-op path. This replaces the former per-candidate write-confirmation invariant.
+
 ## Out of Scope
 
 ## Open questions
@@ -84,25 +88,6 @@ The rule that capture harvests only `Manual-answer:` bodies is restated in: `CLA
     <drawback>Turns the harvester&apos;s highest-quality inputs into redundant interruptions — the user is asked to re-confirm at capture time what they deliberated and wrote when the context was fresh, which is exactly when their memory is weakest and the body is strongest.</drawback>
   </alternative>
   <recommendation option="Prompt only rationale-less overrides, with batch controls">A deliberated Manual-answer body is the user&apos;s override reason already, so prompting is worth it only where no reason exists (Alternative-answers and cold literal answers); the one-shot accept-all/skip-all breaks the tie against per-prompt-skip-only because the skill is now runnable against any past milestone, where the user often cannot answer from memory and every guess is still confirmed before it reaches the store.</recommendation>
-</open-question>
-<open-question id="Store rewrite confirmation granularity" status="open">
-  <question>Now that a pass may prune, merge, generalize, and shorten existing entries as well as add, how is the store change confirmed with the user: one candidate at a time with revise/add/prune/merge as per-candidate choices, or as a single proposed rewrite of the whole store shown as a diff and confirmed once?</question>
-  <alternative id="Per-candidate moves">
-    Keep the milestone-5 loop shape and widen its per-candidate menu: walk the surviving candidates strongest-first and, for each, confirm one of add / revise / prune / merge / generalize against the live store, write that one change, and re-scan the remaining pool before the next.
-    <advantage>Every store write is preceded by an explicit, small user confirmation and followed by a re-scan by construction, so no rule enters or leaves the store without the user having judged that exact rule, matching the existing per-candidate-confirmation invariant.</advantage>
-    <drawback>Prune, merge, generalize, and shorten are cross-entry operations with no single candidate to hang on (a compaction of an entry no candidate touched has no prompt slot at all), so the loop either multiplies prompts over candidates plus existing entries or leaves the compactness bar unenforced, and the user never sees the final store shape until the last write lands.</drawback>
-  </alternative>
-  <alternative id="Whole-store rewrite diff">
-    After the per-override rationale prompts, the skill composes the entire proposed store (adds, revisions, prunes, merges, generalizations, and shortenings applied together), shows it to the user as a diff against the live file, and writes it once on acceptance, iterating on the proposal in conversation if the user asks for changes before accepting.
-    <advantage>Merges, prunes, and compaction are judged where they are actually visible, in the finished store as a whole, and the store is small (four entries today, growing slowly) so the whole diff fits one screen; composing all changes at once also dissolves the independence problem that made grouped writes unsafe, since nothing is written until the final state is settled.</advantage>
-    <drawback>Approval becomes one decision over a synthesis rather than a judgment per rule, so a bad prune or an over-generalized merge can ride in under an otherwise-good diff unless the user reads it entry by entry, and the existing per-candidate-confirmation invariant must be rewritten.</drawback>
-  </alternative>
-  <alternative id="Per-candidate decisions then final diff">
-    Confirm the disposition of each candidate and each contradicted entry one at a time without writing, then render the composed store once, show it as a diff, and write it on a single final acceptance.
-    <advantage>Keeps per-rule user judgment for every add, prune, and merge while still letting compaction and cross-entry coherence be reviewed on the finished file.</advantage>
-    <drawback>The user is effectively asked twice about the same changes, the two-stage flow is the most prose to specify and run, and a rejection at the final diff forces re-rendering decisions that were already confirmed, for a store small enough that the second stage alone would have sufficed.</drawback>
-  </alternative>
-  <recommendation option="Whole-store rewrite diff">The reworked pass edits the store as a whole (prune, merge, generalize, shorten), and those are properties of the finished file, not of one candidate; with per-override reasoning already gathered per item and a store small enough to review in one diff, a single confirmed rewrite, refined in conversation until accepted, is the leanest shape that lets the user judge the result they will actually live with.</recommendation>
 </open-question>
 <open-question id="Non-override manual answers" status="open">
   <question>Does capture still distill candidates from a Manual-answer whose removed block carried no recommendation to override (every pre-sweep answer, and any question the sweep never annotated), using its body rationale alone as today, or does the reworked skill treat only overrides of a recommendation as principle sources?</question>
