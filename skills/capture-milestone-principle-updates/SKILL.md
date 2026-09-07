@@ -377,13 +377,27 @@ the review surface.
      and two candidates that would each add the same rule become one add.
    - **Resolve each flagged entry** from the phase-1 evidence set that no candidate's revision already
      resolved. Current reasoning — the accepted or override rationale that flagged it — takes
-     precedence over the entry as it stands: salvage what the entry still predicts correctly, by
-     narrowing, generalizing, or replacing it, and **prune** it only when nothing survives, choosing
-     the form as part of this composition so it fits both the reasoning that flagged it and every
-     accepted citation it earned.
-   - **Honor the shield.** An entry **reinforced** in this pass is never pruned or narrowed — not by a
-     revision, not by a flagged-entry salvage; a reinforced-and-flagged entry must find a form that
-     fits both.
+     precedence over the entry as it stands, and the entry is **salvaged** before it is dropped: try
+     these four forms **in this fixed order** and take the first that fits, where a form fits when the
+     resulting entry still predicts both the accepted citations the entry earned and the reasoning
+     that flagged it:
+     1. **Narrow its scope clause.** Every entry opens with an explicit scope clause; tighten it until
+        the contradicting case falls outside the rule while every accepted citation stays inside.
+     2. **Generalize it** so the prior accepted citations and the override both fit — restate the
+        directive at the altitude where both are instances of one rule.
+     3. **Replace it with a fresh directive** when its premise is wrong — what the accepted citations
+        and the override jointly support is a different rule, not a wider or narrower one.
+     4. **Delete it** only when nothing survives — no form predicts both, so the entry is pruned.
+
+     When two forms fit equally, break the tie by whichever yields the **shortest entry that still
+     predicts both** the prior accepted citations and the override. The form chosen is part of this
+     composition and is visible in the working-tree change the user reviews with `git diff` before
+     step 7's confirmation — a narrowed clause, a generalized or replaced directive, or a removed
+     entry — with no separate account of the choice printed.
+   - **Honor the shield.** An entry **reinforced** by a citation in this pass is never pruned or
+     narrowed — not by a revision, not by a flagged-entry salvage. For a reinforced-and-flagged entry
+     the ladder's first and last rungs are therefore unavailable: the salvage must find a
+     generalizing or replacing form that fits both, and never deletes it.
    - **Merge plain duplicates.** Two entries — baseline, new, or one of each — that plainly state the
      same rule become one entry carrying the stronger phrasing under one `### <Short Title>`.
    - **Hold every directive to the compactness bar.** A directive should run roughly **40–80 words**.

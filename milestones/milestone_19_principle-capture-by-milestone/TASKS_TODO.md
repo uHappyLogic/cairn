@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Contradicted Entry Salvage Ladder
-
-State in the rewrite composition how an entry contradicted by current reasoning is salvaged, attempted in this fixed order: narrow its scope clause, generalize it so the prior accepted citations and the override both fit, replace it with a fresh directive when its premise is wrong, and delete it only when nothing survives, breaking a tie between forms by whichever yields the shortest entry that still predicts both. Entries reinforced by a citation in the same pass stay shielded from prune or narrowing. Verified when the skill lists the four forms in this order with the tie-break and the shield, and notes the chosen form is visible in the working-tree change.
-
----
-
 ## Single Rewrite Confirmation Gates The Commit
 
 Add the review loop after the in-place write: the user reviews the working-tree change with `git diff` and requests changes in conversation, the skill re-edits the file in place each round, and one confirmation gates the commit — on acceptance the store is committed path-scoped under `Principle-capture: <milestone_id>`, and on explicit rejection the skill restores the pre-write snapshot and exits without invoking `shared/commit-procedure.md`, reporting the no-op line. The report step keeps `Principles captured.` for a committed rewrite and one distinct line for every nothing-captured case (empty range, no candidates, composed store identical to the baseline, rejection). Verified when the confirmation, rejection, and report steps read exactly so.

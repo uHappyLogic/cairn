@@ -97,3 +97,18 @@ Replace the per-candidate confirm-and-write loop with a single composition of th
 - `uv run scripts/migrate_skills_to_agy.py` regenerated `.agents/plugins/cairn/`; only the capture skill copy changed, and it differs from the source solely by the `${CLAUDE_PLUGIN_ROOT}` path rewrite and dropped `echo` hint.
 
 ---
+
+## Contradicted Entry Salvage Ladder
+
+State in the rewrite composition how an entry contradicted by current reasoning is salvaged, attempted in this fixed order: narrow its scope clause, generalize it so the prior accepted citations and the override both fit, replace it with a fresh directive when its premise is wrong, and delete it only when nothing survives, breaking a tie between forms by whichever yields the shortest entry that still predicts both. Entries reinforced by a citation in the same pass stay shielded from prune or narrowing. Verified when the skill lists the four forms in this order with the tie-break and the shield, and notes the chosen form is visible in the working-tree change.
+
+**Verified:**
+
+- Step 6's rewrite composition (the "Resolve each flagged entry" move) lists the four salvage forms for an entry contradicted by current reasoning as a ladder tried in this fixed order, taking the first that fits: narrow its scope clause (every entry opens with one); generalize it so the prior accepted citations and the override both fit; replace it with a fresh directive when its premise is wrong; delete it only when nothing survives.
+- The step states the tie-break: when two forms fit equally, whichever yields the shortest entry that still predicts both the prior accepted citations and the override.
+- The step states the shield: an entry reinforced by a citation in the same pass is never pruned or narrowed, by a revision or a flagged-entry salvage, so for a reinforced-and-flagged entry the ladder's first and last rungs are unavailable and the salvage must find a generalizing or replacing form that fits both.
+- The step notes the chosen form is visible in the working-tree change the user reviews with `git diff` before step 7's confirmation (a narrowed clause, a generalized or replaced directive, or a removed entry), with no separate account of the choice printed.
+- Frontmatter is unchanged and loads under `yaml.safe_load` (15-word description, no colon or semicolon); no `## Rules` section exists under `skills/`, `agents/`, or `shared/`; step headings run 1–8 (with 6a) and every intra-file step reference resolves.
+- `uv run scripts/migrate_skills_to_agy.py` regenerated `.agents/plugins/cairn/`; only the capture skill copy changed, and it differs from the source solely by the step-7 `${CLAUDE_PLUGIN_ROOT}` path rewrite and dropped `echo` hint.
+
+---
