@@ -160,3 +160,18 @@ Update the commit-step prose of `answer-open-question`, `answer-open-question-wi
 - `uv run scripts/migrate_skills_to_agy.py` regenerated `.agents/plugins/cairn/`; only the three answer-skill copies changed, and each differs from its source solely by the `${CLAUDE_PLUGIN_ROOT}` path rewrite and dropped `echo` hint; all three frontmatter descriptions still load under `yaml.safe_load` at 15–19 words.
 
 ---
+
+## README Documents On-Demand Capture
+
+Rewrite the README surfaces — the "Ending a milestone" prose and its dashed optional diagram edge, the `## How skills commit` harvest sentence, the principle-learning and correction-loop bullets, and the skill-reference entries for capture and the three answer skills — so capture is an on-demand skill taking a required milestone id, harvesting all three answer provenances, prompting for override reasons, and composing a whole-store rewrite that may prune and merge, with finish phrased as the natural moment and never a precondition. Verified when README no longer mentions Completed Milestones table resolution or a `Manual-answer:`-only grep for capture and keeps the dashed edge in the "Ending a milestone" diagram.
+
+**Verified:**
+
+- `README.md` "Ending a milestone" prose (line 188) describes `/capture-milestone-principle-updates <milestone_id>` as the on-demand harvester taking a required milestone id, states finish is the natural moment because the answer set is complete then and never a precondition, and allows backfill; the diagram keeps `D5 -.->|optional: distill principles| EM2` and `class EM2 optional` unchanged.
+- `## How skills commit` no longer states a `Manual-answer:`-only grep: it frames the three answer subjects as provenance discriminators, with `Manual-answer:`/`Alternative-answer:` as the override signal capture distills from (prompting for the override reason where the body records none) and `Recommendation-answer:` as evidence only.
+- The answer-principle-learning intro and the teaching-flow bullet describe milestone-id-driven capture over all three provenances, diff reconstruction of the recommendation and cited principles, override-reason prompts with best guesses plus the one-shot accept-all/skip-all choice, and a whole-store rewrite (add/revise/prune/merge/generalize, salvage, compactness) reviewed via `git diff` behind one commit confirmation; the correction-loop bullet routes reconciliation through the corrective override commit and the salvage ladder, and notes the no-clean-store-precondition hand-edit path.
+- Skill-reference entries for `answer-open-question`, `answer-open-question-with-recommendation`, and `answer-open-question-with-alternative` state their subjects as provenance markers capture reads (manual/alternative = override signal, recommendation = evidence only) with no "never harvested" claim; the capture entry's heading is `capture-milestone-principle-updates <milestone_id>` and its body matches the live skill (required id validated by directory existence, no pointer or finish-status dependence, two notice-and-confirm guards, three-provenance path-scoped walk, prompts, evidence, whole-store rewrite, single confirmation, snapshot restore on rejection, `Principle-capture:` commit with per-change body, single-line nothing-captured report).
+- `grep -n -i "Completed Milestones\|grep='^Manual-answer\|never harvested\|harvests exactly\|harvests only\|finish-time\|last row\|just-finished" README.md` returns nothing.
+- The one remaining placement mention outside those surfaces ("Iterating milestone requirements", line 104) now reads "naturally once the milestone is finished" — a convention, not a requirement.
+
+---
