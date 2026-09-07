@@ -44,9 +44,46 @@ The rule that capture harvests only `Manual-answer:` bodies is restated in: `CLA
 
 <open-question id="Role of accepted recommendations" status="open">
   <question>What does capture do with a milestone&apos;s Recommendation-answer commits, where the user accepted the recommendation as-is: treat each as a confirmation that reinforces any principle the removed block cited and leave it at that, mine its rationale for new principle candidates exactly like a manual answer, or use it only to detect a store entry the accepted reasoning contradicts?</question>
+  <alternative id="Confirmation only">
+    Each Recommendation-answer commit whose removed block carried an &lt;applied-principle&gt; citation counts as one user confirmation of that store entry, recorded as reinforcement evidence and nothing more; commits that cited no principle are ignored.
+    <advantage>Cheapest possible role that still respects the goal&apos;s framing — the override commits stay the only teaching signal, and a cited-and-accepted entry gets a concrete shield against being pruned or narrowed in the same pass.</advantage>
+    <drawback>The store has no weight or age field, so outside the prune step the reinforcement is inert, and a recommendation that overrode a bearing principle on merit and was accepted leaves that stale entry standing even though the goal says current reasoning takes precedence.</drawback>
+  </alternative>
+  <alternative id="Mine like manual">
+    Treat every Recommendation-answer body as a rationale to extract keep/eliminate candidates from, exactly as phase 1 does for a Manual-answer body.
+    <advantage>Harvests the largest pool by far (66 of the 87 answer commits) and never lets a genuinely generalizable rationale go uncaptured just because the user accepted it.</advantage>
+    <drawback>Those bodies are the recommender&apos;s own reasoning, so they can only teach the recommender what it already knows — the goal targets the guideline the recommender lacked — while flooding the confirmation loop with agent-authored candidates the user never deliberated, the exact provenance the distinct subject was created to keep out.</drawback>
+  </alternative>
+  <alternative id="Contradiction detection only">
+    Read each accepted rationale solely to check whether it contradicts an existing store entry — most sharply when the recommender overrode a bearing principle for a stated reason and the user accepted — and feed any hit into the prune, narrow, or generalize path; cited-and-accepted entries get no special standing.
+    <advantage>Directly serves the shrink-as-well-as-grow half of the goal by surfacing exactly the entries whose accepted counter-reasoning proves them wrong or too broad.</advantage>
+    <drawback>Discards the reinforcement signal, so the same pass can prune or narrow an entry that was cited and accepted this very milestone, and contradiction hits require the user to adjudicate agent-authored reasoning that nobody deliberated.</drawback>
+  </alternative>
+  <alternative id="Evidence for existing entries">
+    Use accepted recommendations only as evidence about entries already in the store — a removed &lt;applied-principle&gt; citation reinforces that entry and shields it from pruning in the same pass, and an accepted rationale that contradicts an entry flags it for the prune, narrow, or generalize path — but never mine them for new candidates.
+    <advantage>Covers both things an accepted recommendation can actually tell capture (which entries still earn their place, which the recommender has already outgrown) from the same per-commit diff read the goal already requires, while keeping the override commits the sole source of new principles.</advantage>
+    <drawback>Capture must reconstruct and read every Recommendation-answer diff, not just the override ones, and a flagged contradiction still asks the user to weigh a rationale they only rubber-stamped.</drawback>
+  </alternative>
+  <recommendation option="Evidence for existing entries">An accepted recommendation carries the recommender&apos;s own reasoning, so it can never supply the guideline the recommender lacked, but it is the only evidence the shrink half of the goal has for which store entries still earn their place and which the recommender has already outgrown — and the goal already requires reading every answer commit&apos;s diff, so both signals come for free.</recommendation>
 </open-question>
 <open-question id="Override rationale prompting scope" status="open">
   <question>When does capture ask the user why an answer overrode the recommendation: only for overrides whose commit body carries no user rationale (every Alternative-answer, and a cold Manual-answer that is just the literal answer), or for every override including a Manual-answer whose body already holds deliberated rationale, and does the user get a way to skip or answer all prompts at once?</question>
+  <alternative id="Prompt only rationale-less overrides, with batch controls">
+    Capture prompts for the override reason only where the commit body carries no user rationale — every Alternative-answer, and a Manual-answer whose body is the bare literal answer with no stated reason (the same &quot;bare cold answer&quot; test phase 1 already applies) — reading a deliberated Manual-answer body as the user&apos;s own answer to the why; each prompt shows the skill&apos;s best guess and can be skipped, and the run opens with a one-shot choice to accept every guess or skip every prompt.
+    <advantage>Never asks the user to re-explain, weeks later and from memory, a reason they already wrote in context, so prompts scale with the actual rationale gap (four of the seven historical overrides) and the argument-driven backfill run over an old milestone stays workable via skip-all or accept-all-guesses.</advantage>
+    <drawback>Cold-vs-deliberated is a judgment the skill makes over body text, so a thin-but-real rationale can be misread as deliberated and its true why never asked for; the mitigation is that the body still surfaces as the guess at the store-write confirmation.</drawback>
+  </alternative>
+  <alternative id="Prompt only rationale-less overrides, per-prompt skip only">
+    Same gap-only scope, but the only control is skipping an individual prompt — no up-front accept-all or skip-all, on the argument that the prompt set is already small.
+    <advantage>Least machinery: no batch mode to specify, and every retained override reason is one the user actually looked at rather than bulk-accepted.</advantage>
+    <drawback>A retroactive run over a milestone the user no longer remembers becomes a sequence of prompts that each end in skip, and there is no way to say &quot;use your guesses&quot; once for the whole run even though every write is confirmed later anyway.</drawback>
+  </alternative>
+  <alternative id="Prompt every override, body as prefilled guess">
+    Capture prompts on every override regardless of provenance, using an existing Manual-answer body as the prefilled guess the user confirms or corrects, with the same skip and batch controls.
+    <advantage>Uniform and classification-free: no cold-vs-deliberated call, and the user gets to sharpen a body that justified the answer without specifically saying why the recommendation lost.</advantage>
+    <drawback>Turns the harvester&apos;s highest-quality inputs into redundant interruptions — the user is asked to re-confirm at capture time what they deliberated and wrote when the context was fresh, which is exactly when their memory is weakest and the body is strongest.</drawback>
+  </alternative>
+  <recommendation option="Prompt only rationale-less overrides, with batch controls">A deliberated Manual-answer body is the user&apos;s override reason already, so prompting is worth it only where no reason exists (Alternative-answers and cold literal answers); the one-shot accept-all/skip-all breaks the tie against per-prompt-skip-only because the skill is now runnable against any past milestone, where the user often cannot answer from memory and every guess is still confirmed before it reaches the store.</recommendation>
 </open-question>
 <open-question id="Store rewrite confirmation granularity" status="open">
   <question>Now that a pass may prune, merge, generalize, and shorten existing entries as well as add, how is the store change confirmed with the user: one candidate at a time with revise/add/prune/merge as per-candidate choices, or as a single proposed rewrite of the whole store shown as a diff and confirmed once?</question>
@@ -69,18 +106,108 @@ The rule that capture harvests only `Manual-answer:` bodies is restated in: `CLA
 </open-question>
 <open-question id="Non-override manual answers" status="open">
   <question>Does capture still distill candidates from a Manual-answer whose removed block carried no recommendation to override (every pre-sweep answer, and any question the sweep never annotated), using its body rationale alone as today, or does the reworked skill treat only overrides of a recommendation as principle sources?</question>
+  <alternative id="Overrides only">
+    Treat only answers whose removed block carried a recommendation the user departed from as principle sources, and skip any Manual-answer whose block had no recommendation (every pre-sweep answer and any question the sweep never annotated).
+    <advantage>Every candidate is a demonstrated recommender gap, so the diff-comparison and why-prompt machinery applies uniformly and the store only grows where the recommender was provably wrong.</advantage>
+    <drawback>It discards the richest deliberated rationale in the history (8 of the 17 manual answers, and the whole current store came from such answers) and makes a discuss-then-answer decision invisible to capture, even though a decision the recommender never got to weigh in on is still a rule it lacks.</drawback>
+  </alternative>
+  <alternative id="Rationale-alone distill">
+    Keep a Manual-answer with no recommendation in its removed block as a principle source and distill candidates from its body rationale alone, exactly as the current phase-1 extraction does, while the override-specific comparison and prompting apply only where a recommendation existed.
+    <advantage>No user-deliberated rationale is thrown away, the eligibility rule stays simple (a body with reasoning is a source), and the existing non-generalizable filter already drops bare cold answers so the class adds no noise.</advantage>
+    <drawback>These candidates lack the proof that the recommender would have gotten it wrong, so some may restate a rule the recommender already reaches, working against the compactness aim unless the store-side dedup and generalize moves hold them in check.</drawback>
+  </alternative>
+  <alternative id="Prompt as null override">
+    Treat a Manual-answer with no recommendation as an override of a null recommendation: capture asks the user what guideline the answer encodes, offering its best guess distilled from the body, instead of extracting from the body alone.
+    <advantage>One user-confirmed candidate path for every non-accepted answer, so the guideline is stated in the intuitive form the store wants rather than reverse-engineered from prose.</advantage>
+    <drawback>It multiplies prompts on precisely the answers whose bodies already carry the fullest rationale, making a milestone with many pre-sweep or discussed answers tedious to capture for little added signal.</drawback>
+  </alternative>
+  <recommendation option="Rationale-alone distill">A manual answer with no recommendation is a decision the recommender never got to make, so its rationale is exactly the guideline it lacks; overrides are the sharper signal, not the only one, and the override distinction should shape the comparison and prompting steps, never source eligibility.</recommendation>
 </open-question>
 <open-question id="Milestone id argument shape" status="deferred">
   <question>Is the required argument the directory name (milestone_19_principle-capture-by-milestone, matching the sibling skills that take a milestone id), a bare number, or either?</question>
+  <alternative id="Directory name only">
+    The required argument is the milestone directory name under milestones/ (e.g. milestone_19_principle-capture-by-milestone), exactly as specify-milestone-starting-state takes it, resolved as milestones/&lt;milestone_id&gt;/ with a stop-and-report when that directory has no requirements.md.
+    <advantage>One shape shared with the only live sibling that takes a milestone id, and the value is consumed verbatim as both the path-scoped git-log prefix and the Principle-capture: &lt;milestone_id&gt; commit-subject descriptor, so validation is a single file-existence test with no resolution logic.</advantage>
+    <drawback>The user must supply the full zero-padded slug rather than a short number, which is more to type or paste when invoking capture for an older milestone.</drawback>
+  </alternative>
+  <alternative id="Bare number only">
+    The required argument is the milestone number (e.g. 19), which the skill resolves to a directory by globbing milestones/milestone_&lt;NN&gt;_*/ after normalizing zero-padding.
+    <advantage>Shortest possible invocation, and the number is what the Completed Milestones table lists first, so it is easy to read off.</advantage>
+    <drawback>Requires a glob-plus-zero-padding resolution rule and a multiple-or-no-match stop in the runtime file, breaks parity with the sibling skill&apos;s argument, and still has to derive the directory name for the commit subject and the log path.</drawback>
+  </alternative>
+  <alternative id="Either form">
+    The argument may be the directory name or a bare number, with the skill detecting the form (all-digits means number) and resolving a number to its directory by glob.
+    <advantage>Accepts whichever the user has at hand, so neither the long slug nor the number is ever wrong.</advantage>
+    <drawback>Two parse paths and a form-detection rule for a small typing convenience, adding branching to a runtime file that must stay lean, and the numeric branch inherits every resolution edge case of the bare-number option.</drawback>
+  </alternative>
+  <recommendation option="Directory name only">The directory name is the shape the plugin already uses for a milestone-id argument and is what capture consumes verbatim for its path-scoped log walk and its commit subject, so it needs no resolution logic; the bare-number convenience is not worth adding glob and zero-padding rules to the runtime file.</recommendation>
 </open-question>
 <open-question id="Unfinished milestone allowed" status="deferred">
   <question>May capture run against a milestone that is not yet listed in the Completed Milestones table, including the current one, or does it stop unless the milestone is finished?</question>
+  <alternative id="Any defined milestone">
+    Capture accepts any milestone id whose milestones/&lt;milestone_id&gt;/requirements.md exists, the current milestone included, with the path-scoped git log as the only boundary and no check against the Completed Milestones table.
+    <advantage>Matches the goal exactly (argument-driven, last-completed-row resolution dropped) and the sibling milestone-id skills&apos; existence-only validation; because every answer commit lands during the requirements phase, the history is already complete before derive-tasks runs, so finish status carries no information the harvest needs and a user can capture as soon as the questions converge.</advantage>
+    <drawback>A run against a milestone still mid-requirements harvests a partial history, so any answers recorded afterwards need a later pass to be considered.</drawback>
+  </alternative>
+  <alternative id="Finished milestones only">
+    Capture resolves the id to a directory but stops with a clean-stop message unless that path appears as a row in the Completed Milestones table of milestones/README.md.
+    <advantage>Guarantees the answer history is frozen when harvested, so one capture per milestone is by construction the whole story.</advantage>
+    <drawback>Reintroduces the finish coupling the goal removes and adds a second README-table lookup to keep in sync, while blocking legitimate runs for no gain: finishing never adds answer commits, so the guard checks a state unrelated to what it protects.</drawback>
+  </alternative>
+  <alternative id="Advisory on unresolved questions">
+    Capture runs against any defined milestone but, when that requirements.md still carries status=&quot;open&quot; blocks, prints a one-line advisory that the answer set may still grow and asks whether to proceed.
+    <advantage>Keeps the flexibility of the existence-only rule while keying the warning on the signal that actually predicts more answers (unresolved questions) rather than the unrelated finish state.</advantage>
+    <drawback>Adds an interactive gate for a condition git already makes harmless (a later pass simply re-walks the same path), and it fires on exactly the new use case the rework enables, so it reads as noise more often than as a real warning.</drawback>
+  </alternative>
+  <recommendation option="Any defined milestone">The harvest is a path-scoped git log bounded only by the file&apos;s existence and every answer commit lands before derive-tasks, so a finished-only stop guards a state that never changes the harvest and would reintroduce the finish coupling the goal drops; validate the id by directory existence exactly as the sibling milestone-id skills do.</recommendation>
 </open-question>
 <open-question id="Repeat capture on same milestone" status="deferred">
   <question>What happens when capture is run again for a milestone that already has a Principle-capture commit: proceed and rely on store dedup, warn and ask before proceeding, or stop?</question>
+  <alternative id="Proceed and rely on dedup">
+    Treat capture as a repeatable pass with no memory of prior runs: walk the milestone&apos;s answer commits again and let phase 2&apos;s live-store overlap check surface each already-captured candidate as a revise-or-decline against the entry the earlier run wrote, with the dirty-own-path guard making a no-change run commit nothing.
+    <advantage>Matches the plugin&apos;s repeatable-engine pattern (review, recommend sweep, starting-state) and needs no detection step, no new prompt, and no special case in the skill.</advantage>
+    <drawback>The override-rationale prompts fire before any store comparison, so a repeat run re-asks the user why each manual or alternative answer was preferred — answers already given once and persisted nowhere — and only then discovers the candidates duplicate existing entries.</drawback>
+  </alternative>
+  <alternative id="Warn and confirm">
+    Before the commit walk, grep the history for `Principle-capture: &lt;milestone_id&gt;`; when a prior capture exists, print a one-line notice naming it and ask once whether to proceed, otherwise run unchanged.
+    <advantage>A cheap git check the skill already has the machinery for prevents an accidental re-walk and its repeated override prompts, while still allowing a deliberate re-harvest after a corrective re-answer or a shifted store.</advantage>
+    <drawback>Adds one more interactive gate to an already prompt-heavy skill, and the detection is a proxy — a prior run that captured nothing left no commit, so it goes unnoticed (harmlessly, since that case costs no more than a first run).</drawback>
+  </alternative>
+  <alternative id="Stop on prior capture">
+    Refuse to run when a `Principle-capture: &lt;milestone_id&gt;` commit already exists, printing a clean-stop message in the style of the Short-Title-mismatch stops.
+    <advantage>Simplest guarantee that a milestone is harvested exactly once, with no judgment call left to the user.</advantage>
+    <drawback>Blocks the legitimate reruns the goal implies — re-capturing after a revert-then-re-answer correction landed post-capture, or after the store changed under other milestones — with no escape hatch short of git surgery, and the proxy detection still misses no-op prior runs.</drawback>
+  </alternative>
+  <alternative id="Incremental re-walk">
+    Proceed automatically but narrow the walk to answer commits newer than the milestone&apos;s latest `Principle-capture:` commit, so a repeat run only harvests what landed since.
+    <advantage>Idempotent and prompt-free — a repeat with nothing new collapses to the empty-range no-op, and a corrective re-answer landing after capture is harvested without re-asking about the rest.</advantage>
+    <drawback>Contradicts the goal&apos;s whole-milestone reconstruction — pruning, merging, and generalizing entries needs the full override history in view — and because a finished milestone&apos;s answers nearly all predate its capture, a deliberate re-harvest silently yields nothing.</drawback>
+  </alternative>
+  <recommendation option="Warn and confirm">The reworked skill&apos;s override-rationale prompts run before any store dedup can catch a duplicate, so an unguarded repeat costs the user a full re-explanation of every override; a one-line notice plus a single proceed-or-stop question is the cheapest thing that prevents that by accident while keeping the deliberate re-harvest — after a corrective re-answer or a shifted store — that the goal&apos;s current-reasoning-takes-precedence rule requires and a hard stop would forbid.</recommendation>
 </open-question>
 <open-question id="Entry compactness bar" status="deferred">
   <question>Is the compactness of a store entry expressed as a concrete cap (a word limit per entry, a ceiling on entry count) or only as the qualitative &quot;as short as still reads as an intuitive rule&quot; bar, and does the optional Origin line survive?</question>
+  <alternative id="Qualitative bar only">
+    Keep the goal&apos;s &quot;as short as it can be while still reading as an intuitive rule&quot; as the sole compactness standard, with no per-entry word limit and no entry-count ceiling, and keep the optional *Origin:* line exactly as the 4a schema has it today.
+    <advantage>Never forces a lossy truncation of a rule that genuinely needs a condition or corollary (the 125-word Mutate live machinery last entry) and changes nothing in the schema the four existing entries already satisfy.</advantage>
+    <drawback>Gives the reworked skill no trigger for its new shorten move — with only a judgment call to lean on, a pass has no way to tell which entries are over the bar, so entries drift longer and the store the recommender reads on every question grows unchecked.</drawback>
+  </alternative>
+  <alternative id="Soft target plus qualitative bar">
+    State a numeric target as a heuristic — a directive of roughly 40–80 words, flagged for shortening when it exceeds about 100 — while the qualitative bar stays the deciding test, no ceiling on entry count (prune and merge by contradiction and overlap are the count control), and *Origin:* survives as an optional single-line pointer.
+    <advantage>Gives the skill a concrete flag that fires the shorten move on the entries that need it (one of the four today) while the qualitative bar still lets a rule keep the clause it needs, and the one-line Origin preserves the originating case that a revise-vs-salvage judgment and a human auditor rely on.</advantage>
+    <drawback>Two bars instead of one — a runner must hold both the number and the judgment, and a target phrased as &quot;roughly&quot; can be argued past in either direction when an entry sits near it.</drawback>
+  </alternative>
+  <alternative id="Hard caps, Origin dropped">
+    Enforce a fixed per-entry word limit and a fixed ceiling on entry count as pass/fail checks in the skill, mirroring the 25-word frontmatter-description cap, and drop the *Origin:* line since git history now carries the provenance.
+    <advantage>Deterministic and greppable — a pass either satisfies the limits or does not, so the store can never bloat and the recommender&apos;s grounding cost is bounded by construction.</advantage>
+    <drawback>A rule whose condition does not fit the limit gets truncated or split into two shallower entries, and a count ceiling forces an unrelated prune whenever a genuinely new principle arrives at capacity — the cap decides what survives, not the reasoning the goal says takes precedence.</drawback>
+  </alternative>
+  <alternative id="Qualitative bar, Origin dropped">
+    Keep the qualitative bar as the only standard and remove the *Origin:* line, relying on the answer commits&apos; diffs (which the reworked capture reconstructs anyway) as the sole record of where a principle came from.
+    <advantage>Shortest possible entries — every line the recommender reads is directive, none is provenance.</advantage>
+    <drawback>The originating case is what lets capture judge whether current reasoning contradicts an entry or merely narrows it, and a store entry with no pointer forces a git archaeology pass to recover it every time an entry is revised, salvaged, or audited by a human.</drawback>
+  </alternative>
+  <recommendation option="Soft target plus qualitative bar">A numeric target the skill can act on, held under the qualitative bar so a rule keeps the clause it needs, is what turns the goal&apos;s new shorten move into something a pass actually fires; Origin survives as one line because the originating case is what a salvage-vs-revise judgment reads, and an entry-count ceiling is unnecessary once prune and merge by contradiction already bound the store.</recommendation>
 </open-question>
 <open-question id="Salvage form for contradicted entries" status="deferred">
   <question>When current reasoning contradicts an existing entry that was cited and then overridden, what forms may the salvage take: narrow the entry&apos;s scope, generalize it so both cases fit, replace it, or delete it outright when nothing generalizes?</question>
@@ -108,4 +235,20 @@ The rule that capture harvests only `Manual-answer:` bodies is restated in: `CLA
 </open-question>
 <open-question id="Skill framing after decoupling" status="deferred">
   <question>With a required milestone id, is capture still documented as the optional post-finish follow-up in README.md and CLAUDE.md, or reframed as an on-demand skill runnable for any milestone at any time?</question>
+  <alternative id="Keep post-finish framing">
+    Keep documenting capture in README.md and CLAUDE.md as the optional follow-up run after /finish-current-milestone, updating only the resolution sentence to say the milestone comes from the required id argument instead of the last Completed Milestones row.
+    <advantage>Smallest documentation change, and the finish moment stays the one canonical cue for when to run it, which is exactly when a milestone&apos;s answer set is guaranteed complete.</advantage>
+    <drawback>The docs would describe a constraint the skill no longer has: a required id is the whole point of decoupling, so framing it as post-finish-only hides the legitimate backfill run over milestones 6-18, which is the first real use the store will ever get.</drawback>
+  </alternative>
+  <alternative id="Reframe as on-demand skill">
+    Move capture out of the Ending a milestone stage into the on-demand family beside /ask-in-milestone-context, documented as runnable for any milestone id at any time with no reference to finish.
+    <advantage>Documentation matches the actual contract exactly, and backfilling the never-populated store across earlier milestones becomes discoverable rather than something a reader has to infer is allowed.</advantage>
+    <drawback>Loses the pipeline cue that tells a user when to run it, so capture is easy to forget entirely or to run on a milestone whose answers are still being recorded, harvesting a partial decision history.</drawback>
+  </alternative>
+  <alternative id="On-demand contract, finish as natural moment">
+    Document the contract as on-demand (any milestone id, any time, backfill explicitly allowed) while keeping its home in the Ending a milestone stage with the existing dashed optional edge, stating finish as the natural moment because the answer set is complete then, never as a precondition.
+    <advantage>States the true contract and keeps the when-to-run cue, mirroring how README already places the on-demand /ask-in-milestone-context inside a stage with an any-time note.</advantage>
+    <drawback>Two framings in one entry can read as hedging, and every surface must say post-finish is a convention rather than a precondition or the CLAUDE.md invariants drift back toward the pointer-none design.</drawback>
+  </alternative>
+  <recommendation option="On-demand contract, finish as natural moment">The required id makes the contract on-demand by construction and the store&apos;s first real run is a backfill, but finish remains the one moment a milestone&apos;s answer set is complete, so the docs keep that as the natural trigger while never stating it as a precondition.</recommendation>
 </open-question>
