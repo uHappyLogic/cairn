@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Walk All Three Answer Provenances With Diffs
-
-Replace the `Manual-answer:`-only commit walk with a path-scoped `git log` over `<MILESTONE_DIR>/requirements.md` matching all three subjects (`Manual-answer:`, `Alternative-answer:`, `Recommendation-answer:`), reading for each commit its subject, body, and the diff's removed `<open-question>` block to reconstruct the `<recommendation option>`, the `<applied-principle>` citations, and the alternatives the user saw. Each commit is then classified by two tests in order — agreement of the recorded option against the removed recommendation, where a block with no recommendation counts as a non-override manual answer, then deliberated-vs-bare body by the existing bare-cold-answer test — producing the per-commit record the later steps consume. Verified when the walk step can be followed against this repo's milestone 11, 14, or 17 answer commits to yield the right provenance, agreement, and body classification for each.
-
----
-
 ## Override Rationale Prompts With Best Guesses
 
 Add a prompting step that asks the user why the alternative was preferred only for override commits carrying no user rationale — every non-agreeing `Alternative-answer:` and a non-agreeing `Manual-answer:` whose body is the bare literal answer — showing the skill's best guess derived from the removed alternatives, recommendation, and recorded option, skippable per prompt, with the run opening on a one-shot choice to accept every guess or skip every prompt; deliberated manual bodies and agreeing answers are never prompted. Verified when the prompt step states exactly these eligibility rules, the best-guess display, and the one-shot opener.

@@ -5,11 +5,12 @@ description: Distill reusable answering principles from a named milestone's reco
 
 # capture-milestone-principle-updates
 
-This is the on-demand harvester of the answer-principle-learning loop. Over a milestone, each
-`/answer-open-question` records a decision and commits it with the decision's **rationale in the
-commit body** (subject `Manual-answer: <Short Title>`). This skill reads that finite, known-up-front
-set of commits for the milestone you name and distills from them the generalizable answering
-principles that the recommendation advisor can apply.
+This is the on-demand harvester of the answer-principle-learning loop. Over a milestone, every
+recorded answer is one commit on the milestone's `requirements.md` under one of three subjects —
+`Manual-answer:`, `Alternative-answer:`, or `Recommendation-answer: <Short Title>` — whose body carries
+the recorded answer and whose diff preserves the analysis the user saw when recording it. This skill
+reads that finite, known-up-front set of commits for the milestone you name and distills from them
+the generalizable answering principles that the recommendation advisor can apply.
 
 It runs against **any** milestone id whose `milestones/<milestone_id>/requirements.md` exists — the
 current milestone, an unfinished one, or one already finished (backfill included). Because every
@@ -93,25 +94,112 @@ guard prints nothing and asks nothing; the run continues unchanged.
    the baseline** every later step reads and the store rewrite composes over: the pending edits stay
    in place and are built on, never discarded or diffed away.
 
-### 3. Walk the milestone's `Manual-answer` commits
+### 3. Walk the milestone's answer commits
 
-Collect the manual-answer commits for this milestone with a **path-scoped** log, using the
-`<milestone_id>` from step 1 verbatim in the path:
+Collect every answer commit for this milestone — all three provenances — with a **path-scoped**
+log, using the `<milestone_id>` from step 1 verbatim in the path:
 
 ```
-git log --grep='^Manual-answer: ' -- milestones/<milestone_id>/requirements.md
+git log --format='%h %s' -E --grep='^(Manual-answer|Alternative-answer|Recommendation-answer): ' -- milestones/<milestone_id>/requirements.md
 ```
 
 - **The path filter is itself the lower boundary.** `milestones/<milestone_id>/requirements.md` does
   not exist before `/define-milestone-goal` created it, so no earlier commit can touch it — there is
   no need for a milestone-start marker or recorded base SHA. It is also the only boundary on the
   harvest: no finish marker or upper bound is applied.
-- **Read the commit bodies, not just the subjects.** The subject only names the answered question; the
-  reusable reasoning is in the **body** (`git log` / `git show` of each commit). Phase-1 extraction
-  works from those bodies.
+- **Every subject is `<Marker>: <Short Title>`.** The marker names the provenance and the remainder
+  is the answered question's Short Title — the `id` of the `<open-question>` block the answer removed.
 
 If the walk returns **no qualifying commits**, this is the empty-range exit — go straight to step 7
 (it is a normal outcome, not an error).
+
+Otherwise, for **each** commit, read three things and build one per-commit record from them.
+
+**Read the subject, the body, and the diff.**
+
+```
+git show <hash> --format='%s%n%n%b' -- milestones/<milestone_id>/requirements.md
+```
+
+- **Subject → provenance and Short Title.** Split on the first `: `. The marker is the provenance
+  (`Manual-answer`, `Alternative-answer`, `Recommendation-answer`); the remainder is the Short Title.
+- **Body → the recorded answer as written.** Drop git trailers first — the trailing run of `Key: value`
+  lines such as `Co-Authored-By:` and `Claude-Session:` — and keep the rest verbatim. What the body
+  holds differs by provenance: a `Manual-answer:` body is the user's rationale when deliberation was in
+  context, otherwise the literal answer text; a `Recommendation-answer:` body is the lifted
+  "`<option>` — `<rationale>`" of the recommendation; an `Alternative-answer:` body is the chosen
+  alternative's "`<id>` — `<what-it-is>`". No user rationale exists on either lifted path.
+- **Diff → the block the user saw, and the decision they recorded.** `shared/answer-procedure.md`
+  folds the decision into `## Decisions` and then removes the whole `<open-question>` block, so the
+  diff's **removed lines** (`-` prefix) hold the full block as it stood when the answer was recorded and
+  its **added lines** (`+` prefix) hold the new `## Decisions` entry. Locate the answered block among
+  the removed lines by its opening boundary `-<open-question id="…"` whose `id` matches the Short Title
+  (case-insensitive, entity-unescaped, attribute order immaterial) and read through its
+  `-</open-question>` closing line. Any **other** removed block in the same diff is a cascaded sibling
+  the answer mooted — it is not the answered block and contributes nothing to this record. From the
+  answered block reconstruct, reversing the five predefined XML entities (`&lt;` `&gt;` `&quot;`
+  `&apos;`, then `&amp;` last) on every value:
+  - the `<question>` text;
+  - each `<alternative id="…">` — its `id`, its **what-it-is** text (the element's own text before its
+    first child), and its `<advantage>` / `<drawback>` children — in document order: these are the
+    options the user saw;
+  - every `<applied-principle>Short Title</applied-principle>` line — the store entries the recommender
+    cited (zero or more; each is one store `### <Short Title>`);
+  - the `<recommendation option="…">…</recommendation>` element — its `option` attribute and its
+    rationale text — or **none** when the block carries no `<recommendation>` element. A block the
+    recommend sweep never annotated has only a `<question>`; an answer recorded before the block form
+    existed removes no `<open-question>` at all (its removed lines are a `> **Deferred — …:**` or
+    `> **Open — …:**` blockquote). Both are the **no-recommendation** case, never an error.
+
+**Classify the commit by two tests, in this order.**
+
+1. **Agreement — did the recorded option match the removed recommendation?** First derive the
+   **recorded option** per provenance:
+   - `Recommendation-answer:` — the body text before its first spaced em dash (` — `) is the option;
+     it is the lifted recommendation, so agreement holds by construction.
+   - `Alternative-answer:` — the body text before its first ` — ` is the chosen alternative's `id`.
+   - `Manual-answer:` — the alternative whose `id` the body or the added `## Decisions` entry names
+     outright, or, when no `id` is named verbatim, the alternative whose what-it-is text the recorded
+     decision plainly matches; when the decision matches none of the removed alternatives, the recorded
+     option is a fresh one outside the analysis.
+
+   Then compare that recorded option against the removed `<recommendation>`'s `option` attribute
+   (trimmed, case-insensitive, both entity-unescaped) and assign exactly one class:
+   - **`non-override`** — the block carried **no** `<recommendation>` element (assigned before any
+     comparison; only a `Manual-answer:` can land here, and it is still a principle source).
+   - **`agrees`** — the recorded option equals the recommended option (every
+     `Recommendation-answer:`, plus any `Alternative-answer:` or `Manual-answer:` that recorded the
+     recommended option).
+   - **`overrides`** — a recommendation existed and the recorded option is a different alternative or a
+     fresh option.
+
+2. **Body — deliberated or bare?** Apply the **bare-cold-answer test** step 4 already uses: the body is
+   **`deliberated`** when, beyond stating the decision, it states the reasoning behind it — the
+   alternatives weighed, why one was chosen, the trade-off accepted — and **`bare`** when it is only the
+   decision itself (the literal answer or a lifted element's text) with no reason stated. Read the
+   trailer-stripped body as a whole; an inline "because" clause the user typed makes it deliberated. By
+   construction every `Alternative-answer:` and `Recommendation-answer:` body is **`bare`** — it is
+   lifted element text carrying no user rationale (the recommendation body holds the recommender's
+   reasoning, not the user's, which is not what this test looks for). Only a `Manual-answer:` body can
+   be `deliberated`.
+
+**The per-commit record.** Hold one record per commit, in walk order, with these fields — this is
+what steps 4 and 5 consume:
+
+| Field | Value |
+|---|---|
+| `hash` | the commit's short hash |
+| `provenance` | `Manual-answer` \| `Alternative-answer` \| `Recommendation-answer` |
+| `short_title` | the Short Title from the subject |
+| `body` | the trailer-stripped body, verbatim |
+| `recorded_decision` | the added `## Decisions` entry text from the diff |
+| `question` | the removed `<question>` text |
+| `alternatives` | ordered list of (`id`, what-it-is, advantages, drawbacks) the user saw; empty when the block carried none |
+| `applied_principles` | list of cited store Short Titles; empty when none |
+| `recommendation` | (`option`, rationale), or `none` |
+| `recorded_option` | the option derived in test 1 (an alternative `id`, or the fresh-option text) |
+| `agreement` | `non-override` \| `agrees` \| `overrides` |
+| `body_class` | `deliberated` \| `bare` |
 
 ### 4. Phase 1 — extract candidates and dedup them against each other (internal, no user yet)
 
