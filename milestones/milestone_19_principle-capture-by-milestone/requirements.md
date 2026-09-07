@@ -58,29 +58,14 @@ A `Manual-answer:` whose removed block carried no recommendation to override —
 
 `Recommendation-answer:` commits, where the user accepted the recommendation as-is, are used only as evidence about entries already in the store, never mined for new principle candidates. A removed `<applied-principle>` citation counts as reinforcement of that entry and shields it from being pruned or narrowed in the same pass, and an accepted rationale that contradicts an existing entry flags it for the prune, narrow, generalize, or salvage path. New principles continue to come solely from the override commits: an accepted recommendation carries the recommender's own reasoning, so it cannot supply the guideline the recommender lacked, while both evidence signals fall out of the per-commit diff read capture already performs.
 
+### Override rationale prompting scope
+
+Capture prompts for the override reason only where the commit body carries no user rationale: every `Alternative-answer:`, and a `Manual-answer:` whose body is the bare literal answer with no stated reason, judged by the same bare-cold-answer test phase 1 already applies. A deliberated `Manual-answer:` body is read as the user's own answer to the why and is never re-prompted. Each prompt shows the skill's best guess at the override reason and can be skipped individually, and the run opens with a one-shot choice to accept every guess or to skip every prompt, so a backfill run over an older milestone the user no longer remembers stays workable. Misclassifying a thin-but-real rationale as deliberated is accepted: the body still surfaces in the composed store rewrite the user reviews with `git diff` before the commit is confirmed.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Override rationale prompting scope" status="open">
-  <question>When does capture ask the user why an answer overrode the recommendation: only for overrides whose commit body carries no user rationale (every Alternative-answer, and a cold Manual-answer that is just the literal answer), or for every override including a Manual-answer whose body already holds deliberated rationale, and does the user get a way to skip or answer all prompts at once?</question>
-  <alternative id="Prompt only rationale-less overrides, with batch controls">
-    Capture prompts for the override reason only where the commit body carries no user rationale — every Alternative-answer, and a Manual-answer whose body is the bare literal answer with no stated reason (the same &quot;bare cold answer&quot; test phase 1 already applies) — reading a deliberated Manual-answer body as the user&apos;s own answer to the why; each prompt shows the skill&apos;s best guess and can be skipped, and the run opens with a one-shot choice to accept every guess or skip every prompt.
-    <advantage>Never asks the user to re-explain, weeks later and from memory, a reason they already wrote in context, so prompts scale with the actual rationale gap (four of the seven historical overrides) and the argument-driven backfill run over an old milestone stays workable via skip-all or accept-all-guesses.</advantage>
-    <drawback>Cold-vs-deliberated is a judgment the skill makes over body text, so a thin-but-real rationale can be misread as deliberated and its true why never asked for; the mitigation is that the body still surfaces in the rewritten entry the user reviews with git diff before the rewrite is committed.</drawback>
-  </alternative>
-  <alternative id="Prompt only rationale-less overrides, per-prompt skip only">
-    Same gap-only scope, but the only control is skipping an individual prompt — no up-front accept-all or skip-all, on the argument that the prompt set is already small.
-    <advantage>Least machinery: no batch mode to specify, and every retained override reason is one the user actually looked at rather than bulk-accepted.</advantage>
-    <drawback>A retroactive run over a milestone the user no longer remembers becomes a sequence of prompts that each end in skip, and there is no way to say &quot;use your guesses&quot; once for the whole run even though the whole-store rewrite is confirmed once before commit anyway.</drawback>
-  </alternative>
-  <alternative id="Prompt every override, body as prefilled guess">
-    Capture prompts on every override regardless of provenance, using an existing Manual-answer body as the prefilled guess the user confirms or corrects, with the same skip and batch controls.
-    <advantage>Uniform and classification-free: no cold-vs-deliberated call, and the user gets to sharpen a body that justified the answer without specifically saying why the recommendation lost.</advantage>
-    <drawback>Turns the harvester&apos;s highest-quality inputs into redundant interruptions — the user is asked to re-confirm at capture time what they deliberated and wrote when the context was fresh, which is exactly when their memory is weakest and the body is strongest.</drawback>
-  </alternative>
-  <recommendation option="Prompt only rationale-less overrides, with batch controls">A deliberated Manual-answer body is the user&apos;s override reason already, so prompting is worth it only where no reason exists (Alternative-answers and cold literal answers); the one-shot accept-all/skip-all breaks the tie against per-prompt-skip-only because the skill is now runnable against any past milestone, where the user often cannot answer from memory and every guess still lands in a working-tree rewrite the user reviews with git diff before it is committed.</recommendation>
-</open-question>
 <open-question id="Unfinished milestone allowed" status="deferred">
   <question>May capture run against a milestone that is not yet listed in the Completed Milestones table, including the current one, or does it stop unless the milestone is finished?</question>
   <alternative id="Any defined milestone">
