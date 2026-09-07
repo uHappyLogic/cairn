@@ -112,3 +112,20 @@ State in the rewrite composition how an entry contradicted by current reasoning 
 - `uv run scripts/migrate_skills_to_agy.py` regenerated `.agents/plugins/cairn/`; only the capture skill copy changed, and it differs from the source solely by the step-7 `${CLAUDE_PLUGIN_ROOT}` path rewrite and dropped `echo` hint.
 
 ---
+
+## Single Rewrite Confirmation Gates The Commit
+
+Add the review loop after the in-place write: the user reviews the working-tree change with `git diff` and requests changes in conversation, the skill re-edits the file in place each round, and one confirmation gates the commit — on acceptance the store is committed path-scoped under `Principle-capture: <milestone_id>`, and on explicit rejection the skill restores the pre-write snapshot and exits without invoking `shared/commit-procedure.md`, reporting the no-op line. The report step keeps `Principles captured.` for a committed rewrite and one distinct line for every nothing-captured case (empty range, no candidates, composed store identical to the baseline, rejection). Verified when the confirmation, rejection, and report steps read exactly so.
+
+**Verified:**
+
+- Step 7 (`### 7. Review, confirm, and commit the principle-store update`) states the review loop after step 6's in-place write: the user reviews the working-tree change with `git diff -- milestones/answer_decision_principles.md` and requests changes in conversation; each round the skill re-edits the store in place under step 6's rules, takes no new snapshot (the step-6 snapshot stays the restore point), prints no diff or store content, and asks the same single confirmation again — exactly one confirmation gates the commit, not the write, with no per-entry or per-change confirmation.
+- On acceptance step 7 runs `shared/commit-procedure.md` with PATHS = the fixed-path store `milestones/answer_decision_principles.md` and SUBJECT = `Principle-capture: <milestone_id>` (the step-1 argument verbatim), committing the rewrite as it stands after the last review round over the working-tree baseline, then discards the snapshot.
+- On explicit rejection step 7 restores the store from the step-6 snapshot, not from `HEAD` (`cp "$SNAPSHOT" milestones/answer_decision_principles.md`; removes the created file when the snapshot was recorded as *absent*), so the store stands exactly as before the first write in the clean and dirty cases alike, then exits explicitly without invoking `shared/commit-procedure.md` — stating that its dirty-own-path guard would otherwise commit the user's surviving edits under `Principle-capture:` — with no empty commit, and goes to step 8's nothing-captured report.
+- Step 7 states it runs only after a write: the empty range (step 3), no candidates (step 5), and identical-to-baseline (step 6) cases go straight to step 8 and never reach the shared procedure.
+- Step 8 keeps `Principles captured.` solely for a committed rewrite (a written-but-uncommitted rewrite never earns it) and prints one distinct single no-op line — never a collapse into the success line — for every nothing-captured case, naming all four: empty commit range (step 3), no candidates (step 5), composed store identical to its baseline (step 6), rejection (step 7).
+- Surrounding prose is consistent: the usage note says the rewrite is committed once the user confirms it after reviewing `git diff` and that a rejected rewrite leaves the store as it stood; the repeat-capture guard names "a rejected rewrite" among undetectable no-op runs; step 6's references to "step 7's confirmation" resolve; step headings run 1–8 (with 6a) and every intra-file step reference resolves.
+- Frontmatter is unchanged and loads under `yaml.safe_load` (15-word description, no colon or semicolon); no `## Rules` section exists under `skills/`, `agents/`, or `shared/`.
+- `uv run scripts/migrate_skills_to_agy.py` regenerated `.agents/plugins/cairn/`; only the capture skill copy changed, and it differs from the source solely by the step-7 `${CLAUDE_PLUGIN_ROOT}` path rewrite and dropped `echo` hint.
+
+---

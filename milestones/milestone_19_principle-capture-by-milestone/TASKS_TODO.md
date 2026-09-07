@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Single Rewrite Confirmation Gates The Commit
-
-Add the review loop after the in-place write: the user reviews the working-tree change with `git diff` and requests changes in conversation, the skill re-edits the file in place each round, and one confirmation gates the commit — on acceptance the store is committed path-scoped under `Principle-capture: <milestone_id>`, and on explicit rejection the skill restores the pre-write snapshot and exits without invoking `shared/commit-procedure.md`, reporting the no-op line. The report step keeps `Principles captured.` for a committed rewrite and one distinct line for every nothing-captured case (empty range, no candidates, composed store identical to the baseline, rejection). Verified when the confirmation, rejection, and report steps read exactly so.
-
----
-
 ## Capture Commit Body Lists Store Changes
 
 Make the `Principle-capture: <milestone_id>` commit carry a body of one short line per store change, each naming the change kind (add, revision, prune, merge, or generalization) and the Short Title of the override answer commit that drove it, composed at commit time against the final rewrite so it cannot drift from the diff. Verified when the skill's commit step supplies that body to the shared commit procedure and states the at-commit-time composition.

@@ -40,10 +40,11 @@ the `milestones/` root, **above** any one milestone, so principles accumulate ac
 
 > This skill writes **only** the principle store at the fixed path
 > `milestones/answer_decision_principles.md`. It does **not** touch any milestone's `requirements.md`.
-> When a pass distills a new or revised principle it **commits** that principle-store edit itself
-> (step 7); a pass that distills none changes no file and commits nothing. It imposes no clean-store
-> precondition and does not refuse a milestone already captured — both cases pass through a
-> notice-and-confirm guard (step 2), never a stop.
+> When a pass composes a store rewrite it writes it in place and — once the user has reviewed the
+> working-tree change with `git diff` and confirmed it — **commits** that rewrite itself (step 7); a
+> pass that distills nothing, or whose rewrite the user rejects, leaves the store as it stood and
+> commits nothing. It imposes no clean-store precondition and does not refuse a milestone already
+> captured — both cases pass through a notice-and-confirm guard (step 2), never a stop.
 
 ## Workflow
 
@@ -81,7 +82,7 @@ guard prints nothing and asks nothing; the run continues unchanged.
    whether to proceed with a repeat capture. Only a committed capture is detectable: this skill
    writes **no empty commit** to record a no-op run (step 7 has no `--allow-empty`), so a prior run
    that changed nothing — an empty commit range, a store left identical to its baseline, or a
-   declined result — leaves no trace here and is not detected.
+   rejected rewrite — leaves no trace here and is not detected.
 
 2. **Dirty-store guard.** Check whether the store already carries uncommitted changes:
 
@@ -470,26 +471,78 @@ restatement of one past decision.>
   record. What is applied is the *statement*, not the origin.
 - **No status field.** Presence in the file means confirmed.
 
-### 7. Commit the principle-store update
+### 7. Review, confirm, and commit the principle-store update
 
-Read and follow the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
+This step runs only after step 6 wrote the composed store. A pass that wrote nothing — the empty
+commit range (step 3), no surviving candidate and no flagged entry (step 5), or a composed store
+identical to its baseline (step 6) — went straight to step 8 and never reaches this step or the
+shared commit procedure: with nothing of its own written, running that procedure would let its
+dirty-own-path guard commit the user's edits admitted by step 2's dirty-store guard under this
+skill's subject. No empty commit is written to record such a run either.
+
+**The write was not the confirmation; this is.** The working tree is the only review surface. Tell
+the user, in one line, that the composed store has been written to
+`milestones/answer_decision_principles.md` and is ready to review with
+`git diff -- milestones/answer_decision_principles.md`, and ask **once** whether to commit it. Print
+no diff and no store content yourself. Exactly one confirmation gates the commit — there is no
+per-entry or per-change confirmation, and there is none for the write itself.
+
+**Review rounds.** The user reviews the working-tree change and may request changes in
+conversation — reword an entry, undo a prune, keep two merged entries separate, tighten or loosen a
+directive, drop a hygiene shortening. Each round, **re-edit `milestones/answer_decision_principles.md`
+in place** to carry the request, still composing under step 6's rules (the step-6a entry schema, the
+evidence gate on what an entry decides, the compactness bar), then ask the same confirmation again.
+Take **no new snapshot** — the step-6 snapshot stays the restore point for the whole loop — and print
+no diff after a round either; the user re-reads `git diff`. A reply that is neither an explicit
+acceptance nor an explicit rejection is a change request or a question: handle it and ask again.
+There is no round limit; the loop ends only on one of the two answers below.
+
+**On acceptance — commit.** Read and follow the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set: the fixed-path store `milestones/answer_decision_principles.md` (a `milestones/`-root artifact, **not** any `<MILESTONE_DIR>` file — this skill writes only that store).
 - **SUBJECT** — `Principle-capture: <milestone_id>`, with `<milestone_id>` the argument from step 1 used verbatim (e.g. `Principle-capture: milestone_12_user-guide`), the marker naming this skill's distinctive principle-capture function.
 
-A pass that distilled no new principle — the empty commit range, in-range commits that none generalize, or a composed store identical to its baseline (step 6) — wrote nothing to `milestones/answer_decision_principles.md`: skip the shared procedure entirely and go to step 8. The store may still carry the user's own uncommitted edits admitted by step 2's dirty-store guard, and the procedure's dirty-own-path guard would otherwise commit those under this subject; no empty commit is written to record such a run either. A pass whose step-6 rewrite actually changed the store commits that rewrite — over the working-tree baseline, so edits admitted in step 2 ride in the same commit. The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
+The rewrite is committed as it stands after the last review round, over the working-tree baseline,
+so edits admitted in step 2 ride in the same commit. Once the commit lands, discard the snapshot
+(`rm -f "$SNAPSHOT"`) and go to step 8 (captured).
+
+**On explicit rejection — restore the snapshot and exit without committing.** Restore the store
+from the step-6 snapshot, **not from `HEAD`**:
+
+```
+cp "$SNAPSHOT" milestones/answer_decision_principles.md && rm -f "$SNAPSHOT"
+```
+
+When the snapshot was recorded as *absent*, remove the file the write created instead
+(`rm milestones/answer_decision_principles.md`). Either way the store stands exactly as it did
+before the first write: in the clean case that is `HEAD`; after a dirty-store proceed it is the
+user's own uncommitted edits, which survive intact. Then **exit explicitly — do not invoke
+`shared/commit-procedure.md`**, not even for its guard: stage nothing and commit nothing. The
+procedure's dirty-own-path guard would read the user's surviving edits as this pass's change and
+commit them under `Principle-capture: <milestone_id>`, which is why the rejection path never reaches
+it. No empty commit records the rejection. Go to step 8 (nothing captured).
 
 ### 8. Report
 
-- **If the composed rewrite was written,** print exactly one fixed terse status line and nothing
-  else:
+- **If the rewrite was committed** (step 7, acceptance), print exactly one fixed terse status line
+  and nothing else:
 
   `Principles captured.`
 
   Carry no principle `### <Short Title>`, no add/revision breakdown, and no commit subject, and print
-  no next-step or recommendation-advisor pointer.
-- **If nothing was captured** — the empty commit range (step 3) **or** in-range commits that none
-  generalize (step 5) **or** a composed store identical to its baseline (step 6) — report it in a **single line**: there
-  are no principle candidates in range to distill (write nothing, commit nothing). This is the
-  distinct one-line no-op message for a pass whose dirty-own-path guard fired, never a collapse into
-  `Principles captured.`; all three cases **converge on this identical terminal report**.
+  no next-step or recommendation-advisor pointer. A rewrite that was written but not committed
+  never earns this line.
+- **If nothing was captured**, report it in a **single line** — distinct from the terse success
+  line, never a collapse into `Principles captured.` — stating that nothing was captured, that
+  nothing was committed, and briefly which case ended the run. The four cases share this one-line
+  shape and differ only in that brief reason:
+  - **empty commit range** (step 3): no answer commits touch this milestone's `requirements.md`;
+  - **no candidates** (step 5): commits were in range, but none generalizes and none contradicts
+    the store;
+  - **composed store identical to its baseline** (step 6): everything the milestone teaches is
+    already in the store, so nothing was written;
+  - **rejection** (step 7): the rewrite was declined and the store restored to its pre-write state.
+
+  Each is the distinct one-line no-op message for a pass that changed none of its own paths — git
+  holds no record of a no-op, so the console must carry it.
