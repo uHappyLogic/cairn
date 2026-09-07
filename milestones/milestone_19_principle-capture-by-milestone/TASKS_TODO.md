@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Repeat Capture And Dirty Store Guards
-
-Add two start-of-run guards to the capture skill, each a one-line notice plus a single proceed confirmation and never a stop: before the commit walk, grep the history for the exact both-ends-anchored subject `Principle-capture: <milestone_id>` and on a hit name the prior commit; and when `milestones/answer_decision_principles.md` already carries uncommitted changes, notice-and-confirm, then use the working-tree file rather than `HEAD` as the baseline the rewrite composes over. Verified when the skill states both guards with their exact anchoring, runs unchanged on no hit, and writes no empty commit to record a no-op run.
-
----
-
 ## Walk All Three Answer Provenances With Diffs
 
 Replace the `Manual-answer:`-only commit walk with a path-scoped `git log` over `<MILESTONE_DIR>/requirements.md` matching all three subjects (`Manual-answer:`, `Alternative-answer:`, `Recommendation-answer:`), reading for each commit its subject, body, and the diff's removed `<open-question>` block to reconstruct the `<recommendation option>`, the `<applied-principle>` citations, and the alternatives the user saw. Each commit is then classified by two tests in order — agreement of the recorded option against the removed recommendation, where a block with no recommendation counts as a non-override manual answer, then deliberated-vs-bare body by the existing bare-cold-answer test — producing the per-commit record the later steps consume. Verified when the walk step can be followed against this repo's milestone 11, 14, or 17 answer commits to yield the right provenance, agreement, and body classification for each.

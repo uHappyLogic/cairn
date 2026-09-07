@@ -40,7 +40,9 @@ the `milestones/` root, **above** any one milestone, so principles accumulate ac
 > This skill writes **only** the principle store at the fixed path
 > `milestones/answer_decision_principles.md`. It does **not** touch any milestone's `requirements.md`.
 > When a pass distills a new or revised principle it **commits** that principle-store edit itself
-> (step 5); a pass that distills none changes no file and commits nothing.
+> (step 6); a pass that distills none changes no file and commits nothing. It imposes no clean-store
+> precondition and does not refuse a milestone already captured — both cases pass through a
+> notice-and-confirm guard (step 2), never a stop.
 
 ## Workflow
 
@@ -55,10 +57,43 @@ list the `milestone_*` directories present under `milestones/` so the caller can
 them. Directory existence is the only validation; nothing about the milestone's finish status is
 consulted.
 
-The same `<milestone_id>` feeds, verbatim, the path-scoped commit walk in step 2 and the commit
-subject in step 5.
+The same `<milestone_id>` feeds, verbatim, the repeat-capture guard's anchored grep in step 2, the
+path-scoped commit walk in step 3, and the commit subject in step 6.
 
-### 2. Walk the milestone's `Manual-answer` commits
+### 2. Start-of-run guards
+
+Two guards run here, before the commit walk. Each is a **one-line notice plus a single proceed
+confirmation, never a stop**: on a hit, print the one-line notice, ask once whether to proceed, and
+on yes continue exactly as if the guard had not fired. Declining is the user's clean stop — report
+it in one line, having read nothing further, changed nothing, and committed nothing. With no hit, a
+guard prints nothing and asks nothing; the run continues unchanged.
+
+1. **Repeat-capture guard.** The `Principle-capture: <milestone_id>` commit subject is the record
+   that this milestone was already ingested. Grep the history for that exact subject, **anchored on
+   both ends**, with `<milestone_id>` verbatim from step 1:
+
+   ```
+   git log --grep='^Principle-capture: <milestone_id>$' --format='%h %ad %s' --date=short
+   ```
+
+   On a hit, the notice names the prior commit (its short hash, date, and subject) and asks once
+   whether to proceed with a repeat capture. Only a committed capture is detectable: this skill
+   writes **no empty commit** to record a no-op run (step 6 has no `--allow-empty`), so a prior run
+   that changed nothing — an empty commit range, a store left identical to its baseline, or a
+   declined result — leaves no trace here and is not detected.
+
+2. **Dirty-store guard.** Check whether the store already carries uncommitted changes:
+
+   ```
+   git status --porcelain -- milestones/answer_decision_principles.md
+   ```
+
+   On any output, the notice states that `milestones/answer_decision_principles.md` has uncommitted
+   changes and asks once whether to proceed. On proceed, the **working-tree file — not `HEAD` — is
+   the baseline** every later step reads and the store rewrite composes over: the pending edits stay
+   in place and are built on, never discarded or diffed away.
+
+### 3. Walk the milestone's `Manual-answer` commits
 
 Collect the manual-answer commits for this milestone with a **path-scoped** log, using the
 `<milestone_id>` from step 1 verbatim in the path:
@@ -75,10 +110,10 @@ git log --grep='^Manual-answer: ' -- milestones/<milestone_id>/requirements.md
   reusable reasoning is in the **body** (`git log` / `git show` of each commit). Phase-1 extraction
   works from those bodies.
 
-If the walk returns **no qualifying commits**, this is the empty-range exit — go straight to step 6
+If the walk returns **no qualifying commits**, this is the empty-range exit — go straight to step 7
 (it is a normal outcome, not an error).
 
-### 3. Phase 1 — extract candidates and dedup them against each other (internal, no user yet)
+### 4. Phase 1 — extract candidates and dedup them against each other (internal, no user yet)
 
 This phase is entirely internal: no writes, no user prompts. Its job is to turn a pile of commit
 bodies into a clean, deduped set of principle candidates.
@@ -105,10 +140,10 @@ bodies into a clean, deduped set of principle candidates.
    phrasing and the originating examples). The output of phase 1 is the deduped set of surviving candidates, ranked
    **strongest first** (most clearly generalizable / most load-bearing for future recommendations).
 
-If phase 1 leaves **no** surviving candidate (commits existed but none generalize), go to step 6 —
+If phase 1 leaves **no** surviving candidate (commits existed but none generalize), go to step 7 —
 this converges on the **same** "nothing captured" report as the empty range.
 
-### 4. Phase 2 — confirm and write one candidate at a time, against the live store
+### 5. Phase 2 — confirm and write one candidate at a time, against the live store
 
 Now engage the user. You **may** first display the full surviving pool up front as a "what this
 milestone taught" review aid — but **writes still advance one candidate at a time**. Display
@@ -116,8 +151,9 @@ granularity and write granularity are separate; never grouped-per-round approval
 
 Walk the surviving candidates **strongest-first**. For **each** candidate, before writing the next:
 
-1. **Read the entire live `milestones/answer_decision_principles.md`.** It is small and grows slowly,
-   so reading it whole is always feasible. If the file is absent or empty, there are no existing
+1. **Read the entire live `milestones/answer_decision_principles.md`** as it stands in the working
+   tree — the baseline fixed in step 2, whether or not it matches `HEAD`. It is small and grows
+   slowly, so reading it whole is always feasible. If the file is absent or empty, there are no existing
    principles and this candidate will be an add (the file is created on first write).
 
 2. **Decide revise-vs-add by semantic overlap, confirmed by the user — never by title alone, never
@@ -128,7 +164,7 @@ Walk the surviving candidates **strongest-first**. For **each** candidate, befor
    one existing principle (and how), or **add** a new entry. If nothing overlaps, still present the new
    entry for confirmation before writing. Never auto-merge or auto-add without that confirmation.
 
-3. **Write that one candidate** per the schema in step 4a, applying the user's confirmed choice (add a
+3. **Write that one candidate** per the schema in step 5a, applying the user's confirmed choice (add a
    new `### <Short Title>` subsection, or edit an existing one in place).
 
 4. **Re-scan the remaining pool before the next candidate.** Because the write you just made mutated the
@@ -141,7 +177,7 @@ candidates from phase 1. Each confirmation resolves one (add / revise / decline)
 pool shrinks monotonically. The loop ends when every commit's rationale has been considered and every
 surviving candidate is resolved with no pending merges.
 
-#### 4a. Entry schema
+#### 5a. Entry schema
 
 Each entry is one principle per subsection:
 
@@ -164,16 +200,16 @@ restatement of one past decision.>
   applied is the *statement*, not the origin.
 - **No status field.** Presence in the file means confirmed.
 
-### 5. Commit the principle-store update
+### 6. Commit the principle-store update
 
 Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md` (run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path), carrying out its steps yourself. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set: the fixed-path store `milestones/answer_decision_principles.md` (a `milestones/`-root artifact, **not** any `<MILESTONE_DIR>` file — this skill writes only that store).
 - **SUBJECT** — `Principle-capture: <milestone_id>`, with `<milestone_id>` the argument from step 1 used verbatim (e.g. `Principle-capture: milestone_12_user-guide`), the marker naming this skill's distinctive principle-capture function.
 
-A pass that distilled no new principle — the empty commit range, in-range commits that none generalize, or the user declining every candidate — leaves `milestones/answer_decision_principles.md` unchanged; a pass whose confirmed revise/add actually edited the store commits that edit. The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
+A pass that distilled no new principle — the empty commit range, in-range commits that none generalize, or the user declining every candidate — wrote nothing to `milestones/answer_decision_principles.md`: skip the shared procedure entirely and go to step 7. The store may still carry the user's own uncommitted edits admitted by step 2's dirty-store guard, and the procedure's dirty-own-path guard would otherwise commit those under this subject; no empty commit is written to record such a run either. A pass whose confirmed revise/add actually edited the store commits that edit — over the working-tree baseline, so edits admitted in step 2 ride in the same commit. The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
 
-### 6. Report
+### 7. Report
 
 - **If at least one principle was written,** print exactly one fixed terse status line and nothing
   else:
@@ -182,8 +218,8 @@ A pass that distilled no new principle — the empty commit range, in-range comm
 
   Carry no principle `### <Short Title>`, no add/revision breakdown, and no commit subject, and print
   no next-step or recommendation-advisor pointer.
-- **If nothing was captured** — the empty commit range (step 2) **or** in-range commits that none
-  generalize (step 3) **or** the user declined every candidate — report it in a **single line**: there
+- **If nothing was captured** — the empty commit range (step 3) **or** in-range commits that none
+  generalize (step 4) **or** the user declined every candidate — report it in a **single line**: there
   are no `Manual-answer` principles in range to distill (write nothing, commit nothing). This is the
   distinct one-line no-op message for a pass whose dirty-own-path guard fired, never a collapse into
   `Principles captured.`; all three cases **converge on this identical terminal report**.
