@@ -103,8 +103,19 @@ Your only output is the XML sub-elements the orchestrator embeds inside the exis
 in exactly the shape rendered in step 3 — the `<alternative>` elements, then any
 `<applied-principle>` elements, then the single `<recommendation>` element. Do **not** include
 the `<open-question>` wrapper or the `<question>` element: the orchestrator owns those and
-inserts your children inside the existing wrapper. Nothing before your sub-elements, nothing
-after them. There is **no `DONE` line** — the sub-elements themselves are the success return.
+inserts your children inside the existing wrapper.
+
+The orchestrator checks the shape of your final message mechanically before embedding it:
+its **first non-whitespace text must be `<alternative`** and its **last non-whitespace text
+must be `</recommendation>`**. A message that fails either test is discarded whole and the
+question is skipped — the well-formed elements inside it are never salvaged. So your final
+message **starts at the first `<alternative`** and **ends at the closing `</recommendation>`**:
+no grounding summary, no "I have what I need", no list of the facts you found or the files you
+read, no note that no principle bears, no closing remark. Everything your grounding turned up is
+spent inside the elements — a bearing fact goes into an `<advantage>`, a `<drawback>`, or the
+rationale; a bearing principle goes into an `<applied-principle>`; the rest is dropped. If you
+want to think before rendering, do it in an earlier turn, never in the final message. There is
+**no `DONE` line** — the sub-elements themselves are the success return.
 
 If you cannot produce that set — the prompt carries no usable question, the context is too
 thin to enumerate honest alternatives, or any other error stops you — **end your session with
