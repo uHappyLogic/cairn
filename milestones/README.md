@@ -10,9 +10,19 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_20_recommend-agent-return-robustness/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 20 — Recommend Agent Return Robustness
+
+- The `recommend-all-open-questions` sweep now judges each agent return through one per-return pipeline — a last-line `FAILED:` verdict tested before anything else, extraction of the region from the first `<alternative` line through the last `</recommendation>` line, then a single acceptance gate — so surrounding text is stripped rather than dropping a valid recommendation with it.
+- That acceptance gate combines the two boundary tests with four line-greps in the boundary-line CLI idiom (no wrapper or `<question>` line, exactly one `<recommendation` opening line, at least one `<alternative id` line, and an entity-unescaped case-folded `option` matching one of those ids), needing no XML parser and no second control path.
+- Every extraction or gate miss now takes exactly one repair attempt before any skip: continue the same agent session via `SendMessage` where the host allows it, otherwise one fresh re-dispatch with the same prompt plus the shape reminder — the branch the Antigravity build takes — with repairs issued on arrival while other dispatches are in flight and a per-question repair-spent marker holding the attempt to one.
+- The corrective message is a fixed one-paragraph template rendered once in the skill with a single slot, filled with the same failed-test reason string the gate derives, quoting both shape tests verbatim and never quoting the offending prose back.
+- `agents/recommend-open-question.md` step 4 was rewritten from the ground up as a draft → self-check → emit step whose only test list is those two shape tests, dropping the accumulated prohibition list whole while step 3's rendering specification stays byte-for-byte untouched.
+- Console reporting stays terse: a question annotated only after extraction or after the repair gets no mention at all, and only questions still skipped after the repair path reach the step-6 advisory and the step-5 all-skipped no-op wording.
+- `CLAUDE.md` and `README.md` record the deliberate reversal of the "discarded whole, never salvaged" rule with its evidence and a do-not-restore instruction, plus the scope boundary leaving `complete-task`, `answer-open-question-with-recommendation` and their orchestrators byte-for-byte untouched; the Antigravity tree under `.agents/plugins/cairn/` was regenerated.
 
 ### Milestone 19 — Principle Capture By Milestone
 
@@ -215,3 +225,4 @@ Current milestone: `milestones/milestone_20_recommend-agent-return-robustness/`
 | 17 | Versioning And Release Tooling | `milestones/milestone_17_versioning-release-tooling/` |
 | 18 | Agent Layer Improvements | `milestones/milestone_18_agent-layer-improvements/` |
 | 19 | Principle Capture By Milestone | `milestones/milestone_19_principle-capture-by-milestone/` |
+| 20 | Recommend Agent Return Robustness | `milestones/milestone_20_recommend-agent-return-robustness/` |
