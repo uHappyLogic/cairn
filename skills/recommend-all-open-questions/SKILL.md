@@ -255,7 +255,8 @@ to resolve the path), carrying out its steps yourself. Supply it these two input
 The shared procedure owns the path-scoped staging (never `git add -A`), the dirty-own-path no-op
 guard, and the commit. Because that guard is dirty-own-path, a sweep that annotated nothing — every
 gathered block already carried a `<recommendation>` element, or every dispatched question was
-skipped in step 3, so step 4 changed no bytes — stages and commits nothing. This sweep requires **no** clean working tree.
+**still skipped after its repair attempt** in step 3, so step 4 changed no bytes — stages and
+commits nothing. This sweep requires **no** clean working tree.
 
 ### 6. Report
 
@@ -264,17 +265,25 @@ On the success path, print exactly one fixed terse status line for the whole run
 listing, and no consumer pointer to the `/answer-open-question-with-recommendation` /
 `/answer-all-open-questions-with-recommendation` skills.
 
-Alongside that line, if step 3 skipped any question (a `FAILED:` return or one that failed the
-acceptance gate), print the skipped questions as an advisory — each one's Short Title with its
-reason, one per line. This survives the terse-reporting rule because nothing else records it:
+Alongside that line, print only the questions step 3 **still skipped after the repair path** — a
+return whose last non-whitespace line began `FAILED:` (sub-step a), or one that failed extraction
+or the acceptance gate **again** after its one repair attempt (sub-step d). List each as an
+advisory: its Short Title with the reason it was skipped on (the second reason where a repair was
+spent), one per line. This survives the terse-reporting rule because nothing else records it:
 the commit and the annotated `requirements.md` show only the questions that *were* annotated, so
 a question left un-annotated is git-absent and the console must carry it. Re-running the sweep
 retries exactly those blocks, since they still lack a `<recommendation>` element.
 
+A question that **was** annotated gets **no console mention at all**, however its return reached
+step 4: whether it arrived clean, whether extraction stripped surrounding text from it (step 3's
+sub-step b), or whether it was accepted only after the single repair attempt (sub-step d). The
+embedded block in the diff is the whole record, so a recovered return is reported exactly like a
+clean one — no recovered-or-repaired listing, no count, no note.
+
 If the sweep committed nothing — its step-5 dirty-own-path no-op guard fired because step 4
 changed no bytes — do not print the terse success line; instead print a distinct one-line message
 stating that nothing changed and why (every gathered block already carried a `<recommendation>`
-element, or every dispatched question was skipped in step 3), still followed by the skipped-question
-advisory when there was one.
+element, or every dispatched question was still skipped after its repair attempt in step 3), still
+followed by the still-skipped-question advisory when there was one.
 
 If there were no open/deferred questions at all, say so and stop (step 1) — nothing to report.

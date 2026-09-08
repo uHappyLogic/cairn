@@ -49,3 +49,19 @@ Extend step 3 of `skills/recommend-all-open-questions/SKILL.md` so an extraction
 - The file stays runner-facing: the added prose is instructions to the running orchestrator, with no rationale, no history, and no `## Rules` section.
 
 ---
+
+## Report Only Still-Skipped Questions
+
+Update steps 5 and 6 of `skills/recommend-all-open-questions/SKILL.md` so a question whose sub-elements were embedded only after extraction stripped surrounding text or after the single repair attempt gets no console mention at all, the step-6 advisory lists only questions still skipped after the repair path, and the step-5 all-skipped no-op wording describes that post-repair skip. This keeps the terse-reporting rule intact now that recovery exists; verify by reading both steps and confirming a recovered return is reported exactly like a clean one.
+
+**Verified:**
+
+- Step 6 of `skills/recommend-all-open-questions/SKILL.md` prints alongside the terse line **only** the questions step 3 still skipped after the repair path, naming the two cases exactly: a return whose last non-whitespace line began `FAILED:` (sub-step a), or one that failed extraction or the acceptance gate again after its one repair attempt (sub-step d).
+- The advisory carries each still-skipped question's Short Title with the reason it was skipped on — the second reason where a repair was spent — one per line, and its git-absent justification is unchanged.
+- Step 6 states that a question that was annotated gets no console mention at all, however its return reached step 4 — clean arrival, extraction stripping surrounding text (sub-step b), or acceptance only after the single repair attempt (sub-step d) — so a recovered return is reported exactly like a clean one, with no recovered-or-repaired listing, count, or note.
+- Step 5's dirty-own-path no-op wording describes the all-skipped case as "every dispatched question was **still skipped after its repair attempt** in step 3", not a bare step-3 skip.
+- Step 6's no-op message wording matches it — "every dispatched question was still skipped after its repair attempt in step 3" — and is still followed by the still-skipped-question advisory when there was one.
+- The terse success line `Recommendations embedded.` and its "no annotated-vs-skipped breakdown, no per-question listing" clause are unchanged, so the terse-reporting rule stays intact.
+- Only steps 5 and 6 changed (`git diff -U0` shows hunks confined to that region), the file stays runner-facing with no rationale, history, or `## Rules` section, and the frontmatter is untouched.
+
+---
