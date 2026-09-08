@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Rewrite Recommend Agent Return Step
-
-Replace step 4 of `agents/recommend-open-question.md` from the ground up with a draft → self-check → emit step: it opens by naming step 3's rendering as the draft, its only test list is the two shape tests (first non-whitespace text starts with `<alternative`, last non-whitespace text ends with `</recommendation>`), the whole prohibition list and the "discarded whole, never salvaged" wording are dropped, and only the positive "every grounding finding is spent inside the elements" redirect survives as drafting guidance, with the `FAILED: <reason>` last-line failure return kept. Step 3 stays byte-for-byte untouched, and the milestone needs this because the wording-only fix of commit `2475078` already failed once (eight of ten milestone-19 dispatches were skipped); verify by reading the file and confirming step 3 is unchanged, step 4 carries no prohibition list, and the file holds runner-facing instructions only.
-
----
-
 ## Add Extraction Gate To Recommend Sweep
 
 Rework step 3 of `skills/recommend-all-open-questions/SKILL.md` so a return is judged in this order: first a last-line verdict (a last non-whitespace line beginning `FAILED:` is an explicit failure, skipped with that reason and never repaired, with a `FAILED:` token anywhere else being ordinary text), then extraction of the region from the first `<alternative` through the last `</recommendation>`, then a single acceptance gate over that region combining the two boundary tests with line-grep checks in the boundary-line CLI idiom (no `<open-question>`, `</open-question>`, `<question>`, or `</question>` line; exactly one `<recommendation` opening line; at least one `<alternative id` line; an `option` value, entity-unescaped and case-folded, equal to one of those alternative ids), with every miss producing a reason string that names the failed test. This replaces today's raw-return shape check so surrounding text never drops a valid recommendation; verify by reading the step and confirming the verdict precedes extraction, the gate needs no XML parser, and an accepted region is what reaches the step-4 Edit.
