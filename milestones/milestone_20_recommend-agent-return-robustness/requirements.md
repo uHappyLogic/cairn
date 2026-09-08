@@ -36,6 +36,10 @@ When the host cannot continue the finished agent session (no `SendMessage` equiv
 
 The extraction and repair pattern is scoped to the `recommend-open-question` agent and the `recommend-all-open-questions` sweep only: `agents/complete-task.md`, `agents/answer-open-question-with-recommendation.md`, and the `complete-all-tasks` and `answer-all-open-questions-with-recommendation` orchestrators are left byte-for-byte untouched. Trailing text after a `DONE`/`FAILED` line is not the same failure the Goal admits another agent for — those returns are bare last-line tokens with no payload to salvage, prose above the token already passes their check, and the repo records zero occurrences of trailing text — so changing them would be precisely the general audit the Goal rules out.
 
+### Failed-return detection under extraction
+
+The orchestrator recognises an explicit failure return by a **last-line verdict tested before extraction**: it reads the return's last non-whitespace line first, and if that line begins with `FAILED:` the return is an explicit failure — the question is skipped with that reason and no repair attempt is made, even when an extractable `<alternative>`…`</recommendation>` region sits above it. Only when the last line is not a `FAILED:` line does extraction run, and a `FAILED:` token appearing anywhere else in the message is then ordinary text with no special meaning. This keeps one last-line-token convention across all three dispatch sites and is the only rule immune to the `FAILED:` token appearing legitimately inside element text.
+
 ## Out of Scope
 
 ## Open questions
@@ -63,26 +67,6 @@ The extraction and repair pattern is scoped to the `recommend-open-question` age
     <drawback>Contradicts the plugin&apos;s boundary-line-CLI-never-xmllint convention, rejects otherwise usable returns over a single bare &amp; in prose, and depends on a tool the Antigravity host may not provide.</drawback>
   </alternative>
   <recommendation option="Line-anchored checks, one gate">The checks that matter are the ones protecting the downstream boundary-line consumers (no wrapper or question tags inside the region, exactly one recommendation, its option naming an alternative id), all of which are line greps in the same idiom as the two boundary tests, and a miss on any of them is as recoverable by the same-session re-emit as a wrapping miss, so folding them into one extraction gate with one repair attempt keeps the goal&apos;s no-valid-recommendation-dropped promise without adding a second control path.</recommendation>
-</open-question>
-
-<open-question id="Failed-return detection under extraction" status="open">
-  <question>Once the orchestrator extracts a region rather than testing the whole message, how does it recognise an explicit failure return — only a message whose last line is FAILED: &lt;reason&gt;, or a FAILED: line anywhere in the message — and which wins when a message carries both a FAILED: line and an extractable &lt;alternative&gt;…&lt;/recommendation&gt; region?</question>
-  <alternative id="Last-line verdict first">
-    Before any extraction, read the return&apos;s last non-whitespace line: if it begins with FAILED: the return is an explicit failure and the question is skipped with that reason and no repair attempt; otherwise extraction runs and a FAILED: token anywhere else in the message is ordinary text. A message carrying both an extractable region and a final FAILED: line is therefore a failure — the agent&apos;s final word is its verdict.
-    <advantage>It is the same last-line-token convention the complete-task and answer agents&apos; orchestrators already read, it honours the agent&apos;s own contract (FAILED: as the final line is the one alternative to the elements), and it cannot misfire on a FAILED: mention inside element text — a live risk, since this milestone&apos;s own questions and any recommendation on them quote that token verbatim.</advantage>
-    <drawback>A region the agent emitted and then retracted with a trailing FAILED: line is dropped rather than salvaged, and a FAILED: line buried above a complete region is silently ignored in favour of the region.</drawback>
-  </alternative>
-  <alternative id="Any FAILED line wins">
-    Treat any line in the message that begins with FAILED: as an explicit failure return, wherever it sits, and let that failure win over an extractable region: the question is skipped with the text after FAILED: as the reason and no repair is attempted.
-    <advantage>Nothing the agent flagged as failed at any point can ever reach the whole-block-replacement Edit, and the check is a single grep.</advantage>
-    <drawback>It produces false failures: an &lt;alternative&gt;, &lt;drawback&gt;, or &lt;recommendation&gt; whose text begins a line with FAILED: (exactly what a recommendation about failure handling renders) would discard a valid recommendation — the one outcome the milestone goal forbids — and a stray FAILED: in a preamble would override elements the agent went on to emit.</drawback>
-  </alternative>
-  <alternative id="Region wins over FAILED">
-    Run extraction first and embed whatever region passes; consult FAILED: only when no region extracts, using its presence (last line or anywhere) to tell an explicit failure that should be skipped from a malformed return that should get the repair attempt.
-    <advantage>It maximises salvage — a valid region is embedded no matter what surrounds it — and uses the FAILED: token purely as the skip-versus-repair discriminator the extraction path needs.</advantage>
-    <drawback>It embeds and later commits a region the agent explicitly disowned (elements followed by FAILED: the analysis is incomplete), trusting the least trustworthy kind of message, and it makes the failure test run in a different position from the last-line test the other two orchestrators use.</drawback>
-  </alternative>
-  <recommendation option="Last-line verdict first">Test the last non-whitespace line for FAILED: before extracting, let that explicit verdict win over any region above it, and treat FAILED: anywhere else as plain text — it keeps one last-line-token convention across all three dispatch sites and is the only rule immune to the FAILED: token appearing legitimately inside element text.</recommendation>
 </open-question>
 
 <open-question id="Corrective re-emit prompt wording" status="deferred">
