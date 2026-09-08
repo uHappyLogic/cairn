@@ -52,29 +52,13 @@ The ground-up rewrite replaces **step 4 of `agents/recommend-open-question.md` o
 
 The orchestrator repairs each return on arrival: as each dispatch's return comes back it extracts, checks, and — when extraction fails — sends the corrective re-emit prompt to that agent's handle immediately, while the other dispatches are still in flight, rather than holding every failed return and running the repairs as a second phase once the slowest first return has landed. Step 3 therefore stays a single per-return pipeline (check, repair once, re-check, embed or skip), and repairs overlap in-flight dispatches. Because first and repaired returns then interleave in arbitrary order, the orchestrator carries a per-question "repair spent" marker so the single corrective attempt is never spent twice.
 
+### Corrective re-emit prompt wording
+
+The corrective message is a fixed one-paragraph template rendered once in the orchestrator skill with a single slot. It quotes both shape tests verbatim (first non-whitespace text starts with `<alternative`, last ends with `</recommendation>`) so the agent re-runs its own self-check against the exact bar, fills the one slot with the name of the test the previous message failed — the same reason string the orchestrator already derives for the step-6 skip advisory, e.g. "your last message ended after `</recommendation>` with a closing remark" — so the single repair attempt is aimed rather than blind, and closes by asking for the sub-elements and nothing else. The offending prose is never quoted back. Keeping it a fixed single-slot template costs no extra composition (the reason string is computed anyway) while making the one repair attempt count.
+
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Corrective re-emit prompt wording" status="deferred">
-  <question>What the corrective message sent to the continued agent session says — whether it quotes the two shape tests, names what the previous message violated, and asks for nothing but the elements.</question>
-  <alternative id="Fixed test-quoting instruction">
-    A frozen one-paragraph template rendered once in the orchestrator skill, sent unchanged to every continued session: re-emit the recommendation as the bare sub-elements only, with the two shape tests quoted verbatim (first non-whitespace text starts with &lt;alternative, last ends with &lt;/recommendation&gt;) and an explicit &quot;nothing before, nothing after&quot; clause, but no statement of what the previous message did wrong.
-    <advantage>A single fixed string with no per-return composition, so the repair step is as mechanical as the shape check itself and reads identically under Claude Code and the Antigravity transpile; the agent still holds its finished analysis in context, so the exact bar is all it needs to re-emit.</advantage>
-    <drawback>An agent whose miss was structural rather than a wrapping preamble (a missing &lt;/recommendation&gt; because it emitted a trailing note, an included &lt;open-question&gt; wrapper) gets no pointer to its actual defect and may repeat it, spending the one repair attempt.</drawback>
-  </alternative>
-  <alternative id="Test-quoting plus violated-test naming">
-    The same frozen template with one slot: the orchestrator fills in which of the two tests the previous message failed (the same reason string it already derives for the step-6 skip advisory, e.g. &quot;your last message ended after &lt;/recommendation&gt; with a closing remark&quot;), without quoting the offending prose back, then asks for the elements and nothing else.
-    <advantage>Names the defect the agent must remove using a reason the orchestrator computes anyway for the advisory, so the single repair attempt is aimed rather than blind at zero extra composition cost, and the template stays a fixed string rendered once with one slot.</advantage>
-    <drawback>The slot makes the orchestrator responsible for phrasing the failure accurately per return; a vague or wrong reason string could steer the agent toward fixing the wrong end of its message.</drawback>
-  </alternative>
-  <alternative id="Bare elements-only nudge">
-    A one-line message such as &quot;Reply with only the XML sub-elements, nothing else&quot; that neither quotes the tests nor names the violation, relying on the agent&apos;s own step-4 contract for the exact shape.
-    <advantage>Shortest possible message, trivially host-neutral, and adds no prose to the skill.</advantage>
-    <drawback>The agent already had the two tests in its own contract and still failed them (eight of ten dispatches in the milestone-19 sweep), so a nudge that restates less than the contract is the wording-only fix the milestone exists to move past and is the least likely to repair in one try.</drawback>
-  </alternative>
-  <recommendation option="Test-quoting plus violated-test naming">Quote both shape tests so the agent re-runs its own self-check against the exact bar, fill the one slot with the failure reason the orchestrator already records for the advisory so the repair is aimed, and close with an elements-only request; this keeps the message a fixed single-slot template while making the one repair attempt count.</recommendation>
-</open-question>
 
 <open-question id="Repaired-return console advisory" status="deferred">
   <question>Whether a question whose recommendation was embedded only after extraction stripped surrounding text, or only after the repair attempt, is mentioned on the console alongside the terse line, or whether the embedded result alone is the record.</question>
