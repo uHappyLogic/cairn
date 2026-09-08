@@ -48,6 +48,10 @@ The extracted region is accepted by a single gate that combines the two boundary
 
 The ground-up rewrite replaces **step 4 of `agents/recommend-open-question.md` only**: step 3 stays the untouched rendering specification (element shape, indentation, entity escaping), and step 4 becomes a draft → self-check → emit step whose only test list is the two shape tests (first non-whitespace text starts with `<alternative`, last ends with `</recommendation>`), which subsume every entry of the current prohibition list. That prohibition list is dropped whole, keeping only the positive "every grounding finding is spent inside the elements" redirect as drafting guidance, and step 4 opens by naming step 3's rendering as the draft so the self-check cannot be bypassed by treating step 3's output as the final message.
 
+### Repair timing under parallel dispatch
+
+The orchestrator repairs each return on arrival: as each dispatch's return comes back it extracts, checks, and — when extraction fails — sends the corrective re-emit prompt to that agent's handle immediately, while the other dispatches are still in flight, rather than holding every failed return and running the repairs as a second phase once the slowest first return has landed. Step 3 therefore stays a single per-return pipeline (check, repair once, re-check, embed or skip), and repairs overlap in-flight dispatches. Because first and repaired returns then interleave in arbitrary order, the orchestrator carries a per-question "repair spent" marker so the single corrective attempt is never spent twice.
+
 ## Out of Scope
 
 ## Open questions
@@ -70,26 +74,6 @@ The ground-up rewrite replaces **step 4 of `agents/recommend-open-question.md` o
     <drawback>The agent already had the two tests in its own contract and still failed them (eight of ten dispatches in the milestone-19 sweep), so a nudge that restates less than the contract is the wording-only fix the milestone exists to move past and is the least likely to repair in one try.</drawback>
   </alternative>
   <recommendation option="Test-quoting plus violated-test naming">Quote both shape tests so the agent re-runs its own self-check against the exact bar, fill the one slot with the failure reason the orchestrator already records for the advisory so the repair is aimed, and close with an elements-only request; this keeps the message a fixed single-slot template while making the one repair attempt count.</recommendation>
-</open-question>
-
-<open-question id="Repair timing under parallel dispatch" status="deferred">
-  <question>Whether the orchestrator repairs each return as soon as its extraction fails or collects all first returns and then runs the repair attempts, given that dispatches may run in parallel and each repair needs that dispatch&apos;s agent handle.</question>
-  <alternative id="Repair on arrival">
-    The orchestrator handles each dispatch&apos;s return as it arrives: extract, shape-check, and when extraction fails send the corrective re-emit prompt to that agent&apos;s handle immediately, while the other dispatches are still running, so step 3 stays one per-return pipeline (check, repair once, re-check, embed or skip).
-    <advantage>Repairs overlap with still-running dispatches, so the sweep&apos;s wall-clock stays close to the slowest single question plus one repair, and each handle is used at the moment its notification delivers it, with no held list of handles and raw returns to bookkeep.</advantage>
-    <drawback>First returns and repaired returns interleave in arbitrary order, so the orchestrator must remember per question whether the repair was already spent to guarantee the single corrective attempt and never repair twice.</drawback>
-  </alternative>
-  <alternative id="Collect then repair">
-    The orchestrator waits until every first return has arrived, then runs the repair attempts for the failed subset as a second phase (in parallel via each held handle), and only then embeds.
-    <advantage>A clean two-phase narrative that is easy to state in skill prose: dispatch all, gather all, repair the failed set, gather again, then embed, with the repair set known once and no interleaving of first and second returns.</advantage>
-    <drawback>No repair can start before the slowest first dispatch returns, so with the milestone-19 pattern (eight of ten failing) the whole repair round serialises behind the last first return, and the orchestrator must hold every failed return&apos;s handle and raw text idle across that wait.</drawback>
-  </alternative>
-  <alternative id="Sequential dispatch with inline repair">
-    Drop parallel dispatch: dispatch one question, extract, repair inline if needed, embed or skip, then dispatch the next.
-    <advantage>Simplest possible control flow: exactly one live handle at any time, no per-question state, and the repair-once rule is trivially enforced.</advantage>
-    <drawback>Gives up the parallelism step 3 already grants (dispatches are independent by the recommendation-independence invariant), multiplying wall-clock by the question count for no correctness gain.</drawback>
-  </alternative>
-  <recommendation option="Repair on arrival">Each return is independent and its embed is a whole-block replacement of its own block, so nothing is gained by synchronising before repair; repairing as each extraction fails keeps step 3 a single per-return pipeline, uses the handle the moment the notification hands it over, and lets repairs overlap in-flight dispatches, while the only added cost is a one-bit per-question &quot;repair spent&quot; marker.</recommendation>
 </open-question>
 
 <open-question id="Repaired-return console advisory" status="deferred">
