@@ -56,26 +56,11 @@ The orchestrator repairs each return on arrival: as each dispatch's return comes
 
 The corrective message is a fixed one-paragraph template rendered once in the orchestrator skill with a single slot. It quotes both shape tests verbatim (first non-whitespace text starts with `<alternative`, last ends with `</recommendation>`) so the agent re-runs its own self-check against the exact bar, fills the one slot with the name of the test the previous message failed — the same reason string the orchestrator already derives for the step-6 skip advisory, e.g. "your last message ended after `</recommendation>` with a closing remark" — so the single repair attempt is aimed rather than blind, and closes by asking for the sub-elements and nothing else. The offending prose is never quoted back. Keeping it a fixed single-slot template costs no extra composition (the reason string is computed anyway) while making the one repair attempt count.
 
+### Repaired-return console advisory
+
+A question whose sub-elements were embedded only after extraction stripped surrounding text, or only after the single corrective repair attempt, gets **no console mention at all**: the embedded block in the diff is the whole record, and a recovered return is reported exactly like a clean one. Only questions that were still skipped appear in the step-6 advisory. This follows the terse-reporting rule's test — an advisory survives alongside the terse line only when it is both git-absent and decision-critical — and a recovered return changes nothing the user must decide. If re-emit drift is a concern, it is addressed by the extracted-region acceptance checks, not by console reporting.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Repaired-return console advisory" status="deferred">
-  <question>Whether a question whose recommendation was embedded only after extraction stripped surrounding text, or only after the repair attempt, is mentioned on the console alongside the terse line, or whether the embedded result alone is the record.</question>
-  <alternative id="Embedded result alone">
-    Neither extraction nor a successful repair attempt is mentioned on the console; a question whose elements arrived wrapped or re-emitted is treated exactly like a clean return, and only the still-skipped questions appear in the step-6 advisory.
-    <advantage>Matches the terse-reporting rule&apos;s test for what survives alongside the terse line — an advisory must be both git-absent and decision-critical — since the embedded block is in the diff and is identical in kind to a clean return, so nothing about the user&apos;s decision on the question changed; it also makes the wrapping failure the routine non-event the milestone goal sets out to make it, like complete-procedure&apos;s silent resume from partial work.</advantage>
-    <drawback>The sweep loses its only signal of how often the agent&apos;s rewritten return contract still fails (extraction or repair firing on most dispatches would be invisible), so a contract regression surfaces only once the repair attempt also fails and a question is actually skipped.</drawback>
-  </alternative>
-  <alternative id="Advisory for every recovered return">
-    Alongside the terse line, print one line per question whose elements were embedded only after extraction or only after the repair attempt, naming the Short Title and which path recovered it.
-    <advantage>Keeps the agent&apos;s return-contract health visible run by run, so the user can see whether the ground-up rewrite actually stopped the wrapping rather than merely masking it.</advantage>
-    <drawback>Re-narrates a success path the diff already records, contradicting the terse-reporting rule&apos;s decision-critical test, and given that eight of ten milestone-19 returns were wrapped it would list most questions on most sweeps, burying the real skip advisory in noise.</drawback>
-  </alternative>
-  <alternative id="Advisory for repair only">
-    Extraction-only recoveries stay silent, but a question embedded only after the session-continuation repair attempt is listed in the step-6 advisory with its Short Title.
-    <advantage>The repair is the rarer, costlier, and more fallible event (a re-emit can drift from the first analysis), so flagging only it keeps the advisory infrequent and meaningful while routine text-stripping stays a non-event.</advantage>
-    <drawback>Introduces a second tier of recovered-but-succeeded reporting the step-6 rule must define, and still prints a success-path line the commit already records; the re-emitted region passes the same checks as a clean return, so the line reports how the elements arrived, not anything different about what was embedded.</drawback>
-  </alternative>
-  <recommendation option="Embedded result alone">The embedded block is the record: a recovered return changes nothing the user must decide, so under the terse-reporting rule it earns no console line — and if re-emit drift is the real worry, that belongs in the extracted-region acceptance checks, not in the report.</recommendation>
-</open-question>
