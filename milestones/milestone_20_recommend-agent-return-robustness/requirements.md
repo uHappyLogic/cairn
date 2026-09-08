@@ -28,6 +28,10 @@ Claude Code's `Agent` tool returns a spawned agent's final message and its agent
 
 ## Decisions
 
+### Continuation-unavailable fallback
+
+When the host cannot continue the finished agent session (no `SendMessage` equivalent, as under Antigravity, or the agent handle is gone), the orchestrator falls back to a **fresh re-dispatch**, not straight to the skip: it dispatches one fresh `recommend-open-question` agent for that question with the same prompt plus the shape reminder, and skips with advisory only when that second return also fails extraction. The skill prose expresses this as a two-branch instruction — continue the same session where the host allows it, otherwise re-dispatch once. This fallback is limited to the continuation-unavailable case; where continuation is available the same-session corrective re-emit remains the repair path, and the Goal's "never a fresh re-dispatch" clause is to be read as governing that case only.
+
 ## Out of Scope
 
 ## Open questions
@@ -75,26 +79,6 @@ Claude Code's `Agent` tool returns a spawned agent's final message and its agent
     <drawback>It embeds and later commits a region the agent explicitly disowned (elements followed by FAILED: the analysis is incomplete), trusting the least trustworthy kind of message, and it makes the failure test run in a different position from the last-line test the other two orchestrators use.</drawback>
   </alternative>
   <recommendation option="Last-line verdict first">Test the last non-whitespace line for FAILED: before extracting, let that explicit verdict win over any region above it, and treat FAILED: anywhere else as plain text — it keeps one last-line-token convention across all three dispatch sites and is the only rule immune to the FAILED: token appearing legitimately inside element text.</recommendation>
-</open-question>
-
-<open-question id="Continuation-unavailable fallback" status="open">
-  <question>When the host cannot continue the finished agent session (no SendMessage equivalent, as under Antigravity, or the agent handle is gone), does the orchestrator fall back to today&apos;s skip-with-advisory, or to a fresh re-dispatch that redoes the analysis, and how does the skill prose express &quot;continue the same session where the host allows it&quot; so both hosts read one instruction?</question>
-  <alternative id="Skip with advisory, host-descriptive prose">
-    When the host offers no way to continue the finished agent session, the orchestrator treats the repair attempt as unavailable and takes today&apos;s skip-with-advisory for that question; the skill prose names continuation descriptively — continue the same finished agent session with one follow-up message, which Claude Code offers as SendMessage to the returned agent id — and states that where the host offers no such continuation, or the handle is gone, the question falls straight to the skip, so both hosts read one instruction and Antigravity resolves it to extract-then-skip.
-    <advantage>Honors the goal&apos;s explicit &quot;never a fresh re-dispatch&quot; and its named floor (skip-with-advisory), costs Antigravity nothing it does not already pay since the new extraction layer alone catches the dominant prefix-wrapping case (eight of ten milestone-19 skips were well-formed elements behind a grounding summary), and reuses the phrasing pattern the skill already uses for the dispatch name (descriptive capability, Claude Code&apos;s concrete name given as the example) so no transpiler change is needed.</advantage>
-    <drawback>Under Antigravity a return that extraction cannot salvage stays un-annotated until the user re-runs the sweep, which then redoes that question&apos;s analysis in a fresh dispatch anyway — the redo cost is pushed to a manual re-run rather than avoided.</drawback>
-  </alternative>
-  <alternative id="Fresh re-dispatch fallback">
-    When continuation is unavailable, the orchestrator instead dispatches one fresh recommend-open-question agent for that question with the same prompt plus the shape reminder, and skips only when that second return also fails extraction; the prose becomes a two-branch instruction — continue the session where the host allows it, otherwise re-dispatch once.
-    <advantage>No host ever drops a salvageable question within a single run, so the Antigravity sweep reaches the same annotated set as Claude Code without a manual re-run.</advantage>
-    <drawback>Directly contradicts the goal&apos;s &quot;never a fresh re-dispatch, which would redo the analysis&quot;, doubles the per-question cost on exactly the host that cannot repair cheaply, gives no assurance the fresh agent will not wrap its output the same way (the wording-only fix already failed once), and turns the single instruction into a host-detecting branch the runner must evaluate.</drawback>
-  </alternative>
-  <alternative id="Transpiler strips the continuation step">
-    Keep the Claude Code prose naming SendMessage directly, and add a prose-anchored rewrite to scripts/migrate_skills_to_agy.py (in the style of the existing resolve-hint drop) that removes the continuation sentences from the generated Antigravity copy, so each host&apos;s file reads only what that host can do and the Antigravity skill collapses to extract-then-skip.
-    <advantage>Each host reads an unconditional instruction with no capability wording to interpret, and the transpiler already has a precedent for dropping Claude-Code-only prose.</advantage>
-    <drawback>The transpiler grows a content-aware regex over a whole procedural step rather than a stable backtick token, so any later rewording of the skill silently leaves Claude Code prose in the Antigravity tree or over-strips it, and the source and generated files diverge in behavior rather than only in paths, which the current diff -r verification was built to rule out.</drawback>
-  </alternative>
-  <recommendation option="Skip with advisory, host-descriptive prose">The goal already forbids a fresh re-dispatch and names skip-with-advisory as the floor, extraction alone recovers the dominant failure on both hosts, and the skill&apos;s existing dispatch-name sentence shows how one descriptive instruction with Claude Code&apos;s concrete name as the example serves both hosts without touching the transpiler.</recommendation>
 </open-question>
 
 <open-question id="Same-failure test for DONE agents" status="open">
