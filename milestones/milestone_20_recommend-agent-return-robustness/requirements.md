@@ -44,6 +44,10 @@ The orchestrator recognises an explicit failure return by a **last-line verdict 
 
 The extracted region is accepted by a single gate that combines the two boundary tests (first non-whitespace text starts with `<alternative`, last ends with `</recommendation>`) with a short list of line-grep checks in the same idiom: the region contains no `<open-question>`, `</open-question>`, `<question>`, or `</question>` line, exactly one `<recommendation` opening line, at least one `<alternative id` line, and an `option` value (entity-unescaped, case-folded) equal to one of those `<alternative>` ids. Any miss — boundary or structural — counts as an extraction failure and triggers the single same-session repair attempt, with the corrective prompt naming the failed test; a second miss falls to skip-with-advisory. Stray prose between the child elements is left to the agent's own self-check, because it breaks no consumer. The check list is deliberately confined to greps over the boundary tokens the downstream boundary-line CLI depends on — gather, idempotent skip, the recommendation lift, the alternative lift, and whole-block removal — so the gate needs no XML parser and no second control path.
 
+### Agent rewrite boundary
+
+The ground-up rewrite replaces **step 4 of `agents/recommend-open-question.md` only**: step 3 stays the untouched rendering specification (element shape, indentation, entity escaping), and step 4 becomes a draft → self-check → emit step whose only test list is the two shape tests (first non-whitespace text starts with `<alternative`, last ends with `</recommendation>`), which subsume every entry of the current prohibition list. That prohibition list is dropped whole, keeping only the positive "every grounding finding is spent inside the elements" redirect as drafting guidance, and step 4 opens by naming step 3's rendering as the draft so the self-check cannot be bypassed by treating step 3's output as the final message.
+
 ## Out of Scope
 
 ## Open questions
@@ -106,24 +110,4 @@ The extracted region is accepted by a single gate that combines the two boundary
     <drawback>Introduces a second tier of recovered-but-succeeded reporting the step-6 rule must define, and still prints a success-path line the commit already records; the re-emitted region passes the same checks as a clean return, so the line reports how the elements arrived, not anything different about what was embedded.</drawback>
   </alternative>
   <recommendation option="Embedded result alone">The embedded block is the record: a recovered return changes nothing the user must decide, so under the terse-reporting rule it earns no console line — and if re-emit drift is the real worry, that belongs in the extracted-region acceptance checks, not in the report.</recommendation>
-</open-question>
-
-<open-question id="Agent rewrite boundary" status="deferred">
-  <question>Whether the ground-up rewrite of the agent&apos;s return contract replaces only step 4 or merges the step-3 rendering shape and step-4 return into one draft → self-check → emit step, and how much of the current prohibition list survives as the self-check&apos;s test list.</question>
-  <alternative id="Replace step 4 only">
-    Keep step 3 as the untouched rendering specification (element shape, indentation, entity escaping) and rewrite step 4 alone as a draft → self-check against exactly the two shape tests → emit step, dropping the prohibition list whole and keeping only the positive &quot;every grounding finding is spent inside the elements&quot; redirect as drafting guidance.
-    <advantage>The failure was a wrapping failure, not a rendering failure, so the rewrite lands exactly where the defect is; step 3 stays a stable, greppable rendering contract that the CLAUDE.md applied-principle invariant and the orchestrator&apos;s embed step already rely on, and the two tests subsume every listed prohibition (any preamble fails the first, any closing remark fails the second) so nothing is lost by cutting the list.</advantage>
-    <drawback>Leaves the draft &quot;render&quot; and the emit &quot;check&quot; in two steps, so a runner could still treat step 3&apos;s output as its final message and skip the step-4 check unless step 4 opens by naming step 3&apos;s output as the draft.</drawback>
-  </alternative>
-  <alternative id="Merge steps 3 and 4">
-    Fold the rendering shape and the return contract into a single draft → self-check → emit step, where the draft is rendered to step 3&apos;s current shape, the self-check tests the two shape tests plus the structural rendering rules (one &lt;recommendation&gt;, its option naming an &lt;alternative id&gt;, escaping), and the emit is the checked draft.
-    <advantage>One step owns the whole path from analysis to final message, so the draft-and-check mechanic cannot be skipped by stopping after rendering, and the self-check can also catch structural slips the orchestrator would otherwise have to test for.</advantage>
-    <drawback>Produces one very long step that mixes a content spec with a message-discipline mechanic, widens the self-check beyond the two tests the goal names (encroaching on the structural checks that are the orchestrator&apos;s concern), and churns the rendering prose that was never the source of the failure.</drawback>
-  </alternative>
-  <alternative id="Prohibitions become tests">
-    Rewrite step 4 as draft → self-check → emit but carry the current prohibition list forward as the self-check&apos;s named tests (no grounding summary, no file list, no no-principle note, no closing remark) alongside the two shape tests.
-    <advantage>Preserves the concrete, observed failure patterns from the milestone-19 sweep so the runner recognises its own habitual preambles by name rather than only by boundary test.</advantage>
-    <drawback>Reproduces the mechanism that already failed once (commit 2475078 added exactly this list and eight of ten dispatches still wrapped their output), and every listed pattern is already caught by the two boundary tests, so the extra tests add length without adding coverage and reintroduce an enumeration the goal explicitly says to replace.</drawback>
-  </alternative>
-  <recommendation option="Replace step 4 only">The defect is the final-message wrapping, not the rendering, so the rewrite should replace step 4 with a draft → self-check → emit step whose only test list is the two shape tests (which subsume every current prohibition), keep step 3 as the stable rendering contract, and open step 4 by naming step 3&apos;s rendering as the draft so the check cannot be bypassed.</recommendation>
 </open-question>
