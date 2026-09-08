@@ -32,6 +32,10 @@ Claude Code's `Agent` tool returns a spawned agent's final message and its agent
 
 When the host cannot continue the finished agent session (no `SendMessage` equivalent, as under Antigravity, or the agent handle is gone), the orchestrator falls back to a **fresh re-dispatch**, not straight to the skip: it dispatches one fresh `recommend-open-question` agent for that question with the same prompt plus the shape reminder, and skips with advisory only when that second return also fails extraction. The skill prose expresses this as a two-branch instruction — continue the same session where the host allows it, otherwise re-dispatch once. This fallback is limited to the continuation-unavailable case; where continuation is available the same-session corrective re-emit remains the repair path, and the Goal's "never a fresh re-dispatch" clause is to be read as governing that case only.
 
+### Scope of the extraction/repair pattern
+
+The extraction and repair pattern is scoped to the `recommend-open-question` agent and the `recommend-all-open-questions` sweep only: `agents/complete-task.md`, `agents/answer-open-question-with-recommendation.md`, and the `complete-all-tasks` and `answer-all-open-questions-with-recommendation` orchestrators are left byte-for-byte untouched. Trailing text after a `DONE`/`FAILED` line is not the same failure the Goal admits another agent for — those returns are bare last-line tokens with no payload to salvage, prose above the token already passes their check, and the repo records zero occurrences of trailing text — so changing them would be precisely the general audit the Goal rules out.
+
 ## Out of Scope
 
 ## Open questions
@@ -79,26 +83,6 @@ When the host cannot continue the finished agent session (no `SendMessage` equiv
     <drawback>It embeds and later commits a region the agent explicitly disowned (elements followed by FAILED: the analysis is incomplete), trusting the least trustworthy kind of message, and it makes the failure test run in a different position from the last-line test the other two orchestrators use.</drawback>
   </alternative>
   <recommendation option="Last-line verdict first">Test the last non-whitespace line for FAILED: before extracting, let that explicit verdict win over any region above it, and treat FAILED: anywhere else as plain text — it keeps one last-line-token convention across all three dispatch sites and is the only rule immune to the FAILED: token appearing legitimately inside element text.</recommendation>
-</open-question>
-
-<open-question id="Same-failure test for DONE agents" status="open">
-  <question>The complete-task and answer-open-question-with-recommendation agents end with a DONE/FAILED last line, so prose above that line already passes their orchestrators; is trailing text after the DONE/FAILED line the &quot;same failure&quot; that warrants applying last-line extraction (and a repair attempt) to those two agents and their orchestrators, or does this milestone leave all four files untouched?</question>
-  <alternative id="Leave all four untouched">
-    Scope the extraction/repair pattern to the recommend agent and its sweep only, leaving agents/complete-task.md, agents/answer-open-question-with-recommendation.md, and the complete-all-tasks and answer-all-open-questions-with-recommendation orchestrators byte-for-byte as they are.
-    <advantage>It honours the goal&apos;s own test — apply the pattern only where an agent duplicates this exact failure, never as a general audit — and the repo holds no evidence the DONE agents ever failed this way: every milestone-19 task completion and every recommendation-answer dispatch passed on the existing last-line-token contract.</advantage>
-    <drawback>If a DONE agent ever does append a closing remark after its DONE line, its orchestrator still reads that as an ambiguous return and report-and-stops the whole loop rather than salvaging a return whose verdict was actually present.</drawback>
-  </alternative>
-  <alternative id="Full extraction and repair for DONE agents">
-    Apply the milestone&apos;s pattern to both DONE agents and their orchestrators — rewrite each agent&apos;s return contract as draft → self-check → emit, have each orchestrator extract the last DONE/FAILED line from the raw return, and continue the same agent session once with a corrective re-emit prompt when no such line is found.
-    <advantage>Every dispatched agent in the plugin then shares one uniform return-robustness contract, so a future editor finds a single pattern rather than two.</advantage>
-    <drawback>It is the general audit the goal explicitly forbids: it touches four files to fix a failure nothing in the repo records, and the failure is not even the same mechanism — the recommend sweep discards a payload-bearing return on a whole-message shape test, while the DONE agents hand back a bare token checked by its last line, where prose above already passes.</drawback>
-  </alternative>
-  <alternative id="Tolerant last-line detection only">
-    Leave both agents untouched and change only the two orchestrators&apos; return handling so they read the last line matching DONE or FAILED: wherever it sits in the message, tolerating trailing text with no repair attempt and no session continuation.
-    <advantage>A one-sentence change per orchestrator closes the only reproduction path (trailing text after the token) without any of the repair machinery or the agent rewrite.</advantage>
-    <drawback>It still edits two files on speculation — no occurrence is recorded — and a token-anywhere read weakens the contract, since a FAILED: line quoted mid-message and a DONE verdict at the end can now be confused in a way the strict last-line rule prevents.</drawback>
-  </alternative>
-  <recommendation option="Leave all four untouched">The goal admits another agent only where it duplicates this exact failure, and the DONE agents do not: their return is a bare last-line token with no payload to salvage, prose above it already passes, and the repo records zero occurrences of trailing text — so touching them would be precisely the general audit the goal rules out.</recommendation>
 </open-question>
 
 <open-question id="Corrective re-emit prompt wording" status="deferred">
