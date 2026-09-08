@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Single Repair Attempt To Sweep
-
-Extend step 3 of `skills/recommend-all-open-questions/SKILL.md` so an extraction failure triggers exactly one repair before any skip, as a two-branch instruction: where the host can continue the finished session (Claude Code's `SendMessage` to the returned agent id) send a corrective re-emit message to that same agent, and where it cannot (no continuation equivalent, as under Antigravity, or the handle is gone) re-dispatch one fresh `cairn:recommend-open-question` agent with the same prompt plus the shape reminder; the repaired or second return runs through the same last-line verdict and extraction gate, and only a second miss falls to skip-with-advisory. Repairs happen on arrival inside a single per-return pipeline (check, repair once, re-check, embed or skip) overlapping in-flight dispatches, guarded by a per-question "repair spent" marker, and the corrective message is a fixed one-paragraph template rendered once in the skill with a single slot that quotes both shape tests verbatim, is filled with the same failed-test reason string the gate derives, never quotes the offending prose back, and closes by asking for the sub-elements and nothing else; verify by reading the step and confirming both branches, the on-arrival timing, the spent marker, and the template are present and that no question can be repaired twice.
-
----
-
 ## Report Only Still-Skipped Questions
 
 Update steps 5 and 6 of `skills/recommend-all-open-questions/SKILL.md` so a question whose sub-elements were embedded only after extraction stripped surrounding text or after the single repair attempt gets no console mention at all, the step-6 advisory lists only questions still skipped after the repair path, and the step-5 all-skipped no-op wording describes that post-repair skip. This keeps the terse-reporting rule intact now that recovery exists; verify by reading both steps and confirming a recovered return is reported exactly like a clean one.

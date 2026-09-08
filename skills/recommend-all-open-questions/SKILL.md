@@ -103,7 +103,10 @@ as its final message — one `<alternative id="...">` element per option (each w
 `<open-question>` wrapper or the `<question>` element. The orchestrator does **all** the writing.
 
 **Judge every return before it can be embedded, in this fixed order — last-line verdict, then
-extraction, then the acceptance gate.** Each stage runs only on what the stage before it passed.
+extraction, then the acceptance gate, then a single repair attempt when the gate rejects.** Each
+stage runs only on what the stage before it passed, and the four stages are **one per-return
+pipeline**: as each return arrives, judge it, repair it once if judging failed, re-judge what
+comes back, then embed or skip.
 
 **a. Last-line verdict (before any extraction).** Read the return's **last non-whitespace line**
 first. If that line begins with `FAILED:`, the return is an **explicit failure**: skip that
@@ -142,10 +145,58 @@ parser):
 on the region's opening line`, `text trails </recommendation> on the region's closing line`, `the
 region contains a <question> line`, `the region contains two <recommendation> opening lines`, `the
 region contains no <alternative id> line`, `the option value matches no <alternative> id`). A miss
-— boundary or structural — is an **extraction failure**, and an extraction failure is a **skip of
-that question alone, never a run stop**: embed nothing for it, leave its `<open-question>` block
-byte-for-byte untouched, note its Short Title with that reason for the step-6 advisory, and carry
-on with the other questions.
+— boundary or structural — is an **extraction failure**, and an extraction failure is never an
+immediate skip: it takes the single repair attempt of sub-step d.
+
+**d. Repair once, on arrival.** A return that passed the last-line verdict but failed extraction
+(b) or the acceptance gate (c) gets **exactly one** repair attempt before any skip. Repair it **as
+it arrives** — the moment its judging fails, while the other dispatches are still in flight —
+never by holding failed returns back and running the repairs as a second phase once the slowest
+first return has landed.
+
+Carry a **repair-spent marker per question**: unset when the question is dispatched, set the
+moment its repair is issued. Repair only a question whose marker is unset, and set that marker as
+you issue the repair — first and repaired returns interleave in arbitrary order, so the marker is
+what keeps the one attempt from being spent twice. A failing return for a question whose marker is
+already set is not repaired again; it goes straight to the skip below.
+
+Repair by whichever of these two branches the host supports, in this order:
+
+- **Continue the same agent session.** Where the host can continue a finished agent session and
+  you still hold that dispatch's handle — under Claude Code, `SendMessage` addressed to the agent
+  id the `Agent` tool returned — send the corrective message below to **that same agent**. Its
+  context is intact, so it re-emits from the analysis it already did.
+- **Re-dispatch one fresh agent.** Where the host offers no session-continuation equivalent (as
+  under Antigravity), or the handle is gone, dispatch **one** fresh `cairn:recommend-open-question`
+  agent for that question with the `Agent` tool, passing the **same prompt** as the original
+  dispatch with the corrective message below appended to it as a shape reminder. This second
+  dispatch redoes the analysis, so it is the fallback branch, never the preferred one.
+
+Both branches send this fixed one-paragraph corrective message, whose single slot is
+`<failed test>`:
+
+```
+A previous return for this question could not be used: <failed test>. Emit the sub-elements — the
+`<alternative>` elements, then any `<applied-principle>` elements, then the single
+`<recommendation>` element — as your whole final message, and check that message against both
+shape tests before sending it: its first non-whitespace text starts with `<alternative`, and its
+last non-whitespace text ends with `</recommendation>`. Send those sub-elements and nothing else —
+no grounding summary above them, no closing remark below them.
+```
+
+Fill `<failed test>` with the reason string the failed test already produced in b or c — the same
+string the skip advisory would carry — so the one attempt is aimed rather than blind. Never quote
+the offending prose back to the agent; the reason string names the test, and the template asks for
+the sub-elements and nothing else.
+
+Judge whatever comes back — the same agent's re-emitted message, or the fresh dispatch's return —
+by sub-steps a, b and c exactly as a first return is judged: the same last-line verdict, the same
+extraction, the same acceptance gate. An accepted region goes to step 4 like any other.
+
+Only a **second** failure — the repaired return's last line begins `FAILED:`, or it misses
+extraction or the gate again — is a **skip of that question alone, never a run stop**: embed
+nothing for it, leave its `<open-question>` block byte-for-byte untouched, note its Short Title
+with that second reason for the step-6 advisory, and carry on with the other questions.
 
 Only an **accepted region** reaches step 4's Edit — never the raw return — so prose, a partial or
 explanatory reply, or a returned `<open-question>` wrapper cannot be spliced into
