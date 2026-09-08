@@ -40,34 +40,13 @@ The extraction and repair pattern is scoped to the `recommend-open-question` age
 
 The orchestrator recognises an explicit failure return by a **last-line verdict tested before extraction**: it reads the return's last non-whitespace line first, and if that line begins with `FAILED:` the return is an explicit failure — the question is skipped with that reason and no repair attempt is made, even when an extractable `<alternative>`…`</recommendation>` region sits above it. Only when the last line is not a `FAILED:` line does extraction run, and a `FAILED:` token appearing anywhere else in the message is then ordinary text with no special meaning. This keeps one last-line-token convention across all three dispatch sites and is the only rule immune to the `FAILED:` token appearing legitimately inside element text.
 
+### Extracted-region acceptance checks
+
+The extracted region is accepted by a single gate that combines the two boundary tests (first non-whitespace text starts with `<alternative`, last ends with `</recommendation>`) with a short list of line-grep checks in the same idiom: the region contains no `<open-question>`, `</open-question>`, `<question>`, or `</question>` line, exactly one `<recommendation` opening line, at least one `<alternative id` line, and an `option` value (entity-unescaped, case-folded) equal to one of those `<alternative>` ids. Any miss — boundary or structural — counts as an extraction failure and triggers the single same-session repair attempt, with the corrective prompt naming the failed test; a second miss falls to skip-with-advisory. Stray prose between the child elements is left to the agent's own self-check, because it breaks no consumer. The check list is deliberately confined to greps over the boundary tokens the downstream boundary-line CLI depends on — gather, idempotent skip, the recommendation lift, the alternative lift, and whole-block removal — so the gate needs no XML parser and no second control path.
+
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Extracted-region acceptance tests" status="open">
-  <question>Beyond the two boundary tests (region starts with &lt;alternative, ends with &lt;/recommendation&gt;), what structural checks must the extracted region pass before it is embedded — for example exactly one &lt;recommendation&gt; element, its option attribute naming one of the region&apos;s &lt;alternative id&gt; values, and no stray text or &lt;open-question&gt;/&lt;question&gt; tags between the child elements — and does a check failure count as an extraction failure that triggers the repair attempt?</question>
-  <alternative id="Boundary-only">
-    The extracted region passes only the two boundary tests (first non-whitespace text &lt;alternative, last &lt;/recommendation&gt;); no further structural check runs, and the repair attempt fires only when those two tests fail.
-    <advantage>Matches the goal&apos;s wording literally (&quot;runs the existing shape check on that&quot;), adds no prose to the orchestrator, and can never reject a genuinely usable return through an over-strict test.</advantage>
-    <drawback>A region carrying a stray &lt;/open-question&gt; line, a second &lt;recommendation&gt; element, or an option naming no alternative gets embedded as-is, and the boundary-line CLI that gathers, idempotency-skips, lifts, and removes blocks then misreads every later pass on that file — a silent corruption the current whole-message test only happened to exclude.</drawback>
-  </alternative>
-  <alternative id="Line-anchored checks, one gate">
-    The two boundary tests plus a short list of line-grep checks in the same idiom form one acceptance gate — the region contains no &lt;open-question&gt;, &lt;/open-question&gt;, &lt;question&gt;, or &lt;/question&gt; line, exactly one &lt;recommendation opening line, at least one &lt;alternative id line, and the option value (entity-unescaped, case-folded) equals one of those ids — and any miss counts as an extraction failure that triggers the single same-session repair, with the corrective prompt naming the failed test and a second miss falling to skip-with-advisory; stray prose between elements is left to the agent&apos;s self-check because it breaks no consumer.
-    <advantage>Every test is a grep over exactly the boundary tokens the downstream CLI consumers depend on, so it protects gather, idempotent skip, the recommendation lift, the alternative lift, and whole-block removal without a parser, and a structural miss is the same recoverable emit defect as a wrapping miss, so one control path (extract → check → repair once → skip) covers both.</advantage>
-    <drawback>A well-formed but slightly off return (an id with mismatched entity escaping against its option value, an odd attribute layout) costs a repair round, and the longer test list enlarges both the corrective prompt and the agent&apos;s self-check.</drawback>
-  </alternative>
-  <alternative id="Two-tier gate">
-    The boundary tests gate extraction and are repairable, while the structural checks run afterward as a separate acceptance gate whose failure goes straight to skip-with-advisory with no repair attempt.
-    <advantage>Keeps &quot;extraction failure&quot; narrowly defined as the wrapping defect the milestone-19 sweep actually observed, so the repair path stays aimed at one known failure.</advantage>
-    <drawback>A structural miss is fixable by the same one-line re-emit in the same session, so skipping without repair drops a valid recommendation the goal says must never be dropped, and two failure classes with different handling is more orchestrator prose than one gate.</drawback>
-  </alternative>
-  <alternative id="Full XML parse">
-    Wrap the extracted region in a synthetic root and validate it with a real XML processor (well-formedness, balanced tags, entity correctness) before embedding.
-    <advantage>Catches every malformation, including unbalanced or mis-nested elements that no line-grep list anticipates.</advantage>
-    <drawback>Contradicts the plugin&apos;s boundary-line-CLI-never-xmllint convention, rejects otherwise usable returns over a single bare &amp; in prose, and depends on a tool the Antigravity host may not provide.</drawback>
-  </alternative>
-  <recommendation option="Line-anchored checks, one gate">The checks that matter are the ones protecting the downstream boundary-line consumers (no wrapper or question tags inside the region, exactly one recommendation, its option naming an alternative id), all of which are line greps in the same idiom as the two boundary tests, and a miss on any of them is as recoverable by the same-session re-emit as a wrapping miss, so folding them into one extraction gate with one repair attempt keeps the goal&apos;s no-valid-recommendation-dropped promise without adding a second control path.</recommendation>
-</open-question>
 
 <open-question id="Corrective re-emit prompt wording" status="deferred">
   <question>What the corrective message sent to the continued agent session says — whether it quotes the two shape tests, names what the previous message violated, and asks for nothing but the elements.</question>
