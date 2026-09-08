@@ -86,3 +86,20 @@ Revise the `CLAUDE.md` invariants — the "Dispatched-agent return contracts are
 - Only `CLAUDE.md` changed (`git diff --stat` shows one file, three lines), each invariant remains a single physical line in the established format, and the runtime layer is untouched so the editor-facing rationale lives only in these invariants.
 
 ---
+
+## Update README Recommend Sweep Entries
+
+Revise the `README.md` skill-reference entries for `recommend-all-open-questions` and `recommend-open-question (subagent)` so they describe the extraction of the sub-element region, the single repair attempt (same-session re-emit or fresh re-dispatch) and the skip-with-advisory that follows only a second failure, and the agent's draft → self-check → emit return. Verify by reading the two entries against the finished skill and agent files for consistency.
+
+**Verified:**
+
+- The `README.md` skill-reference entry for `recommend-all-open-questions` describes the **extraction of the sub-element region** — the first `<alternative` line through the last `</recommendation>` line, with surrounding text (a grounding summary above, a closing remark below) discarded rather than the recommendation dropped with it — and the acceptance gate over that region (the two boundary tests plus the four line-greps), matching step 3 sub-steps b and c of `skills/recommend-all-open-questions/SKILL.md`.
+- The same entry states the last-line verdict ahead of extraction: a last non-whitespace line beginning `FAILED:` is an explicit failure, skipped with that reason and never repaired — matching sub-step a.
+- The same entry describes the **single repair attempt** with both branches in the skill's order — continue the same agent session (Claude Code's `SendMessage` to the agent id the dispatch returned) where the host allows it, otherwise one fresh re-dispatch with the same prompt plus the corrective message as a shape reminder (no continuation equivalent, as under Antigravity, or the handle gone) — plus its on-arrival timing, the per-question repair-spent marker, and the fixed one-paragraph corrective message that quotes both shape tests and names the failed test, matching sub-step d.
+- The same entry states that **skip-with-advisory follows only a second failure**: the repaired or second return is judged the same way, and only then is that question alone skipped with its block untouched and its Short Title plus reason printed alongside the terse line, never a run stop — matching sub-step d and step 6.
+- The same entry records that a question annotated only after extraction stripped surrounding text, or only after the repair, gets no console mention at all and is reported exactly like a clean one — matching step 6.
+- The `recommend-open-question` (subagent) entry describes the agent's **draft → self-check → emit** return: the rendered sub-elements are a draft, self-checked against the same two shape tests (first non-whitespace text `<alternative`, last `</recommendation>`) and revised until both pass, then emitted as the final message with nothing accompanying it, with every grounding finding spent inside the elements and a `FAILED: <reason>` last line as the only alternative — matching step 4 of `agents/recommend-open-question.md`.
+- Both entries were read against the finished `skills/recommend-all-open-questions/SKILL.md` and `agents/recommend-open-question.md` with no contradiction found, and no other `README.md` passage states the retired raw-return shape check or skip-only behaviour (a grep for "shape check", "salvage", "discarded", and "skipped" over `README.md` returns no stale claim).
+- Only `README.md` changed (`git diff --stat` shows one file), and the two entries keep the file's existing one-dense-paragraph skill-reference style.
+
+---
