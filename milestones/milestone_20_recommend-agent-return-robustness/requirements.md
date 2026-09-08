@@ -30,3 +30,40 @@ Claude Code's `Agent` tool returns a spawned agent's final message and its agent
 
 ## Out of Scope
 
+## Open questions
+
+<open-question id="Extracted-region acceptance tests" status="open">
+  <question>Beyond the two boundary tests (region starts with &lt;alternative, ends with &lt;/recommendation&gt;), what structural checks must the extracted region pass before it is embedded — for example exactly one &lt;recommendation&gt; element, its option attribute naming one of the region&apos;s &lt;alternative id&gt; values, and no stray text or &lt;open-question&gt;/&lt;question&gt; tags between the child elements — and does a check failure count as an extraction failure that triggers the repair attempt?</question>
+</open-question>
+
+<open-question id="Failed-return detection under extraction" status="open">
+  <question>Once the orchestrator extracts a region rather than testing the whole message, how does it recognise an explicit failure return — only a message whose last line is FAILED: &lt;reason&gt;, or a FAILED: line anywhere in the message — and which wins when a message carries both a FAILED: line and an extractable &lt;alternative&gt;…&lt;/recommendation&gt; region?</question>
+</open-question>
+
+<open-question id="Continuation-unavailable fallback" status="open">
+  <question>When the host cannot continue the finished agent session (no SendMessage equivalent, as under Antigravity, or the agent handle is gone), does the orchestrator fall back to today&apos;s skip-with-advisory, or to a fresh re-dispatch that redoes the analysis, and how does the skill prose express &quot;continue the same session where the host allows it&quot; so both hosts read one instruction?</question>
+</open-question>
+
+<open-question id="Same-failure test for DONE agents" status="open">
+  <question>The complete-task and answer-open-question-with-recommendation agents end with a DONE/FAILED last line, so prose above that line already passes their orchestrators; is trailing text after the DONE/FAILED line the &quot;same failure&quot; that warrants applying last-line extraction (and a repair attempt) to those two agents and their orchestrators, or does this milestone leave all four files untouched?</question>
+</open-question>
+
+<open-question id="Corrective re-emit prompt wording" status="deferred">
+  <question>What the corrective message sent to the continued agent session says — whether it quotes the two shape tests, names what the previous message violated, and asks for nothing but the elements.</question>
+</open-question>
+
+<open-question id="Repair timing under parallel dispatch" status="deferred">
+  <question>Whether the orchestrator repairs each return as soon as its extraction fails or collects all first returns and then runs the repair attempts, given that dispatches may run in parallel and each repair needs that dispatch&apos;s agent handle.</question>
+</open-question>
+
+<open-question id="Repaired-return console advisory" status="deferred">
+  <question>Whether a question whose recommendation was embedded only after extraction stripped surrounding text, or only after the repair attempt, is mentioned on the console alongside the terse line, or whether the embedded result alone is the record.</question>
+</open-question>
+
+<open-question id="Extracted-region re-indentation" status="deferred">
+  <question>How the orchestrator normalises the indentation of an extracted region (for example one emitted at column 0 or inside a fenced code block) to the 2-space-per-level depth of the existing &lt;question&gt; child before the whole-block-replacement Edit.</question>
+</open-question>
+
+<open-question id="Agent rewrite boundary" status="deferred">
+  <question>Whether the ground-up rewrite of the agent&apos;s return contract replaces only step 4 or merges the step-3 rendering shape and step-4 return into one draft → self-check → emit step, and how much of the current prohibition list survives as the self-check&apos;s test list.</question>
+</open-question>
