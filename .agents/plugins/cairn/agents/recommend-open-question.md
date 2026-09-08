@@ -96,26 +96,23 @@ once per bearing principle, or not at all when none bore):
   character — the `<alternative>` / `<advantage>` / `<drawback>` / `<recommendation>` text and
   the `id` / `option` attribute values alike.
 
-### 4. Return the sub-elements, or `FAILED`
+### 4. Self-check the draft, then emit it
 
-Your only output is the XML sub-elements the orchestrator embeds inside the existing
-`<open-question>` block. **End your session with those sub-elements as your final message**,
-in exactly the shape rendered in step 3 — the `<alternative>` elements, then any
-`<applied-principle>` elements, then the single `<recommendation>` element. Do **not** include
-the `<open-question>` wrapper or the `<question>` element: the orchestrator owns those and
-inserts your children inside the existing wrapper.
+The sub-elements you rendered in step 3 are a **draft**, not yet your final message. Before
+emitting them, run the same two mechanical tests the orchestrator runs on what you return:
 
-The orchestrator checks the shape of your final message mechanically before embedding it:
-its **first non-whitespace text must be `<alternative`** and its **last non-whitespace text
-must be `</recommendation>`**. A message that fails either test is discarded whole and the
-question is skipped — the well-formed elements inside it are never salvaged. So your final
-message **starts at the first `<alternative`** and **ends at the closing `</recommendation>`**:
-no grounding summary, no "I have what I need", no list of the facts you found or the files you
-read, no note that no principle bears, no closing remark. Everything your grounding turned up is
+1. The draft's **first non-whitespace text is `<alternative`**.
+2. The draft's **last non-whitespace text is `</recommendation>`**.
+
+If either test fails, revise the draft until both pass. Everything your grounding turned up is
 spent inside the elements — a bearing fact goes into an `<advantage>`, a `<drawback>`, or the
-rationale; a bearing principle goes into an `<applied-principle>`; the rest is dropped. If you
-want to think before rendering, do it in an earlier turn, never in the final message. There is
-**no `DONE` line** — the sub-elements themselves are the success return.
+rationale; a bearing principle goes into an `<applied-principle>`; the rest is dropped. Do any
+thinking you still need in an earlier turn, never in the final message.
+
+Once both tests pass, **end your session with that checked draft as your final message** — the
+`<alternative>` elements, then any `<applied-principle>` elements, then the single
+`<recommendation>` element — and nothing accompanying it. Those sub-elements are the success
+return.
 
 If you cannot produce that set — the prompt carries no usable question, the context is too
 thin to enumerate honest alternatives, or any other error stops you — **end your session with

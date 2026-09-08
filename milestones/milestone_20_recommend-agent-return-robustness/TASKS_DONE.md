@@ -103,3 +103,18 @@ Revise the `README.md` skill-reference entries for `recommend-all-open-questions
 - Only `README.md` changed (`git diff --stat` shows one file), and the two entries keep the file's existing one-dense-paragraph skill-reference style.
 
 ---
+
+## Regenerate Antigravity Plugin Tree
+
+Run `uv run scripts/migrate_skills_to_agy.py` so `.agents/plugins/cairn/` picks up the rewritten agent and sweep skill, confirming the transpiled skill reads the same two-branch repair prose and therefore takes the fresh re-dispatch branch where session continuation is unavailable. Verify with `diff -r` between the source and generated trees showing only the expected `${CLAUDE_PLUGIN_ROOT}` reference rewrites and dropped resolve hints.
+
+**Verified:**
+
+- `uv run scripts/migrate_skills_to_agy.py` runs from the repository root and completes without error, regenerating `.agents/plugins/cairn/` in full — the manifest, 21 skills, `agents/`, and `shared/`.
+- The regeneration changed exactly the two files this milestone's source rewrites touched: `git status --porcelain` after the run lists only `.agents/plugins/cairn/agents/recommend-open-question.md` and `.agents/plugins/cairn/skills/recommend-all-open-questions/SKILL.md` as modified.
+- The transpiled `skills/recommend-all-open-questions/SKILL.md` carries the same two-branch repair prose as its source: a `diff` over the whole step-3 repair region shows no difference other than the one `${CLAUDE_PLUGIN_ROOT}` commit-procedure rewrite, and the transpiled text names the branches in order — continue the same agent session under Claude Code's `SendMessage`, otherwise "Where the host offers no session-continuation equivalent (as under Antigravity), or the handle is gone, dispatch **one** fresh `cairn:recommend-open-question` agent" — so the Antigravity build takes the fresh re-dispatch branch.
+- The transpiled `agents/recommend-open-question.md` carries the rewritten return contract: step 4 reads "Self-check the draft, then emit it", names step 3's rendering as the draft, lists exactly the two shape tests, and keeps `FAILED: <reason>` as the only alternative to the sub-elements.
+- `diff -r` between each source tree and its generated counterpart (`agents/`, `shared/`, `skills/`) reports only `${CLAUDE_PLUGIN_ROOT}/shared/<name>.md` → `.agents/plugins/cairn/shared/<name>.md` reference rewrites and dropped `echo "$CLAUDE_PLUGIN_ROOT"` resolve hints — no other content difference, and no file present in one tree and absent from the other.
+- No `CLAUDE_PLUGIN_ROOT` occurrence remains anywhere under `.agents/plugins/cairn/` (recursive grep returns 0 matches), and the generated `plugin.json` version (`1.1.1`) matches `.claude-plugin/plugin.json`.
+
+---
