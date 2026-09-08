@@ -161,10 +161,6 @@ When the host cannot continue the finished agent session (no `SendMessage` equiv
   <recommendation option="Embedded result alone">The embedded block is the record: a recovered return changes nothing the user must decide, so under the terse-reporting rule it earns no console line — and if re-emit drift is the real worry, that belongs in the extracted-region acceptance checks, not in the report.</recommendation>
 </open-question>
 
-<open-question id="Extracted-region re-indentation" status="deferred">
-  <question>How the orchestrator normalises the indentation of an extracted region (for example one emitted at column 0 or inside a fenced code block) to the 2-space-per-level depth of the existing &lt;question&gt; child before the whole-block-replacement Edit.</question>
-</open-question>
-
 <open-question id="Agent rewrite boundary" status="deferred">
   <question>Whether the ground-up rewrite of the agent&apos;s return contract replaces only step 4 or merges the step-3 rendering shape and step-4 return into one draft → self-check → emit step, and how much of the current prohibition list survives as the self-check&apos;s test list.</question>
   <alternative id="Replace step 4 only">
