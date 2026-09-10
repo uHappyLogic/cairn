@@ -84,6 +84,10 @@ A valid `<depends-on>` target is any `<open-question>` block still present under
 
 When a target block is removed by a path that records no option — the cascade removing a mooted entry, or a `/review-milestone-requirements` pass pruning or deduplicating it — the removal is treated uniformly as a mismatch: every surviving sibling whose `<depends-on>` pointed at that block has its embedded children stripped transitively, leaving the bare block for the next recommend sweep to regenerate. A removal that records no option is exactly the inconclusive comparison this milestone already decided to resolve by stripping, so it routes into the existing disagreeing-answer branch rather than adding a third cascade outcome, and the review skill gains the same dependent-stripping step on its prune and dedup paths. The cost is real blast radius from an option-less removal into sweep output — several blocks' children may clear at once, forcing a re-run — and is accepted as the recoverable failure over a stale rationale surviving as lift-able.
 
+### Unresolvable dependency targets
+
+The answer sweep builds the dependency graph only over the set it gathered: each `<depends-on>` is resolved against that set, an edge whose target block is absent or carries no recommendation is dropped, and a question left with no resolvable edges is walked as an origin in document order among the other origins. A `<depends-on>` records what a dependent assumed rather than a live pointer, and only a recorded option can reconcile it, so an edge to a target this sweep will never answer carries nothing to act on — dropping it adds no outcome class, no deadlock, and no orchestrator mutation, and preserves the sweep's existing contract that every gathered question gets answered. The residual is exactly the stale-rationale risk the forward-declaration decision already accepted.
+
 ## Out of Scope
 
 ## Open questions
@@ -111,25 +115,6 @@ When a target block is removed by a path that records no option — the cascade 
     <drawback>A pair of questions produced by an ordinary hand-clear refresh becomes permanently unanswerable by the sweep until a human breaks the cycle by hand, contradicting the self-healing, strip-and-regenerate pattern every other branch of this design uses.</drawback>
   </alternative>
   <recommendation option="Tolerate, document-order entry">A cycle is only reachable through the hand-clear escape hatch, is coherent under the already-decided reading of &lt;depends-on&gt; as a record of what a dependent assumed rather than a live pointer, and dissolves at the first answer&apos;s cascade — so a one-sentence deterministic entry rule reusing the decided document-order tie-break beats adding a transitive graph walk to a gate kept deliberately parser-free, and its one stale-rationale risk is the recoverable kind this milestone has twice chosen to accept.</recommendation>
-</open-question>
-<open-question id="Unresolvable target walk placement" status="open">
-  <question>How does the answer sweep place a gathered question whose &lt;depends-on&gt; target is not in the gathered set because the target block is gone or carries no recommendation: record it as an origin in this sweep, or leave it unanswered until its target has been recommended and answered?</question>
-  <alternative id="Origin by dropped edge">
-    Build the dependency graph only over the gathered set: each &lt;depends-on&gt; is resolved against that set, an edge whose target is absent or recommendation-less is dropped, and a question left with no resolvable edges is an origin walked in document order among the other origins.
-    <advantage>Keeps the walk one uniform graph build with no new outcome class, no deadlock, and no orchestrator mutation — every gathered question is still recorded, preserving the sweep&apos;s existing contract that a gathered block always gets answered, and the depth-tie rule already decided (document order) applies unchanged.</advantage>
-    <drawback>The question&apos;s recorded answer may lift a rationale resting on an assumption nothing in the sweep can verify, and a wrong recorded decision is undone only by reverting its commit — the asymmetric cost the strip-on-doubt decision named.</drawback>
-  </alternative>
-  <alternative id="Hold until target resolved">
-    Leave such a question unanswered in this sweep — neither origin nor descendant — so it is recorded only after a later run has regenerated and answered its target, making the dependency reconcilable by the cascade as designed.
-    <advantage>Never records a decision on an assumption the cascade could not check, so the graph&apos;s whole purpose — no dependent answered before its target — holds without exception.</advantage>
-    <drawback>Adds a gathered-but-unanswered outcome the sweep does not have today (needing its own report line despite terse reporting), and when the target was removed for good — pruned or deduped by a review pass, or mooted by a cascade — the question is unanswerable by the sweep forever, with hand-editing the only escape.</drawback>
-  </alternative>
-  <alternative id="Strip and defer">
-    Treat the unresolvable edge like a disagreeing cascade: clear the question&apos;s embedded children and leave the bare block for the next recommend sweep to regenerate against the current document, instead of answering it this run.
-    <advantage>Resolves the doubt toward the recoverable failure — the question is re-recommended with fresh grounding rather than recorded on an unverifiable assumption — and is self-healing across a recommend-then-answer cycle.</advantage>
-    <drawback>Gives the answer orchestrator a mutation it has never had (a strip to stage and commit outside any answer, under some new subject), and cuts against the already-recorded decision that a dependent whose target was hand-cleared is left exactly as it is.</drawback>
-  </alternative>
-  <recommendation option="Origin by dropped edge">A &lt;depends-on&gt; records what a dependent assumed rather than a live pointer, and only a recorded option can reconcile it, so an edge to a target this sweep will never answer carries nothing to act on — dropping it costs no machinery, deadlocks nothing, and leaves exactly the residual stale-rationale risk the forward-declaration decision already accepted.</recommendation>
 </open-question>
 <open-question id="Recommend sweep significance ordering" status="deferred">
   <question>On what basis does the recommend sweep rank questions most-significant-first before dispatching sequentially: the gathered question texts alone, or a whole-document read of requirements.md, which the gather step today deliberately avoids?</question>
