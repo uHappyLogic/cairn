@@ -80,6 +80,10 @@ The shared answer procedure's input contract widens from two fields to three: an
 
 A valid `<depends-on>` target is any `<open-question>` block still present under `## Open questions` that carries embedded children, regardless of its `status`: the acceptance gate's resolution test resolves the `question` attribute against that whole set without reading `status` at all, so a `status="deferred"` sibling the sweep annotated is a declarable target exactly like an open one. That keeps the resolution test a plain boundary-line grep over the block list the sweep already gathered and preserves the open-or-deferred uniformity the two sweeps' gathers, the CLI locate, and `shared/answer-procedure.md` all share, rather than making the gate the first mechanism on this path to branch on `status`. The residual — a deferred target may carry forward unanswered past `/derive-tasks`, leaving a declared dependency permanently unreconciled — is accepted as one the milestone already accepts elsewhere, and no advisory is added for it.
 
+### Dangling dependency tags
+
+When a target block is removed by a path that records no option — the cascade removing a mooted entry, or a `/review-milestone-requirements` pass pruning or deduplicating it — the removal is treated uniformly as a mismatch: every surviving sibling whose `<depends-on>` pointed at that block has its embedded children stripped transitively, leaving the bare block for the next recommend sweep to regenerate. A removal that records no option is exactly the inconclusive comparison this milestone already decided to resolve by stripping, so it routes into the existing disagreeing-answer branch rather than adding a third cascade outcome, and the review skill gains the same dependent-stripping step on its prune and dedup paths. The cost is real blast radius from an option-less removal into sweep output — several blocks' children may clear at once, forcing a re-run — and is accepted as the recoverable failure over a stale rationale surviving as lift-able.
+
 ## Out of Scope
 
 ## Open questions
@@ -107,30 +111,6 @@ A valid `<depends-on>` target is any `<open-question>` block still present under
     <drawback>A pair of questions produced by an ordinary hand-clear refresh becomes permanently unanswerable by the sweep until a human breaks the cycle by hand, contradicting the self-healing, strip-and-regenerate pattern every other branch of this design uses.</drawback>
   </alternative>
   <recommendation option="Tolerate, document-order entry">A cycle is only reachable through the hand-clear escape hatch, is coherent under the already-decided reading of &lt;depends-on&gt; as a record of what a dependent assumed rather than a live pointer, and dissolves at the first answer&apos;s cascade — so a one-sentence deterministic entry rule reusing the decided document-order tie-break beats adding a transitive graph walk to a gate kept deliberately parser-free, and its one stale-rationale risk is the recoverable kind this milestone has twice chosen to accept.</recommendation>
-</open-question>
-<open-question id="Dangling dependency tags" status="open">
-  <question>When a target block is removed by a path that records no option, such as the cascade removing a mooted entry or a review pass pruning or deduplicating it, what happens to the &lt;depends-on&gt; elements in surviving siblings that point at it: strip those dependents, remove just the elements, or leave them in place?</question>
-  <alternative id="Leave in place">
-    Neither the cascade nor a review pass touches surviving siblings, so a &lt;depends-on&gt; whose target block is gone simply dangles, and the dependent keeps its embedded children unchanged.
-    <advantage>Costs nothing anywhere: it is consistent with the recorded reading that a tag records what a dependent assumed rather than a live pointer that must track its target, and it keeps the review skill&apos;s remit and the cascade&apos;s outcome set exactly as they are.</advantage>
-    <drawback>A recommendation built on an assumption that was never validated stays lift-able forever, because the target is gone and no future answer can ever run the agree/disagree comparison against it; it also leaves permanently unresolvable tags in the document for the answer sweep&apos;s graph walk to cope with.</drawback>
-  </alternative>
-  <alternative id="Remove tags only">
-    The removing path deletes just the dangling &lt;depends-on&gt; lines from surviving siblings, leaving their alternatives, applied-principles and recommendation intact — the same tidy the cascade already performs on an agreeing answer.
-    <advantage>Reuses an outcome the cascade already defines and leaves the document self-consistent, with every remaining tag resolving to a still-open sibling and no re-dispatch cost.</advantage>
-    <drawback>It silently asserts agreement no one checked: the stale rationale survives while the one durable trace that it rested on a now-void assumption is erased, so the block afterwards looks freshly grounded to every later reader and to the answer path that lifts it.</drawback>
-  </alternative>
-  <alternative id="Strip uniformly">
-    Any removal that records no option to compare against is treated as a mismatch, so every path that removes a block — the mooted-entry cascade and a review pass&apos;s prune or dedup alike — strips its dependents&apos; embedded children transitively and leaves the bare blocks for the next recommend sweep.
-    <advantage>It adds no new cascade outcome at all — an option-less removal is exactly the inconclusive comparison the milestone already decided to resolve by stripping, so it routes into the existing disagreeing-answer branch — and every affected recommendation is regenerated against the document as it now stands.</advantage>
-    <drawback>It gives a prune or a mooted-entry removal real blast radius into sweep output, potentially clearing several blocks&apos; children and forcing a re-run, and the review skill gains a dependent-editing step it does not have today.</drawback>
-  </alternative>
-  <alternative id="Split by path">
-    The answer-time cascade strips dependents transitively, while a review pass leaves the dangling tags alone and merely flags them, keeping the review skill&apos;s delete/dedup/flag remit untouched.
-    <advantage>Confines the new machinery to the procedure that is already gaining a dependency cascade, and matches the review skill&apos;s established habit of flagging rather than acting when in doubt.</advantage>
-    <drawback>Two rules for one structural situation: whether a dangling tag is stripped depends on which skill happened to remove the target, so a reader cannot tell from a block whether its children were reconciled, and the review-pruned case keeps every drawback of leaving tags in place.</drawback>
-  </alternative>
-  <recommendation option="Strip uniformly">A removal that records no option is the inconclusive comparison this milestone already decided to resolve by stripping, and routing it into the existing disagree branch keeps one rule and one self-healing outcome instead of adding a third.</recommendation>
 </open-question>
 <open-question id="Unresolvable target walk placement" status="open">
   <question>How does the answer sweep place a gathered question whose &lt;depends-on&gt; target is not in the gathered set because the target block is gone or carries no recommendation: record it as an origin in this sweep, or leave it unanswered until its target has been recommended and answered?</question>
