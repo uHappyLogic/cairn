@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Extend Answer Cascade With Dependency Reconciliation
-
-Widen `shared/answer-procedure.md` to three inputs by adding an optional RECORDED OPTION (the un-escaped option or alternative id the caller lifted), whose presence selects exact id comparison and whose absence selects a judgment of whether ANSWER invalidates the assumed option, and extend step 6's cascade so that after the answered block and any mooted entries are removed, every surviving block whose `<depends-on question="…">` names a removed block is reconciled: an agreeing option deletes only that `<depends-on>` line, while a disagreeing option, an inconclusive judgment, or a target removed as a mooted entry with no option strips that dependent's embedded children transitively, leaving the bare `<open-question>` wrapper and `<question>` for the next recommend sweep. The core prints nothing and stays execution-neutral, and the fold-before-remove order is preserved. Verified by reading: both branches are stated once, "strip on doubt" is explicit, and no anchor-string parsing enters the core.
-
----
-
 ## Pass Recorded Option From Lifting Callers
 
 Update the three callers of the recording core so `shared/answer-with-recommendation-procedure.md` step 4 passes the un-escaped `option` value it lifted as RECORDED OPTION, `skills/answer-open-question-with-alternative/SKILL.md` step 4 passes the un-escaped chosen `id`, and `skills/answer-open-question/SKILL.md` step 3 explicitly passes no RECORDED OPTION so the cascade takes the judgment mode. Verified by reading the three delegation sentences, with no other step in those files changed.

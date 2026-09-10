@@ -60,3 +60,20 @@ Add a seventh test to the acceptance gate in `skills/recommend-all-open-question
 - `uv run scripts/migrate_skills_to_agy.py` succeeds and the regenerated `.agents/plugins/cairn/skills/recommend-all-open-questions/SKILL.md` differs from the source only by the shared-path rewrite.
 
 ---
+
+## Extend Answer Cascade With Dependency Reconciliation
+
+Widen `shared/answer-procedure.md` to three inputs by adding an optional RECORDED OPTION (the un-escaped option or alternative id the caller lifted), whose presence selects exact id comparison and whose absence selects a judgment of whether ANSWER invalidates the assumed option, and extend step 6's cascade so that after the answered block and any mooted entries are removed, every surviving block whose `<depends-on question="…">` names a removed block is reconciled: an agreeing option deletes only that `<depends-on>` line, while a disagreeing option, an inconclusive judgment, or a target removed as a mooted entry with no option strips that dependent's embedded children transitively, leaving the bare `<open-question>` wrapper and `<question>` for the next recommend sweep. The core prints nothing and stays execution-neutral, and the fold-before-remove order is preserved. Verified by reading: both branches are stated once, "strip on doubt" is explicit, and no anchor-string parsing enters the core.
+
+**Verified:**
+
+- `## Inputs` in `shared/answer-procedure.md` declares three inputs — SHORT TITLE, ANSWER, and an optional RECORDED OPTION described as the un-escaped `<recommendation option>` / `<alternative id>` value the caller lifted; its presence selects exact id comparison and its absence selects a judgment of whether ANSWER invalidates the assumed option, and the core states it never derives it by parsing ANSWER (no `<option> — <rationale>` anchor parsing; `grep rationale` finds no hit in the core).
+- Step 6 reconciles, only after the answered block and every mooted entry are removed, every surviving block whose `<depends-on question="…">` (attribute-name-anchored regex, entity-unescaped, case-folded as step 2 matches `id`) names a removed block.
+- The agreeing branch is stated once: matching option (equal ids with RECORDED OPTION, or ANSWER plainly leaving the assumed option standing without it) deletes only that one `<depends-on …/>` line, leaving the block's other children intact.
+- The disagreeing branch is stated once and covers differing ids, an inconclusive judgment, and a target removed as a mooted entry with no recorded option; it strips every child between `<question>` and `</open-question>`, leaving the bare wrapper and `<question>` for the next recommend sweep, and stripping is stated as transitive over dependents of stripped blocks.
+- "Strip on doubt" is explicit ("whenever the agreeing case cannot be affirmed, this branch applies").
+- The core stays execution-neutral and silent: `grep -Ei 'commit|DONE|FAILED|git add|print|console'` finds no hit, and the reconciliation states it produces no report of its own.
+- Fold-before-remove is preserved: step 4 (fold) still precedes step 5 (remove), the cascade stays step 6 and last, and step 5's child list now also names `<depends-on>`.
+- `uv run scripts/migrate_skills_to_agy.py` succeeds and `.agents/plugins/cairn/shared/answer-procedure.md` differs from the source only by the `${CLAUDE_PLUGIN_ROOT}` path rewrite.
+
+---

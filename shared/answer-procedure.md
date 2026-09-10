@@ -3,18 +3,27 @@
 This is the single source of truth for recording an answer to one open question in the
 current milestone's `requirements.md`. It is followed inline by the `answer-open-question`
 skill and once per resolved question by an orchestrator sweeping several. The caller
-supplies the two inputs below and wraps the result; this file describes only the recording
+supplies the inputs below and wraps the result; this file describes only the recording
 work itself — locate, analyse, fold, remove, cascade.
 
 ## Inputs
 
-This procedure records one decision given two inputs the caller supplies:
+This procedure records one decision given three inputs the caller supplies, the third
+optional:
 
 - **SHORT TITLE** — the resolved handle of an existing `<open-question>` block to answer,
   whether `status="open"` or `status="deferred"` (case-insensitive against the block's
   `id`). The caller has already obtained it; locating the matching block is this
   procedure's job.
 - **ANSWER** — the answer text for that question.
+- **RECORDED OPTION** *(optional)* — the un-escaped option or alternative id the caller
+  lifted as the decision, when it lifted one: the block's `<recommendation option="…">`
+  value or the chosen `<alternative id="…">` value, with entity escapes already reversed.
+  Its presence is the comparison-mode discriminator for step 6's dependency
+  reconciliation: supplied, the recorded option is compared to each dependent's assumed
+  option as an exact id; absent, the procedure judges whether ANSWER invalidates that
+  assumed option. The caller either passes it or passes nothing — this procedure never
+  derives it by parsing ANSWER, whose form is the caller's own convention.
 
 ## Procedure
 
@@ -82,15 +91,47 @@ deterministic line-range removal, so drive it with the line-oriented CLI (delete
 opening-through-closing line span), not by hand-matching prose.
 
 The same opening-through-closing removal clears the whole block whether or not it carries
-embedded `<alternative>` / `<applied-principle>` / `<recommendation>` children.
+embedded `<alternative>` / `<applied-principle>` / `<depends-on>` / `<recommendation>`
+children.
 
-### 6. Cascade to mooted entries
+### 6. Cascade to mooted entries and reconcile dependents
 
 If the decision moots another open or deferred entry or forces its answer, fold any implied
 constraint into `## Decisions` the same way and remove that entry too.
+
+Then reconcile dependency declarations. The recommend sweep may have embedded in any block
+a self-closing `<depends-on question="…" option="…"/>` child recording that the block's
+recommendation assumed a sibling's option. Once the answered block and every mooted entry
+are removed, collect the `id`s of those removed blocks and query every surviving block under
+`## Open questions` for `<depends-on` lines whose `question` attribute — pulled by
+attribute-name-anchored regex, entity-unescaped, and case-folded exactly as step 2 matches
+`id` — names one of them. Each such dependent takes one of two outcomes, decided by holding
+its tag's un-escaped `option` value against what was actually recorded:
+
+- **Agreeing — remove the tag only.** The target is the answered block and the dependent's
+  assumed option is the recorded one: with RECORDED OPTION supplied, the two un-escaped,
+  case-folded ids are equal; without it, the ANSWER prose plainly leaves the assumed
+  option standing. Delete that one `<depends-on …/>` line and nothing else in the block —
+  its alternatives, citations, and recommendation stand.
+- **Disagreeing — strip the children.** Everything else: the ids differ, the judgment is
+  inconclusive, or the target was removed as a mooted entry (no option was recorded for
+  it, so there is nothing to agree with). Delete every child line between the block's
+  `<question>` element and its `</open-question>` closing line — all its `<alternative>`,
+  `<applied-principle>`, `<depends-on>`, and `<recommendation>` children — leaving the bare
+  `<open-question …>` wrapper and `<question>` element for the next recommend sweep to
+  regenerate. Strip on doubt: whenever the agreeing case cannot be affirmed, this branch
+  applies.
+
+Stripping is **transitive**: a stripped block's own dependents assumed a recommendation
+that no longer exists, so every surviving block whose `<depends-on question="…">` names a
+stripped block is stripped the same way, repeating until no `<depends-on>` names a block
+removed or stripped in this run. A stripped block records no decision and is never removed,
+and this reconciliation produces no report of its own — the edited document is its record.
+
 Then the document is left in the now-updated state for any further work.
 
 Make steps 4–6 as separate, targeted edits — one per logical change (fold, removal,
-cascade) — rather than one large rewrite of a long file, and do not otherwise rewrite or
-restructure existing content: only remove the answered entry and any it moots, and add the
-decisions they produce.
+cascade, reconciliation) — rather than one large rewrite of a long file, and do not otherwise
+rewrite or restructure existing content: only remove the answered entry and any it moots,
+add the decisions they produce, and delete the dependency tags or embedded children this
+step reconciles.
