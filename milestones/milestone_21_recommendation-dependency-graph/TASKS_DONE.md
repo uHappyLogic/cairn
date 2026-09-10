@@ -77,3 +77,18 @@ Widen `shared/answer-procedure.md` to three inputs by adding an optional RECORDE
 - `uv run scripts/migrate_skills_to_agy.py` succeeds and `.agents/plugins/cairn/shared/answer-procedure.md` differs from the source only by the `${CLAUDE_PLUGIN_ROOT}` path rewrite.
 
 ---
+
+## Pass Recorded Option From Lifting Callers
+
+Update the three callers of the recording core so `shared/answer-with-recommendation-procedure.md` step 4 passes the un-escaped `option` value it lifted as RECORDED OPTION, `skills/answer-open-question-with-alternative/SKILL.md` step 4 passes the un-escaped chosen `id`, and `skills/answer-open-question/SKILL.md` step 3 explicitly passes no RECORDED OPTION so the cascade takes the judgment mode. Verified by reading the three delegation sentences, with no other step in those files changed.
+
+**Verified:**
+
+- `shared/answer-with-recommendation-procedure.md` step 4's delegation sentence hands `shared/answer-procedure.md` the resolved SHORT TITLE, the derived ANSWER, and — as RECORDED OPTION — the un-escaped `option` value lifted in step 3, passed separately so the core compares it as an exact id rather than parsing ANSWER.
+- `skills/answer-open-question-with-alternative/SKILL.md` step 4's delegation sentence hands the core `<Short Title>`, the derived ANSWER, and — as RECORDED OPTION — the un-escaped chosen alternative `id` from step 3, on the same separate-not-parsed terms.
+- `skills/answer-open-question/SKILL.md` step 3 passes SHORT TITLE and ANSWER and explicitly passes **no** RECORDED OPTION, stating that a literal answer lifts no option id so the core's cascade takes its judgment mode (deciding from the ANSWER prose whether each dependent's assumed option still stands).
+- No other step in those three files changed: `git diff -U0` shows one hunk at each delegation sentence and, in the with-recommendation procedure only, a matching one-clause amendment to the non-step `## Inputs` hand-off sentence so it no longer contradicts step 4.
+- Both skills' frontmatter still loads under `yaml.safe_load` with their descriptions unchanged (18 and 19 words).
+- `uv run scripts/migrate_skills_to_agy.py` succeeds and the three regenerated copies under `.agents/plugins/cairn/` differ from their sources only by the `${CLAUDE_PLUGIN_ROOT}` path rewrite and echo-hint drop.
+
+---

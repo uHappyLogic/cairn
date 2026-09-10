@@ -21,8 +21,8 @@ supplies:
   `<recommendation>` element, and delegating the recording are this procedure's job.
 
 The ANSWER is **not** an input here — this procedure *derives* it by lifting the block's
-embedded `<recommendation>` element. That derived ANSWER, together with SHORT TITLE, is what
-it hands to `shared/answer-procedure.md`.
+embedded `<recommendation>` element. That derived ANSWER, together with SHORT TITLE and the
+lifted `option` value as RECORDED OPTION, is what it hands to `shared/answer-procedure.md`.
 
 ## Procedure
 
@@ -64,7 +64,9 @@ the rationale). That string is the answer text.
 
 ### 4. Delegate to the recording core
 
-Hand the resolved **SHORT TITLE** and the derived **ANSWER** to
-`.agents/plugins/cairn/shared/answer-procedure.md` and follow it unchanged. That procedure
-owns the recording work (locate, analyse, fold, remove, cascade); this procedure only lifts
-and delegates.
+Hand the resolved **SHORT TITLE**, the derived **ANSWER**, and — as **RECORDED OPTION** —
+the un-escaped `option` value lifted in step 3 (the same value ANSWER opens with, passed
+separately so the core compares it to each dependent's assumed option as an exact id rather
+than parsing it out of ANSWER) to `.agents/plugins/cairn/shared/answer-procedure.md` and
+follow it unchanged. That procedure owns the recording work (locate, analyse, fold, remove,
+cascade); this procedure only lifts and delegates.

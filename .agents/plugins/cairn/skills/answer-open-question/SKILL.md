@@ -44,7 +44,7 @@ Compare the parsed answer text — **trimmed and lowercased** — against the re
 
 ### 3. Record the answer
 
-Read and follow the shared answer-recording procedure at `.agents/plugins/cairn/shared/answer-procedure.md`, carrying out every step **yourself, in this conversation**. Pass it the **Short Title** parsed in step 1 and the **answer text** resolved in step 2 as its `SHORT TITLE` and `ANSWER` inputs.
+Read and follow the shared answer-recording procedure at `.agents/plugins/cairn/shared/answer-procedure.md`, carrying out every step **yourself, in this conversation**. Pass it the **Short Title** parsed in step 1 and the **answer text** resolved in step 2 as its `SHORT TITLE` and `ANSWER` inputs, and pass **no `RECORDED OPTION`** — a literal answer lifts no option id, so the core's cascade takes its judgment mode, deciding from the ANSWER prose whether each dependent's assumed option still stands.
 
 That procedure owns resolving the current milestone (the `<MILESTONE_DIR>` referenced below) and the locate / analyse / fold / remove / cascade recording. If the Short Title matches no block, it stops without changes and reports the mismatch — relay that to the user so they can retry.
 

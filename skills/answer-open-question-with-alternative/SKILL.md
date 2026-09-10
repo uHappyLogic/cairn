@@ -97,12 +97,14 @@ recommendation path uses for "`<option>` — `<rationale>`". Never invent answer
 
 ### 4. Record the answer via the shared recording core
 
-Hand the resolved **`<Short Title>`** and the derived **ANSWER** to
-`${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` and follow it unchanged **yourself, in this
-conversation** (its own step 1 re-resolves the milestone you already found — harmless). That
-procedure owns the recording work — locate, analyse, fold the decision into `## Decisions`
-as clean prose, remove the whole `<open-question …>`…`</open-question>` block, and cascade to
-any mooted siblings.
+Hand the resolved **`<Short Title>`**, the derived **ANSWER**, and — as **RECORDED OPTION** —
+the un-escaped chosen alternative `id` from step 3 (the same value ANSWER opens with, passed
+separately so the core compares it to each dependent's assumed option as an exact id rather
+than parsing it out of ANSWER) to `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` and
+follow it unchanged **yourself, in this conversation** (its own step 1 re-resolves the
+milestone you already found — harmless). That procedure owns the recording work — locate,
+analyse, fold the decision into `## Decisions` as clean prose, remove the whole
+`<open-question …>`…`</open-question>` block, and cascade to any mooted siblings.
 
 Do **not** spawn any subagent — there is no `answer-open-question-with-alternative` agent.
 

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Pass Recorded Option From Lifting Callers
-
-Update the three callers of the recording core so `shared/answer-with-recommendation-procedure.md` step 4 passes the un-escaped `option` value it lifted as RECORDED OPTION, `skills/answer-open-question-with-alternative/SKILL.md` step 4 passes the un-escaped chosen `id`, and `skills/answer-open-question/SKILL.md` step 3 explicitly passes no RECORDED OPTION so the cascade takes the judgment mode. Verified by reading the three delegation sentences, with no other step in those files changed.
-
----
-
 ## Walk Dependency Graph In Answer Sweep
 
 Replace the "loosely most-significant → least" ordering in `skills/answer-all-open-questions-with-recommendation/SKILL.md` step 1 with a walk of the dependency graph built over the gathered set from each block's `<depends-on question="…">` lines: edges whose target is absent from the set or carries no `<recommendation>` are dropped, questions with no resolvable edges are origins, same-depth questions go in document order, and a stranded set whose targets are never answered promotes its document-order-first member to an origin and continues the depth walk. Step 2's re-check and per-answer commit stay unchanged. Verified by reading: the significance proxy is gone and the walk is deterministic and total for any graph shape, cycles included.
