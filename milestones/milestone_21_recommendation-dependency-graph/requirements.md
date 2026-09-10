@@ -68,31 +68,11 @@ The answer sweep walks questions that share the same depth in the dependency gra
 
 The conversational `discuss-open-question` path does name the sibling recommendations its inline recommendation builds on, via a caller-neutral disclosure duty written into `shared/recommend-procedure.md` step 1 in place of the retired independence clause: when a recommendation leans on a still-open sibling's recommendation, name that sibling and the option assumed. Each caller renders that duty its own way — `<depends-on>` elements in the agent, prose in the discussion — which is the established division of labor already used for principles, where the core states the citation obligation and the agent owns the `<applied-principle>` markup. The core carries the duty without the sweep mechanics that give it teeth (the acceptance gate and the answer-time cascade), so a reader of the core alone sees the obligation without its enforcement; that is accepted.
 
+### Capture treatment of tag lines
+
+Capture's diff read is updated by rewording its one existing disambiguating sentence so the scoping rule covers removed lines belonging to no removed block as well as whole cascaded sibling blocks: only lines within the answered block's `-<open-question id="…">` … `-</open-question>` boundaries feed the record. That closes the gap the cascade's tidy and strip outcomes actually open — orphan `<recommendation option>` and `<alternative id>` lines removed from siblings that stay in the document, which are exactly the tokens the reconstruct and agreement steps key on — and subsumes the `<depends-on>` case for free. The reworded sentence stays element-agnostic and never names `<depends-on>`, so no per-element "ignore this" list is started and the rule holds unchanged as further child elements are added.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Capture treatment of tag lines" status="deferred">
-  <question>Whether the capture skill&apos;s diff read is updated to state explicitly that removed `&lt;depends-on&gt;` lines, both inside the answered block and as orphan lines from tidied or stripped siblings, contribute nothing to its record.</question>
-  <alternative id="No change">
-    Leave the capture skill&apos;s diff read exactly as it is, relying on its reconstruct list being a closed enumeration — `&lt;question&gt;`, `&lt;alternative&gt;`, `&lt;applied-principle&gt;`, `&lt;recommendation&gt;` — so any child element it does not name contributes nothing by omission.
-    <advantage>Zero runtime prose growth, and it is already true: nothing in the read tells a runner to look at an unlisted element, so `&lt;depends-on&gt;` is inert without a word being written.</advantage>
-    <drawback>It answers only the easy half. The cascade&apos;s new tidy and strip outcomes remove lines from siblings that stay in the document, so the diff now carries removed `&lt;recommendation option&gt;` and `&lt;alternative id&gt;` lines belonging to no removed block — exactly the tokens the reconstruct and agreement steps key on — and the starting state records that removed lines belonging to no removed block are not addressed by that read.</drawback>
-  </alternative>
-  <alternative id="Orphan-line scoping">
-    Reword the existing disambiguating sentence (&quot;any other removed block in the same diff is a cascaded sibling … contributes nothing&quot;) so it covers removed lines belonging to no removed block as well: only lines within the answered block&apos;s `-&lt;open-question id=&quot;…&quot;` … `-&lt;/open-question&gt;` boundaries feed the record.
-    <advantage>One reworded sentence at the exact point of use closes the real gap, and it is element-agnostic — it holds for `&lt;depends-on&gt;` orphans and for stripped siblings&apos; `&lt;recommendation&gt;`/`&lt;alternative&gt;` orphans alike, so it will not need revisiting when another child element is added.</advantage>
-    <drawback>It never names `&lt;depends-on&gt;`, so an editor grepping the repo for that tag to confirm every skill&apos;s treatment of it finds nothing in capture and must infer the coverage from the scoping rule.</drawback>
-  </alternative>
-  <alternative id="Name depends-on explicitly">
-    Add prose that names `&lt;depends-on&gt;` outright, stating that such lines contribute nothing both inside the answered block and as orphans from tidied or stripped siblings — the literal update the question proposes.
-    <advantage>Maximally unambiguous about the one element the milestone introduces, and it makes capture&apos;s treatment of the tag greppable by name alongside the skills that do act on it.</advantage>
-    <drawback>It is an element-specific negative clause — the start of a per-element &quot;ignore this&quot; list every future child element must be added to — and it addresses the weaker hazard while saying nothing about the orphan `&lt;recommendation&gt;`/`&lt;alternative&gt;` lines a strip leaves behind, which are the lines that could actually flip an agreement classification.</drawback>
-  </alternative>
-  <alternative id="Capture as evidence">
-    Make `&lt;depends-on&gt;` a positive input to capture: reconstruct the answered block&apos;s dependency tags as part of what the user saw, and read a strip cascade as evidence about the recommendations it invalidated.
-    <advantage>The assumed-option tag is genuine context that stood in the block at answer time, and an override that invalidated dependents is arguably stronger evidence than one that did not.</advantage>
-    <drawback>It expands capture&apos;s scope well past the milestone goal for no principle it could not already distill — new principles come from override reasoning and deliberated bodies, and a dependency tag is the recommender&apos;s own assumption, which the accepted-recommendation rule already bars as a principle source.</drawback>
-  </alternative>
-  <recommendation option="Orphan-line scoping">Rewording the one existing scoping sentence to cover orphan removed lines fixes the gap the cascade actually opens — stripped siblings&apos; `&lt;recommendation&gt;`/`&lt;alternative&gt;` lines outside any removed block — and subsumes the `&lt;depends-on&gt;` case for free, without starting a per-element exclusion list.</recommendation>
-</open-question>
