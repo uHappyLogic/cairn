@@ -92,31 +92,11 @@ The answer sweep builds the dependency graph only over the set it gathered: each
 
 A `<depends-on>` cycle — reachable only through the hand-clear escape hatch, when a regenerated block declares a dependency back on one of its former dependents — is tolerated rather than rejected. The acceptance gate gains no cycle test and stays the line-oriented CLI check it was deliberately confined to, with the seventh test's one-hop resolution unchanged; instead the answer sweep's origin walk handles a stranded set — questions none of whose targets are yet answered — by promoting its document-order-first member to an origin and continuing the depth walk from there, reusing the document-order tie-break already decided for same-depth questions so the sweep stays deterministic and total for any graph shape. A cycle is coherent under the decided reading of `<depends-on>` as a record of what a dependent assumed rather than a live pointer, and dissolves at the first answer's cascade. The residual — the promoted member is answered before the sibling whose option it assumed, so its rationale may be stale when recorded — is the same recoverable risk already accepted under forward dependency declaration, shrunk to one question per cycle.
 
+### Recommend sweep significance ordering
+
+The recommend sweep ranks its surviving questions most-significant-first by judgment over exactly what step 1's boundary-line gather already yields — each block's id, status, and `<question>` text — and reads no more of `requirements.md` to do it. The ordering is a best-effort heuristic whose misses are absorbed by the accepted prose fallback for an undeclared coupling, so it does not justify breaking the sweep's deliberate property that the orchestrator never reads the whole document to assemble context (the subagent, not the orchestrator, is what grounds in the document), and it matches the same loose-judgment ordering the answer sweep already documents.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Recommend sweep significance ordering" status="deferred">
-  <question>On what basis does the recommend sweep rank questions most-significant-first before dispatching sequentially: the gathered question texts alone, or a whole-document read of requirements.md, which the gather step today deliberately avoids?</question>
-  <alternative id="Gathered texts only">
-    Rank the surviving questions by judgment over exactly what step 1&apos;s boundary-line gather already yields — each block&apos;s id, status, and &lt;question&gt; text — with no additional reading of requirements.md by the orchestrator.
-    <advantage>Costs nothing beyond the gather the sweep already performs, and preserves the sweep&apos;s stated design property that the orchestrator never reads the whole file to assemble context — the subagent, not the orchestrator, is the one that grounds in the document.</advantage>
-    <drawback>Question texts alone are a thin signal for foundationality, so the ranking will sometimes place a dependent ahead of its target, leaving that coupling to the prose fallback instead of a &lt;depends-on&gt; element.</drawback>
-  </alternative>
-  <alternative id="Whole-document read">
-    Have the orchestrator read requirements.md in full — Goal, Relevant starting state, Decisions, and every block — and rank the questions against that whole picture before dispatching.
-    <advantage>Gives the richest available basis for judging which questions are foundational, maximizing how many real couplings get declared as structured &lt;depends-on&gt; elements rather than falling back to prose.</advantage>
-    <drawback>Reverses an explicit design property of this sweep — the gather is deliberately CLI-only precisely so the orchestrator&apos;s context stays small across a long sequential run — and buys accuracy on a heuristic whose misses are already an accepted, self-healing risk.</drawback>
-  </alternative>
-  <alternative id="Goal-slice hybrid">
-    Rank from the gathered question texts plus one bounded extra slice of requirements.md — the &#35;&#35; Goal section, and optionally &#35;&#35; Decisions — sliced by the same line-oriented CLI rather than read whole.
-    <advantage>Adds the milestone&apos;s root context, which is the single most useful signal for what &quot;foundational&quot; means here, at a bounded and deterministic reading cost rather than a whole-file one.</advantage>
-    <drawback>Introduces a second reading rule into a gather step whose whole virtue is being one uniform CLI pass, and the added precision is spent on a ranking that is loose by construction anyway.</drawback>
-  </alternative>
-  <alternative id="Document order">
-    Drop significance ranking entirely and dispatch in the document order the gather already hands back, mirroring the tie order the answer sweep just adopted.
-    <advantage>Fully deterministic, free, and consistent with the sibling decision that retired the &quot;loosely most-significant first&quot; proxy elsewhere in this milestone.</advantage>
-    <drawback>Contradicts the milestone Goal&apos;s explicit &quot;most-significant-first order&quot; and would require a goal revision; unlike the answer sweep it has no dependency graph to fall back on, since the graph is what this sweep produces, so ordering here is the only lever that exists.</drawback>
-  </alternative>
-  <recommendation option="Gathered texts only">Rank from what the gather already holds: the ordering is a best-effort heuristic whose misses are absorbed by the accepted prose fallback, so it does not justify breaking the sweep&apos;s deliberate no-whole-document-read property, and it matches the same loose-judgment ordering the answer sweep already documents.</recommendation>
-</open-question>
