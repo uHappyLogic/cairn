@@ -78,19 +78,135 @@ Capture's diff read is updated by rewording its one existing disambiguating sent
 
 <open-question id="Cascade option input contract" status="open">
   <question>How does the shared answer procedure obtain the recorded option id and the exact-versus-judgment comparison mode for its dependency cascade, given that its inputs today are only the Short Title and the answer text?</question>
+  <alternative id="Optional recorded-option input">
+    Extend the recording core&apos;s Inputs with one optional RECORDED OPTION — the un-escaped option/alternative id the caller already lifted — whose presence is itself the mode discriminator: supplied means exact id comparison against each dependent&apos;s assumed option, absent means judgment against the ANSWER prose.
+    <advantage>Both lifting callers already hold that id at the moment they delegate (the recommendation procedure&apos;s step 3 and the alternative skill&apos;s step 83 lift it before building ANSWER), so passing it costs nothing, re-derives nothing, and one optional field carries both the id and the mode without a second parameter.</advantage>
+    <drawback>It widens the core&apos;s input contract from two fields to three, so every caller and its invariant must be re-stated, and the literal caller must be explicitly documented as passing nothing rather than simply being unchanged.</drawback>
+  </alternative>
+  <alternative id="Parse the answer string">
+    Leave the two-input contract untouched and have the cascade re-derive the option inside the core by splitting ANSWER on its first spaced em dash and matching the prefix against the answered block&apos;s own &lt;alternative id&gt; lines, read before removal; a match means exact mode, no match means judgment.
+    <advantage>No caller changes at all and no input-contract churn — the whole extension lands inside the one shared file the goal already reopens.</advantage>
+    <drawback>It promotes the &quot;&lt;option&gt; — &lt;rationale&gt;&quot; anchor string from a caller-side rendering convention into a load-bearing parse contract inside the execution-neutral core, and a literal manual answer that happens to open with an option-shaped phrase is silently misrouted into exact mode.</drawback>
+  </alternative>
+  <alternative id="Judgment mode only">
+    Add no input and no mode at all: the cascade always judges, for every caller, whether the recorded ANSWER text invalidates each dependent&apos;s assumed option, using the answered block&apos;s alternatives as context.
+    <advantage>The simplest possible extension — one uniform code path, no discriminator to specify, test, or keep consistent with capture&apos;s parallel agreement test.</advantage>
+    <drawback>It contradicts the milestone Goal&apos;s explicit &quot;exact id comparison for alternative and recommendation answers&quot; and spends model judgment on the two cases where a deterministic id equality is already available, making the two sweep-driven paths non-deterministic for no gain.</drawback>
+  </alternative>
+  <alternative id="Cascade in the callers">
+    Keep the core at two inputs and move the dependency cascade out to the three answer runners, each of which already knows its own option and comparison mode.
+    <advantage>The execution-neutral core needs no new input and no knowledge of comparison modes whatsoever.</advantage>
+    <drawback>It triplicates the transitive strip across three runners against the plugin&apos;s shared-is-source-of-truth convention, and the cascade must run against the document state the core itself produced after removal, so the logic cannot cleanly live outside it.</drawback>
+  </alternative>
+  <recommendation option="Optional recorded-option input">One optional RECORDED OPTION whose presence selects exact-versus-judgment is the cheapest honest fit — the lifting callers already hold that id, the literal caller genuinely has none, and it mirrors the same discrimination capture already makes on the answer commit&apos;s diff.</recommendation>
 </open-question>
 <open-question id="Dependency cycle handling" status="open">
   <question>A block whose children were hand-cleared and regenerated after its former dependents can declare a dependency back on one of them, forming a cycle; is such a cycle rejected at the acceptance gate or tolerated, and how does the answer sweep then order the members of a cycle?</question>
+  <alternative id="Tolerate, document-order entry">
+    The acceptance gate gains no cycle test, and the answer sweep&apos;s origin walk handles a stranded set — questions none of whose targets are yet answered — by promoting its document-order-first member to an origin and continuing the depth walk from there.
+    <advantage>It costs one sentence in the walk step and nothing anywhere else: the gate stays the line-oriented CLI check it was deliberately confined to, the seventh test&apos;s one-hop resolution is unchanged, and the tie-break rule already decided for same-depth questions (document order) is simply reused as the entry rule, so the sweep stays deterministic and total for any graph shape.</advantage>
+    <drawback>The promoted member is answered before the sibling whose option it assumed, so its rationale may be stale when recorded — the same residual risk already accepted under &quot;Forward dependency declaration&quot;, here shrunk to one question per cycle because answering it immediately strips or tidies the rest of the cycle.</drawback>
+  </alternative>
+  <alternative id="Reject at the gate">
+    The gate gains a further test that follows the target sibling&apos;s own &lt;depends-on&gt; elements transitively and rejects any returned element that closes a cycle back on the question under dispatch, taking the single repair attempt and then the per-question skip.
+    <advantage>The embedded graph is acyclic by construction, so the answer sweep&apos;s origin walk needs no special case at all and every question is answered strictly after the sibling it assumed.</advantage>
+    <drawback>It turns a gate held to line-greps and one-hop attribute resolution into a transitive reachability walk over the whole questions section — a second control path the gate was explicitly designed to avoid — and its likely outcome is a skipped, un-annotated block, defeating the hand-clear refresh that created the situation.</drawback>
+  </alternative>
+  <alternative id="Agent-side prohibition">
+    The recommend agent is told not to declare a dependency on a sibling that already depends on the question it is recommending, with the gate and the answer sweep both left unchanged.
+    <advantage>It is the cheapest possible change — one clause in the agent&apos;s rendering step — and needs no new machinery in either sweep.</advantage>
+    <drawback>It is unenforced, which is precisely what the acceptance gate exists to correct: a return that ignores the clause passes the gate, gets embedded, and strands the answer sweep with no rule for what to do — the failure is merely moved past every checkpoint.</drawback>
+  </alternative>
+  <alternative id="Tolerate, defer cycle members">
+    The gate tolerates cycles, and the answer sweep leaves every member of a cycle unanswered, reporting them as questions it could not order.
+    <advantage>No question is ever answered against an unvalidated assumption, and the deferral is visible rather than silent.</advantage>
+    <drawback>A pair of questions produced by an ordinary hand-clear refresh becomes permanently unanswerable by the sweep until a human breaks the cycle by hand, contradicting the self-healing, strip-and-regenerate pattern every other branch of this design uses.</drawback>
+  </alternative>
+  <recommendation option="Tolerate, document-order entry">A cycle is only reachable through the hand-clear escape hatch, is coherent under the already-decided reading of &lt;depends-on&gt; as a record of what a dependent assumed rather than a live pointer, and dissolves at the first answer&apos;s cascade — so a one-sentence deterministic entry rule reusing the decided document-order tie-break beats adding a transitive graph walk to a gate kept deliberately parser-free, and its one stale-rationale risk is the recoverable kind this milestone has twice chosen to accept.</recommendation>
 </open-question>
 <open-question id="Deferred siblings as targets" status="open">
   <question>Does a still-open sibling, as a valid &lt;depends-on&gt; target and in the acceptance gate&apos;s resolution test, mean any block still present under the Open questions section including status=&quot;deferred&quot; ones, or only status=&quot;open&quot; blocks?</question>
+  <alternative id="Any still-present block">
+    A valid `&lt;depends-on&gt;` target is any `&lt;open-question&gt;` block still present under `## Open questions` that carries embedded children, and the gate&apos;s seventh test resolves the `question` attribute against that whole set without reading `status` at all.
+    <advantage>It matches every mechanism this feature composes with: both sweeps gather open and deferred blocks with a gather that explicitly ignores status, `shared/answer-procedure.md` locates and cascades over open and deferred entries uniformly, and the boundary-line CLI keys only on the `&lt;open-question …&gt;` / `&lt;/open-question&gt;` token pair — so the resolution test stays a plain line-grep over the same block list the sweep already holds, and a deferred sibling that the sweep did annotate becomes declarable rather than being pushed into unenforced prose.</advantage>
+    <drawback>A deferred block may legitimately carry forward past `/derive-tasks` and never be answered in the milestone, so a dependency on one can stay permanently unreconciled by the answer-time cascade while still reading as a tracked declaration.</drawback>
+  </alternative>
+  <alternative id="Open blocks only">
+    A valid target is restricted to `status=&quot;open&quot;` blocks; a returned element naming a `status=&quot;deferred&quot;` sibling fails the gate exactly like any other unresolvable target, and coupling on a deferred sibling is expressed as prose under the forward-declaration rule.
+    <advantage>Every declared dependency then names a question that must be answered before `/derive-tasks` can run, so each tag is guaranteed to reach the agree/disagree cascade rather than dangling past the requirements phase.</advantage>
+    <drawback>It makes the gate the first mechanism in the whole path to branch on `status`, splitting the uniform open-or-deferred treatment the sweeps, the CLI locate, and the answer procedure all share; and the coupling it rejects is real, so it converts an enforceable tag into prose that the cascade cannot act on — the strictly worse of the two failure modes this milestone is built to reduce.</drawback>
+  </alternative>
+  <alternative id="Status-agnostic with a deferred-target advisory">
+    Targets are status-agnostic as in the first option, plus a new advisory — from `/review-milestone-requirements` or `/derive-tasks` — flagging any surviving dependent whose target is a still-unanswered deferred block.
+    <advantage>It keeps the uniform resolution rule while surfacing the one case where a declared dependency can outlive the milestone&apos;s answering phase.</advantage>
+    <drawback>It adds cross-skill machinery to two skills the milestone goal does not touch, and the advisory fails the same git-absent-and-decision-critical test the recorded &quot;Cleared dependents console advisory&quot; decision already applied against a closely analogous note.</drawback>
+  </alternative>
+  <recommendation option="Any still-present block">Status-agnostic resolution keeps the gate a pure boundary-line grep over the block list the sweep already gathered and preserves the open-or-deferred uniformity every other mechanism on this path relies on, while the deferred-carry-forward risk is a residual the milestone already accepts elsewhere rather than one worth a status branch.</recommendation>
 </open-question>
 <open-question id="Dangling dependency tags" status="open">
   <question>When a target block is removed by a path that records no option, such as the cascade removing a mooted entry or a review pass pruning or deduplicating it, what happens to the &lt;depends-on&gt; elements in surviving siblings that point at it: strip those dependents, remove just the elements, or leave them in place?</question>
+  <alternative id="Leave in place">
+    Neither the cascade nor a review pass touches surviving siblings, so a &lt;depends-on&gt; whose target block is gone simply dangles, and the dependent keeps its embedded children unchanged.
+    <advantage>Costs nothing anywhere: it is consistent with the recorded reading that a tag records what a dependent assumed rather than a live pointer that must track its target, and it keeps the review skill&apos;s remit and the cascade&apos;s outcome set exactly as they are.</advantage>
+    <drawback>A recommendation built on an assumption that was never validated stays lift-able forever, because the target is gone and no future answer can ever run the agree/disagree comparison against it; it also leaves permanently unresolvable tags in the document for the answer sweep&apos;s graph walk to cope with.</drawback>
+  </alternative>
+  <alternative id="Remove tags only">
+    The removing path deletes just the dangling &lt;depends-on&gt; lines from surviving siblings, leaving their alternatives, applied-principles and recommendation intact — the same tidy the cascade already performs on an agreeing answer.
+    <advantage>Reuses an outcome the cascade already defines and leaves the document self-consistent, with every remaining tag resolving to a still-open sibling and no re-dispatch cost.</advantage>
+    <drawback>It silently asserts agreement no one checked: the stale rationale survives while the one durable trace that it rested on a now-void assumption is erased, so the block afterwards looks freshly grounded to every later reader and to the answer path that lifts it.</drawback>
+  </alternative>
+  <alternative id="Strip uniformly">
+    Any removal that records no option to compare against is treated as a mismatch, so every path that removes a block — the mooted-entry cascade and a review pass&apos;s prune or dedup alike — strips its dependents&apos; embedded children transitively and leaves the bare blocks for the next recommend sweep.
+    <advantage>It adds no new cascade outcome at all — an option-less removal is exactly the inconclusive comparison the milestone already decided to resolve by stripping, so it routes into the existing disagreeing-answer branch — and every affected recommendation is regenerated against the document as it now stands.</advantage>
+    <drawback>It gives a prune or a mooted-entry removal real blast radius into sweep output, potentially clearing several blocks&apos; children and forcing a re-run, and the review skill gains a dependent-editing step it does not have today.</drawback>
+  </alternative>
+  <alternative id="Split by path">
+    The answer-time cascade strips dependents transitively, while a review pass leaves the dangling tags alone and merely flags them, keeping the review skill&apos;s delete/dedup/flag remit untouched.
+    <advantage>Confines the new machinery to the procedure that is already gaining a dependency cascade, and matches the review skill&apos;s established habit of flagging rather than acting when in doubt.</advantage>
+    <drawback>Two rules for one structural situation: whether a dangling tag is stripped depends on which skill happened to remove the target, so a reader cannot tell from a block whether its children were reconciled, and the review-pruned case keeps every drawback of leaving tags in place.</drawback>
+  </alternative>
+  <recommendation option="Strip uniformly">A removal that records no option is the inconclusive comparison this milestone already decided to resolve by stripping, and routing it into the existing disagree branch keeps one rule and one self-healing outcome instead of adding a third.</recommendation>
 </open-question>
 <open-question id="Unresolvable target walk placement" status="open">
   <question>How does the answer sweep place a gathered question whose &lt;depends-on&gt; target is not in the gathered set because the target block is gone or carries no recommendation: record it as an origin in this sweep, or leave it unanswered until its target has been recommended and answered?</question>
+  <alternative id="Origin by dropped edge">
+    Build the dependency graph only over the gathered set: each &lt;depends-on&gt; is resolved against that set, an edge whose target is absent or recommendation-less is dropped, and a question left with no resolvable edges is an origin walked in document order among the other origins.
+    <advantage>Keeps the walk one uniform graph build with no new outcome class, no deadlock, and no orchestrator mutation — every gathered question is still recorded, preserving the sweep&apos;s existing contract that a gathered block always gets answered, and the depth-tie rule already decided (document order) applies unchanged.</advantage>
+    <drawback>The question&apos;s recorded answer may lift a rationale resting on an assumption nothing in the sweep can verify, and a wrong recorded decision is undone only by reverting its commit — the asymmetric cost the strip-on-doubt decision named.</drawback>
+  </alternative>
+  <alternative id="Hold until target resolved">
+    Leave such a question unanswered in this sweep — neither origin nor descendant — so it is recorded only after a later run has regenerated and answered its target, making the dependency reconcilable by the cascade as designed.
+    <advantage>Never records a decision on an assumption the cascade could not check, so the graph&apos;s whole purpose — no dependent answered before its target — holds without exception.</advantage>
+    <drawback>Adds a gathered-but-unanswered outcome the sweep does not have today (needing its own report line despite terse reporting), and when the target was removed for good — pruned or deduped by a review pass, or mooted by a cascade — the question is unanswerable by the sweep forever, with hand-editing the only escape.</drawback>
+  </alternative>
+  <alternative id="Strip and defer">
+    Treat the unresolvable edge like a disagreeing cascade: clear the question&apos;s embedded children and leave the bare block for the next recommend sweep to regenerate against the current document, instead of answering it this run.
+    <advantage>Resolves the doubt toward the recoverable failure — the question is re-recommended with fresh grounding rather than recorded on an unverifiable assumption — and is self-healing across a recommend-then-answer cycle.</advantage>
+    <drawback>Gives the answer orchestrator a mutation it has never had (a strip to stage and commit outside any answer, under some new subject), and cuts against the already-recorded decision that a dependent whose target was hand-cleared is left exactly as it is.</drawback>
+  </alternative>
+  <recommendation option="Origin by dropped edge">A &lt;depends-on&gt; records what a dependent assumed rather than a live pointer, and only a recorded option can reconcile it, so an edge to a target this sweep will never answer carries nothing to act on — dropping it costs no machinery, deadlocks nothing, and leaves exactly the residual stale-rationale risk the forward-declaration decision already accepted.</recommendation>
 </open-question>
 <open-question id="Recommend sweep significance ordering" status="deferred">
   <question>On what basis does the recommend sweep rank questions most-significant-first before dispatching sequentially: the gathered question texts alone, or a whole-document read of requirements.md, which the gather step today deliberately avoids?</question>
+  <alternative id="Gathered texts only">
+    Rank the surviving questions by judgment over exactly what step 1&apos;s boundary-line gather already yields — each block&apos;s id, status, and &lt;question&gt; text — with no additional reading of requirements.md by the orchestrator.
+    <advantage>Costs nothing beyond the gather the sweep already performs, and preserves the sweep&apos;s stated design property that the orchestrator never reads the whole file to assemble context — the subagent, not the orchestrator, is the one that grounds in the document.</advantage>
+    <drawback>Question texts alone are a thin signal for foundationality, so the ranking will sometimes place a dependent ahead of its target, leaving that coupling to the prose fallback instead of a &lt;depends-on&gt; element.</drawback>
+  </alternative>
+  <alternative id="Whole-document read">
+    Have the orchestrator read requirements.md in full — Goal, Relevant starting state, Decisions, and every block — and rank the questions against that whole picture before dispatching.
+    <advantage>Gives the richest available basis for judging which questions are foundational, maximizing how many real couplings get declared as structured &lt;depends-on&gt; elements rather than falling back to prose.</advantage>
+    <drawback>Reverses an explicit design property of this sweep — the gather is deliberately CLI-only precisely so the orchestrator&apos;s context stays small across a long sequential run — and buys accuracy on a heuristic whose misses are already an accepted, self-healing risk.</drawback>
+  </alternative>
+  <alternative id="Goal-slice hybrid">
+    Rank from the gathered question texts plus one bounded extra slice of requirements.md — the &#35;&#35; Goal section, and optionally &#35;&#35; Decisions — sliced by the same line-oriented CLI rather than read whole.
+    <advantage>Adds the milestone&apos;s root context, which is the single most useful signal for what &quot;foundational&quot; means here, at a bounded and deterministic reading cost rather than a whole-file one.</advantage>
+    <drawback>Introduces a second reading rule into a gather step whose whole virtue is being one uniform CLI pass, and the added precision is spent on a ranking that is loose by construction anyway.</drawback>
+  </alternative>
+  <alternative id="Document order">
+    Drop significance ranking entirely and dispatch in the document order the gather already hands back, mirroring the tie order the answer sweep just adopted.
+    <advantage>Fully deterministic, free, and consistent with the sibling decision that retired the &quot;loosely most-significant first&quot; proxy elsewhere in this milestone.</advantage>
+    <drawback>Contradicts the milestone Goal&apos;s explicit &quot;most-significant-first order&quot; and would require a goal revision; unlike the answer sweep it has no dependency graph to fall back on, since the graph is what this sweep produces, so ordering here is the only lever that exists.</drawback>
+  </alternative>
+  <recommendation option="Gathered texts only">Rank from what the gather already holds: the ordering is a best-effort heuristic whose misses are absorbed by the accepted prose fallback, so it does not justify breaking the sweep&apos;s deliberate no-whole-document-read property, and it matches the same loose-judgment ordering the answer sweep already documents.</recommendation>
 </open-question>
