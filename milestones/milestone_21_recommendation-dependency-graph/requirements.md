@@ -48,6 +48,10 @@ A `<depends-on>` element is emitted only for a sibling that already carries embe
 
 A returned `<depends-on>` element naming a question id that matches no still-open sibling block, or an option matching none of that sibling's embedded `<alternative>` ids, is a gate failure rather than something the orchestrator edits away. The acceptance gate gains a seventh test that resolves every returned `<depends-on>` against the still-open sibling blocks and the target sibling's embedded `<alternative id>` lines — reaching outside the return into the document for the first time — and a miss is treated exactly like any other structural miss: a reason string naming the failed test, the single repair attempt, and a skip of that question alone only on a second failure. The orchestrator therefore never deletes or rewrites a returned element and never embeds an unverified structural claim, keeping one uniform per-return judging pipeline.
 
+### Depends-on child order and form
+
+The `<depends-on>` elements are self-closing `<depends-on question="…" option="…"/>` tags placed as direct children strictly inside the existing extraction region — after the alternatives and any `<applied-principle>` elements, immediately before `<recommendation>` — so a block's child order is alternatives, applied-principles, depends-on, recommendation. Sitting wholly within the region leaves the return pipeline's extraction anchors, its two boundary shape tests, and the whole-block removal untouched, and the self-closing two-attribute form keeps each declaration a single greppable line whose `question` and `option` fields are both readable by one attribute-name-anchored regex. Child order is settled in favour of the pipeline, which is its primary consumer, rather than a reader scanning the block.
+
 ## Out of Scope
 
 ## Open questions
@@ -94,30 +98,6 @@ A returned `<depends-on>` element naming a question id that matches no still-ope
     <drawback>A bare count is not actionable — the user must open the diff anyway to learn which blocks were hit — so it costs a console line without removing a lookup, and it still narrates the diff.</drawback>
   </alternative>
   <recommendation option="Stay silent">Clearing a dependent is fully recorded in the answer commit&apos;s diff and leaves the block in exactly the un-annotated state the next review or recommend pass surfaces by construction, so it fails both halves of the git-absent-and-decision-critical advisory test and an advisory would contradict the answer sweep&apos;s existing rule against enumerating recommendation-less questions.</recommendation>
-</open-question>
-<open-question id="Depends-on child order and form" status="deferred">
-  <question>Where among the block&apos;s children the `&lt;depends-on&gt;` elements sit and whether they are self-closing, given that extraction keeps only the region from the first `&lt;alternative` line through the last `&lt;/recommendation&gt;` line.</question>
-  <alternative id="Inside region, self-closing">
-    Self-closing `&lt;depends-on question=&quot;…&quot; option=&quot;…&quot;/&gt;` elements sit as direct children strictly inside the extraction region — after the alternatives and any `&lt;applied-principle&gt;` elements, immediately before `&lt;recommendation&gt;` — so the child order is alternatives, applied-principles, depends-on, recommendation.
-    <advantage>Requires no change to the pipeline&apos;s start/end anchors or to gate tests 1 and 2: the region still opens on `&lt;alternative` and closes on `&lt;/recommendation&gt;`, every tag is one atomic greppable line in the same boundary-line CLI idiom as `&lt;applied-principle&gt;`, and both attributes yield to one attribute-name-anchored regex, which is exactly what the cascade&apos;s tag-matching and capture&apos;s diff read need.</advantage>
-    <drawback>The declarations sit in the middle of the children rather than at the top, so a reader scanning a block for its assumptions must know the order to find them, and a new self-closing form enters a vocabulary whose every existing element is paired.</drawback>
-  </alternative>
-  <alternative id="Leading, extraction widened">
-    The `&lt;depends-on&gt;` elements are the block&apos;s first children, ahead of the alternatives, with extraction&apos;s start anchor and acceptance-gate test 1 widened to accept a leading `&lt;depends-on` line before the first `&lt;alternative` line.
-    <advantage>Dependencies read first, before the analysis that rests on them — the most legible order for a human scanning a block, and it matches how the goal describes a declaration as a property of the whole block.</advantage>
-    <drawback>It loosens the one guarantee the milestone-19 failure was fixed by: the region no longer provably starts at `&lt;alternative`, and any leading tag an agent renders slightly wrong (or that a repaired return omits) is silently truncated by extraction rather than caught, turning a declared dependency into an undeclared one — the precise failure mode the graph exists to prevent.</drawback>
-  </alternative>
-  <alternative id="Nested in recommendation">
-    The elements are nested inside the `&lt;recommendation&gt;` element as its children, so the assumption travels with the assertion that made it.
-    <advantage>The dependency can never be orphaned from the recommendation it qualifies, and no new sibling child kind is added to the block&apos;s vocabulary.</advantage>
-    <drawback>It contradicts the deliberate rule that keeps `&lt;applied-principle&gt;` a sibling and never a child of `&lt;recommendation&gt;`, and it breaks the recommendation lift: the answer path takes that element&apos;s text verbatim as the recorded decision prose, so nested tags would have to be stripped out and would otherwise leak assumption provenance into `## Decisions`.</drawback>
-  </alternative>
-  <alternative id="Paired, option as text">
-    A paired form carrying the assumed option as element text — `&lt;depends-on question=&quot;…&quot;&gt;Option&lt;/depends-on&gt;` — placed in the same in-region position as the first alternative.
-    <advantage>It mirrors `&lt;applied-principle&gt;`, the closest existing precedent for an atomic citation-like child, and introduces no self-closing syntax into a vocabulary that has none.</advantage>
-    <drawback>The two halves of one fact then need two different read rules — an attribute-name-anchored regex plus a text read — where the self-closing two-attribute form needs only the former, and it diverges from the `&lt;depends-on question=&quot;Short Title&quot; option=&quot;Option&quot;/&gt;` form the milestone goal already states.</drawback>
-  </alternative>
-  <recommendation option="Inside region, self-closing">Placing the tags strictly inside the existing extraction region keeps the shape-checked return pipeline, its two boundary tests, and the whole-block removal untouched, and the self-closing two-attribute form matches the goal while keeping each declaration one greppable line with both fields readable by the same attribute regex; if legibility later outweighs that, the tie-breaker is whether a reader or the pipeline is the primary consumer of child order — and today it is the pipeline.</recommendation>
 </open-question>
 <open-question id="Origin walk tie order" status="deferred">
   <question>How the answer sweep orders questions that share the same depth in the dependency graph, such as several origins with no dependencies.</question>
