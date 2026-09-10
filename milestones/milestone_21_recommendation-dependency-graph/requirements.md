@@ -76,6 +76,10 @@ Capture's diff read is updated by rewording its one existing disambiguating sent
 
 The shared answer procedure's input contract widens from two fields to three: an optional **RECORDED OPTION** — the un-escaped option/alternative id the caller already lifted — joins SHORT TITLE and ANSWER, and its presence is itself the comparison-mode discriminator. Supplied means exact id comparison of the recorded option against each dependent's assumed option; absent means judgment of whether the ANSWER prose invalidates that assumption. Both lifting callers already hold the id at the moment they delegate (`shared/answer-with-recommendation-procedure.md`'s step 3 lift and `answer-open-question-with-alternative`'s inline lift), so passing it re-derives nothing and one optional field carries both the id and the mode without a second parameter; `answer-open-question` is documented as explicitly passing nothing rather than merely being unchanged. The anchor string `<option> — <rationale>` stays a caller-side rendering convention and never becomes a parse contract inside the execution-neutral core, and the discrimination mirrors the one capture already makes on an answer commit's diff.
 
+### Deferred siblings as targets
+
+A valid `<depends-on>` target is any `<open-question>` block still present under `## Open questions` that carries embedded children, regardless of its `status`: the acceptance gate's resolution test resolves the `question` attribute against that whole set without reading `status` at all, so a `status="deferred"` sibling the sweep annotated is a declarable target exactly like an open one. That keeps the resolution test a plain boundary-line grep over the block list the sweep already gathered and preserves the open-or-deferred uniformity the two sweeps' gathers, the CLI locate, and `shared/answer-procedure.md` all share, rather than making the gate the first mechanism on this path to branch on `status`. The residual — a deferred target may carry forward unanswered past `/derive-tasks`, leaving a declared dependency permanently unreconciled — is accepted as one the milestone already accepts elsewhere, and no advisory is added for it.
+
 ## Out of Scope
 
 ## Open questions
@@ -103,25 +107,6 @@ The shared answer procedure's input contract widens from two fields to three: an
     <drawback>A pair of questions produced by an ordinary hand-clear refresh becomes permanently unanswerable by the sweep until a human breaks the cycle by hand, contradicting the self-healing, strip-and-regenerate pattern every other branch of this design uses.</drawback>
   </alternative>
   <recommendation option="Tolerate, document-order entry">A cycle is only reachable through the hand-clear escape hatch, is coherent under the already-decided reading of &lt;depends-on&gt; as a record of what a dependent assumed rather than a live pointer, and dissolves at the first answer&apos;s cascade — so a one-sentence deterministic entry rule reusing the decided document-order tie-break beats adding a transitive graph walk to a gate kept deliberately parser-free, and its one stale-rationale risk is the recoverable kind this milestone has twice chosen to accept.</recommendation>
-</open-question>
-<open-question id="Deferred siblings as targets" status="open">
-  <question>Does a still-open sibling, as a valid &lt;depends-on&gt; target and in the acceptance gate&apos;s resolution test, mean any block still present under the Open questions section including status=&quot;deferred&quot; ones, or only status=&quot;open&quot; blocks?</question>
-  <alternative id="Any still-present block">
-    A valid `&lt;depends-on&gt;` target is any `&lt;open-question&gt;` block still present under `## Open questions` that carries embedded children, and the gate&apos;s seventh test resolves the `question` attribute against that whole set without reading `status` at all.
-    <advantage>It matches every mechanism this feature composes with: both sweeps gather open and deferred blocks with a gather that explicitly ignores status, `shared/answer-procedure.md` locates and cascades over open and deferred entries uniformly, and the boundary-line CLI keys only on the `&lt;open-question …&gt;` / `&lt;/open-question&gt;` token pair — so the resolution test stays a plain line-grep over the same block list the sweep already holds, and a deferred sibling that the sweep did annotate becomes declarable rather than being pushed into unenforced prose.</advantage>
-    <drawback>A deferred block may legitimately carry forward past `/derive-tasks` and never be answered in the milestone, so a dependency on one can stay permanently unreconciled by the answer-time cascade while still reading as a tracked declaration.</drawback>
-  </alternative>
-  <alternative id="Open blocks only">
-    A valid target is restricted to `status=&quot;open&quot;` blocks; a returned element naming a `status=&quot;deferred&quot;` sibling fails the gate exactly like any other unresolvable target, and coupling on a deferred sibling is expressed as prose under the forward-declaration rule.
-    <advantage>Every declared dependency then names a question that must be answered before `/derive-tasks` can run, so each tag is guaranteed to reach the agree/disagree cascade rather than dangling past the requirements phase.</advantage>
-    <drawback>It makes the gate the first mechanism in the whole path to branch on `status`, splitting the uniform open-or-deferred treatment the sweeps, the CLI locate, and the answer procedure all share; and the coupling it rejects is real, so it converts an enforceable tag into prose that the cascade cannot act on — the strictly worse of the two failure modes this milestone is built to reduce.</drawback>
-  </alternative>
-  <alternative id="Status-agnostic with a deferred-target advisory">
-    Targets are status-agnostic as in the first option, plus a new advisory — from `/review-milestone-requirements` or `/derive-tasks` — flagging any surviving dependent whose target is a still-unanswered deferred block.
-    <advantage>It keeps the uniform resolution rule while surfacing the one case where a declared dependency can outlive the milestone&apos;s answering phase.</advantage>
-    <drawback>It adds cross-skill machinery to two skills the milestone goal does not touch, and the advisory fails the same git-absent-and-decision-critical test the recorded &quot;Cleared dependents console advisory&quot; decision already applied against a closely analogous note.</drawback>
-  </alternative>
-  <recommendation option="Any still-present block">Status-agnostic resolution keeps the gate a pure boundary-line grep over the block list the sweep already gathered and preserves the open-or-deferred uniformity every other mechanism on this path relies on, while the deferred-carry-forward risk is a residual the milestone already accepts elsewhere rather than one worth a status branch.</recommendation>
 </open-question>
 <open-question id="Dangling dependency tags" status="open">
   <question>When a target block is removed by a path that records no option, such as the cascade removing a mooted entry or a review pass pruning or deduplicating it, what happens to the &lt;depends-on&gt; elements in surviving siblings that point at it: strip those dependents, remove just the elements, or leave them in place?</question>
