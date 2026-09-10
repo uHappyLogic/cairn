@@ -6,14 +6,17 @@ description: Annotate every open and deferred question in the current milestone'
 # recommend-all-open-questions
 
 This is the non-interactive batch path for producing recommendations on open questions. It
-walks every open and deferred question in the current milestone and, per question, dispatches
-a read-only subagent — the non-interactive twin of `/discuss-open-question` — that returns
-**alternatives + a single recommendation** as the `<open-question>` block's XML sub-elements.
-The orchestrator is the **sole document mutator**: it embeds each returned set of sub-elements
-inside the existing `<open-question>` block, leaving the block's `<open-question …>` /
-`</open-question>` boundary tags and its `<question>` element untouched. It is **argument-free**,
-records **no decisions**, and triggers **no cascades** — it only annotates. Each embedded
-recommendation is consumed later, when it is recorded as an answer, by
+walks every open and deferred question in the current milestone **most-significant-first,
+strictly one at a time**, and, per question, dispatches a read-only subagent — the
+non-interactive twin of `/discuss-open-question` — that returns **alternatives + a single
+recommendation** as the `<open-question>` block's XML sub-elements. The orchestrator is the
+**sole document mutator**: it embeds each returned set of sub-elements inside the existing
+`<open-question>` block **before dispatching the next question**, leaving the block's
+`<open-question …>` / `</open-question>` boundary tags and its `<question>` element untouched,
+so every later recommendation may build on the sibling recommendations already embedded and
+declares each such use as a `<depends-on question="…" option="…"/>` child of its block. It is
+**argument-free**, records **no decisions**, and triggers **no cascades** — it only annotates.
+Each embedded recommendation is consumed later, when it is recorded as an answer, by
 `/answer-open-question-with-recommendation` or the
 `/answer-all-open-questions-with-recommendation` sweep.
 
@@ -47,11 +50,14 @@ blocks share one `<open-question …>` / `</open-question>` boundary-token pair 
 
 Keep the full text of each gathered block (from this same pass) in hand — the embed step (step 4)
 rewrites the whole block via an exact-string Edit and needs the block's current text as the match
-target.
+target. Nothing in this run touches a block before its own embed, so the text held here stays
+the exact match target for it even though earlier questions' blocks have been rewritten by then.
 
-Gather this set **once** and walk it straight through (step 3): **no** gather-order, **no**
-per-question live-re-check/skip against the document, and **no** outer re-gather loop. The
-gathered list stays valid for the whole run.
+Gather this set **once**: there is **no** per-question live-re-check/skip against the document
+and **no** outer re-gather loop. This run only adds children to blocks — it records no decisions
+and triggers no cascades — so the question set never shrinks under it and the gathered list stays
+valid for the whole run. The order in which the surviving questions are dispatched is decided in
+step 3, over this gathered data alone.
 
 ### 2. Skip already-recommended blocks (re-run idempotency)
 
@@ -64,15 +70,35 @@ each gathered block for one:
 
 **Escape hatch for a stale recommendation:** to force a fresh recommendation on a block whose
 recommendation has gone stale, the user **deletes that block's embedded sub-elements** — the
-`<alternative>` / `<applied-principle>` / `<recommendation>` children — leaving the
-`<open-question>` wrapper and its `<question>` element intact, and re-runs. The block now lacks a
-`<recommendation>` element, so skip regenerates it.
+`<alternative>` / `<applied-principle>` / `<depends-on>` / `<recommendation>` children — leaving
+the `<open-question>` wrapper and its `<question>` element intact, and re-runs. The block now
+lacks a `<recommendation>` element, so skip regenerates it.
 
-### 3. Dispatch the read-only subagent per surviving question
+When such a regenerated block's new `<recommendation option>` differs from the option that
+surviving dependents' `<depends-on question="…" option="…"/>` elements assumed of it, **leave
+those dependents exactly as they are**: do not strip or re-dispatch them, do not rewrite their
+`option` values, and print no mismatch advisory. A `<depends-on>` records what a dependent
+assumed, not a pointer that must track its target's live recommendation; reconciling it against
+the option actually recorded is the answer-time cascade's job, never this sweep's. A dependent the
+user also wants regenerated is cleared by the same hand-clear just used on the target.
 
-For each **surviving** question (gathered, not skipped), dispatch one read-only subagent. These
-dispatches are **independent**: **never feed one question's recommendation into another.** Because
-they are independent, they may be run in parallel.
+### 3. Dispatch the read-only subagent per surviving question, most-significant-first
+
+First **rank the surviving questions** (gathered, not skipped) **most-significant-first** —
+foundational questions, whose eventual answer other questions turn on, ahead of the questions that
+would build on them. Rank them by judgment over **exactly what step 1's gather yielded**: each
+block's `id`, `status`, and `<question>` text. Read **no more** of `requirements.md` to rank them
+— the subagent, not the orchestrator, is what grounds in the document. The ranking is a
+best-effort heuristic: a coupling it orders wrongly is absorbed by the subagent's own rule that a
+dependency on a sibling not yet annotated is expressed as prose, never as an element.
+
+Then dispatch one read-only subagent per surviving question, **strictly sequentially in that
+order — never in parallel**: dispatch a question, wait for its return, judge it (sub-steps a–d
+below, including its one repair attempt), and embed its accepted region (step 4) — or skip it —
+**before dispatching the next question**. Each dispatch therefore reads a `requirements.md` that
+already carries every earlier question's embedded children, which is what lets a later
+recommendation build on those siblings' recommendations and declare each such use as a
+`<depends-on question="…" option="…"/>` element.
 
 Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the
 `recommend-open-question` agent (singular — the per-question subagent) under this plugin's
@@ -98,15 +124,18 @@ so the orchestrator never reads the whole file to assemble context.
 
 The subagent is **read-only** — it mutates nothing. It returns the ready-to-embed XML sub-elements
 as its final message — one `<alternative id="...">` element per option (each with child
-`<advantage>` and `<drawback>`), zero or more sibling `<applied-principle>` elements, and one
-`<recommendation option="...">` element — and **only** those child elements, never the
-`<open-question>` wrapper or the `<question>` element. The orchestrator does **all** the writing.
+`<advantage>` and `<drawback>`), zero or more sibling `<applied-principle>` elements, zero or more
+self-closing `<depends-on question="..." option="..."/>` elements (one per already-embedded
+sibling the recommendation builds on, naming that sibling's `id` and the `<alternative>` id it
+assumes), and one `<recommendation option="...">` element — and **only** those child elements,
+never the `<open-question>` wrapper or the `<question>` element. The orchestrator does **all** the
+writing.
 
 **Judge every return before it can be embedded, in this fixed order — last-line verdict, then
 extraction, then the acceptance gate, then a single repair attempt when the gate rejects.** Each
 stage runs only on what the stage before it passed, and the four stages are **one per-return
-pipeline**: as each return arrives, judge it, repair it once if judging failed, re-judge what
-comes back, then embed or skip.
+pipeline**: as the return arrives, judge it, repair it once if judging failed, re-judge what
+comes back, then embed or skip — all of it before the next question is dispatched.
 
 **a. Last-line verdict (before any extraction).** Read the return's **last non-whitespace line**
 first. If that line begins with `FAILED:`, the return is an **explicit failure**: skip that
@@ -148,17 +177,15 @@ region contains no <alternative id> line`, `the option value matches no <alterna
 — boundary or structural — is an **extraction failure**, and an extraction failure is never an
 immediate skip: it takes the single repair attempt of sub-step d.
 
-**d. Repair once, on arrival.** A return that passed the last-line verdict but failed extraction
-(b) or the acceptance gate (c) gets **exactly one** repair attempt before any skip. Repair it **as
-it arrives** — the moment its judging fails, while the other dispatches are still in flight —
-never by holding failed returns back and running the repairs as a second phase once the slowest
-first return has landed.
+**d. Repair once, immediately.** A return that passed the last-line verdict but failed extraction
+(b) or the acceptance gate (c) gets **exactly one** repair attempt before any skip. Run that
+repair **immediately, for this question** — the moment its judging fails, and before the next
+question is dispatched — never by holding failed returns back and running the repairs as a second
+phase once the last first return has landed. The next dispatch waits until this question's
+repaired return has been judged and the question embedded or skipped.
 
-Carry a **repair-spent marker per question**: unset when the question is dispatched, set the
-moment its repair is issued. Repair only a question whose marker is unset, and set that marker as
-you issue the repair — first and repaired returns interleave in arbitrary order, so the marker is
-what keeps the one attempt from being spent twice. A failing return for a question whose marker is
-already set is not repaired again; it goes straight to the skip below.
+Spend at most **one** repair per question: a repaired return that fails judging again is not
+repaired a second time; it goes straight to the skip below.
 
 Repair by whichever of these two branches the host supports, in this order:
 
@@ -202,20 +229,23 @@ Only an **accepted region** reaches step 4's Edit — never the raw return — s
 explanatory reply, or a returned `<open-question>` wrapper cannot be spliced into
 `requirements.md` as XML.
 
-### 4. Embed each returned set of sub-elements
+### 4. Embed the accepted region before the next dispatch
 
-The orchestrator is the sole mutator. Only the regions step 3's acceptance gate accepted reach
-this step. Embed each accepted region's sub-elements **inside the existing `<open-question>`
-block**, as children of its wrapper. Do this by **whole-block replacement**, not a
-line-oriented CLI splice: locate the target `<open-question id="...">…</open-question>` in the
-block text the sweep already holds from its single gather pass, and replace it whole with an
-exact-string structural `Edit` — the `old_string` is the block as it stands (the
-`<open-question …>` boundary tag, its `<question>` element, and the `</open-question>` boundary
-tag), and the `new_string` is that same block with the subagent's returned children inserted
-between the `<question>` element and the closing `</open-question>` tag. Insert the children at
-a **2-space indent per nesting level** relative to the block's base column, matching the depth
-of the existing `<question>` child, so the wrapper's boundary tags and `<question>` element
-stay byte-for-byte unchanged.
+The orchestrator is the sole mutator. Only a region step 3's acceptance gate accepted reaches
+this step, and it is embedded **now — before the next question is dispatched**, never deferred
+until every dispatch has returned: the subagent for each later question reads this block's
+children in `requirements.md`, and a `<depends-on>` element it returns may name this block only
+because the children are already there. Embed the accepted region's sub-elements **inside the
+existing `<open-question>` block**, as children of its wrapper. Do this by **whole-block
+replacement**, not a line-oriented CLI splice: locate the target
+`<open-question id="...">…</open-question>` in the block text the sweep already holds from its
+single gather pass, and replace it whole with an exact-string structural `Edit` — the
+`old_string` is the block as it stands (the `<open-question …>` boundary tag, its `<question>`
+element, and the `</open-question>` boundary tag), and the `new_string` is that same block with
+the subagent's returned children inserted between the `<question>` element and the closing
+`</open-question>` tag. Insert the children at a **2-space indent per nesting level** relative to
+the block's base column, matching the depth of the existing `<question>` child, so the wrapper's
+boundary tags and `<question>` element stay byte-for-byte unchanged.
 
 The block after embedding looks like:
 
@@ -233,19 +263,24 @@ The block after embedding looks like:
     <drawback>…</drawback>
   </alternative>
   <applied-principle>Short Title</applied-principle>
+  <depends-on question="Sibling Short Title" option="Option X"/>
   <recommendation option="Option A">one-line rationale</recommendation>
 </open-question>
 ```
 
 (The `<applied-principle>` element appears once per bearing principle, or not at all when none
-bore; there are one or more `<alternative>` elements and exactly one `<recommendation>`.)
+bore; the `<depends-on>` element appears once per already-embedded sibling the recommendation
+builds on, or not at all when it builds on none; there are one or more `<alternative>` elements
+and exactly one `<recommendation>`.) The returned children are embedded exactly as accepted, in
+the order returned — the orchestrator never edits, reorders, or drops a returned element.
 
 ### 5. Commit the annotations
 
-You are the orchestrator, so you commit **once at the end of the run** — here, after every
-per-question subagent (step 3) has returned and all their sub-elements are embedded (step 4),
-never inside the dispatch loop. Read and follow the shared commit procedure at
-`.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
+You are the orchestrator, so you commit **once at the end of the run** — here, after the last
+surviving question has been dispatched and judged (step 3) and embedded or skipped (step 4),
+never inside the dispatch loop — embedding happens per question, committing does not. Read and
+follow the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself.
+Supply it these two inputs:
 
 - **PATHS** — this run's own change set: `<MILESTONE_DIR>/requirements.md` (the file this sweep
   embedded the sub-elements into in step 4).

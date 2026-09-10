@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Sequential Ordered Dispatch In Recommend Sweep
-
-Rework `skills/recommend-all-open-questions/SKILL.md` steps 1–4 so the sweep ranks its surviving questions most-significant-first by judgment over only what the gather yields (each block's `id`, `status`, and `<question>` text, reading no more of `requirements.md`), dispatches strictly sequentially, and embeds each accepted region by whole-block-replacement `Edit` before the next dispatch so later agents read the embedded siblings; the repair attempt then runs immediately for that question rather than "while the other dispatches are still in flight". Extend the embedded-block example with a `<depends-on>` line, and extend the escape-hatch note so a regenerated block whose new option differs from what surviving dependents assumed leaves those dependents exactly as they are, with no mismatch advisory. Verified by reading: no parallel or independence language remains, and the commit still happens once at the end.
-
----
-
 ## Add Dependency Resolution Gate Test
 
 Add a seventh test to the acceptance gate in `skills/recommend-all-open-questions/SKILL.md` step 3c that resolves every returned `<depends-on>` line against the `<open-question>` blocks still present under `## Open questions` that carry embedded children (without reading `status`) and the target's `<alternative id` lines, with entity-unescaped case-folded comparison, and a miss producing a reason string that takes the single repair attempt and skips only on a second failure, exactly like the other structural misses; no cycle test is added. Update the fixed corrective message so its element ordering names the `<depends-on>` elements between the applied-principles and the recommendation. Verified by reading: the gate lists seven line-grep tests, the orchestrator never edits or drops a returned element, and the reason strings name the new test.
