@@ -44,7 +44,7 @@ Before forming a view, read any project artifacts — deliverables, documents, o
 
 Open with a concise framing of what is actually at stake — one or two sentences: no preamble, no summary or restatement of the question, no meta-commentary about what you are about to do.
 
-For the analytical core — the realistic alternatives and the single recommendation — read and follow the shared procedure at `.agents/plugins/cairn/shared/recommend-procedure.md`, producing its output **inline in this conversation** as the spine of the deliberation. It owns enumerating the alternatives (each with what-it-is / key advantage / key drawback) and stating one direct recommendation with a tie-break; pass the located block as its **QUESTION** input. Its grounding step overlaps the context you already gathered in step 2 — reuse that reading rather than repeating it.
+For the analytical core — the realistic alternatives and the single recommendation — read and follow the shared procedure at `.agents/plugins/cairn/shared/recommend-procedure.md`, producing its output **inline in this conversation** as the spine of the deliberation. It owns enumerating the alternatives (each with what-it-is / key advantage / key drawback) and stating one direct recommendation with a tie-break; pass the located block as its **QUESTION** input. Its grounding step overlaps the context you already gathered in step 2 — reuse that reading rather than repeating it. When the core's disclosure duty applies — the recommendation leans on a still-unanswered sibling's recommendation — render it as plain prose in the rationale, naming that sibling's Short Title and the option assumed, never as markup.
 
 Then add the layer that is this skill's own — not part of the shared core:
 
