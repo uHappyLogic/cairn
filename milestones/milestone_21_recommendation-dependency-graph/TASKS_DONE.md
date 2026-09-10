@@ -45,3 +45,18 @@ Rework `skills/recommend-all-open-questions/SKILL.md` steps 1–4 so the sweep r
 - Frontmatter unchanged (parses under `yaml.safe_load`, 18-word description); `uv run scripts/migrate_skills_to_agy.py` succeeds and the regenerated `.agents/plugins/cairn/skills/recommend-all-open-questions/SKILL.md` differs from the source only by the path rewrite.
 
 ---
+
+## Add Dependency Resolution Gate Test
+
+Add a seventh test to the acceptance gate in `skills/recommend-all-open-questions/SKILL.md` step 3c that resolves every returned `<depends-on>` line against the `<open-question>` blocks still present under `## Open questions` that carry embedded children (without reading `status`) and the target's `<alternative id` lines, with entity-unescaped case-folded comparison, and a miss producing a reason string that takes the single repair attempt and skips only on a second failure, exactly like the other structural misses; no cycle test is added. Update the fixed corrective message so its element ordering names the `<depends-on>` elements between the applied-principles and the recommendation. Verified by reading: the gate lists seven line-grep tests, the orchestrator never edits or drops a returned element, and the reason strings name the new test.
+
+**Verified:**
+
+- Step 3c's acceptance gate lists exactly seven numbered line-grep tests; test 7 resolves every `<depends-on` line in the region — its `question` value against the `id` of an `<open-question>` block still present under `## Open questions` that carries embedded children, and its `option` value against that target block's `<alternative id` values — with entity escapes reversed and case-folding on both sides, attributes read by attribute-name-anchored regex.
+- Test 7 states it reads no `status` (a `status="deferred"` target is as valid as an open one), reaches into the live document only by re-slicing the `## Open questions` section with step 1's boundary-line CLI, resolves one hop only, and adds no cycle check (`grep cycle` hits only that no-cycle-check sentence).
+- The reason-string list names the new test's two misses (`a depends-on question value names no still-present annotated <open-question> id`, `a depends-on option value matches none of the target block's <alternative> ids`); the miss paragraph routes a test-7 miss through the single repair attempt and second-failure skip like every other structural miss, and states it is never resolved by dropping or rewriting the offending line — step 4's "never edits, reorders, or drops a returned element" sentence is intact.
+- The fixed corrective message orders the elements as `<alternative>`, then `<applied-principle>`, then `<depends-on>`, then the single `<recommendation>`.
+- `git diff -U0` shows hunks only in sub-steps 3c and 3d; frontmatter parses under `yaml.safe_load` with an 18-word description.
+- `uv run scripts/migrate_skills_to_agy.py` succeeds and the regenerated `.agents/plugins/cairn/skills/recommend-all-open-questions/SKILL.md` differs from the source only by the shared-path rewrite.
+
+---

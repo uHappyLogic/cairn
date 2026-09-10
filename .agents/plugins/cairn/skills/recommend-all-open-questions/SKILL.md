@@ -154,7 +154,7 @@ stripped here, not a failure in itself. If the return holds no `<alternative` li
 or `no </recommendation> line to extract to`.
 
 **c. Acceptance gate over the extracted region.** The region is usable only when it passes **all**
-of these, checked in the same line-oriented boundary-line CLI idiom as step 1 (`awk`/`sed`/`grep`
+seven of these, checked in the same line-oriented boundary-line CLI idiom as step 1 (`awk`/`sed`/`grep`
 over lines and the boundary tokens on them — never a real XML processor, so the gate needs no XML
 parser):
 
@@ -169,13 +169,29 @@ parser):
 6. The `<recommendation>`'s **`option` value equals one of those `<alternative>` ids** — compared
    after reversing the XML entity escapes (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`) on both
    sides and case-folding them.
+7. **Every `<depends-on` line in the region resolves.** Its `question` value equals the `id` of an
+   `<open-question>` block **still present under `## Open questions`** in
+   `<MILESTONE_DIR>/requirements.md` that **carries embedded children** (its block contains a
+   `<recommendation` line — every block step 2 skipped or this run already embedded), and its
+   `option` value equals one of **that target block's `<alternative id`** values. Read
+   `question`, `option`, and `id` by attribute-name-anchored regex, and compare both pairs as in
+   test 6 — entity escapes reversed on both sides, case-folded. This is the one test that reaches
+   outside the return into the document: re-slice the `## Open questions` section from the live
+   file with step 1's boundary-line CLI, so the slice carries every earlier embed of this run, and
+   read **no `status`** — a `status="deferred"` target is as valid as an open one. Resolution is
+   **one hop**: the target's own `<depends-on` lines are not followed and no cycle check is made.
+   A region with no `<depends-on` line passes this test trivially.
 
 **Every miss produces a reason string naming the test that failed** (`text precedes <alternative>
 on the region's opening line`, `text trails </recommendation> on the region's closing line`, `the
 region contains a <question> line`, `the region contains two <recommendation> opening lines`, `the
-region contains no <alternative id> line`, `the option value matches no <alternative> id`). A miss
-— boundary or structural — is an **extraction failure**, and an extraction failure is never an
-immediate skip: it takes the single repair attempt of sub-step d.
+region contains no <alternative id> line`, `the option value matches no <alternative> id`, `a
+depends-on question value names no still-present annotated <open-question> id`, `a depends-on
+option value matches none of the target block's <alternative> ids`). A miss — boundary or
+structural — is an **extraction failure**, and an extraction failure is never an immediate skip: it
+takes the single repair attempt of sub-step d. A test-7 miss is no exception: it is never resolved
+by dropping or rewriting the offending `<depends-on>` line — the orchestrator embeds a returned
+region exactly as accepted or not at all.
 
 **d. Repair once, immediately.** A return that passed the last-line verdict but failed extraction
 (b) or the acceptance gate (c) gets **exactly one** repair attempt before any skip. Run that
@@ -204,11 +220,11 @@ Both branches send this fixed one-paragraph corrective message, whose single slo
 
 ```
 A previous return for this question could not be used: <failed test>. Emit the sub-elements — the
-`<alternative>` elements, then any `<applied-principle>` elements, then the single
-`<recommendation>` element — as your whole final message, and check that message against both
-shape tests before sending it: its first non-whitespace text starts with `<alternative`, and its
-last non-whitespace text ends with `</recommendation>`. Send those sub-elements and nothing else —
-no grounding summary above them, no closing remark below them.
+`<alternative>` elements, then any `<applied-principle>` elements, then any `<depends-on>`
+elements, then the single `<recommendation>` element — as your whole final message, and check
+that message against both shape tests before sending it: its first non-whitespace text starts
+with `<alternative`, and its last non-whitespace text ends with `</recommendation>`. Send those
+sub-elements and nothing else — no grounding summary above them, no closing remark below them.
 ```
 
 Fill `<failed test>` with the reason string the failed test already produced in b or c — the same

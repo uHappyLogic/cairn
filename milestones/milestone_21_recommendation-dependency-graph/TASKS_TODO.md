@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Dependency Resolution Gate Test
-
-Add a seventh test to the acceptance gate in `skills/recommend-all-open-questions/SKILL.md` step 3c that resolves every returned `<depends-on>` line against the `<open-question>` blocks still present under `## Open questions` that carry embedded children (without reading `status`) and the target's `<alternative id` lines, with entity-unescaped case-folded comparison, and a miss producing a reason string that takes the single repair attempt and skips only on a second failure, exactly like the other structural misses; no cycle test is added. Update the fixed corrective message so its element ordering names the `<depends-on>` elements between the applied-principles and the recommendation. Verified by reading: the gate lists seven line-grep tests, the orchestrator never edits or drops a returned element, and the reason strings name the new test.
-
----
-
 ## Extend Answer Cascade With Dependency Reconciliation
 
 Widen `shared/answer-procedure.md` to three inputs by adding an optional RECORDED OPTION (the un-escaped option or alternative id the caller lifted), whose presence selects exact id comparison and whose absence selects a judgment of whether ANSWER invalidates the assumed option, and extend step 6's cascade so that after the answered block and any mooted entries are removed, every surviving block whose `<depends-on question="…">` names a removed block is reconciled: an agreeing option deletes only that `<depends-on>` line, while a disagreeing option, an inconclusive judgment, or a target removed as a mooted entry with no option strips that dependent's embedded children transitively, leaving the bare `<open-question>` wrapper and `<question>` for the next recommend sweep. The core prints nothing and stays execution-neutral, and the fold-before-remove order is preserved. Verified by reading: both branches are stated once, "strip on doubt" is explicit, and no anchor-string parsing enters the core.
