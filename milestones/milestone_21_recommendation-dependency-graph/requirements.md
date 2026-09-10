@@ -56,34 +56,14 @@ The `<depends-on>` elements are self-closing `<depends-on question="…" option=
 
 Strip on doubt — the costs are asymmetric — an extra dispatch is cheap, self-healing, and already tolerated by both sweeps, while a kept stale rationale becomes a wrong recorded decision that only a revert can undo — so doubt should resolve toward the recoverable failure. When the cascade's judgment of whether a free-text manual answer invalidates the option a dependent's `<depends-on>` assumed is inconclusive, it treats that as a mismatch: the dependent's embedded children are stripped transitively, exactly as a disagreeing answer strips them, and the bare block is left for the next recommend sweep to regenerate.
 
+### Cleared dependents console advisory
+
+When recording an answer strips or tidies a dependent block's embedded children, the answer skills print nothing beyond their existing output. The change is fully recorded in the answer commit's own diff, and each cleared block is left in exactly the un-annotated state the next `/review-milestone-requirements` or `/recommend-all-open-questions` pass surfaces by construction, so such a note fails both halves of the git-absent-and-decision-critical advisory test. Printing one would also contradict the answer sweep's existing rule against enumerating recommendation-less questions.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Cleared dependents console advisory" status="open">
-  <question>When an answer strips or tidies dependent blocks, should the answer skills print the affected Short Titles as a git-absent advisory alongside the terse status line (a cue that a recommend re-run is due), or stay silent because the diff records the change?</question>
-  <alternative id="Stay silent">
-    The answer skills print nothing new: the strip or tidy is recorded in the answer commit&apos;s own diff (removed `&lt;alternative&gt;` / `&lt;applied-principle&gt;` / `&lt;recommendation&gt;` / `&lt;depends-on&gt;` child lines inside the surviving sibling blocks), and each cleared block re-surfaces as an un-annotated open question on the next `/review-milestone-requirements` or `/recommend-all-open-questions` pass.
-    <advantage>It is the only option that passes the terse-reporting rule&apos;s two-part test — the change is git-recorded, not git-absent, and it forces no decision (the recommend sweep&apos;s idempotent skip means a re-run annotates precisely the cleared set by construction) — and it matches two standing precedents: the recommend sweep&apos;s silent extraction/repair recovery, and this answer sweep&apos;s existing explicit rule not to enumerate recommendation-less questions because &quot;they remain visible as `&lt;open-question&gt;` blocks in `requirements.md` and via re-running `/review-milestone-requirements`&quot;.</advantage>
-    <drawback>A user who has just answered learns nothing at that moment about which sibling recommendations went stale, and must read the diff or wait for the next review pass to see the blast radius of a wide transitive strip.</drawback>
-  </alternative>
-  <alternative id="Advisory in single-question skills">
-    Each of the three single-question answer skills (`answer-open-question`, `-with-recommendation`, `-with-alternative`) prints the affected Short Titles alongside its terse status line, in the slot already occupied by the newly-exposed-open-questions advisory.
-    <advantage>It gives the immediate re-run cue at the one moment the user is looking — the answer they just recorded — using an advisory slot that already exists in all three skills, so the reporting step needs no new shape.</advantage>
-    <drawback>It is a re-narration of the commit&apos;s own diff, which is exactly what the terse-reporting rule collapses, and its length is unbounded — a transitive strip across several dependents prints a growing list after every answer.</drawback>
-  </alternative>
-  <alternative id="Advisory in the answer sweep only">
-    The single-question skills stay silent; only `answer-all-open-questions-with-recommendation` reports at end of run, listing the gathered questions it skipped because a mid-sweep strip removed their `&lt;recommendation&gt;` element.
-    <advantage>It targets the one case where the user could plausibly be misled — a multi-answer run whose single terse line would otherwise imply every gathered question was answered, when a routine strip turned some into benign skips.</advantage>
-    <drawback>It directly contradicts that sweep&apos;s existing do-not-enumerate rule, and the information is not actually missing: the sweep commits once per answer under `Recommendation-answer: &lt;Short Title&gt;`, so `git log` already names exactly which gathered questions were recorded and which were not.</drawback>
-  </alternative>
-  <alternative id="Count-only line">
-    A fixed one-line addition stating how many dependent blocks were cleared or tidied, with no Short Titles.
-    <advantage>Output stays bounded no matter how wide the cascade, while still flagging that a recommend re-run is due.</advantage>
-    <drawback>A bare count is not actionable — the user must open the diff anyway to learn which blocks were hit — so it costs a console line without removing a lookup, and it still narrates the diff.</drawback>
-  </alternative>
-  <recommendation option="Stay silent">Clearing a dependent is fully recorded in the answer commit&apos;s diff and leaves the block in exactly the un-annotated state the next review or recommend pass surfaces by construction, so it fails both halves of the git-absent-and-decision-critical advisory test and an advisory would contradict the answer sweep&apos;s existing rule against enumerating recommendation-less questions.</recommendation>
-</open-question>
 <open-question id="Origin walk tie order" status="deferred">
   <question>How the answer sweep orders questions that share the same depth in the dependency graph, such as several origins with no dependencies.</question>
   <alternative id="Document order">
