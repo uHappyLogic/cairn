@@ -125,3 +125,17 @@ Extend `skills/review-milestone-requirements/SKILL.md` step 2 so that when a pru
 - `uv run scripts/migrate_skills_to_agy.py` succeeds and `.agents/plugins/cairn/skills/review-milestone-requirements/SKILL.md` differs from the source only by the two `${CLAUDE_PLUGIN_ROOT}` path rewrites and the echo-hint drop.
 
 ---
+
+## Scope Capture Diff Read To Answered Block
+
+Reword the one disambiguating sentence in `skills/capture-milestone-principle-updates/SKILL.md` (currently "Any other removed block in the same diff is a cascaded sibling…") so only removed lines within the answered block's `-<open-question id="…">` through `-</open-question>` boundaries feed the record, covering both cascaded sibling blocks and orphan removed lines from siblings that stay in the document. The sentence stays element-agnostic and never names `<depends-on>`. Verified by reading: exactly that sentence changed and no per-element ignore list was started.
+
+**Verified:**
+
+- `git diff -U0` on `skills/capture-milestone-principle-updates/SKILL.md` shows a single hunk, at lines 139–140 of the diff-read bullet, replacing only the former "Any **other** removed block in the same diff is a cascaded sibling…" sentence; no other line of the file changed.
+- The reworded sentence states that only the removed lines lying within the answered block's `-<open-question id="…">` … `-</open-question>` boundaries feed the record.
+- It covers both cases explicitly: a whole sibling block the answer's cascade mooted, and a stray line the cascade cleared from a sibling block that still stands in the document — each stated as outside the answered block and contributing nothing.
+- The sentence stays element-agnostic: `grep -c depends-on` on the file returns 0 and no per-element ignore list was started.
+- Frontmatter unchanged (parses under `yaml.safe_load`, 15-word description); `uv run scripts/migrate_skills_to_agy.py` succeeds and the regenerated `.agents/plugins/cairn/skills/capture-milestone-principle-updates/SKILL.md` differs from the source only by the shared-path rewrite.
+
+---

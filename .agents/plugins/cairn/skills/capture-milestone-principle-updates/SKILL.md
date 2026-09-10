@@ -136,8 +136,10 @@ git show <hash> --format='%s%n%n%b' -- milestones/<milestone_id>/requirements.md
   its **added lines** (`+` prefix) hold the new `## Decisions` entry. Locate the answered block among
   the removed lines by its opening boundary `-<open-question id="…"` whose `id` matches the Short Title
   (case-insensitive, entity-unescaped, attribute order immaterial) and read through its
-  `-</open-question>` closing line. Any **other** removed block in the same diff is a cascaded sibling
-  the answer mooted — it is not the answered block and contributes nothing to this record. From the
+  `-</open-question>` closing line. Only the removed lines lying within those two boundaries feed
+  this record: every other removed line in the same diff — whether a whole sibling block the answer's
+  cascade mooted, or a stray line the cascade cleared from a sibling block that still stands in the
+  document — is outside the answered block and contributes nothing. From the
   answered block reconstruct, reversing the five predefined XML entities (`&lt;` `&gt;` `&quot;`
   `&apos;`, then `&amp;` last) on every value:
   - the `<question>` text;

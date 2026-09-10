@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Scope Capture Diff Read To Answered Block
-
-Reword the one disambiguating sentence in `skills/capture-milestone-principle-updates/SKILL.md` (currently "Any other removed block in the same diff is a cascaded sibling…") so only removed lines within the answered block's `-<open-question id="…">` through `-</open-question>` boundaries feed the record, covering both cascaded sibling blocks and orphan removed lines from siblings that stay in the document. The sentence stays element-agnostic and never names `<depends-on>`. Verified by reading: exactly that sentence changed and no per-element ignore list was started.
-
----
-
 ## Retire Independence Invariant In CLAUDE.md
 
 Update the `CLAUDE.md` invariants and repository-layout lines to match the new behaviour: retire the "Recommendation independence" clause and the parallel-dispatch and embed-at-end wording of the `recommend-all-open-questions` bullet in favour of sequential most-significant-first dispatch, embed-before-next, the `<depends-on>` element, the seventh gate test, the stale-tag and no-cycle-test decisions; record the disclosure duty in the `shared/recommend-procedure.md` bullet; record the three-input contract, the agree/strip branches, strip-on-doubt, and option-less removal in the `shared/answer-procedure.md` bullet; record the graph walk and cycle promotion in the answer-sweep bullet, the dependent stripping in the review invariant, the scoped diff read in the capture bullet, and the seven-test gate in the dispatched-agent-return bullet. Verified by reading: every decision in `requirements.md` is reflected and no invariant still asserts independence.
