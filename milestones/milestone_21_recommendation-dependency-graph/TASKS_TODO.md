@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Replace Independence Clause With Disclosure Duty
-
-Rewrite `shared/recommend-procedure.md` step 1 so the "never treat another question's recommendation as an input" clause is replaced by a caller-neutral disclosure duty: when a recommendation leans on a still-open sibling's recommendation, name that sibling and the option assumed. Add the one sentence `skills/discuss-open-question/SKILL.md` needs so its inline run renders that duty as prose. Verified by reading both files: no independence wording remains and the duty is stated once, in the core, with no XML markup.
-
----
-
 ## Render Depends-On Elements In Recommend Agent
 
 Update `agents/recommend-open-question.md` so step 1 drops the independence rule (sibling recommendations already embedded are legitimate inputs) and step 3's rendering spec gains the self-closing `<depends-on question="Short Title" option="Option"/>` element, emitted only for a sibling that already carries embedded children in the block the agent read, naming that sibling's `id` and one of its `<alternative>` ids, placed after the alternatives and any `<applied-principle>` elements and immediately before `<recommendation>`. A coupling on a sibling not yet annotated is expressed as prose inside the affected `<drawback>` or the rationale, with no option-less tag form; step 4's two-test self-check stays unchanged. Verified by reading: the shape example shows the child order alternatives, applied-principles, depends-on, recommendation, and the emit-only-when-target-annotated rule is explicit.

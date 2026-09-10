@@ -30,10 +30,11 @@ Part of that grounding is the project-wide answering-principle store
 any one milestone. Read it in place and note any confirmed principle that bears on this
 question. Presence of a principle in that file means it is user-confirmed.
 
-Grounding is not the same as coupling to other questions. Reading `requirements.md`
-incidentally surfaces the sibling questions, but a recommendation for this question is
-formed in isolation from any *other* question's recommendation — never treat another
-question's recommendation as an input to this one.
+Reading `requirements.md` also surfaces the sibling questions, and a recommendation already
+attached to a sibling that is itself still unanswered (open or deferred) is legitimate input
+to this one. Whenever the recommendation you form leans on such a sibling's recommendation,
+disclose that dependency: name the sibling (its Short Title) and the option you assumed it
+will settle on. The caller decides how that disclosure is rendered.
 
 ### 2. Enumerate the alternatives
 
