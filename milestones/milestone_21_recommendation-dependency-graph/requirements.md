@@ -52,29 +52,14 @@ A returned `<depends-on>` element naming a question id that matches no still-ope
 
 The `<depends-on>` elements are self-closing `<depends-on question="…" option="…"/>` tags placed as direct children strictly inside the existing extraction region — after the alternatives and any `<applied-principle>` elements, immediately before `<recommendation>` — so a block's child order is alternatives, applied-principles, depends-on, recommendation. Sitting wholly within the region leaves the return pipeline's extraction anchors, its two boundary shape tests, and the whole-block removal untouched, and the self-closing two-attribute form keeps each declaration a single greppable line whose `question` and `option` fields are both readable by one attribute-name-anchored regex. Child order is settled in favour of the pipeline, which is its primary consumer, rather than a reader scanning the block.
 
+### Ambiguous manual agreement default
+
+Strip on doubt — the costs are asymmetric — an extra dispatch is cheap, self-healing, and already tolerated by both sweeps, while a kept stale rationale becomes a wrong recorded decision that only a revert can undo — so doubt should resolve toward the recoverable failure. When the cascade's judgment of whether a free-text manual answer invalidates the option a dependent's `<depends-on>` assumed is inconclusive, it treats that as a mismatch: the dependent's embedded children are stripped transitively, exactly as a disagreeing answer strips them, and the bare block is left for the next recommend sweep to regenerate.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Ambiguous manual agreement default" status="open">
-  <question>When the cascade cannot tell whether a free-text manual answer invalidates the option a dependent&apos;s `&lt;depends-on&gt;` assumed, should it default to stripping the dependent (a spare re-recommendation) or to keeping it (risking a stale rationale being lifted later)?</question>
-  <alternative id="Strip on doubt">
-    Treat an inconclusive judgment as a mismatch: strip the dependent&apos;s embedded children (transitively, as a disagreeing answer already does) and leave the bare block for the next recommend sweep to regenerate.
-    <advantage>It keeps one hard invariant — an embedded recommendation in the document is never inconsistent with what `## Decisions` now records — and the recovery path is cheap and already specified: the answer sweep&apos;s per-question re-check already treats a block whose `&lt;recommendation&gt;` is gone as a benign skip, and a re-run of `/recommend-all-open-questions` regenerates exactly the un-annotated set.</advantage>
-    <drawback>It spends a recommendation dispatch that may have been unnecessary, and discards any hand-edits made to that dependent&apos;s children, since the documented refresh path is regeneration rather than repair.</drawback>
-  </alternative>
-  <alternative id="Keep on doubt">
-    Treat an inconclusive judgment as agreement: leave the dependent&apos;s children intact (removing or keeping its `&lt;depends-on&gt;` tag as the agreement path does) and let a later pass catch any staleness.
-    <advantage>It preserves work and avoids churn — no wasted dispatch, no block temporarily unanswerable via `/answer-open-question-with-recommendation`, and no loss of hand-edited rationale.</advantage>
-    <drawback>A rationale built on an assumption the manual answer actually invalidated stays liftable, so the failure mode is a silently wrong recorded decision that only revert-then-re-answer fixes — and that capture then reads as accepted-recommendation evidence; the milestone-19 history shows this exact class of stale sibling rationale surviving an override and being corrected only incidentally by a review pass.</drawback>
-  </alternative>
-  <alternative id="Ask on doubt">
-    Resolve the ambiguity by asking: on an inconclusive judgment, name the dependent and its assumed option and take a single strip-or-keep confirmation from the user.
-    <advantage>The one party who knows what the free-text answer meant decides, so neither wrong default is taken.</advantage>
-    <drawback>It puts interaction into `shared/answer-procedure.md`, which is execution-neutral and prompts nowhere today, and adds per-dependent friction to every ambiguous manual answer for a call the cascade can make safely by default.</drawback>
-  </alternative>
-  <recommendation option="Strip on doubt">The costs are asymmetric — an extra dispatch is cheap, self-healing, and already tolerated by both sweeps, while a kept stale rationale becomes a wrong recorded decision that only a revert can undo — so doubt should resolve toward the recoverable failure.</recommendation>
-</open-question>
 <open-question id="Cleared dependents console advisory" status="open">
   <question>When an answer strips or tidies dependent blocks, should the answer skills print the affected Short Titles as a git-absent advisory alongside the terse status line (a cue that a recommend re-run is due), or stay silent because the diff records the change?</question>
   <alternative id="Stay silent">
