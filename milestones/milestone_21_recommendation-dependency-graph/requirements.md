@@ -60,34 +60,14 @@ Strip on doubt — the costs are asymmetric — an extra dispatch is cheap, self
 
 When recording an answer strips or tidies a dependent block's embedded children, the answer skills print nothing beyond their existing output. The change is fully recorded in the answer commit's own diff, and each cleared block is left in exactly the un-annotated state the next `/review-milestone-requirements` or `/recommend-all-open-questions` pass surfaces by construction, so such a note fails both halves of the git-absent-and-decision-critical advisory test. Printing one would also contradict the answer sweep's existing rule against enumerating recommendation-less questions.
 
+### Origin walk tie order
+
+The answer sweep walks questions that share the same depth in the dependency graph in document order — the order their `<open-question>` blocks appear in the `## Open questions` section, which is what the boundary-line CLI already hands the gather step. Same-depth questions cannot depend on one another, so tie order can never change a cascade outcome; determinism and cost are therefore the only real criteria, and document order costs nothing while retiring the "loosely most-significant first" significance proxy the dependency graph was built to replace.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Origin walk tie order" status="deferred">
-  <question>How the answer sweep orders questions that share the same depth in the dependency graph, such as several origins with no dependencies.</question>
-  <alternative id="Document order">
-    Within a depth level, walk the tied questions in the order their `&lt;open-question&gt;` blocks appear in the `## Open questions` section, which is the order the boundary-line CLI already enumerates.
-    <advantage>Fully deterministic and free: same-depth questions are mutually independent by construction (if A declares `&lt;depends-on&gt;` on B then A sits deeper than B), so every tie-break yields an equally valid topological order and the cheapest one costs nothing in correctness while making the walk reproducible run to run.</advantage>
-    <drawback>Document order is authoring order appended by `review-milestone-requirements`, so it carries no semantic weight — the first tied question answered is arbitrary rather than the most consequential.</drawback>
-  </alternative>
-  <alternative id="Significance judgment">
-    Keep the existing sweep&apos;s "loosely most-significant → least" heuristic as the within-depth tie-break, applying judgment only among questions the graph leaves unordered.
-    <advantage>Preserves the current skill&apos;s ordering language verbatim and offers a hedge against coupling a question failed to declare, by tending to answer foundational questions first anyway.</advantage>
-    <drawback>Reintroduces per-run judgment into a step the dependency graph exists to make structural — the significance ordering was explicitly the proxy adopted because "no structural signal exists for the order", and an undeclared coupling between two tied questions is precisely the defect `&lt;depends-on&gt;` is meant to surface, not to paper over.</drawback>
-  </alternative>
-  <alternative id="Fan-out count">
-    Order tied questions by how many dependents declare a `&lt;depends-on&gt;` on them, most-depended-upon first.
-    <advantage>Structural rather than judgmental, and answers the question whose cascade touches the most dependents earliest.</advantage>
-    <drawback>Buys nothing — every tied question is answered in the same single pass regardless of order, and no cascade outcome changes — while adding a whole-graph fan-out computation to the gather step and still needing a further fallback for equal counts, so it relocates the tie instead of resolving it.</drawback>
-  </alternative>
-  <alternative id="Leave unspecified">
-    State that same-depth order is immaterial and let the runner walk ties in any order.
-    <advantage>Honest about the fact that ties are genuinely unordered, and adds the least spec surface to the ordering step.</advantage>
-    <drawback>An unspecified order in a runtime file invites the runner to improvise a different sequence each run, which contradicts the deterministic gather the boundary-line CLI is used for and leaves a reader of the step with no instruction to follow.</drawback>
-  </alternative>
-  <recommendation option="Document order">Same-depth questions cannot depend on one another, so tie order can never change a cascade outcome — that makes the only real criteria determinism and cost, and document order is already what the boundary-line CLI hands the gather step for free, while retiring the significance proxy the graph was built to replace.</recommendation>
-</open-question>
 <open-question id="Discuss path dependency naming" status="deferred">
   <question>Whether the conversational discuss-open-question path, which renders no XML, names the sibling recommendations its inline recommendation builds on.</question>
   <alternative id="Disclosure duty in shared core">
