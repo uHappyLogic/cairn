@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Walk Dependency Graph In Answer Sweep
-
-Replace the "loosely most-significant → least" ordering in `skills/answer-all-open-questions-with-recommendation/SKILL.md` step 1 with a walk of the dependency graph built over the gathered set from each block's `<depends-on question="…">` lines: edges whose target is absent from the set or carries no `<recommendation>` are dropped, questions with no resolvable edges are origins, same-depth questions go in document order, and a stranded set whose targets are never answered promotes its document-order-first member to an origin and continues the depth walk. Step 2's re-check and per-answer commit stay unchanged. Verified by reading: the significance proxy is gone and the walk is deterministic and total for any graph shape, cycles included.
-
----
-
 ## Strip Dependents On Review Prune And Dedup
 
 Extend `skills/review-milestone-requirements/SKILL.md` step 2 so that when a prune or dedup removes an `<open-question>` block, every surviving sibling whose `<depends-on question="…">` names that block has its embedded children stripped transitively, leaving the bare wrapper and `<question>` for the next recommend sweep, with no new console advisory beyond the existing removal report. Verified by reading: the stripping is attached to both removal paths and the skill still records no decision.

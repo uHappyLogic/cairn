@@ -92,3 +92,20 @@ Update the three callers of the recording core so `shared/answer-with-recommenda
 - `uv run scripts/migrate_skills_to_agy.py` succeeds and the three regenerated copies under `.agents/plugins/cairn/` differ from their sources only by the `${CLAUDE_PLUGIN_ROOT}` path rewrite and echo-hint drop.
 
 ---
+
+## Walk Dependency Graph In Answer Sweep
+
+Replace the "loosely most-significant → least" ordering in `skills/answer-all-open-questions-with-recommendation/SKILL.md` step 1 with a walk of the dependency graph built over the gathered set from each block's `<depends-on question="…">` lines: edges whose target is absent from the set or carries no `<recommendation>` are dropped, questions with no resolvable edges are origins, same-depth questions go in document order, and a stranded set whose targets are never answered promotes its document-order-first member to an origin and continues the depth walk. Step 2's re-check and per-answer commit stay unchanged. Verified by reading: the significance proxy is gone and the walk is deterministic and total for any graph shape, cycles included.
+
+**Verified:**
+
+- Step 1 of `skills/answer-all-open-questions-with-recommendation/SKILL.md` no longer orders by "loosely most-significant → least": `grep -i 'significan\|foundational\|loosely'` hits only the sentence prohibiting a significance judgment, and the heading names the dependency graph.
+- The gather still enumerates via the boundary-line CLI, now explicitly in document order, and additionally extracts each surviving block's `<depends-on question="…">` values by attribute-name-anchored regex, reading only the `question` value (the `option` value is left to the recording core's cascade).
+- The graph is built over the gathered set alone; an edge whose target is absent from the document or present without a `<recommendation>` element (so never gathered) is dropped, the gather is never widened, the tag stays in the document, and a question left with no resolvable edge is an origin.
+- The depth walk places origins first, then each depth of questions whose every resolvable edge is already placed, with same-depth questions in document order (the order the gather yielded).
+- A stranded set (a `<depends-on>` cycle) promotes its document-order-first remaining member to an origin and continues the depth walk, repeating the promotion whenever the walk strands again.
+- The walk is stated as deterministic and total for any graph shape, cycles included — depending only on block order and the gathered `<depends-on>` values, placing every question exactly once, always terminating — and the walk-exactly-once / no-outer-re-gather-loop rule is retained.
+- `git diff -U0` shows hunks only at the step-1 heading and its gather/order paragraphs; step 2 (re-check, dispatch, per-answer commit) and step 3 are byte-identical.
+- Frontmatter loads under `yaml.safe_load` with its 21-word description unchanged; `uv run scripts/migrate_skills_to_agy.py` succeeds and the regenerated `.agents/plugins/cairn/skills/answer-all-open-questions-with-recommendation/SKILL.md` differs from the source only by the shared-path rewrite.
+
+---
