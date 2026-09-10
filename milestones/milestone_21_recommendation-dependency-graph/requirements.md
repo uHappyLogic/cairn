@@ -72,34 +72,14 @@ The conversational `discuss-open-question` path does name the sibling recommenda
 
 Capture's diff read is updated by rewording its one existing disambiguating sentence so the scoping rule covers removed lines belonging to no removed block as well as whole cascaded sibling blocks: only lines within the answered block's `-<open-question id="…">` … `-</open-question>` boundaries feed the record. That closes the gap the cascade's tidy and strip outcomes actually open — orphan `<recommendation option>` and `<alternative id>` lines removed from siblings that stay in the document, which are exactly the tokens the reconstruct and agreement steps key on — and subsumes the `<depends-on>` case for free. The reworded sentence stays element-agnostic and never names `<depends-on>`, so no per-element "ignore this" list is started and the rule holds unchanged as further child elements are added.
 
+### Cascade option input contract
+
+The shared answer procedure's input contract widens from two fields to three: an optional **RECORDED OPTION** — the un-escaped option/alternative id the caller already lifted — joins SHORT TITLE and ANSWER, and its presence is itself the comparison-mode discriminator. Supplied means exact id comparison of the recorded option against each dependent's assumed option; absent means judgment of whether the ANSWER prose invalidates that assumption. Both lifting callers already hold the id at the moment they delegate (`shared/answer-with-recommendation-procedure.md`'s step 3 lift and `answer-open-question-with-alternative`'s inline lift), so passing it re-derives nothing and one optional field carries both the id and the mode without a second parameter; `answer-open-question` is documented as explicitly passing nothing rather than merely being unchanged. The anchor string `<option> — <rationale>` stays a caller-side rendering convention and never becomes a parse contract inside the execution-neutral core, and the discrimination mirrors the one capture already makes on an answer commit's diff.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Cascade option input contract" status="open">
-  <question>How does the shared answer procedure obtain the recorded option id and the exact-versus-judgment comparison mode for its dependency cascade, given that its inputs today are only the Short Title and the answer text?</question>
-  <alternative id="Optional recorded-option input">
-    Extend the recording core&apos;s Inputs with one optional RECORDED OPTION — the un-escaped option/alternative id the caller already lifted — whose presence is itself the mode discriminator: supplied means exact id comparison against each dependent&apos;s assumed option, absent means judgment against the ANSWER prose.
-    <advantage>Both lifting callers already hold that id at the moment they delegate (the recommendation procedure&apos;s step 3 and the alternative skill&apos;s step 83 lift it before building ANSWER), so passing it costs nothing, re-derives nothing, and one optional field carries both the id and the mode without a second parameter.</advantage>
-    <drawback>It widens the core&apos;s input contract from two fields to three, so every caller and its invariant must be re-stated, and the literal caller must be explicitly documented as passing nothing rather than simply being unchanged.</drawback>
-  </alternative>
-  <alternative id="Parse the answer string">
-    Leave the two-input contract untouched and have the cascade re-derive the option inside the core by splitting ANSWER on its first spaced em dash and matching the prefix against the answered block&apos;s own &lt;alternative id&gt; lines, read before removal; a match means exact mode, no match means judgment.
-    <advantage>No caller changes at all and no input-contract churn — the whole extension lands inside the one shared file the goal already reopens.</advantage>
-    <drawback>It promotes the &quot;&lt;option&gt; — &lt;rationale&gt;&quot; anchor string from a caller-side rendering convention into a load-bearing parse contract inside the execution-neutral core, and a literal manual answer that happens to open with an option-shaped phrase is silently misrouted into exact mode.</drawback>
-  </alternative>
-  <alternative id="Judgment mode only">
-    Add no input and no mode at all: the cascade always judges, for every caller, whether the recorded ANSWER text invalidates each dependent&apos;s assumed option, using the answered block&apos;s alternatives as context.
-    <advantage>The simplest possible extension — one uniform code path, no discriminator to specify, test, or keep consistent with capture&apos;s parallel agreement test.</advantage>
-    <drawback>It contradicts the milestone Goal&apos;s explicit &quot;exact id comparison for alternative and recommendation answers&quot; and spends model judgment on the two cases where a deterministic id equality is already available, making the two sweep-driven paths non-deterministic for no gain.</drawback>
-  </alternative>
-  <alternative id="Cascade in the callers">
-    Keep the core at two inputs and move the dependency cascade out to the three answer runners, each of which already knows its own option and comparison mode.
-    <advantage>The execution-neutral core needs no new input and no knowledge of comparison modes whatsoever.</advantage>
-    <drawback>It triplicates the transitive strip across three runners against the plugin&apos;s shared-is-source-of-truth convention, and the cascade must run against the document state the core itself produced after removal, so the logic cannot cleanly live outside it.</drawback>
-  </alternative>
-  <recommendation option="Optional recorded-option input">One optional RECORDED OPTION whose presence selects exact-versus-judgment is the cheapest honest fit — the lifting callers already hold that id, the literal caller genuinely has none, and it mirrors the same discrimination capture already makes on the answer commit&apos;s diff.</recommendation>
-</open-question>
 <open-question id="Dependency cycle handling" status="open">
   <question>A block whose children were hand-cleared and regenerated after its former dependents can declare a dependency back on one of them, forming a cycle; is such a cycle rejected at the acceptance gate or tolerated, and how does the answer sweep then order the members of a cycle?</question>
   <alternative id="Tolerate, document-order entry">
