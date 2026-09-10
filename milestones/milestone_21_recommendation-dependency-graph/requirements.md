@@ -76,3 +76,21 @@ Capture's diff read is updated by rewording its one existing disambiguating sent
 
 ## Open questions
 
+<open-question id="Cascade option input contract" status="open">
+  <question>How does the shared answer procedure obtain the recorded option id and the exact-versus-judgment comparison mode for its dependency cascade, given that its inputs today are only the Short Title and the answer text?</question>
+</open-question>
+<open-question id="Dependency cycle handling" status="open">
+  <question>A block whose children were hand-cleared and regenerated after its former dependents can declare a dependency back on one of them, forming a cycle; is such a cycle rejected at the acceptance gate or tolerated, and how does the answer sweep then order the members of a cycle?</question>
+</open-question>
+<open-question id="Deferred siblings as targets" status="open">
+  <question>Does a still-open sibling, as a valid &lt;depends-on&gt; target and in the acceptance gate&apos;s resolution test, mean any block still present under the Open questions section including status=&quot;deferred&quot; ones, or only status=&quot;open&quot; blocks?</question>
+</open-question>
+<open-question id="Dangling dependency tags" status="open">
+  <question>When a target block is removed by a path that records no option, such as the cascade removing a mooted entry or a review pass pruning or deduplicating it, what happens to the &lt;depends-on&gt; elements in surviving siblings that point at it: strip those dependents, remove just the elements, or leave them in place?</question>
+</open-question>
+<open-question id="Unresolvable target walk placement" status="open">
+  <question>How does the answer sweep place a gathered question whose &lt;depends-on&gt; target is not in the gathered set because the target block is gone or carries no recommendation: record it as an origin in this sweep, or leave it unanswered until its target has been recommended and answered?</question>
+</open-question>
+<open-question id="Recommend sweep significance ordering" status="deferred">
+  <question>On what basis does the recommend sweep rank questions most-significant-first before dispatching sequentially: the gathered question texts alone, or a whole-document read of requirements.md, which the gather step today deliberately avoids?</question>
+</open-question>
