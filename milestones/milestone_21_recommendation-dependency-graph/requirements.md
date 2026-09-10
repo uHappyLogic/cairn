@@ -88,34 +88,14 @@ When a target block is removed by a path that records no option — the cascade 
 
 The answer sweep builds the dependency graph only over the set it gathered: each `<depends-on>` is resolved against that set, an edge whose target block is absent or carries no recommendation is dropped, and a question left with no resolvable edges is walked as an origin in document order among the other origins. A `<depends-on>` records what a dependent assumed rather than a live pointer, and only a recorded option can reconcile it, so an edge to a target this sweep will never answer carries nothing to act on — dropping it adds no outcome class, no deadlock, and no orchestrator mutation, and preserves the sweep's existing contract that every gathered question gets answered. The residual is exactly the stale-rationale risk the forward-declaration decision already accepted.
 
+### Dependency cycle handling
+
+A `<depends-on>` cycle — reachable only through the hand-clear escape hatch, when a regenerated block declares a dependency back on one of its former dependents — is tolerated rather than rejected. The acceptance gate gains no cycle test and stays the line-oriented CLI check it was deliberately confined to, with the seventh test's one-hop resolution unchanged; instead the answer sweep's origin walk handles a stranded set — questions none of whose targets are yet answered — by promoting its document-order-first member to an origin and continuing the depth walk from there, reusing the document-order tie-break already decided for same-depth questions so the sweep stays deterministic and total for any graph shape. A cycle is coherent under the decided reading of `<depends-on>` as a record of what a dependent assumed rather than a live pointer, and dissolves at the first answer's cascade. The residual — the promoted member is answered before the sibling whose option it assumed, so its rationale may be stale when recorded — is the same recoverable risk already accepted under forward dependency declaration, shrunk to one question per cycle.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Dependency cycle handling" status="open">
-  <question>A block whose children were hand-cleared and regenerated after its former dependents can declare a dependency back on one of them, forming a cycle; is such a cycle rejected at the acceptance gate or tolerated, and how does the answer sweep then order the members of a cycle?</question>
-  <alternative id="Tolerate, document-order entry">
-    The acceptance gate gains no cycle test, and the answer sweep&apos;s origin walk handles a stranded set — questions none of whose targets are yet answered — by promoting its document-order-first member to an origin and continuing the depth walk from there.
-    <advantage>It costs one sentence in the walk step and nothing anywhere else: the gate stays the line-oriented CLI check it was deliberately confined to, the seventh test&apos;s one-hop resolution is unchanged, and the tie-break rule already decided for same-depth questions (document order) is simply reused as the entry rule, so the sweep stays deterministic and total for any graph shape.</advantage>
-    <drawback>The promoted member is answered before the sibling whose option it assumed, so its rationale may be stale when recorded — the same residual risk already accepted under &quot;Forward dependency declaration&quot;, here shrunk to one question per cycle because answering it immediately strips or tidies the rest of the cycle.</drawback>
-  </alternative>
-  <alternative id="Reject at the gate">
-    The gate gains a further test that follows the target sibling&apos;s own &lt;depends-on&gt; elements transitively and rejects any returned element that closes a cycle back on the question under dispatch, taking the single repair attempt and then the per-question skip.
-    <advantage>The embedded graph is acyclic by construction, so the answer sweep&apos;s origin walk needs no special case at all and every question is answered strictly after the sibling it assumed.</advantage>
-    <drawback>It turns a gate held to line-greps and one-hop attribute resolution into a transitive reachability walk over the whole questions section — a second control path the gate was explicitly designed to avoid — and its likely outcome is a skipped, un-annotated block, defeating the hand-clear refresh that created the situation.</drawback>
-  </alternative>
-  <alternative id="Agent-side prohibition">
-    The recommend agent is told not to declare a dependency on a sibling that already depends on the question it is recommending, with the gate and the answer sweep both left unchanged.
-    <advantage>It is the cheapest possible change — one clause in the agent&apos;s rendering step — and needs no new machinery in either sweep.</advantage>
-    <drawback>It is unenforced, which is precisely what the acceptance gate exists to correct: a return that ignores the clause passes the gate, gets embedded, and strands the answer sweep with no rule for what to do — the failure is merely moved past every checkpoint.</drawback>
-  </alternative>
-  <alternative id="Tolerate, defer cycle members">
-    The gate tolerates cycles, and the answer sweep leaves every member of a cycle unanswered, reporting them as questions it could not order.
-    <advantage>No question is ever answered against an unvalidated assumption, and the deferral is visible rather than silent.</advantage>
-    <drawback>A pair of questions produced by an ordinary hand-clear refresh becomes permanently unanswerable by the sweep until a human breaks the cycle by hand, contradicting the self-healing, strip-and-regenerate pattern every other branch of this design uses.</drawback>
-  </alternative>
-  <recommendation option="Tolerate, document-order entry">A cycle is only reachable through the hand-clear escape hatch, is coherent under the already-decided reading of &lt;depends-on&gt; as a record of what a dependent assumed rather than a live pointer, and dissolves at the first answer&apos;s cascade — so a one-sentence deterministic entry rule reusing the decided document-order tie-break beats adding a transitive graph walk to a gate kept deliberately parser-free, and its one stale-rationale risk is the recoverable kind this milestone has twice chosen to accept.</recommendation>
-</open-question>
 <open-question id="Recommend sweep significance ordering" status="deferred">
   <question>On what basis does the recommend sweep rank questions most-significant-first before dispatching sequentially: the gathered question texts alone, or a whole-document read of requirements.md, which the gather step today deliberately avoids?</question>
   <alternative id="Gathered texts only">
