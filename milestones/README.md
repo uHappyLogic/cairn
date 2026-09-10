@@ -10,9 +10,21 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_21_recommendation-dependency-graph/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 21 — Recommendation Dependency Graph
+
+- `recommend-all-open-questions` now dispatches strictly sequentially in most-significant-first order and embeds each accepted return before the next dispatch, so a later recommendation may build on sibling recommendations already embedded — retiring the recommendation-independence rule that forbade it.
+- A recommendation that leans on an already-annotated sibling must declare it as a self-closing `<depends-on question="…" option="…"/>` child, placed after the alternatives and applied-principles and immediately before `<recommendation>`; a coupling on a not-yet-annotated sibling is expressed as prose instead, so no option is ever guessed.
+- The sweep's acceptance gate gained a seventh test that resolves every returned `<depends-on>` one hop against the still-present annotated sibling blocks and their `<alternative id>` values — the first test to read the live document — with a miss taking the ordinary reason-string-plus-one-repair path and the orchestrator never dropping or rewriting a returned element.
+- `shared/answer-procedure.md`'s cascade now reconciles surviving dependents: the matching `<depends-on>` tag is removed when the recorded option agrees with what the dependent assumed, and the dependent's embedded children are stripped transitively when it disagrees, is in doubt, or the target was removed with no option recorded — strip-on-doubt, because an extra dispatch is cheap while a stale rationale becomes a wrong decision.
+- Its input contract widened to three fields with an optional **RECORDED OPTION**, whose presence selects exact-id comparison over judgment; the two lifting callers pass the id they already hold and `answer-open-question` explicitly passes nothing.
+- `answer-all-open-questions-with-recommendation` now walks the dependency graph by depth from its origins — unresolvable edges dropped, same-depth ties in document order, a stranded cycle broken by promoting its document-order-first member — replacing the "loosely most-significant-first" significance proxy with a deterministic, total walk.
+- `review-milestone-requirements` strips the embedded children of every dependent of a block it prunes or dedups, transitively and without recording any decision, giving an option-less removal the same treatment the answer cascade gives a mismatch.
+- `capture-milestone-principle-updates`' diff read was scoped to the answered block's own boundaries with one element-agnostic sentence, so the orphan lines the cascade's tidy and strip outcomes leave in surviving siblings no longer feed the record.
+- `CLAUDE.md` and `README.md` record the retirement of recommendation independence and the new dependency-graph behaviour across both sweeps; the Antigravity tree under `.agents/plugins/cairn/` was regenerated.
 
 ### Milestone 20 — Recommend Agent Return Robustness
 
@@ -226,3 +238,4 @@ Current milestone: `milestones/milestone_21_recommendation-dependency-graph/`
 | 18 | Agent Layer Improvements | `milestones/milestone_18_agent-layer-improvements/` |
 | 19 | Principle Capture By Milestone | `milestones/milestone_19_principle-capture-by-milestone/` |
 | 20 | Recommend Agent Return Robustness | `milestones/milestone_20_recommend-agent-return-robustness/` |
+| 21 | Recommendation Dependency Graph | `milestones/milestone_21_recommendation-dependency-graph/` |
