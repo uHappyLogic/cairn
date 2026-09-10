@@ -109,3 +109,19 @@ Replace the "loosely most-significant → least" ordering in `skills/answer-all-
 - Frontmatter loads under `yaml.safe_load` with its 21-word description unchanged; `uv run scripts/migrate_skills_to_agy.py` succeeds and the regenerated `.agents/plugins/cairn/skills/answer-all-open-questions-with-recommendation/SKILL.md` differs from the source only by the shared-path rewrite.
 
 ---
+
+## Strip Dependents On Review Prune And Dedup
+
+Extend `skills/review-milestone-requirements/SKILL.md` step 2 so that when a prune or dedup removes an `<open-question>` block, every surviving sibling whose `<depends-on question="…">` names that block has its embedded children stripped transitively, leaving the bare wrapper and `<question>` for the next recommend sweep, with no new console advisory beyond the existing removal report. Verified by reading: the stripping is attached to both removal paths and the skill still records no decision.
+
+**Verified:**
+
+- Step 2 of `skills/review-milestone-requirements/SKILL.md` now states that a removed block's dependents are stripped: after each removal it queries every surviving block under `## Open questions` for `<depends-on` lines whose `question` attribute — attribute-name-anchored regex, entity-unescaped, case-folded, matched against the removed block's `id` treated the same way — names the removed block, and deletes every child line between that dependent's `<question>` element and its `</open-question>` closing line (all `<alternative>`, `<applied-principle>`, `<depends-on>`, `<recommendation>` children), leaving the bare wrapper and `<question>` for the next recommend sweep.
+- Stripping is stated as transitive: dependents of a stripped block are stripped the same way, repeating until no `<depends-on>` names a block removed or stripped in the pass.
+- The one stripping rule is attached to both removal paths — its heading reads "on both paths above", directly following the prune and dedup bullets, and it triggers "after each removal".
+- The skill still records no decision: the "You **never** record a decision, fold an answer into `## Decisions`…" sentence stands, and the stripping paragraph itself states it decides nothing and records nothing under `## Decisions`; a stripped block stays as a live question and is never removed.
+- No new console advisory: `git diff -U0` shows a single hunk confined to step 2, step 5's reporting is byte-for-byte unchanged, and the stripping is stated to add nothing to the step-5 report (the committed diff is its record).
+- Frontmatter still loads under `yaml.safe_load` with the `description` unchanged (22 words).
+- `uv run scripts/migrate_skills_to_agy.py` succeeds and `.agents/plugins/cairn/skills/review-milestone-requirements/SKILL.md` differs from the source only by the two `${CLAUDE_PLUGIN_ROOT}` path rewrites and the echo-hint drop.
+
+---

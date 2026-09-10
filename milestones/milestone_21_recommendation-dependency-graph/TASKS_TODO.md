@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Strip Dependents On Review Prune And Dedup
-
-Extend `skills/review-milestone-requirements/SKILL.md` step 2 so that when a prune or dedup removes an `<open-question>` block, every surviving sibling whose `<depends-on question="…">` names that block has its embedded children stripped transitively, leaving the bare wrapper and `<question>` for the next recommend sweep, with no new console advisory beyond the existing removal report. Verified by reading: the stripping is attached to both removal paths and the skill still records no decision.
-
----
-
 ## Scope Capture Diff Read To Answered Block
 
 Reword the one disambiguating sentence in `skills/capture-milestone-principle-updates/SKILL.md` (currently "Any other removed block in the same diff is a cascaded sibling…") so only removed lines within the answered block's `-<open-question id="…">` through `-</open-question>` boundaries feed the record, covering both cascaded sibling blocks and orphan removed lines from siblings that stay in the document. The sentence stays element-agnostic and never names `<depends-on>`. Verified by reading: exactly that sentence changed and no per-element ignore list was started.
