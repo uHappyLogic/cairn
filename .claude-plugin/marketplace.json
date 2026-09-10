@@ -8,7 +8,7 @@
       "name": "cairn",
       "source": ".",
       "description": "Milestone-driven development for any stack.",
-      "version": "1.2.0"
+      "version": "1.3.0"
     }
   ]
 }
