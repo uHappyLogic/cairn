@@ -64,29 +64,14 @@ When recording an answer strips or tidies a dependent block's embedded children,
 
 The answer sweep walks questions that share the same depth in the dependency graph in document order — the order their `<open-question>` blocks appear in the `## Open questions` section, which is what the boundary-line CLI already hands the gather step. Same-depth questions cannot depend on one another, so tie order can never change a cascade outcome; determinism and cost are therefore the only real criteria, and document order costs nothing while retiring the "loosely most-significant first" significance proxy the dependency graph was built to replace.
 
+### Discuss path dependency naming
+
+The conversational `discuss-open-question` path does name the sibling recommendations its inline recommendation builds on, via a caller-neutral disclosure duty written into `shared/recommend-procedure.md` step 1 in place of the retired independence clause: when a recommendation leans on a still-open sibling's recommendation, name that sibling and the option assumed. Each caller renders that duty its own way — `<depends-on>` elements in the agent, prose in the discussion — which is the established division of labor already used for principles, where the core states the citation obligation and the agent owns the `<applied-principle>` markup. The core carries the duty without the sweep mechanics that give it teeth (the acceptance gate and the answer-time cascade), so a reader of the core alone sees the obligation without its enforcement; that is accepted.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Discuss path dependency naming" status="deferred">
-  <question>Whether the conversational discuss-open-question path, which renders no XML, names the sibling recommendations its inline recommendation builds on.</question>
-  <alternative id="Disclosure duty in shared core">
-    Replace the retired &quot;never treat another question&apos;s recommendation as an input&quot; clause in `shared/recommend-procedure.md` step 1 with a caller-neutral duty — when the recommendation leans on a still-open sibling&apos;s recommendation, name that sibling and the option assumed — leaving each caller to render it its own way (`&lt;depends-on&gt;` in the agent, prose in the discussion).
-    <advantage>One edit in the file where the retired clause already lives keeps the core from going silent on cross-question coupling, and mirrors the established split exactly: the core already says &quot;cite the principle it leaned on&quot; while the agent owns the `&lt;applied-principle&gt;` markup.</advantage>
-    <drawback>The execution-neutral core must state the duty without the sweep mechanics that give it teeth (the acceptance gate and the answer-time cascade), so a reader of the core alone sees a disclosure obligation with no visible enforcement.</drawback>
-  </alternative>
-  <alternative id="Prose naming in discuss skill">
-    Leave the core silent on the duty and author a naming rule in `skills/discuss-open-question/SKILL.md` itself, alongside its own &quot;what would change your mind&quot; layer.
-    <advantage>Keeps the sweep-shaped dependency vocabulary entirely out of the neutral core, and puts the prose form next to the conversational layer that would surface it to the user.</advantage>
-    <drawback>Duplicates in a skill what the core already covers for its other caller, and the core — which both callers read — would say nothing at all about cross-question coupling once the independence clause is removed from it.</drawback>
-  </alternative>
-  <alternative id="Discuss path untouched">
-    Treat the dependency declaration as agent-and-XML-only: `discuss-open-question` is left byte-for-byte unchanged and names no sibling recommendation.
-    <advantage>Smallest change surface, and honest that the discussion has no machine consumer for a declaration — the conversation is live, so the user can interrogate any assumption directly.</advantage>
-    <drawback>Retiring the independence clause from the shared core silently grants the discuss path the coupling ability with no disclosure duty whatever, so an inline recommendation can rest on an unstated assumption about a sibling — the milestone-19 undeclared-coupling failure this milestone exists to fix, reproduced on the conversational path.</drawback>
-  </alternative>
-  <recommendation option="Disclosure duty in shared core">Yes — it names them, via a caller-neutral duty written into the core in place of the retired independence clause, because that is where both callers already learn the obligation and where each caller&apos;s own rendering (XML vs. prose) is already the established division of labor.</recommendation>
-</open-question>
 <open-question id="Capture treatment of tag lines" status="deferred">
   <question>Whether the capture skill&apos;s diff read is updated to state explicitly that removed `&lt;depends-on&gt;` lines, both inside the answered block and as orphan lines from tidied or stripped siblings, contribute nothing to its record.</question>
   <alternative id="No change">
