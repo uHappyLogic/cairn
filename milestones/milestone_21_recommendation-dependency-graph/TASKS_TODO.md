@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Render Depends-On Elements In Recommend Agent
-
-Update `agents/recommend-open-question.md` so step 1 drops the independence rule (sibling recommendations already embedded are legitimate inputs) and step 3's rendering spec gains the self-closing `<depends-on question="Short Title" option="Option"/>` element, emitted only for a sibling that already carries embedded children in the block the agent read, naming that sibling's `id` and one of its `<alternative>` ids, placed after the alternatives and any `<applied-principle>` elements and immediately before `<recommendation>`. A coupling on a sibling not yet annotated is expressed as prose inside the affected `<drawback>` or the rationale, with no option-less tag form; step 4's two-test self-check stays unchanged. Verified by reading: the shape example shows the child order alternatives, applied-principles, depends-on, recommendation, and the emit-only-when-target-annotated rule is explicit.
-
----
-
 ## Sequential Ordered Dispatch In Recommend Sweep
 
 Rework `skills/recommend-all-open-questions/SKILL.md` steps 1–4 so the sweep ranks its surviving questions most-significant-first by judgment over only what the gather yields (each block's `id`, `status`, and `<question>` text, reading no more of `requirements.md`), dispatches strictly sequentially, and embeds each accepted region by whole-block-replacement `Edit` before the next dispatch so later agents read the embedded siblings; the repair attempt then runs immediately for that question rather than "while the other dispatches are still in flight". Extend the embedded-block example with a `<depends-on>` line, and extend the escape-hatch note so a regenerated block whose new option differs from what surviving dependents assumed leaves those dependents exactly as they are, with no mismatch advisory. Verified by reading: no parallel or independence language remains, and the commit still happens once at the end.

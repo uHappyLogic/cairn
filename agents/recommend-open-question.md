@@ -35,9 +35,14 @@ Before forming any view, read the context that bears on the question — the sur
 project over reasoning from memory. All of this reading is read-only; forming a recommendation
 changes nothing.
 
-What you must never do is treat **another question's recommendation** as an input to this
-one. That never narrows the read-only grounding you do for the question at hand: ground
-fully; just don't couple to a sibling's recommendation.
+Reading `requirements.md` also shows you the sibling `<open-question>` blocks under
+`## Open questions`, and the orchestrator embeds each accepted return before it dispatches
+the next question — so a sibling that **already carries embedded children** (its
+`<alternative>` elements and `<recommendation>`) in the document as you read it is a
+legitimate input to this one. You may build on such a sibling's recommendation; when you do,
+note that sibling's block `id` and which one of its `<alternative id="...">` values you
+assume it will settle on, because step 3 renders that dependency as an element. A sibling not yet
+annotated is still context, but never something to declare a dependency on.
 
 ### 2. Produce the alternatives and the single recommendation
 
@@ -50,12 +55,13 @@ step 1 — reuse that reading rather than repeating it.
 
 ### 3. Render the XML sub-elements
 
-Render the alternatives, any applied-principle citations, and the recommendation as the
-sub-elements that go *inside* the `<open-question>` block, each a direct child of it. The
-`<open-question …>` / `</open-question>` boundary tags sit at the block's base column and the
-orchestrator owns them; your children sit one level in, at a 2-space indent per nesting level
-relative to that base column, in exactly this shape (the `<applied-principle>` element appears
-once per bearing principle, or not at all when none bore):
+Render the alternatives, any applied-principle citations, any depends-on declarations, and
+the recommendation as the sub-elements that go *inside* the `<open-question>` block, each a
+direct child of it. The `<open-question …>` / `</open-question>` boundary tags sit at the
+block's base column and the orchestrator owns them; your children sit one level in, at a
+2-space indent per nesting level relative to that base column, in exactly this shape (the `<applied-principle>` element appears
+once per bearing principle, or not at all when none bore; the `<depends-on>` element appears
+once per already-annotated sibling the recommendation builds on, or not at all when none):
 
 ```
   <alternative id="Option A">
@@ -69,6 +75,7 @@ once per bearing principle, or not at all when none bore):
     <drawback>…</drawback>
   </alternative>
   <applied-principle>Short Title</applied-principle>
+  <depends-on question="Sibling Short Title" option="Option X"/>
   <recommendation option="Option A">one-line rationale</recommendation>
 ```
 
@@ -86,6 +93,18 @@ once per bearing principle, or not at all when none bore):
   bears, emit no `<applied-principle>` element at all.**
 - **Never bake the citation into the `<recommendation>` element's text.** The applied-principle
   citation lives only in its own sibling `<applied-principle>` element(s).
+- When the recommendation builds on a sibling's already-embedded recommendation (step 1),
+  declare it as a self-closing `<depends-on question="..." option="..."/>` element — a direct
+  child of `<open-question>`, placed **after** the alternatives and any `<applied-principle>`
+  elements and **immediately before** `<recommendation>`, so the child order is always
+  alternatives, applied-principles, depends-on, recommendation. Its `question` attribute is
+  that sibling block's `id` and its `option` attribute is one of that sibling's embedded
+  `<alternative id="...">` values — the option you assumed it will settle on. **Emit a
+  `<depends-on>` element only for a sibling that already carries embedded children in the
+  block you read**, whatever its `status`; one element per such sibling, and none at all when
+  the recommendation builds on no sibling. A coupling on a sibling **not yet annotated** gets
+  no element: never guess an option, and there is no option-less tag form — express that
+  coupling instead as prose inside the affected `<drawback>` or the recommendation's rationale.
 - The single `<recommendation option="...">…</recommendation>` element carries the one
   recommendation: its `option` attribute must name the winning `<alternative id="...">` by
   that alternative's id, and its element text must be the one-line rationale alone, with no
@@ -94,7 +113,7 @@ once per bearing principle, or not at all when none bore):
 - **Entity-escape all element text and attribute values** with the five predefined XML
   entities (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`) wherever the data can carry a special
   character — the `<alternative>` / `<advantage>` / `<drawback>` / `<recommendation>` text and
-  the `id` / `option` attribute values alike.
+  the `id` / `option` / `question` attribute values alike.
 
 ### 4. Self-check the draft, then emit it
 
@@ -106,12 +125,13 @@ emitting them, run the same two mechanical tests the orchestrator runs on what y
 
 If either test fails, revise the draft until both pass. Everything your grounding turned up is
 spent inside the elements — a bearing fact goes into an `<advantage>`, a `<drawback>`, or the
-rationale; a bearing principle goes into an `<applied-principle>`; the rest is dropped. Do any
+rationale; a bearing principle goes into an `<applied-principle>`; an assumed sibling option
+goes into a `<depends-on>`; the rest is dropped. Do any
 thinking you still need in an earlier turn, never in the final message.
 
 Once both tests pass, **end your session with that checked draft as your final message** — the
-`<alternative>` elements, then any `<applied-principle>` elements, then the single
-`<recommendation>` element — and nothing accompanying it. Those sub-elements are the success
+`<alternative>` elements, then any `<applied-principle>` elements, then any `<depends-on>`
+elements, then the single `<recommendation>` element — and nothing accompanying it. Those sub-elements are the success
 return.
 
 If you cannot produce that set — the prompt carries no usable question, the context is too
