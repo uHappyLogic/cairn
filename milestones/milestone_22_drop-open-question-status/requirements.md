@@ -32,29 +32,13 @@ The remaining runtime mentions all say the same thing — the mechanism treats b
 
 The sweep is scoped to the runtime layer (`skills/`, `agents/`, `shared/`), `README.md`, `CLAUDE.md`, and the regenerated Antigravity tree. Every finished milestone's `requirements.md` and `TASKS_DONE.md`, and the existing completed-milestone entries in `milestones/README.md`, are left exactly as written wherever they mention the `status` attribute or the open/deferred distinction: they are records of what was true when they were written, nothing at runtime reads them (capture walks answer commits' git diffs by `id`, never the live files), and milestone 9 already set the no-historical-migration precedent when it introduced the attribute. Milestone 22's own finish entry in `milestones/README.md` is the record dating the attribute's retirement.
 
+### Capture legacy format note
+
+Keep the legacy note without a status note. `capture-milestone-principle-updates` keeps its parenthetical describing the pre-XML `> **Deferred — …:**` / `> **Open question — …:**` blockquote form (correcting the marker to `**Open question — …:**`, which is what those commits actually contain), because the parenthetical describes commits backfill genuinely reads: the 28 blockquote-era answers in milestones 6–9 whose removed lines carry their own alternatives and recommendation, which the runner must be told to treat as the no-recommendation case. It is a description of walked history rather than a carrier of the retired open/deferred distinction. No sentence is added about `status="…"` on the 95 XML-era removed opening lines from milestones 10–21: that attribute is already absorbed by capture's id-anchored, attribute-order-immaterial locate over walked historical diffs, and a note would reintroduce the attribute into the runtime layer. The surviving word "Deferred" in that one runtime file is the one known exception a grep-clean verification of `skills/` must carry.
+
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Capture legacy format note" status="open">
-  <question>Should capture-milestone-principle-updates keep its description of the pre-XML `&gt; **Deferred — …:**` / `&gt; **Open — …:**` blockquote form (and gain a note that walked diffs from milestones 9–21 carry `status=&quot;…&quot;` on their removed opening lines), since it reads those historical commits during backfill, or is that description dropped along with every other deferred mention?</question>
-  <alternative id="Keep legacy note without status note">
-    Keep capture&apos;s parenthetical describing the pre-XML `&gt; **Deferred — …:**` / `&gt; **Open question — …:**` blockquote form (correcting the marker to `**Open question — …:**`, which is what those commits actually contain) and add no note about `status=&quot;…&quot;` on the walked XML-era opening lines.
-    <advantage>The sentence describes the 28 answer commits of milestones 6–9 that backfill actually walks — blockquotes that themselves carry `**Alternatives:**` lists and a recommendation, so the runner needs the explicit rule to treat them as the no-recommendation case rather than parse them — while the 95 XML-era commits of milestones 10–21 need nothing new because the locate at line 138 already matches the removed opening line by its `id` attribute alone with attribute order immaterial; a description of walked history is not one of the open/deferred qualifiers the goal retires.</advantage>
-    <drawback>The word &quot;Deferred&quot; survives in one runtime file, so a grep-clean verification of `skills/` must carry this one known exception and a reader may momentarily take the blockquote form for a live one.</drawback>
-  </alternative>
-  <alternative id="Keep legacy note and add status note">
-    Keep the blockquote description and add a sentence stating that removed opening lines from milestones 10–21 carry `status=&quot;…&quot;`, which the `id`-anchored locate ignores.
-    <advantage>Documents every historical shape the backfill walk encounters in one place, so a runner never meets a removed line the skill has not described.</advantage>
-    <drawback>It restates what line 138 already guarantees (attribute-name-anchored `id` match, attribute order immaterial) — editor-facing rationale a runtime file must not carry — and it would plant a fresh `status` mention in the one runtime layer this milestone is scrubbing, contradicting the goal&apos;s &quot;no trace&quot; intent for that surface.</drawback>
-  </alternative>
-  <alternative id="Drop the legacy description">
-    Delete the blockquote parenthetical along with every other deferred mention, leaving only &quot;an answer recorded before the block form existed removes no `&lt;open-question&gt;` at all&quot;.
-    <advantage>Leaves `skills/`, `agents/`, and `shared/` fully grep-clean of &quot;Deferred&quot; with no exception list, matching the milestone&apos;s sweep uniformly.</advantage>
-    <drawback>Backfill over milestones 6–9 then hands the runner 28 diffs whose removed blockquotes contain alternatives and a recommendation the user saw, with no rule saying those are the no-recommendation case — inviting an ad-hoc attempt to reconstruct a recorded option from a format capture never defined, which is exactly the misclassification the parenthetical exists to prevent.</drawback>
-  </alternative>
-  <recommendation option="Keep legacy note without status note">The parenthetical describes commits backfill genuinely reads (28 blockquote-era answers in milestones 6–9 whose removed lines carry their own alternatives and recommendation, which the runner must be told to treat as no-recommendation), so it is a description of walked history rather than a carrier of the retired open/deferred distinction, while the `status=&quot;…&quot;` on the 95 XML-era removed opening lines is already absorbed by the id-anchored, attribute-order-immaterial locate at line 138 and needs no note that would reintroduce the attribute into the runtime layer.</recommendation>
-</open-question>
 
 <open-question id="Attribute-order wording" status="deferred">
   <question>With `id` as the only attribute, is the &quot;attribute-name-anchored regex, independent of attribute order&quot; phrasing and the review skill&apos;s &quot;id first&quot; ordering rule kept as-is (future-proofing for later attributes), reworded to a plain `id=&quot;([^&quot;]*)&quot;` extraction rule, or dropped?</question>
@@ -73,6 +57,5 @@ The sweep is scoped to the runtime layer (`skills/`, `agents/`, `shared/`), `REA
     <advantage>Leaves the fewest words: the runner is told what to match, not how, and there is nothing left that could ever go stale.</advantage>
     <drawback>The regex is what makes every locate, gather, and cascade deterministic — it is what pulls an entity-escaped value for the reverse substitution, what the acceptance gate&apos;s tests grep, and what tells `question=` from `option=` on a `&lt;depends-on&gt;` line — and the ordering bullet is also the home of the load-bearing single-physical-line and double-quote shape the boundary-line CLI needs, so a pure drop either loses those or has to keep the bullet anyway and collapses into the reword.</drawback>
   </alternative>
-  <depends-on question="Capture legacy format note" option="Keep legacy note without status note"/>
   <recommendation option="Plain extraction rule">The regex `id=&quot;([^&quot;]*)&quot;` and the single-physical-line shape are what the boundary-line CLI executes and stay load-bearing, while &quot;independent of attribute order&quot; and &quot;id first&quot; describe a property that constrains nothing once `id` is the only attribute — speculative future-proofing the runtime layer must not carry and precisely a rule that existed only to carry the retired attribute — so state the mechanism, cut the justification and the ordering clause, and keep the attribute-name-anchored / order-immaterial wording only where a line genuinely has two attributes (`&lt;depends-on&gt;` reads and capture&apos;s locate over historical removed lines, which the sibling recommendation relies on to absorb `status` without a note).</recommendation>
 </open-question>
