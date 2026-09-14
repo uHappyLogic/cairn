@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Review Skill Authors Status-Free Blocks
-
-Rewrite step 3 of `skills/review-milestone-requirements/SKILL.md` so every finding it surfaces is authored as one ordinary three-line block whose opening tag is exactly `<open-question id="Short Title">`, deleting the "it's fine to leave some decisions to settle while doing the work" sentence, the Blocking/Deferred categories, the "do not mark something blocking if a reasonable, low-risk-to-reverse choice exists" rule, and the deferred template with no reworded threshold or pointer in their place. The shape rules state the single-physical-line opening tag plainly, dropping the id-first ordering clause and `status` from the entity-escaping rule, because the sweep and answer skills match against exactly this shape. Verified by reading the step and finding one template, no triage, and no mention of `status`.
-
----
-
 ## Review Skill Convergence On Any Block
 
 Update the step 1 inventory and the step 5 report of `skills/review-milestone-requirements/SKILL.md` so the still-open list names every remaining `<open-question>` block and the convergence verdict is "ready for `/derive-tasks` only when no `<open-question>` block remains", removing the deferred carry-forward clause. This is needed because the derive-tasks precondition it mirrors no longer passes any block through. Verified by grepping the file for `status=` and `deferred` and finding nothing.

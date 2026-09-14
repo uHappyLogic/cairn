@@ -5,7 +5,7 @@ description: Review the current milestone's requirements.md to reconcile its ope
 
 # review-milestone-requirements
 
-The current "work in progress" requirements for the planned milestone live in the current milestone's `requirements.md`. The overall goal is to make that file ready enough for the work to begin — it's fine to leave some decisions to settle while doing the work if they're better solved there.
+The current "work in progress" requirements for the planned milestone live in the current milestone's `requirements.md`. The overall goal is to make that file ready enough for the work to begin.
 
 This skill is the **repeatable engine** of the requirements-iteration loop — run it each time around:
 
@@ -81,36 +81,24 @@ Now look for questions the document doesn't yet capture — paying special atten
 - Are there dependencies on systems not yet described?
 - Are there constraints implied but not stated?
 
-Add only genuinely new questions — don't re-raise anything already present (you just inventoried them in step 1), and do not invent requirements: only annotate gaps relative to what is already written. Categorise each new finding:
-
-**Blocking** — would force a wrong approach or a rewrite if left unanswered. Must be resolved before the work begins. Do not mark something blocking if a reasonable, low-risk-to-reverse choice exists.
-
-**Deferred** — better decided while doing the work (e.g. tuning a value, choosing a specific curve). Note it so it isn't forgotten, but it does not block.
+Add only genuinely new questions — don't re-raise anything already present (you just inventoried them in step 1), and do not invent requirements: only annotate gaps relative to what is already written.
 
 Author each new finding as an `<open-question>` XML block, appended under the single `## Open questions` section (create that section if it does not yet exist). These blocks are **not** placed inline next to the requirement they concern — they all live together in `## Open questions`. Because a block does not sit next to its originating requirement, **each `<question>` must stand on its own** — write it brief, self-contained, and question-shaped, fully understandable without the surrounding context that inline placement used to supply, never a design proposal.
 
-A block you author has exactly three lines: the opening boundary tag, one `<question>` child, and the closing boundary tag. For a blocking (open) question:
+A block you author has exactly three lines: the opening boundary tag, one `<question>` child, and the closing boundary tag:
 
 ```
-<open-question id="Short Title" status="open">
+<open-question id="Short Title">
   <question>Question text here.</question>
-</open-question>
-```
-
-For a deferred decision, only the `status` value and the child text change:
-
-```
-<open-question id="Short Title" status="deferred">
-  <question>What will be decided while doing the work.</question>
 </open-question>
 ```
 
 Author every block to this exact shape — these conventions are the contract the recommendation and answer skills match against, so hold to them precisely:
 
-- **Single-line opening tag, id first.** The `<open-question …>` opening tag is written on one physical line that never wraps, with attributes in id-first order: `id` then `status`, both double-quoted — `<open-question id="…" status="open">`.
+- **Single-line opening tag.** The `<open-question …>` opening tag is written on one physical line that never wraps, carrying the double-quoted `id` attribute — `<open-question id="…">`.
 - **Boundary tags at the base column.** The `<open-question …>` and `</open-question>` lines both sit at the section's base column (no leading indent under `## Open questions`).
 - **`<question>` indented 2 spaces.** The child is nested one level — 2 spaces — under the opening tag. You author only this one child; the `<alternative>` / `<applied-principle>` / `<recommendation>` children are added later by the recommend path.
-- **Entity-escape everything.** Both the element text (inside `<question>`) and the attribute values (`id` and `status`) are XML-escaped using the five predefined entities — `&amp;` for `&`, `&lt;` for `<`, `&gt;` for `>`, `&quot;` for `"`, `&apos;` for `'`. Escape any of these characters wherever they appear in the Short Title or the question text.
+- **Entity-escape everything.** Both the element text (inside `<question>`) and the `id` attribute value are XML-escaped using the five predefined entities — `&amp;` for `&`, `&lt;` for `<`, `&gt;` for `>`, `&quot;` for `"`, `&apos;` for `'`. Escape any of these characters wherever they appear in the Short Title or the question text.
 
 The `id` is the **Short Title**: a 2–5 word phrase that uniquely identifies the question within the document (e.g. "Getting-started section order", "Glossary term scope"). It is the stable handle the question is cited by in conversation and located by in the answering and recommendation skills, which match it **case-insensitively** — so keep every Short Title unique across all `<open-question>` blocks even ignoring case.
 
