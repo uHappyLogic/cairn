@@ -44,26 +44,11 @@ Plain extraction rule — The regex `id="([^"]*)"` and the single-physical-line 
 
 Delete only, no retirement note anywhere. The CLAUDE.md sweep removes every `status` and open/deferred mention from the skill table and the invariants and adds nothing in their place: no standalone retirement invariant, no inline "retired in milestone 22 / do not reintroduce" sentence, and no description of the attribute having existed. The runtime layer, `README.md`, and `CLAUDE.md` state only the current form (the opening tag is exactly `<open-question id="Short Title">`). Nothing forbids a status-like attribute from being introduced later as a fresh design decision. Milestone 22's finish entry in `milestones/README.md` is the only place the change is dated, per the Historical milestone records decision.
 
+### Review skill raise threshold
+
+Raise everything, delete threshold. The review skill authors every finding it surfaces as an ordinary three-line `<open-question>` block and deletes the opening sentence ("it's fine to leave some decisions to settle while doing the work"), the Blocking/Deferred categories, and the "do not mark something blocking if a reasonable, low-risk-to-reverse choice exists" rule as carriers of the retired distinction, with no reworded don't-raise threshold and no pointer sentence in their place. The 21-milestone record shows the threshold only labelled findings and never withheld one (all 47 deferred blocks were raised and answered before derive-tasks), so deleting it preserves the actual raise set, whereas a don't-raise rewrite would add a new silent-suppression behaviour bypassing `## Decisions`, the answer commits, and principle capture. Work-time design keeps its existing home in the completer's design-ownership step of `shared/complete-procedure.md`, and step 3's "only annotate gaps relative to what is already written" rule is the pass's surviving altitude guard.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Review skill raise threshold" status="open">
-  <question>Once the Blocking/Deferred triage is gone, does the review skill keep a threshold for findings better settled during the work — its opening sentence &quot;it&apos;s fine to leave some decisions to settle while doing the work&quot; and the &quot;do not mark something blocking if a reasonable, low-risk-to-reverse choice exists&quot; rule, reworded as &quot;do not raise it at all, the completer decides it against the live project&quot; — or is every finding it would have deferred authored as an ordinary question that must be answered before /derive-tasks, with that opening sentence and rule deleted as carriers of the retired distinction?</question>
-  <alternative id="Reworded don&apos;t-raise threshold">
-    Keep the opening sentence and the low-risk-to-reverse rule, reworded so a finding the pass would have deferred is not authored at all and the completer decides it against the live project.
-    <advantage>The review skill keeps an explicit guard against authoring execution-level tuning as requirements questions, each of which now costs a recommend dispatch and an answer commit before /derive-tasks can run.</advantage>
-    <drawback>It is a new suppression behaviour, not a preserved one: across 21 milestones every one of the 47 deferred blocks was raised and answered before its Task-derivation commit, so the old rule only labelled and never dropped, and a don&apos;t-raise rewrite would silently withhold roughly half the historical finding set from ## Decisions, the answer commits, and principle capture, with no trace that a decision was ever made.</drawback>
-  </alternative>
-  <alternative id="Raise everything, delete threshold">
-    Author every finding as an ordinary three-line block, and delete the opening sentence, the Blocking/Deferred categories, and the low-risk-to-reverse rule as carriers of the retired distinction, leaving work-time design where it already lives (the completer&apos;s &quot;you own the design&quot; step in shared/complete-procedure.md).
-    <advantage>It changes nothing the pass actually raises: the deferred findings were already authored as blocks and already answered before derive-tasks, so the only thing removed is the label, exactly matching the Goal&apos;s &quot;findings it would have deferred are authored as ordinary questions&quot; and the milestone&apos;s Attribute-order wording pattern of cutting a rule that constrains nothing once the attribute is gone.</advantage>
-    <drawback>The pass keeps no reviewer-side counterpart to the task format&apos;s strategy-versus-execution line, so its only altitude guard is step 3&apos;s existing &quot;only annotate gaps relative to what is already written&quot; and its own judgment.</drawback>
-  </alternative>
-  <alternative id="Pointer sentence only">
-    Delete the categories and the low-risk-to-reverse rule, but rewrite the opening sentence into a one-line altitude reminder that execution detail the completer derives against the live project is not a gap in requirements.md, without any threshold applied to findings.
-    <advantage>It preserves a reviewer-facing cue about altitude while carrying no open/deferred distinction and no suppression rule.</advantage>
-    <drawback>It restates what step 3 already says (&quot;do not invent requirements: only annotate gaps relative to what is already written&quot;), which the no-editor-prose rule for runtime files cuts, and its wording is one edit away from regrowing the threshold it replaced.</drawback>
-  </alternative>
-  <recommendation option="Raise everything, delete threshold">The 21-milestone record shows the threshold only labelled findings and never withheld one (all 47 deferred blocks were raised and answered before derive-tasks), so deleting it preserves the actual raise set while a don&apos;t-raise rewrite would add a new silent-suppression behaviour that bypasses ## Decisions, the answer commits, and capture; the work-time home already exists in the completer&apos;s design-ownership step and step 3&apos;s gaps-relative-to-what-is-written rule is the surviving altitude guard.</recommendation>
-</open-question>
