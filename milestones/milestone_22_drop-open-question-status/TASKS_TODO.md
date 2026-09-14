@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Review Skill Convergence On Any Block
-
-Update the step 1 inventory and the step 5 report of `skills/review-milestone-requirements/SKILL.md` so the still-open list names every remaining `<open-question>` block and the convergence verdict is "ready for `/derive-tasks` only when no `<open-question>` block remains", removing the deferred carry-forward clause. This is needed because the derive-tasks precondition it mirrors no longer passes any block through. Verified by grepping the file for `status=` and `deferred` and finding nothing.
-
----
-
 ## Derive Tasks Precondition Stops On Any Block
 
 Change the precondition and step 2 of `skills/derive-tasks/SKILL.md` so derivation stops when any `<open-question` block remains in `requirements.md`, deleting the deferred pass-through sentence and its "may carry forward" wording. This is the only runtime control flow that read the attribute value, so with it gone nothing branches on `status`. Verified by grepping the file for `status=` and `deferred` and finding nothing.

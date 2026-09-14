@@ -15,3 +15,17 @@ Rewrite step 3 of `skills/review-milestone-requirements/SKILL.md` so every findi
 - Step 3's "only annotate gaps relative to what is already written" rule survives as the pass's altitude guard.
 
 ---
+
+## Review Skill Convergence On Any Block
+
+Update the step 1 inventory and the step 5 report of `skills/review-milestone-requirements/SKILL.md` so the still-open list names every remaining `<open-question>` block and the convergence verdict is "ready for `/derive-tasks` only when no `<open-question>` block remains", removing the deferred carry-forward clause. This is needed because the derive-tasks precondition it mirrors no longer passes any block through. Verified by grepping the file for `status=` and `deferred` and finding nothing.
+
+**Verified:**
+
+- Step 1's inventory bullet in `skills/review-milestone-requirements/SKILL.md` names the `<open-question>` blocks present under `## Open questions` with no `status="open"`/`status="deferred"` qualifier.
+- Step 5's "What's still open" item lists every remaining `<open-question>` block by Short Title (`id`).
+- Step 5's convergence rule reads that `/derive-tasks` requires no `<open-question>` block remains, its two sub-bullets branch on any block remaining vs. none, the deferred carry-forward clause and the "noting any deferred blocks" wording are gone, and no retirement note was added in their place.
+- `grep -i -E 'status=|deferred'` over the file returns nothing; the only surviving `status` hit is the "terse status line" wording in step 5.
+- The diff touches only step 1's bullet and step 5's four report lines; steps 0, 2, 3, 4, the no-op paragraph, and the frontmatter are unchanged.
+
+---

@@ -57,7 +57,7 @@ Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILE
 Read `<MILESTONE_DIR>/requirements.md` in full. Build a mental inventory of three things, because the rest of the pass plays them against each other:
 
 - the **Decisions** already recorded (what's settled),
-- the **`<open-question>` blocks** already present under `## Open questions` (what's still flagged) — both `status="open"` and `status="deferred"`,
+- the **`<open-question>` blocks** already present under `## Open questions` (what's still flagged),
 - every stated requirement, constraint, and assumption.
 
 ### 2. Reconcile the existing question set
@@ -119,9 +119,9 @@ On the success path, print exactly one fixed terse status line — `Requirements
 
 Follow that terse line with only the two pieces of decision-critical state git never captures, so the user knows whether to loop again or move on:
 
-- **What's still open** — the remaining `status="open"` blocks, by Short Title (`id`). No nudge pointer.
-- **Convergence** — `/derive-tasks` requires that **no `status="open"` blocks remain** (`status="deferred"` blocks may carry forward — they're meant to be settled while doing the work). So:
-  - If any `status="open"` block remains → the requirements are **not** ready; the next loop step is to answer them, then re-run this skill.
-  - If none remain → say explicitly that the requirements look **ready for `/derive-tasks`**, noting any `status="deferred"` blocks that will be settled during the work.
+- **What's still open** — every remaining `<open-question>` block, by Short Title (`id`). No nudge pointer.
+- **Convergence** — `/derive-tasks` requires that **no `<open-question>` block remains**. So:
+  - If any `<open-question>` block remains → the requirements are **not** ready; the next loop step is to answer them, then re-run this skill.
+  - If none remain → say explicitly that the requirements look **ready for `/derive-tasks`**.
 
 **No-op pass.** When the step-4 dirty-own-path guard fires — this pass reconciled, pruned, and surfaced nothing, so `requirements.md` is unchanged and nothing was committed — do **not** print `Requirements reviewed.` Instead print a single distinct line stating that nothing changed and briefly why (e.g. "No changes — the question set already matched the recorded decisions and no new gaps surfaced."). Still report the still-open list and convergence verdict above, since that state is unchanged but the user still needs it to decide the next loop step.
