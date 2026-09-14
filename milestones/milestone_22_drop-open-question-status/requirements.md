@@ -28,29 +28,13 @@ The remaining runtime mentions all say the same thing — the mechanism treats b
 
 ## Decisions
 
+### Historical milestone records
+
+The sweep is scoped to the runtime layer (`skills/`, `agents/`, `shared/`), `README.md`, `CLAUDE.md`, and the regenerated Antigravity tree. Every finished milestone's `requirements.md` and `TASKS_DONE.md`, and the existing completed-milestone entries in `milestones/README.md`, are left exactly as written wherever they mention the `status` attribute or the open/deferred distinction: they are records of what was true when they were written, nothing at runtime reads them (capture walks answer commits' git diffs by `id`, never the live files), and milestone 9 already set the no-historical-migration precedent when it introduced the attribute. Milestone 22's own finish entry in `milestones/README.md` is the record dating the attribute's retirement.
+
 ## Out of Scope
 
 ## Open questions
-
-<open-question id="Historical milestone records" status="open">
-  <question>Does the repo-wide sweep also edit the finished milestones&apos; own files (their requirements.md, TASKS_DONE.md, and the completed-milestone summaries in milestones/README.md) wherever they mention the status attribute or the open/deferred distinction, or are those left untouched as historical records with only the runtime layer, README.md, CLAUDE.md, and the generated tree in scope?</question>
-  <alternative id="Historical records untouched">
-    Scope the sweep to the runtime layer, README.md, CLAUDE.md, and the regenerated Antigravity tree, leaving every finished milestone&apos;s requirements.md and TASKS_DONE.md and the existing `milestones/README.md` history entries exactly as written; milestone 22&apos;s own finish entry becomes the record of when the attribute was retired.
-    <advantage>Matches the precedent milestone 9 set when it introduced the XML form (&quot;no historical migration&quot; of milestones 01–08) and milestone 12 reaffirmed, keeps the ~85 mentions across 17 finished-milestone files and the three history bullets true to what those milestones actually decided and verified (milestone 9&apos;s goal and milestone 21&apos;s &quot;Deferred siblings as targets&quot; decision only make sense with the attribute in them), and costs nothing at runtime because no skill reads a finished milestone&apos;s files — capture reads answer commits&apos; removed lines by `id` alone.</advantage>
-    <drawback>A repo-wide grep for `status=&quot;deferred&quot;` or &quot;open/deferred&quot; keeps returning historical hits under `milestones/`, so a reader must know from the milestone 22 finish entry that they describe a retired format rather than the live one.</drawback>
-  </alternative>
-  <alternative id="Full repo-wide rewrite">
-    Extend the sweep to every file in the repository, rewording each mention of the attribute or the open/deferred distinction in the 17 finished-milestone files and the three `milestones/README.md` history bullets so no trace remains anywhere.
-    <advantage>Leaves the repository grep-clean, so the goal&apos;s &quot;no trace&quot; intent holds for every file and not just the runtime and documentation surfaces.</advantage>
-    <drawback>Rewrites records of what was decided and verified at the time — milestone 9&apos;s goal describing the `status=&quot;open|deferred&quot;` block it introduced, milestone 21&apos;s decision that a deferred sibling is a valid `&lt;depends-on&gt;` target, and the `**Verified:**` bars that checked those mentions — into text that contradicts the commits behind it, at the cost of ~85 edits nothing consumes, and it breaks the milestone 9 and 12 precedent that finished-milestone history is never migrated.</drawback>
-  </alternative>
-  <alternative id="README summaries only">
-    Leave the per-milestone directories untouched but reword the three `milestones/README.md` history bullets (milestones 6, 7, and 9) that describe the sweeps and the XML block with the attribute, on the grounds that the README is a live top-level index rather than an archived directory.
-    <advantage>Keeps the most-visible summary surface consistent with the live format while touching none of the archived requirements.md or TASKS_DONE.md files.</advantage>
-    <drawback>Draws the historical line at an arbitrary place: those bullets are the release-note source milestone 17 established and the record of what those milestones shipped, so rewording them changes history just as the full rewrite does, only for three lines, without making the repository grep-clean.</drawback>
-  </alternative>
-  <recommendation option="Historical records untouched">Finished milestones&apos; files and the existing README history entries are records of what was true when they were written, nothing at runtime reads them (capture walks git diffs by `id`, never the live files), and milestone 9 already set the no-historical-migration precedent when it introduced the attribute — so the sweep stays scoped to the runtime layer, README.md, CLAUDE.md, and the generated tree, with milestone 22&apos;s finish entry dating the retirement.</recommendation>
-</open-question>
 
 <open-question id="Capture legacy format note" status="open">
   <question>Should capture-milestone-principle-updates keep its description of the pre-XML `&gt; **Deferred — …:**` / `&gt; **Open — …:**` blockquote form (and gain a note that walked diffs from milestones 9–21 carry `status=&quot;…&quot;` on their removed opening lines), since it reads those historical commits during backfill, or is that description dropped along with every other deferred mention?</question>
