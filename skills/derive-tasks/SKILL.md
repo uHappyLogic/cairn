@@ -19,7 +19,7 @@ No arguments. The skill always reads from and writes to the current milestone di
 
 ## Preconditions
 
-- All open questions in the current milestone's `requirements.md` must be resolved (no `<open-question` block with `status="open"` remains; `status="deferred"` blocks may carry forward).
+- All open questions in the current milestone's `requirements.md` must be resolved (no `<open-question` block remains).
 - `TASKS_TODO.md` should be empty or contain only stale tasks from a previous milestone; this skill replaces its contents.
 
 ## Workflow
@@ -38,7 +38,7 @@ Read the shared task format at `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md` (ru
 
 ### 2. Check for unresolved open questions
 
-Scan `requirements.md` for `<open-question` blocks carrying `status="open"`. If any exist, stop immediately and output:
+Scan `requirements.md` for `<open-question` blocks. If any exist, stop immediately and output:
 
 ```
 Cannot derive tasks: the following open questions must be resolved first:
@@ -47,8 +47,6 @@ Cannot derive tasks: the following open questions must be resolved first:
 
 Run /answer-open-question for each one, then re-run /derive-tasks.
 ```
-
-A block with `status="deferred"` does **not** block derivation — deferred questions may carry forward past this point.
 
 ### 3. Decompose into high-level task briefs
 

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Derive Tasks Precondition Stops On Any Block
-
-Change the precondition and step 2 of `skills/derive-tasks/SKILL.md` so derivation stops when any `<open-question` block remains in `requirements.md`, deleting the deferred pass-through sentence and its "may carry forward" wording. This is the only runtime control flow that read the attribute value, so with it gone nothing branches on `status`. Verified by grepping the file for `status=` and `deferred` and finding nothing.
-
----
-
 ## Shared Procedures Drop Status Qualifiers
 
 Sweep `shared/answer-procedure.md`, `shared/answer-with-recommendation-procedure.md`, and `shared/recommend-procedure.md` to remove every "open or deferred", `status="open"`/`status="deferred"`, and "status may precede or follow id" phrasing, stating the `id="([^"]*)"` extraction and single-physical-line locate plainly without the attribute-order justification, per the Attribute-order wording decision. The mechanisms are unchanged; only the qualifiers that described the retired distinction go. Verified by grepping `shared/` for `status` and `deferred` and finding only the `git status --porcelain` line in the commit procedure.

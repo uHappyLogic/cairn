@@ -29,3 +29,17 @@ Update the step 1 inventory and the step 5 report of `skills/review-milestone-re
 - The diff touches only step 1's bullet and step 5's four report lines; steps 0, 2, 3, 4, the no-op paragraph, and the frontmatter are unchanged.
 
 ---
+
+## Derive Tasks Precondition Stops On Any Block
+
+Change the precondition and step 2 of `skills/derive-tasks/SKILL.md` so derivation stops when any `<open-question` block remains in `requirements.md`, deleting the deferred pass-through sentence and its "may carry forward" wording. This is the only runtime control flow that read the attribute value, so with it gone nothing branches on `status`. Verified by grepping the file for `status=` and `deferred` and finding nothing.
+
+**Verified:**
+
+- The `## Preconditions` bullet in `skills/derive-tasks/SKILL.md` states that derivation requires no `<open-question` block remain in `requirements.md`, with no `status="open"`, `status="deferred"`, or "may carry forward" wording.
+- Step 2 scans `requirements.md` for any `<open-question` block and stops when one exists; its scan instruction carries no `status="open"` qualifier.
+- The deferred pass-through sentence ("A block with `status="deferred"` does **not** block derivation — deferred questions may carry forward past this point.") is deleted entirely, with no reworded replacement or retirement note.
+- `grep -i -E 'status=|deferred'` over the file returns nothing; the only surviving `status` hit is the "terse status line" wording in step 8.
+- The diff touches only the precondition bullet and step 2; the frontmatter and steps 0–1 and 3–9 are unchanged.
+
+---
