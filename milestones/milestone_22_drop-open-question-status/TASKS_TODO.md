@@ -1,2 +1,73 @@
 # TASKS TODO
 
+## Review Skill Authors Status-Free Blocks
+
+Rewrite step 3 of `skills/review-milestone-requirements/SKILL.md` so every finding it surfaces is authored as one ordinary three-line block whose opening tag is exactly `<open-question id="Short Title">`, deleting the "it's fine to leave some decisions to settle while doing the work" sentence, the Blocking/Deferred categories, the "do not mark something blocking if a reasonable, low-risk-to-reverse choice exists" rule, and the deferred template with no reworded threshold or pointer in their place. The shape rules state the single-physical-line opening tag plainly, dropping the id-first ordering clause and `status` from the entity-escaping rule, because the sweep and answer skills match against exactly this shape. Verified by reading the step and finding one template, no triage, and no mention of `status`.
+
+---
+
+## Review Skill Convergence On Any Block
+
+Update the step 1 inventory and the step 5 report of `skills/review-milestone-requirements/SKILL.md` so the still-open list names every remaining `<open-question>` block and the convergence verdict is "ready for `/derive-tasks` only when no `<open-question>` block remains", removing the deferred carry-forward clause. This is needed because the derive-tasks precondition it mirrors no longer passes any block through. Verified by grepping the file for `status=` and `deferred` and finding nothing.
+
+---
+
+## Derive Tasks Precondition Stops On Any Block
+
+Change the precondition and step 2 of `skills/derive-tasks/SKILL.md` so derivation stops when any `<open-question` block remains in `requirements.md`, deleting the deferred pass-through sentence and its "may carry forward" wording. This is the only runtime control flow that read the attribute value, so with it gone nothing branches on `status`. Verified by grepping the file for `status=` and `deferred` and finding nothing.
+
+---
+
+## Shared Procedures Drop Status Qualifiers
+
+Sweep `shared/answer-procedure.md`, `shared/answer-with-recommendation-procedure.md`, and `shared/recommend-procedure.md` to remove every "open or deferred", `status="open"`/`status="deferred"`, and "status may precede or follow id" phrasing, stating the `id="([^"]*)"` extraction and single-physical-line locate plainly without the attribute-order justification, per the Attribute-order wording decision. The mechanisms are unchanged; only the qualifiers that described the retired distinction go. Verified by grepping `shared/` for `status` and `deferred` and finding only the `git status --porcelain` line in the commit procedure.
+
+---
+
+## Recommend Sweep Drops Status Reads
+
+Update `skills/recommend-all-open-questions/SKILL.md` so the gather extracts only each block's `id` and `<question>` text, the ranking judges over those alone, gate test 7 no longer states that it reads no `status` or that a deferred target is as valid as an open one, the worked example's opening tag is `<open-question id="Short Title">`, and every "open and deferred"/"open/deferred" phrasing including the frontmatter description is reworded, keeping that description at 25 words or fewer and unquoted. The attribute-order justification on the `id` regex is cut, while `<depends-on>` reads keep their two-attribute order-immaterial wording. Verified by grepping the file for `status` and `deferred` and finding only the "terse status line" and "never deferred to the end" wording.
+
+---
+
+## Answer Sweep Drops Status Qualifiers
+
+Update `skills/answer-all-open-questions-with-recommendation/SKILL.md` so its frontmatter description, gather, block-shape note, and re-check no longer name `status="open"`/`status="deferred"` or "open and deferred", keeping the description at 25 words or fewer and unquoted, and cutting the attribute-order justification on the `id` regex while the `<depends-on>` `question` read keeps its order-immaterial wording. Verified by grepping the file for `status` and `deferred` and finding only the "terse status line" and DONE/FAILED status wording.
+
+---
+
+## Single Question Skills Drop Status Qualifiers
+
+Sweep `skills/discuss-open-question/SKILL.md`, `skills/answer-open-question/SKILL.md`, `skills/answer-open-question-with-recommendation/SKILL.md`, `skills/answer-open-question-with-alternative/SKILL.md`, and `skills/modify-milestone-goal/SKILL.md` to remove every `status="open|deferred"`, "open or deferred", "whether open or deferred", and "open or `Deferred` questions" qualifier plus the "independent of attribute order" justification on the `<open-question>` `id` regex, stating each locate as a plain extraction. Verified by grepping those five files for `status` and `deferred` and finding only "terse status line" hits.
+
+---
+
+## Agents Drop Status Qualifiers
+
+Update `agents/recommend-open-question.md` and `agents/answer-open-question-with-recommendation.md` so the dispatch framing says "once per question", the sibling-declaration rule no longer says "whatever its `status`", and the resolved block is described without `status="open|deferred"`, leaving the `<depends-on>` element rendering and the step 4 self-check untouched. Verified by grepping `agents/` for `status` and `deferred` and finding nothing besides DONE/FAILED wording.
+
+---
+
+## Capture Legacy Note Marker Correction
+
+In `skills/capture-milestone-principle-updates/SKILL.md` keep the parenthetical describing the pre-XML blockquote form as the no-recommendation case, correcting its second marker from `> **Open — …:**` to `> **Open question — …:**` (what those milestone 6–9 commits actually contain), and add no sentence about `status="…"` on historical removed lines, since the id-anchored, attribute-order-immaterial locate already absorbs it and that wording stays. Verified by reading the note and confirming its surviving "Deferred" is the single known exception a grep of `skills/` carries.
+
+---
+
+## README Drops Open Deferred Distinction
+
+Rewrite the five `README.md` passages — the workflow overview, the review skill's reference entry with its Blocking/Deferred triage and convergence rule, and the two sweeps' and the recommend agent's entries — so they describe the review skill authoring every finding as an ordinary block, convergence as no `<open-question>` block remaining, and the sweeps gathering every `<open-question>` block, with no open/deferred wording and no retirement note. Verified by grepping `README.md` for `status=`, `deferred`, and `Blocking` and finding nothing.
+
+---
+
+## CLAUDE Invariants Drop Status Mentions
+
+Sweep `CLAUDE.md` so the skill-table rows for the two sweeps and the invariants on the review skill, the answer-recording mechanism, the recommend sweep, the recommend procedure, and the dispatched-agent return contracts no longer mention `status="open"`/`status="deferred"`, "open/deferred", "a deferred sibling is a declarable target", "no `status` read", "a deferred target is as valid as an open one", or the milestone-21 residual about deferred targets carrying forward, and the review invariant's convergence rule reads "no `<open-question>` block remains". Per the Retirement invariant decision this is delete-only: the attribute-order clause on the `<open-question>` locate is cut, `<depends-on>` and capture keep theirs, and no retirement invariant or "do not reintroduce" sentence is added. Verified by grepping `CLAUDE.md` for `status=` and `deferred` and finding nothing.
+
+---
+
+## Regenerate Antigravity Tree Status Free
+
+Run `uv run scripts/migrate_skills_to_agy.py` to regenerate `.agents/plugins/cairn/` from the swept `skills/`, `agents/`, and `shared/` so the generated tree carries no trace of the attribute, and use the same pass to confirm the whole sweep is grep-clean. Verified by grepping `skills/`, `agents/`, `shared/`, `README.md`, `CLAUDE.md`, and `.agents/plugins/cairn/` for `status=`, `deferred`, and `Blocking` and finding only the capture skill's legacy blockquote note (and its generated copy), while "terse status line", `git status --porcelain`, "finish status", and the DONE/FAILED status wording survive untouched.
+
+---
