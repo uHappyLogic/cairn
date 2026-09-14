@@ -44,3 +44,9 @@ Plain extraction rule — The regex `id="([^"]*)"` and the single-physical-line 
 
 ## Open questions
 
+<open-question id="Review skill raise threshold" status="open">
+  <question>Once the Blocking/Deferred triage is gone, does the review skill keep a threshold for findings better settled during the work — its opening sentence &quot;it&apos;s fine to leave some decisions to settle while doing the work&quot; and the &quot;do not mark something blocking if a reasonable, low-risk-to-reverse choice exists&quot; rule, reworded as &quot;do not raise it at all, the completer decides it against the live project&quot; — or is every finding it would have deferred authored as an ordinary question that must be answered before /derive-tasks, with that opening sentence and rule deleted as carriers of the retired distinction?</question>
+</open-question>
+<open-question id="Retirement invariant in CLAUDE" status="deferred">
+  <question>Does the CLAUDE.md sweep only delete the status and open/deferred mentions, leaving milestone 22&apos;s finish entry in milestones/README.md as the sole record of the retirement, or does it also add a short invariant stating that the block carries only the `id` attribute and there is deliberately no deferred category, in the house style used for other retired rules, so a later editor does not reintroduce it?</question>
+</open-question>
