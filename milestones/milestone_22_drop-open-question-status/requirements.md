@@ -30,3 +30,16 @@ The remaining runtime mentions all say the same thing — the mechanism treats b
 
 ## Out of Scope
 
+## Open questions
+
+<open-question id="Historical milestone records" status="open">
+  <question>Does the repo-wide sweep also edit the finished milestones&apos; own files (their requirements.md, TASKS_DONE.md, and the completed-milestone summaries in milestones/README.md) wherever they mention the status attribute or the open/deferred distinction, or are those left untouched as historical records with only the runtime layer, README.md, CLAUDE.md, and the generated tree in scope?</question>
+</open-question>
+
+<open-question id="Capture legacy format note" status="open">
+  <question>Should capture-milestone-principle-updates keep its description of the pre-XML `&gt; **Deferred — …:**` / `&gt; **Open — …:**` blockquote form (and gain a note that walked diffs from milestones 9–21 carry `status=&quot;…&quot;` on their removed opening lines), since it reads those historical commits during backfill, or is that description dropped along with every other deferred mention?</question>
+</open-question>
+
+<open-question id="Attribute-order wording" status="deferred">
+  <question>With `id` as the only attribute, is the &quot;attribute-name-anchored regex, independent of attribute order&quot; phrasing and the review skill&apos;s &quot;id first&quot; ordering rule kept as-is (future-proofing for later attributes), reworded to a plain `id=&quot;([^&quot;]*)&quot;` extraction rule, or dropped?</question>
+</open-question>
