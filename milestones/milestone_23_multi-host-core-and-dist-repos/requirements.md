@@ -36,6 +36,10 @@ There is no `core/` directory, no neutral plugin-root placeholder, no per-host m
 
 ## Decisions
 
+### Host build
+
+Each host is declared to the build as a declarative definition directory, `scripts/hosts/<host>/`, holding a settings file (the plugin-root placeholder replacement value, prose patterns to drop, frontmatter keys to strip, output layout and file renames, excluded paths) beside that host's manifest template files with version and name slots. One generic build script discovers the definitions by directory scan and applies them uniformly, so no host-specific Python exists and a definition can be validated before any build runs. Every host difference the current transpiler performs is a substitution, a rename, an exclusion, a frontmatter-key strip, or a manifest slot, and all of them fit this data schema; per-host prose rewrites, if any are adopted, fit it as pattern-replacement pairs. Adding a host means adding a definition directory. Only a host rule needing real logic beyond literal or regex substitution would justify a Python module per host, and no such rule is anticipated.
+
 ## Out of Scope
 
 ## Open questions
@@ -85,25 +89,6 @@ There is no `core/` directory, no neutral plugin-root placeholder, no per-host m
   <depends-on question="Host-conditional prose handling" option="Neutral prose, strip keys by data"/>
   <recommendation option="Remove from core entirely">The hint is the one remaining host-named sentence once the other prose sites are neutralized and it is dead weight even on Claude Code, where the reference is substituted at load and the echo prints nothing, so deleting its 24 occurrences once costs less than a drop rule every future host must carry plus an exemption in the no-host-name guard that the neutral core otherwise makes a one-line check.</recommendation>
 </open-question>
-<open-question id="Host definition mechanism">
-  <question>How is a host declared to the build so that adding one means adding a definition rather than code — a data file per host under scripts/ (manifest template, placeholder rewrite, output layout, excluded files), a small Python module per host implementing a fixed interface, or a registry table inside the build script?</question>
-  <alternative id="Data definition per host">
-    A declarative definition directory per host, such as scripts/hosts/&lt;host&gt;/ holding a host.toml (placeholder replacement value, prose patterns to drop, frontmatter keys to strip, output layout and file renames, excluded paths) beside that host&apos;s manifest template files with version and name slots, which one generic build script loads by directory scan and applies uniformly.
-    <advantage>Matches the goal&apos;s own bar literally — a new host is a directory of templates and settings with no Python — and every host difference that exists today (manifest shape, one placeholder literal, one hint regex, one file rename, one frontmatter key) is already expressible as data, so nothing is lost while definitions stay diffable, reviewable, and cheap to validate before any build runs.</advantage>
-    <drawback>The definition schema must anticipate the kinds of difference a host can have; a future host needing a transform that is not a substitution, rename, or exclusion forces a schema extension in the build script rather than a local tweak.</drawback>
-  </alternative>
-  <alternative id="Python module per host">
-    A scripts/hosts/&lt;host&gt;.py module per host exposing a fixed interface (render manifest, rewrite a file&apos;s content, lay out the output tree, list exclusions) that the build script discovers and calls.
-    <advantage>Unbounded expressiveness — any host quirk, including conditional prose rewrites or format conversions, is an ordinary function with no schema to grow.</advantage>
-    <drawback>Each host is code again, so the milestone&apos;s &quot;definition rather than transpiler&quot; promise holds only by discipline: per-host modules drift back into per-host transpilers, cannot be validated without executing them, and the common copy-and-rewrite work either gets re-implemented per module or is hidden behind a base class the definition author must understand.</drawback>
-  </alternative>
-  <alternative id="Registry table in build script">
-    A single HOSTS dictionary inside the build script mapping each host name to its manifest dict, placeholder value, drop patterns, exclusions, and layout, with no separate per-host files.
-    <advantage>The simplest possible mechanism — one file, no discovery or loading layer, no new file format, and every host visible side by side.</advantage>
-    <drawback>Adding a host means editing the build script itself, so the definition/code boundary is a convention rather than a structure; multi-line manifest templates as inline Python literals are awkward to read and review, and documentation has no per-host file to point at.</drawback>
-  </alternative>
-  <recommendation option="Data definition per host">Every host difference the live transpiler actually performs is a substitution, a rename, an exclusion, or a manifest with version and name slots, so a per-host definition directory captures both current hosts with zero host-specific Python while giving a future host a single place to add and the build a definition it can validate before running; the tie-breaker against the module form is the sibling Host-conditional prose handling question — if it settles on per-host prose rewrites that are still literal or regex substitutions they fit the data schema as pattern-replacement pairs, and only a rule needing real logic would justify moving to a Python module.</recommendation>
-</open-question>
 <open-question id="Build script interface">
   <question>What is the build script&apos;s name, invocation shape (one host, all hosts, a check-only mode), and relationship to scripts/migrate_skills_to_agy.py — is the old transpiler deleted outright or kept as a thin alias for one release?</question>
   <alternative id="Host selector with check mode">
@@ -122,7 +107,6 @@ There is no `core/` directory, no neutral plugin-root placeholder, no per-host m
     <drawback>The shim cannot honor its old contract — the goal removes both the root skills/, agents/, shared/ it read and the .agents/plugins/cairn/ tree it wrote, so it would silently emit into hosts/antigravity/ instead — and it protects nobody: the script&apos;s only callers are three in-repo files this milestone rewrites, no CI, hook, or published package invokes it, so the alias adds a scheduled follow-up removal that a later release must remember while guarding a command no one outside the repository runs.</drawback>
   </alternative>
   <applied-principle>Name by distinctive function</applied-principle>
-  <depends-on question="Host definition mechanism" option="Data definition per host"/>
   <recommendation option="Host selector with check mode">One scripts/build_hosts.py — named for its distinctive responsibility of building host trees and matching set_version.py&apos;s verb_object family rather than the generic build.py or the mechanism-and-one-host name migrate_skills_to_agy.py — whose no-argument default is every host discovered under scripts/hosts/, whose host-name form builds one, and whose --check mode is the non-mutating comparison a drift check needs; the old transpiler is deleted outright in the same change, because its inputs and output path cease to exist in this milestone and its only three callers are in-repo files rewritten here, so a shim would preserve a command nobody outside the repo runs while silently changing what it produces.</recommendation>
 </open-question>
 <open-question id="Version source of truth">
@@ -167,7 +151,6 @@ There is no `core/` directory, no neutral plugin-root placeholder, no per-host m
     <drawback>The cap is the one rule in the layer with a numeric no-exceptions bar, every current description fits (the longest is 23 words), and the transpiler already rejects a missing description — so the word count is a one-line addition to a check that already parses the frontmatter, and without it the &quot;hard pass/fail bar&quot; is enforced by nobody until a dist repo has already published the overage.</drawback>
   </alternative>
   <depends-on question="Placeholder token form" option="Mustache-style token"/>
-  <depends-on question="Host definition mechanism" option="Data definition per host"/>
   <depends-on question="Build script interface" option="Host selector with check mode"/>
   <depends-on question="Host-conditional prose handling" option="Neutral prose, strip keys by data"/>
   <recommendation option="Full gate, whole build aborts">Every check the question names is a one-line grep or a frontmatter read once the placeholder is the double-brace token and each host definition declares its own plugin-root literal and stripped keys — unreplaced is any {{, foreign is any other host&apos;s literal, dangling is this host&apos;s literal followed by a path that does not exist in the tree, the cap is a word count on a field the build already parses — and adding the sibling&apos;s two guards (no host name in core/, no stripped key in a host tree) completes the set at no extra mechanism; the abort must cover the whole selected build because the release commits every hosts/&lt;host&gt;/ tree as one version and a build that writes some trees and not others hands it a state it must never commit, while rendering to a temporary directory and swapping only after all checks pass is the same primitive the --check mode already needs.</recommendation>
@@ -215,7 +198,6 @@ There is no `core/` directory, no neutral plugin-root placeholder, no per-host m
     <drawback>It contradicts the goal&apos;s explicit &quot;monorepo marketplace repointed at ./hosts/claude&quot;, breaks every install pinned to uHappyLogic/cairn (two local projects at 1.4.0 and 1.0.0) outright instead of through the migration note the Install documentation sibling anticipates, and forces the maintainer&apos;s directory-source autoUpdate registration at the live checkout — how core edits are exercised before a release — to be re-registered against a subdirectory.</drawback>
   </alternative>
   <depends-on question="Version source of truth" option="Dedicated VERSION file"/>
-  <depends-on question="Host definition mechanism" option="Data definition per host"/>
   <recommendation option="Both manifests, VERSION authoritative">A marketplace add of cairn-claude needs a .claude-plugin/marketplace.json at that repository root, and since the dist repository is hosts/claude/ published verbatim, that file must be a generated member of hosts/claude/ — one more template in the Claude host definition with a version slot, exactly like plugin.json — while the root marketplace.json the goal keeps pointing at ./hosts/claude stays a mirrored surface set_version.py writes; the &quot;no dist marketplace&quot; branch is not viable because it defeats the recommended-install-source goal, and neither marketplace file is authoritative because the sibling already makes VERSION the sole source, so the version script writes only its mirrored surfaces, the build renders from the template, and validation reduces to asserting that both copies carry the VERSION literal.</recommendation>
 </open-question>
 <open-question id="Dist repo README content">
@@ -240,7 +222,6 @@ There is no `core/` directory, no neutral plugin-root placeholder, no per-host m
     <advantage>Nothing to template and nothing to keep aligned with the root README, so the dist tree is the plugin and no more.</advantage>
     <drawback>The repository the goal makes the documented recommended install source renders no landing page — a reader sees a directory listing with no install command, no notice that the tree is generated, and no visible pointer to where changes are actually made — which is the first thing GitHub shows and the one surface neither the commit body nor a release page replaces.</drawback>
   </alternative>
-  <depends-on question="Host definition mechanism" option="Data definition per host"/>
   <depends-on question="Version source of truth" option="Dedicated VERSION file"/>
   <depends-on question="Dist publish mechanism" option="Plumbing snapshot commit"/>
   <depends-on question="Build drift check" option="Pre-flight check stops release"/>
@@ -307,7 +288,6 @@ There is no `core/` directory, no neutral plugin-root placeholder, no per-host m
   <depends-on question="Dist publish mechanism" option="Plumbing snapshot commit"/>
   <depends-on question="Dist repo creation" option="One-time gh command in milestone"/>
   <depends-on question="Build drift check" option="Pre-flight check stops release"/>
-  <depends-on question="Host definition mechanism" option="Data definition per host"/>
   <recommendation option="After GitHub release, per host">The publish step&apos;s ordering rule is that nothing is created before what it names exists, and the dist commit names both the pushed source commit and the monorepo release URL, so it belongs after (c) as one check-then-do sub-step per host in definition order; the already-published state is the dist tag&apos;s tree id equalling HEAD:hosts/&lt;host&gt; — meaningful because the drift gate guarantees that tree is a fresh build of core/ — and a tag on any other tree is the same stop-and-report the monorepo tag already gets, since a published dist tag is never moved; the announcement window is seconds on success and one resumption on failure, and if the still-open Dist repo GitHub releases sibling adds a dist release it attaches as a further check-then-do sub-step after each host&apos;s tag inside the same shape.</recommendation>
 </open-question>
 <open-question id="Dist repo GitHub releases">
@@ -380,7 +360,6 @@ There is no `core/` directory, no neutral plugin-root placeholder, no per-host m
     <advantage>Splits the sites by kind: a sentence can be written once so it cannot go stale, while a frontmatter key is a structured field a build drops deterministically by name, so the Claude tree keeps its colors, the Antigravity tree carries nothing Claude-only, and both guards — no host name in core, no foreign key in a host tree — are one-line checks.</advantage>
     <drawback>Two mechanisms for what the question treats as one category, and the neutral sentences must still give the runner enough to act on — the repair step has to describe the continuation capability precisely enough that the Claude Code runner finds SendMessage from it — which is a wording burden the per-host rewrite option never has.</drawback>
   </alternative>
-  <depends-on question="Host definition mechanism" option="Data definition per host"/>
   <recommendation option="Neutral prose, strip keys by data">Three of the four sites are already capability-keyed sentences with the host names as parenthetical examples, and the Antigravity tree has run on them verbatim since milestone 15, so stripping the examples costs nothing at run time while a prose rewrite rule would silently stop matching on the first rewording; the color key is the one site that is a field rather than a sentence, and the recommended data schema already lists frontmatter keys to strip, so it is dropped by declaration and no rule in the build ever needs real logic — which also confirms the sibling&apos;s tie-breaker in favor of data definitions. The one existing prose-drop rule, the Claude resolve hint, is left to the still-open Resolve hint fate sibling; a core that names no host makes removing it from core the consistent outcome, but that is that question&apos;s to settle.</recommendation>
 </open-question>
 <open-question id="Stale migrate-workspace references">
@@ -401,6 +380,5 @@ There is no `core/` directory, no neutral plugin-root placeholder, no per-host m
     <drawback>Carrying the references across means the rewrite must either invent core/skills/migrate-workspace/SKILL.md — a fresh false path a reader would trust — or keep a root skills/ path the milestone declares removed; the transpiler cannot carry the skip forward once it is deleted, so whether the new host definitions inherit an exclusion is decided in this milestone regardless; and no later milestone touches migrate-workspace, so the cleanup has no natural trigger.</drawback>
   </alternative>
   <depends-on question="Build script interface" option="Host selector with check mode"/>
-  <depends-on question="Host definition mechanism" option="Data definition per host"/>
   <recommendation option="Fold into layout rewrite">All four references live in passages the layout rewrite must edit anyway — one names the root path skills/migrate-workspace/SKILL.md, which the goal removes and which has had no target since 759c285 deleted the skill — and the -workspace skip vanishes with the transpiler the Build script interface sibling deletes, so the only live decision is to add no excluded-path entry for it to the Antigravity definition; deferring would force the rewrite to fabricate a core/ path for a skill that does not exist, and a separate commit would edit a file about to be deleted.</recommendation>
 </open-question>
