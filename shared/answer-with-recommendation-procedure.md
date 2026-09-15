@@ -15,10 +15,10 @@ delegate.
 This procedure records one recommendation-derived answer given one input the caller
 supplies:
 
-- **SHORT TITLE** — the resolved handle of an existing `<open-question>` block to answer,
-  whether `status="open"` or `status="deferred"` (case-insensitive against the block's
-  `id`). The caller has already obtained it; locating the matching block, lifting its
-  `<recommendation>` element, and delegating the recording are this procedure's job.
+- **SHORT TITLE** — the resolved handle of an existing `<open-question>` block to answer
+  (case-insensitive against the block's `id`). The caller has already obtained it; locating
+  the matching block, lifting its `<recommendation>` element, and delegating the recording
+  are this procedure's job.
 
 The ANSWER is **not** an input here — this procedure *derives* it by lifting the block's
 embedded `<recommendation>` element. That derived ANSWER, together with SHORT TITLE and the
@@ -36,7 +36,7 @@ Locate the block whose `id` case-folds equal to SHORT TITLE exactly as
 `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` step 2 specifies: the line-oriented CLI
 (`awk`/`sed`/`grep`) keyed on the `<open-question …>` / `</open-question>` boundary lines
 within the single `## Open questions` section of `<MILESTONE_DIR>/requirements.md`, the `id`
-attribute pulled by attribute-name-anchored regex, entity-unescaped, and case-folded against
+attribute pulled by the regex `id="([^"]*)"`, entity-unescaped, and case-folded against
 SHORT TITLE. The matched block spans its opening boundary line through the next
 `</open-question>` closing boundary line.
 

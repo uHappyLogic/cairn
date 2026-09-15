@@ -11,10 +11,9 @@ work itself — locate, analyse, fold, remove, cascade.
 This procedure records one decision given three inputs the caller supplies, the third
 optional:
 
-- **SHORT TITLE** — the resolved handle of an existing `<open-question>` block to answer,
-  whether `status="open"` or `status="deferred"` (case-insensitive against the block's
-  `id`). The caller has already obtained it; locating the matching block is this
-  procedure's job.
+- **SHORT TITLE** — the resolved handle of an existing `<open-question>` block to answer
+  (case-insensitive against the block's `id`). The caller has already obtained it; locating
+  the matching block is this procedure's job.
 - **ANSWER** — the answer text for that question.
 - **RECORDED OPTION** *(optional)* — the un-escaped option or alternative id the caller
   lifted as the decision, when it lifted one: the block's `<recommendation option="…">`
@@ -39,17 +38,15 @@ lines rather than reading the whole file to eyeball a header. Every `<open-quest
 lives under the single `## Open questions` section of `<MILESTONE_DIR>/requirements.md`, so
 those boundary lines within that one section enumerate the entire question set.
 
-For each `<open-question …>` opening boundary line, pull its `id` attribute with an
-attribute-name-anchored regex — `id="([^"]*)"` — so the match is independent of attribute
-order (`status` may precede or follow `id`). The captured value is stored **entity-escaped**,
-so reverse the five-predefined-entity substitution on it before comparing — replace
-`&lt;`→`<`, `&gt;`→`>`, `&quot;`→`"`, `&apos;`→`'`, and `&amp;`→`&` **last**. Then case-fold
-both that un-escaped `id` and SHORT TITLE and compare: the block whose `id` case-folds equal
-to SHORT TITLE is the match.
+Each `<open-question …>` opening boundary line is the block's opening tag on one physical
+line; pull its `id` attribute from it with the regex `id="([^"]*)"`. The captured value is
+stored **entity-escaped**, so reverse the five-predefined-entity substitution on it before
+comparing — replace `&lt;`→`<`, `&gt;`→`>`, `&quot;`→`"`, `&apos;`→`'`, and `&amp;`→`&`
+**last**. Then case-fold both that un-escaped `id` and SHORT TITLE and compare: the block
+whose `id` case-folds equal to SHORT TITLE is the match.
 
 The matched block spans from its `<open-question …>` opening boundary line through the next
-`</open-question>` closing boundary line — one boundary-token pair per block, shared by open
-and deferred blocks alike.
+`</open-question>` closing boundary line — one boundary-token pair per block.
 
 If no block's `id` case-folds equal to SHORT TITLE, **stop without changing anything** and
 report the mismatch, listing all available ids — deterministically enumerable by pulling
@@ -62,7 +59,7 @@ Before editing, reason about the answer's implications:
 
 - Does it resolve the question completely, or leave a sub-question open?
 - Does it introduce a concrete constraint that belongs under `## Decisions`?
-- Does it make any other open or deferred entry moot, or force a specific answer to one?
+- Does it make any other entry moot, or force a specific answer to one?
 - Does it contradict or supersede anything already written in the document?
 
 This analysis is how you reach the right edits in steps 4–6; it is not itself written into
@@ -96,8 +93,8 @@ children.
 
 ### 6. Cascade to mooted entries and reconcile dependents
 
-If the decision moots another open or deferred entry or forces its answer, fold any implied
-constraint into `## Decisions` the same way and remove that entry too.
+If the decision moots another entry or forces its answer, fold any implied constraint into
+`## Decisions` the same way and remove that entry too.
 
 Then reconcile dependency declarations. The recommend sweep may have embedded in any block
 a self-closing `<depends-on question="…" option="…"/>` child recording that the block's

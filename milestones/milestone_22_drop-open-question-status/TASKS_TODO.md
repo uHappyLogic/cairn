@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Shared Procedures Drop Status Qualifiers
-
-Sweep `shared/answer-procedure.md`, `shared/answer-with-recommendation-procedure.md`, and `shared/recommend-procedure.md` to remove every "open or deferred", `status="open"`/`status="deferred"`, and "status may precede or follow id" phrasing, stating the `id="([^"]*)"` extraction and single-physical-line locate plainly without the attribute-order justification, per the Attribute-order wording decision. The mechanisms are unchanged; only the qualifiers that described the retired distinction go. Verified by grepping `shared/` for `status` and `deferred` and finding only the `git status --porcelain` line in the commit procedure.
-
----
-
 ## Recommend Sweep Drops Status Reads
 
 Update `skills/recommend-all-open-questions/SKILL.md` so the gather extracts only each block's `id` and `<question>` text, the ranking judges over those alone, gate test 7 no longer states that it reads no `status` or that a deferred target is as valid as an open one, the worked example's opening tag is `<open-question id="Short Title">`, and every "open and deferred"/"open/deferred" phrasing including the frontmatter description is reworded, keeping that description at 25 words or fewer and unquoted. The attribute-order justification on the `id` regex is cut, while `<depends-on>` reads keep their two-attribute order-immaterial wording. Verified by grepping the file for `status` and `deferred` and finding only the "terse status line" and "never deferred to the end" wording.

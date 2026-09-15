@@ -11,9 +11,9 @@ ground, enumerate honest alternatives, recommend one.
 
 This procedure produces a recommendation for one question the caller supplies:
 
-- **QUESTION** — the resolved open or deferred question to reason about (its Short Title and
-  text). The caller has already selected it; forming the alternatives and the single
-  recommendation for it is this procedure's job.
+- **QUESTION** — the resolved question to reason about (its Short Title and text). The
+  caller has already selected it; forming the alternatives and the single recommendation
+  for it is this procedure's job.
 
 ## Procedure
 
@@ -31,10 +31,10 @@ any one milestone. Read it in place and note any confirmed principle that bears 
 question. Presence of a principle in that file means it is user-confirmed.
 
 Reading `requirements.md` also surfaces the sibling questions, and a recommendation already
-attached to a sibling that is itself still unanswered (open or deferred) is legitimate input
-to this one. Whenever the recommendation you form leans on such a sibling's recommendation,
-disclose that dependency: name the sibling (its Short Title) and the option you assumed it
-will settle on. The caller decides how that disclosure is rendered.
+attached to a sibling that is itself still unanswered is legitimate input to this one.
+Whenever the recommendation you form leans on such a sibling's recommendation, disclose that
+dependency: name the sibling (its Short Title) and the option you assumed it will settle on.
+The caller decides how that disclosure is rendered.
 
 ### 2. Enumerate the alternatives
 

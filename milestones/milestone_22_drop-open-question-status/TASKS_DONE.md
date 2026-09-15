@@ -43,3 +43,17 @@ Change the precondition and step 2 of `skills/derive-tasks/SKILL.md` so derivati
 - The diff touches only the precondition bullet and step 2; the frontmatter and steps 0–1 and 3–9 are unchanged.
 
 ---
+
+## Shared Procedures Drop Status Qualifiers
+
+Sweep `shared/answer-procedure.md`, `shared/answer-with-recommendation-procedure.md`, and `shared/recommend-procedure.md` to remove every "open or deferred", `status="open"`/`status="deferred"`, and "status may precede or follow id" phrasing, stating the `id="([^"]*)"` extraction and single-physical-line locate plainly without the attribute-order justification, per the Attribute-order wording decision. The mechanisms are unchanged; only the qualifiers that described the retired distinction go. Verified by grepping `shared/` for `status` and `deferred` and finding only the `git status --porcelain` line in the commit procedure.
+
+**Verified:**
+
+- `grep -rn -i "status\|deferred" shared/` returns only `shared/commit-procedure.md:26` (the `git status --porcelain` line); `shared/answer-procedure.md`, `shared/answer-with-recommendation-procedure.md`, and `shared/recommend-procedure.md` carry no `status="open"`, `status="deferred"`, "open or deferred", "open and deferred", or "status may precede or follow id" phrasing.
+- `shared/answer-procedure.md` step 2 states the locate plainly: each `<open-question …>` opening boundary line is the block's opening tag on one physical line and its `id` is pulled with the regex `id="([^"]*)"`, with the "independent of attribute order" justification and its parenthetical cut; the matched-block sentence ends at "one boundary-token pair per block".
+- `shared/answer-with-recommendation-procedure.md` step 2 names the `id` extraction as "pulled by the regex `id="([^"]*)"`" and its SHORT TITLE input drops the status clause; `shared/recommend-procedure.md`'s QUESTION input and disclosure duty read "the resolved question" and "a sibling that is itself still unanswered".
+- The `<depends-on>` `question` read in `shared/answer-procedure.md` step 6 keeps its "pulled by attribute-name-anchored regex, entity-unescaped, and case-folded exactly as step 2 matches `id`" wording, as the only line with two attributes.
+- `git diff` over the three files shows only qualifier removals and the rephrased locate sentence: the boundary-line CLI, entity unescaping, case-folding, fold-before-remove order, cascade, and the two reconciliation outcomes are unchanged, and no other `shared/` file is modified.
+
+---
