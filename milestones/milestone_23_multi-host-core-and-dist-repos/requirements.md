@@ -80,3 +80,6 @@ The install instructions are mirrored per-host sections with a versioned-archive
 
 ## Open questions
 
+<open-question id="Dist repository resolution">
+  <question>How does the release skill resolve each host&apos;s distribution repository and remote URL: by a fixed naming convention derived from the host definition directory name (uHappyLogic/cairn-&lt;host&gt;), or from a field declared in that host&apos;s definition settings file?</question>
+</open-question>
