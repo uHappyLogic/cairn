@@ -150,3 +150,20 @@ Rewrite the five `README.md` passages — the workflow overview, the review skil
 - `git diff -U0 README.md` shows exactly five hunks at lines 104, 235, 265, 281, and 285, and no retirement note or "do not reintroduce" sentence was added anywhere.
 
 ---
+
+## CLAUDE Invariants Drop Status Mentions
+
+Sweep `CLAUDE.md` so the skill-table rows for the two sweeps and the invariants on the review skill, the answer-recording mechanism, the recommend sweep, the recommend procedure, and the dispatched-agent return contracts no longer mention `status="open"`/`status="deferred"`, "open/deferred", "a deferred sibling is a declarable target", "no `status` read", "a deferred target is as valid as an open one", or the milestone-21 residual about deferred targets carrying forward, and the review invariant's convergence rule reads "no `<open-question>` block remains". Per the Retirement invariant decision this is delete-only: the attribute-order clause on the `<open-question>` locate is cut, `<depends-on>` and capture keep theirs, and no retirement invariant or "do not reintroduce" sentence is added. Verified by grepping `CLAUDE.md` for `status=` and `deferred` and finding nothing.
+
+**Verified:**
+
+- The skill-table rows for `recommend-all-open-questions` (line 42) and `answer-all-open-questions-with-recommendation` (line 48) read "sweeps every question", with no "open/deferred questions" wording.
+- The review invariant (line 76) reconciles "the existing blocks" with no `status="open"`/`status="deferred"` qualifier, its convergence rule reads "converged when no `<open-question>` block remains — exactly `derive-tasks`'s precondition", and the "`status="deferred"` blocks may carry forward" clause is gone.
+- The answer-recording invariant (line 77) states the `<open-question>` locate as "(case-folded, entity-unescaped, matched by attribute-name-anchored regex)" with the "so attribute order is immaterial" clause cut, while the `<depends-on>` parentheticals on lines 76, 77, and 84 are byte-for-byte unchanged.
+- The recommend-sweep invariant (line 78) gathers "the `<open-question>` entries", ranks over "each block's `id` and `<question>` text", carries no "whatever its `status` — a `status="deferred"` sibling … is a declarable target" parenthetical, and gate test 7 opens "(**no cycle test** —" with the "no `status` read" clause gone.
+- The recommend-procedure invariant (line 83) reads "still-unanswered sibling" with the "(open or deferred)" parenthetical cut, and the return-contracts invariant (line 102) reads "and it resolves **one hop only**" with the "reads **no `status`** (a deferred target is as valid as an open one …)" clause gone.
+- No retirement invariant, "do not reintroduce" sentence, or description of the attribute having existed was added; the word diff shows only deletions plus the minimal connective wording ("every question", "converged when … —", "`<open-question>`", and "postponed" for the unrelated verb "deferred" in "never deferred to the end of the run").
+- `grep -n -i -E 'status=|deferred' CLAUDE.md` returns nothing; the only surviving `status` hits are "terse status line" (line 89) and "finish status" (line 90).
+- `git diff -U0 CLAUDE.md` shows exactly five hunks at lines 42, 48, 76–78, 83, and 102, and no other file is modified.
+
+---
