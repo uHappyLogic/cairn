@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Recommend Sweep Drops Status Reads
-
-Update `skills/recommend-all-open-questions/SKILL.md` so the gather extracts only each block's `id` and `<question>` text, the ranking judges over those alone, gate test 7 no longer states that it reads no `status` or that a deferred target is as valid as an open one, the worked example's opening tag is `<open-question id="Short Title">`, and every "open and deferred"/"open/deferred" phrasing including the frontmatter description is reworded, keeping that description at 25 words or fewer and unquoted. The attribute-order justification on the `id` regex is cut, while `<depends-on>` reads keep their two-attribute order-immaterial wording. Verified by grepping the file for `status` and `deferred` and finding only the "terse status line" and "never deferred to the end" wording.
-
----
-
 ## Answer Sweep Drops Status Qualifiers
 
 Update `skills/answer-all-open-questions-with-recommendation/SKILL.md` so its frontmatter description, gather, block-shape note, and re-check no longer name `status="open"`/`status="deferred"` or "open and deferred", keeping the description at 25 words or fewer and unquoted, and cutting the attribute-order justification on the `id` regex while the `<depends-on>` `question` read keeps its order-immaterial wording. Verified by grepping the file for `status` and `deferred` and finding only the "terse status line" and DONE/FAILED status wording.

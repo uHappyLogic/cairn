@@ -57,3 +57,19 @@ Sweep `shared/answer-procedure.md`, `shared/answer-with-recommendation-procedure
 - `git diff` over the three files shows only qualifier removals and the rephrased locate sentence: the boundary-line CLI, entity unescaping, case-folding, fold-before-remove order, cascade, and the two reconciliation outcomes are unchanged, and no other `shared/` file is modified.
 
 ---
+
+## Recommend Sweep Drops Status Reads
+
+Update `skills/recommend-all-open-questions/SKILL.md` so the gather extracts only each block's `id` and `<question>` text, the ranking judges over those alone, gate test 7 no longer states that it reads no `status` or that a deferred target is as valid as an open one, the worked example's opening tag is `<open-question id="Short Title">`, and every "open and deferred"/"open/deferred" phrasing including the frontmatter description is reworded, keeping that description at 25 words or fewer and unquoted. The attribute-order justification on the `id` regex is cut, while `<depends-on>` reads keep their two-attribute order-immaterial wording. Verified by grepping the file for `status` and `deferred` and finding only the "terse status line" and "never deferred to the end" wording.
+
+**Verified:**
+
+- The frontmatter `description` carries no "open and deferred" wording, is 15 words, stays an unquoted plain YAML scalar with no colon or semicolon, and loads under `yaml.safe_load`.
+- Step 1's gather extracts only each block's `id` (by the regex `id="([^"]*)"` over the opening boundary line) and `<question>` text — no `status` extraction, no attribute-order justification on the `id` regex, and no open-vs-deferred sentence.
+- Step 3's ranking judges over each block's `id` and `<question>` text alone.
+- Gate test 7 no longer says it reads no `status` or that a deferred target is as valid as an open one, while its `<depends-on>` `question`/`option` read keeps its attribute-name-anchored wording.
+- The worked example's opening tag is exactly `<open-question id="Short Title">`.
+- Every "open and deferred" / "open/deferred" / `status="open"` / `status="deferred"` phrasing (intro, Usage, step 1, step 6) is reworded.
+- `grep -n -i -E 'status|deferred'` on the file hits only line 312's "terse status line" and line 249's "never deferred until every dispatch has returned" wording.
+
+---
