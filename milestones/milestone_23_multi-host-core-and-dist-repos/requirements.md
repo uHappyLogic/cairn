@@ -82,4 +82,20 @@ The install instructions are mirrored per-host sections with a versioned-archive
 
 <open-question id="Dist repository resolution">
   <question>How does the release skill resolve each host&apos;s distribution repository and remote URL: by a fixed naming convention derived from the host definition directory name (uHappyLogic/cairn-&lt;host&gt;), or from a field declared in that host&apos;s definition settings file?</question>
+  <alternative id="Fixed naming convention">
+    The release skill lists `scripts/hosts/<host>/` and derives each distribution repository as `uHappyLogic/cairn-<host>` and its remote URL as `git@github.com:uHappyLogic/cairn-<host>.git` (the same SSH scheme as `origin`), with no new field anywhere.
+    <advantage>It adds no schema and no parsing to a Markdown skill: the host list, host-definition order, and repository names all come from the one directory scan the build already uses, and the two repositories the distribution decision created already fit the pattern exactly, so the `gh repo view` pre-flight verifies the derived name and prints the matching creation command with nothing to keep aligned.</advantage>
+    <drawback>A host whose repository cannot follow the pattern (a different owner, a renamed repository, or a directory name that is not a usable repository slug) has no escape short of editing the release skill, so repository naming is permanently coupled to definition directory naming.</drawback>
+  </alternative>
+  <alternative id="Declared settings field">
+    Each host's definition settings file carries a distribution-repository field (owner/name, optionally the full remote URL) that the release skill reads per host and uses for the existence check, fetch, push, and `gh release` calls.
+    <advantage>Every host definition is fully self-describing including its publish target, and moving a repository to another owner or name, or changing the transport, is a data edit with no convention to remember.</advantage>
+    <drawback>It puts a release-only value into a settings file the build script never consumes, forces the Markdown release skill to parse that file's format for every host, and duplicates a name already present in the host's README template and the recorded creation command, so a typo is caught only when a publish reaches the wrong repository or the existence check fails.</drawback>
+  </alternative>
+  <alternative id="Convention with override field">
+    The skill derives `uHappyLogic/cairn-<host>` by default and an optional settings-file field overrides it when present.
+    <advantage>Ordinary hosts pay nothing while the rare non-conforming host still has a data-only escape.</advantage>
+    <drawback>It builds two resolution paths and a parse step for a value resolved twice per release and for an exception that has no instance today, so the override is speculative machinery the existence check and drift reasoning must nonetheless account for.</drawback>
+  </alternative>
+  <recommendation option="Fixed naming convention">The two distribution repositories were already named `cairn-<host>` to match the definition directory names, the per-host `gh repo view` pre-flight already verifies the derived name and prints its creation command, and a settings field would be a release-only duplicate of a name the README template and creation command already carry; if a host ever needs a non-conforming repository, adding the field then costs no more than adding it now.</recommendation>
 </open-question>
