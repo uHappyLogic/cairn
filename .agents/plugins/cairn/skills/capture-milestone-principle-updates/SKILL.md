@@ -152,7 +152,7 @@ git show <hash> --format='%s%n%n%b' -- milestones/<milestone_id>/requirements.md
     rationale text — or **none** when the block carries no `<recommendation>` element. A block the
     recommend sweep never annotated has only a `<question>`; an answer recorded before the block form
     existed removes no `<open-question>` at all (its removed lines are a `> **Deferred — …:**` or
-    `> **Open — …:**` blockquote). Both are the **no-recommendation** case, never an error.
+    `> **Open question — …:**` blockquote). Both are the **no-recommendation** case, never an error.
 
 **Classify the commit by two tests, in this order.**
 

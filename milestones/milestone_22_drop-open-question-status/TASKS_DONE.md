@@ -167,3 +167,18 @@ Sweep `CLAUDE.md` so the skill-table rows for the two sweeps and the invariants 
 - `git diff -U0 CLAUDE.md` shows exactly five hunks at lines 42, 48, 76–78, 83, and 102, and no other file is modified.
 
 ---
+
+## Regenerate Antigravity Tree Status Free
+
+Run `uv run scripts/migrate_skills_to_agy.py` to regenerate `.agents/plugins/cairn/` from the swept `skills/`, `agents/`, and `shared/` so the generated tree carries no trace of the attribute, and use the same pass to confirm the whole sweep is grep-clean. Verified by grepping `skills/`, `agents/`, `shared/`, `README.md`, `CLAUDE.md`, and `.agents/plugins/cairn/` for `status=`, `deferred`, and `Blocking` and finding only the capture skill's legacy blockquote note (and its generated copy), while "terse status line", `git status --porcelain`, "finish status", and the DONE/FAILED status wording survive untouched.
+
+**Verified:**
+
+- `uv run scripts/migrate_skills_to_agy.py` exits 0 and regenerates `.agents/plugins/cairn/` (21 skills, the agents, the shared procedures, and `plugin.json` at version 1.3.0) from the current `skills/`, `agents/`, and `shared/`; 15 generated files changed against the last `Agy-regeneration:` sync.
+- `grep -rn -i -E 'status=|deferred|blocking' .agents/plugins/cairn` hits only the generated copy of the capture skill's legacy blockquote note (`skills/capture-milestone-principle-updates/SKILL.md:154`, the `> **Deferred — …:**` parenthetical); the case-sensitive `Blocking` grep hits nothing (the lowercase "what's blocking" in `ask-in-milestone-context` is ordinary English, not the retired review-skill category).
+- The same grep over `skills/`, `agents/`, `shared/`, `README.md`, and `CLAUDE.md` hits only the source capture legacy note, so the whole sweep is grep-clean.
+- The unrelated `status` survivors are untouched in both source and generated tree: "terse status line" in every reporting step, `git status --porcelain` in `shared/commit-procedure.md` and capture, "finish status" in capture, `README.md`, and `CLAUDE.md`, and the `DONE`/`FAILED` "status" wording in both orchestrators.
+- A second run of the script yields a byte-identical `git diff --stat` (regeneration is idempotent and complete), and `grep -rn 'CLAUDE_PLUGIN_ROOT' .agents/plugins/cairn` returns nothing.
+- The only source-layer change is the one-word rewording of the unrelated verb on `skills/recommend-all-open-questions/SKILL.md` line 249 ("never deferred" → "never postponed"), matching the same sentence in `CLAUDE.md` line 78, so the sweep's grep exception is exactly the capture note the task names.
+
+---

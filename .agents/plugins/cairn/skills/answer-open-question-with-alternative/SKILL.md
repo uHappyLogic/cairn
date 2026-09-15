@@ -29,8 +29,8 @@ before it is `<Short Title>` (the question handle); everything after it is `<Alt
 (the `id` of the `<alternative>` to record). Trim surrounding whitespace from both halves.
 
 - `<Short Title>` must match (case-insensitive, against the block's `id`) an existing
-  `<open-question status="open|deferred">` block that the `/recommend-all-open-questions` sweep
-  has already annotated with `<alternative>` elements.
+  `<open-question>` block that the `/recommend-all-open-questions` sweep has already
+  annotated with `<alternative>` elements.
 - `<Alternative Id>` must match (case-insensitive, against the `id` attribute) one of that
   block's embedded `<alternative id="...">` elements.
 
@@ -52,18 +52,17 @@ rather than reading the whole file to eyeball a header. Every `<open-question>` 
 under the single `## Open questions` section of `<MILESTONE_DIR>/requirements.md`.
 
 - **Find the question block.** For each `<open-question …>` opening boundary line, pull its
-  `id` attribute with an attribute-name-anchored regex — `id="([^"]*)"` — so the match is
-  independent of attribute order. The captured value is stored **entity-escaped**, so reverse
-  the five-predefined-entity substitution on it before comparing — replace `&lt;`→`<`,
-  `&gt;`→`>`, `&quot;`→`"`, `&apos;`→`'`, and `&amp;`→`&` **last**. Case-fold both that
-  un-escaped `id` and `<Short Title>` and compare; the block whose `id` case-folds equal is the
-  match. It spans from its `<open-question …>` opening boundary line through the next
-  `</open-question>` closing boundary line — one boundary-token pair per block, shared by open
-  and deferred blocks (they differ only in the `status` value), so the locate is uniform.
+  `id` attribute with the regex `id="([^"]*)"`. The captured value is stored
+  **entity-escaped**, so reverse the five-predefined-entity substitution on it before
+  comparing — replace `&lt;`→`<`, `&gt;`→`>`, `&quot;`→`"`, `&apos;`→`'`, and `&amp;`→`&`
+  **last**. Case-fold both that un-escaped `id` and `<Short Title>` and compare; the block
+  whose `id` case-folds equal is the match. It spans from its `<open-question …>` opening
+  boundary line through the next `</open-question>` closing boundary line — one
+  boundary-token pair per block.
 
 - **Find the chosen alternative within it.** Inside the matched block, scan its
-  `<alternative id="...">` opening lines, pull each `id` the same way (attribute-name-anchored
-  regex, reverse entity-escaping), and case-fold-compare against `<Alternative Id>`. The
+  `<alternative id="...">` opening lines, pull each `id` the same way (the same regex,
+  reverse entity-escaping), and case-fold-compare against `<Alternative Id>`. The
   `<alternative>` whose `id` case-folds equal is the one to lift; it spans from its
   `<alternative id="...">` opening line through its `</alternative>` closing line.
 

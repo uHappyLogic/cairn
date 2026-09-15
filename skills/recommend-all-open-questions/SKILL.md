@@ -246,7 +246,7 @@ explanatory reply, or a returned `<open-question>` wrapper cannot be spliced int
 ### 4. Embed the accepted region before the next dispatch
 
 The orchestrator is the sole mutator. Only a region step 3's acceptance gate accepted reaches
-this step, and it is embedded **now — before the next question is dispatched**, never deferred
+this step, and it is embedded **now — before the next question is dispatched**, never postponed
 until every dispatch has returned: the subagent for each later question reads this block's
 children in `requirements.md`, and a `<depends-on>` element it returns may name this block only
 because the children are already there. Embed the accepted region's sub-elements **inside the

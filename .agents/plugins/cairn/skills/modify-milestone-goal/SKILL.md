@@ -44,7 +44,7 @@ If the intended change is genuinely ambiguous, state the revised wording you pro
 Reason about what the new goal may have invalidated. Do **not** write this analysis into the document and do **not** edit those sections — this is to inform what you surface in step 5:
 
 - Which `## Decisions` entries the new goal contradicts, moots, or leaves dangling.
-- Which open or `Deferred` questions it newly settles, newly opens, or makes irrelevant.
+- Which open questions it newly settles, newly opens, or makes irrelevant.
 - Which `## Out of Scope` entries the new goal now pulls back in (or pushes out).
 - If `TASKS_TODO.md` / `TASKS_DONE.md` already hold tasks, which derived or completed tasks the new goal strands, contradicts, or leaves unaddressed.
 

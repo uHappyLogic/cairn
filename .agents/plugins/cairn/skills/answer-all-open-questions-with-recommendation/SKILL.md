@@ -1,6 +1,6 @@
 ---
 name: answer-all-open-questions-with-recommendation
-description: Record the embedded recommendation as the answer for every open and deferred question in the current milestone's requirements that carries one.
+description: Record the embedded recommendation as the answer for every question in the current milestone's requirements that carries one.
 ---
 
 # answer-all-open-questions-with-recommendation
@@ -26,9 +26,8 @@ dispatching the next. Because every dispatch mutates the same `requirements.md`,
 /answer-all-open-questions-with-recommendation
 ```
 
-Takes no arguments — it sweeps every `<open-question>` block (both `status="open"` and
-`status="deferred"`) in the current milestone's `requirements.md` that contains a
-`<recommendation>` element.
+Takes no arguments — it sweeps every `<open-question>` block in the current milestone's
+`requirements.md` that contains a `<recommendation>` element.
 
 ## Workflow
 
@@ -46,16 +45,15 @@ bounded region the CLI slices deterministically. Using `awk`/`sed`/`grep` keyed 
 processor (`xmllint`) — enumerate every block **in document order** (the order the CLI hands
 them back is the order their blocks appear in the section, and the walk below relies on it) and
 keep only those that **contain a `<recommendation>` element**, extracting each surviving block's
-`id` (and `status`) by attribute-name-anchored regex like `id="([^"]*)"` (so extraction is
-independent of attribute order). From each surviving block also extract the `question` value of
-every self-closing `<depends-on question="…" option="…"/>` line it carries — the same
-attribute-name-anchored regex, anchored on `question=`; the recommend sweep embeds one such line
-per sibling recommendation this block's recommendation assumed. Read only the `question` value
-here: the `option` value is what the recording core's cascade reconciles at answer time, and the
-orchestrator never acts on it. Open and deferred blocks share one `<open-question …>` /
-`</open-question>` boundary-token pair distinguished only by `status`, so the gather ignores type.
-Recommendation-less blocks — those with **no `<recommendation>` element** — are **not gathered**:
-annotating them is the recommend sweep's job (`/recommend-all-open-questions`), never this one's.
+`id` by the regex `id="([^"]*)"`. From each surviving block also extract the `question` value of
+every self-closing `<depends-on question="…" option="…"/>` line it carries — by an
+attribute-name-anchored regex on `question=`, so the read is independent of the order in which
+`question` and `option` appear on that line; the recommend sweep embeds one such line per
+sibling recommendation this block's recommendation assumed. Read only the `question` value here:
+the `option` value is what the recording core's cascade reconciles at answer time, and the
+orchestrator never acts on it. Recommendation-less blocks — those with **no `<recommendation>`
+element** — are **not gathered**: annotating them is the recommend sweep's job
+(`/recommend-all-open-questions`), never this one's.
 If no block carries a `<recommendation>` element, say so and stop.
 
 Order the gathered list by **walking the dependency graph built over it** — never by a judgment
@@ -165,5 +163,5 @@ run), do not print the terse success line; instead say so in one sentence — th
 one-line no-op message, kept separate from the terse success line.
 
 Do **not** enumerate the untouched (recommendation-less) questions: they remain visible as
-`<open-question>` blocks (`status="open"` / `status="deferred"`) in `requirements.md` and via
-re-running `/review-milestone-requirements`.
+`<open-question>` blocks in `requirements.md` and via re-running
+`/review-milestone-requirements`.

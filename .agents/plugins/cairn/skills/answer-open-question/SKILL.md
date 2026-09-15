@@ -5,7 +5,7 @@ description: Answer a named open question in the current milestone's requirement
 
 # answer-open-question
 
-Resolves a named open or deferred question in the current milestone's `requirements.md` by recording the user's answer, propagating its implications through the document, and committing that edit on its own with the decision's rationale in the commit body — establishing the `Manual-answer:` commit that `/capture-milestone-principle-updates` later reads, alongside `Alternative-answer:` and `Recommendation-answer:` commits, when it distills a milestone's answers into reusable principles: a manual answer is an override signal (a decision the recommender did not make), so its body rationale is what gets distilled. The answer text is recorded **literally**; the one reserved answer text is the retired sentinel `record the recommendation`, which this skill redirects instead of recording (step 2).
+Resolves a named open question in the current milestone's `requirements.md` by recording the user's answer, propagating its implications through the document, and committing that edit on its own with the decision's rationale in the commit body — establishing the `Manual-answer:` commit that `/capture-milestone-principle-updates` later reads, alongside `Alternative-answer:` and `Recommendation-answer:` commits, when it distills a milestone's answers into reusable principles: a manual answer is an override signal (a decision the recommender did not make), so its body rationale is what gets distilled. The answer text is recorded **literally**; the one reserved answer text is the retired sentinel `record the recommendation`, which this skill redirects instead of recording (step 2).
 
 ## Usage
 
@@ -13,7 +13,7 @@ Resolves a named open or deferred question in the current milestone's `requireme
 /answer-open-question <Short Title>. <answer text>
 ```
 
-The `<Short Title>` must match (case-insensitive, against the block's `id`) an existing `<open-question status="open|deferred">` block. The `.` character is the separator. Everything after the first `.` is the answer.
+The `<Short Title>` must match (case-insensitive, against the block's `id`) an existing `<open-question>` block. The `.` character is the separator. Everything after the first `.` is the answer.
 
 **Example (literal answer):**
 ```

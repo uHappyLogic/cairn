@@ -1,15 +1,15 @@
 ---
 name: recommend-all-open-questions
-description: Annotate every open and deferred question in the current milestone's requirements with alternatives and a single recommended option.
+description: Annotate every question in the current milestone's requirements with alternatives and a single recommended option.
 ---
 
 # recommend-all-open-questions
 
 This is the non-interactive batch path for producing recommendations on open questions. It
-walks every open and deferred question in the current milestone **most-significant-first,
-strictly one at a time**, and, per question, dispatches a read-only subagent — the
-non-interactive twin of `/discuss-open-question` — that returns **alternatives + a single
-recommendation** as the `<open-question>` block's XML sub-elements. The orchestrator is the
+walks every question in the current milestone **most-significant-first, strictly one at a
+time**, and, per question, dispatches a read-only subagent — the non-interactive twin of
+`/discuss-open-question` — that returns **alternatives + a single recommendation** as the
+`<open-question>` block's XML sub-elements. The orchestrator is the
 **sole document mutator**: it embeds each returned set of sub-elements inside the existing
 `<open-question>` block **before dispatching the next question**, leaving the block's
 `<open-question …>` / `</open-question>` boundary tags and its `<question>` element untouched,
@@ -26,8 +26,8 @@ Each embedded recommendation is consumed later, when it is recorded as an answer
 /recommend-all-open-questions
 ```
 
-Takes no arguments — it sweeps every `<open-question>` block (both `status="open"` and
-`status="deferred"`) in the current milestone's `requirements.md`.
+Takes no arguments — it sweeps every `<open-question>` block in the current milestone's
+`requirements.md`.
 
 ## Workflow
 
@@ -38,15 +38,13 @@ Never use a hardcoded path.
 
 ### 1. Gather the questions once
 
-Fetch the open/deferred set with the line-oriented boundary-line CLI. Every `<open-question>`
+Fetch the question set with the line-oriented boundary-line CLI. Every `<open-question>`
 block lives under the single `## Open questions` section of `<MILESTONE_DIR>/requirements.md`,
 so that section is the one bounded region the CLI slices deterministically. Using `awk`/`sed`/`grep`
 keyed on the `<open-question …>` opening and `</open-question>` closing **boundary lines** — never
 a real XML processor (`xmllint`) — enumerate every block in document order and, for each, extract
-its `id` and `status` (by attribute-name-anchored regex like `id="([^"]*)"` and `status="([^"]*)"`,
-so extraction is independent of attribute order) and its `<question>` text. Open and deferred
-blocks share one `<open-question …>` / `</open-question>` boundary-token pair distinguished only by
-`status`, so the gather ignores type — it lists them all. If there are none, say so and stop.
+its `id` (by the regex `id="([^"]*)"` over the opening boundary line) and its `<question>` text.
+If there are none, say so and stop.
 
 Keep the full text of each gathered block (from this same pass) in hand — the embed step (step 4)
 rewrites the whole block via an exact-string Edit and needs the block's current text as the match
@@ -87,7 +85,7 @@ user also wants regenerated is cleared by the same hand-clear just used on the t
 First **rank the surviving questions** (gathered, not skipped) **most-significant-first** —
 foundational questions, whose eventual answer other questions turn on, ahead of the questions that
 would build on them. Rank them by judgment over **exactly what step 1's gather yielded**: each
-block's `id`, `status`, and `<question>` text. Read **no more** of `requirements.md` to rank them
+block's `id` and `<question>` text. Read **no more** of `requirements.md` to rank them
 — the subagent, not the orchestrator, is what grounds in the document. The ranking is a
 best-effort heuristic: a coupling it orders wrongly is absorbed by the subagent's own rule that a
 dependency on a sibling not yet annotated is expressed as prose, never as an element.
@@ -177,9 +175,9 @@ parser):
    `question`, `option`, and `id` by attribute-name-anchored regex, and compare both pairs as in
    test 6 — entity escapes reversed on both sides, case-folded. This is the one test that reaches
    outside the return into the document: re-slice the `## Open questions` section from the live
-   file with step 1's boundary-line CLI, so the slice carries every earlier embed of this run, and
-   read **no `status`** — a `status="deferred"` target is as valid as an open one. Resolution is
-   **one hop**: the target's own `<depends-on` lines are not followed and no cycle check is made.
+   file with step 1's boundary-line CLI, so the slice carries every earlier embed of this run.
+   Resolution is **one hop**: the target's own `<depends-on` lines are not followed and no cycle
+   check is made.
    A region with no `<depends-on` line passes this test trivially.
 
 **Every miss produces a reason string naming the test that failed** (`text precedes <alternative>
@@ -248,7 +246,7 @@ explanatory reply, or a returned `<open-question>` wrapper cannot be spliced int
 ### 4. Embed the accepted region before the next dispatch
 
 The orchestrator is the sole mutator. Only a region step 3's acceptance gate accepted reaches
-this step, and it is embedded **now — before the next question is dispatched**, never deferred
+this step, and it is embedded **now — before the next question is dispatched**, never postponed
 until every dispatch has returned: the subagent for each later question reads this block's
 children in `requirements.md`, and a `<depends-on>` element it returns may name this block only
 because the children are already there. Embed the accepted region's sub-elements **inside the
@@ -266,7 +264,7 @@ boundary tags and `<question>` element stay byte-for-byte unchanged.
 The block after embedding looks like:
 
 ```
-<open-question id="Short Title" status="open">
+<open-question id="Short Title">
   <question>Question text here.</question>
   <alternative id="Option A">
     what it is
@@ -336,4 +334,4 @@ stating that nothing changed and why (every gathered block already carried a `<r
 element, or every dispatched question was still skipped after its repair attempt in step 3), still
 followed by the still-skipped-question advisory when there was one.
 
-If there were no open/deferred questions at all, say so and stop (step 1) — nothing to report.
+If there were no questions at all, say so and stop (step 1) — nothing to report.

@@ -5,7 +5,7 @@ description: Discuss a named open question in the current milestone requirements
 
 # discuss-open-question
 
-Facilitates a deliberation on a named `<open-question>` block (whether `status="open"` or `status="deferred"`) in the current milestone's `requirements.md` where the user cannot give an immediate answer. The goal is a concrete decision by the end of the conversation — not a design document. The skill is purely conversational: it never edits `requirements.md` or any other file.
+Facilitates a deliberation on a named `<open-question>` block in the current milestone's `requirements.md` where the user cannot give an immediate answer. The goal is a concrete decision by the end of the conversation — not a design document. The skill is purely conversational: it never edits `requirements.md` or any other file.
 
 ## Usage
 
@@ -13,7 +13,7 @@ Facilitates a deliberation on a named `<open-question>` block (whether `status="
 /discuss-open-question <Short Title>
 ```
 
-The `<Short Title>` must match (case-insensitive) the `id` of an existing `<open-question>` block (either `status="open"` or `status="deferred"`) in the document.
+The `<Short Title>` must match (case-insensitive) the `id` of an existing `<open-question>` block in the document.
 
 **Example:**
 ```
@@ -30,7 +30,7 @@ Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILE
 
 Locating a block by its handle is a deterministic lookup, so query it with the line-oriented CLI (`awk`/`sed`/`grep`) keyed on the `<open-question …>` / `</open-question>` boundary lines — never a real XML processor (`xmllint`). Every `<open-question>` block lives under the single `## Open questions` section of `<MILESTONE_DIR>/requirements.md`, so those boundary lines within that one section enumerate the entire question set.
 
-For each `<open-question …>` opening boundary line, pull its `id` attribute with an attribute-name-anchored regex — `id="([^"]*)"` — so the match is independent of attribute order (`status` may precede or follow `id`). The captured value is stored **entity-escaped**, so reverse the five-predefined-entity substitution on it before comparing — replace `&lt;`→`<`, `&gt;`→`>`, `&quot;`→`"`, `&apos;`→`'`, and `&amp;`→`&` **last**. Then case-fold both that un-escaped `id` and the `<Short Title>` argument and compare: the block whose `id` case-folds equal to the title is the match.
+For each `<open-question …>` opening boundary line, pull its `id` attribute with the regex `id="([^"]*)"`. The captured value is stored **entity-escaped**, so reverse the five-predefined-entity substitution on it before comparing — replace `&lt;`→`<`, `&gt;`→`>`, `&quot;`→`"`, `&apos;`→`'`, and `&amp;`→`&` **last**. Then case-fold both that un-escaped `id` and the `<Short Title>` argument and compare: the block whose `id` case-folds equal to the title is the match.
 
 Pull the **whole matched block** — from its `<open-question …>` opening boundary line through the next `</open-question>` closing boundary line — as the question context the deliberation runs on: its `<question>` text plus any `<alternative>` / `<applied-principle>` / `<recommendation>` sub-elements the recommend sweep may already have embedded. That whole block is the **QUESTION** you carry into step 3.
 

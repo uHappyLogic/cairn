@@ -19,7 +19,7 @@ To record **every** recommendation-bearing question unattended instead, use
 ```
 
 `<Short Title>` must match (case-insensitive, against the block's `id`) an existing
-`<open-question status="open|deferred">` block that the `/recommend-all-open-questions` sweep
+`<open-question>` block that the `/recommend-all-open-questions` sweep
 has already annotated with a `<recommendation>` element. The procedure resolves the current
 milestone itself, so nothing needs to be looked up first.
 
