@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Answer Sweep Drops Status Qualifiers
-
-Update `skills/answer-all-open-questions-with-recommendation/SKILL.md` so its frontmatter description, gather, block-shape note, and re-check no longer name `status="open"`/`status="deferred"` or "open and deferred", keeping the description at 25 words or fewer and unquoted, and cutting the attribute-order justification on the `id` regex while the `<depends-on>` `question` read keeps its order-immaterial wording. Verified by grepping the file for `status` and `deferred` and finding only the "terse status line" and DONE/FAILED status wording.
-
----
-
 ## Single Question Skills Drop Status Qualifiers
 
 Sweep `skills/discuss-open-question/SKILL.md`, `skills/answer-open-question/SKILL.md`, `skills/answer-open-question-with-recommendation/SKILL.md`, `skills/answer-open-question-with-alternative/SKILL.md`, and `skills/modify-milestone-goal/SKILL.md` to remove every `status="open|deferred"`, "open or deferred", "whether open or deferred", and "open or `Deferred` questions" qualifier plus the "independent of attribute order" justification on the `<open-question>` `id` regex, stating each locate as a plain extraction. Verified by grepping those five files for `status` and `deferred` and finding only "terse status line" hits.

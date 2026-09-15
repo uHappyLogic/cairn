@@ -73,3 +73,20 @@ Update `skills/recommend-all-open-questions/SKILL.md` so the gather extracts onl
 - `grep -n -i -E 'status|deferred'` on the file hits only line 312's "terse status line" and line 249's "never deferred until every dispatch has returned" wording.
 
 ---
+
+## Answer Sweep Drops Status Qualifiers
+
+Update `skills/answer-all-open-questions-with-recommendation/SKILL.md` so its frontmatter description, gather, block-shape note, and re-check no longer name `status="open"`/`status="deferred"` or "open and deferred", keeping the description at 25 words or fewer and unquoted, and cutting the attribute-order justification on the `id` regex while the `<depends-on>` `question` read keeps its order-immaterial wording. Verified by grepping the file for `status` and `deferred` and finding only the "terse status line" and DONE/FAILED status wording.
+
+**Verified:**
+
+- The frontmatter `description` no longer says "open and deferred", is a plain unquoted YAML scalar of 18 words (under the 25-word cap), and the frontmatter loads under `yaml.safe_load` with `name` and `description` keys.
+- The Usage paragraph names no `status="open"`/`status="deferred"`.
+- Step 1's `id` extraction is stated as a plain extraction — the `(and `status`)` read and the "so extraction is independent of attribute order" justification are cut.
+- Step 1's `<depends-on>` `question` read keeps explicit attribute-name-anchored wording stating the read is independent of the order of `question` and `option` on that line.
+- The block-shape note ("Open and deferred blocks share one … boundary-token pair distinguished only by `status`") is removed.
+- Step 2's re-check and step 3's report name no `status="open"`/`status="deferred"`.
+- `grep -in 'status\|deferred'` on the file returns only the "terse status line" hit and the DONE/FAILED "status" hit.
+- `git diff` on the file touches only the description, Usage, the step-1 gather paragraph, and the step-3 report; the dependency walk, dispatch, and commit logic are unchanged.
+
+---
