@@ -40,34 +40,12 @@ There is no `core/` directory, no neutral plugin-root placeholder, no per-host m
 
 Each host is declared to the build as a declarative definition directory, `scripts/hosts/<host>/`, holding a settings file (the plugin-root placeholder replacement value, prose patterns to drop, frontmatter keys to strip, output layout and file renames, excluded paths) beside that host's manifest template files with version and name slots. One generic build script discovers the definitions by directory scan and applies them uniformly, so no host-specific Python exists and a definition can be validated before any build runs. Every host difference the current transpiler performs is a substitution, a rename, an exclusion, a frontmatter-key strip, or a manifest slot, and all of them fit this data schema; per-host prose rewrites, if any are adopted, fit it as pattern-replacement pairs. Adding a host means adding a definition directory. Only a host rule needing real logic beyond literal or regex substitution would justify a Python module per host, and no such rule is anticipated.
 
+The neutral plugin-root placeholder in `core/` files is the mustache-style double-brace token `{{PLUGIN_ROOT}}`, which each host definition replaces with its own value (`${CLAUDE_PLUGIN_ROOT}` for Claude Code, `.agents/plugins/cairn` for Antigravity) by plain literal substitution. The double-brace form is inert in Markdown prose, inline code, and fenced shell blocks alike, and its shape cannot be mistaken for any host's runtime syntax, so both validation checks — no unreplaced placeholder (any `{{` in a generated tree) and no foreign variable syntax in another host's tree — are a one-line grep. The Claude-specific resolve hint that follows some references is settled separately and is unaffected by this choice.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Placeholder token form">
-  <question>What literal form does the neutral plugin-root placeholder take in core/ files (for example a mustache-style token, a shell-style variable, or a bare relative path), given that it must be safe inside Markdown prose and fenced shell blocks and must never collide with a host&apos;s own runtime variable syntax?</question>
-  <alternative id="Mustache-style token">
-    A double-brace token such as {{PLUGIN_ROOT}} stands in for the plugin root in every core/ file, and each host definition replaces that exact literal with its own value (${CLAUDE_PLUGIN_ROOT} for Claude Code, .agents/plugins/cairn for Antigravity) by plain string substitution.
-    <advantage>Its shape belongs to no host runtime and to neither Markdown nor the shell — braces need a comma to expand in bash and mean nothing in a code span — so it is inert in prose, inline code, and fenced blocks alike, and an unreplaced leftover is loud and mechanically greppable (any {{ in a generated tree is a build failure, any ${ outside the Claude tree is foreign syntax), which is exactly the validation the build needs.</advantage>
-    <drawback>It introduces a third placeholder notation into the layer beside the agent-resolved &lt;MILESTONE_DIR&gt; form and the shell-style Claude variable, and every current reference — 45 of them, all inside inline code spans — is rewritten to a form no host will ever show at runtime, so the token exists purely for the build.</drawback>
-  </alternative>
-  <alternative id="Neutral shell variable">
-    A host-neutral shell-style variable such as ${PLUGIN_ROOT} replaces ${CLAUDE_PLUGIN_ROOT} in core/, with the Claude build renaming it to the real variable and other hosts substituting a literal path.
-    <advantage>The smallest visible change: every reference keeps its current shape, the Claude rewrite is a rename rather than a re-shaping, and the existing resolve hint reads naturally against it.</advantage>
-    <drawback>It is real shell syntax, so a leftover inside a fenced shell block or a command a runner copies expands silently to an empty string instead of failing, and by shape it is indistinguishable from a host&apos;s genuine runtime variable — a validation check for &quot;no foreign host&apos;s variable syntax&quot; cannot tell an unreplaced neutral token from a legitimate Claude reference without a name-level exception list.</drawback>
-  </alternative>
-  <alternative id="Angle-bracket placeholder">
-    An angle-bracket placeholder such as &lt;PLUGIN_ROOT&gt;, matching the &lt;MILESTONE_DIR&gt; and &lt;VERSION&gt; convention the layer already uses for values resolved at run time.
-    <advantage>Reuses a notation every runner already reads as &quot;a value to be filled in&quot;, so no new convention is introduced and the files stay visually uniform.</advantage>
-    <drawback>It blurs two different resolution moments — &lt;MILESTONE_DIR&gt; is resolved by the agent at run time and must survive the build untouched, while the plugin root must be consumed by the build — so the build cannot validate &quot;no angle-bracket leftovers&quot; and a reader cannot tell from shape which placeholders the host tree should still contain; the same bracket family is also the boundary token the question-block CLI greps on, and outside a code span Markdown renders it as an HTML tag.</drawback>
-  </alternative>
-  <alternative id="Bare relative path">
-    Core files reference shared procedures by a bare plugin-relative path such as shared/answer-procedure.md, and each host build prefixes those occurrences with its own root.
-    <advantage>Core reads as an ordinary repository with no placeholder at all, and a reference is a real path inside core/ that can be checked for existence before any build runs.</advantage>
-    <drawback>The build has to decide which relative paths are plugin-relative and which are project-relative (milestones/README.md, CLAUDE.md, TASKS_TODO.md all appear in the same files), which turns a literal substitution into a pattern rule with a curated prefix list, and a runner reading the generated Claude tree still needs a root to resolve against, so the placeholder is not removed, only hidden.</drawback>
-  </alternative>
-  <recommendation option="Mustache-style token">The double-brace form is the only candidate that is inert in every context the question names and whose shape cannot be mistaken for any host&apos;s runtime syntax, which makes both validation checks (no unreplaced placeholder, no foreign variable syntax in another host&apos;s tree) a one-line grep and keeps the per-host rewrite a plain literal substitution; the Claude-specific resolve hint that follows some references is settled separately by the Resolve hint fate sibling, and none of the candidates here changes that choice.</recommendation>
-</open-question>
 <open-question id="Resolve hint fate">
   <question>Does the prose hint that follows plugin-root references in 18 core files (run echo of the Claude variable to resolve the path) stay in core/ and get emitted only by the Claude build, or is it removed from core/ entirely so no host output carries it?</question>
   <alternative id="Remove from core entirely">
@@ -85,7 +63,6 @@ Each host is declared to the build as a declarative definition directory, `scrip
     <advantage>Zero rules and zero edits — the simplest possible build for this sentence.</advantage>
     <drawback>The Antigravity tree would tell its runner to echo a Claude variable that is undefined there, immediately after a path the build already made literal, reverting the deliberate milestone-18 drop and shipping a false instruction on every non-Claude host.</drawback>
   </alternative>
-  <depends-on question="Placeholder token form" option="Mustache-style token"/>
   <depends-on question="Host-conditional prose handling" option="Neutral prose, strip keys by data"/>
   <recommendation option="Remove from core entirely">The hint is the one remaining host-named sentence once the other prose sites are neutralized and it is dead weight even on Claude Code, where the reference is substituted at load and the echo prints nothing, so deleting its 24 occurrences once costs less than a drop rule every future host must carry plus an exemption in the no-host-name guard that the neutral core otherwise makes a one-line check.</recommendation>
 </open-question>
@@ -150,7 +127,6 @@ Each host is declared to the build as a declarative definition directory, `scrip
     <advantage>Keeps editorial policy out of the build: an over-long description is a wording problem for the author, not a broken tree, and the build fails only on things that would misbehave at run time.</advantage>
     <drawback>The cap is the one rule in the layer with a numeric no-exceptions bar, every current description fits (the longest is 23 words), and the transpiler already rejects a missing description — so the word count is a one-line addition to a check that already parses the frontmatter, and without it the &quot;hard pass/fail bar&quot; is enforced by nobody until a dist repo has already published the overage.</drawback>
   </alternative>
-  <depends-on question="Placeholder token form" option="Mustache-style token"/>
   <depends-on question="Build script interface" option="Host selector with check mode"/>
   <depends-on question="Host-conditional prose handling" option="Neutral prose, strip keys by data"/>
   <recommendation option="Full gate, whole build aborts">Every check the question names is a one-line grep or a frontmatter read once the placeholder is the double-brace token and each host definition declares its own plugin-root literal and stripped keys — unreplaced is any {{, foreign is any other host&apos;s literal, dangling is this host&apos;s literal followed by a path that does not exist in the tree, the cap is a word count on a field the build already parses — and adding the sibling&apos;s two guards (no host name in core/, no stripped key in a host tree) completes the set at no extra mechanism; the abort must cover the whole selected build because the release commits every hosts/&lt;host&gt;/ tree as one version and a build that writes some trees and not others hands it a state it must never commit, while rendering to a temporary directory and swapping only after all checks pass is the same primitive the --check mode already needs.</recommendation>
