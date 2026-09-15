@@ -14,7 +14,7 @@ recorded `requirements.md` edit staged in the index for the sweep orchestrator t
 Your prompt contains the single input the shared procedure needs:
 
 - **SHORT TITLE** — the handle (matched case-insensitively against the block's `id`) of the
-  `<open-question status="open|deferred">` block to answer. It is already resolved for you;
+  `<open-question>` block to answer. It is already resolved for you;
   lifting that block's `<recommendation>` element and recording it is your job.
 
 ## How to record

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Agents Drop Status Qualifiers
-
-Update `agents/recommend-open-question.md` and `agents/answer-open-question-with-recommendation.md` so the dispatch framing says "once per question", the sibling-declaration rule no longer says "whatever its `status`", and the resolved block is described without `status="open|deferred"`, leaving the `<depends-on>` element rendering and the step 4 self-check untouched. Verified by grepping `agents/` for `status` and `deferred` and finding nothing besides DONE/FAILED wording.
-
----
-
 ## Capture Legacy Note Marker Correction
 
 In `skills/capture-milestone-principle-updates/SKILL.md` keep the parenthetical describing the pre-XML blockquote form as the no-recommendation case, correcting its second marker from `> **Open — …:**` to `> **Open question — …:**` (what those milestone 6–9 commits actually contain), and add no sentence about `status="…"` on historical removed lines, since the id-anchored, attribute-order-immaterial locate already absorbs it and that wording stays. Verified by reading the note and confirming its surviving "Deferred" is the single known exception a grep of `skills/` carries.

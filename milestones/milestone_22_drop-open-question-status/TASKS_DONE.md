@@ -104,3 +104,18 @@ Sweep `skills/discuss-open-question/SKILL.md`, `skills/answer-open-question/SKIL
 - Each file's frontmatter still loads under `yaml.safe_load` with `name` and `description`, the descriptions untouched and all at 21 words or fewer.
 
 ---
+
+## Agents Drop Status Qualifiers
+
+Update `agents/recommend-open-question.md` and `agents/answer-open-question-with-recommendation.md` so the dispatch framing says "once per question", the sibling-declaration rule no longer says "whatever its `status`", and the resolved block is described without `status="open|deferred"`, leaving the `<depends-on>` element rendering and the step 4 self-check untouched. Verified by grepping `agents/` for `status` and `deferred` and finding nothing besides DONE/FAILED wording.
+
+**Verified:**
+
+- `agents/recommend-open-question.md` line 9 reads "dispatches you once per question" with no "Open/Deferred" qualifier.
+- The `<depends-on>` sibling-declaration bullet in step 3 of `agents/recommend-open-question.md` no longer carries "whatever its `status`"; the rest of that bullet, the rendered template (line 78's `<depends-on question="Sibling Short Title" option="Option X"/>`), and the child-order rule are unchanged.
+- Step 4 (self-check) of `agents/recommend-open-question.md` is byte-for-byte unchanged — the file's only two diff hunks sit at lines 9 and 104.
+- `agents/answer-open-question-with-recommendation.md` describes the resolved block as an `<open-question>` block, with no `status="open|deferred"`.
+- `grep -rn -i -E 'status|deferred' agents/` returns nothing (no DONE/FAILED "status" wording exists in `agents/`, so nothing else survives).
+- `git diff --stat` shows exactly three changed lines across the two agent files; both frontmatters load under `yaml.safe_load` with `name` and `description`, the descriptions untouched at 19 and 23 words.
+
+---
