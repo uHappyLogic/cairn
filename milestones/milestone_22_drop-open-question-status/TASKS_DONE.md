@@ -119,3 +119,18 @@ Update `agents/recommend-open-question.md` and `agents/answer-open-question-with
 - `git diff --stat` shows exactly three changed lines across the two agent files; both frontmatters load under `yaml.safe_load` with `name` and `description`, the descriptions untouched at 19 and 23 words.
 
 ---
+
+## Capture Legacy Note Marker Correction
+
+In `skills/capture-milestone-principle-updates/SKILL.md` keep the parenthetical describing the pre-XML blockquote form as the no-recommendation case, correcting its second marker from `> **Open — …:**` to `> **Open question — …:**` (what those milestone 6–9 commits actually contain), and add no sentence about `status="…"` on historical removed lines, since the id-anchored, attribute-order-immaterial locate already absorbs it and that wording stays. Verified by reading the note and confirming its surviving "Deferred" is the single known exception a grep of `skills/` carries.
+
+**Verified:**
+
+- The parenthetical at lines 153–155 of `skills/capture-milestone-principle-updates/SKILL.md` survives, still describing the pre-XML blockquote form as the no-recommendation case.
+- Its second marker now reads `> **Open question — …:**`; `grep -c 'Open — '` on the file returns 0, and the milestone 6–9 answer commits' removed lines confirm the corrected marker (15 `> **Open question — …:**` lines, no `> **Open — …:**` line).
+- Its first marker `> **Deferred — …:**` is unchanged.
+- No sentence about `status="…"` on historical removed lines was added; `grep -c 'status='` on the file returns 0.
+- Line 138's locate wording "(case-insensitive, entity-unescaped, attribute order immaterial)" is unchanged.
+- A case-sensitive `grep -rn Deferred skills/` yields exactly that one note line as the single known exception.
+
+---

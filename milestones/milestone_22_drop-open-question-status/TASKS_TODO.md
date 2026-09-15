@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Capture Legacy Note Marker Correction
-
-In `skills/capture-milestone-principle-updates/SKILL.md` keep the parenthetical describing the pre-XML blockquote form as the no-recommendation case, correcting its second marker from `> **Open — …:**` to `> **Open question — …:**` (what those milestone 6–9 commits actually contain), and add no sentence about `status="…"` on historical removed lines, since the id-anchored, attribute-order-immaterial locate already absorbs it and that wording stays. Verified by reading the note and confirming its surviving "Deferred" is the single known exception a grep of `skills/` carries.
-
----
-
 ## README Drops Open Deferred Distinction
 
 Rewrite the five `README.md` passages — the workflow overview, the review skill's reference entry with its Blocking/Deferred triage and convergence rule, and the two sweeps' and the recommend agent's entries — so they describe the review skill authoring every finding as an ordinary block, convergence as no `<open-question>` block remaining, and the sweeps gathering every `<open-question>` block, with no open/deferred wording and no retirement note. Verified by grepping `README.md` for `status=`, `deferred`, and `Blocking` and finding nothing.
