@@ -134,3 +134,19 @@ In `skills/capture-milestone-principle-updates/SKILL.md` keep the parenthetical 
 - A case-sensitive `grep -rn Deferred skills/` yields exactly that one note line as the single known exception.
 
 ---
+
+## README Drops Open Deferred Distinction
+
+Rewrite the five `README.md` passages — the workflow overview, the review skill's reference entry with its Blocking/Deferred triage and convergence rule, and the two sweeps' and the recommend agent's entries — so they describe the review skill authoring every finding as an ordinary block, convergence as no `<open-question>` block remaining, and the sweeps gathering every `<open-question>` block, with no open/deferred wording and no retirement note. Verified by grepping `README.md` for `status=`, `deferred`, and `Blocking` and finding nothing.
+
+**Verified:**
+
+- The workflow overview (README.md line 104) describes `/review-milestone-requirements` as authoring every finding it surfaces as an ordinary `<open-question>` block, the `/recommend-all-open-questions` sweep as dispatching one subagent per question with no "open/deferred" qualifier, and the loop as repeating until no `<open-question>` block remains.
+- The `review-milestone-requirements` reference entry (line 235) describes surfacing as authoring each finding as an ordinary `<open-question>` block and reports convergence as whether any `<open-question>` block remains (which `/derive-tasks` forbids) or the requirements are ready to derive tasks — no `status="open"`/`status="deferred"`, no Blocking/Deferred triage, no carry-forward clause.
+- The `answer-all-open-questions-with-recommendation` entry (line 265) gathers every `<open-question>` block carrying a `<recommendation>` element, with no "open and deferred" wording.
+- The `recommend-all-open-questions` entry (line 281) gathers every `<open-question>` block, ranks over each block's `id` and `<question>` text alone (no `status`), and states gate test 7 without "(open or deferred alike)".
+- The `recommend-open-question` agent entry (line 285) states the sibling-declaration rule as "only for a sibling already annotated", with no "(open or deferred)".
+- `grep -n -i -E 'status=|deferred|blocking' README.md` returns nothing (submit-task's unrelated "Triages for duplicates" survives).
+- `git diff -U0 README.md` shows exactly five hunks at lines 104, 235, 265, 281, and 285, and no retirement note or "do not reintroduce" sentence was added anywhere.
+
+---

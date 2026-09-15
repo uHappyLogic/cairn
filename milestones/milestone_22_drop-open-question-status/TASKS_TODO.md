@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## README Drops Open Deferred Distinction
-
-Rewrite the five `README.md` passages — the workflow overview, the review skill's reference entry with its Blocking/Deferred triage and convergence rule, and the two sweeps' and the recommend agent's entries — so they describe the review skill authoring every finding as an ordinary block, convergence as no `<open-question>` block remaining, and the sweeps gathering every `<open-question>` block, with no open/deferred wording and no retirement note. Verified by grepping `README.md` for `status=`, `deferred`, and `Blocking` and finding nothing.
-
----
-
 ## CLAUDE Invariants Drop Status Mentions
 
 Sweep `CLAUDE.md` so the skill-table rows for the two sweeps and the invariants on the review skill, the answer-recording mechanism, the recommend sweep, the recommend procedure, and the dispatched-agent return contracts no longer mention `status="open"`/`status="deferred"`, "open/deferred", "a deferred sibling is a declarable target", "no `status` read", "a deferred target is as valid as an open one", or the milestone-21 residual about deferred targets carrying forward, and the review invariant's convergence rule reads "no `<open-question>` block remains". Per the Retirement invariant decision this is delete-only: the attribute-order clause on the `<open-question>` locate is cut, `<depends-on>` and capture keep theirs, and no retirement invariant or "do not reintroduce" sentence is added. Verified by grepping `CLAUDE.md` for `status=` and `deferred` and finding nothing.
