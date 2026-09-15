@@ -10,9 +10,18 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_22_drop-open-question-status/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 22 — Drop Open-Question Status
+
+- The `status` attribute is gone from `<open-question>` blocks: the opening boundary tag is now exactly `<open-question id="Short Title">`, and every locate and gather states its `id="([^"]*)"` extraction plainly, without the attribute-order justification the second attribute once required.
+- `review-milestone-requirements` authors every finding it surfaces as one ordinary three-line block — the Blocking/Deferred triage, the deferred template, and the "low-risk-to-reverse" threshold were deleted with no reworded don't-raise rule in their place — and its convergence verdict, like the `derive-tasks` precondition, is now simply "no `<open-question>` block remains".
+- The deferred pass-through in `derive-tasks` was removed, so no runtime control flow branches on the attribute anymore.
+- Every "open or deferred", "whatever its `status`", and "reads no `status`" qualifier was swept from `shared/`, the two sweeps, the single-question skills, and both agents, leaving the boundary-line CLI, entity unescaping, case-folding, cascade, and `<depends-on>` reconciliation unchanged.
+- `capture-milestone-principle-updates` keeps its pre-XML blockquote-form note (with its second marker corrected to `> **Open question — …:**`) as the one runtime survivor of the word "Deferred", relying on its id-anchored locate to absorb `status="…"` on historical removed lines without a note.
+- `README.md` and `CLAUDE.md` describe only the current form — delete-only, with no retirement invariant or "do not reintroduce" sentence — and finished milestones' records were left as written; the Antigravity tree under `.agents/plugins/cairn/` was regenerated status-free.
 
 ### Milestone 21 — Recommendation Dependency Graph
 
@@ -239,3 +248,4 @@ Current milestone: `milestones/milestone_22_drop-open-question-status/`
 | 19 | Principle Capture By Milestone | `milestones/milestone_19_principle-capture-by-milestone/` |
 | 20 | Recommend Agent Return Robustness | `milestones/milestone_20_recommend-agent-return-robustness/` |
 | 21 | Recommendation Dependency Graph | `milestones/milestone_21_recommendation-dependency-graph/` |
+| 22 | Drop Open-Question Status | `milestones/milestone_22_drop-open-question-status/` |
