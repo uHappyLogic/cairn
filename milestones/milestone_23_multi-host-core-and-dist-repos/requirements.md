@@ -38,3 +38,53 @@ There is no `core/` directory, no neutral plugin-root placeholder, no per-host m
 
 ## Out of Scope
 
+## Open questions
+
+<open-question id="Placeholder token form">
+  <question>What literal form does the neutral plugin-root placeholder take in core/ files (for example a mustache-style token, a shell-style variable, or a bare relative path), given that it must be safe inside Markdown prose and fenced shell blocks and must never collide with a host&apos;s own runtime variable syntax?</question>
+</open-question>
+<open-question id="Resolve hint fate">
+  <question>Does the prose hint that follows plugin-root references in 18 core files (run echo of the Claude variable to resolve the path) stay in core/ and get emitted only by the Claude build, or is it removed from core/ entirely so no host output carries it?</question>
+</open-question>
+<open-question id="Host definition mechanism">
+  <question>How is a host declared to the build so that adding one means adding a definition rather than code — a data file per host under scripts/ (manifest template, placeholder rewrite, output layout, excluded files), a small Python module per host implementing a fixed interface, or a registry table inside the build script?</question>
+</open-question>
+<open-question id="Build script interface">
+  <question>What is the build script&apos;s name, invocation shape (one host, all hosts, a check-only mode), and relationship to scripts/migrate_skills_to_agy.py — is the old transpiler deleted outright or kept as a thin alias for one release?</question>
+</open-question>
+<open-question id="Version source of truth">
+  <question>Once .claude-plugin/plugin.json becomes a generated file under hosts/claude/, which single file holds the plugin version that scripts/set_version.py writes and every host manifest is rendered from — pyproject.toml, a dedicated VERSION file, or a manifest kept in core/?</question>
+</open-question>
+<open-question id="Build validation checks">
+  <question>Which checks does the per-host validation run on generated output — frontmatter presence and YAML parse, the 25-word description cap, no unreplaced placeholder, no foreign host&apos;s variable syntax in another host&apos;s tree, every placeholder-rewritten path resolving to a file in that same tree — and does a failed check abort the whole build or only that host?</question>
+</open-question>
+<open-question id="Build drift check">
+  <question>Should the release pre-flight (and any pre-commit convention) verify that every committed hosts/&lt;host&gt;/ tree is byte-identical to a fresh build from core/, replacing the current absorbed-drift count for the Antigravity tree, and should such drift stop the release or be absorbed into the release commit as today?</question>
+</open-question>
+<open-question id="Dist repo marketplace manifest">
+  <question>Does hosts/claude/ (and therefore the cairn-claude repository root) carry its own .claude-plugin/marketplace.json with source &quot;.&quot;, so that a marketplace add of cairn-claude works, while the monorepo root keeps a second marketplace.json pointing at ./hosts/claude — and if so, which of the two the version script and validation treat as authoritative?</question>
+</open-question>
+<open-question id="Dist repo README content">
+  <question>What does each distribution repository&apos;s README contain — per-host install instructions, a generated-do-not-edit notice, a pointer to the source repository and release tag, the license — and does the build generate it per host from a template so it lands in hosts/&lt;host&gt;/ like any other file?</question>
+</open-question>
+<open-question id="Dist repo creation">
+  <question>Who creates the cairn-claude and cairn-antigravity repositories on GitHub and with what settings (public, description, default branch main, license, topics) — a one-time gh command run during this milestone, a bootstrap script, or the publish step creating a missing repository on demand?</question>
+</open-question>
+<open-question id="Dist publish mechanism">
+  <question>How does the publish step turn hosts/&lt;host&gt;/ into one ordinary commit on the distribution repository&apos;s main branch — a git subtree split pushed to the remote, or a snapshot copy into a fresh clone committed under a fixed subject such as Release: &lt;VERSION&gt; — and how is the commit body composed?</question>
+</open-question>
+<open-question id="Dist publish resumption">
+  <question>How does the dist publish fit the release skill&apos;s check-then-do resumption model — where it sits relative to the monorepo tag push and GitHub release, what state marks a host as already published (a tag on the dist remote at a commit whose tree matches hosts/&lt;host&gt;/), and what happens when a dist repository already carries that tag on a different tree?</question>
+</open-question>
+<open-question id="Dist repo GitHub releases">
+  <question>Does each distribution repository receive only the bare &lt;VERSION&gt; tag, or also a GitHub Release with the same notes as the monorepo release?</question>
+</open-question>
+<open-question id="Install documentation">
+  <question>What do the install instructions become across README.md and each dist README — cairn-claude as the recommended Claude Code marketplace source, a first-ever Antigravity install path (clone or copy of cairn-antigravity into .agents/plugins/cairn), and a migration note for existing installs pinned to the uHappyLogic/cairn marketplace?</question>
+</open-question>
+<open-question id="Host-conditional prose handling">
+  <question>How does core/ handle the prose that names a specific host today — the two-branch repair step naming Claude Code&apos;s SendMessage and Antigravity, the cairn: registry-name mentions, the init template&apos;s Claude Code wording, and the agents&apos; Claude-only color frontmatter — kept as host-neutral wording in core, or made per-host rewrite rules?</question>
+</open-question>
+<open-question id="Stale migrate-workspace references">
+  <question>README.md and CLAUDE.md reference a migrate-workspace skill that has no directory under skills/, and the transpiler carries a -workspace exclusion for it — are those references and that exclusion removed in this milestone as part of rewriting the layout documentation, or left for a separate cleanup?</question>
+</open-question>
