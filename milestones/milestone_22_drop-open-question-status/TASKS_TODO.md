@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Single Question Skills Drop Status Qualifiers
-
-Sweep `skills/discuss-open-question/SKILL.md`, `skills/answer-open-question/SKILL.md`, `skills/answer-open-question-with-recommendation/SKILL.md`, `skills/answer-open-question-with-alternative/SKILL.md`, and `skills/modify-milestone-goal/SKILL.md` to remove every `status="open|deferred"`, "open or deferred", "whether open or deferred", and "open or `Deferred` questions" qualifier plus the "independent of attribute order" justification on the `<open-question>` `id` regex, stating each locate as a plain extraction. Verified by grepping those five files for `status` and `deferred` and finding only "terse status line" hits.
-
----
-
 ## Agents Drop Status Qualifiers
 
 Update `agents/recommend-open-question.md` and `agents/answer-open-question-with-recommendation.md` so the dispatch framing says "once per question", the sibling-declaration rule no longer says "whatever its `status`", and the resolved block is described without `status="open|deferred"`, leaving the `<depends-on>` element rendering and the step 4 self-check untouched. Verified by grepping `agents/` for `status` and `deferred` and finding nothing besides DONE/FAILED wording.

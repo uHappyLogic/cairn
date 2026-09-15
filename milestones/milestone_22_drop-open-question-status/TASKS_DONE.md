@@ -90,3 +90,17 @@ Update `skills/answer-all-open-questions-with-recommendation/SKILL.md` so its fr
 - `git diff` on the file touches only the description, Usage, the step-1 gather paragraph, and the step-3 report; the dependency walk, dispatch, and commit logic are unchanged.
 
 ---
+
+## Single Question Skills Drop Status Qualifiers
+
+Sweep `skills/discuss-open-question/SKILL.md`, `skills/answer-open-question/SKILL.md`, `skills/answer-open-question-with-recommendation/SKILL.md`, `skills/answer-open-question-with-alternative/SKILL.md`, and `skills/modify-milestone-goal/SKILL.md` to remove every `status="open|deferred"`, "open or deferred", "whether open or deferred", and "open or `Deferred` questions" qualifier plus the "independent of attribute order" justification on the `<open-question>` `id` regex, stating each locate as a plain extraction. Verified by grepping those five files for `status` and `deferred` and finding only "terse status line" hits.
+
+**Verified:**
+
+- `skills/discuss-open-question/SKILL.md`, `skills/answer-open-question/SKILL.md`, `skills/answer-open-question-with-recommendation/SKILL.md`, `skills/answer-open-question-with-alternative/SKILL.md`, and `skills/modify-milestone-goal/SKILL.md` carry no `status="open|deferred"`, "whether `status="open"` or `status="deferred"`", "open or deferred", "open or `Deferred` questions", or "shared by open and deferred blocks (they differ only in the `status` value)" wording.
+- The "independent of attribute order (`status` may precede or follow `id`)" justification is cut from every `<open-question>` `id` locate in those files; each locate states the plain extraction — pull the `id` attribute with the regex `id="([^"]*)"` — matching the swept `shared/answer-procedure.md` wording, and the alternative skill's matched-block sentence ends at "one boundary-token pair per block".
+- `grep -i -E 'status|deferred'` over the five files returns only the "terse status line" hits in the four committing skills' reporting steps (`discuss-open-question` is conversational and has none).
+- No retirement note or replacement sentence is added; the diff touches only the qualifier phrases and the rewrapped locate paragraph — the boundary-line CLI, entity unescaping, case-folding, the `<alternative id>` lookup, and every other step are unchanged.
+- Each file's frontmatter still loads under `yaml.safe_load` with `name` and `description`, the descriptions untouched and all at 21 words or fewer.
+
+---
