@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Backfill Changelog From GitHub Releases
-
-First demote the nine `##` milestone-section lines on the eight sectioned monorepo release pages (`0.9.8` through `1.4.0`) to `###` with one `gh release edit --notes-file` loop that changes no other line, then write a root `CHANGELOG.md` from one uniform loop over all sixteen tags (`gh release view --json body` with `publishedAt` as the date): a title, a one-line note that each entry is that release's notes verbatim, newest first, and per release a `## <VERSION> — <YYYY-MM-DD>` heading directly over the body exactly as returned — link-only and empty bodies included, nothing reconstructed — with no Unreleased section and no reference-link list. Verify, and record among the Verified bullets, that every entry read back from the file equals its release-page body byte for byte.
-
----
-
 ## Release Skill Maintains Changelog Entry
 
 Edit `.claude/skills/release-plugin/SKILL.md` so a release keeps `CHANGELOG.md` identical to the release notes: step 5 composes the milestone sections at `###` (only on a fresh run — a resumption skips it whole); step 6 prepends the `## <VERSION> — <YYYY-MM-DD>` entry below the changelog title and stages `CHANGELOG.md` beside the existing version paths in the one `Release: <VERSION>` commit, with step 6b and `CLAUDE.md`'s Development sentence about that commit updated to name the changelog entry; a pre-flight gate beside the tag-existence check requires no entry for `<VERSION>` on a fresh run and exactly one at `HEAD` on a resumption; and steps 7 and 8 show and publish the entry extracted from `HEAD:CHANGELOG.md` (the lines under its heading up to the next `##` heading, blank lines trimmed) on a fresh run and a resumption alike, with the extraction rule stated exactly. Verify by reading the skill through both paths — fresh and resumption — and confirming every step names the committed entry as its source and the staged path list includes `CHANGELOG.md`.
