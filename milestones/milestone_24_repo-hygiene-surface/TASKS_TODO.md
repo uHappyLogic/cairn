@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Render Host Contributing Pointer Templates
-
-Add a `CONTRIBUTING.md` template to each host definition directory (`scripts/hosts/claude/`, `scripts/hosts/antigravity/`) that renders into the host tree and points contributors at the root repository `uHappyLogic/cairn` for issues and pull requests, naming the root's private vulnerability reporting form for security reports beside the issue route; `SECURITY.md` and `CODE_OF_CONDUCT.md` stay root-only and are not rendered or copied. Rebuild both host trees with `uv run scripts/build_hosts.py` and commit them, so each host tree carries exactly `README.md`, `LICENSE`, and `CONTRIBUTING.md` as its non-plugin files. Verify `uv run scripts/build_hosts.py --check` passes and `hosts/<host>/CONTRIBUTING.md` exists for both hosts.
-
----
-
 ## Backfill Changelog From GitHub Releases
 
 First demote the nine `##` milestone-section lines on the eight sectioned monorepo release pages (`0.9.8` through `1.4.0`) to `###` with one `gh release edit --notes-file` loop that changes no other line, then write a root `CHANGELOG.md` from one uniform loop over all sixteen tags (`gh release view --json body` with `publishedAt` as the date): a title, a one-line note that each entry is that release's notes verbatim, newest first, and per release a `## <VERSION> — <YYYY-MM-DD>` heading directly over the body exactly as returned — link-only and empty bodies included, nothing reconstructed — with no Unreleased section and no reference-link list. Verify, and record among the Verified bullets, that every entry read back from the file equals its release-page body byte for byte.
