@@ -46,3 +46,19 @@ Add a root `CODE_OF_CONDUCT.md` that is Contributor Covenant 2.1 verbatim, with 
 - The change set is exactly the new file: `git status --porcelain` shows only `?? CODE_OF_CONDUCT.md` beyond this TODO→DONE move (the fetched reference copies live under the gitignored `temp/`).
 
 ---
+
+## Write Security Policy File
+
+Add a root `SECURITY.md` that directs vulnerability reports to GitHub private vulnerability reporting only — the root repository's Report a vulnerability form — with no email address, and a supported-versions table naming the latest release only, stating that every fix ships as a new release to both distribution repositories. Verify the file names no email, links the private reporting form, and its table names exactly the current latest release tag.
+
+**Verified:**
+
+- `SECURITY.md` exists at the repository root (1041 bytes, 15 lines), beside `LICENSE`, `README.md`, and `CODE_OF_CONDUCT.md`, with a `## Supported versions` section and a `## Reporting a vulnerability` section.
+- It directs reports to GitHub private vulnerability reporting only: line 13 reads "Report vulnerabilities through GitHub private vulnerability reporting only" and links the root repository's form as `[Report a vulnerability](https://github.com/uHappyLogic/cairn/security/advisories/new)` — the form the `### Security policy` decision names, on the repository whose private vulnerability reporting the settings task already enabled (`gh api repos/uHappyLogic/cairn/private-vulnerability-reporting` returns `{"enabled":true}`). The file's three URLs are that form and the two distribution repositories; its closing line rules out a public issue, a discussion, and a pull request as report routes and states the form is the only channel.
+- No email address appears in the file: `grep -c -E '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'` returns 0, `grep -c -i 'mailto:'` returns 0, and the file contains no `@` character at all.
+- Its supported-versions table names exactly the current latest release tag: the one data row is `| 1.4.0   | Yes       |`, and `1.4.0` is the only `MAJOR.MINOR.PATCH` literal anywhere in the file — the tag `gh api repos/uHappyLogic/cairn/releases/latest --jq .tag_name` returns, marked Latest in `gh release list`, and the literal the root `VERSION` file holds.
+- It states that every fix ships as a new release to both distribution repositories: line 5 reads "Every fix ships as a new release, published to both distribution repositories" and links [`cairn-claude`](https://github.com/uHappyLogic/cairn-claude) and [`cairn-antigravity`](https://github.com/uHappyLogic/cairn-antigravity) by name, the two repositories the release skill publishes into.
+- It stays root-only, as the `### Distribution tree hygiene files` decision fixes: `find` names `./SECURITY.md` as the only such file in the tree, none exists under `core/`, `scripts/hosts/`, or either `hosts/<host>/` tree, `scripts/build_hosts.py` copies only `LICENSE` into a host tree, and `uv run scripts/build_hosts.py --check` — the repository's one automated check — exits 0 with "Check passed: hosts/antigravity/ and hosts/claude/ match a fresh build of core/ at version 1.4.0."
+- The change set is exactly the new file: `git status --porcelain` shows only `?? SECURITY.md` beyond this TODO→DONE move.
+
+---

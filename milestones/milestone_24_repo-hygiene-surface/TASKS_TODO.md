@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Write Security Policy File
-
-Add a root `SECURITY.md` that directs vulnerability reports to GitHub private vulnerability reporting only — the root repository's Report a vulnerability form — with no email address, and a supported-versions table naming the latest release only, stating that every fix ships as a new release to both distribution repositories. Verify the file names no email, links the private reporting form, and its table names exactly the current latest release tag.
-
----
-
 ## Add Issue Forms And Chooser Config
 
 Add three YAML issue forms under `.github/ISSUE_TEMPLATE/`: a bug form with a required host dropdown of the two values mirroring `scripts/hosts/`, a required cairn-version text input, and a required skill-invoked text input; a feature form; and a proposal form whose required fields are a goal statement in the shape a milestone `## Goal` takes, the motivation, what is in and out of scope, and a checkbox committing the proposer to run the milestone in a fork through `/finish-current-milestone`. Beside them add `config.yml` with `blank_issues_enabled: false` and one contact link — name Ask a question, url `https://github.com/uHappyLogic/cairn/discussions/new?category=q-a`, about usage and how-to questions — and no security link. Verify every form loads as YAML with the required fields marked required and the chooser config carries exactly that one link.
