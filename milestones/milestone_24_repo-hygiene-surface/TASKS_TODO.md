@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Write Root Contributing Guide
-
-Add a root `CONTRIBUTING.md` whose first section spells out the proposal-then-reserved-milestone handoff as an ordered list, one step per act: file the proposal issue; the maintainer accepts by running `/define-milestone-goal` on `main` while their pointer reads `none`, whose `Milestone-definition:` commit reserves `milestone_<N>_<slug>` without activating it; fork and branch from that commit; run `/goto-next-milestone` first; run the requirements-and-task pipeline through `/finish-current-milestone` as one step linking the README's Workflow pipeline; sync from `main` by merge only (never rebase) and only while its `Current milestone:` line reads `none` (checkable with `git show origin/main:milestones/README.md`), aborting a pointer conflict rather than resolving it; rebuild `hosts/` and pass `--check`; open the pull request, merged as a merge commit (squash merges are disabled), after which the maintainer runs `/capture-milestone-principle-updates` — noting there is no plain-pull-request tier and small fixes are filed as issues, and that the design invariants live in `CLAUDE.md`. The section after it is the README's `## Development` body moved whole, with its one in-section link re-pointed to `README.md#installation`; this task leaves `README.md` untouched. Verify the ordered steps match the decisions and the Development text equals the README section apart from that one link.
-
----
-
 ## Render Host Contributing Pointer Templates
 
 Add a `CONTRIBUTING.md` template to each host definition directory (`scripts/hosts/claude/`, `scripts/hosts/antigravity/`) that renders into the host tree and points contributors at the root repository `uHappyLogic/cairn` for issues and pull requests, naming the root's private vulnerability reporting form for security reports beside the issue route; `SECURITY.md` and `CODE_OF_CONDUCT.md` stay root-only and are not rendered or copied. Rebuild both host trees with `uv run scripts/build_hosts.py` and commit them, so each host tree carries exactly `README.md`, `LICENSE`, and `CONTRIBUTING.md` as its non-plugin files. Verify `uv run scripts/build_hosts.py --check` passes and `hosts/<host>/CONTRIBUTING.md` exists for both hosts.
