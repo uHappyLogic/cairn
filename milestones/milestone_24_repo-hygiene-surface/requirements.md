@@ -192,3 +192,15 @@ An outside contribution is proposal-first, then a contributor-run milestone on a
 <open-question id="Unused wiki tab">
   <question>Should the unused wiki be disabled on the root repository so a visitor sees no empty Wiki tab, or be left enabled?</question>
 </open-question>
+<open-question id="Squash merge setting">
+  <question>Is disabling squash merges on the root repository, which the contributor-workflow decision requires so a contributor milestone&apos;s Milestone-finish: and answer commit subjects survive the merge, a task of this milestone alongside enabling Discussions, or a repository setting the maintainer flips by hand outside any task?</question>
+</open-question>
+<open-question id="Proposal intake route">
+  <question>Is the proposal that precedes a contributor-run milestone filed through a dedicated proposal issue form beside the bug and feature templates, through a Discussions category once Discussions is enabled, or through the feature template as it stands?</question>
+</open-question>
+<open-question id="CONTRIBUTING.md handoff wording">
+  <question>Does the root CONTRIBUTING.md spell out the proposal-then-reserved-milestone handoff step by step (propose, maintainer defines and activates the milestone on main, branch from that commit, run the pipeline through /finish-current-milestone, merge commit), or state the contract in a sentence and point at the README workflow documentation for the steps?</question>
+</open-question>
+<open-question id="Pull-request template milestone field">
+  <question>Does the pull-request template ask for the reserved milestone id and the proposal it was accepted in, so a reviewer can check the branch carries that milestone&apos;s artifacts, or stay a generic checklist (rebuilt hosts/ trees, --check green, CLAUDE.md invariants preserved)?</question>
+</open-question>
