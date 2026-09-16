@@ -32,6 +32,10 @@ Sixteen GitHub releases exist, tagged bare `0.9.0` through `1.4.0`, published 20
 
 ## Decisions
 
+### Contributor workflow
+
+An outside contribution is proposal-first, then a contributor-run milestone on a maintainer-reserved slot. A substantive change is proposed as an issue or Discussion; acceptance is the maintainer running `/define-milestone-goal` on `main` with the accepted proposal and activating it with `/goto-next-milestone` once the current-milestone pointer is free. The contributor branches from that commit and runs the full requirements-and-task pipeline through `/finish-current-milestone` in a fork, and the pull request is merged with a merge commit — squash merges are disabled on the repository — so the milestone commits survive for release notes and for `/capture-milestone-principle-updates`, which the maintainer runs after the merge. There is no plain-pull-request tier: small fixes are filed as issues for the maintainer to make.
+
 ## Out of Scope
 
 ## Open questions
@@ -55,49 +59,8 @@ Sixteen GitHub releases exist, tagged bare `0.9.0` through `1.4.0`, published 20
   </alternative>
   <recommendation option="Every push and pull request, unfiltered">The gate reads core/, scripts/hosts/, VERSION, LICENSE, and the root marketplace and finishes in 0.2 seconds inside a half-minute free job, so filtering buys nothing measurable while a paths list would be a hand-maintained second copy of the build&apos;s input set (the question&apos;s own list already omits LICENSE and the uv files) and a skipped run leaves a pull request with no status; every push and pull request is the goal&apos;s literal wording, the maintainer pushes straight to main with no pull-request history to double-run, and the two-event trigger has nothing to curate.</recommendation>
 </open-question>
-<open-question id="Contributor workflow expectation">
-  <question>Must an outside contribution go through the milestone workflow this repository runs on itself (milestone artifacts, Marker-colon commit subjects), or is a plain pull request editing core/ with rebuilt hosts/ trees and a passing drift gate sufficient?</question>
-  <alternative id="Plain pull request">
-    An outside contribution is an ordinary pull request that edits core/ (or scripts/) and commits the rebuilt hosts/ trees, gated only by review and the green drift-gate check; commit subjects are free-form and no milestone artifact is touched, the milestone workflow staying the maintainer&apos;s own way of working.
-    <advantage>It asks exactly what the repository can verify: the drift gate is its only automated check, and both readers of commit subjects (the release skill&apos;s Milestone-finish: grep and capture&apos;s three answer markers) are path-scoped to milestones/, so a contributor commit on core/ or hosts/ is never read by either.</advantage>
-    <drawback>The change lands outside any milestone, so when a release range also contains a finished milestone, step 5 of /release-plugin composes the notes from milestone history entries alone and the contribution reaches the notes only if the maintainer adds it by hand (the commit-range summary runs only when no milestone finished in the range).</drawback>
-  </alternative>
-  <alternative id="Milestone workflow required">
-    A contribution must arrive as milestone artifacts: the contributor installs cairn, defines a milestone under milestones/, runs the requirements and task pipeline, and the pull request carries the resulting &lt;Marker&gt;: subjects and a Milestone-finish: history entry.
-    <advantage>Every contributed change comes with recorded requirements, decisions, and a milestones/README.md history entry, so it flows into the release notes by the existing step-5 path and the self-dogfooding story stays complete.</advantage>
-    <drawback>The workflow is single-tenant by construction: milestones/README.md holds one Current milestone: pointer and goto-next-milestone refuses while it is not none, so a contributor&apos;s milestone collides with the maintainer&apos;s live one; it also demands the plugin, an agent host, and &lt;Marker&gt;: subjects that the maintainer&apos;s own hand commits (144 of 568) do not follow, turning a typo fix into a multi-day ritual.</drawback>
-  </alternative>
-  <alternative id="Proposal-first for design changes">
-    Two tiers: fixes and small changes are plain pull requests, while a design-level change to a skill, agent, shared procedure, or invariant must be proposed first as an issue or Discussion, after which the maintainer runs the milestone workflow on the accepted proposal and the change lands as maintainer milestone commits rather than the contributor&apos;s branch.
-    <advantage>Design decisions on the runtime layer keep passing through the recommend-and-answer loop that feeds the principle store and the release notes, without requiring any contributor to install the workflow.</advantage>
-    <drawback>It needs a stated line between fix and design change that every reviewer applies the same way, and it turns the contributor&apos;s branch into a suggestion the maintainer re-implements, slowing every substantive contribution and diluting its authorship.</drawback>
-  </alternative>
-  <alternative id="Marker subjects without milestones">
-    A plain pull request as in the first option, but CONTRIBUTING.md additionally requires each commit subject to follow the function-derived &lt;Marker&gt;: &lt;descriptor&gt; form so the git log stays uniform.
-    <advantage>The log reads in one provenance style whether a change came from a skill or a human.</advantage>
-    <drawback>Nothing consumes the convention outside milestones/ (both subject readers are path-scoped there), the repository allows squash merges that rewrite the landing subject anyway, and the maintainer&apos;s own hand commits do not follow it, so the rule is cost with no reader.</drawback>
-  </alternative>
-  <recommendation option="Plain pull request">The drift gate is the only check the repository can run, both subject-reading tools are path-scoped to milestones/, and the single Current milestone: pointer makes a contributor-run milestone collide with the maintainer&apos;s, so the contract is exactly the goal&apos;s own framing of CONTRIBUTING.md (edit core/, rebuild, keep the CLAUDE.md invariants); folding a contributed change into release notes stays the maintainer&apos;s job at release time.</recommendation>
-</open-question>
 <open-question id="Contributing vs Development overlap">
   <question>Does the root CONTRIBUTING.md absorb the README Development section (with the README linking out to it), or summarize the contributor path and link to the README section that stays authoritative?</question>
-  <alternative id="Absorb into CONTRIBUTING">
-    Move the content of README&apos;s ## Development section (the core-once model, the three build_hosts.py invocations, the rebuild-and-commit rule, VERSION/set_version.py, the distribution repositories, the directory-marketplace developer install) into the root CONTRIBUTING.md, which becomes the human-facing home of the build model, and shrink README ## Development to a one-paragraph pointer at it.
-    <advantage>The file GitHub surfaces on every new issue and pull request carries the complete build instructions in place, with no click-through, and README becomes a pure user document (installation, workflow, skill reference) with a single pointer for contributors.</advantage>
-    <drawback>The section is more than a contributor path: it is where a repository visitor learns why the hosts/ trees exist, how the two distribution repositories relate to what Installation tells them to install, and how to install from a checkout, and it already has an agent-facing twin in CLAUDE.md&apos;s own ## Development, so the move relocates the human copy away from the document a visitor reads rather than collapsing a duplicate, at the cost of a large README diff.</drawback>
-  </alternative>
-  <alternative id="Summarize and link">
-    The root CONTRIBUTING.md states the contributor contract in a few lines (propose via an issue or Discussion, edit core/ or scripts/ and never hosts/, run uv run scripts/build_hosts.py and commit the rebuilt trees, keep --check green, preserve the invariants in CLAUDE.md) and links to README ## Development for the build model, which stays exactly as it is and remains authoritative.
-    <advantage>It is the shape the goal already gives the file (edit core/, rebuild, invariants live in CLAUDE.md): README keeps its self-contained visitor-facing explanation of the two-host build and the developer install, and CONTRIBUTING.md holds only what is contributor-specific, a short stable file whose one inline build command rarely changes.</advantage>
-    <drawback>The rebuild rule then lives in three prose surfaces (the CONTRIBUTING summary, README ## Development, CLAUDE.md ## Development) that must move together whenever the build changes, and a contributor arriving from GitHub&apos;s pull-request-time guidelines link gets the contract plus one link rather than the full explanation in place.</drawback>
-  </alternative>
-  <alternative id="Split by audience">
-    Divide the README section by reader: the contributor half (core-once, the build invocations, the rebuild-and-commit rule, the drift gate) moves into CONTRIBUTING.md, while the maintainer and visitor half (VERSION/set_version.py, the distribution repositories, the directory-marketplace install) stays under README ## Development, each half linking to the other.
-    <advantage>No paragraph is restated anywhere: every part of the build story has exactly one home and each audience reads only its half.</advantage>
-    <drawback>The dividing line is judgment (the drift gate and the distribution repositories matter to both audiences), and the halves read as fragments of one explanation a reader must reassemble across two files, with README no longer able to say on its own why the committed trees are rebuilt.</drawback>
-  </alternative>
-  <depends-on question="Contributor workflow expectation" option="Plain pull request"/>
-  <recommendation option="Summarize and link">The goal names CONTRIBUTING.md as a three-point contributor path pointing at CLAUDE.md, not a relocated build manual; README ## Development is the one place a repository visitor learns why hosts/ exists and how to install from a checkout, and it already has its agent-facing twin in CLAUDE.md, so absorbing it would relocate rather than deduplicate; and under the plain-pull-request contract the contributor-specific content is a handful of lines with one build command, which is a summary by size, while a future README Contributing section would link to CONTRIBUTING.md for the contract and CONTRIBUTING.md back to ## Development for the model, each hop carrying different content.</recommendation>
 </open-question>
 <open-question id="README links to hygiene files">
   <question>Beyond the CI badge, should README.md gain a Contributing section or links to CONTRIBUTING.md, SECURITY.md, CHANGELOG.md, and Discussions, or stay untouched?</question>
