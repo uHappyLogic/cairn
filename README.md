@@ -5,6 +5,9 @@
   <a href="https://github.com/uHappyLogic/cairn/releases/latest">
     <img alt="Latest Release" src="https://img.shields.io/github/v/release/uHappyLogic/cairn?style=flat&color=22c55e&label=release&display_name=tag" />
   </a>
+  <a href="https://github.com/uHappyLogic/cairn/actions/workflows/drift-gate.yml?query=branch%3Amain">
+    <img alt="CI" src="https://img.shields.io/github/actions/workflow/status/uHappyLogic/cairn/drift-gate.yml?branch=main&event=push&style=flat&label=ci" />
+  </a>
   <a href="LICENSE">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-3b82f6?style=flat" />
   </a>

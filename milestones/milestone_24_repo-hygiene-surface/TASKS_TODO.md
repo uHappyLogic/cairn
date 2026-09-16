@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Drift-Gate CI Workflow And Badge
-
-Add a GitHub Actions workflow under `.github/workflows/` that triggers on `push` and `pull_request` with no branch filter and no `paths` filter, installs `uv` and runs `uv run scripts/build_hosts.py --check`, pinning both actions (checkout and uv setup) to full 40-character commit SHAs each followed by a `# vX.Y.Z` comment, with no Dependabot configuration. Add a third shields.io badge to the README's centred badge row beside the release badge, `https://img.shields.io/github/actions/workflow/status/uHappyLogic/cairn/<workflow-file>?branch=main&event=push&style=flat&label=ci`, wrapped in a link to `actions/workflows/<workflow-file>?query=branch%3Amain`, where `<workflow-file>` is the workflow's file name fixed here. Verify the workflow YAML parses, both SHAs resolve to the commented releases, and the badge and link URLs name the same workflow file.
-
----
-
 ## Add Contributor Covenant Code Of Conduct
 
 Add a root `CODE_OF_CONDUCT.md` that is Contributor Covenant 2.1 verbatim, with its single `[INSERT CONTACT METHOD]` slot filled with the git author address `kosiak.lukasz@gmail.com` and nothing else changed, so GitHub's content detection labels it Contributor Covenant. Verify by diffing the file against the canonical 2.1 text: the only difference is the filled slot.
