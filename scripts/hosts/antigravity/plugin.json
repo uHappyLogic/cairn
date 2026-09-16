@@ -1,0 +1,6 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "{{NAME}}",
+  "description": "Milestone-driven development workflow — discuss goals, define milestones, derive and complete tasks, and archive milestones",
+  "version": "{{VERSION}}"
+}

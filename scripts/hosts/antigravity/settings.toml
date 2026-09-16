@@ -1,0 +1,38 @@
+# Host definition: Antigravity.
+#
+# A host is declared to scripts/build_hosts.py by this settings file plus the template
+# files beside it under scripts/hosts/<host>/. The build discovers hosts by scanning that
+# directory, renders core/ through these settings into hosts/<host>/, and renders every
+# other file in this directory as a template to the same relative path in that tree, with
+# its {{VERSION}} slot filled from the root VERSION file and its {{NAME}} slot from
+# plugin_name below. Every host shares this exact key set: a key with nothing to declare
+# is left empty, never omitted.
+
+# The plugin name that fills every {{NAME}} slot in the templates beside this file.
+plugin_name = "cairn"
+
+# The literal that replaces every {{PLUGIN_ROOT}} placeholder in the rendered core/ files.
+# Antigravity defines no plugin-root variable and loads the plugin from this path relative
+# to the consuming workspace root, so references become that workspace-relative literal.
+plugin_root = ".agents/plugins/cairn"
+
+# Regular expressions whose every match is deleted from each rendered core/ text file.
+prose_drop_patterns = []
+
+# YAML frontmatter keys removed from every rendered skill and agent file. Only Claude Code
+# reads the agents' `color` key, so this tree carries none.
+strip_frontmatter_keys = ["color"]
+
+# Individual files moved after the layout below is applied: each `from` path, relative to
+# the host tree root, is written at its `to` path instead.
+renames = []
+
+# Paths relative to core/ (files or whole directories) left out of this host's tree.
+exclude = []
+
+# Where each top-level directory of core/ lands, relative to the host tree root. Every
+# top-level directory of core/ must appear here.
+[layout]
+skills = "skills"
+agents = "agents"
+shared = "shared"

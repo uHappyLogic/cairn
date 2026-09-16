@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Author Claude And Antigravity Host Definitions
-
-Create the declarative host definition directories `scripts/hosts/claude/` and `scripts/hosts/antigravity/`, each holding a settings file — the plugin-root placeholder replacement value (`${CLAUDE_PLUGIN_ROOT}` for Claude Code, `.agents/plugins/cairn` for Antigravity), prose patterns to drop (none), frontmatter keys to strip (`color` for Antigravity, none for Claude Code), output layout and file renames, and excluded paths (no entry for the retired `migrate-workspace` skill) — beside that host's manifest templates with version and name slots: a `.claude-plugin/plugin.json` plus a `.claude-plugin/marketplace.json` with source `"."` and marketplace name `cairn` for Claude Code, and a `plugin.json` with `$schema` `https://antigravity.google/schemas/v1/plugin.json` for Antigravity. Verified when every difference the current `scripts/migrate_skills_to_agy.py` performs is expressed as a settings entry or a template slot under one shared settings shape, with no host-specific Python anywhere.
-
----
-
 ## Author Distribution README Templates
 
 Add a `README.md` template with a version slot to each host definition directory, containing a one-paragraph statement of what the repository is, a generated-do-not-edit notice routing issues and pull requests to `uHappyLogic/cairn`, that host's own install subsection in the exact wording the install-documentation decision fixes (Claude Code: `/plugin marketplace add uHappyLogic/cairn-claude` then `/plugin install cairn@cairn`, with the migration note in `cairn-claude`'s template only; Antigravity: `mkdir -p .agents/plugins/cairn`, `curl -sL` of the `cairn-antigravity` `archive/refs/heads/main.tar.gz` archive piped through `tar -xz --strip-components=1 -C .agents/plugins/cairn`, and one sentence on pinning by swapping `main` for a release tag) followed by `/init-milestone-base-workflow` and `/init`, a pointer to the source repository with the release tag and release URL derived from the version, and a license line naming MIT and pointing at the `LICENSE` file in the same tree. Verified when each template renders to a README whose only per-release change is the version literal and whose install subsection is word-for-word the one the root `README.md` will carry for that host.
