@@ -27,19 +27,43 @@ It works with any kind of project. Skills read your project's environment — it
 
 ## Installation
 
-In any Claude Code project, run:
+### Claude Code
+
+In Claude Code, add the `cairn-claude` marketplace and install the plugin from it:
 
 ```
-/plugin marketplace add uHappyLogic/cairn
+/plugin marketplace add uHappyLogic/cairn-claude
+/plugin install cairn@cairn
 ```
 
-Then bootstrap the milestones scaffold once in your project root:
+**Already installed from `uHappyLogic/cairn`?** Installs pinned to `uHappyLogic/cairn` keep working and updating — that marketplace now serves `./hosts/claude` — but `cairn-claude` is the recommended source. To switch, remove the old marketplace, add the new one, and install again; the plugin id `cairn@cairn` is unchanged, so no project settings need editing:
+
+```
+/plugin marketplace remove cairn
+/plugin marketplace add uHappyLogic/cairn-claude
+/plugin install cairn@cairn
+```
+
+### Antigravity
+
+From your project root, extract the latest release into `.agents/plugins/cairn`, the path Antigravity loads the plugin from:
+
+```bash
+mkdir -p .agents/plugins/cairn
+curl -sL https://github.com/uHappyLogic/cairn-antigravity/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 -C .agents/plugins/cairn
+```
+
+The `main` archive is always the latest release, since `cairn-antigravity` advances only by release snapshots. To pin a release instead of tracking the latest, swap `refs/heads/main` in that URL for `refs/tags/<tag>`, using a tag from the [releases page](https://github.com/uHappyLogic/cairn-antigravity/releases).
+
+### Bootstrap your project
+
+Then, in your project root, create the milestones scaffold once:
 
 ```
 /init-milestone-base-workflow
 ```
 
-Run `/init` to document your project — its domain context, working conventions, available tools, and how work is verified as done — in `CLAUDE.md` so skills can read the environment context.
+Run `/init` to document your project — its domain context, working conventions, available tools, and how work is verified as done — in `CLAUDE.md`, so the skills can read that environment context.
 
 ## How it works
 
@@ -327,6 +351,15 @@ uv run scripts/migrate_skills_to_agy.py
 ```
 
 This will parse the Claude Code plugin source and generate the Antigravity-compatible version under `.agents/plugins/cairn/`.
+
+The monorepo is not the source users install from — that is `cairn-claude`, as described under [Installation](#installation) — but it is the maintainer's install source: its root `.claude-plugin/marketplace.json` stays a working marketplace, named `cairn` and pointing at `./hosts/claude`, so a checkout can be registered as a **directory marketplace** and the plugin installed from it as usual, for running cairn straight from the working tree while developing it:
+
+```
+/plugin marketplace add /path/to/cairn
+/plugin install cairn@cairn
+```
+
+Claude Code reads that marketplace from the checkout directory, so the `hosts/claude/` tree it points at is what gets installed and updated — no release needed.
 
 ## Self-dogfooding
 
