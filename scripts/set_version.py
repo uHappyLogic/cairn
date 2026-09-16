@@ -2,19 +2,27 @@
 
 Usage: uv run scripts/set_version.py MAJOR.MINOR.PATCH
 
+The root VERSION file is the single source of truth for the plugin version. It holds the
+bare literal on one newline-terminated line and nothing else, so `cat VERSION`, Python, or
+any build reads it without a parser. Every other version literal in the repo is a mirrored
+surface that this script keeps in lockstep with it.
+
 Surfaces written:
-  - .claude-plugin/plugin.json       "version" on the manifest
-  - .claude-plugin/marketplace.json  "version" on the single plugins[] entry (added if absent)
-  - pyproject.toml                   version under [project] (cairn-tooling)
-  - uv.lock                          version in the cairn-tooling [[package]] block
+  - VERSION                          the bare literal (source of truth)
+  - .claude-plugin/marketplace.json  "version" on the single plugins[] entry (the monorepo's
+                                     hand-held marketplace, mirrored)
+  - pyproject.toml                   version under [project] (cairn-tooling, mirrored)
+  - uv.lock                          version in the cairn-tooling [[package]] block (mirrored)
 
-The generated Antigravity manifest .agents/plugins/cairn/plugin.json is deliberately not
-written here: the transpiler copies the version out of .claude-plugin/plugin.json on every
-regeneration, so .claude-plugin/plugin.json stays the single source of truth.
+Deliberately not written:
+  - anything under hosts/            every host manifest (plugin.json, and the dist
+                                     marketplace.json for Claude Code) is rendered under
+                                     hosts/<host>/ by the host build, scripts/build_hosts.py,
+                                     from a template whose version slot is filled from VERSION
+  - .claude-plugin/plugin.json       not a surface: no plugin manifest is written by this script
 
-This script only edits files. It never invokes git or gh, and it writes nothing under
-.agents/. All four files are parsed and rewritten in memory first, so a failure on any one
-surface leaves every file untouched.
+This script only edits files. It never invokes git or gh. All four surfaces are rendered in
+memory first, so a failure on any one of them leaves every file untouched.
 """
 
 import json
@@ -24,7 +32,7 @@ import sys
 
 VERSION_PATTERN = re.compile(r"^(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)$")
 
-PLUGIN_MANIFEST = os.path.join(".claude-plugin", "plugin.json")
+VERSION_FILE = "VERSION"
 MARKETPLACE_MANIFEST = os.path.join(".claude-plugin", "marketplace.json")
 PYPROJECT = "pyproject.toml"
 UV_LOCK = "uv.lock"
@@ -41,9 +49,13 @@ def fail(message):
     sys.exit(1)
 
 
-def read_text(path):
+def require_surface(path):
     if not os.path.exists(path):
         raise SurfaceError(f"{path} not found (run this script from the repository root)")
+
+
+def read_text(path):
+    require_surface(path)
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
@@ -52,12 +64,11 @@ def dump_json(data):
     return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
 
 
-def render_plugin_manifest(version):
-    data = json.loads(read_text(PLUGIN_MANIFEST))
-    if "version" not in data:
-        raise SurfaceError(f"{PLUGIN_MANIFEST} has no 'version' key to update")
-    data["version"] = version
-    return dump_json(data)
+def render_version_file(version):
+    # The file's whole content is the literal, so nothing is read back: the existence check
+    # is the same repository-root guard every other surface gets.
+    require_surface(VERSION_FILE)
+    return f"{version}\n"
 
 
 def render_marketplace_manifest(version):
@@ -100,7 +111,7 @@ def render_uv_lock(version):
 
 
 RENDERERS = (
-    (PLUGIN_MANIFEST, render_plugin_manifest),
+    (VERSION_FILE, render_version_file),
     (MARKETPLACE_MANIFEST, render_marketplace_manifest),
     (PYPROJECT, render_pyproject),
     (UV_LOCK, render_uv_lock),

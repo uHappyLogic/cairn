@@ -34,3 +34,19 @@ Reword the three prose sites in `core/` that name a host so they name capabiliti
 - Each touched file's frontmatter still loads under `yaml.safe_load` with `name` and `description` present and every description at or under 25 words (15, 18, 15, 21).
 
 ---
+
+## Add Root VERSION File And Version Script
+
+Create a root `VERSION` file holding the bare `1.4.0` literal and nothing else as the single source of truth for the plugin version, and rewrite `scripts/set_version.py <MAJOR.MINOR.PATCH>` to write `VERSION`, `pyproject.toml`, `uv.lock`, and the root `.claude-plugin/marketplace.json` entry in lockstep (all-or-nothing, as today), never writing any manifest under `hosts/` and no longer treating the root `.claude-plugin/plugin.json` as a surface. Verified by running the script with a throwaway version, confirming exactly those four files change and carry the literal, then restoring `1.4.0`.
+
+**Verified:**
+
+- A root `VERSION` file exists holding exactly the bare `1.4.0` literal on one newline-terminated line and nothing else: `cat -e VERSION` prints `1.4.0$` only and the file is 6 bytes.
+- `scripts/set_version.py`'s write set (its `RENDERERS` tuple) names exactly four paths — `VERSION`, `.claude-plugin/marketplace.json`, `pyproject.toml`, `uv.lock` — with no path under `hosts/` and no `.claude-plugin/plugin.json`; the only `hosts/` and `plugin.json` mentions in the script are the docstring's "deliberately not written" statement.
+- `uv run scripts/set_version.py 9.9.9` from the repository root exits 0, and `git status --porcelain` afterwards lists exactly those four files (`VERSION` new, the other three modified); `.claude-plugin/plugin.json` is untouched and still reads `1.4.0`.
+- After that run each of the four carries `9.9.9` in its version slot and nothing else in them changed: `VERSION` is `9.9.9\n`, `marketplace.json`'s single `plugins[0].version` is `"9.9.9"` with name, source `"."`, and description intact, `pyproject.toml` `[project]` `version = "9.9.9"`, and `uv.lock`'s `cairn-tooling` block reads `version = "9.9.9"` with the `pyyaml` `6.0.3` line untouched — each tracked diff is exactly one line.
+- All-or-nothing holds: with the last-rendered surface `uv.lock` moved away, `.venv/bin/python scripts/set_version.py 8.8.8` exits 1 with `uv.lock not found (run this script from the repository root)` and `No files were changed.`, and `VERSION`, `marketplace.json`, and `pyproject.toml` still read the pre-run `9.9.9`.
+- `uv run scripts/set_version.py 1.4.0` restores the literal: `git diff --stat` over the three tracked surfaces is empty, `VERSION` is again `1.4.0\n`, and the working tree holds only the task's own change set (`scripts/set_version.py` modified, `VERSION` new).
+- The invocation contract is unchanged — `uv run scripts/set_version.py MAJOR.MINOR.PATCH`; no argument, two arguments, and `v1.2.3` each exit 1 with the existing usage/format message and change nothing — and the docstring names the four surfaces, `VERSION` as the single source of truth the mirrored surfaces follow, and the never-written `hosts/<host>/` manifests (rendered by the host build from `VERSION`) and root `plugin.json`.
+
+---

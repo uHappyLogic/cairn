@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Root VERSION File And Version Script
-
-Create a root `VERSION` file holding the bare `1.4.0` literal and nothing else as the single source of truth for the plugin version, and rewrite `scripts/set_version.py <MAJOR.MINOR.PATCH>` to write `VERSION`, `pyproject.toml`, `uv.lock`, and the root `.claude-plugin/marketplace.json` entry in lockstep (all-or-nothing, as today), never writing any manifest under `hosts/` and no longer treating the root `.claude-plugin/plugin.json` as a surface. Verified by running the script with a throwaway version, confirming exactly those four files change and carry the literal, then restoring `1.4.0`.
-
----
-
 ## Author Claude And Antigravity Host Definitions
 
 Create the declarative host definition directories `scripts/hosts/claude/` and `scripts/hosts/antigravity/`, each holding a settings file — the plugin-root placeholder replacement value (`${CLAUDE_PLUGIN_ROOT}` for Claude Code, `.agents/plugins/cairn` for Antigravity), prose patterns to drop (none), frontmatter keys to strip (`color` for Antigravity, none for Claude Code), output layout and file renames, and excluded paths (no entry for the retired `migrate-workspace` skill) — beside that host's manifest templates with version and name slots: a `.claude-plugin/plugin.json` plus a `.claude-plugin/marketplace.json` with source `"."` and marketplace name `cairn` for Claude Code, and a `plugin.json` with `$schema` `https://antigravity.google/schemas/v1/plugin.json` for Antigravity. Verified when every difference the current `scripts/migrate_skills_to_agy.py` performs is expressed as a settings entry or a template slot under one shared settings shape, with no host-specific Python anywhere.
