@@ -115,8 +115,8 @@ the block is gone, so lifting it here is the only chance.
 
 **b. Dispatch the file-editing agent.** Use the `Agent` tool with `subagent_type` set to the
 namespaced registry name of the `answer-open-question-with-recommendation` agent under this
-plugin's namespace — Claude Code lists it as `cairn:answer-open-question-with-recommendation` —
-one dispatch per question. Pass it the question's **Short Title** in the prompt:
+plugin's namespace, `cairn:answer-open-question-with-recommendation` — one dispatch per question.
+Pass it the question's **Short Title** in the prompt:
 
 ```
 Record the embedded recommendation for this open question as its answer.

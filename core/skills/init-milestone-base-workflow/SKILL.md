@@ -73,7 +73,7 @@ If `milestones/README.md` **already exists**, do not overwrite it. Instead, ensu
 ```markdown
 # CLAUDE.md
 
-This file provides guidance to Claude Code when working in this repository.
+This file provides guidance to the coding agent working in this repository.
 
 ## Milestone Workflow
 

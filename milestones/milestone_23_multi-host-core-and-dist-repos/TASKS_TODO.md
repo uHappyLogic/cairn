@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Neutralize Host-Named Prose In Core
-
-Reword the three prose sites in `core/` that name a host so they name capabilities and the plugin's own namespace instead: the `recommend-all-open-questions` repair step keyed on whether the host can continue a finished agent session versus cannot (no `SendMessage`, Claude Code, or Antigravity mention), the dispatch sites of the three orchestrators naming the agent's registry name under this plugin's namespace, and the `init-milestone-base-workflow` CLAUDE.md template addressing the coding agent working in the repository. The agents' Claude-only `color` frontmatter key stays in `core/`, since the Antigravity host definition strips it by data. Verified when a case-insensitive grep for `Claude Code`, `Antigravity`, and `SendMessage` under `core/` returns nothing and each reworded passage still states the same rule it did before.
-
----
-
 ## Add Root VERSION File And Version Script
 
 Create a root `VERSION` file holding the bare `1.4.0` literal and nothing else as the single source of truth for the plugin version, and rewrite `scripts/set_version.py <MAJOR.MINOR.PATCH>` to write `VERSION`, `pyproject.toml`, `uv.lock`, and the root `.claude-plugin/marketplace.json` entry in lockstep (all-or-nothing, as today), never writing any manifest under `hosts/` and no longer treating the root `.claude-plugin/plugin.json` as a surface. Verified by running the script with a throwaway version, confirming exactly those four files change and carry the literal, then restoring `1.4.0`.

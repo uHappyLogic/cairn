@@ -100,8 +100,8 @@ recommendation build on those siblings' recommendations and declare each such us
 
 Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the
 `recommend-open-question` agent (singular — the per-question subagent) under this plugin's
-namespace — Claude Code lists it as `cairn:recommend-open-question` — one dispatch per surviving
-question. Pass it that question's **Short Title**, the `<MILESTONE_DIR>` resolved in step 0, and
+namespace, `cairn:recommend-open-question` — one dispatch per surviving question. Pass it that
+question's **Short Title**, the `<MILESTONE_DIR>` resolved in step 0, and
 the question's full `<open-question>` block — the block text this sweep already holds from its
 single gather pass — so it can enumerate honest alternatives:
 
@@ -204,14 +204,14 @@ repaired a second time; it goes straight to the skip below.
 Repair by whichever of these two branches the host supports, in this order:
 
 - **Continue the same agent session.** Where the host can continue a finished agent session and
-  you still hold that dispatch's handle — under Claude Code, `SendMessage` addressed to the agent
-  id the `Agent` tool returned — send the corrective message below to **that same agent**. Its
-  context is intact, so it re-emits from the analysis it already did.
-- **Re-dispatch one fresh agent.** Where the host offers no session-continuation equivalent (as
-  under Antigravity), or the handle is gone, dispatch **one** fresh `cairn:recommend-open-question`
-  agent for that question with the `Agent` tool, passing the **same prompt** as the original
-  dispatch with the corrective message below appended to it as a shape reminder. This second
-  dispatch redoes the analysis, so it is the fallback branch, never the preferred one.
+  you still hold that dispatch's handle — a follow-up message addressed to the agent id the
+  `Agent` tool returned — send the corrective message below to **that same agent**. Its context
+  is intact, so it re-emits from the analysis it already did.
+- **Re-dispatch one fresh agent.** Where the host cannot continue a finished agent session, or
+  the handle is gone, dispatch **one** fresh `cairn:recommend-open-question` agent for that
+  question with the `Agent` tool, passing the **same prompt** as the original dispatch with the
+  corrective message below appended to it as a shape reminder. This second dispatch redoes the
+  analysis, so it is the fallback branch, never the preferred one.
 
 Both branches send this fixed one-paragraph corrective message, whose single slot is
 `<failed test>`:
