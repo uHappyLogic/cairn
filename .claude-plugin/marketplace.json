@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "cairn",
-      "source": ".",
+      "source": "./hosts/claude",
       "description": "Milestone-driven development for any stack.",
       "version": "1.4.0"
     }

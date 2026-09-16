@@ -19,7 +19,8 @@ Deliberately not written:
                                      marketplace.json for Claude Code) is rendered under
                                      hosts/<host>/ by the host build, scripts/build_hosts.py,
                                      from a template whose version slot is filled from VERSION
-  - .claude-plugin/plugin.json       not a surface: no plugin manifest is written by this script
+  - any plugin.json                  no plugin manifest exists at the repository root; the Claude
+                                     plugin manifest is rendered under hosts/claude/ like the rest
 
 This script only edits files. It never invokes git or gh. All four surfaces are rendered in
 memory first, so a failure on any one of them leaves every file untouched.

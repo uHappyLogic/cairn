@@ -1,7 +1,7 @@
 [project]
 name = "cairn-tooling"
 version = "1.4.0"
-description = "Development tooling for the cairn plugin (Antigravity transpilation)"
+description = "Development tooling for the cairn plugin (host build and version script)"
 requires-python = ">=3.11"
 dependencies = [
     "pyyaml>=6.0.2",
