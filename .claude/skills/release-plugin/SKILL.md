@@ -8,8 +8,8 @@ description: Cut a cairn plugin release for a given MAJOR.MINOR.PATCH version, r
 Releases the cairn plugin at a maintainer-supplied `MAJOR.MINOR.PATCH` version. This
 `SKILL.md` is the single place the release procedure is documented — no release prose lives
 in `CLAUDE.md` or `README.md`. It is a maintainer-only, project-local skill: it lives under
-`.claude/skills/`, outside the shipped `skills/` tree, so it is never transpiled into
-`.agents/plugins/cairn/` and never reaches a consuming project.
+`.claude/skills/`, outside `core/`, so no host build renders it into a `hosts/<host>/` tree
+and it never reaches a consuming project.
 
 Every tag and release is a bare `MAJOR.MINOR.PATCH`, with no `v` prefix anywhere in the
 history — the legacy `v.0.9.x` and `v0.9.7` tags were renamed to their bare form on
@@ -76,8 +76,9 @@ git describe --tags --abbrev=0 --exclude=<VERSION>
 
 ### 2. Pre-flight stops
 
-Run all four checks. Each one blocks a route by which uncommitted or unmerged content could
-reach a published tag, so any failure stops the run.
+Run all six checks. Each one blocks a route by which the release would tag something other
+than a fresh build of committed `core/`, or publish into a place that does not exist, so any
+failure stops the run. None of them writes anything.
 
 **a. The tracked working tree is clean.**
 
@@ -107,15 +108,71 @@ A non-zero count means `origin/main` carries commits `main` does not, so the rel
 tag an outdated tree. Stop and report the count. Being *ahead* of `origin/main` is fine and
 expected — those local commits are pushed later in the run.
 
-**d. No untracked files under the transpiler's source paths.**
+**d. No untracked files under the host build's source paths.**
 
 ```bash
-git ls-files --others --exclude-standard -- skills/ agents/ shared/
+git ls-files --others --exclude-standard -- core/ scripts/hosts/
 ```
 
-Any output means a source file that would belong in the release is not committed. Stop and
-list the files. Untracked files **elsewhere** in the repo are tolerated and are not checked:
-staging is path-scoped, so they cannot be picked up.
+Any output means a source file the host build would read — a `core/` file, or a host
+definition's settings or template under `scripts/hosts/<host>/` — is not committed, so the
+trees it renders would not be reproducible from `main`. Stop and list the files. Untracked
+files **elsewhere** in the repo are tolerated and are not checked: staging is path-scoped, so
+they cannot be picked up.
+
+**e. The committed host trees are a fresh build of `core/`.**
+
+```bash
+uv run scripts/build_hosts.py --check
+```
+
+This renders every host from `core/` through its `scripts/hosts/<host>/` definition into a
+temporary directory at the current `VERSION`, runs the build's full validation set on the
+render, and compares it byte-for-byte against the committed `hosts/<host>/` trees. It writes
+nothing. A non-zero exit stops the run: report the script's output, which lists every
+differing path (or every failing file and check, when validation rather than the comparison
+failed). The remedy is the maintainer's, outside this skill — rebuild with
+`uv run scripts/build_hosts.py`, commit that sync as its own standalone commit, never folded
+into the release, and re-run `/release-plugin <VERSION>`. This gate is what lets step 6 change
+only version slots: once the committed trees match a fresh build at the old version, the only
+thing a rebuild at the new version can change is the version literal in each rendered manifest
+and README.
+
+**f. Every host's distribution repository exists.** List the host definitions — one
+directory per host, in definition order:
+
+```bash
+ls -1 scripts/hosts/
+```
+
+Call each directory name `<host>`. Its distribution repository is `uHappyLogic/cairn-<host>`,
+derived from the definition directory name by that fixed convention and nothing else — no
+settings file names it. For every `<host>`, check that the repository exists:
+
+```bash
+gh repo view uHappyLogic/cairn-<host> --json nameWithOwner
+```
+
+A zero exit means it exists; move to the next host. A non-zero exit (`Could not resolve to a
+Repository`) means it is missing. Once every host has been checked, if any is missing, stop
+and print — for each missing host, with `<host>` filled in — exactly these two commands, in
+this order, and **never run them**:
+
+```bash
+gh repo create uHappyLogic/cairn-<host> --public \
+  --description "Distribution of the Cairn plugin for <host>, published verbatim by each release of uHappyLogic/cairn. Report issues there."
+gh repo edit uHappyLogic/cairn-<host> \
+  --add-topic cairn --add-topic <host> --add-topic plugin \
+  --enable-issues=false --enable-wiki=false --enable-projects=false
+```
+
+The `create` is public, carries a description, and is deliberately empty — no `--license`,
+`--add-readme`, or `--gitignore` — so the first publish into it becomes the repository's root
+commit rather than a child of an initial README; the `LICENSE` file the published tree
+carries is the license. The `edit` adds the topics and disables issues, wiki, and projects so
+feedback routes to `uHappyLogic/cairn`. Provisioning a public repository is a deliberate,
+irreversible act that belongs to the maintainer: this skill publishes into what already
+exists and stops on anything else, so it prints the commands and exits with nothing changed.
 
 ### 3. Validate the version argument
 
@@ -256,88 +313,74 @@ the release series consistent.
 
 `<LAST_TAG>` is used literally, whatever its format; `<VERSION>` is the tag this run creates.
 
-### 6. Apply the version, regenerate, and record the release commit
+### 6. Apply the version, rebuild the host trees, and record the release commit
 
 Everything so far has been read-only. This step is where the run first writes, and it
 produces **exactly one commit** — the complete, self-consistent state the tag will point at.
 Run it unattended: nothing here pauses for the maintainer.
 
 **Skip this whole step on a resumption.** The `Release: <VERSION>` commit at HEAD is the
-commit this step produces: the version script and the regeneration would rewrite the same
+commit this step produces: the version script and the rebuild would rewrite the same
 values, and the commit would find nothing staged. Carry `<VERSION>`, `<LAST_TAG>`, and
 `<RELEASE_BODY>` straight into step 7.
 
-**a. Write the version into every source surface.**
+**a. Write the version into its source of truth and every mirrored surface.**
 
 ```bash
 uv run scripts/set_version.py <VERSION>
 ```
 
-The script takes the bare literal and writes it into the four source surfaces it owns —
-`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `pyproject.toml`, and
-`uv.lock` — leaving every file untouched if any one of them fails. A non-zero exit stops the
-release; report what the script printed. The script never touches git, `gh`, or anything
-under `.agents/`.
+The script takes the bare literal and writes it into the four surfaces it owns — `VERSION`,
+the single source of truth, and the three mirrors kept in lockstep with it,
+`.claude-plugin/marketplace.json`, `pyproject.toml`, and `uv.lock` — leaving every file
+untouched if any one of them fails. A non-zero exit stops the release; report what the script
+printed. The script never touches git, `gh`, or anything under `hosts/`: every host manifest
+is rendered from `VERSION` by the build in (b), never written here.
 
-**b. Regenerate the Antigravity tree.**
-
-```bash
-uv run scripts/migrate_skills_to_agy.py
-```
-
-This rewrites `.agents/plugins/cairn/` from `skills/`, `agents/`, and `shared/`, and copies
-the version just written into `.claude-plugin/plugin.json` through to the generated
-`.agents/plugins/cairn/plugin.json`. Order matters: the regeneration must follow (a), or the
-generated manifest carries the previous version. A non-zero exit stops the release.
-
-**c. Report generated-tree drift, then proceed.**
-
-In the ordinary case the regeneration changes only the generated manifest's version line.
-When it changes more, a runtime edit reached `main` without being regenerated. Count the
-generated files that changed beyond the manifest:
+**b. Rebuild the host trees.**
 
 ```bash
-git status --porcelain --untracked-files=all -- .agents/plugins/cairn/ \
-  | grep -v '\.agents/plugins/cairn/plugin\.json$'
+uv run scripts/build_hosts.py
 ```
 
-If that produces output, print a **one-line advisory** naming the drift and how many files it
-covers, for example:
+This renders every host from `core/` through its `scripts/hosts/<host>/` definition into
+`hosts/<host>/`, filling each manifest and README template's version slot from the `VERSION`
+just written, and swaps the trees in only after every host passes the build's validation set.
+Order matters: the rebuild must follow (a), or the rendered trees carry the previous version.
+A non-zero exit stops the release; report what the script printed — nothing under `hosts/`
+was written.
 
-```
-Generated tree drift: 3 files beyond .agents/plugins/cairn/plugin.json changed on regeneration; absorbed into the release commit.
-```
+Because step 2e proved the committed trees already matched a fresh build of `core/` at the
+previous version, this rebuild can change only the version literal in each rendered manifest
+and README: the Release commit changes version slots and nothing else, by construction. There
+is no drift to inspect, report, or absorb here — anything beyond the version slots would have
+stopped the run in pre-flight.
 
-Then **proceed**. This is an advisory, never a stop and never a review prompt: the generated
-tree is a pure deterministic derivative of already-committed sources, so the regeneration can
-only produce what those sources say, and step 2a's clean tree makes the whole diff
-self-generated. The advisory carries the one fact the commit alone would not surface.
-
-**d. Stage exactly the written paths.** Name them explicitly — the four surfaces the version
-script writes plus the regenerated tree:
+**c. Stage exactly the written paths.** Name them explicitly — the four surfaces the version
+script writes plus the rebuilt trees:
 
 ```bash
 git add -- \
-  .claude-plugin/plugin.json \
-  .claude-plugin/marketplace.json \
+  VERSION \
   pyproject.toml \
   uv.lock \
-  .agents/plugins/cairn/
+  .claude-plugin/marketplace.json \
+  hosts/
 ```
 
 **Never `git add -A`** and never `git add .`. A path-scoped `git add` records additions,
-modifications, and removals under those paths, so a regeneration that deletes a generated
-file is staged too. Nothing else in the repo may enter the release commit.
+modifications, and removals under those paths, so a rebuild that drops a rendered file is
+staged too. Nothing else in the repo may enter the release commit.
 
-**e. Commit once.** The subject is exactly:
+**d. Commit once.** The subject is exactly:
 
 ```
 Release: <VERSION>
 ```
 
 with `<VERSION>` the bare literal, and the body following the repository's commit conventions.
-One release is one commit — never split the version bump and the regeneration, and never
-amend a later step into it.
+One release is one commit — never split the version bump and the rebuild, and never amend a
+later step into it.
 
 Then confirm the staging was complete: `git status --porcelain --untracked-files=no` must be
 empty. Any tracked change left behind means a written path was missed; stop and report it
