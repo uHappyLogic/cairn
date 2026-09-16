@@ -1,0 +1,14 @@
+{
+  "name": "cairn",
+  "owner": {
+    "name": "Lukasz Kosiak"
+  },
+  "plugins": [
+    {
+      "name": "cairn",
+      "source": ".",
+      "description": "Milestone-driven development for any stack.",
+      "version": "1.4.0"
+    }
+  ]
+}
