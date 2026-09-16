@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Create Host-Neutral Core Tree
-
-Copy the root `skills/`, `agents/`, and `shared/` trees into a new `core/` directory (leaving the root trees in place until the final cutover task, because the running plugin still resolves its shared procedures from them), replacing every `${CLAUDE_PLUGIN_ROOT}` with the neutral placeholder `{{PLUGIN_ROOT}}` and deleting all 24 occurrences of the ``(run `echo "$CLAUDE_PLUGIN_ROOT"` if you need to resolve the path)`` resolve hint across the 18 files that carry it. This is the host-neutral source every host build renders from. Verified when `core/` holds the same file set as the three root trees, a grep finds no `CLAUDE_PLUGIN_ROOT` and no `echo` hint under `core/`, and every `{{PLUGIN_ROOT}}/shared/<name>.md` reference names a file present in `core/shared/`.
-
----
-
 ## Neutralize Host-Named Prose In Core
 
 Reword the three prose sites in `core/` that name a host so they name capabilities and the plugin's own namespace instead: the `recommend-all-open-questions` repair step keyed on whether the host can continue a finished agent session versus cannot (no `SendMessage`, Claude Code, or Antigravity mention), the dispatch sites of the three orchestrators naming the agent's registry name under this plugin's namespace, and the `init-milestone-base-workflow` CLAUDE.md template addressing the coding agent working in the repository. The agents' Claude-only `color` frontmatter key stays in `core/`, since the Antigravity host definition strips it by data. Verified when a case-insensitive grep for `Claude Code`, `Antigravity`, and `SendMessage` under `core/` returns nothing and each reworded passage still states the same rule it did before.
