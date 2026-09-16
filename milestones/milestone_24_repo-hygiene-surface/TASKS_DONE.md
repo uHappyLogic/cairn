@@ -78,3 +78,18 @@ Add three YAML issue forms under `.github/ISSUE_TEMPLATE/`: a bug form with a re
 - `uv run scripts/build_hosts.py --check` — the repository's one automated check — exits 0 with "Check passed: hosts/antigravity/ and hosts/claude/ match a fresh build of core/ at version 1.4.0."; `git status --porcelain` shows only `?? .github/ISSUE_TEMPLATE/` beyond this TODO→DONE move, so the change set is exactly the four new files.
 
 ---
+
+## Add Pull-Request Template
+
+Add a single `.github/PULL_REQUEST_TEMPLATE.md` that opens with two fill-in lines — the reserved milestone id (the `milestone_<N>_<slug>` directory name the maintainer's `Milestone-definition:` commit created on `main`) and `Closes #<proposal issue>` — followed by a reviewer checklist of what a finished contributor milestone leaves in the tree: `milestones/<id>/requirements.md` with no `<open-question>` block, `TASKS_TODO.md` with no task section, `TASKS_DONE.md` carrying every task with its Verified bullets, `milestones/README.md` with the milestone's history entry and the pointer at `none`, one `Milestone-finish: <id>` commit on the branch, `CLAUDE.md` touched only for lasting changes, and `hosts/` rebuilt (confirmed by the drift-gate status check). Verify the file carries exactly those two fill-ins and those checklist items and no generic checklist.
+
+**Verified:**
+
+- Exactly one pull-request template exists in the repository, at `.github/PULL_REQUEST_TEMPLATE.md`: a tree-wide `find` for any `pull_request_template*` file or `PULL_REQUEST_TEMPLATE` directory names only that path — no `.github/PULL_REQUEST_TEMPLATE/` directory and no root or `docs/` variant.
+- The file opens with two fill-in lines, in order: line 1 is the `Milestone:` label followed by the backticked `milestone_<N>_<slug>` placeholder, trailed by an HTML comment (not rendered on the pull request) naming it as the reserved id — the directory name the maintainer's `Milestone-definition:` commit created on `main`; line 2 is `Closes #<proposal issue>`. Nothing precedes them.
+- The fill-ins are followed by a reviewer checklist of exactly seven `- [ ]` items (`grep -c '^- \[ \] '` returns 7), one per finished-milestone artifact and in the decision's order: `milestones/<id>/requirements.md` with no `<open-question>` block; `milestones/<id>/TASKS_TODO.md` with no task section; `milestones/<id>/TASKS_DONE.md` carrying every task with its `**Verified:**` bullets; `milestones/README.md` carrying the milestone's history entry with its `Current milestone:` line reading `none`; one `Milestone-finish: <id>` commit on the branch; `CLAUDE.md` touched only for lasting changes; and `hosts/` rebuilt, confirmed by the `drift-gate` status check — the `name:` the live `.github/workflows/drift-gate.yml` declares. Every required token (`milestones/<id>/requirements.md`, `<open-question>`, `TASKS_TODO.md`, `no task section`, `TASKS_DONE.md`, `Verified`, `milestones/README.md`, `history entry`, `none`, `Milestone-finish: <id>`, `CLAUDE.md`, `lasting changes`, `hosts/`, `drift-gate`) occurs exactly once.
+- No generic checklist item appears: the file carries only a `## Finished-milestone checklist` heading and one framing sentence beside the fill-ins and the seven items, and a case-insensitive grep for `test`, `lint`, `self-review`, `documentation`, `type of change`, `breaking`, `code style`, and `screenshot` matches nothing.
+- `uv run scripts/build_hosts.py --check` — the repository's one automated check — exits 0 with "Check passed: hosts/antigravity/ and hosts/claude/ match a fresh build of core/ at version 1.4.0."
+- The change set is exactly the new file: `git status --porcelain` shows only `?? .github/PULL_REQUEST_TEMPLATE.md` beyond this TODO→DONE move.
+
+---

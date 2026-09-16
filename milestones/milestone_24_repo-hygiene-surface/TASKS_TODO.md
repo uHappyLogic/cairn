@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Pull-Request Template
-
-Add a single `.github/PULL_REQUEST_TEMPLATE.md` that opens with two fill-in lines — the reserved milestone id (the `milestone_<N>_<slug>` directory name the maintainer's `Milestone-definition:` commit created on `main`) and `Closes #<proposal issue>` — followed by a reviewer checklist of what a finished contributor milestone leaves in the tree: `milestones/<id>/requirements.md` with no `<open-question>` block, `TASKS_TODO.md` with no task section, `TASKS_DONE.md` carrying every task with its Verified bullets, `milestones/README.md` with the milestone's history entry and the pointer at `none`, one `Milestone-finish: <id>` commit on the branch, `CLAUDE.md` touched only for lasting changes, and `hosts/` rebuilt (confirmed by the drift-gate status check). Verify the file carries exactly those two fill-ins and those checklist items and no generic checklist.
-
----
-
 ## Write Root Contributing Guide
 
 Add a root `CONTRIBUTING.md` whose first section spells out the proposal-then-reserved-milestone handoff as an ordered list, one step per act: file the proposal issue; the maintainer accepts by running `/define-milestone-goal` on `main` while their pointer reads `none`, whose `Milestone-definition:` commit reserves `milestone_<N>_<slug>` without activating it; fork and branch from that commit; run `/goto-next-milestone` first; run the requirements-and-task pipeline through `/finish-current-milestone` as one step linking the README's Workflow pipeline; sync from `main` by merge only (never rebase) and only while its `Current milestone:` line reads `none` (checkable with `git show origin/main:milestones/README.md`), aborting a pointer conflict rather than resolving it; rebuild `hosts/` and pass `--check`; open the pull request, merged as a merge commit (squash merges are disabled), after which the maintainer runs `/capture-milestone-principle-updates` — noting there is no plain-pull-request tier and small fixes are filed as issues, and that the design invariants live in `CLAUDE.md`. The section after it is the README's `## Development` body moved whole, with its one in-section link re-pointed to `README.md#installation`; this task leaves `README.md` untouched. Verify the ordered steps match the decisions and the Development text equals the README section apart from that one link.
