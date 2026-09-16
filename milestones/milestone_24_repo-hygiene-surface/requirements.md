@@ -34,3 +34,41 @@ Sixteen GitHub releases exist, tagged bare `0.9.0` through `1.4.0`, published 20
 
 ## Out of Scope
 
+## Open questions
+
+<open-question id="CI trigger scope">
+  <question>Should the drift-gate workflow run on pushes to every branch or only to main (plus every pull request), and should it be path-filtered to the build inputs (core/, scripts/, hosts/, VERSION, the root marketplace) or run on every change?</question>
+</open-question>
+<open-question id="Contributor workflow expectation">
+  <question>Must an outside contribution go through the milestone workflow this repository runs on itself (milestone artifacts, Marker-colon commit subjects), or is a plain pull request editing core/ with rebuilt hosts/ trees and a passing drift gate sufficient?</question>
+</open-question>
+<open-question id="Contributing vs Development overlap">
+  <question>Does the root CONTRIBUTING.md absorb the README Development section (with the README linking out to it), or summarize the contributor path and link to the README section that stays authoritative?</question>
+</open-question>
+<open-question id="README links to hygiene files">
+  <question>Beyond the CI badge, should README.md gain a Contributing section or links to CONTRIBUTING.md, SECURITY.md, CHANGELOG.md, and Discussions, or stay untouched?</question>
+</open-question>
+<open-question id="Conduct text and contact">
+  <question>Which code-of-conduct text is adopted (Contributor Covenant 2.1, the GitHub-recognized default, or 3.0), and which contact address does its enforcement clause name?</question>
+</open-question>
+<open-question id="Security reporting channel">
+  <question>Does SECURITY.md direct reports to GitHub private vulnerability reporting (which must be enabled on the repository), to an email address, or both, and which versions does it declare supported?</question>
+</open-question>
+<open-question id="Issue template format">
+  <question>Are the bug and feature templates YAML issue forms with structured fields (host, cairn version, skill invoked) or Markdown templates with free-text sections?</question>
+</open-question>
+<open-question id="Blank issues and contact links">
+  <question>Should an ISSUE_TEMPLATE config.yml disable blank issues and route questions to a Discussions category once Discussions is enabled?</question>
+</open-question>
+<open-question id="Changelog entry heading form">
+  <question>Does each CHANGELOG.md entry follow Keep a Changelog conventions (a bracketed version heading with date, reference-style compare links, an Unreleased section) or a plain version-and-date heading over the release body verbatim?</question>
+</open-question>
+<open-question id="Link-only release backfill">
+  <question>For the eight releases 0.9.0 through 0.9.7 whose bodies are only the compare link, does the backfill carry those bodies verbatim or reconstruct condensed notes from the milestone history and commit ranges?</question>
+</open-question>
+<open-question id="Release body source of truth">
+  <question>Once /release-plugin writes the changelog entry, does the publish step read the release body from the committed CHANGELOG.md entry (so a resumption rereads it instead of recomposing) or keep the in-context body, and does pre-flight guard against an entry for the release version already being present?</question>
+</open-question>
+<open-question id="Unused wiki tab">
+  <question>Should the unused wiki be disabled on the root repository so a visitor sees no empty Wiki tab, or be left enabled?</question>
+</open-question>
