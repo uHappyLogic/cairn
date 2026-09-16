@@ -88,3 +88,24 @@ Once the `Release: <VERSION>` commit exists, the release body is the committed c
 <open-question id="Pull-request template milestone field">
   <question>Does the pull-request template ask for the reserved milestone id and the proposal it was accepted in, so a reviewer can check the branch carries that milestone&apos;s artifacts, or stay a generic checklist (rebuilt hosts/ trees, --check green, CLAUDE.md invariants preserved)?</question>
 </open-question>
+<open-question id="CI action pinning">
+  <question>Should the drift-gate workflow pin its checkout and uv setup actions to full commit SHAs or to major-version tags?</question>
+</open-question>
+<open-question id="CI badge source">
+  <question>Is the CI badge a shields.io workflow-status badge matching the two existing badges or GitHub&apos;s native badge.svg, and does it report the main branch only or the latest run on any branch?</question>
+</open-question>
+<open-question id="Distribution tree hygiene files">
+  <question>Beyond the CONTRIBUTING.md template, should SECURITY.md and CODE_OF_CONDUCT.md also be rendered into each host tree so a visitor to a distribution repository finds them, or stay root-only?</question>
+</open-question>
+<open-question id="Backfilled release page headings">
+  <question>Since the backfill demotes the milestone sections of the eight sectioned releases (0.9.8 through 1.4.0) to ###, are those eight release pages edited to match so the changelog and release bodies stay identical, or is the heading-level divergence for backfilled entries accepted?</question>
+</open-question>
+<open-question id="Notes edit at release pause">
+  <question>Now that the release body is the committed changelog entry, can the maintainer revise the notes at the step-7 pause, and if so does the skill amend the unpushed Release commit or must the run be aborted and restarted?</question>
+</open-question>
+<open-question id="Pointer held during contribution">
+  <question>While a contributor-run milestone holds the current-milestone pointer on main, is the maintainer blocked from starting their own milestones until the merge, and how is the pointer freed if the contribution is abandoned?</question>
+</open-question>
+<open-question id="Discussions categories">
+  <question>Does enabling Discussions keep GitHub&apos;s default category set, or does the milestone curate categories (for example a proposals category) for the intake routes the templates point at?</question>
+</open-question>
