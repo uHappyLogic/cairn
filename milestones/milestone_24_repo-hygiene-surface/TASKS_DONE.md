@@ -31,3 +31,18 @@ Add a GitHub Actions workflow under `.github/workflows/` that triggers on `push`
 - `uv run scripts/build_hosts.py --check` — the workflow's step command run locally, and the repository's done-verification — exits 0 with "Check passed: hosts/antigravity/ and hosts/claude/ match a fresh build of core/ at version 1.4.0."; `git status --porcelain` shows only `README.md` modified and `.github/workflows/` added beyond this TODO→DONE move.
 
 ---
+
+## Add Contributor Covenant Code Of Conduct
+
+Add a root `CODE_OF_CONDUCT.md` that is Contributor Covenant 2.1 verbatim, with its single `[INSERT CONTACT METHOD]` slot filled with the git author address `kosiak.lukasz@gmail.com` and nothing else changed, so GitHub's content detection labels it Contributor Covenant. Verify by diffing the file against the canonical 2.1 text: the only difference is the filled slot.
+
+**Verified:**
+
+- `CODE_OF_CONDUCT.md` exists at the repository root (5480 bytes, 85 lines), beside `LICENSE` and `README.md`.
+- Its text is Contributor Covenant 2.1 verbatim: `diff` against the canonical 2.1 Markdown fetched from `https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md` (sha256 `977d7813…37ba`) yields exactly one hunk, `40c40`, and a word-level diff of that line shows only `[INSERT CONTACT METHOD]` → `kosiak.lukasz@gmail.com`; with line 40 dropped from both, the remaining 84 lines are byte-identical — the canonical file's leading blank line, its five reference-link lines, and its trailing blank line all kept as they come, so nothing else changed.
+- No `[INSERT CONTACT METHOD]` placeholder remains (`grep -c` returns 0) and `kosiak.lukasz@gmail.com` appears exactly once — the git author address every existing commit carries: `git log --format=%ae | sort -u` lists that one address across all 601 commits.
+- The text is the version GitHub's detector labels Contributor Covenant: line 74 reads "adapted from the Contributor Covenant, version 2.1", the 2.1 the `### Code of conduct` decision names; the canonical contributor-covenant.org file is the reference (GitHub's `/codes_of_conduct/contributor_covenant` API body is the hard-wrapped 2.0 text, a different version, so it is not what "verbatim 2.1" is diffed against), and the remote `community/profile` read-back can only follow a push, which this task never performs.
+- It stays root-only, as the `### Distribution tree hygiene files` decision fixes: `find` names `./CODE_OF_CONDUCT.md` as the only such file in the tree, none exists under `core/`, `scripts/hosts/`, or either `hosts/<host>/` tree, `scripts/build_hosts.py` copies only `LICENSE` into a host tree, and `uv run scripts/build_hosts.py --check` — the repository's one automated check — exits 0 with "Check passed: hosts/antigravity/ and hosts/claude/ match a fresh build of core/ at version 1.4.0."
+- The change set is exactly the new file: `git status --porcelain` shows only `?? CODE_OF_CONDUCT.md` beyond this TODO→DONE move (the fetched reference copies live under the gitignored `temp/`).
+
+---

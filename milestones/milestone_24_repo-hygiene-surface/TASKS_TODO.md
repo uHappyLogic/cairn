@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Contributor Covenant Code Of Conduct
-
-Add a root `CODE_OF_CONDUCT.md` that is Contributor Covenant 2.1 verbatim, with its single `[INSERT CONTACT METHOD]` slot filled with the git author address `kosiak.lukasz@gmail.com` and nothing else changed, so GitHub's content detection labels it Contributor Covenant. Verify by diffing the file against the canonical 2.1 text: the only difference is the filled slot.
-
----
-
 ## Write Security Policy File
 
 Add a root `SECURITY.md` that directs vulnerability reports to GitHub private vulnerability reporting only — the root repository's Report a vulnerability form — with no email address, and a supported-versions table naming the latest release only, stating that every fix ships as a new release to both distribution repositories. Verify the file names no email, links the private reporting form, and its table names exactly the current latest release tag.
