@@ -44,6 +44,10 @@ The drift-gate workflow triggers on `push` and `pull_request` with no branch fil
 
 `CODE_OF_CONDUCT.md` is Contributor Covenant 2.1 verbatim, with its single `[INSERT CONTACT METHOD]` slot filled with the git author address every existing commit already carries, `kosiak.lukasz@gmail.com`. 2.1 is the current 2.x text and the one GitHub's content detection labels Contributor Covenant on the Community Standards page (a 3.0 file resolves to Other), and it has one slot to fill instead of 3.0's two authored notes. The contact is an email because GitHub offers no private conduct channel — issues and Discussions are public, and private vulnerability reporting is for security — and the author address is the only one that verifiably exists and is read, so naming it exposes a rendered file to crawler indexing but publishes no new information. A dedicated conduct address would be chosen only if a monitored mailbox on a maintainer-controlled domain already existed; none does, and creating one for a repository with no community yet would be an inbox nobody checks.
 
+### Security policy
+
+`SECURITY.md` directs vulnerability reports to GitHub private vulnerability reporting only — the root repository's Report a vulnerability form — and the milestone enables private vulnerability reporting on `uHappyLogic/cairn` with one `gh api --method PUT` toggle of the same kind as the Discussions enable. Private reporting puts each report where the fix happens, as a draft advisory with a private thread and a publish step, instead of in a gmail inbox. No email address appears in the file: the maintainer publishes none today, and a fallback address is a one-line addition should one ever be wanted, so nothing is lost by leaving it out. The supported-versions table names the latest release only and states that every fix ships as a new release to both distribution repositories — the one honest value, because the sixteen releases are strictly linear, the release skill publishes only `main`'s HEAD, and both patch releases (1.0.1, 1.1.1) landed on the newest minor.
+
 ## Out of Scope
 
 ## Open questions
@@ -53,25 +57,6 @@ The drift-gate workflow triggers on `push` and `pull_request` with no branch fil
 </open-question>
 <open-question id="README links to hygiene files">
   <question>Beyond the CI badge, should README.md gain a Contributing section or links to CONTRIBUTING.md, SECURITY.md, CHANGELOG.md, and Discussions, or stay untouched?</question>
-</open-question>
-<open-question id="Security reporting channel">
-  <question>Does SECURITY.md direct reports to GitHub private vulnerability reporting (which must be enabled on the repository), to an email address, or both, and which versions does it declare supported?</question>
-  <alternative id="GitHub private reporting only">
-    SECURITY.md directs reports to the root repository&apos;s Report a vulnerability form (github.com/uHappyLogic/cairn/security/advisories/new), the milestone enables private vulnerability reporting on uHappyLogic/cairn with one gh api --method PUT call beside the Discussions enable, no email address appears in the file, and the supported-versions table names the latest release only, noting that every fix ships as a new release from main to both distribution repositories.
-    <advantage>A report lands as a draft advisory inside the repository that owns the fix, with a private thread, an optional private fork for the patch, and a publish-with-CVE step, and nothing new is published about the maintainer: the GitHub profile lists no email today and no file in the repository carries contact text, so the file stays a link plus a policy.</advantage>
-    <drawback>The link only works once private reporting is actually enabled (it is disabled on all three repositories today), a reporter needs a GitHub account, and the distribution repositories keep no Report a vulnerability button of their own, so a user who lands on cairn-claude first reaches the form only through that README&apos;s existing redirect to the root repository.</drawback>
-  </alternative>
-  <alternative id="Email address only">
-    SECURITY.md names an email address as the sole reporting channel (the git author address that every one of the 568 commits already carries, or a dedicated one) with the same latest-release-only support declaration, and no repository setting changes.
-    <advantage>It works for a reporter with no GitHub account, needs no settings toggle, and can share one address with the code-of-conduct enforcement clause if Conduct text and contact settles on an email.</advantage>
-    <drawback>It publishes a personal address in the one file every scanner and spam harvester reads (the profile publishes none today, and a gmail inbox cannot tell a report from noise), and each report arrives as unstructured mail outside the repository: no private thread, no advisory record, no fix-then-publish flow, all of which the maintainer then rebuilds by hand.</drawback>
-  </alternative>
-  <alternative id="Private reporting with email fallback">
-    Private reporting is enabled and named first, and the file adds an email address as a fallback for reporters who cannot use the GitHub form, with the same latest-release-only declaration.
-    <advantage>Neither reporter class is turned away, and the file reads as the fullest conventional policy.</advantage>
-    <drawback>It pays both costs at once for a repository with zero advisories and one maintainer: the address is published anyway, reports can arrive through two channels the maintainer must watch and reconcile, and the fallback line is the one part of the file that depends on how Conduct text and contact chooses its enforcement contact, so writing it now means choosing that address here first.</drawback>
-  </alternative>
-  <recommendation option="GitHub private reporting only">Private reporting is one gh api --method PUT toggle of the same kind as the Discussions enable the goal already includes, and it puts each report where the fix happens, as a draft advisory with a private thread and a publish step, instead of in a gmail inbox; the maintainer publishes no email today and a fallback address is a one-line addition if Conduct text and contact settles on one, so nothing is lost by leaving it out now; and the supported-versions clause has one honest value because the sixteen releases are strictly linear, the release skill publishes only main&apos;s HEAD, and both patch releases (1.0.1, 1.1.1) landed on the newest minor, so the table names the latest release only and states that every fix ships as a new release to both distribution repositories.</recommendation>
 </open-question>
 <open-question id="Issue template format">
   <question>Are the bug and feature templates YAML issue forms with structured fields (host, cairn version, skill invoked) or Markdown templates with free-text sections?</question>
