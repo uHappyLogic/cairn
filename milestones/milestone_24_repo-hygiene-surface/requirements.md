@@ -36,29 +36,14 @@ Sixteen GitHub releases exist, tagged bare `0.9.0` through `1.4.0`, published 20
 
 An outside contribution is proposal-first, then a contributor-run milestone on a maintainer-reserved slot. A substantive change is proposed as an issue or Discussion; acceptance is the maintainer running `/define-milestone-goal` on `main` with the accepted proposal and activating it with `/goto-next-milestone` once the current-milestone pointer is free. The contributor branches from that commit and runs the full requirements-and-task pipeline through `/finish-current-milestone` in a fork, and the pull request is merged with a merge commit — squash merges are disabled on the repository — so the milestone commits survive for release notes and for `/capture-milestone-principle-updates`, which the maintainer runs after the merge. There is no plain-pull-request tier: small fixes are filed as issues for the maintainer to make.
 
+### Continuous integration
+
+The drift-gate workflow triggers on `push` and `pull_request` with no branch filter and no `paths` filter, so the gate runs on every commit reaching any branch of the root repository, on every pull request, and on each release tag push. Filtering is deliberately not done: the gate finishes in 0.2 seconds inside a half-minute free job, so filtering buys nothing measurable, while a `paths` list would be a hand-maintained second copy of the build's input set — the very drift the gate exists to catch — and a path-skipped run would leave a pull request with no status. Every push and pull request is the goal's literal wording, and the two-event trigger has nothing to curate.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="CI trigger scope">
-  <question>Should the drift-gate workflow run on pushes to every branch or only to main (plus every pull request), and should it be path-filtered to the build inputs (core/, scripts/, hosts/, VERSION, the root marketplace) or run on every change?</question>
-  <alternative id="Every push and pull request, unfiltered">
-    A workflow triggered by push and pull_request with no branch or path filter, so the gate runs on every commit reaching any branch of the root repository, on every pull request, and on each release tag push.
-    <advantage>It is the literal contract of the goal (every push and pull request) in the smallest possible workflow with nothing to curate: no filter list can fall out of step with what build_hosts.py reads, every pull request, including a docs-only one, gets a status from the repository&apos;s single automated check, and the badge reflects the latest commit on main rather than the last relevant one.</advantage>
-    <drawback>Most runs re-verify an unchanged build: 33 of the last 40 commits are the milestone workflow&apos;s own milestones/-only commits touching nothing the build reads, and a same-repository branch with an open pull request runs twice per push, though each run is about half a minute of checkout and uv setup around a 0.2-second gate on a public repository where Actions minutes cost nothing.</drawback>
-  </alternative>
-  <alternative id="Main pushes plus pull requests">
-    The conventional GitHub layout: push restricted to the main branch plus every pull_request, with no path filter.
-    <advantage>It removes the push-plus-pull-request double run and the tag-push run, so every commit is checked exactly once at the point it matters, when it lands on main or is proposed against it.</advantage>
-    <drawback>In 568 commits the maintainer has opened no pull request and lands side branches by fast-forward, so a side-branch push gets no run and drift is first reported by the badge turning red on main after it has landed, exactly when a visitor sees it; it also narrows the goal&apos;s own wording (every push) to save a handful of free runs.</drawback>
-  </alternative>
-  <alternative id="Path-filtered to build inputs">
-    Push and pull_request triggers carrying a paths filter that names the build inputs, so a commit touching none of them starts no run at all.
-    <advantage>It cuts the runs to the commits that can actually change the render, about one in six on this history, and keeps the Actions tab free of no-op runs for the milestone workflow&apos;s own commits.</advantage>
-    <drawback>The list must mirror the exact input set of build_hosts.py and its runner (core/, scripts/, hosts/, VERSION, LICENSE, the root marketplace, pyproject.toml, uv.lock, .python-version, and the workflow file itself); the question&apos;s own five-item list already omits LICENSE, which the build copies into every host tree, and the uv environment files, so the filter becomes a hand-maintained second copy of the build&apos;s inputs, the very drift the gate exists to catch, and a path-skipped workflow reports no status, so any future required-check branch protection blocks a docs-only pull request until a no-op twin workflow is added.</drawback>
-  </alternative>
-  <recommendation option="Every push and pull request, unfiltered">The gate reads core/, scripts/hosts/, VERSION, LICENSE, and the root marketplace and finishes in 0.2 seconds inside a half-minute free job, so filtering buys nothing measurable while a paths list would be a hand-maintained second copy of the build&apos;s input set (the question&apos;s own list already omits LICENSE and the uv files) and a skipped run leaves a pull request with no status; every push and pull request is the goal&apos;s literal wording, the maintainer pushes straight to main with no pull-request history to double-run, and the two-event trigger has nothing to curate.</recommendation>
-</open-question>
 <open-question id="Contributing vs Development overlap">
   <question>Does the root CONTRIBUTING.md absorb the README Development section (with the README linking out to it), or summarize the contributor path and link to the README section that stays authoritative?</question>
 </open-question>
