@@ -40,6 +40,10 @@ An outside contribution is proposal-first, then a contributor-run milestone on a
 
 The drift-gate workflow triggers on `push` and `pull_request` with no branch filter and no `paths` filter, so the gate runs on every commit reaching any branch of the root repository, on every pull request, and on each release tag push. Filtering is deliberately not done: the gate finishes in 0.2 seconds inside a half-minute free job, so filtering buys nothing measurable, while a `paths` list would be a hand-maintained second copy of the build's input set — the very drift the gate exists to catch — and a path-skipped run would leave a pull request with no status. Every push and pull request is the goal's literal wording, and the two-event trigger has nothing to curate.
 
+### Code of conduct
+
+`CODE_OF_CONDUCT.md` is Contributor Covenant 2.1 verbatim, with its single `[INSERT CONTACT METHOD]` slot filled with the git author address every existing commit already carries, `kosiak.lukasz@gmail.com`. 2.1 is the current 2.x text and the one GitHub's content detection labels Contributor Covenant on the Community Standards page (a 3.0 file resolves to Other), and it has one slot to fill instead of 3.0's two authored notes. The contact is an email because GitHub offers no private conduct channel — issues and Discussions are public, and private vulnerability reporting is for security — and the author address is the only one that verifiably exists and is read, so naming it exposes a rendered file to crawler indexing but publishes no new information. A dedicated conduct address would be chosen only if a monitored mailbox on a maintainer-controlled domain already existed; none does, and creating one for a repository with no community yet would be an inbox nobody checks.
+
 ## Out of Scope
 
 ## Open questions
@@ -49,30 +53,6 @@ The drift-gate workflow triggers on `push` and `pull_request` with no branch fil
 </open-question>
 <open-question id="README links to hygiene files">
   <question>Beyond the CI badge, should README.md gain a Contributing section or links to CONTRIBUTING.md, SECURITY.md, CHANGELOG.md, and Discussions, or stay untouched?</question>
-</open-question>
-<open-question id="Conduct text and contact">
-  <question>Which code-of-conduct text is adopted (Contributor Covenant 2.1, the GitHub-recognized default, or 3.0), and which contact address does its enforcement clause name?</question>
-  <alternative id="Covenant 2.1 with the commit author address">
-    CODE_OF_CONDUCT.md is Contributor Covenant 2.1 verbatim, its single [INSERT CONTACT METHOD] slot filled with kosiak.lukasz@gmail.com, the author address every one of the 568 commits already carries.
-    <advantage>It is the current 2.x text and the one GitHub&apos;s content detection labels Contributor Covenant on the Community Standards page (a 2.1 file resolves to key contributor_covenant where a 3.0 file resolves to Other), it has exactly one slot to fill, and the address named already exists, is read, and is public on every commit page of the repository, so the file needs no new mailbox and no authored enforcement text.</advantage>
-    <drawback>A personal gmail address lands in a rendered file that crawlers and harvesters index, the exposure Security reporting channel&apos;s recommendation leaves out of SECURITY.md, and 2.1 is no longer the newest Covenant (3.0 shipped in July 2025), so a visitor who checks the Covenant site sees a superseded version.</drawback>
-  </alternative>
-  <alternative id="Covenant 2.1 with a dedicated conduct address">
-    The same 2.1 text with the slot filled by a purpose-made address on a domain the maintainer controls (the profile links busyminds.io) or a separate mailbox created for reports.
-    <advantage>It keeps the personal inbox out of the rendered file, gives conduct mail a channel that can be forwarded or rotated without touching the file, and is the address SECURITY.md could later name as its fallback.</advantage>
-    <drawback>No such mailbox verifiably exists today (the GitHub profile lists no email and busyminds.io exposes no contact), so the file names an address whose creation and monitoring happen outside the repository, and for a one-maintainer project with no community incidents an alias nobody checks is worse than a personal address somebody reads.</drawback>
-  </alternative>
-  <alternative id="GitHub picker text (Covenant 2.0)">
-    The text GitHub&apos;s codes_of_conduct API serves and its template chooser draws on, which is Contributor Covenant 2.0, with the same single slot filled with the author address.
-    <advantage>Zero authoring: gh api codes_of_conduct/contributor_covenant returns the body ready to write, and GitHub detects it as Contributor Covenant exactly as it does 2.1.</advantage>
-    <drawback>It adopts a text its publisher replaced in 2021 (2.1 adds caste and color to the pledge and changes little else) to save one download, so the file opens with an outdated version line for anyone who knows the Covenant.</drawback>
-  </alternative>
-  <alternative id="Covenant 3.0 with the commit author address">
-    The July 2025 rewrite from the Organization for Ethical Source, with its two [NOTE] slots (means of reporting, and the remedies and enforcement process) authored and the author address named as the reporting channel.
-    <advantage>It is the current text from the Covenant&apos;s stewards, with clearer and less US-centric language, the neutral Community Moderators role, and the restorative Addressing and Repairing Harm section that new adopters are moving to.</advantage>
-    <drawback>GitHub&apos;s detection does not recognise it (the Covenant&apos;s own repository and changesets&apos; 3.0 file both show as Other on the Community Standards page, though the presence check still passes), its text carries a CC BY-SA 4.0 share-alike line beside an otherwise MIT repository, and its two NOTE slots ask for authored reporting and remedy prose rather than one address, more customisation than a repository with no community incidents has facts for.</drawback>
-  </alternative>
-  <recommendation option="Covenant 2.1 with the commit author address">2.1 is the text GitHub labels Contributor Covenant (a 3.0 file resolves to Other) and the current 2.x version, with one slot to fill instead of 3.0&apos;s two authored notes; the contact has to be an email because GitHub offers no private conduct channel (issues and Discussions are public, private vulnerability reporting is for security), and the only address that verifiably exists and is read is the author address already on all 568 commits and every commit page of the repository, so naming it adds crawler indexing of a rendered file but no new information; choose the dedicated address instead only if a monitored mailbox on a maintainer-controlled domain already exists, since creating one for a repository with no community yet is an inbox nobody checks.</recommendation>
 </open-question>
 <open-question id="Security reporting channel">
   <question>Does SECURITY.md direct reports to GitHub private vulnerability reporting (which must be enabled on the repository), to an email address, or both, and which versions does it declare supported?</question>
