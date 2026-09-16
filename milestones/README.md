@@ -10,9 +10,20 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_23_multi-host-core-and-dist-repos/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 23 — Multi-Host Core And Dist Repos
+
+- The runtime layer is authored once, host-neutrally, under `core/` (21 skills, 3 agents, 7 shared procedures): every cross-reference uses the `{{PLUGIN_ROOT}}` placeholder, the 24 Claude-specific resolve hints are deleted, and no `core/` file names a host — the repair step, dispatch sites, and init template are keyed on capabilities and the plugin's own namespace, while the agents' Claude-only `color` key stays in `core/` and is stripped by data.
+- Each host is a declarative definition directory `scripts/hosts/<host>/` — a `settings.toml` under one shared key set beside manifest and README templates with `{{VERSION}}`/`{{NAME}}` slots — and `scripts/build_hosts.py [<host> ...] [--check]` renders every selected host from `core/` through a full validation gate (no host name in `core/`, frontmatter and 25-word descriptions, no `{{`, no foreign or dangling plugin-root literal, no stripped key, every version slot equal to `VERSION`), swapping trees in only when all pass; `--check` is the byte-for-byte drift gate and `scripts/migrate_skills_to_agy.py` is gone.
+- The committed `hosts/claude/` and `hosts/antigravity/` trees are pure build output; the root `skills/`, `agents/`, `shared/`, and `.agents/` trees and the root `.claude-plugin/plugin.json` are removed, and the monorepo marketplace points at `./hosts/claude`.
+- A root `VERSION` file is the single source of truth for the plugin version: `set_version.py` writes it with its three mirrored surfaces (`.claude-plugin/marketplace.json`, `pyproject.toml`, `uv.lock`) and never touches `hosts/`, whose manifest and README version slots the build renders from it.
+- The release skill runs the `--check` drift gate and a per-host `gh repo view` existence pre-flight (printing the exact `gh repo create`/`gh repo edit` commands when a repository is missing), stages `hosts/` with the version surfaces so the Release commit changes only version slots, and in step 8d publishes each `hosts/<host>/` tree into `uHappyLogic/cairn-<host>` as one `git commit-tree` commit atomically pushed to `main` and the `<VERSION>` tag, followed by a distribution GitHub release carrying the monorepo's notes.
+- The distribution repositories `uHappyLogic/cairn-claude` and `uHappyLogic/cairn-antigravity` exist — public, deliberately empty so the first publish becomes their root commit, with topics set and issues, wiki, and projects disabled so feedback routes to `uHappyLogic/cairn`.
+- `README.md`'s Installation section is one subsection per host plus the shared bootstrap steps, with `cairn-claude` as the recommended Claude Code install source, a migration note for installs pinned to `uHappyLogic/cairn`, and an archive-extract path for Antigravity, each subsection word-for-word identical to its distribution README template.
+- `CLAUDE.md` and `README.md` describe the `core/` → `scripts/hosts/` → `hosts/` model throughout, and the four stale `migrate-workspace` references are deleted.
 
 ### Milestone 22 — Drop Open-Question Status
 
@@ -249,3 +260,4 @@ Current milestone: `milestones/milestone_23_multi-host-core-and-dist-repos/`
 | 20 | Recommend Agent Return Robustness | `milestones/milestone_20_recommend-agent-return-robustness/` |
 | 21 | Recommendation Dependency Graph | `milestones/milestone_21_recommendation-dependency-graph/` |
 | 22 | Drop Open-Question Status | `milestones/milestone_22_drop-open-question-status/` |
+| 23 | Multi-Host Core And Dist Repos | `milestones/milestone_23_multi-host-core-and-dist-repos/` |
