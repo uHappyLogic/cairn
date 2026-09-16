@@ -407,10 +407,12 @@ acceptable substitute, asked before anything is written — so an empty-range ru
 This gate is the only pause between the release commit and publication, and it is never
 skipped.
 
-### 8. Publish: push `main`, push the tag, create the GitHub release
+### 8. Publish: push `main`, push the tag, create the GitHub release, publish the distribution repositories
 
-Three steps in this order: the branch must carry the commit before a tag can name it, and the
-tag must exist on the remote before a release can attach to it.
+Four steps in this order: the branch must carry the commit before a tag can name it, the tag
+must exist on the remote before a release can attach to it, and the distribution publish runs
+last because every distribution commit names the pushed source commit and the monorepo release
+URL — nothing is created before what it names exists.
 
 Every one is **check-then-do** — query the artifact first, skip the step when it already
 matches the expected state, and **stop and report** when it exists but disagrees with that
@@ -463,14 +465,17 @@ git ls-remote --tags origin "refs/tags/<VERSION>"
   **Stop and report** both SHAs. Never move or delete a published tag, and never
   `git push --force` one.
 
-**c. Create the GitHub release.** Check by exact tag name:
+**c. Create the GitHub release.** First write `<RELEASE_BODY>` to a temporary file so it
+survives verbatim — call it `<BODY_FILE>`. Write it before the check below, not inside the
+create branch: (c) and every host in (d) publish from this one file, so it must exist even on
+a resumption that skips (c), and it is deleted only once step 8 is complete. Then check by
+exact tag name:
 
 ```bash
 gh release view <VERSION> --repo uHappyLogic/cairn --json tagName,isDraft
 ```
 
-- **Non-zero exit** (`release not found`) → not published. Write `<RELEASE_BODY>` to a
-  temporary file so it survives verbatim, then create the release from it:
+- **Non-zero exit** (`release not found`) → not published. Create the release from the file:
 
   ```bash
   gh release create <VERSION> --repo uHappyLogic/cairn \
@@ -479,14 +484,136 @@ gh release view <VERSION> --repo uHappyLogic/cairn --json tagName,isDraft
 
   `--title` is the bare version, matching the published `0.9.8` and `0.9.9` releases;
   `--verify-tag` aborts if (b) did not land the tag. The release is neither a draft nor a
-  prerelease — pass neither flag. Delete `<BODY_FILE>` afterwards.
+  prerelease — pass neither flag.
 
 - **JSON with `"tagName": "<VERSION>"` and `"isDraft": false`** → already published. Skip.
 - **Any other existing release** — a draft, or one whose `tagName` differs → **stop and
   report** what was found. Never edit or delete a published release to make the run pass.
 
-With (a), (b), and (c) each skipped or done, the release is live. Report its URL and stop:
+**d. Publish each host's distribution repository.** Runs only once (a), (b), and (c) are each
+skipped or done. List the host definitions in definition order, as step 2f did:
+
+```bash
+ls -1 scripts/hosts/
+```
+
+For each `<host>` in that order, the distribution repository is `uHappyLogic/cairn-<host>` and
+its remote is `git@github.com:uHappyLogic/cairn-<host>.git` — the same SSH scheme as `origin`
+— both derived from the directory name by that fixed convention and nothing else. Call that
+URL `<REMOTE>`; every git command below names it directly, so no remote is added to the
+monorepo's configuration. Each host is two check-then-do sub-steps in turn, its tag and then
+its release, and the run moves to the next host only when both are skipped or done.
+
+The tree to publish is the one the Release commit already stores for that host:
+
+```bash
+git rev-parse HEAD:hosts/<host>
+```
+
+Call it `<TREE>`, and call `git rev-parse HEAD` `<SHA>`. Publishing is plumbing over that
+tree object — nothing is checked out or written on disk — so byte-identity between
+`hosts/<host>/` at the Release commit and what the distribution repository carries is a
+property of the object model, and step 2e's drift gate makes that tree a fresh build of
+`core/`.
+
+**i. The distribution tag.** Check the remote by exact name:
+
+```bash
+git ls-remote --tags <REMOTE> "refs/tags/<VERSION>"
+```
+
+- **No output** → this host is unpublished. Decide the parent first:
+
+  ```bash
+  git ls-remote --heads <REMOTE> refs/heads/main
+  ```
+
+  No output means the repository is still the empty one step 2f's creation command
+  provides, so the commit has **no parent** — the first publish is a parentless root commit,
+  and the push below makes `main` the default branch. Output means distribution `main`
+  exists: fetch it into `FETCH_HEAD`, and only there —
+
+  ```bash
+  git fetch --no-tags <REMOTE> main
+  ```
+
+  — no remote-tracking ref is written, and `--no-tags` keeps the distribution tags, which
+  share their names with the monorepo's own tags, out of the local tag namespace. A failing
+  fetch is a stop, never a root commit: only the empty `--heads` query decides that.
+
+  Then make the commit from `<TREE>` with `FETCH_HEAD` as its sole parent — drop
+  `-p FETCH_HEAD` on a root commit — under subject `Release: <VERSION>` and a fixed
+  provenance body:
+
+  ```bash
+  printf 'Release: <VERSION>\n\nSource: uHappyLogic/cairn@<SHA>\nPath: hosts/<host>/\nNotes: https://github.com/uHappyLogic/cairn/releases/tag/<VERSION>\n' \
+    | git commit-tree <TREE> -p FETCH_HEAD -F -
+  ```
+
+  That message is the subject, a blank line, and exactly these three body lines, composed
+  from values the run already holds — the source commit, the published path, and the
+  monorepo release URL derived from `<VERSION>`:
+
+  ```
+  Source: uHappyLogic/cairn@<SHA>
+  Path: hosts/<host>/
+  Notes: https://github.com/uHappyLogic/cairn/releases/tag/<VERSION>
+  ```
+
+  It never carries `<RELEASE_BODY>`; the notes live on the GitHub releases. Call the commit
+  id it prints `<COMMIT>` and land it with **one atomic push** to the branch and the tag:
+
+  ```bash
+  git push --atomic <REMOTE> "<COMMIT>:refs/heads/main" "<COMMIT>:refs/tags/<VERSION>"
+  ```
+
+  Atomic means both refs update or neither does, so a distribution tag exists exactly when
+  distribution `main` carries the same commit and no half-published host can arise between
+  re-runs. A rejected push — `non-fast-forward`, because `main` moved between the fetch and
+  the push — lands nothing: **stop and report** it, and a re-run resumes from the fresh
+  state.
+
+- **Output** → the tag is published. Fetch its commit and compare trees:
+
+  ```bash
+  git fetch --no-tags <REMOTE> "refs/tags/<VERSION>"
+  git rev-parse "FETCH_HEAD^{tree}"
+  ```
+
+  - Equal to `<TREE>` → already published, and — because step 2e proved `hosts/<host>/` a
+    fresh build of `core/` — published correctly. Skip to (ii).
+  - Anything else → the distribution tag names a different tree. **Stop and report** all
+    three ids: the tag's tree, `<TREE>`, and the tag's commit SHA (the first column of the
+    `ls-remote` line; an annotated tag would also print a `refs/tags/<VERSION>^{}` line,
+    whose peeled SHA is the commit). Never move, delete, or force-push a published
+    distribution tag — the same stop the monorepo tag gets in (b).
+
+**ii. The distribution GitHub release.** Check by exact tag name on this host's repository:
+
+```bash
+gh release view <VERSION> --repo uHappyLogic/cairn-<host> --json tagName,isDraft
+```
+
+- **Non-zero exit** (`release not found`) → not published. Create it from the same
+  `<BODY_FILE>` (c) wrote, so the release pages carry identical notes by construction:
+
+  ```bash
+  gh release create <VERSION> --repo uHappyLogic/cairn-<host> \
+    --title <VERSION> --verify-tag --notes-file <BODY_FILE>
+  ```
+
+  `--verify-tag` aborts if (i) did not land the tag; neither `--draft` nor `--prerelease`,
+  as in (c). The notes are composed for the monorepo — their compare link points at
+  `uHappyLogic/cairn` — and that is accepted; never edit them per host.
+
+- **JSON with `"tagName": "<VERSION>"` and `"isDraft": false`** → already published. Skip.
+- **Any other existing release** — a draft, or one whose `tagName` differs → **stop and
+  report** what was found, exactly as in (c).
+
+With (a) through (d) each skipped or done, the release is live everywhere. Delete
+`<BODY_FILE>`, then report the release URLs — the monorepo's and one per host — and stop:
 
 ```bash
 gh release view <VERSION> --repo uHappyLogic/cairn --json url --jq .url
+gh release view <VERSION> --repo uHappyLogic/cairn-<host> --json url --jq .url
 ```

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Distribution Publish Step To Release
-
-Add step 8d to the release skill: after the monorepo `main` push, tag push, and GitHub release are each skipped or done, for each host in `scripts/hosts/` definition order derive the distribution repository `uHappyLogic/cairn-<host>` and remote `git@github.com:uHappyLogic/cairn-<host>.git`, query `git ls-remote --tags` for `refs/tags/<VERSION>`, and when absent fetch distribution `main` into `FETCH_HEAD` (absent on the first publish, making it a parentless root commit), `git commit-tree` the tree `git rev-parse HEAD:hosts/<host>` with `FETCH_HEAD` as sole parent under subject `Release: <VERSION>` and a fixed provenance body (`uHappyLogic/cairn@<SHA>`, path `hosts/<host>/`, the monorepo release URL, never the notes), and push atomically to `refs/heads/main` and `refs/tags/<VERSION>`; when present, compare that tag's tree id against `HEAD:hosts/<host>` and skip on equality or stop reporting both tree ids and the tag's commit SHA without ever moving the tag; then check-then-do a distribution GitHub release with `gh release view <VERSION>` and `gh release create <VERSION> --title <VERSION> --verify-tag --notes-file <BODY_FILE>` reusing step 8c's body file, where an existing non-draft release skips and anything else stops. Verified by rehearsing the plumbing sequence against a throwaway local bare remote (first publish as root commit, second as its child, already-published skip, mismatch stop) and by reading that no clone, temporary directory, or file copy appears in the step.
-
----
-
 ## Create Distribution Repositories
 
 As the once-only maintainer act this milestone records, create `uHappyLogic/cairn-claude` and `uHappyLogic/cairn-antigravity` with the `gh repo create` command the release skill's pre-flight prints — public, with a description, deliberately empty (no `--license`, `--add-readme`, or `--gitignore`) — then run `gh repo edit` on each to add topics and disable issues, wiki, and projects so feedback routes to `uHappyLogic/cairn`. Verified when `gh repo view` succeeds for both, each shows zero commits with issues, wiki, and projects disabled, and the commands run match the ones the pre-flight prints.
