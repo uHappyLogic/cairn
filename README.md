@@ -343,34 +343,14 @@ Verifies all tasks are done, writes a completion summary to `milestones/README.m
 
 Creates the next milestone directory with empty starter files and updates the current-milestone pointer in `milestones/README.md`. Only runnable after `/finish-current-milestone` has cleared the active pointer.
 
-## Development
+## Contributing
 
-This project supports both Claude Code and Google Antigravity from one source. The runtime layer — skills, agents, and shared procedures — is authored **once, host-neutrally, under `core/`**: files there refer to each other through the placeholder `{{PLUGIN_ROOT}}` rather than any host's own syntax, and nothing under `core/` names a host.
+Cairn is authored once under `core/` and every `hosts/<host>/` tree is rebuilt from it, never hand-edited — see [CONTRIBUTING.md](CONTRIBUTING.md) for the full contributor path, from proposal to pull request.
 
-Each supported host is a **declarative definition directory** under `scripts/hosts/<host>/` — `scripts/hosts/claude/` and `scripts/hosts/antigravity/` today. It holds a `settings.toml` (the literal that replaces `{{PLUGIN_ROOT}}`, frontmatter keys to strip, renames, excluded paths, and the layout of the host tree) beside that host's manifest and `README.md` templates, whose version slot is filled from the root `VERSION` file. Adding a host means adding a definition directory, not code.
-
-One generic build script renders every host tree from `core/`:
-
-```bash
-uv run scripts/build_hosts.py             # build every host into hosts/<host>/
-uv run scripts/build_hosts.py claude      # build only the named host(s)
-uv run scripts/build_hosts.py --check     # drift gate: render, validate, compare with the committed trees, write nothing
-```
-
-Before writing anything it validates each render in full — frontmatter present and loadable with `name` and `description`, every description at or under 25 words, no unreplaced placeholder, no other host's plugin-root literal, every plugin-root reference resolving to a file in the tree, no stripped frontmatter key still present, and every manifest version equal to `VERSION` — and swaps the results into the committed `hosts/claude/` and `hosts/antigravity/` trees only when every selected host passes; otherwise it exits non-zero listing every failing file and check. Those trees are generated output, never hand-edited: rebuild after changing `core/` or a host definition and commit the rebuilt trees with that change. `--check` compares a fresh render byte-for-byte against the committed trees and is the first thing a release runs.
-
-The root `VERSION` file holds the plugin version and nothing else. `uv run scripts/set_version.py <MAJOR.MINOR.PATCH>` writes it together with its mirrored surfaces (the root `.claude-plugin/marketplace.json` entry, `pyproject.toml`, and `uv.lock`); the version in every host manifest is rendered from `VERSION` by the build, never edited by hand.
-
-Each release publishes every `hosts/<host>/` tree verbatim into its own **distribution repository** — [`cairn-claude`](https://github.com/uHappyLogic/cairn-claude), the recommended install source, and [`cairn-antigravity`](https://github.com/uHappyLogic/cairn-antigravity) — as one ordinary commit tagged with the release version and carrying a GitHub release with the same notes. Nothing in those repositories is edited by hand, and their issues are disabled: bug reports and pull requests belong here.
-
-The monorepo is not the source users install from — that is `cairn-claude`, as described under [Installation](#installation) — but it is the maintainer's install source: its root `.claude-plugin/marketplace.json` stays a working marketplace, named `cairn` and pointing at `./hosts/claude`, so a checkout can be registered as a **directory marketplace** and the plugin installed from it as usual, for running cairn straight from the working tree while developing it:
-
-```
-/plugin marketplace add /path/to/cairn
-/plugin install cairn@cairn
-```
-
-Claude Code reads that marketplace from the checkout directory, so the `hosts/claude/` tree it points at is what gets installed and updated — no release needed.
+- Bug reports and proposals — file them through the [issue forms](https://github.com/uHappyLogic/cairn/issues/new/choose).
+- Questions — ask in [Discussions](https://github.com/uHappyLogic/cairn/discussions/new?category=q-a).
+- Vulnerabilities — report them privately as [SECURITY.md](SECURITY.md) describes, never in an issue.
+- Release notes — every release's notes, verbatim, in [CHANGELOG.md](CHANGELOG.md).
 
 ## Self-dogfooding
 

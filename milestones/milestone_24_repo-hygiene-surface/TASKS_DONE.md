@@ -180,3 +180,22 @@ Extend step 7 of `.claude/skills/release-plugin/SKILL.md` with a third answer be
 - `uv run scripts/build_hosts.py --check` — the repository's one automated check — exits 0 with "Check passed: hosts/antigravity/ and hosts/claude/ match a fresh build of core/ at version 1.4.0." (the edited file is outside `core/` and `scripts/hosts/`), and `git status --porcelain` shows exactly ` M .claude/skills/release-plugin/SKILL.md` beyond this TODO→DONE move.
 
 ---
+
+## Replace README Development With Contributing Section
+
+Remove the README's `## Development` section (its body now lives in `CONTRIBUTING.md`) and put a `## Contributing` section in its place, between the skill reference and `## Self-dogfooding`, in the one-line shape of `## License`: one sentence naming the `core/`-once-rebuild model with a link to `CONTRIBUTING.md` for the full contributor path, then one line each routing bug reports and proposals to the issue forms, questions to the Discussions tab, vulnerability reports to `SECURITY.md`, and release notes to `CHANGELOG.md` — five or six lines, with `CODE_OF_CONDUCT.md` left to GitHub's About sidebar and the badge row untouched. Verify no `## Development` heading remains, every linked file exists in the tree, and nothing in the repository links to the README's `#development` anchor.
+
+**Verified:**
+
+- `README.md` has no `## Development` heading (`grep -n '^## Development' README.md` returns nothing) and none of that section's former body remains in it: `/path/to/cairn`, `cairn@cairn`-under-a-directory-marketplace, `host-neutrally`, `settings.toml`, `set_version.py`, `build_hosts.py`, "declarative definition directory", and "distribution repository" all grep to nothing in the README (the only surviving `cairn@cairn` and `marketplace add` hits are the pre-existing Installation section's), while `CONTRIBUTING.md`'s `## Development` still carries that body whole.
+- A `## Contributing` heading stands where `## Development` was: the README's `##` sequence ends `## Skill reference` (242) → `## Contributing` (346) → `## Self-dogfooding` (355) → `## License` (359).
+- The section opens in the one-line shape of `## License` ("MIT — see [LICENSE](LICENSE).") with one sentence naming the `core/`-once-rebuild model — "Cairn is authored once under `core/` and every `hosts/<host>/` tree is rebuilt from it, never hand-edited — see [CONTRIBUTING.md](CONTRIBUTING.md) for the full contributor path, from proposal to pull request."
+- That sentence is followed by exactly four one-line routes (`awk` over the section counts 4 `- ` lines): bug reports and proposals → the issue forms at `https://github.com/uHappyLogic/cairn/issues/new/choose`; questions → Discussions at the fixed Q&A slug `https://github.com/uHappyLogic/cairn/discussions/new?category=q-a`, the one Discussions URL the Repository settings decision lets an intake route name; vulnerability reports → `[SECURITY.md](SECURITY.md)`; release notes → `[CHANGELOG.md](CHANGELOG.md)`.
+- The body is five content lines (pointer sentence plus four routes, one blank separator between them — six lines with it), and `grep -c CODE_OF_CONDUCT README.md` returns 0, leaving the code of conduct to GitHub's About sidebar.
+- Every file the section links exists in the tree — `CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md` at the root, each resolving as a relative link from `README.md` — and the two GitHub URLs resolve live: `gh api repos/uHappyLogic/cairn` reads `has_discussions: true` and `has_issues: true`, and `curl -L` returns HTTP 200 for both `issues/new/choose` and `discussions/new?category=q-a`.
+- The badge row is untouched: `git diff -U0 -- README.md`'s first hunk starts at line 346, and `diff` of lines 1–14 (banner and the centered `<p>` with the release, CI, and license badges) between `HEAD:README.md` and the working file is empty.
+- Nothing in the repository links to the README's `#development` anchor: `git grep -n -i '\](#development)\|README\.md#development\|#development)'` over the whole tree matches nothing, and the only `#development` mentions anywhere are this task's own brief and the requirements' prose describing this check, neither a link.
+- `uv run scripts/build_hosts.py --check` — the repository's one automated check — exits 0 with "Check passed: hosts/antigravity/ and hosts/claude/ match a fresh build of core/ at version 1.4.0." (`README.md` is outside `core/` and `scripts/hosts/`, so no host tree changes).
+- `git status --porcelain` shows exactly ` M README.md` beyond this TODO→DONE move.
+
+---
