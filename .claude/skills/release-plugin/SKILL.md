@@ -20,6 +20,13 @@ passed and the release notes have been composed. The pre-flight and version gate
 and 3) are hard stops: on failure, report the specific reason and exit, having changed
 nothing. Never work around a gate, and never ask the maintainer to waive one.
 
+The release notes live in the repository: the `Release: <VERSION>` commit prepends them to
+`CHANGELOG.md` as the entry `## <VERSION> — <YYYY-MM-DD>`, and from that commit on the
+committed entry — extracted from `HEAD:CHANGELOG.md` by the rule step 7 states — is the one
+source of the notes: step 7 shows it and step 8 publishes it to the monorepo release and every
+distribution release, so the changelog and the three release pages carry identical text by
+construction.
+
 **Resuming an interrupted release.** Re-running with the same version after a failed run is
 the whole recovery story — there is no rollback of already-published refs and no hand-run
 recovery command. A resumption is detected once, up front:
@@ -30,9 +37,12 @@ git log -1 --format='%s' HEAD
 
 If that prints exactly `Release: <VERSION>`, this version's release commit is already
 recorded and the run is a **resumption**. When it is, step 1 excludes `<VERSION>` from the
-last-release lookup, step 3b tolerates a tag that points at HEAD, and step 6 is skipped whole
-— the commit it would produce already exists. Every other step runs unchanged, and step 8's
-per-artifact checks pick the run up from the first step that did not complete.
+last-release lookup, step 3b tolerates a tag that points at HEAD, step 3c requires the
+`CHANGELOG.md` entry it would otherwise forbid, and steps 5 and 6 are skipped whole — the
+notes step 5 would compose and the commit step 6 would produce already exist, as the entry in
+`HEAD:CHANGELOG.md`, and steps 7 and 8 read that entry exactly as they do on a fresh run.
+Every other step runs unchanged, and step 8's per-artifact checks pick the run up from the
+first step that did not complete.
 
 ## Usage
 
@@ -176,7 +186,7 @@ exists and stops on anything else, so it prints the commands and exits with noth
 
 ### 3. Validate the version argument
 
-All three refusals are hard and pre-mutation. A bad version caught here costs an error
+All four refusals are hard and pre-mutation. A bad version caught here costs an error
 message; caught later it would cost reverting a pushed commit and deleting a published
 release. A maintainer who genuinely needs a non-monotonic or backfill release tags manually,
 outside this skill.
@@ -203,7 +213,33 @@ pushed it before failing. A tag on either side that resolves to HEAD is that tag
 continue, and let step 8b re-check it. A tag resolving to any other commit is a genuine
 collision and stops the run as above.
 
-**c. The version is strictly greater than the last release.** Compare as a **numeric
+**c. The changelog carries the version's entry exactly when the run is a resumption.** Count
+the entry headings for `<VERSION>` in the committed changelog — the tracked tree is clean by
+step 2a, so `HEAD:CHANGELOG.md` is the working file:
+
+```bash
+git show HEAD:CHANGELOG.md | awk -v v='<VERSION>' '$1 == "##" && $2 == v { n++ } END { print n + 0 }'
+```
+
+A heading counts when its first field is `##` and its second is exactly `<VERSION>` — the
+`## <VERSION> — <YYYY-MM-DD>` form step 6c writes — so this is an exact-name count, and a
+heading merely containing `<VERSION>` is not a match. The required count is one check that
+flips on resumption:
+
+- On a **fresh run** it must be `0`. A `1` or more means an entry for `<VERSION>` was already
+  committed without this run's `Release: <VERSION>` commit being at HEAD — a stale unpublished
+  Release commit buried below HEAD, or a hand-written entry — and a run that continued would
+  prepend a duplicate in a commit that then succeeds. Stop and report the count, naming the
+  commit the heading last changed in (`git log -1 --format='%h %s' -S'## <VERSION> — ' -- CHANGELOG.md`).
+- On a **resumption** it must be exactly `1`: the entry the `Release: <VERSION>` commit at HEAD
+  prepended, which steps 7 and 8 read back. A `0` means the commit at HEAD carries no entry
+  (it was made by hand, or before the changelog existed), and `2` or more means a duplicate;
+  either stops the run, reporting the count.
+
+If `git show` itself fails, `CHANGELOG.md` is not a tracked file at HEAD: stop and report it —
+the release prepends to that file and never creates it.
+
+**d. The version is strictly greater than the last release.** Compare as a **numeric
 tuple**, never by tag-name sort:
 
 1. Confirm `<LAST_TAG>` is three numeric components — every tag is bare
@@ -223,8 +259,17 @@ rest of the release with them.
 ### 5. Compose the release notes
 
 This step still mutates nothing: it reads the range, cross-checks its two sides, and builds
-the release body in context. Call the finished text `<RELEASE_BODY>`; the later steps commit,
-tag, and publish with it.
+the release body in context. Call the finished text `<RELEASE_BODY>`; step 6 writes it into
+`CHANGELOG.md` as the `<VERSION>` entry and commits it, and from that commit on the committed
+entry — not this draft — is what steps 7 and 8 show and publish.
+
+**Skip this whole step on a resumption.** The notes it would compose are already committed:
+the `Release: <VERSION>` commit at HEAD carries them as the `CHANGELOG.md` entry step 3c
+counted, and step 7 reads that entry back. Recomposing would produce a second condensed
+rewrite that could hand a distribution release notes differing from a monorepo release an
+earlier run already created; reading the entry back cannot. The cross-check in (c) and the
+empty-range confirmation in (d) are therefore not re-run on a resumption — the committed
+entry is the evidence they passed. Carry `<VERSION>` and `<LAST_TAG>` straight into step 7.
 
 **a. Gather the finished milestones from the commit range.**
 
@@ -274,9 +319,9 @@ and only the maintainer can tell the two apart, so:
 2. Build **commit-range-derived notes** in place of the usual history-entry sections: read
    the range's commits (`git log --format='%s' <LAST_TAG>..HEAD`, reading bodies where a
    subject is not self-explanatory) and condense them into a single
-   `## Changes since <LAST_TAG>` section — a short bulleted summary of the user-facing
-   changes, under the same rewrite discipline as (e) below — then the Full Changelog link
-   from (f).
+   `### Changes since <LAST_TAG>` section — at `###`, like every section in (e), and a short
+   bulleted summary of the user-facing changes under the same rewrite discipline as (e)
+   below — then the Full Changelog link from (f).
 3. Show the maintainer that full body and ask whether to release with it.
 4. Proceed only on an **explicit** affirmative answer. Anything else — a refusal, a question,
    an ambiguous reply — stops the run with nothing changed.
@@ -289,7 +334,7 @@ sections, and it never takes itself silently.
 `milestones/README.md` and rewrite it into:
 
 ```markdown
-## <Title> (milestone <N>)
+### <Title> (milestone <N>)
 
 - <condensed user-facing change>
 - <condensed user-facing change>
@@ -297,13 +342,19 @@ sections, and it never takes itself silently.
 
 `<Title>` is the heading's title text; `<N>` is the milestone number as the heading writes it.
 
+Every section heading in the body is `###` — one level below the `## <VERSION> — <YYYY-MM-DD>`
+heading step 6c puts over the body in `CHANGELOG.md`, so the sections nest under their
+release. The body must contain **no line beginning `## `**: the next such line is what ends
+the entry under step 7's extraction rule, so a `##` inside the body would cut the published
+notes short.
+
 The bullets are **condensed rewrites, never verbatim copies**. Keep what a consumer of the
 plugin would notice — what the release now does, what changed for them, what was added,
 renamed, or retired. Cut milestone-internal process detail: task counts, per-task ledgers,
 audit passes, re-audit verdicts, which sweep touched which file, and how the work was
 verified. Where several history bullets describe one user-facing change, merge them into one.
-This is the shape the published `0.9.8` and `0.9.9` bodies already set, and matching it keeps
-the release series consistent.
+This is the shape every sectioned release page from `0.9.8` on and its `CHANGELOG.md` entry
+already carry, and matching it keeps the release series consistent.
 
 **f. Close with the compare link.** The last line of `<RELEASE_BODY>` is always:
 
@@ -321,8 +372,9 @@ Run it unattended: nothing here pauses for the maintainer.
 
 **Skip this whole step on a resumption.** The `Release: <VERSION>` commit at HEAD is the
 commit this step produces: the version script and the rebuild would rewrite the same
-values, and the commit would find nothing staged. Carry `<VERSION>`, `<LAST_TAG>`, and
-`<RELEASE_BODY>` straight into step 7.
+values, the changelog already carries the entry step 3c counted, and the commit would find
+nothing staged. Carry `<VERSION>` and `<LAST_TAG>` straight into step 7, which reads the
+notes from that commit.
 
 **a. Write the version into its source of truth and every mirrored surface.**
 
@@ -352,12 +404,39 @@ was written.
 
 Because step 2e proved the committed trees already matched a fresh build of `core/` at the
 previous version, this rebuild can change only the version literal in each rendered manifest
-and README: the Release commit changes version slots and nothing else, by construction. There
-is no drift to inspect, report, or absorb here — anything beyond the version slots would have
-stopped the run in pre-flight.
+and README: the Release commit changes version slots and the `CHANGELOG.md` entry (c) adds,
+and nothing else, by construction. There is no drift to inspect, report, or absorb here —
+anything the rebuild changed beyond the version slots would have stopped the run in
+pre-flight.
 
-**c. Stage exactly the written paths.** Name them explicitly — the four surfaces the version
-script writes plus the rebuilt trees:
+**c. Prepend the changelog entry, then stage exactly the written paths.** The entry is the
+`## <VERSION> — <YYYY-MM-DD>` heading over `<RELEASE_BODY>` verbatim, and it goes below the
+changelog's title, above every earlier release:
+
+```markdown
+## <VERSION> — <YYYY-MM-DD>
+
+<RELEASE_BODY>
+
+```
+
+The date is today's UTC calendar date, `date -u +%Y-%m-%d` — the clock the backfilled
+headings took from each release's `publishedAt` — and the separator is an em dash (`—`,
+U+2014) with one space on each side, as every existing heading has it. Insert those lines —
+the heading, one blank line, the body's lines exactly as composed, one blank line — immediately
+**above the first line of `CHANGELOG.md` that begins `## `**, which is `<LAST_TAG>`'s heading.
+That slot sits below the `# Changelog` title and its one-line verbatim note, which are never
+touched, and it is the file's only write: no Unreleased section is filled, no reference-link
+list is updated, and no earlier entry is edited.
+
+Then confirm the write with `git diff --numstat -- CHANGELOG.md` and `grep -n '^## ' CHANGELOG.md`:
+the diff shows added lines only (`0` deletions), and the first two `## ` lines are the new
+heading and then `<LAST_TAG>`'s. Anything else — a deletion, the entry landing anywhere but
+first, a second `<VERSION>` heading — means the prepend went wrong: stop and report, with
+nothing committed.
+
+Now stage the written paths. Name them explicitly — the four surfaces the version script
+writes, the changelog, and the rebuilt trees:
 
 ```bash
 git add -- \
@@ -365,6 +444,7 @@ git add -- \
   pyproject.toml \
   uv.lock \
   .claude-plugin/marketplace.json \
+  CHANGELOG.md \
   hosts/
 ```
 
@@ -384,18 +464,48 @@ later step into it.
 
 Then confirm the staging was complete: `git status --porcelain --untracked-files=no` must be
 empty. Any tracked change left behind means a written path was missed; stop and report it
-rather than tagging a partial state. The tag is not created here — the run holds `<VERSION>`,
-`<LAST_TAG>`, and `<RELEASE_BODY>` and carries them into the publish step.
+rather than tagging a partial state. The tag is not created here — the run holds `<VERSION>`
+and `<LAST_TAG>` and carries them into the publish step, and the notes now live in the commit
+as the `CHANGELOG.md` entry step 7 reads back; `<RELEASE_BODY>` is not carried past this
+point.
 
 ### 7. Confirm before publishing
 
 This is the run's **single pause**. Everything before it is local work a `git reset` undoes;
-everything after it is public and permanent. Show the maintainer both facts they need in
-order to veto:
+everything after it is public and permanent.
+
+**Extract the entry.** The release notes are the `<VERSION>` entry of the committed changelog,
+read from `HEAD:CHANGELOG.md` — never from context, and the same way on a fresh run and a
+resumption. The entry is **the lines under the `## <VERSION> — <YYYY-MM-DD>` heading, up to
+the next `##` heading, blank lines trimmed**: every line after the heading line and before the
+next line beginning `## ` (or the end of the file where the entry is the last), with the blank
+lines at the start and end of that range dropped and the blank lines inside it kept. Extract it
+with exactly this command, whose heading match is the same exact second-field test as step 3c:
+
+```bash
+git show HEAD:CHANGELOG.md | awk -v v='<VERSION>' '
+  /^## / { if (found) exit; found = ($2 == v); next }
+  found  { lines[++n] = $0 }
+  END {
+    s = 1; e = n
+    while (s <= e && lines[s] == "") s++
+    while (e >= s && lines[e] == "") e--
+    for (i = s; i <= e; i++) print lines[i]
+  }'
+```
+
+Call what it prints `<ENTRY>`. It is exactly the body between the heading's blank line and the
+blank line before `<LAST_TAG>`'s heading — on a fresh run, `<RELEASE_BODY>` as step 6c wrote
+it, now read back from the commit rather than from context; if the two differ, the 6c write
+went wrong — stop and report it, the commit still being local. An empty `<ENTRY>` (the heading
+absent, or nothing under it) is likewise a stop: step 3c counted exactly one such heading, so
+this cannot happen without the changelog having changed since.
+
+Show the maintainer both facts they need in order to veto:
 
 1. `<VERSION>` — the version about to be tagged and released.
-2. `<RELEASE_BODY>` — the **full** composed body, verbatim, exactly as step 8c will publish
-   it. Never a summary, an excerpt, or a description of it.
+2. `<ENTRY>` — the **full** committed entry, verbatim, exactly as step 8c will publish it.
+   Never a summary, an excerpt, or a description of it.
 
 Then ask whether to publish, and proceed only on an **explicit** affirmative answer. Anything
 else — a refusal, a question, an edit request, an ambiguous reply — stops the run here with
@@ -465,11 +575,13 @@ git ls-remote --tags origin "refs/tags/<VERSION>"
   **Stop and report** both SHAs. Never move or delete a published tag, and never
   `git push --force` one.
 
-**c. Create the GitHub release.** First write `<RELEASE_BODY>` to a temporary file so it
-survives verbatim — call it `<BODY_FILE>`. Write it before the check below, not inside the
-create branch: (c) and every host in (d) publish from this one file, so it must exist even on
-a resumption that skips (c), and it is deleted only once step 8 is complete. Then check by
-exact tag name:
+**c. Create the GitHub release.** First write `<ENTRY>` to a temporary file — call it
+`<BODY_FILE>` — by running step 7's extraction again with its output redirected into the
+file (`git show HEAD:CHANGELOG.md | awk … > <BODY_FILE>`), so the file is the committed entry
+byte for byte rather than a transcription from context. Write it before the check below, not
+inside the create branch: (c) and every host in (d) publish from this one file, so it must
+exist even on a resumption that skips (c), and it is deleted only once step 8 is complete.
+Then check by exact tag name:
 
 ```bash
 gh release view <VERSION> --repo uHappyLogic/cairn --json tagName,isDraft
@@ -560,8 +672,9 @@ git ls-remote --tags <REMOTE> "refs/tags/<VERSION>"
   Notes: https://github.com/uHappyLogic/cairn/releases/tag/<VERSION>
   ```
 
-  It never carries `<RELEASE_BODY>`; the notes live on the GitHub releases. Call the commit
-  id it prints `<COMMIT>` and land it with **one atomic push** to the branch and the tag:
+  It never carries the release notes; those live in the monorepo's `CHANGELOG.md` entry and
+  on the GitHub releases. Call the commit id it prints `<COMMIT>` and land it with **one
+  atomic push** to the branch and the tag:
 
   ```bash
   git push --atomic <REMOTE> "<COMMIT>:refs/heads/main" "<COMMIT>:refs/tags/<VERSION>"
@@ -595,7 +708,8 @@ gh release view <VERSION> --repo uHappyLogic/cairn-<host> --json tagName,isDraft
 ```
 
 - **Non-zero exit** (`release not found`) → not published. Create it from the same
-  `<BODY_FILE>` (c) wrote, so the release pages carry identical notes by construction:
+  `<BODY_FILE>` (c) wrote — the entry extracted from `HEAD:CHANGELOG.md` — so the changelog
+  and the release pages carry identical notes by construction:
 
   ```bash
   gh release create <VERSION> --repo uHappyLogic/cairn-<host> \

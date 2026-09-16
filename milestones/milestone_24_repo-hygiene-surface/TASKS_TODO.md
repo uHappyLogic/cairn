@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Release Skill Maintains Changelog Entry
-
-Edit `.claude/skills/release-plugin/SKILL.md` so a release keeps `CHANGELOG.md` identical to the release notes: step 5 composes the milestone sections at `###` (only on a fresh run — a resumption skips it whole); step 6 prepends the `## <VERSION> — <YYYY-MM-DD>` entry below the changelog title and stages `CHANGELOG.md` beside the existing version paths in the one `Release: <VERSION>` commit, with step 6b and `CLAUDE.md`'s Development sentence about that commit updated to name the changelog entry; a pre-flight gate beside the tag-existence check requires no entry for `<VERSION>` on a fresh run and exactly one at `HEAD` on a resumption; and steps 7 and 8 show and publish the entry extracted from `HEAD:CHANGELOG.md` (the lines under its heading up to the next `##` heading, blank lines trimmed) on a fresh run and a resumption alike, with the extraction rule stated exactly. Verify by reading the skill through both paths — fresh and resumption — and confirming every step names the committed entry as its source and the staged path list includes `CHANGELOG.md`.
-
----
-
 ## Release Skill Revises Notes At Pause
 
 Extend step 7 of `.claude/skills/release-plugin/SKILL.md` with a third answer beside publish and stop: while the `Release: <VERSION>` commit is still unpushed (after a fetch, `git merge-base --is-ancestor HEAD origin/main` fails), a revision applies the maintainer's stated change to the `<VERSION>` entry in the working `CHANGELOG.md` (a hand edit already made there counts the same), stages it with `git add -- CHANGELOG.md`, amends with `git commit --amend --no-edit` so the subject is untouched, re-extracts the entry from `HEAD:CHANGELOG.md`, shows it in full, and asks again; once `origin/main` carries the commit a revision request is a stop naming that reason, and step 6d's one-commit sentence names this as the run's only amend. Verify by reading step 7 and 6d together: the amend is path-scoped, subject-preserving, and gated on the unpushed check.
