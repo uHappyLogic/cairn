@@ -48,6 +48,10 @@ The drift-gate workflow triggers on `push` and `pull_request` with no branch fil
 
 `SECURITY.md` directs vulnerability reports to GitHub private vulnerability reporting only — the root repository's Report a vulnerability form — and the milestone enables private vulnerability reporting on `uHappyLogic/cairn` with one `gh api --method PUT` toggle of the same kind as the Discussions enable. Private reporting puts each report where the fix happens, as a draft advisory with a private thread and a publish step, instead of in a gmail inbox. No email address appears in the file: the maintainer publishes none today, and a fallback address is a one-line addition should one ever be wanted, so nothing is lost by leaving it out. The supported-versions table names the latest release only and states that every fix ships as a new release to both distribution repositories — the one honest value, because the sixteen releases are strictly linear, the release skill publishes only `main`'s HEAD, and both patch releases (1.0.1, 1.1.1) landed on the newest minor.
 
+### Issue templates
+
+The bug and feature issue templates are YAML issue forms, not Markdown templates. Host, cairn version, and skill invoked are the three facts a cairn bug cannot be reproduced without and exactly what free text loses, and required form fields are the only mechanism that guarantees them on a repository with no issues yet and no triage history to fall back on. The host is a two-value dropdown mirroring `scripts/hosts/`, and the version and skill are free-text inputs, so no field enumerates the 21 skills a list would have to track. The one cost is the `gh` CLI gap — it does not detect YAML forms — which a reporter crosses with `gh issue create --web`; a Markdown template would only paper over that gap, since `gh` pre-fills sections it does not enforce, so Markdown would be chosen only if terminal-filed issues were expected to be the main channel.
+
 ## Out of Scope
 
 ## Open questions
@@ -57,25 +61,6 @@ The drift-gate workflow triggers on `push` and `pull_request` with no branch fil
 </open-question>
 <open-question id="README links to hygiene files">
   <question>Beyond the CI badge, should README.md gain a Contributing section or links to CONTRIBUTING.md, SECURITY.md, CHANGELOG.md, and Discussions, or stay untouched?</question>
-</open-question>
-<open-question id="Issue template format">
-  <question>Are the bug and feature templates YAML issue forms with structured fields (host, cairn version, skill invoked) or Markdown templates with free-text sections?</question>
-  <alternative id="YAML issue forms">
-    Two issue forms, .github/ISSUE_TEMPLATE/bug-report.yml and feature-request.yml, each with name, description, and labels (bug and enhancement, both already present on the repository) over a body of typed fields: the bug form a host dropdown (Claude Code, Antigravity), a cairn version input, a skill-invoked input, a what-happened textarea, and a console-output textarea with render set to shell, the first four marked required; the feature form a summary input and two textareas for the workflow gap and the proposed behaviour.
-    <advantage>A required field can be neither left empty nor deleted, so every bug report arrives carrying the three facts a cairn reproduction turns on (which of the two host trees, which of the sixteen releases, which of the 21 skills) under fixed ### headings in a plain-Markdown body; the host dropdown mirrors the two definition directories under scripts/hosts/, and the transcript textarea renders as a code block without the reporter knowing any Markdown.</advantage>
-    <drawback>The gh CLI does not detect YAML forms (its template lookup matches only .md files, and cli/cli issue 5865, Support for issue forms, has been open since 2022), so gh issue create, the tool at hand for cairn&apos;s agent-host audience, offers no template and files a blank body unless run with --web; and any dropdown that enumerated the skills would be a hand-maintained copy of core/skills/ the build never validates, in a history that has already renamed seven skills.</drawback>
-  </alternative>
-  <alternative id="Markdown templates">
-    Two Markdown templates, .github/ISSUE_TEMPLATE/bug_report.md and feature_request.md, each with YAML front matter (name, about, title, labels) over a body of ### sections whose HTML-comment prompts ask for host, cairn version, skill invoked, steps, expected and actual behaviour, and console output.
-    <advantage>It works in every entry path: the web chooser, gh issue create (which lists the template and pre-fills the body from it), and any editor, and each template is one plain text file to author, read, and diff.</advantage>
-    <drawback>Nothing is enforced: the pre-filled sections are editable text a reporter deletes or leaves as the placeholder comment, so host, version, and skill arrive as prose when they arrive at all and must be asked for in a follow-up comment, while the community-profile check counts the template folder the same for either format, so the file earns nothing a form does not.</drawback>
-  </alternative>
-  <alternative id="Form for bugs, Markdown for features">
-    A YAML form for the bug report, where the structured fields pay, and a Markdown template for the feature request, which is prose.
-    <advantage>Each template takes the format its content wants: enforced facts for a reproduction, free text for a proposal.</advantage>
-    <drawback>Two authoring formats for two files, and the gh CLI then sees only the .md file, so its chooser offers the feature template and a blank issue alone and a bug filed from the terminal starts from the feature body or nothing; a form whose body is a single textarea is exactly as free as a Markdown template, so the split saves no freedom and costs the uniformity.</drawback>
-  </alternative>
-  <recommendation option="YAML issue forms">Host, cairn version, and skill invoked are the three facts a cairn bug cannot be reproduced without and exactly what free text loses, and required form fields are the only mechanism that guarantees them on a repository with no issues yet and no triage history to fall back on; keep the host as a two-value dropdown mirroring scripts/hosts/ and the version and skill as free-text inputs so no field enumerates the 21 skills a list would have to track; the one cost is the gh CLI gap, which a reporter crosses with gh issue create --web and which a Markdown template only papers over since gh pre-fills sections it does not enforce, so choose Markdown only if terminal-filed issues are expected to be the main channel.</recommendation>
 </open-question>
 <open-question id="Blank issues and contact links">
   <question>Should an ISSUE_TEMPLATE config.yml disable blank issues and route questions to a Discussions category once Discussions is enabled?</question>
