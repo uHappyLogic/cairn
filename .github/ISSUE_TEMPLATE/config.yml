@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ask a question
+    url: https://github.com/uHappyLogic/cairn/discussions/new?category=q-a
+    about: Usage and how-to questions — how a skill behaves, how to fit cairn into a project, what a message means. Answered in Discussions.

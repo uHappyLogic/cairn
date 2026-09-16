@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Issue Forms And Chooser Config
-
-Add three YAML issue forms under `.github/ISSUE_TEMPLATE/`: a bug form with a required host dropdown of the two values mirroring `scripts/hosts/`, a required cairn-version text input, and a required skill-invoked text input; a feature form; and a proposal form whose required fields are a goal statement in the shape a milestone `## Goal` takes, the motivation, what is in and out of scope, and a checkbox committing the proposer to run the milestone in a fork through `/finish-current-milestone`. Beside them add `config.yml` with `blank_issues_enabled: false` and one contact link — name Ask a question, url `https://github.com/uHappyLogic/cairn/discussions/new?category=q-a`, about usage and how-to questions — and no security link. Verify every form loads as YAML with the required fields marked required and the chooser config carries exactly that one link.
-
----
-
 ## Add Pull-Request Template
 
 Add a single `.github/PULL_REQUEST_TEMPLATE.md` that opens with two fill-in lines — the reserved milestone id (the `milestone_<N>_<slug>` directory name the maintainer's `Milestone-definition:` commit created on `main`) and `Closes #<proposal issue>` — followed by a reviewer checklist of what a finished contributor milestone leaves in the tree: `milestones/<id>/requirements.md` with no `<open-question>` block, `TASKS_TODO.md` with no task section, `TASKS_DONE.md` carrying every task with its Verified bullets, `milestones/README.md` with the milestone's history entry and the pointer at `none`, one `Milestone-finish: <id>` commit on the branch, `CLAUDE.md` touched only for lasting changes, and `hosts/` rebuilt (confirmed by the drift-gate status check). Verify the file carries exactly those two fill-ins and those checklist items and no generic checklist.

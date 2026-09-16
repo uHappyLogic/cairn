@@ -1,0 +1,30 @@
+name: Feature request
+description: Ask for a new capability, a change to how a skill behaves, or a small fix for the maintainer to make.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What should cairn do
+      description: The behaviour you want, stated against the skill or file it touches — a new skill, a change to an existing one, a wording fix in a rendered file, a build-script change.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: The situation that made you want it — what you were trying to do, and what the current behaviour cost you.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other ways the same need could be met, including anything you tried, if any.
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: |
+        A change large enough to be a milestone of its own — several skills, a new procedure, a workflow change — is a proposal, not a feature request: file it through the proposal form instead, and see `CONTRIBUTING.md` for how a proposal becomes a contributor-run milestone.

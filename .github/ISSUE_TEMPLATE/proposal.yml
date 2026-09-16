@@ -1,0 +1,45 @@
+name: Milestone proposal
+description: Propose a change you will carry out yourself as a contributor-run milestone. Acceptance reserves a milestone from this goal.
+title: "[Proposal]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A proposal is a work item in waiting. When the maintainer accepts it, they run `/define-milestone-goal` on `main` with your goal statement, which reserves `milestone_<N>_<slug>` for you; you then fork, run the milestone through `/finish-current-milestone`, and open a pull request that closes this issue. `CONTRIBUTING.md` spells out each step.
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal statement
+      description: One paragraph in the shape a milestone's `## Goal` takes — an imperative statement of what the milestone accomplishes and what it leaves in the repository, specific enough to hand to `/define-milestone-goal` as it stands. On acceptance it becomes the `## Goal` of `milestones/milestone_<N>_<slug>/requirements.md` verbatim.
+      placeholder: Make the <skill> do <X> so that <outcome>, by <the concrete changes>; <what the milestone deliberately leaves out>.
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why cairn needs this — the situation that exposed the gap, and what stays broken or awkward until the milestone lands.
+    validations:
+      required: true
+  - type: textarea
+    id: in-scope
+    attributes:
+      label: In scope
+      description: What the milestone changes — the skills, agents, shared procedures, scripts, or documentation it touches, and the behaviour each gains.
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+      description: What it deliberately leaves alone, so the requirements review does not reopen it. Write "nothing" if there is no boundary worth drawing.
+    validations:
+      required: true
+  - type: checkboxes
+    id: commitment
+    attributes:
+      label: Commitment
+      description: A proposal is accepted only with its contributor attached; there is no plain-pull-request tier, and a change the maintainer is expected to make is a feature request instead.
+      options:
+        - label: I will run this milestone myself in a fork, from the reserved `Milestone-definition:` commit through `/finish-current-milestone`, and open the pull request.
+          required: true
