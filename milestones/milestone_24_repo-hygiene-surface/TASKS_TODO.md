@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Configure Root Repository Settings
-
-Flip the four repository settings on `uHappyLogic/cairn` that the milestone's decisions state as fact: enable Discussions (`has_discussions=true`, leaving GitHub's six default categories exactly as created — no `.github/DISCUSSION_TEMPLATE/`), enable private vulnerability reporting with one `gh api --method PUT` toggle, and run `gh repo edit uHappyLogic/cairn --enable-squash-merge=false --enable-wiki=false`. Git never records a repository setting, so the task's `TASKS_DONE.md` entry is the only record: verify by reading `has_discussions` back as `true`, private vulnerability reporting as enabled, `allow_squash_merge` as `false`, and `has_wiki` as `false`, and record each read-back among the Verified bullets.
-
----
-
 ## Add Drift-Gate CI Workflow And Badge
 
 Add a GitHub Actions workflow under `.github/workflows/` that triggers on `push` and `pull_request` with no branch filter and no `paths` filter, installs `uv` and runs `uv run scripts/build_hosts.py --check`, pinning both actions (checkout and uv setup) to full 40-character commit SHAs each followed by a `# vX.Y.Z` comment, with no Dependabot configuration. Add a third shields.io badge to the README's centred badge row beside the release badge, `https://img.shields.io/github/actions/workflow/status/uHappyLogic/cairn/<workflow-file>?branch=main&event=push&style=flat&label=ci`, wrapped in a link to `actions/workflows/<workflow-file>?query=branch%3Amain`, where `<workflow-file>` is the workflow's file name fixed here. Verify the workflow YAML parses, both SHAs resolve to the commented releases, and the badge and link URLs name the same workflow file.
