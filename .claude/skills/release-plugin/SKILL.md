@@ -23,9 +23,10 @@ nothing. Never work around a gate, and never ask the maintainer to waive one.
 The release notes live in the repository: the `Release: <VERSION>` commit prepends them to
 `CHANGELOG.md` as the entry `## <VERSION> — <YYYY-MM-DD>`, and from that commit on the
 committed entry — extracted from `HEAD:CHANGELOG.md` by the rule step 7 states — is the one
-source of the notes: step 7 shows it and step 8 publishes it to the monorepo release and every
-distribution release, so the changelog and the three release pages carry identical text by
-construction.
+source of the notes: step 7 shows it (and, while the commit is still unpushed, revises it in
+place at the maintainer's request by amending that commit) and step 8 publishes it to the
+monorepo release and every distribution release, so the changelog and the three release pages
+carry identical text by construction.
 
 **Resuming an interrupted release.** Re-running with the same version after a failed run is
 the whole recovery story — there is no rollback of already-published refs and no hand-run
@@ -460,7 +461,9 @@ Release: <VERSION>
 
 with `<VERSION>` the bare literal, and the body following the repository's commit conventions.
 One release is one commit — never split the version bump and the rebuild, and never amend a
-later step into it.
+later step into it. The run's **only amend** is step 7's revision of the notes: a
+`git commit --amend --no-edit` over `git add -- CHANGELOG.md` alone, made only while this
+commit is still unpushed, which changes the changelog entry and leaves this subject untouched.
 
 Then confirm the staging was complete: `git status --porcelain --untracked-files=no` must be
 empty. Any tracked change left behind means a written path was missed; stop and report it
@@ -472,7 +475,9 @@ point.
 ### 7. Confirm before publishing
 
 This is the run's **single pause**. Everything before it is local work a `git reset` undoes;
-everything after it is public and permanent.
+everything after it is public and permanent. The pause asks one question; a revision of the
+notes answers it by amending the still-unpushed release commit and asking again, so the run
+leaves this step only by publishing or by stopping.
 
 **Extract the entry.** The release notes are the `<VERSION>` entry of the committed changelog,
 read from `HEAD:CHANGELOG.md` — never from context, and the same way on a fresh run and a
@@ -495,22 +500,80 @@ git show HEAD:CHANGELOG.md | awk -v v='<VERSION>' '
 ```
 
 Call what it prints `<ENTRY>`. It is exactly the body between the heading's blank line and the
-blank line before `<LAST_TAG>`'s heading — on a fresh run, `<RELEASE_BODY>` as step 6c wrote
-it, now read back from the commit rather than from context; if the two differ, the 6c write
-went wrong — stop and report it, the commit still being local. An empty `<ENTRY>` (the heading
-absent, or nothing under it) is likewise a stop: step 3c counted exactly one such heading, so
-this cannot happen without the changelog having changed since.
+blank line before `<LAST_TAG>`'s heading. On a fresh run's **first** extraction it is
+`<RELEASE_BODY>` as step 6c wrote it, now read back from the commit rather than from context;
+if the two differ, the 6c write went wrong — stop and report it, the commit still being local.
+(After a revision below, `<ENTRY>` is the revised entry and `<RELEASE_BODY>` is no longer its
+reference.) An empty `<ENTRY>` (the heading absent, or nothing under it) is likewise a stop:
+step 3c counted exactly one such heading, so this cannot happen without the changelog having
+changed since.
 
-Show the maintainer both facts they need in order to veto:
+Show the maintainer both facts they need in order to veto or revise:
 
 1. `<VERSION>` — the version about to be tagged and released.
 2. `<ENTRY>` — the **full** committed entry, verbatim, exactly as step 8c will publish it.
    Never a summary, an excerpt, or a description of it.
 
-Then ask whether to publish, and proceed only on an **explicit** affirmative answer. Anything
-else — a refusal, a question, an edit request, an ambiguous reply — stops the run here with
-nothing pushed. Say that the release commit stays at HEAD, unpushed and revertible, and that
-re-running `/release-plugin <VERSION>` resumes from this point.
+Then ask whether to publish. The answer takes one of three forms:
+
+- **Publish** — an **explicit** affirmative. Proceed to step 8.
+- **Revise** — a stated change to the entry's text, or word that the maintainer has already
+  edited the entry by hand in the working `CHANGELOG.md`. Take the revision path below; it
+  ends by showing the entry again and asking again.
+- **Anything else** — a refusal, a question, an ambiguous reply — stops the run here with
+  nothing pushed. Say that the release commit stays at HEAD — unpushed and revertible, unless
+  an earlier run already pushed it — and that re-running `/release-plugin <VERSION>` resumes
+  from this point.
+
+**Revise the entry.** The notes are the skill's own output, written into a commit the run
+made, so a revision at the run's own review point is applied here rather than handed back to
+the maintainer as a stop. It is the run's **only amend** (6d), and it is allowed only while the
+release commit is still unpushed — check that first, before touching anything:
+
+```bash
+git fetch origin main
+git merge-base --is-ancestor HEAD origin/main
+```
+
+A **non-zero** exit means `origin/main` does not carry HEAD: the commit is unpushed and may be
+amended — continue. A **zero** exit means `origin/main` already carries the release commit — a
+resumption past step 8a — so its notes are frozen: a pushed commit is never amended. **Stop and
+report** that reason, with nothing changed, and say that re-running `/release-plugin <VERSION>`
+resumes from this point with the notes as committed.
+
+Then apply the revision to the `<VERSION>` entry — and only that entry — in the working
+`CHANGELOG.md`: edit the entry's lines to carry the maintainer's stated change, keeping every
+section at `###` and adding no line that begins `## ` (5e's rule — the next such line ends the
+entry). An edit the maintainer already made by hand in the working file counts the same: take
+the file as it stands and apply nothing. Either way, confirm the change stayed inside the entry
+— everything outside it, the `## ` heading lines included, must still match HEAD:
+
+```bash
+diff <(git show HEAD:CHANGELOG.md | awk -v v='<VERSION>' '/^## / { skip = ($2 == v); print; next } !skip') \
+     <(awk -v v='<VERSION>' '/^## / { skip = ($2 == v); print; next } !skip' CHANGELOG.md)
+```
+
+Any output means the revision reached outside the entry — another release's entry, the title
+or its note, or the `<VERSION>` heading itself — or added a `## ` line inside it: stop and
+report it, leaving the working change in place and the commit untouched. If instead the file is
+unchanged from HEAD (`git diff --quiet HEAD -- CHANGELOG.md` exits 0), there is nothing to
+amend: say so, then show the entry and ask again.
+
+Then stage that one path and amend, keeping the message:
+
+```bash
+git add -- CHANGELOG.md
+git commit --amend --no-edit
+```
+
+`git add -- CHANGELOG.md` is the amend's whole staging — never `git add -A`, and no other path,
+so the amended commit still changes only version slots and the changelog entry. `--no-edit`
+keeps the message as 6d wrote it, so the `Release: <VERSION>` subject a resumption keys on is
+untouched; confirm that `git log -1 --format='%s' HEAD` still prints exactly `Release: <VERSION>`.
+
+Now go back to **Extract the entry**: re-extract `<ENTRY>` from `HEAD:CHANGELOG.md` with the
+same command, show `<VERSION>` and the full revised entry again, and ask again. Step 8 publishes
+whatever HEAD records when the maintainer finally answers publish.
 
 Step 5d's empty-range question is a different one — whether commit-derived notes are an
 acceptable substitute, asked before anything is written — so an empty-range run answers both.
