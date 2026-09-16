@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Create Distribution Repositories
-
-As the once-only maintainer act this milestone records, create `uHappyLogic/cairn-claude` and `uHappyLogic/cairn-antigravity` with the `gh repo create` command the release skill's pre-flight prints — public, with a description, deliberately empty (no `--license`, `--add-readme`, or `--gitignore`) — then run `gh repo edit` on each to add topics and disable issues, wiki, and projects so feedback routes to `uHappyLogic/cairn`. Verified when `gh repo view` succeeds for both, each shows zero commits with issues, wiki, and projects disabled, and the commands run match the ones the pre-flight prints.
-
----
-
 ## Rewrite Install Documentation
 
 Rewrite the Installation section of `README.md` into one subsection per host followed by the shared bootstrap steps — Claude Code: `/plugin marketplace add uHappyLogic/cairn-claude` then `/plugin install cairn@cairn`; Antigravity: `mkdir -p .agents/plugins/cairn`, `curl -sL` of the `cairn-antigravity` `archive/refs/heads/main.tar.gz` archive piped through `tar -xz --strip-components=1 -C .agents/plugins/cairn`, and one sentence on pinning by swapping `main` for a release tag; then `/init-milestone-base-workflow` and `/init` — plus a Claude Code migration note stating that installs pinned to `uHappyLogic/cairn` keep working and updating because that marketplace now serves `./hosts/claude`, and that switching to the recommended source is `/plugin marketplace remove cairn`, `/plugin marketplace add uHappyLogic/cairn-claude`, `/plugin install cairn@cairn`; the monorepo is named as an install source only under Development, as the maintainer's directory-marketplace source. Verified when `cairn-claude` reads as the recommended install source and each per-host subsection matches the corresponding dist README template word for word.

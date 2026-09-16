@@ -136,3 +136,20 @@ Add step 8d to the release skill: after the monorepo `main` push, tag push, and 
 - Every flag named exists in the live toolchain: git 2.50.1 (`ls-remote --tags`/`--heads`, `fetch --[no-]tags`, `commit-tree -p -F`, `push --[no-]atomic`) and gh 2.96.0 (`release view --repo --json tagName,isDraft`, `release create --repo --title --verify-tag --notes-file`); the frontmatter still loads under `yaml.safe_load` with `name` and `description` (22 words); `git diff -U0` shows every changed hunk at or after line 410 (the step-8 heading), so steps 1–7 are byte-for-byte unchanged; and the change set is exactly `.claude/skills/release-plugin/SKILL.md`.
 
 ---
+
+## Create Distribution Repositories
+
+As the once-only maintainer act this milestone records, create `uHappyLogic/cairn-claude` and `uHappyLogic/cairn-antigravity` with the `gh repo create` command the release skill's pre-flight prints — public, with a description, deliberately empty (no `--license`, `--add-readme`, or `--gitignore`) — then run `gh repo edit` on each to add topics and disable issues, wiki, and projects so feedback routes to `uHappyLogic/cairn`. Verified when `gh repo view` succeeds for both, each shows zero commits with issues, wiki, and projects disabled, and the commands run match the ones the pre-flight prints.
+
+**Verified:**
+
+- `gh repo view uHappyLogic/cairn-antigravity --json nameWithOwner` and `gh repo view uHappyLogic/cairn-claude --json nameWithOwner` each exit 0 and return `{"nameWithOwner":"uHappyLogic/cairn-<host>"}` — before this task both exited 1 with `Could not resolve to a Repository`, the release skill's pre-flight (f) stop.
+- Each repository is public: `gh repo view --json visibility,isPrivate` reports `"visibility":"PUBLIC"` and `"isPrivate":false` for both.
+- Each carries the description the pre-flight prints with `<host>` filled in: `"Distribution of the Cairn plugin for antigravity, published verbatim by each release of uHappyLogic/cairn. Report issues there."` and the same with `claude`.
+- Each is empty with zero commits and no initial README, license, or gitignore: `gh repo view --json isEmpty,defaultBranchRef,licenseInfo` reports `"isEmpty":true`, an empty `defaultBranchRef` name, and `"licenseInfo":null`; `gh api repos/uHappyLogic/cairn-<host>/commits` returns HTTP 409 `Git Repository is empty.`; and `git ls-remote git@github.com:uHappyLogic/cairn-<host>.git` lists zero refs — so the first publish will become each repository's root commit and `main` its default branch as the first pushed branch.
+- Each carries exactly the topics `cairn`, `<host>`, and `plugin`: `repositoryTopics` is `antigravity`/`cairn`/`plugin` on `cairn-antigravity` and `cairn`/`claude`/`plugin` on `cairn-claude`.
+- Each has issues, wiki, and projects disabled so feedback routes to `uHappyLogic/cairn`: `hasIssuesEnabled`, `hasWikiEnabled`, and `hasProjectsEnabled` are all `false` on both.
+- The commands run match the ones the pre-flight prints: for each host in `ls -1 scripts/hosts/` definition order (`antigravity`, then `claude`), the two commands were rendered from the `gh repo create` / `gh repo edit` block of `.claude/skills/release-plugin/SKILL.md` (lines 162–166) by substituting `<host>` and fed verbatim to the shell; `diff` of that rendered text against the block with `<host>` filled in is empty for both hosts, and both runs exited 0 printing the new repository URL.
+- The act is remote-only and once-only: `git status --porcelain` shows no working-tree change beyond this TODO→DONE move, and running the pre-flight's own `gh repo view` check for every host in `scripts/hosts/` now passes without printing a creation command.
+
+---
