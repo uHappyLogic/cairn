@@ -2,6 +2,28 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.5.0 — 2026-09-17
+
+### Repo Hygiene Surface (milestone 24)
+
+- A GitHub Actions drift-gate workflow runs `uv run scripts/build_hosts.py --check` on every push and pull request, with both actions pinned to full commit SHAs, and the README carries a CI badge reporting its status on `main`.
+- Root `CONTRIBUTING.md` spells out the proposal-first contributor workflow — the maintainer reserves a milestone on `main` with `/define-milestone-goal`, the contributor runs it in a fork from `/goto-next-milestone` through `/finish-current-milestone`, and the pull request lands as a merge commit — and now holds the build-loop `## Development` section moved out of the README, which keeps a short `## Contributing` routing section in its place.
+- Root `SECURITY.md` directs vulnerability reports to GitHub private vulnerability reporting, and root `CODE_OF_CONDUCT.md` adopts Contributor Covenant 2.1; both stay root-only and are never rendered into a host tree.
+- Three YAML issue forms (bug, feature, milestone proposal) and a pull-request template replace blank issues, with questions routed to the newly enabled Discussions Q&A category.
+- Every distribution repository now carries a `CONTRIBUTING.md` pointer sending visitors to `uHappyLogic/cairn` for issues, pull requests, and vulnerability reports.
+- Root `CHANGELOG.md` holds every release's notes, backfilled from all sixteen GitHub releases, and each release now prepends its entry inside the `Release: <VERSION>` commit so the changelog and the release pages carry identical text.
+
+### Multi-Host Core And Dist Repos (milestone 23)
+
+- The runtime layer — 21 skills, 3 agents, 7 shared procedures — is authored once, host-neutrally, under `core/`: every cross-reference uses the `{{PLUGIN_ROOT}}` placeholder and no `core/` file names a host.
+- Each host is a declarative definition directory `scripts/hosts/<host>/` (a `settings.toml` beside its manifest and README templates), and `uv run scripts/build_hosts.py [<host> ...] [--check]` renders every host from `core/` through a full validation gate, with `--check` as the byte-for-byte drift gate; `scripts/migrate_skills_to_agy.py` is gone.
+- The committed `hosts/claude/` and `hosts/antigravity/` trees are pure build output; the root `skills/`, `agents/`, `shared/`, and `.agents/` trees and the root `.claude-plugin/plugin.json` are removed, and the monorepo marketplace points at `./hosts/claude`.
+- A root `VERSION` file is the single source of truth for the plugin version; `set_version.py` writes it with its three mirrored surfaces and never touches `hosts/`, whose manifests the build renders from it.
+- Each release now publishes every `hosts/<host>/` tree verbatim into its distribution repository — `uHappyLogic/cairn-claude` and `uHappyLogic/cairn-antigravity` — as one commit tagged with the release version, plus a GitHub release carrying the same notes.
+- `README.md`'s Installation section is one subsection per host: `uHappyLogic/cairn-claude` is the recommended Claude Code install source (with a migration note for installs pinned to `uHappyLogic/cairn`), and Antigravity installs from an archive extract.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.4.0...1.5.0
+
 ## 1.4.0 — 2026-09-15
 
 ### Drop Open-Question Status (milestone 22)
