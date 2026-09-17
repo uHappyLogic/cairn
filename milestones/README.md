@@ -10,9 +10,19 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_24_repo-hygiene-surface/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 24 — Repo Hygiene Surface
+
+- A GitHub Actions drift-gate workflow at `.github/workflows/drift-gate.yml` runs `uv run scripts/build_hosts.py --check` on every push and pull request with no branch or path filter, both actions pinned to full commit SHAs, and the README badge row carries a third shields.io CI badge beside the release badge.
+- Root `CONTRIBUTING.md` spells out the proposal-first contributor workflow — the maintainer reserves a milestone with `/define-milestone-goal` on `main` without activating it, the contributor runs it in a fork from `/goto-next-milestone` through `/finish-current-milestone`, syncing from `main` by merge only while its pointer reads `none`, and the pull request lands as a merge commit followed by `/capture-milestone-principle-updates` — and carries the build-loop `## Development` section moved whole out of the README, whose slot now holds a short `## Contributing` routing section.
+- Root `SECURITY.md` directs vulnerability reports to GitHub private vulnerability reporting only, with a supported-versions table naming the latest release, and root `CODE_OF_CONDUCT.md` is Contributor Covenant 2.1 verbatim; both stay root-only, never rendered into a host tree.
+- `.github/ISSUE_TEMPLATE/` holds three YAML issue forms — bug (required host dropdown, cairn version, and skill invoked), feature, and milestone proposal — beside a `config.yml` that disables blank issues and routes questions to the Discussions Q&A category, and `.github/PULL_REQUEST_TEMPLATE.md` asks for the reserved milestone id and the proposal issue over a seven-item finished-milestone checklist.
+- Each host definition under `scripts/hosts/<host>/` carries a `CONTRIBUTING.md` template rendered into its host tree, so every distribution repository points visitors at the root repository for issues, pull requests, and vulnerability reports.
+- Root `CHANGELOG.md` is backfilled from all sixteen GitHub releases verbatim under `## <VERSION> — <YYYY-MM-DD>` headings (the eight sectioned release pages demoted to `###` sections so every entry equals its page body byte for byte), and `/release-plugin` now prepends each release's entry inside the `Release: <VERSION>` commit, gates on that entry in pre-flight, publishes the committed entry to every release page on fresh runs and resumptions alike, and amends the unpushed commit to revise the notes at its pause.
+- Repository settings on `uHappyLogic/cairn` now have Discussions and private vulnerability reporting enabled and squash merges and the wiki disabled, each read back and recorded in the settings task's Verified bullets.
 
 ### Milestone 23 — Multi-Host Core And Dist Repos
 
@@ -261,3 +271,4 @@ Current milestone: `milestones/milestone_24_repo-hygiene-surface/`
 | 21 | Recommendation Dependency Graph | `milestones/milestone_21_recommendation-dependency-graph/` |
 | 22 | Drop Open-Question Status | `milestones/milestone_22_drop-open-question-status/` |
 | 23 | Multi-Host Core And Dist Repos | `milestones/milestone_23_multi-host-core-and-dist-repos/` |
+| 24 | Repo Hygiene Surface | `milestones/milestone_24_repo-hygiene-surface/` |
