@@ -61,6 +61,13 @@ first step that did not complete.
 
 Call the argument `<VERSION>` from here on.
 
+Every `<NAME>` placeholder in the commands below is substituted as the literal value or as a
+**braced** shell variable (`${NAME}`), never unbraced. The session shell may be zsh, where a
+variable followed by `:` and a letter is read as a modifier — `$COMMIT:refs/heads/main`
+silently becomes `<COMMIT>efs/heads/main` and `$LAST_TAG:milestones/README.md` errors on
+`:m` — so an unbraced substitution breaks exactly the refspec and path arguments the run
+depends on.
+
 ## Workflow
 
 ### 1. Resolve the last release
@@ -742,6 +749,11 @@ git ls-remote --tags <REMOTE> "refs/tags/<VERSION>"
   ```bash
   git push --atomic <REMOTE> "<COMMIT>:refs/heads/main" "<COMMIT>:refs/tags/<VERSION>"
   ```
+
+  This is the one site where an unbraced substitution fails **silently** (zsh's `:r`
+  modifier is valid, so `$COMMIT:refs/...` is not a shell error): the push rejects both refs
+  with `src refspec … does not match any` and lands nothing, and a re-run resumes cleanly —
+  but only a braced `"${COMMIT}:refs/heads/main"` lands them.
 
   Atomic means both refs update or neither does, so a distribution tag exists exactly when
   distribution `main` carries the same commit and no half-published host can arise between
