@@ -34,3 +34,50 @@ Every file under `scripts/hosts/<host>/` other than `settings.toml` is a templat
 
 ## Out of Scope
 
+## Open questions
+
+<open-question id="Placeholder gate for workflows">
+  <question>How does a workflow template under scripts/hosts/&lt;host&gt;/ carry the ${{ secrets.TRAFFIC_TOKEN }} expression syntax past the build gate that fails on any {{ in a rendered file — a path-scoped exemption of the check, a template escape sequence the render expands, or a new definition key listing exempt templates?</question>
+</open-question>
+<open-question id="PAT push access">
+  <question>The stored fine-grained PAT reads traffic on all three repositories but cannot push, while the action pushes the traffic-data branch with that same token: is the token extended in place with Contents read and write on the three repositories before it is stored as TRAFFIC_TOKEN, or is a new token minted and temp/PAT replaced?</question>
+</open-question>
+<open-question id="PAT file retention">
+  <question>Once TRAFFIC_TOKEN is set on all three repositories, is the gitignored temp/PAT file deleted, or kept so the secret can be set again later?</question>
+</open-question>
+<open-question id="Distribution seeding sequence">
+  <question>Each distribution repository receives its workflow only when a release publishes hosts/&lt;host&gt;/, yet every traffic-data branch must be seeded before README.md references its badge: does the milestone cut a release to publish the workflows (and at which version), push the workflows to the distribution repositories once by hand, or hold the README table until after the next regular release?</question>
+</open-question>
+<open-question id="Workflow copy duplication">
+  <question>With the monorepo workflow hand-authored under .github/workflows/ and each distribution workflow rendered from its own scripts/hosts/&lt;host&gt;/ template, the same workflow exists in three copies: is that duplication accepted, or does the build gain a shared template rendered into every host tree?</question>
+</open-question>
+<open-question id="Workflow name and cron time">
+  <question>What file name, workflow name, and daily cron time (UTC) does the traffic workflow use, and do the three repositories run at the same time or staggered?</question>
+</open-question>
+<open-question id="Workflow permissions block">
+  <question>The action pushes with the PAT rather than GITHUB_TOKEN, yet its README prescribes permissions contents: write: does the traffic workflow declare contents: read as drift-gate does, or contents: write as the action documents?</question>
+</open-question>
+<open-question id="Badge rendering parameters">
+  <question>What label text, color, style, and output SVG file names do the two badges per repository use, given that the table columns already name the metrics and the existing README badges use style=flat?</question>
+</open-question>
+<open-question id="Adoption table placement">
+  <question>Where does the adoption table go in README.md — inside the header badge block, in a new section (and where in the section order), or beside Self-dogfooding?</question>
+</open-question>
+<open-question id="Table markup and links">
+  <question>Is the adoption table a Markdown table or HTML like the header badge block, are the row labels full owner/repo names or short names, and do the row labels or badges link anywhere (the repository, its traffic-data branch, the workflow runs)?</question>
+</open-question>
+<open-question id="Caption precision">
+  <question>Beyond the two facts the goal fixes, does the caption also state that counts include the 14 days the first run captured, that unique counts sum per-day uniques, and that each row starts from the first run of its own workflow (the distribution rows later than the monorepo row)?</question>
+</open-question>
+<open-question id="Self-clone inflation">
+  <question>Every step of the action fetches the repository over git by the same mechanism as actions/checkout, which the caption already treats as a counted clone, so the workflow inflates the clone counts of every repository daily — including the distribution repositories the caption presents as CI-free: is that accepted, mitigated, or disclosed in the caption?</question>
+</open-question>
+<open-question id="Inactivity disable evidence">
+  <question>GitHub disables a scheduled workflow only after 60 idle days, so what evidence verifies within the milestone that the daily traffic-data push keeps the distribution workflows active — GitHub documentation, an API read-back of the workflow state after some days, or a follow-up check scheduled beyond the milestone?</question>
+</open-question>
+<open-question id="Workflow in installed trees">
+  <question>A workflow file in hosts/&lt;host&gt;/ reaches every consumer install — the Antigravity tarball extracts it under .agents/plugins/cairn/.github/workflows/ and Claude Code clones it: is that inert file accepted in installed plugin trees, or kept out of what consumers receive?</question>
+</open-question>
+<open-question id="Distribution README wording">
+  <question>The distribution README templates state that every file in the repository is rendered by the host build and that main advances only by release snapshots: are they amended to account for the action-written traffic-data branch and the workflow that writes it?</question>
+</open-question>
