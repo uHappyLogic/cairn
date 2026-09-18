@@ -101,3 +101,20 @@ With every task that changes `hosts/` landed — the build-gate change, the two 
 - `uv run scripts/build_hosts.py --check` exits 0 on HEAD ("match a fresh build of core/ at version 1.5.1") and the tracked tree is clean; the release itself was committed and published by the earlier `/release-plugin 1.5.1` run (a re-run would stop at the skill's tag-exists gate, correctly, since a published release is never re-cut), so this completion re-cuts nothing and its change set is the two task-list files only.
 
 ---
+
+## Store Traffic Token Secret And Delete PAT
+
+Store the value of `temp/PAT` as the `TRAFFIC_TOKEN` repository secret on `uHappyLogic/cairn`, `uHappyLogic/cairn-claude`, and `uHappyLogic/cairn-antigravity` with `gh secret set`, then delete `temp/PAT` so the token exists only in GitHub's write-only secret store, recording the deletion in this task's `TASKS_DONE.md` entry because `temp/` is gitignored and nothing in git would otherwise record it. Verified when `gh secret list` on each of the three repositories shows `TRAFFIC_TOKEN` and `test ! -e temp/PAT` succeeds.
+
+**Verified:**
+
+- Pre-store identity: `temp/PAT` was the token the prior task verified and no replacement was minted — 93 bytes, `github_pat_` prefix, last byte `0x34`, no trailing newline — and it still authenticated as `uHappyLogic` (`GET /user` returned HTTP 200 with `login: uHappyLogic`) immediately before it was stored.
+- The secret name is the one the workflows read: the three `traffic-badges.yml` copies (`.github/workflows/`, `hosts/claude/.github/workflows/`, `hosts/antigravity/.github/workflows/`) and their two `scripts/hosts/<host>/` templates each carry two `token: ${{ secrets.TRAFFIC_TOKEN }}` lines, so `TRAFFIC_TOKEN` is the name stored.
+- `gh secret set TRAFFIC_TOKEN --app actions -R uHappyLogic/<repo> < temp/PAT` ran once per repository with the file's own bytes on stdin (never retyped or copied), exiting 0 on `cairn`, `cairn-claude`, and `cairn-antigravity`, so the stored value is exactly the verified 93-byte token.
+- `gh secret list --app actions -R uHappyLogic/<repo>` shows `TRAFFIC_TOKEN` on all three repositories, and `gh api repos/uHappyLogic/<repo>/actions/secrets/TRAFFIC_TOKEN` returns it as an Actions repository secret created 2026-09-18T14:45:06Z (`cairn`), 14:45:07Z (`cairn-claude`), and 14:45:08Z (`cairn-antigravity`).
+- `temp/PAT` was removed (`rm temp/PAT`) only after that listing held on all three, and `test ! -e temp/PAT` succeeds.
+- No second store: immediately before the deletion, a fixed-string search over the whole working tree (gitignored files included, `.git/` searched separately) found the token value in `temp/PAT` and nowhere else, and the task wrote it to no other file, so from the deletion on the token exists only in GitHub's write-only secret store, recoverable only by regenerating it on its settings page and re-setting all three repositories.
+- The deletion of `temp/PAT` is recorded here, in this entry, because `temp/` is gitignored and nothing in git would otherwise record it.
+- The task changed no tracked file (`git status --porcelain` was empty before the task-list move; `uv run scripts/build_hosts.py --check` passes at 1.5.1), so its change set is the two task-list files only.
+
+---

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Store Traffic Token Secret And Delete PAT
-
-Store the value of `temp/PAT` as the `TRAFFIC_TOKEN` repository secret on `uHappyLogic/cairn`, `uHappyLogic/cairn-claude`, and `uHappyLogic/cairn-antigravity` with `gh secret set`, then delete `temp/PAT` so the token exists only in GitHub's write-only secret store, recording the deletion in this task's `TASKS_DONE.md` entry because `temp/` is gitignored and nothing in git would otherwise record it. Verified when `gh secret list` on each of the three repositories shows `TRAFFIC_TOKEN` and `test ! -e temp/PAT` succeeds.
-
----
-
 ## Seed Traffic Data Branches Via Dispatch
 
 Trigger one `workflow_dispatch` run of `traffic-badges.yml` on each of the three repositories with `gh workflow run`, wait for each run to succeed, and confirm each repository now has a `traffic-data` branch carrying `totals.json`, `views-unique.svg`, and `clones-unique.svg`, so every badge URL resolves before the README references it. Read the earliest date recorded in each branch's `totals.json` and note it in the `TASKS_DONE.md` entry, since the adoption caption's start date is read off the seeded branches. Verified when `gh run list` shows a successful run per repository and `curl` on each of the six `https://raw.githubusercontent.com/uHappyLogic/<repo>/traffic-data/<output>` badge URLs returns HTTP 200.
