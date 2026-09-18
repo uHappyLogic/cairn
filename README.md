@@ -56,7 +56,7 @@ mkdir -p .agents/plugins/cairn
 curl -sL https://github.com/uHappyLogic/cairn-antigravity/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 -C .agents/plugins/cairn
 ```
 
-The `main` archive is always the latest release, since `cairn-antigravity` advances only by release snapshots. To pin a release instead of tracking the latest, swap `refs/heads/main` in that URL for `refs/tags/<tag>`, using a tag from the [releases page](https://github.com/uHappyLogic/cairn-antigravity/releases).
+The `main` archive is always the latest release, since `main` advances only by release snapshots. To pin a release instead of tracking the latest, swap `refs/heads/main` in that URL for `refs/tags/<tag>`, using a tag from the [releases page](https://github.com/uHappyLogic/cairn-antigravity/releases).
 
 ### Bootstrap your project
 

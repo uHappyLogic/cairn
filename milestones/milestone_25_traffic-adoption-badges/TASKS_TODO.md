@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Scope Distribution README Build Claims
-
-Amend five files by hand so every claim about the distribution repositories stays true once a `traffic-data` branch exists: in both distribution README templates scope the generated-do-not-edit note to Every file on `main`, this README included, is rendered …, and append one sentence naming the exception — the repository's only other branch, `traffic-data`, is not built from anything; the traffic workflow this tree carries, which runs only in this repository and never in an installed copy, writes its per-day data file and badge SVGs there daily for the adoption table in the root repository's README, and no release touches it — kept generic about file and workflow names; change the Antigravity template's and the root README's Installation line to since `main` advances only by release snapshots; and scope the two CONTRIBUTING.md pointers' every-file claim the same way, taking nothing more. Rebuild the host trees so the rendered READMEs and CONTRIBUTING files carry the wording. Verified when `uv run scripts/build_hosts.py --check` passes and a grep for `release snapshots` shows only the scoped phrase in both README copies.
-
----
-
 ## Cut Patch Release For Workflow Templates
 
 With every task that changes `hosts/` landed — the build-gate change, the two workflow templates, and the README wording — run `/release-plugin 1.5.1` so the release's empty-range path (no milestone finish since 1.5.0) publishes each rebuilt `hosts/<host>/` tree as a `Release: 1.5.1` commit on `uHappyLogic/cairn-claude` and `uHappyLogic/cairn-antigravity`, the one documented route by which distribution `main` advances; the patch number is right because nothing in the plugin runtime changes for a consumer. Every later task depends on the distribution repositories carrying the workflow. Verified when the `1.5.1` tag exists on all three repositories and `gh api repos/uHappyLogic/cairn-<host>/contents/.github/workflows/traffic-badges.yml` returns the file on both distribution repositories.
