@@ -30,7 +30,10 @@ Checks (every selected host, every failure listed):
                             YAML frontmatter that yaml.safe_load accepts, with name and
                             description
   description-length        every such description is at or under 25 words
-  unfilled-placeholder      no "{{" anywhere in the tree
+  unfilled-placeholder      no "{{" outside a "${{" expression anywhere in the tree (a "{{"
+                            not immediately preceded by "$", so a bare {{VERSION}},
+                            {{NAME}}, or {{PLUGIN_ROOT}} slot fails while a GitHub
+                            Actions ${{ ... }} expression in a rendered workflow passes)
   foreign-plugin-root       no other host's plugin-root literal anywhere in the tree
   dangling-plugin-root      every occurrence of this host's own plugin-root literal that a
                             /path follows names a file in this tree
@@ -80,6 +83,10 @@ REQUIRED_FRONTMATTER_KEYS = ("name", "description")
 
 VERSION_PATTERN = re.compile(r"^(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)$")
 
+# An unfilled placeholder: a `{{` not immediately preceded by `$`, so the bare {{VERSION}},
+# {{NAME}}, and {{PLUGIN_ROOT}} slots trip it while a GitHub Actions `${{ ... }}` expression
+# in a rendered workflow does not.
+UNFILLED_PLACEHOLDER_RE = re.compile(r"(?<!\$)\{\{")
 # A frontmatter block is a leading `---` line, its content, and the next `---` line.
 FRONTMATTER_RE = re.compile(r"\A---\n(.*?)^---[ \t]*(?:\n|\Z)", re.S | re.M)
 # A top-level frontmatter key: the key at the start of a line, before its colon.
@@ -445,7 +452,7 @@ def check_host_tree(defn, tree, origins, definitions, version):
         lines = text.splitlines()
 
         for lineno, line in enumerate(lines, 1):
-            if PLACEHOLDER_OPEN in line:
+            if UNFILLED_PLACEHOLDER_RE.search(line):
                 failures.append((label, "unfilled-placeholder", f"line {lineno}: {line.strip()}"))
             for other_name, other_root in foreign_roots:
                 if other_root in line:

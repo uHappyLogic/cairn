@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Relax Build Placeholder Gate For Expressions
-
-Change the build's `unfilled-placeholder` check in `scripts/build_hosts.py` from any `{{` to a `{{` not immediately preceded by `$` (the lookbehind `(?<!\$)\{\{`), so a GitHub Actions `${{ … }}` expression passes in any rendered file of any host while a bare `{{VERSION}}`, `{{NAME}}`, or `{{PLUGIN_ROOT}}` still fails, and reword the script's docstring and the CLAUDE.md clauses that say no `{{` anywhere to no `{{` outside a `${{` expression. The two distribution workflow templates cannot pass the build without this. Verified when `uv run scripts/build_hosts.py --check` still passes on the unchanged trees, a scratch render containing `${{ secrets.X }}` passes the check, and one containing a bare `{{X}}` fails it.
-
----
-
 ## Author Monorepo Traffic Badges Workflow
 
 Add `.github/workflows/traffic-badges.yml` (`name: traffic-badges`) to the monorepo beside `drift-gate.yml`: a `workflow_dispatch` plus one cron `17 3 * * *` commented as daily at 03:17 UTC, `permissions: {}` with a one-line comment that the job token is unused because the action reads the Traffic API and pushes with `TRAFFIC_TOKEN`, and two steps of `albertoarena/github-traffic-badge` pinned to `56f6f3e0ed586f14440561758b197ca57a38f480` with a `# v1.1.4` comment, one for metric `views-unique` and one for `clones-unique`, each passing `token: ${{ secrets.TRAFFIC_TOKEN }}`, `label` `unique views` / `unique clones`, `color` `3b82f6`, `style` `flat`, and `output` `views-unique.svg` / `clones-unique.svg` written out explicitly, with no leading inert-copy comment. This is the monorepo's one of the three hand-kept copies, and CLAUDE.md's description of `drift-gate.yml` as the only workflow is updated to name it. Verified when the file loads as valid YAML, `actionlint` or an equivalent reports no error, and a grep for `github-traffic-badge@` finds the pinned SHA.
