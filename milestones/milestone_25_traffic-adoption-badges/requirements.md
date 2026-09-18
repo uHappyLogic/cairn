@@ -36,24 +36,14 @@ Every file under `scripts/hosts/<host>/` other than `settings.toml` is a templat
 
 The validation gate's `unfilled-placeholder` check tests for a `{{` not immediately preceded by `$` (the one-character negative lookbehind `(?<!\$)\{\{`) instead of any `{{`, so GitHub Actions `${{ … }}` expressions pass in any rendered file of any host while every slot of the plugin's own bare `{{UPPER}}` token family — `{{VERSION}}`, `{{NAME}}`, `{{PLUGIN_ROOT}}` — still fails the build. The gate stays one uniform check over every file: no path-scoped exemption, template escape sequence, or exempt-templates definition key is added, nothing in any `settings.toml` or template changes, and a workflow template under `scripts/hosts/<host>/` is the literal file GitHub will run (valid YAML, lintable, copy-pasteable). The build script's docstring and the CLAUDE.md clauses stating no `{{` anywhere are reworded to no `{{` outside a `${{` expression.
 
+### Token and secrets
+
+The stored fine-grained token is extended in place rather than replaced: on its GitHub settings page, Contents: Read and write is added to its repository permissions for the three repositories, keeping everything already verified — user-owned, scoped to exactly `uHappyLogic/cairn`, `cairn-claude`, and `cairn-antigravity`, Administration: read, no expiration — so the 93-byte value at `temp/PAT` stays as it is and is the value stored as `TRAFFIC_TOKEN`. A second HTTPS push dry-run against all three repositories confirming the grant is the proof, so the secret the milestone stores is exactly the token whose access was verified; no replacement token is minted.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="PAT push access">
-  <question>The stored fine-grained PAT reads traffic on all three repositories but cannot push, while the action pushes the traffic-data branch with that same token: is the token extended in place with Contents read and write on the three repositories before it is stored as TRAFFIC_TOKEN, or is a new token minted and temp/PAT replaced?</question>
-  <alternative id="Extend in place">
-    Open the existing token on GitHub&apos;s fine-grained token settings page and add Contents: Read and write to its repository permissions — keeping Administration: read, the three selected repositories, and the no-expiration lifetime — so the same 93-byte value stays at temp/PAT and becomes TRAFFIC_TOKEN once a second push dry-run confirms the grant.
-    <advantage>Everything already verified carries forward untouched: the token is user-owned (no approval step), scoped to exactly the three repositories (it sees none of the account&apos;s 41 private repositories and traffic reads return 403 on a fourth public one), carries administration=read per the API&apos;s accepted-permissions header, and has the infinite lifetime a daily cron that must run indefinitely needs — so the edit is the one field the push was missing, and re-running the push dry-run proves the exact token that will be stored.</advantage>
-    <drawback>It widens a credential instead of issuing one for its purpose: a token minted as a read probe becomes the one long-lived credential that pushes to three repositories daily, so its name and description must be corrected in the same edit or they misdescribe what it can do, and the widening is a web-form act (no REST endpoint exists for a user-owned fine-grained token) that nothing in the repository records.</drawback>
-  </alternative>
-  <alternative id="Mint a replacement">
-    Create a new fine-grained token with the three repositories selected, Administration: read plus Contents: Read and write, a purpose-naming name and description, and a deliberately chosen lifetime, overwrite temp/PAT with it (no trailing newline, as the starting state records the file), and revoke the probe token.
-    <advantage>The credential that lives on as TRAFFIC_TOKEN is purpose-built and described at creation — name, lifetime, repositories, and permissions all chosen for this use — and the read probe is retired rather than widened.</advantage>
-    <drawback>It reproduces byte-for-byte the grant set a one-field edit of the existing token yields, at the cost of redoing every verification the starting state already recorded (traffic reads on three repositories, the push dry-run, the temp/PAT rewrite), of re-entering the non-obvious Administration: read grant the Traffic API requires — omitting it gives the workflow&apos;s first run a 403 on its traffic fetch — and of two live tokens until the old one is revoked, a step nothing in the milestone would notice if forgotten.</drawback>
-  </alternative>
-  <recommendation option="Extend in place">The stored token is already everything TRAFFIC_TOKEN must be except one permission — minted for this milestone a minute before its definition, user-owned, scoped to exactly the three repositories with administration=read and no expiration — so one edit on its settings page adds Contents: Read and write while the value at temp/PAT and every verified read stay as they are, with a second push dry-run as the proof; minting anew reaches the identical grant set only by re-entering every setting and re-verifying every read, and what breaks the tie is that the secret the milestone stores should be the token whose access was verified, which only the in-place edit preserves.</recommendation>
-</open-question>
 <open-question id="PAT file retention">
   <question>Once TRAFFIC_TOKEN is set on all three repositories, is the gitignored temp/PAT file deleted, or kept so the secret can be set again later?</question>
   <alternative id="Delete after storing">
