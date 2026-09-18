@@ -68,3 +68,18 @@ Amend five files by hand so every claim about the distribution repositories stay
 - `grep -rn 'release snapshots'` over `README.md`, `scripts/hosts/antigravity/README.md`, and `hosts/antigravity/README.md` returns one line per file, each the scoped phrase "since `main` advances only by release snapshots", and a repository-wide grep for the old "`cairn-antigravity` advances" phrase finds nothing.
 
 ---
+
+## Extend Token With Contents Write Access
+
+Have the maintainer add Contents: Read and write for `uHappyLogic/cairn`, `cairn-claude`, and `cairn-antigravity` to the existing fine-grained token on its GitHub settings page, keeping the 93-byte value at `temp/PAT` unchanged rather than minting a replacement, because the action's push step needs contents-write access the token lacks as stored (an HTTPS push dry-run is refused with 403 on all three today). Verified when a second HTTPS push dry-run authenticated with `temp/PAT` is accepted on all three repositories and the token still reads `/traffic/views` and `/traffic/clones` on each with HTTP 200.
+
+**Verified:**
+
+- `temp/PAT` is unchanged: 93 bytes, `github_pat_` prefix, last byte `0x34` (no trailing newline) — no replacement token was minted.
+- The token still authenticates as `uHappyLogic` (`GET /user` returns HTTP 200 with `login: uHappyLogic`) and the response carries no `github-authentication-token-expiration` header, so its ownership and no-expiration setting stand as recorded.
+- The token reads `/repos/uHappyLogic/<repo>/traffic/views` and `/traffic/clones` with HTTP 200 on `cairn`, `cairn-claude`, and `cairn-antigravity` (all six reads 200).
+- A second HTTPS push dry-run authenticated with `temp/PAT` — `git push --dry-run https://github.com/uHappyLogic/<repo>.git HEAD:refs/heads/zz-token-dry-run`, the credential supplied as `x-access-token` by an inline helper — is accepted on all three repositories, each reporting `* [new branch] HEAD -> zz-token-dry-run`, where the same dry-run was refused with `403` (`Permission to uHappyLogic/<repo>.git denied to uHappyLogic`) before the grant.
+- The dry-run wrote nothing: `gh api repos/uHappyLogic/<repo>/branches` lists only `main` on all three repositories.
+- The task changed no file in the repository; its change set is the two task-list files.
+
+---

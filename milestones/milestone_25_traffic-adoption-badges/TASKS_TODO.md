@@ -6,12 +6,6 @@ With every task that changes `hosts/` landed — the build-gate change, the two 
 
 ---
 
-## Extend Token With Contents Write Access
-
-Have the maintainer add Contents: Read and write for `uHappyLogic/cairn`, `cairn-claude`, and `cairn-antigravity` to the existing fine-grained token on its GitHub settings page, keeping the 93-byte value at `temp/PAT` unchanged rather than minting a replacement, because the action's push step needs contents-write access the token lacks as stored (an HTTPS push dry-run is refused with 403 on all three today). Verified when a second HTTPS push dry-run authenticated with `temp/PAT` is accepted on all three repositories and the token still reads `/traffic/views` and `/traffic/clones` on each with HTTP 200.
-
----
-
 ## Store Traffic Token Secret And Delete PAT
 
 Store the value of `temp/PAT` as the `TRAFFIC_TOKEN` repository secret on `uHappyLogic/cairn`, `uHappyLogic/cairn-claude`, and `uHappyLogic/cairn-antigravity` with `gh secret set`, then delete `temp/PAT` so the token exists only in GitHub's write-only secret store, recording the deletion in this task's `TASKS_DONE.md` entry because `temp/` is gitignored and nothing in git would otherwise record it. Verified when `gh secret list` on each of the three repositories shows `TRAFFIC_TOKEN` and `test ! -e temp/PAT` succeeds.
