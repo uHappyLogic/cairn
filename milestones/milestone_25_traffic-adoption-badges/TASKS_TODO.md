@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Distribution Traffic Workflow Templates
-
-Add `scripts/hosts/claude/.github/workflows/traffic-badges.yml` and `scripts/hosts/antigravity/.github/workflows/traffic-badges.yml`, each identical to the monorepo workflow except for a leading comment stating that it runs only in `uHappyLogic/cairn-<host>` and does nothing in an installed copy, so the existing recursive template rule renders each to the same relative path in `hosts/<host>/` and the next release publishes it; no shared template source is added and neither `settings.toml` changes. Rebuild both host trees and widen CLAUDE.md's host-tree contract that names README.md, CONTRIBUTING.md, and LICENSE as the tree's only non-plugin files to name the workflow beside them. Verified when `uv run scripts/build_hosts.py --check` passes, `hosts/claude/.github/workflows/traffic-badges.yml` and `hosts/antigravity/.github/workflows/traffic-badges.yml` exist with the `${{ secrets.TRAFFIC_TOKEN }}` expression intact, and a grep for `github-traffic-badge@` across all three copies returns the same SHA.
-
----
-
 ## Scope Distribution README Build Claims
 
 Amend five files by hand so every claim about the distribution repositories stays true once a `traffic-data` branch exists: in both distribution README templates scope the generated-do-not-edit note to Every file on `main`, this README included, is rendered …, and append one sentence naming the exception — the repository's only other branch, `traffic-data`, is not built from anything; the traffic workflow this tree carries, which runs only in this repository and never in an installed copy, writes its per-day data file and badge SVGs there daily for the adoption table in the root repository's README, and no release touches it — kept generic about file and workflow names; change the Antigravity template's and the root README's Installation line to since `main` advances only by release snapshots; and scope the two CONTRIBUTING.md pointers' every-file claim the same way, taking nothing more. Rebuild the host trees so the rendered READMEs and CONTRIBUTING files carry the wording. Verified when `uv run scripts/build_hosts.py --check` passes and a grep for `release snapshots` shows only the scoped phrase in both README copies.

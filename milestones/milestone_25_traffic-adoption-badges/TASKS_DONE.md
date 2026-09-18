@@ -34,3 +34,19 @@ Add `.github/workflows/traffic-badges.yml` (`name: traffic-badges`) to the monor
 - `uv run scripts/build_hosts.py --check` still passes ("Check passed: hosts/antigravity/ and hosts/claude/ match a fresh build of core/ at version 1.5.0."); the change set is `.github/workflows/traffic-badges.yml` and `CLAUDE.md` only, touching neither `core/`, `scripts/hosts/`, nor `hosts/`.
 
 ---
+
+## Add Distribution Traffic Workflow Templates
+
+Add `scripts/hosts/claude/.github/workflows/traffic-badges.yml` and `scripts/hosts/antigravity/.github/workflows/traffic-badges.yml`, each identical to the monorepo workflow except for a leading comment stating that it runs only in `uHappyLogic/cairn-<host>` and does nothing in an installed copy, so the existing recursive template rule renders each to the same relative path in `hosts/<host>/` and the next release publishes it; no shared template source is added and neither `settings.toml` changes. Rebuild both host trees and widen CLAUDE.md's host-tree contract that names README.md, CONTRIBUTING.md, and LICENSE as the tree's only non-plugin files to name the workflow beside them. Verified when `uv run scripts/build_hosts.py --check` passes, `hosts/claude/.github/workflows/traffic-badges.yml` and `hosts/antigravity/.github/workflows/traffic-badges.yml` exist with the `${{ secrets.TRAFFIC_TOKEN }}` expression intact, and a grep for `github-traffic-badge@` across all three copies returns the same SHA.
+
+**Verified:**
+
+- `scripts/hosts/claude/.github/workflows/traffic-badges.yml` exists and `diff` against `.github/workflows/traffic-badges.yml` reports only three added leading lines (`0a1,3`): the two-line comment `# This workflow runs only in the uHappyLogic/cairn-claude repository and does nothing in an` / `# installed copy of this plugin.` and one blank line; every other byte is the monorepo workflow's.
+- `scripts/hosts/antigravity/.github/workflows/traffic-badges.yml` exists with the same `0a1,3` diff, its comment naming `uHappyLogic/cairn-antigravity`.
+- No shared template source was added (no new directory beside `scripts/hosts/`, no new `core/` directory, `scripts/build_hosts.py` untouched) and `git diff --quiet` confirms neither `scripts/hosts/claude/settings.toml` nor `scripts/hosts/antigravity/settings.toml` changed; the working-tree change set is the two templates, the two rendered workflows, and `CLAUDE.md`.
+- After `uv run scripts/build_hosts.py` (exit 0, 36 + 37 files), `hosts/claude/.github/workflows/traffic-badges.yml` and `hosts/antigravity/.github/workflows/traffic-badges.yml` exist, each `cmp`-identical to its template (the template carries no `{{VERSION}}`/`{{NAME}}` slot), and a fixed-string grep counts two `token: ${{ secrets.TRAFFIC_TOKEN }}` lines in each — the expression intact, as in the monorepo copy.
+- `uv run scripts/build_hosts.py --check` exits 0 ("Check passed: hosts/antigravity/ and hosts/claude/ match a fresh build of core/ at version 1.5.0.").
+- `grep -h 'github-traffic-badge@'` over the monorepo workflow and both templates yields six lines carrying one SHA, `56f6f3e0ed586f14440561758b197ca57a38f480`.
+- `CLAUDE.md`'s `hosts/<host>/` layout entry now names `.github/workflows/traffic-badges.yml` beside README.md, CONTRIBUTING.md, and the copy of LICENSE as "exactly those four non-plugin files", describing the workflow as that host's hand-kept copy rendered from its `scripts/hosts/<host>/` template, identical to the monorepo's except for the leading inert-in-an-installed-copy comment; the `scripts/hosts/<host>/` layout entry and the Development section's enumeration of each definition's templates name the slot-free workflow template beside the README and CONTRIBUTING pointer, so no CLAUDE.md enumeration of the tree or its templates omits it.
+
+---
