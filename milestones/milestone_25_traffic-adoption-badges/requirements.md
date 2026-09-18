@@ -32,34 +32,14 @@ Every file under `scripts/hosts/<host>/` other than `settings.toml` is a templat
 
 ## Decisions
 
+### Host build and templates
+
+The validation gate's `unfilled-placeholder` check tests for a `{{` not immediately preceded by `$` (the one-character negative lookbehind `(?<!\$)\{\{`) instead of any `{{`, so GitHub Actions `${{ … }}` expressions pass in any rendered file of any host while every slot of the plugin's own bare `{{UPPER}}` token family — `{{VERSION}}`, `{{NAME}}`, `{{PLUGIN_ROOT}}` — still fails the build. The gate stays one uniform check over every file: no path-scoped exemption, template escape sequence, or exempt-templates definition key is added, nothing in any `settings.toml` or template changes, and a workflow template under `scripts/hosts/<host>/` is the literal file GitHub will run (valid YAML, lintable, copy-pasteable). The build script's docstring and the CLAUDE.md clauses stating no `{{` anywhere are reworded to no `{{` outside a `${{` expression.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Placeholder gate for workflows">
-  <question>How does a workflow template under scripts/hosts/&lt;host&gt;/ carry the ${{ secrets.TRAFFIC_TOKEN }} expression syntax past the build gate that fails on any {{ in a rendered file — a path-scoped exemption of the check, a template escape sequence the render expands, or a new definition key listing exempt templates?</question>
-  <alternative id="Path-scoped exemption">
-    check_host_tree skips its unfilled-placeholder test for every rendered path under .github/workflows/, leaving the any-{{ reading intact everywhere else and every definition and template untouched.
-    <advantage>The smallest possible edit — one path condition in the loop that already runs the check — keyed on the one directory GitHub reads workflows from, which is exactly where its ${{ syntax must appear, so nothing about the slot family, either settings.toml, or the template&apos;s content changes.</advantage>
-    <drawback>It exempts by where the brace sits rather than what it is: a workflow file goes unchecked wholesale, so a genuinely unfilled {{VERSION}} or {{NAME}} in it renders through silently, and a build that today names no path a host tree must carry and keeps every per-host rule in settings.toml gains a hard-coded GitHub directory in its Python.</drawback>
-  </alternative>
-  <alternative id="Template escape sequence">
-    The template token family gains an escape (say {{OPEN}}, rendered to {{, so the template reads ${{OPEN}} secrets.TRAFFIC_TOKEN }}) that the render expands in a final pass after the gate has read the slot-rendered text, so any {{ an author leaves unescaped still fails.
-    <advantage>The gate keeps its exact any-{{ reading over everything an author wrote: each intended brace pair is declared per occurrence, so an unfilled slot anywhere — inside the workflow included — still fails, and no file, path, or host is ever exempt.</advantage>
-    <drawback>The template stops being a valid workflow file — every expression is written in a private notation that no YAML schema, actionlint, or copy-paste accepts, in the very file whose behaviour on GitHub the milestone must verify — and it takes two mechanisms (a new token plus a render/check reordering so the gate reads pre-expansion text) to carry two occurrences of ${{ per workflow; should the duplication question settle on a template shared with the monorepo copy, that copy could never be the same literal file.</drawback>
-  </alternative>
-  <alternative id="Exempt-templates key">
-    settings.toml gains a list key (say verbatim_templates) naming template paths the render copies byte-for-byte and the unfilled-placeholder check skips — added to SETTINGS_SCHEMA, validated to name an existing template, and declared filled or empty in every host exactly like exclude.
-    <advantage>Keeps the build&apos;s rule that every per-host behaviour is data declared beside the files it concerns: the exemption is visible in the definition that ships the workflow, validated like every other key, and no path or syntax convention enters the Python.</advantage>
-    <drawback>The heaviest change for one file — a schema key, its validation branch, both hosts&apos; settings, and the docstring and CLAUDE.md key lists all grow — to model a difference that is not per-host at all (both definitions would list the same file, and a shared template from the duplication question would have to be listed by every host), and like the path exemption it blinds the gate to a real unfilled slot inside a listed file.</drawback>
-  </alternative>
-  <alternative id="Bare-brace check">
-    The unfilled-placeholder test changes from a plain substring test for {{ to a {{ not immediately preceded by $ (the one-character negative lookbehind (?&lt;!\$)\{\{), so GitHub&apos;s ${{ … }} expressions pass in any file of any host while every slot of the plugin&apos;s own token family — {{VERSION}}, {{NAME}}, {{PLUGIN_ROOT}}, all written bare — still fails.
-    <advantage>It exempts exactly the colliding syntax and nothing else: the gate stays one uniform one-line grep over every file, no definition, template, path, or list changes, the workflow template is the literal file GitHub will run (valid YAML, lintable, copy-pasteable into .github/workflows/), and a bare unfilled slot inside a workflow is still caught.</advantage>
-    <drawback>The gate&apos;s deliberately crude any-{{ reading — chosen in milestone 23 because nothing could fool it — gains a carve-out that teaches an otherwise format-agnostic build one character of GitHub Actions grammar, so the script docstring and the two CLAUDE.md clauses stating no {{ anywhere must be reworded to no {{ outside a ${{ expression, and a slot anyone ever wrote with a $ prefix would slip through (no such form exists today).</drawback>
-  </alternative>
-  <recommendation option="Bare-brace check">The plugin&apos;s slots are always bare {{UPPER}} and GitHub&apos;s expressions are always ${{, so a one-character lookbehind separates the two exactly — the gate stays one uniform grep over every file of every host, nothing in a definition or template changes, and the workflow template is the literal file GitHub will run; the path-scoped exemption is the runner-up, and what breaks the tie is that it exempts by where a brace sits rather than what it is, letting a real unfilled slot through a workflow and hard-coding a directory the build otherwise never names.</recommendation>
-</open-question>
 <open-question id="PAT push access">
   <question>The stored fine-grained PAT reads traffic on all three repositories but cannot push, while the action pushes the traffic-data branch with that same token: is the token extended in place with Contents read and write on the three repositories before it is stored as TRAFFIC_TOKEN, or is a new token minted and temp/PAT replaced?</question>
   <alternative id="Extend in place">
