@@ -2,6 +2,18 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.5.1 — 2026-09-18
+
+### Changes since 1.5.0
+
+- Each distribution repository's tree now carries `.github/workflows/traffic-badges.yml`, a scheduled GitHub Actions workflow (daily at 03:17 UTC, plus manual dispatch) that records the repository's unique views and unique clones as badge SVGs on a `traffic-data` branch. It runs only in `uHappyLogic/cairn-<host>` and is inert in an installed copy of the plugin.
+- The distribution READMEs and `CONTRIBUTING.md` pointers scope their generated-do-not-edit claim to `main` and name `traffic-data` as the one branch no release touches; the Antigravity install note now reads that `main` advances only by release snapshots.
+- The host build's unfilled-placeholder check ignores a `{{` inside a GitHub Actions `${{ … }}` expression, so a workflow template can be rendered into a host tree while a bare `{{VERSION}}`, `{{NAME}}`, or `{{PLUGIN_ROOT}}` slot still fails the build.
+- The maintainer-only `/release-plugin` skill now states that every placeholder is substituted braced, after an unbraced `$COMMIT:refs/heads/main` under zsh made the 1.5.0 distribution push land nothing on its first attempt.
+- Nothing in the plugin runtime — skills, agents, shared procedures — changes in this release.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.5.0...1.5.1
+
 ## 1.5.0 — 2026-09-17
 
 ### Repo Hygiene Surface (milestone 24)
