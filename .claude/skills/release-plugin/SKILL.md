@@ -66,7 +66,11 @@ Every `<NAME>` placeholder in the commands below is substituted as the literal v
 variable followed by `:` and a letter is read as a modifier — `$COMMIT:refs/heads/main`
 silently becomes `<COMMIT>efs/heads/main` and `$LAST_TAG:milestones/README.md` errors on
 `:m` — so an unbraced substitution breaks exactly the refspec and path arguments the run
-depends on.
+depends on. And no command in this file contains a `$` followed by a digit: the skill loader
+substitutes positional-argument tokens into this text before it is read — on the 1.5.1 run it
+replaced awk's whole-record field reference (a dollar sign followed by the digit zero) in the
+extraction program with `1.5.1` — so the three changelog filters below are Python, which reads
+a line and its fields without one.
 
 ## Workflow
 
@@ -226,7 +230,11 @@ the entry headings for `<VERSION>` in the committed changelog — the tracked tr
 step 2a, so `HEAD:CHANGELOG.md` is the working file:
 
 ```bash
-git show HEAD:CHANGELOG.md | awk -v v='<VERSION>' '$1 == "##" && $2 == v { n++ } END { print n + 0 }'
+git show HEAD:CHANGELOG.md | python3 -c '
+import sys
+v = sys.argv[1]
+print(sum(1 for line in sys.stdin if line.split()[:2] == ["##", v]))
+' '<VERSION>'
 ```
 
 A heading counts when its first field is `##` and its second is exactly `<VERSION>` — the
@@ -495,15 +503,24 @@ lines at the start and end of that range dropped and the blank lines inside it k
 with exactly this command, whose heading match is the same exact second-field test as step 3c:
 
 ```bash
-git show HEAD:CHANGELOG.md | awk -v v='<VERSION>' '
-  /^## / { if (found) exit; found = ($2 == v); next }
-  found  { lines[++n] = $0 }
-  END {
-    s = 1; e = n
-    while (s <= e && lines[s] == "") s++
-    while (e >= s && lines[e] == "") e--
-    for (i = s; i <= e; i++) print lines[i]
-  }'
+git show HEAD:CHANGELOG.md | python3 -c '
+import sys
+v = sys.argv[1]
+found, lines = False, []
+for line in sys.stdin:
+    line = line.rstrip("\n")
+    if line.startswith("## "):
+        if found:
+            break
+        found = line.split()[:2] == ["##", v]
+    elif found:
+        lines.append(line)
+while lines and lines[0] == "":
+    del lines[0]
+while lines and lines[-1] == "":
+    del lines[-1]
+sys.stdout.write("".join(line + "\n" for line in lines))
+' '<VERSION>'
 ```
 
 Call what it prints `<ENTRY>`. It is exactly the body between the heading's blank line and the
@@ -556,8 +573,19 @@ the file as it stands and apply nothing. Either way, confirm the change stayed i
 — everything outside it, the `## ` heading lines included, must still match HEAD:
 
 ```bash
-diff <(git show HEAD:CHANGELOG.md | awk -v v='<VERSION>' '/^## / { skip = ($2 == v); print; next } !skip') \
-     <(awk -v v='<VERSION>' '/^## / { skip = ($2 == v); print; next } !skip' CHANGELOG.md)
+outside_entry() {
+  python3 -c '
+import sys
+v = sys.argv[1]
+skip = False
+for line in sys.stdin:
+    if line.startswith("## "):
+        skip = line.split()[:2] == ["##", v]
+    if line.startswith("## ") or not skip:
+        sys.stdout.write(line)
+' '<VERSION>'
+}
+diff <(git show HEAD:CHANGELOG.md | outside_entry) <(outside_entry < CHANGELOG.md)
 ```
 
 Any output means the revision reached outside the entry — another release's entry, the title
@@ -647,7 +675,7 @@ git ls-remote --tags origin "refs/tags/<VERSION>"
 
 **c. Create the GitHub release.** First write `<ENTRY>` to a temporary file — call it
 `<BODY_FILE>` — by running step 7's extraction again with its output redirected into the
-file (`git show HEAD:CHANGELOG.md | awk … > <BODY_FILE>`), so the file is the committed entry
+file (`git show HEAD:CHANGELOG.md | python3 … > <BODY_FILE>`), so the file is the committed entry
 byte for byte rather than a transcription from context. Write it before the check below, not
 inside the create branch: (c) and every host in (d) publish from this one file, so it must
 exist even on a resumption that skips (c), and it is deleted only once step 8 is complete.
@@ -731,6 +759,12 @@ git ls-remote --tags <REMOTE> "refs/tags/<VERSION>"
   printf 'Release: <VERSION>\n\nSource: uHappyLogic/cairn@<SHA>\nPath: hosts/<host>/\nNotes: https://github.com/uHappyLogic/cairn/releases/tag/<VERSION>\n' \
     | git commit-tree <TREE> -p FETCH_HEAD -F -
   ```
+
+  The two cases are two literal commands — this one, and the same line with `-p FETCH_HEAD`
+  removed for a root commit — never one command with the flag held in a shell variable: zsh
+  does not word-split an unquoted variable, so `-p FETCH_HEAD` reaches `commit-tree` as a
+  single argument and it fails with `not a valid object name  FETCH_HEAD` (before the push, so
+  harmlessly, but the 1.5.1 run spent a retry on it).
 
   That message is the subject, a blank line, and exactly these three body lines, composed
   from values the run already holds — the source commit, the published path, and the
