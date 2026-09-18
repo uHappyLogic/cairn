@@ -83,3 +83,21 @@ Have the maintainer add Contents: Read and write for `uHappyLogic/cairn`, `cairn
 - The task changed no file in the repository; its change set is the two task-list files.
 
 ---
+
+## Cut Patch Release For Workflow Templates
+
+With every task that changes `hosts/` landed — the build-gate change, the two workflow templates, and the README wording — run `/release-plugin 1.5.1` so the release's empty-range path (no milestone finish since 1.5.0) publishes each rebuilt `hosts/<host>/` tree as a `Release: 1.5.1` commit on `uHappyLogic/cairn-claude` and `uHappyLogic/cairn-antigravity`, the one documented route by which distribution `main` advances; the patch number is right because nothing in the plugin runtime changes for a consumer. Every later task depends on the distribution repositories carrying the workflow. Verified when the `1.5.1` tag exists on all three repositories and `gh api repos/uHappyLogic/cairn-<host>/contents/.github/workflows/traffic-badges.yml` returns the file on both distribution repositories.
+
+**Verified:**
+
+- Every task that changes `hosts/` landed before the release: the four `Tasklist-completion:` commits — `e945bd2` (relax build placeholder gate), `9d15504` (author monorepo workflow), `1f38546` (add distribution workflow templates), `523a5d8` (scope distribution README build claims) — are each ancestors of the `Release: 1.5.1` commit `99b848d`.
+- Exactly one `Release: 1.5.1` commit (`99b848d`) sits on `main`, changing only the four version surfaces (`VERSION`, `pyproject.toml`, `uv.lock`, `.claude-plugin/marketplace.json`), `CHANGELOG.md` (12 added lines, no deletions), and the version slots of the four rendered manifests and READMEs under `hosts/` — 10 files; `VERSION` and every rendered manifest at that commit carry `1.5.1`.
+- The release took the empty-range path: `git log --grep='^Milestone-finish: ' 1.5.0..99b848d -- milestones/README.md` returns nothing, the nearest tag below `1.5.1` is `1.5.0`, and `CHANGELOG.md` carries exactly one `## 1.5.1 — 2026-09-18` heading, first in the file above `## 1.5.0 — 2026-09-17`, whose body is a `### Changes since 1.5.0` section closing with the `1.5.0...1.5.1` Full Changelog link.
+- The `1.5.1` tag exists on all three repositories: on `uHappyLogic/cairn` it resolves to `99b848d` both locally and on `origin` (`origin/main` is at that commit); on `uHappyLogic/cairn-claude` it resolves to `69497f3` and on `uHappyLogic/cairn-antigravity` to `a69fd8e`, in each case the same commit that repository's `main` names.
+- Each distribution commit is a `Release: 1.5.1` commit whose tree is byte-identical to the monorepo's `99b848d:hosts/<host>` (`ca6f02d…` for claude, `ba191ba…` for antigravity), with the provenance body `Source: uHappyLogic/cairn@99b848dc457c7c91d8b4a39b7409cd5593fdd900`, `Path: hosts/<host>/`, `Notes: https://github.com/uHappyLogic/cairn/releases/tag/1.5.1`.
+- A non-draft GitHub release `1.5.1` exists on `uHappyLogic/cairn`, `uHappyLogic/cairn-claude`, and `uHappyLogic/cairn-antigravity`, each body identical to the committed `CHANGELOG.md` entry.
+- `gh api repos/uHappyLogic/cairn-<host>/contents/.github/workflows/traffic-badges.yml` returns HTTP 200 with the file (989 bytes on claude, 994 on antigravity) on both distribution repositories; the decoded content is byte-identical to `hosts/<host>/.github/workflows/traffic-badges.yml` and to its `scripts/hosts/<host>/` template, opens with the inert-copy comment naming `uHappyLogic/cairn-<host>`, carries the pinned SHA `56f6f3e0ed586f14440561758b197ca57a38f480` on both step lines, and holds two intact `token: ${{ secrets.TRAFFIC_TOKEN }}` lines.
+- Nothing in the plugin runtime changed for a consumer, so the patch number is right: `git diff --stat 1.5.0 1.5.1 -- hosts/<host>/` touches only the manifests' version slots, `README.md`, `CONTRIBUTING.md`, and the new workflow on each host — zero paths under `skills/`, `agents/`, or `shared/`.
+- `uv run scripts/build_hosts.py --check` exits 0 on HEAD ("match a fresh build of core/ at version 1.5.1") and the tracked tree is clean; the release itself was committed and published by the earlier `/release-plugin 1.5.1` run (a re-run would stop at the skill's tag-exists gate, correctly, since a published release is never re-cut), so this completion re-cuts nothing and its change set is the two task-list files only.
+
+---
