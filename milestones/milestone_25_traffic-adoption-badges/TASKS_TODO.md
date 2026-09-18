@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Author Monorepo Traffic Badges Workflow
-
-Add `.github/workflows/traffic-badges.yml` (`name: traffic-badges`) to the monorepo beside `drift-gate.yml`: a `workflow_dispatch` plus one cron `17 3 * * *` commented as daily at 03:17 UTC, `permissions: {}` with a one-line comment that the job token is unused because the action reads the Traffic API and pushes with `TRAFFIC_TOKEN`, and two steps of `albertoarena/github-traffic-badge` pinned to `56f6f3e0ed586f14440561758b197ca57a38f480` with a `# v1.1.4` comment, one for metric `views-unique` and one for `clones-unique`, each passing `token: ${{ secrets.TRAFFIC_TOKEN }}`, `label` `unique views` / `unique clones`, `color` `3b82f6`, `style` `flat`, and `output` `views-unique.svg` / `clones-unique.svg` written out explicitly, with no leading inert-copy comment. This is the monorepo's one of the three hand-kept copies, and CLAUDE.md's description of `drift-gate.yml` as the only workflow is updated to name it. Verified when the file loads as valid YAML, `actionlint` or an equivalent reports no error, and a grep for `github-traffic-badge@` finds the pinned SHA.
-
----
-
 ## Add Distribution Traffic Workflow Templates
 
 Add `scripts/hosts/claude/.github/workflows/traffic-badges.yml` and `scripts/hosts/antigravity/.github/workflows/traffic-badges.yml`, each identical to the monorepo workflow except for a leading comment stating that it runs only in `uHappyLogic/cairn-<host>` and does nothing in an installed copy, so the existing recursive template rule renders each to the same relative path in `hosts/<host>/` and the next release publishes it; no shared template source is added and neither `settings.toml` changes. Rebuild both host trees and widen CLAUDE.md's host-tree contract that names README.md, CONTRIBUTING.md, and LICENSE as the tree's only non-plugin files to name the workflow beside them. Verified when `uv run scripts/build_hosts.py --check` passes, `hosts/claude/.github/workflows/traffic-badges.yml` and `hosts/antigravity/.github/workflows/traffic-badges.yml` exist with the `${{ secrets.TRAFFIC_TOKEN }}` expression intact, and a grep for `github-traffic-badge@` across all three copies returns the same SHA.
