@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Move Workflow And Skill Reference Into Docs
-
-Create `docs/workflow.md` carrying the README's six `## Workflow pipeline` phase sections with their mermaid diagrams followed by `How skills commit` and `The answer-principle-learning loop` as sibling sections, and `docs/skill-reference.md` carrying the 25 per-skill and per-agent entries, removing all of it from `README.md` while keeping every heading's text so existing anchors survive as path-prefixed links; as the reference moves, correct the two stale entries — the `goto-next-milestone` heading loses its `<number> <title>` arguments and its body says the skill activates an already-defined milestone and creates nothing, and `finish-current-milestone`'s closing sentence names `/define-milestone-goal` and then `/goto-next-milestone` as what runs next. Re-point the pipeline intro's `Skill reference` anchor and `CONTRIBUTING.md`'s `Workflow pipeline` link to the new pages in the same change. Verified when the two pages hold the moved sections word for word apart from the two corrections, `README.md` no longer contains them, and no link in the repository still targets a moved README anchor.
-
----
-
 ## Promote Design Claims Into Docs Page
 
 Commit `temp/cairn-design-claims.md` as `docs/design-claims.md` with its 19 claims, six-group order, **Design** paragraphs, and **Metric** lines kept word for word in Simplified Technical English, changing only the frame: the intro becomes one orienting paragraph for a repository reader (what the list is, why it uses a controlled register, that each Metric names the test that would check the claim, and that no test suite in the repository runs them yet), the closing note keeps only the half saying claims 17–19 concern the plugin's own code, and claim 12's sentence "the work tree is clean after each skill" is corrected in the same register to match the non-committing bootstrap skill and the partial-work-stays rule. Verified when the committed page diffs from the source only in those three places and each claim line still heads its own entry so the README block can link to it.
