@@ -10,9 +10,18 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_26_readme-landing-page/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 26 — README landing page
+
+- Root `README.md` is now a landing page: its first screen is the release/CI/license badges and the centered three-repository adoption table (one-sentence caption, no `## Adoption` heading) above `# Cairn`, the bold tagline, the host-neutral one-liner "Milestone-driven development for your coding agent — any kind of work, one milestone at a time.", one simplified mermaid loop diagram (define → review → recommend → answer → derive → complete, plus a dashed answer → review return edge labelled "until no open questions remain", under the phase diagrams' shared theme block), and per-host `## Installation`, with the 4.7 MB banner and the `.github/assets/` directory deleted.
+- Below the fold, `## Why Cairn?` reads host-neutrally ("Cairn gives your coding agent…"), a new `## Design principles` block presents claims 11, 2 (carrying claim 12's provenance subject), and 5 as their verbatim claim lines linked to the claims page over one design sentence each, and the tail runs `## How it works` (closing with links to both docs pages), `## Self-dogfooding`, `## Contributing`, `## Migrating from the old marketplace` (the pre-1.5.0 note demoted to an appendix reached from one bold pointer line in the Claude Code subsection), `## License`.
+- A new `docs/` directory holds `docs/workflow.md` (the six phase sections with their mermaid diagrams, `## How skills commit`, and `## The answer-principle-learning loop` promoted to a sibling `##` section) and `docs/skill-reference.md` (the 23 per-skill and per-agent entries, with milestone 15's two stale entries — the argument-free `goto-next-milestone` and `finish-current-milestone`'s closing sentence — corrected in the move), every heading's text kept so the old README anchors survive path-prefixed.
+- `docs/design-claims.md` commits the 19 design claims from the untracked `temp/` note word for word in Simplified Technical English, changing only the frame: a one-paragraph orienting intro for a repository reader, the closing note trimmed to the claims-17–19 sentence, and claim 12's clean-tree sentence corrected for the non-committing bootstrap skill and the partial-work-stays rule.
+- Both distribution README templates under `scripts/hosts/*/README.md` share the landing shape — a centered two-badge strip of that repository's unique-views and unique-clones badges above `# Cairn for <Host>`, the same one-liner verbatim, the generated note's `traffic-data` sentence disclosing that the workflow's own daily fetch counts as one unique clone a day, and the host's installation section (the Claude one split exactly like the root's, with the migration note in its own section) over the `## Source` and `## License` tail, with no diagram, no "Why Cairn?" text, and no design-principles block — and `hosts/` is rebuilt with `uv run scripts/build_hosts.py --check` passing.
+- `CLAUDE.md`'s repository layout describes the finished landing page and carries entries for the three `docs/` pages, its Skill Frontmatter invariant and `## Development` prose name `docs/skill-reference.md` and the first-screen adoption table as the new homes, and `CONTRIBUTING.md`'s Workflow pipeline link points at `docs/workflow.md#workflow-pipeline`, so no link in the repository targets a moved README section.
 
 ### Milestone 25 — Traffic Adoption Badges
 
@@ -284,3 +293,4 @@ Current milestone: `milestones/milestone_26_readme-landing-page/`
 | 23 | Multi-Host Core And Dist Repos | `milestones/milestone_23_multi-host-core-and-dist-repos/` |
 | 24 | Repo Hygiene Surface | `milestones/milestone_24_repo-hygiene-surface/` |
 | 25 | Traffic Adoption Badges | `milestones/milestone_25_traffic-adoption-badges/` |
+| 26 | README landing page | `milestones/milestone_26_readme-landing-page/` |
