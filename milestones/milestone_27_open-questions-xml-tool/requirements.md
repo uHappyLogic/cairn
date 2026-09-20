@@ -42,3 +42,56 @@ No document names a runtime prerequisite for the installed plugin: `README.md`'s
 
 ## Out of Scope
 
+## Open questions
+
+<open-question id="Root element shape">
+  <question>What is the root element of `open_questions.xml` — its tag name, whether the document opens with an XML declaration, and whether the root carries attributes such as the milestone id?</question>
+</open-question>
+<open-question id="Empty document creation">
+  <question>Does `define-milestone-goal` create the empty `open_questions.xml` by invoking a tool subcommand, keeping the tool the file&apos;s only writer, or by writing a fixed template itself?</question>
+</open-question>
+<open-question id="Tool directory placement">
+  <question>Does the Python tool live in a new top-level `core/` directory that every host `[layout]` maps, such as `tools/`, or under the existing `shared/` directory beside the procedures?</question>
+</open-question>
+<open-question id="Interpreter command name">
+  <question>Which command runs the tool at every invocation site and in the bootstrap check — `python3`, `python`, or a probe that falls back between the two?</question>
+</open-question>
+<open-question id="Tool file resolution">
+  <question>Does every tool invocation take the `open_questions.xml` path or the milestone directory as an argument the caller resolves, or does the tool resolve the current milestone from the `milestones/README.md` pointer itself?</question>
+</open-question>
+<open-question id="Tool output contract">
+  <question>What is the tool&apos;s output and error contract — what each operation prints on success (bare ids, whole blocks, lifted answer text) and how a failure is signalled (exit status and message form)?</question>
+</open-question>
+<open-question id="Fragment input channel">
+  <question>How do `add` and `embed` receive multi-line text — the question text and the agent&apos;s returned fragment — as a command-line argument, on stdin, or from a file path?</question>
+</open-question>
+<open-question id="Embed extraction ownership">
+  <question>Does `embed` accept the recommend agent&apos;s whole final message and extract the `&lt;alternative&gt;`…`&lt;/recommendation&gt;` region itself, or does the orchestrator still extract that region and pass only the fragment for validation?</question>
+</open-question>
+<open-question id="Escape hatch under sole writer">
+  <question>With the tool as the file&apos;s only writer, how does a user clear a stale recommendation to force its regeneration — a `strip` subcommand or a documented hand-edit exception?</question>
+</open-question>
+<open-question id="Reconciliation command placement">
+  <question>Does `remove` run the exact-id `&lt;depends-on&gt;` reconciliation and transitive strip itself when given the recorded option, or is reconciliation a separate subcommand the answer path invokes after the answered block and any mooted siblings are removed?</question>
+</open-question>
+<open-question id="Judgment-mode verdict application">
+  <question>How does the literal-answer path, which judges each dependent&apos;s assumed option in prose, apply its per-dependent outcomes through the tool — per-dependent strip and tag-removal primitives, or one reconcile command that takes the verdicts?</question>
+</open-question>
+<open-question id="Capture decision source">
+  <question>With its commit walk repointed at `open_questions.xml`, does `capture-milestone-principle-updates` read the recorded `## Decisions` entry from the same commit&apos;s `requirements.md` hunk, or from the commit body alone?</question>
+</open-question>
+<open-question id="Direct XML reads">
+  <question>May read-only consumers that need the whole question set — the recommend agent&apos;s grounding, `discuss-open-question`, `ask-in-milestone-context`, `modify-milestone-goal` — read `open_questions.xml` directly, or must every read go through the tool?</question>
+</open-question>
+<open-question id="Canonical serialization format">
+  <question>What on-disk formatting does the tool guarantee when it writes `open_questions.xml` — one element per line at a fixed indent per level, and which entity escapes — so that git diffs and capture&apos;s removed-line reconstruction stay line-oriented?</question>
+</open-question>
+<open-question id="Test suite location">
+  <question>Where does the pytest suite live — in a repository-root `tests/` directory outside `core/` that imports the tool, or beside the tool inside `core/` and excluded from the host render?</question>
+</open-question>
+<open-question id="Tool test Python versions">
+  <question>Which Python versions does CI run the tool&apos;s pytest suite under — a matrix reaching down to the documented 3.9 floor, or only the 3.13 the repository pins — given that `pyproject.toml` requires 3.11 for the build tooling?</question>
+</open-question>
+<open-question id="Prerequisite check failure mode">
+  <question>When `init-milestone-base-workflow` finds no Python 3.9+ interpreter, does it stop the bootstrap or warn and continue creating the scaffold?</question>
+</open-question>
