@@ -34,6 +34,10 @@ The adoption block moves to the first screen as the existing three-row pipe tabl
 
 The title block keeps the bold "Mark the path from idea to shipped." as the lead under `# Cairn` and replaces the subtitle "Milestone-driven development for any kind of work." with the host-neutral one-liner "Milestone-driven development for your coding agent — any kind of work, one milestone at a time." The subtitle seat is where the one-liner belongs: it is that line's host-neutral successor, adding whom Cairn is for and the one-milestone-at-a-time motif in wording that reads across any kind of work, and the two lines render as one paragraph on GitHub, so it adds no first-screen line. The bold tagline stays because it renders inline at no first-screen cost and, with the banner gone, is the last visible trace of the trail-marker metaphor behind the name. The same one-liner sentence goes verbatim into both distribution README templates under their `# Cairn for <Host>` titles.
 
+### Docs pages
+
+The moved sections split across two pages under `docs/`, beside the promoted design-claims page: `docs/workflow.md` carries the six phase sections with their diagrams, followed by How skills commit and The answer-principle-learning loop as sibling sections (the loop promoted out of the skill reference), and `docs/skill-reference.md` carries the per-skill and per-agent entries. The split follows how the content is read — one narrative page that runs as run, record, learn, and one lookup page — under the repository's established terms (workflow, skill reference) rather than a generic guide or reference label. Every heading's text is kept, so the existing anchors survive as path-prefixed links (`docs/workflow.md#how-skills-commit`, `docs/skill-reference.md#review-milestone-requirements`) and re-pointing `CLAUDE.md`, `CONTRIBUTING.md`, and the pipeline intro is a path swap; a reader of the reference page reaches the loop by a link out.
+
 ## Out of Scope
 
 ## Open questions
@@ -61,31 +65,6 @@ The title block keeps the bold "Mark the path from idea to shipped." as the lead
     <drawback>Seven nodes with two dashed return arcs around the same row is the busiest of the four and stops reading at a glance — the arcs nest and their labels crowd — and the outer arc exists to draw what the subtitle already states.</drawback>
   </alternative>
   <recommendation option="Iteration back-edge">The requirements iteration is the one fact the six verbs cannot convey and the mechanism the design claims rest on, and a single short arc buys it, while the milestone cycle is already stated in words by the subtitle&apos;s &quot;one milestone at a time&quot; and would cost a seventh node and a chain-wide arc to draw; the shared theme block stays because it has no real rival — invisible when rendered, it keeps the summary in the same font, line color and curve style as the six diagrams it expands into, its wrappingWidth setting is what keeps the return edge&apos;s label on one line, and it contains no `{{`, so it would pass the host build&apos;s placeholder check should a distribution template ever carry the diagram.</recommendation>
-</open-question>
-<open-question id="Docs page layout">
-  <question>How are the moved sections — the phase narrative with its six diagrams, the skill reference, the commit conventions, and the answer-principle-learning loop — split across files under docs/, and what are those pages named?</question>
-  <alternative id="One page per section">
-    Four pages, one per moved section — docs/workflow.md for the six phase sections and their diagrams, docs/skill-reference.md for the per-skill and per-agent entries, docs/commit-conventions.md for How skills commit, and docs/answer-principle-learning.md for the loop — beside the promoted design-claims page.
-    <advantage>Every section gets a file with a single subject and a guessable name, so each external consumer (the CLAUDE.md skill-reference pointer, the CONTRIBUTING.md pipeline link, a README design-principles entry) links to a whole file rather than an anchor inside a longer page.</advantage>
-    <drawback>Two of the four pages are stubs of 329 and 571 words that each lean on the phase narrative for context — the commit page on the orchestrators and answer skills, the loop page on the requirements phase and capture — so they need re-orientation prose or read cold, and five pages of cross-links are kept in step for about 5,700 words of content.</drawback>
-  </alternative>
-  <alternative id="Narrative and reference pages">
-    Two pages — docs/workflow.md carrying the six phase sections and diagrams followed by How skills commit and The answer-principle-learning loop as sibling sections (the loop promoted out of the reference), and docs/skill-reference.md carrying the per-skill and per-agent entries — beside the promoted design-claims page.
-    <advantage>Matches the two ways the content is read — one page runs end to end as run, record, learn (the phase prose already names capture three times, and the commit section&apos;s provenance subjects are what capture reads) and the other is scanned as a lookup — and keeping every heading&apos;s text means the existing anchors survive as path-prefixed links (docs/workflow.md#how-skills-commit, docs/skill-reference.md#review-milestone-requirements), so re-pointing CLAUDE.md, CONTRIBUTING.md, and the pipeline intro is a path swap.</advantage>
-    <drawback>The workflow page runs to about 2,000 words plus six diagrams, and the loop leaves its seat beside the review-milestone-requirements entry, so a reader of the reference page needs a link out to reach it.</drawback>
-  </alternative>
-  <alternative id="Single docs page">
-    One page — docs/workflow.md — holding all four sections in their current README order.
-    <advantage>A straight cut that preserves every existing anchor on one file, so every cross-reference becomes the same path prefix and nothing inside the moved text is re-linked.</advantage>
-    <drawback>It re-creates the 5,700-word wall the milestone exists to break up under a different path, with the skill lookup buried below the walkthrough and one page name stretched to cover everything.</drawback>
-  </alternative>
-  <alternative id="Concepts page split">
-    Three pages — docs/workflow.md with only the six phase sections and diagrams, docs/skill-reference.md, and a third page such as docs/records-and-learning.md combining How skills commit with the answer-principle-learning loop as the what-git-records-and-what-the-project-learns page.
-    <advantage>Keeps the workflow page a pure walkthrough that the README loop diagram expands into, and gives the README design-principles block one page to link for the record and learning novelties.</advantage>
-    <drawback>The third page&apos;s subject is a compound whose only honest name is a conjunction, and both of its sections lean on the phase narrative for context, so it reads as two appendices split off from the page that explains them.</drawback>
-  </alternative>
-  <applied-principle>Name by distinctive function</applied-principle>
-  <recommendation option="Narrative and reference pages">The split follows how the content is read — one narrative page that runs as run, record, learn and one lookup page — under two names that carry the repository&apos;s established terms (workflow, skill reference) rather than a generic guide or reference label, and keeping every heading text turns the cross-reference update into a path swap.</recommendation>
 </open-question>
 <open-question id="Design-claims page fidelity">
   <question>Is the design-claims file promoted into docs/ verbatim, keeping its Simplified Technical English style, its Metric lines, and its closing note on the plugin-code claims, or edited for a reader of the repository?</question>
@@ -202,7 +181,6 @@ The title block keeps the bold "Mark the path from idea to shipped." as the lead
     <advantage>The fewest words below the principles block — a link list in place of an explainer of under a hundred words — and every page under docs/ is reachable from one place a reader finds by heading.</advantage>
     <drawback>The three-file paragraph is the only text on the landing page saying what Cairn creates in a project — the scaffold the bootstrap subsection above and the Self-dogfooding paragraph below both point at — so dropping it sends a visitor into a 2,000-word walkthrough for a fact three bullets carry, and the claims link repeats the one the principles block already ends with.</drawback>
   </alternative>
-  <depends-on question="Docs page layout" option="Narrative and reference pages"/>
   <depends-on question="Install section scope" option="Bootstrap stays, migration moves"/>
   <recommendation option="Showcase after the model">All four sections earn their seat — the model, its live instance, the routing surface, the license — and the milestone makes them contiguous for the first time, which is the fact milestone 25&apos;s join-then-showcase order never weighed; Self-dogfooding is read in flow and belongs right after the model it instantiates, Contributing is found by heading and belongs where a README reader expects it, last before License, and the docs-pointer sentence closes How it works because it is the last tool-level section on the page; the migration note goes between Contributing and License as an appendix reached from its pointer line, out of every scrolling reader&apos;s path and removable later without moving anything else.</recommendation>
 </open-question>
