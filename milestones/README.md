@@ -10,9 +10,20 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_25_traffic-adoption-badges/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 25 — Traffic Adoption Badges
+
+- `README.md` carries a new `## Adoption` section between `## Skill reference` and `## Contributing`: a pipe table with one linked row per repository (`uHappyLogic/cairn`, `cairn-claude`, `cairn-antigravity`) and two badge columns (unique views, unique clones), each badge served from that repository's `traffic-data` branch and linked to it, under a caption dating the counts from 2026-09-04, explaining that unique counts sum each day's uniques, and disclosing the workflow's own daily clone plus the monorepo's CI checkouts.
+- Every repository runs the same `traffic-badges` workflow daily at 03:17 UTC — `permissions: {}`, two steps of `albertoarena/github-traffic-badge` pinned to its `v1.1.4` commit SHA writing `views-unique.svg` and `clones-unique.svg` to the `traffic-data` branch — as three hand-kept copies: the monorepo's under `.github/workflows/` and one template per host under `scripts/hosts/<host>/.github/workflows/`, rendered into `hosts/<host>/` and shipped as inert cargo in installed trees behind a leading runs-only-in-its-distribution-repository comment.
+- The build's `unfilled-placeholder` gate now matches `(?<!\$)\{\{` — a `{{` not immediately preceded by `$` — so GitHub Actions `${{ … }}` expressions pass in rendered workflow files while bare `{{VERSION}}`/`{{NAME}}`/`{{PLUGIN_ROOT}}` slots still fail, with no path-scoped exemption or new definition key.
+- Both distribution README templates, both `CONTRIBUTING.md` pointers, and the root README's Installation line scope their build-output claims to `main` and name the `traffic-data` branch as the one thing in each distribution repository no build renders and no release touches.
+- Release 1.5.1 was cut mid-milestone to publish the workflow templates into both distribution repositories through the documented release route, so their `main` advanced only by a release snapshot.
+- The fine-grained token was extended in place with Contents read-and-write on the three repositories, stored as the `TRAFFIC_TOKEN` secret on each with `gh secret set`, and its local copy at `temp/PAT` deleted, so the token now exists only in GitHub's write-only secret store.
+- One `workflow_dispatch` per repository seeded every `traffic-data` branch (14 days of `totals.json` from 2026-09-04) before the README referenced a badge, and all six badge URLs return HTTP 200.
+- Read-only `gh api` readings, dated in `requirements.md`, show the action author's own repository still `active` on nothing but the daily bot push at day 75 and 77 past its last human commit, and both distribution repositories advancing `pushed_at` with public `PushEvent`s on `refs/heads/traffic-data` after their first scheduled runs — the evidence that the daily push keeps the cron workflows clear of GitHub's 60-day inactivity disable.
 
 ### Milestone 24 — Repo Hygiene Surface
 
@@ -272,3 +283,4 @@ Current milestone: `milestones/milestone_25_traffic-adoption-badges/`
 | 22 | Drop Open-Question Status | `milestones/milestone_22_drop-open-question-status/` |
 | 23 | Multi-Host Core And Dist Repos | `milestones/milestone_23_multi-host-core-and-dist-repos/` |
 | 24 | Repo Hygiene Surface | `milestones/milestone_24_repo-hygiene-surface/` |
+| 25 | Traffic Adoption Badges | `milestones/milestone_25_traffic-adoption-badges/` |
