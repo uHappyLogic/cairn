@@ -28,34 +28,14 @@ Exactly two hosts exist — `scripts/hosts/claude/` and `scripts/hosts/antigravi
 
 ## Decisions
 
+### Root README first screen
+
+The adoption block moves to the first screen as the existing three-row pipe table — six badges, each row the linked owner/repo name, each badge linking to its repository's `traffic-data` branch — with the `## Adoption` heading dropped; the table stays because a badge's own label names only its metric, so the row label is what says which repository it counts. Its caption shrinks from three sentences to one sentence of about two lines that keeps the four facts a reader of the displayed numbers needs: counts are cumulative since 2026-09-04, unique counts are summed per day so a returning visitor counts again, the badge workflow's own fetch adds one unique clone per repository per day, and the monorepo's clones include its CI checkouts. No badge strip and no partial promotion of the monorepo's pair: the whole three-repository block sits on the first screen, since the distribution rows, not the monorepo's, are the counts an install moves.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Adoption block form">
-  <question>How compact should the adoption block be on the first screen, given that today it is a three-repository table of six badges under a three-sentence caption?</question>
-  <alternative id="Table moved whole">
-    The existing three-row pipe table — six badges, each row the linked owner/repo name, each badge linking to its repository&apos;s traffic-data branch — and its three-sentence caption move to the first screen exactly as milestone 25 wrote them, losing only the `## Adoption` heading because the block now sits with the status badges above the title.
-    <advantage>Nothing is re-authored: every recorded milestone-25 choice about the table and the caption — full repository names, the traffic-data links, the start date, the unique-sum and clone-floor clauses — survives word for word, and the task is a cut and paste.</advantage>
-    <drawback>It is the tallest element on the first screen — four bordered rows plus four rendered lines of caveats, some seventy words of fine print above the page title — on a screen that must also fit the title block, the loop diagram and two per-host install blocks, and the first prose a visitor reads is a paragraph about what the numbers do not mean.</drawback>
-  </alternative>
-  <alternative id="Table with one-line caption">
-    The three-row table stays as it is — the row label is the only thing that says which repository a badge counts, since a badge&apos;s own label names just its metric — the heading goes, and the caption shrinks to one sentence of about two lines keeping the four facts a reader of the displayed numbers needs: cumulative since 2026-09-04, unique counts summed per day so a returning visitor counts again, one unique clone per repository per day from the badge workflow&apos;s own fetch, and CI checkouts inside the monorepo&apos;s clones.
-    <advantage>Every badge stays labelled, aligned and linked in plain Markdown exactly as milestone 25 settled it, the disclosure stays legible beside the numbers it qualifies — the workflow&apos;s fetch adds one unique clone per repository every day, so over months that floor becomes a large share of a distribution row&apos;s clone count — and the block gives back the heading and two lines, roughly the height of one host&apos;s install command block.</advantage>
-    <drawback>The header row restates the labels every badge already carries and the borders are the heaviest chrome GitHub draws, so the block is still four rows tall, and a bordered table between a centred badge strip and the h1 is a visible switch of idiom at the top of the page.</drawback>
-  </alternative>
-  <alternative id="Badge strip with names">
-    The six badges join the header block as three centred lines under the release/CI/license row — each line the linked full repository name followed by its two badges — with the caption cut to one small-print line beneath them, so the block is hand-written HTML in the strip&apos;s own idiom and no table.
-    <advantage>The most compact form that still names each repository — three lines of badge height instead of four bordered rows, in the same centred idiom as the status badges it sits under — so the first screen reads as one badge zone above the title.</advantage>
-    <drawback>Names of unequal length leave the six badges unaligned across the three centred lines, the block grows to a dozen hand-written anchor and image elements against the table&apos;s plain Markdown, the one clause a reader must see — the workflow&apos;s own daily clone — is set in the smallest type on the page, and nine badges plus three repository names above the title is a badge wall, not the clean opening a landing page wants, while the distribution rows still show single-digit views.</drawback>
-  </alternative>
-  <alternative id="Root pair only up top">
-    Only this repository&apos;s own two badges move up, appended to the release/CI/license row where, like the three beside them, they need no repository label, and the `## Adoption` table with its caption stays below the fold exactly where milestone 25 placed it.
-    <advantage>It costs the first screen nothing — two badges on a line that already exists — and leaves the three-repository table and every clause of its caption untouched.</advantage>
-    <drawback>The pair it promotes is the least adoption-relevant of the three — both install commands fetch from cairn-claude and cairn-antigravity, never from the monorepo, so the counts an install moves stay below the fold — the monorepo&apos;s numbers then appear twice on one page, and the goal names the adoption block itself, not a summary of it, as first-screen content.</drawback>
-  </alternative>
-  <recommendation option="Table with one-line caption">The table is the smallest plain-Markdown form that keeps three repositories&apos; badges labelled and aligned — a badge&apos;s own label names only its metric, so the row label is what says which repository it counts — and the real bulk is the caption, which shrinks from three sentences to one without losing a fact a reader of the displayed numbers needs; the strip&apos;s further saving of one bordered row is not worth a badge wall and a fine-print disclosure while the distribution rows still show single-digit views, and the block belongs on the first screen whole because the distribution rows, not the monorepo&apos;s, are the counts an install moves.</recommendation>
-</open-question>
 <open-question id="One-liner wording">
   <question>What does the generic host-neutral one-liner say, and does it replace the existing two-line tagline or sit beside it?</question>
   <alternative id="One-liner as subtitle">
