@@ -32,35 +32,12 @@ Exactly two hosts exist — `scripts/hosts/claude/` and `scripts/hosts/antigravi
 
 The adoption block moves to the first screen as the existing three-row pipe table — six badges, each row the linked owner/repo name, each badge linking to its repository's `traffic-data` branch — with the `## Adoption` heading dropped; the table stays because a badge's own label names only its metric, so the row label is what says which repository it counts. Its caption shrinks from three sentences to one sentence of about two lines that keeps the four facts a reader of the displayed numbers needs: counts are cumulative since 2026-09-04, unique counts are summed per day so a returning visitor counts again, the badge workflow's own fetch adds one unique clone per repository per day, and the monorepo's clones include its CI checkouts. No badge strip and no partial promotion of the monorepo's pair: the whole three-repository block sits on the first screen, since the distribution rows, not the monorepo's, are the counts an install moves.
 
+The title block keeps the bold "Mark the path from idea to shipped." as the lead under `# Cairn` and replaces the subtitle "Milestone-driven development for any kind of work." with the host-neutral one-liner "Milestone-driven development for your coding agent — any kind of work, one milestone at a time." The subtitle seat is where the one-liner belongs: it is that line's host-neutral successor, adding whom Cairn is for and the one-milestone-at-a-time motif in wording that reads across any kind of work, and the two lines render as one paragraph on GitHub, so it adds no first-screen line. The bold tagline stays because it renders inline at no first-screen cost and, with the banner gone, is the last visible trace of the trail-marker metaphor behind the name. The same one-liner sentence goes verbatim into both distribution README templates under their `# Cairn for <Host>` titles.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="One-liner wording">
-  <question>What does the generic host-neutral one-liner say, and does it replace the existing two-line tagline or sit beside it?</question>
-  <alternative id="One-liner as subtitle">
-    Keep the bold &quot;Mark the path from idea to shipped.&quot; as the lead under # Cairn and put the host-neutral one-liner in the subtitle&apos;s seat in place of &quot;Milestone-driven development for any kind of work.&quot; — &quot;Milestone-driven development for your coding agent — any kind of work, one milestone at a time.&quot; — the same sentence the two distribution templates carry under their own # Cairn for &lt;Host&gt; titles.
-    <advantage>The one-liner supplies the two things the current subtitle omits — whom Cairn is for, named host-neutrally, and the one-milestone-at-a-time motif — without adding a line: the two source lines carry no trailing hard break, so GitHub already renders them as one paragraph, and the recorded brand line stays as the bold lead at zero first-screen cost while, once the banner goes, it is the only carrier left of the trail-marker metaphor behind the name.</advantage>
-    <drawback>The first words a visitor reads stay a metaphor rather than a description, and &quot;shipped&quot; — the one product-flavored word milestone 12&apos;s work-type sweep left in the tagline — sits on the first screen beside a sentence claiming any kind of work.</drawback>
-  </alternative>
-  <alternative id="One-liner alone">
-    Drop both tagline lines and set the single sentence alone under # Cairn — &quot;Milestone-driven development for your coding agent — any kind of work, one milestone at a time.&quot; — identical in the root README and both distribution templates.
-    <advantage>The plainest possible first screen, one text kept in step across three READMEs, and no brand line left to defend or to neutralize.</advantage>
-    <drawback>It reverses milestone 1&apos;s recorded tagline decision for no space gain — the bold lead costs no line on GitHub — and, with the banner dropped in the same milestone, leaves # Cairn with nothing on the page that hints at the cairn trail-marker metaphor behind the name.</drawback>
-  </alternative>
-  <alternative id="Loop sentence alone">
-    Drop both tagline lines and use the distribution templates&apos; existing opening sentence, made host-neutral, as the one-liner: &quot;Cairn gives your coding agent a milestone-driven development workflow — clarify the goal, resolve every open question, derive an ordered task list, complete the tasks, and close out the milestone before moving on — for any kind of work.&quot;
-    <advantage>Nothing new is authored — the Antigravity template already carries this sentence almost word for word — and a visitor learns the whole shape of the workflow before reaching the diagram.</advantage>
-    <drawback>Forty words is a paragraph, not a one-liner, and its steps (clarify, resolve, derive, complete, close out) sit one screen above a diagram whose six steps are named differently (define → review → recommend → answer → derive → complete), so the first screen states the loop twice in two vocabularies.</drawback>
-  </alternative>
-  <alternative id="Additive third line">
-    Keep both existing tagline lines unchanged and add the host-neutral one-liner as a new paragraph beneath them, ahead of the loop diagram.
-    <advantage>Two recorded decisions — milestone 1&apos;s tagline and milestone 12&apos;s neutralized subtitle — stay byte-for-byte intact, and the one-liner is authored once for the distribution templates without touching the root title block.</advantage>
-    <drawback>The subtitle and the one-liner then say the same thing twice (milestone-driven development, any kind of work), so the first screen spends an extra paragraph restating itself on exactly the space the milestone reclaims for the diagram and the per-host install.</drawback>
-  </alternative>
-  <applied-principle>Prefer domain-neutral terms</applied-principle>
-  <recommendation option="One-liner as subtitle">The subtitle seat is where the one-liner belongs — it is that line&apos;s host-neutral successor, adding whom Cairn is for and the one-milestone-at-a-time motif in wording that reads across any kind of work — and the bold tagline stays because it renders inline at no first-screen cost and, with the banner gone, is the last visible trace of the metaphor behind the name; the same sentence goes verbatim into both distribution templates.</recommendation>
-</open-question>
 <open-question id="Loop diagram shape">
   <question>What does the simplified first-screen mermaid diagram show beyond the six named loop steps — the review-and-answer iteration, the milestone close, neither — and does it keep the theme block the six phase diagrams share?</question>
   <alternative id="Six steps only">
@@ -83,7 +60,6 @@ The adoption block moves to the first screen as the existing three-row pipe tabl
     <advantage>The complete honest shape: the inner requirements loop and the outer milestone cycle are exactly the two dashed loops the six phase diagrams carry, so nothing a reader later finds in the docs is missing from the summary.</advantage>
     <drawback>Seven nodes with two dashed return arcs around the same row is the busiest of the four and stops reading at a glance — the arcs nest and their labels crowd — and the outer arc exists to draw what the subtitle already states.</drawback>
   </alternative>
-  <depends-on question="One-liner wording" option="One-liner as subtitle"/>
   <recommendation option="Iteration back-edge">The requirements iteration is the one fact the six verbs cannot convey and the mechanism the design claims rest on, and a single short arc buys it, while the milestone cycle is already stated in words by the subtitle&apos;s &quot;one milestone at a time&quot; and would cost a seventh node and a chain-wide arc to draw; the shared theme block stays because it has no real rival — invisible when rendered, it keeps the summary in the same font, line color and curve style as the six diagrams it expands into, its wrappingWidth setting is what keeps the return edge&apos;s label on one line, and it contains no `{{`, so it would pass the host build&apos;s placeholder check should a distribution template ever carry the diagram.</recommendation>
 </open-question>
 <open-question id="Docs page layout">
@@ -178,7 +154,6 @@ The adoption block moves to the first screen as the existing three-row pipe tabl
     <drawback>The goal names a host-neutral &quot;Why Cairn?&quot; and a short &quot;Design principles&quot; block as two things, the principles-selection analysis rests on a distinct block whose verbatim claim lines match numbered headings on the claims page and are kept in step with it while the pitch is stable prose, a `## Design principles` heading is the landmark a reader scanning the page&apos;s headings looks for, and the merged section runs past two hundred words — the longest prose on the landing page.</drawback>
   </alternative>
   <depends-on question="Design principles selection" option="Three novelties with design sentence"/>
-  <depends-on question="One-liner wording" option="One-liner as subtitle"/>
   <recommendation option="Host sentence only">The goal names host-neutrality as this section&apos;s one change and gives the design-claims narrative to the principles block beneath it, so the section keeps its job — the failure modes, the user&apos;s-eye telling of the loop, and how the workflow adapts through `CLAUDE.md` — in text two sweeps already verified against the live plugin, and the only edit is the host name becoming &quot;your coding agent&quot;, the phrase the subtitle and the Antigravity template already carry; it stays its own section because the block below is a linked, claim-numbered list kept in step with the claims page while the pitch is stable prose, and the restatement it carries below the fold is a prose complement to six bare verbs, not a first-screen cost worth authored text.</recommendation>
 </open-question>
 <open-question id="Install section scope">
@@ -253,7 +228,6 @@ The adoption block moves to the first screen as the existing three-row pipe tabl
     <advantage>Every repository a visitor can land on carries the complete pitch, so the recommended install source is a landing page in the full sense rather than an install page that points elsewhere.</advantage>
     <drawback>It turns the one hand-aligned duplicate milestone 23 accepted into four across three files, the principles block cannot even be a verbatim copy — its link changes form and its claim lines already track the claims page by hand, so the templates would track a copy of a copy — and the whole mirror reaches the distribution repositories only at release time, for pages read by four unique visitors each since 2026-09-04.</drawback>
   </alternative>
-  <depends-on question="One-liner wording" option="One-liner as subtitle"/>
   <recommendation option="Four items only">The goal&apos;s list is the shape: milestone 23 made the distribution README the install page of the recommended source and accepted exactly one hand-aligned duplicate for the installer&apos;s self-sufficiency, and none of the three elements serves that reader — the diagram is a stand-in the demo GIF will retire, and the two prose sections are pitch kept in step by hand and release-lagged on pages with four unique views each — so the templates carry the four named items and the root link in their opening sentence carries the reader to the pitch; should the maintainer want the workflow drawn on the install page anyway, the diagram is the only element worth copying, since it alone copies verbatim, build-clean and link-free.</recommendation>
 </open-question>
 <open-question id="Distribution badge form">
