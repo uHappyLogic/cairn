@@ -25,6 +25,27 @@ Cumulative since 2026-09-04, with unique counts summed per day (a returning visi
 **Mark the path from idea to shipped.**
 Milestone-driven development for your coding agent — any kind of work, one milestone at a time.
 
+```mermaid
+%%{init: {'theme':'base','themeVariables':{'fontFamily':'ui-sans-serif, system-ui','lineColor':'#94a3b8','primaryBorderColor':'#475569'},'flowchart':{'wrappingWidth':9999,'curve':'basis'}}}%%
+flowchart LR
+    define["define"]
+    review["review"]
+    recommend["recommend"]
+    answer["answer"]
+    derive["derive"]
+    complete["complete"]
+
+    define --> review --> recommend --> answer --> derive --> complete
+    answer -.->|until no open questions remain| review
+
+    classDef init fill:#eff6ff,stroke:#2563eb,color:#1e3a8a;
+    classDef req fill:#faf5ff,stroke:#9333ea,color:#581c87;
+    classDef auto fill:#ecfdf5,stroke:#059669,color:#064e3b;
+    class define init;
+    class review,recommend,answer req;
+    class derive,complete auto;
+```
+
 ## Why Cairn?
 
 Large, ambitious projects fail in predictable ways: the goal drifts during planning, ambiguities pile up before the work starts, the task list grows unbounded, and there's no clear line between "working on it" and "done."

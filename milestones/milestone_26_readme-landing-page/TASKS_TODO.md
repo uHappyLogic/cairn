@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Simplified Milestone Loop Diagram
-
-Insert one mermaid `flowchart` directly under the title block of `README.md`, before `## Installation`, drawing the six verbs define, review, recommend, answer, derive, complete chained by plain arrows plus one dashed return edge from answer back to review labelled with the convergence condition (until no open questions remain), with no finish step and no milestone-return edge, under the same `%%{init: …}%%` theme block the six phase diagrams in `docs/workflow.md` carry so the wrappingWidth keeps the return label on one line. Verified when the diagram renders on GitHub with exactly those six nodes and seven edges, its theme block is byte-identical to the phase diagrams', and the file gains no `{{` sequence.
-
----
-
 ## Demote Migration Note And Reorder Tail Sections
 
 Move the "Already installed from `uHappyLogic/cairn`?" marketplace-migration paragraph and its second command block out of `## Installation` into a short `##` section of its own placed between `## Contributing` and `## License`, leaving one bold pointer line to it in the `### Claude Code` subsection, so Installation keeps only the two per-host subsections and `### Bootstrap your project`; order the remaining tail as `## How it works`, `## Self-dogfooding`, `## Contributing`, the migration section, `## License`, and add one closing sentence to `## How it works` linking `docs/workflow.md` and `docs/skill-reference.md`, changing no other section text. Verified when the section order reads Installation, Why Cairn, How it works, Self-dogfooding, Contributing, migration, License, the Claude Code subsection matches the root's install commands plus the pointer line, and the migration commands appear once, below the fold.

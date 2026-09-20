@@ -53,3 +53,18 @@ Rework the top of `README.md` so the first screen opens with the three shields.i
 - `uv run scripts/build_hosts.py --check` exits 0 ("Check passed … at version 1.5.1") and `grep -P '(?<!\$)\{\{' README.md` finds nothing.
 
 ---
+
+## Add Simplified Milestone Loop Diagram
+
+Insert one mermaid `flowchart` directly under the title block of `README.md`, before `## Installation`, drawing the six verbs define, review, recommend, answer, derive, complete chained by plain arrows plus one dashed return edge from answer back to review labelled with the convergence condition (until no open questions remain), with no finish step and no milestone-return edge, under the same `%%{init: …}%%` theme block the six phase diagrams in `docs/workflow.md` carry so the wrappingWidth keeps the return label on one line. Verified when the diagram renders on GitHub with exactly those six nodes and seven edges, its theme block is byte-identical to the phase diagrams', and the file gains no `{{` sequence.
+
+**Verified:**
+
+- `README.md` carries exactly one mermaid fence (one ```` ```mermaid ```` line), at lines 28–47, inserted directly under the title block — one blank line after the one-liner at line 26 and one blank line before `## Why Cairn?` at line 49 — so it sits before `## Installation` (line 57); `git diff --numstat` is 21 insertions and 0 deletions on `README.md`, and nothing else in the file changed (the `## Why Cairn?` seat is the reorder task's, whose own verification places it after Installation).
+- The fence's first line is the `%%{init: …}%%` theme block, byte-identical to the six phase diagrams' theme line in `docs/workflow.md` — md5 `c21c74ddf202de57bb26dc0a9fba6417` for the README line and for the docs' six lines alike.
+- The diagram is a `flowchart LR` declaring exactly six nodes — `define`, `review`, `recommend`, `answer`, `derive`, `complete` — and no finish node; its three `classDef` lines (the init, req, and auto colours copied from the phase diagrams, so each verb carries the colour of the phase it expands into) add no node.
+- The six verbs are chained by five plain `-->` arrows in the order define → review → recommend → answer → derive → complete, plus exactly one dashed `-.->` edge from `answer` back to `review` labelled `until no open questions remain`; no edge leaves `complete` and none returns to `define` (no milestone-return edge). That is six edges — five chain plus one return — exactly the set the decision enumerates; the brief's "seven" over-counts its own enumeration by one (six verbs chained give five arrows, not six), as the docs task's "25 entries" was a miscount.
+- The diagram renders on GitHub: `gh api markdown` (gfm, context `uHappyLogic/cairn`) emits `<h1>Cairn</h1>`, then the `<pre lang="mermaid" aria-label="Raw mermaid code">` element GitHub hands its client-side renderer with the diagram text intact (arrows entity-escaped, the label and `-.->` preserved), then `<h2>Why Cairn?</h2>` and `<h2>Installation</h2>`; and real mermaid (mermaid.ink) renders the fence body to a 991×129 SVG/PNG with six node labels, six edge paths (`L_define_review`, `L_review_recommend`, `L_recommend_answer`, `L_answer_derive`, `L_derive_complete`, `L_answer_review`), the return edge in the `edge-pattern-dotted` class, and the label "until no open questions remain" as one unwrapped line.
+- `README.md` gains no `{{` sequence: `grep -c '{{' README.md` is 0 and `grep -P '(?<!\$)\{\{'` finds nothing; `uv run scripts/build_hosts.py --check` exits 0 ("Check passed … at version 1.5.1").
+
+---
