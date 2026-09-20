@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Demote Migration Note And Reorder Tail Sections
-
-Move the "Already installed from `uHappyLogic/cairn`?" marketplace-migration paragraph and its second command block out of `## Installation` into a short `##` section of its own placed between `## Contributing` and `## License`, leaving one bold pointer line to it in the `### Claude Code` subsection, so Installation keeps only the two per-host subsections and `### Bootstrap your project`; order the remaining tail as `## How it works`, `## Self-dogfooding`, `## Contributing`, the migration section, `## License`, and add one closing sentence to `## How it works` linking `docs/workflow.md` and `docs/skill-reference.md`, changing no other section text. Verified when the section order reads Installation, Why Cairn, How it works, Self-dogfooding, Contributing, migration, License, the Claude Code subsection matches the root's install commands plus the pointer line, and the migration commands appear once, below the fold.
-
----
-
 ## Neutralize Why Cairn And Add Design Principles
 
 Change the one host sentence in `## Why Cairn?` from "Cairn gives Claude Code a structured, repeatable process" to "Cairn gives your coding agent a structured, repeatable process", keeping its heading and three paragraphs otherwise intact, and add a short `## Design principles` section directly beneath it presenting three entries — claim 11 (records are machine-readable), claim 2 carrying claim 12's provenance subject (each decision has a record in git), and claim 5 (advice gets better with each milestone) — each the claim line verbatim as it heads `docs/design-claims.md` followed by one sentence of the design behind it in the README's voice, closing with one link to that page for all nineteen. Verified when the block is about a hundred words, each verbatim claim line matches a heading on the claims page, and `README.md` no longer names Claude Code as the host outside the Installation section.

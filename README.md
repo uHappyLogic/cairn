@@ -46,14 +46,6 @@ flowchart LR
     class derive,complete auto;
 ```
 
-## Why Cairn?
-
-Large, ambitious projects fail in predictable ways: the goal drifts during planning, ambiguities pile up before the work starts, the task list grows unbounded, and there's no clear line between "working on it" and "done."
-
-Cairn gives Claude Code a structured, repeatable process for moving an idea from rough goal to finished deliverable — one milestone at a time. Each milestone is a self-contained unit: you clarify the goal, resolve every open question, derive an ordered task list, complete the tasks, and close out the milestone before moving on. Nothing falls through the cracks because every decision is recorded and every requirement maps to a task.
-
-It works with any kind of project. Skills read your project's environment — its domain context, working conventions, available tools, and how work is verified as done — from `CLAUDE.md`, so the workflow adapts to whatever you're producing.
-
 ## Installation
 
 ### Claude Code
@@ -65,13 +57,7 @@ In Claude Code, add the `cairn-claude` marketplace and install the plugin from i
 /plugin install cairn@cairn
 ```
 
-**Already installed from `uHappyLogic/cairn`?** Installs pinned to `uHappyLogic/cairn` keep working and updating — that marketplace now serves `./hosts/claude` — but `cairn-claude` is the recommended source. To switch, remove the old marketplace, add the new one, and install again; the plugin id `cairn@cairn` is unchanged, so no project settings need editing:
-
-```
-/plugin marketplace remove cairn
-/plugin marketplace add uHappyLogic/cairn-claude
-/plugin install cairn@cairn
-```
+**Already installed from `uHappyLogic/cairn`?** That install keeps working — see [Migrating from the old marketplace](#migrating-from-the-old-marketplace) to switch to this source.
 
 ### Antigravity
 
@@ -94,6 +80,14 @@ Then, in your project root, create the milestones scaffold once:
 
 Run `/init` to document your project — its domain context, working conventions, available tools, and how work is verified as done — in `CLAUDE.md`, so the skills can read that environment context.
 
+## Why Cairn?
+
+Large, ambitious projects fail in predictable ways: the goal drifts during planning, ambiguities pile up before the work starts, the task list grows unbounded, and there's no clear line between "working on it" and "done."
+
+Cairn gives Claude Code a structured, repeatable process for moving an idea from rough goal to finished deliverable — one milestone at a time. Each milestone is a self-contained unit: you clarify the goal, resolve every open question, derive an ordered task list, complete the tasks, and close out the milestone before moving on. Nothing falls through the cracks because every decision is recorded and every requirement maps to a task.
+
+It works with any kind of project. Skills read your project's environment — its domain context, working conventions, available tools, and how work is verified as done — from `CLAUDE.md`, so the workflow adapts to whatever you're producing.
+
 ## How it works
 
 Each milestone lives in `milestones/milestone_<N>_<slug>/` and contains three files:
@@ -104,6 +98,12 @@ Each milestone lives in `milestones/milestone_<N>_<slug>/` and contains three fi
 
 `milestones/README.md` is the source of truth for which milestone is active. Skills read and write the current-milestone pointer there; it is never ambiguous which milestone is open.
 
+How the skills move a milestone through those files is described in [docs/workflow.md](docs/workflow.md), and what each skill does is in [docs/skill-reference.md](docs/skill-reference.md).
+
+## Self-dogfooding
+
+This repository runs its own workflow on itself. The `milestones/` directory and `milestones/README.md` are live workflow artifacts produced by Cairn's own skills — the requirements, task list, and completed tasks for the current milestone are all right there in the repo. If you want to see what a real milestone looks like end-to-end, look no further.
+
 ## Contributing
 
 Cairn is authored once under `core/` and every `hosts/<host>/` tree is rebuilt from it, never hand-edited — see [CONTRIBUTING.md](CONTRIBUTING.md) for the full contributor path, from proposal to pull request.
@@ -113,9 +113,15 @@ Cairn is authored once under `core/` and every `hosts/<host>/` tree is rebuilt f
 - Vulnerabilities — report them privately as [SECURITY.md](SECURITY.md) describes, never in an issue.
 - Release notes — every release's notes, verbatim, in [CHANGELOG.md](CHANGELOG.md).
 
-## Self-dogfooding
+## Migrating from the old marketplace
 
-This repository runs its own workflow on itself. The `milestones/` directory and `milestones/README.md` are live workflow artifacts produced by Cairn's own skills — the requirements, task list, and completed tasks for the current milestone are all right there in the repo. If you want to see what a real milestone looks like end-to-end, look no further.
+**Already installed from `uHappyLogic/cairn`?** Installs pinned to `uHappyLogic/cairn` keep working and updating — that marketplace now serves `./hosts/claude` — but `cairn-claude` is the recommended source. To switch, remove the old marketplace, add the new one, and install again; the plugin id `cairn@cairn` is unchanged, so no project settings need editing:
+
+```
+/plugin marketplace remove cairn
+/plugin marketplace add uHappyLogic/cairn-claude
+/plugin install cairn@cairn
+```
 
 ## License
 
