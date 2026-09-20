@@ -84,3 +84,21 @@ Move the "Already installed from `uHappyLogic/cairn`?" marketplace-migration par
 - `uv run scripts/build_hosts.py --check` exits 0 ("Check passed … at version 1.5.1"), `grep -P '(?<!\$)\{\{' README.md` finds nothing, GitHub's markdown API (gfm, context `uHappyLogic/cairn`) renders the `<h2>` sequence Installation, Why Cairn?, How it works, Self-dogfooding, Contributing, Migrating from the old marketplace, License with the pointer's `href="#migrating-from-the-old-marketplace"` equal to the slug GitHub derives from the heading text, and a script resolving every relative link in `README.md` against existing files and headings reports 0 unresolved.
 
 ---
+
+## Neutralize Why Cairn And Add Design Principles
+
+Change the one host sentence in `## Why Cairn?` from "Cairn gives Claude Code a structured, repeatable process" to "Cairn gives your coding agent a structured, repeatable process", keeping its heading and three paragraphs otherwise intact, and add a short `## Design principles` section directly beneath it presenting three entries — claim 11 (records are machine-readable), claim 2 carrying claim 12's provenance subject (each decision has a record in git), and claim 5 (advice gets better with each milestone) — each the claim line verbatim as it heads `docs/design-claims.md` followed by one sentence of the design behind it in the README's voice, closing with one link to that page for all nineteen. Verified when the block is about a hundred words, each verbatim claim line matches a heading on the claims page, and `README.md` no longer names Claude Code as the host outside the Installation section.
+
+**Verified:**
+
+- `## Why Cairn?`'s second paragraph now opens "Cairn gives your coding agent a structured, repeatable process" (1 hit) and "Cairn gives Claude Code" no longer appears (0 hits); the section's heading and its three paragraphs are otherwise unchanged — `git diff README.md` shows that one substituted line as its only deletion.
+- `## Design principles` (line 91) is the next `##` heading after `## Why Cairn?` (line 83) and sits ahead of `## How it works` (line 99).
+- The section presents exactly three entries in the order claim 11, claim 2, claim 5, each opening with its claim line verbatim — "The records are machine-readable.", "Each decision has a record in git.", "Advice gets better with each milestone." — and each of those lines grep-matches a `###` heading in `docs/design-claims.md` (lines 100, 20, and 45).
+- Each claim line is followed by exactly one sentence of its design in the README's voice (sentence count 1 per entry), and the claim-2 sentence carries claim 12's provenance subject: "one path-scoped commit whose subject marks how it was made — manual, recommendation, or alternative".
+- The block closes with one page-level link to `docs/design-claims.md` for all nineteen claims; that link and the three per-entry heading links (`#11-the-records-are-machine-readable`, `#2-each-decision-has-a-record-in-git`, `#5-advice-gets-better-with-each-milestone`) each resolve to an existing file and a heading slug on that page.
+- The block, from its `## Design principles` heading through the line before `## How it works`, is 118 words by `wc -w` (114 with markup stripped), within the about-a-hundred bar.
+- `grep -n "Claude Code" README.md` hits only lines 51 and 53, both inside `## Installation` (lines 49–82); no line outside that section names Claude Code as the host.
+- `git status --short` lists only `README.md`, and `git diff --stat` is 9 insertions and 1 deletion — the substituted sentence plus the eight inserted block lines — with no other section text changed.
+- `uv run scripts/build_hosts.py --check` exits 0 ("Check passed … at version 1.5.1").
+
+---
