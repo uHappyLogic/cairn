@@ -38,6 +38,8 @@ The first-screen `## Installation` section keeps the two per-host subsections �
 
 The banner image file `.github/assets/readme/cairn-banner.png` is deleted with the reference: the task that drops the `<p align="center">` banner paragraph from `README.md` also removes the file in the same commit, taking the now-empty `.github/assets/` directory with it, so no commit leaves the reference gone and the file stranded. Its only consumer is the README line the goal removes, the distribution trees never carry it, and git history already holds it permanently — deletion reclaims nothing from a clone and loses nothing recoverable — so the tree keeps no orphan binary under a README-named directory for a use nobody has named; the social preview, if ever wanted, is a resized upload through repository settings that history can source as well as the tree, and the demo GIF the goal defers is a different asset that starts the assets directory fresh.
 
+The simplified first-screen mermaid diagram draws the six verbs — define, review, recommend, answer, derive, complete — chained by plain arrows, plus one dashed return edge from answer back to review carrying the convergence condition (until no open questions remain), the same dashed repeat-until-satisfied edge the docs' requirements diagram draws; it has no finish step and no milestone-return edge. The requirements iteration is the one fact the six verbs cannot convey and the mechanism the design claims rest on, and a single short arc buys it, while the milestone cycle is already stated in words by the subtitle's "one milestone at a time" and would cost a seventh node and a chain-wide arc to draw. The diagram keeps the shared `%%{init: …}%%` theme block the six phase diagrams carry: invisible when rendered, it keeps the summary in the same font, line color and curve style as the six diagrams it expands into, its wrappingWidth setting is what keeps the return edge's label on one line, and it contains no `{{`, so it would pass the host build's placeholder check should a distribution template ever carry the diagram.
+
 ### Docs pages
 
 The moved sections split across two pages under `docs/`, beside the promoted design-claims page: `docs/workflow.md` carries the six phase sections with their diagrams, followed by How skills commit and The answer-principle-learning loop as sibling sections (the loop promoted out of the skill reference), and `docs/skill-reference.md` carries the per-skill and per-agent entries. The split follows how the content is read — one narrative page that runs as run, record, learn, and one lookup page — under the repository's established terms (workflow, skill reference) rather than a generic guide or reference label. Every heading's text is kept, so the existing anchors survive as path-prefixed links (`docs/workflow.md#how-skills-commit`, `docs/skill-reference.md#review-milestone-requirements`) and re-pointing `CLAUDE.md`, `CONTRIBUTING.md`, and the pipeline intro is a path swap; a reader of the reference page reaches the loop by a link out.
@@ -50,30 +52,6 @@ The two skill-reference entries milestone 15 recorded as stale are corrected as 
 
 ## Open questions
 
-<open-question id="Loop diagram shape">
-  <question>What does the simplified first-screen mermaid diagram show beyond the six named loop steps — the review-and-answer iteration, the milestone close, neither — and does it keep the theme block the six phase diagrams share?</question>
-  <alternative id="Six steps only">
-    The six verbs — define, review, recommend, answer, derive, complete — chained by plain arrows and nothing else: no return edge, no finish step, no state node.
-    <advantage>It is the goal&apos;s parenthesis drawn literally and the smallest thing that can sit between the subtitle and the install commands — six short labels in one chain, read in a glance with nothing to misread.</advantage>
-    <drawback>It draws a checklist, not a loop: nothing shows that review, recommend and answer repeat until no question is open before any task is derived, which is the one fact the six words cannot say and the mechanism the design-principles block below then has to explain in prose.</drawback>
-  </alternative>
-  <alternative id="Iteration back-edge">
-    The six-verb chain plus one dashed return edge from answer to review carrying the convergence condition (until no open questions remain) — the same dashed repeat-until-satisfied edge the docs&apos; requirements diagram draws — with no finish step and no milestone-return edge.
-    <advantage>One short arc adds exactly the fact that makes the picture a loop — requirements iterate to convergence before derive — and that iteration is what every novelty below rests on (machine-readable question blocks, one answer = one commit, the principle store), so the summary points at the thing the docs diagrams then expand.</advantage>
-    <drawback>The chain still ends at complete, so the diagram itself never shows a milestone being closed and the next one starting; that half of the cycle is carried only by the words above it.</drawback>
-  </alternative>
-  <alternative id="Closed milestone cycle">
-    The six-verb chain extended by a seventh step, finish, with one dashed return edge from finish back to define labelled next milestone — the docs&apos; D5 loop compressed into the row — and no iteration edge.
-    <advantage>The diagram becomes a literal loop and shows where a milestone ends, the seam that &quot;one milestone at a time&quot; names, using the same next-milestone edge a reader meets again in the docs.</advantage>
-    <drawback>The return arc spans the whole chain — the widest element in the diagram — to draw what the subtitle already says in words, adds a seventh step beyond the six the goal names, and leaves the requirements iteration, the part that separates Cairn from a task runner, invisible.</drawback>
-  </alternative>
-  <alternative id="Both loops">
-    The six-verb chain with the finish step and both dashed edges — answer back to review for the iteration and finish back to define for the next milestone.
-    <advantage>The complete honest shape: the inner requirements loop and the outer milestone cycle are exactly the two dashed loops the six phase diagrams carry, so nothing a reader later finds in the docs is missing from the summary.</advantage>
-    <drawback>Seven nodes with two dashed return arcs around the same row is the busiest of the four and stops reading at a glance — the arcs nest and their labels crowd — and the outer arc exists to draw what the subtitle already states.</drawback>
-  </alternative>
-  <recommendation option="Iteration back-edge">The requirements iteration is the one fact the six verbs cannot convey and the mechanism the design claims rest on, and a single short arc buys it, while the milestone cycle is already stated in words by the subtitle&apos;s &quot;one milestone at a time&quot; and would cost a seventh node and a chain-wide arc to draw; the shared theme block stays because it has no real rival — invisible when rendered, it keeps the summary in the same font, line color and curve style as the six diagrams it expands into, its wrappingWidth setting is what keeps the return edge&apos;s label on one line, and it contains no `{{`, so it would pass the host build&apos;s placeholder check should a distribution template ever carry the diagram.</recommendation>
-</open-question>
 <open-question id="Design principles selection">
   <question>Which design claims does the README design-principles block present, how many, and in what form — the claim line alone, or the claim with one sentence of the design behind it?</question>
   <alternative id="Three novelties with design sentence">
