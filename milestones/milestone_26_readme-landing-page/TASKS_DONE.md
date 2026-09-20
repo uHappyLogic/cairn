@@ -137,3 +137,18 @@ Update every place `CLAUDE.md` describes the README or its sections to the finis
 - No `CLAUDE.md` mention of the README describes a pre-milestone state — `authoritative workflow documentation`, `## Adoption`, `cairn-banner`, `.github/assets`, and `temp/cairn-design-claims` each 0 hits — its eight `#` headings and its `{{PLUGIN_ROOT}}`/`{{VERSION}}`/`{{NAME}}` slot counts are unchanged; `git status --short` lists only `CLAUDE.md`; and `uv run scripts/build_hosts.py --check` exits 0 ("Check passed … at version 1.5.1").
 
 ---
+
+## Center Adoption Table On First Screen
+
+The three-repository adoption pipe table under the centered badge paragraph on the root `README.md` first screen renders left-aligned; wrap it so GitHub renders it horizontally centered at any viewport width, matching the badge row above it — keep it a Markdown pipe table if GitHub honors a centering HTML wrapper around it, and only if it does not convert it to an HTML `<table align="center">`, updating the `CLAUDE.md` repository-layout wording that calls it a "pipe table" in the same commit. The first screen is this milestone's landing-page deliverable, and the table is its one element left out of the centered header. Verify by rendering the README the way GitHub does (a pushed view or GitHub's markdown rendering) and confirming the table sits centered with its links and badge images intact, with `uv run scripts/build_hosts.py --check` still passing since the root README is not a build input.
+
+**Verified:**
+
+- `README.md` keeps the adoption table as a Markdown pipe table — header, delimiter, and three repository rows byte-for-byte unchanged (`git diff --numstat` reports 4 insertions, 0 deletions) — wrapped by a `<div align="center">` line above and a `</div>` line below, each separated from the table by one blank line, directly under the centered `<p align="center">` badge paragraph.
+- Rendered through GitHub's own Markdown renderer (`gh api /markdown`, GFM mode, the whole file), the output carries a `<div align="center" dir="auto">` element whose content is `<markdown-accessiblity-table><table role="table">` with one header row and three body rows and no stray `<p>` — the `align` attribute survives GitHub's sanitizer, so GitHub's `align=center` handling centers the fixed-width (`width: max-content`) table block inside it at any viewport width.
+- In that rendered output, all nine anchors (the three repository links and the six badge links to each repository's `traffic-data` branch) and all six badge `<img>` sources are identical to the README source, in order.
+- `CLAUDE.md`'s repository-layout wording "three-repository pipe table" stays accurate and is left unchanged — the table was not converted to `<table align="center">`, so no wording update was needed.
+- `uv run scripts/build_hosts.py --check` exits 0 ("Check passed: hosts/antigravity/ and hosts/claude/ match a fresh build of core/ at version 1.5.1").
+- `git status --short` lists only `README.md`; the diff is confined to the two wrapper lines and their blank-line spacing.
+
+---
