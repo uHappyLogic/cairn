@@ -18,3 +18,20 @@ Create `docs/workflow.md` carrying the README's six `## Workflow pipeline` phase
 - `docs/workflow.md` carries six mermaid fences with six byte-identical `%%{init: …}%%` theme blocks, neither docs page contains `{{` outside a `${{` expression, and `uv run scripts/build_hosts.py --check` exits 0 ("Check passed").
 
 ---
+
+## Promote Design Claims Into Docs Page
+
+Commit `temp/cairn-design-claims.md` as `docs/design-claims.md` with its 19 claims, six-group order, **Design** paragraphs, and **Metric** lines kept word for word in Simplified Technical English, changing only the frame: the intro becomes one orienting paragraph for a repository reader (what the list is, why it uses a controlled register, that each Metric names the test that would check the claim, and that no test suite in the repository runs them yet), the closing note keeps only the half saying claims 17–19 concern the plugin's own code, and claim 12's sentence "the work tree is clean after each skill" is corrected in the same register to match the non-committing bootstrap skill and the partial-work-stays rule. Verified when the committed page diffs from the source only in those three places and each claim line still heads its own entry so the README block can link to it.
+
+**Verified:**
+
+- `docs/design-claims.md` exists beside `docs/workflow.md` and `docs/skill-reference.md`, derived from `temp/cairn-design-claims.md` by three exact replacements with everything else copied byte-for-byte.
+- All 19 `### N. …` claim headings are byte-identical to the source and in the same six-group order under the same six `##` group headings (Decisions, Work, Records, Efficiency, Robustness, Engineering) — a `diff` of the two files' heading lines is empty; counts are 6 groups, 19 claims, 19 **Design** lines, 19 **Metric** lines.
+- Every **Design** paragraph and **Metric** line is word-for-word identical to the source except claim 12's Design, where the one sentence "The work tree is clean after each skill." became "The work tree is clean after each skill, with two exceptions. The bootstrap skill does not commit and leaves its changes staged for the user. A failed run leaves its partial work in the tree for the next run." in the same short-sentence STE register; claim 12's heading, its other Design sentences, and its Metric line are unchanged, and the two exceptions match the live plugin (`init-milestone-base-workflow` is non-committing and leaves changes staged; the completion procedure's carry-out step continues from uncommitted partial work).
+- The intro is one paragraph (no blank line inside it) addressed to a repository reader that states what the list is (19 design claims in six groups, each with its design and one metric), why it uses a controlled register (ASD-STE100 Simplified Technical English, so each claim reads the same to a reader and to a test author), that each **Metric** line names the test that would check its claim, and that no test suite in the repository runs those tests yet.
+- The closing note after the `---` is the single sentence "Claims 17 to 19 are about the plugin code, not a user project."; the benchmark-versus-showcase sentence is dropped.
+- `diff -u temp/cairn-design-claims.md docs/design-claims.md` shows exactly 3 hunks — the intro, claim 12's Design paragraph, and the closing note — and nothing else.
+- Each claim line still heads its own entry as a `###` heading, so the README block can link to it; claims 2, 5, and 11 head lines 20, 45, and 100 as `### 2. Each decision has a record in git.`, `### 5. Advice gets better with each milestone.`, and `### 11. The records are machine-readable.`.
+- `grep -P '(?<!\$)\{\{'` finds nothing in the page, and `uv run scripts/build_hosts.py --check` exits 0 ("Check passed").
+
+---

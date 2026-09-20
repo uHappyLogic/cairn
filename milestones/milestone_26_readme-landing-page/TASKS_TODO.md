@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Promote Design Claims Into Docs Page
-
-Commit `temp/cairn-design-claims.md` as `docs/design-claims.md` with its 19 claims, six-group order, **Design** paragraphs, and **Metric** lines kept word for word in Simplified Technical English, changing only the frame: the intro becomes one orienting paragraph for a repository reader (what the list is, why it uses a controlled register, that each Metric names the test that would check the claim, and that no test suite in the repository runs them yet), the closing note keeps only the half saying claims 17–19 concern the plugin's own code, and claim 12's sentence "the work tree is clean after each skill" is corrected in the same register to match the non-committing bootstrap skill and the partial-work-stays rule. Verified when the committed page diffs from the source only in those three places and each claim line still heads its own entry so the README block can link to it.
-
----
-
 ## Rebuild README First Screen Header
 
 Rework the top of `README.md` so the first screen opens with the three shields.io badges followed by the adoption block — the existing three-row pipe table with its `## Adoption` heading dropped, its caption cut to one sentence of about two lines that keeps the four facts (cumulative since 2026-09-04, unique counts summed per day, the badge workflow's own fetch adds one unique clone per repository per day, the monorepo's clones include CI checkouts) — placed above `# Cairn`, then the title with its bold "Mark the path from idea to shipped." lead and the subtitle replaced verbatim by "Milestone-driven development for your coding agent — any kind of work, one milestone at a time." Delete the `<p align="center">` banner paragraph together with `.github/assets/readme/cairn-banner.png` and the then-empty `.github/assets/` directory in the same commit, and remove the old `## Adoption` section from its place near the foot of the file. Verified when the rendered page opens on badges, table, and title with no banner, the file has one adoption table and no `## Adoption` heading, and nothing in the repository references the deleted image.
