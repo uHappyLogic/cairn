@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Rebuild README First Screen Header
-
-Rework the top of `README.md` so the first screen opens with the three shields.io badges followed by the adoption block — the existing three-row pipe table with its `## Adoption` heading dropped, its caption cut to one sentence of about two lines that keeps the four facts (cumulative since 2026-09-04, unique counts summed per day, the badge workflow's own fetch adds one unique clone per repository per day, the monorepo's clones include CI checkouts) — placed above `# Cairn`, then the title with its bold "Mark the path from idea to shipped." lead and the subtitle replaced verbatim by "Milestone-driven development for your coding agent — any kind of work, one milestone at a time." Delete the `<p align="center">` banner paragraph together with `.github/assets/readme/cairn-banner.png` and the then-empty `.github/assets/` directory in the same commit, and remove the old `## Adoption` section from its place near the foot of the file. Verified when the rendered page opens on badges, table, and title with no banner, the file has one adoption table and no `## Adoption` heading, and nothing in the repository references the deleted image.
-
----
-
 ## Add Simplified Milestone Loop Diagram
 
 Insert one mermaid `flowchart` directly under the title block of `README.md`, before `## Installation`, drawing the six verbs define, review, recommend, answer, derive, complete chained by plain arrows plus one dashed return edge from answer back to review labelled with the convergence condition (until no open questions remain), with no finish step and no milestone-return edge, under the same `%%{init: …}%%` theme block the six phase diagrams in `docs/workflow.md` carry so the wrappingWidth keeps the return label on one line. Verified when the diagram renders on GitHub with exactly those six nodes and seven edges, its theme block is byte-identical to the phase diagrams', and the file gains no `{{` sequence.

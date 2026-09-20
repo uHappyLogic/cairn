@@ -1,7 +1,4 @@
 <p align="center">
-    <img src=".github/assets/readme/cairn-banner.png" width="100%" alt="Cairn banner"/>
-</p>
-<p align="center">
   <a href="https://github.com/uHappyLogic/cairn/releases/latest">
     <img alt="Latest Release" src="https://img.shields.io/github/v/release/uHappyLogic/cairn?style=flat&color=22c55e&label=release&display_name=tag" />
   </a>
@@ -13,12 +10,20 @@
   </a>
 </p>
 
+| repository | unique views | unique clones |
+| --- | --- | --- |
+| [uHappyLogic/cairn](https://github.com/uHappyLogic/cairn) | [![unique views](https://raw.githubusercontent.com/uHappyLogic/cairn/traffic-data/views-unique.svg)](https://github.com/uHappyLogic/cairn/tree/traffic-data) | [![unique clones](https://raw.githubusercontent.com/uHappyLogic/cairn/traffic-data/clones-unique.svg)](https://github.com/uHappyLogic/cairn/tree/traffic-data) |
+| [uHappyLogic/cairn-claude](https://github.com/uHappyLogic/cairn-claude) | [![unique views](https://raw.githubusercontent.com/uHappyLogic/cairn-claude/traffic-data/views-unique.svg)](https://github.com/uHappyLogic/cairn-claude/tree/traffic-data) | [![unique clones](https://raw.githubusercontent.com/uHappyLogic/cairn-claude/traffic-data/clones-unique.svg)](https://github.com/uHappyLogic/cairn-claude/tree/traffic-data) |
+| [uHappyLogic/cairn-antigravity](https://github.com/uHappyLogic/cairn-antigravity) | [![unique views](https://raw.githubusercontent.com/uHappyLogic/cairn-antigravity/traffic-data/views-unique.svg)](https://github.com/uHappyLogic/cairn-antigravity/tree/traffic-data) | [![unique clones](https://raw.githubusercontent.com/uHappyLogic/cairn-antigravity/traffic-data/clones-unique.svg)](https://github.com/uHappyLogic/cairn-antigravity/tree/traffic-data) |
+
+Cumulative since 2026-09-04, with unique counts summed per day (a returning visitor counts again); the badge workflow's own daily fetch adds one unique clone per repository per day, and the monorepo's clones also include CI checkouts.
+
 ---
 
 # Cairn
 
 **Mark the path from idea to shipped.**
-Milestone-driven development for any kind of work.
+Milestone-driven development for your coding agent — any kind of work, one milestone at a time.
 
 ## Why Cairn?
 
@@ -77,16 +82,6 @@ Each milestone lives in `milestones/milestone_<N>_<slug>/` and contains three fi
 - `TASKS_DONE.md` — completed tasks in the same section format, each entry augmented with the acceptance bar the completer derived and verified the work against, recorded as a `**Verified:**` bullet list (one bullet per criterion)
 
 `milestones/README.md` is the source of truth for which milestone is active. Skills read and write the current-milestone pointer there; it is never ambiguous which milestone is open.
-
-## Adoption
-
-| repository | unique views | unique clones |
-| --- | --- | --- |
-| [uHappyLogic/cairn](https://github.com/uHappyLogic/cairn) | [![unique views](https://raw.githubusercontent.com/uHappyLogic/cairn/traffic-data/views-unique.svg)](https://github.com/uHappyLogic/cairn/tree/traffic-data) | [![unique clones](https://raw.githubusercontent.com/uHappyLogic/cairn/traffic-data/clones-unique.svg)](https://github.com/uHappyLogic/cairn/tree/traffic-data) |
-| [uHappyLogic/cairn-claude](https://github.com/uHappyLogic/cairn-claude) | [![unique views](https://raw.githubusercontent.com/uHappyLogic/cairn-claude/traffic-data/views-unique.svg)](https://github.com/uHappyLogic/cairn-claude/tree/traffic-data) | [![unique clones](https://raw.githubusercontent.com/uHappyLogic/cairn-claude/traffic-data/clones-unique.svg)](https://github.com/uHappyLogic/cairn-claude/tree/traffic-data) |
-| [uHappyLogic/cairn-antigravity](https://github.com/uHappyLogic/cairn-antigravity) | [![unique views](https://raw.githubusercontent.com/uHappyLogic/cairn-antigravity/traffic-data/views-unique.svg)](https://github.com/uHappyLogic/cairn-antigravity/tree/traffic-data) | [![unique clones](https://raw.githubusercontent.com/uHappyLogic/cairn-antigravity/traffic-data/clones-unique.svg)](https://github.com/uHappyLogic/cairn-antigravity/tree/traffic-data) |
-
-Counts are cumulative since 2026-09-04, the earliest day in each `traffic-data` branch's `totals.json`. A unique count is the sum of each day's unique visitors or cloners, so a visitor returning on another day counts again. Clone counts include the badge workflow's own daily fetch of the `traffic-data` branch (one unique clone and two clones per repository per day), and the monorepo's additionally include CI checkouts.
 
 ## Contributing
 
