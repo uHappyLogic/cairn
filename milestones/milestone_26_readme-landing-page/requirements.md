@@ -30,3 +30,44 @@ Exactly two hosts exist — `scripts/hosts/claude/` and `scripts/hosts/antigravi
 
 ## Out of Scope
 
+## Open questions
+
+<open-question id="Adoption block form">
+  <question>How compact should the adoption block be on the first screen, given that today it is a three-repository table of six badges under a three-sentence caption?</question>
+</open-question>
+<open-question id="One-liner wording">
+  <question>What does the generic host-neutral one-liner say, and does it replace the existing two-line tagline or sit beside it?</question>
+</open-question>
+<open-question id="Loop diagram shape">
+  <question>What does the simplified first-screen mermaid diagram show beyond the six named loop steps — the review-and-answer iteration, the milestone close, neither — and does it keep the theme block the six phase diagrams share?</question>
+</open-question>
+<open-question id="Docs page layout">
+  <question>How are the moved sections — the phase narrative with its six diagrams, the skill reference, the commit conventions, and the answer-principle-learning loop — split across files under docs/, and what are those pages named?</question>
+</open-question>
+<open-question id="Design-claims page fidelity">
+  <question>Is the design-claims file promoted into docs/ verbatim, keeping its Simplified Technical English style, its Metric lines, and its closing note on the plugin-code claims, or edited for a reader of the repository?</question>
+</open-question>
+<open-question id="Design principles selection">
+  <question>Which design claims does the README design-principles block present, how many, and in what form — the claim line alone, or the claim with one sentence of the design behind it?</question>
+</open-question>
+<open-question id="Why Cairn rewrite depth">
+  <question>Does the &quot;Why Cairn?&quot; section change only its host-naming sentence, or is it rewritten around the design-claims narrative, and does it stay a section separate from the design-principles block?</question>
+</open-question>
+<open-question id="Install section scope">
+  <question>Does the first-screen installation section keep the bootstrap steps and the marketplace-migration paragraph, or do those move below the fold so only the per-host install commands remain on the first screen?</question>
+</open-question>
+<open-question id="Below-the-fold sections">
+  <question>Which existing root README sections stay below the fold — how it works, contributing, self-dogfooding, license — and in what order after the design-principles block?</question>
+</open-question>
+<open-question id="Distribution README depth">
+  <question>Beyond the one-liner, adoption badges, installation, and contributor redirect, do the distribution README templates also carry the loop diagram, the &quot;Why Cairn?&quot; text, or the design-principles block?</question>
+</open-question>
+<open-question id="Distribution badge form">
+  <question>Where do a distribution repository&apos;s own unique-views and unique-clones badges sit in its README — in the top badge row or in an adoption section — and do they carry the caption about the workflow&apos;s own daily clone?</question>
+</open-question>
+<open-question id="Stale skill entries">
+  <question>Are the two known stale skill-reference entries — the goto-next-milestone arguments and the finish-current-milestone next-step sentence — corrected as the reference moves into docs/, or left for a later milestone?</question>
+</open-question>
+<open-question id="Banner file disposal">
+  <question>Is the banner image file deleted from the repository once the README no longer references it, or kept for another use?</question>
+</open-question>
