@@ -16,8 +16,6 @@
 | [uHappyLogic/cairn-claude](https://github.com/uHappyLogic/cairn-claude) | [![unique views](https://raw.githubusercontent.com/uHappyLogic/cairn-claude/traffic-data/views-unique.svg)](https://github.com/uHappyLogic/cairn-claude/tree/traffic-data) | [![unique clones](https://raw.githubusercontent.com/uHappyLogic/cairn-claude/traffic-data/clones-unique.svg)](https://github.com/uHappyLogic/cairn-claude/tree/traffic-data) |
 | [uHappyLogic/cairn-antigravity](https://github.com/uHappyLogic/cairn-antigravity) | [![unique views](https://raw.githubusercontent.com/uHappyLogic/cairn-antigravity/traffic-data/views-unique.svg)](https://github.com/uHappyLogic/cairn-antigravity/tree/traffic-data) | [![unique clones](https://raw.githubusercontent.com/uHappyLogic/cairn-antigravity/traffic-data/clones-unique.svg)](https://github.com/uHappyLogic/cairn-antigravity/tree/traffic-data) |
 
-Cumulative since 2026-09-04, with unique counts summed per day (a returning visitor counts again); the badge workflow's own daily fetch adds one unique clone per repository per day, and the monorepo's clones also include CI checkouts.
-
 ---
 
 # Cairn
@@ -50,14 +48,10 @@ flowchart LR
 
 ### Claude Code
 
-In Claude Code, add the `cairn-claude` marketplace and install the plugin from it:
-
 ```
 /plugin marketplace add uHappyLogic/cairn-claude
 /plugin install cairn@cairn
 ```
-
-**Already installed from `uHappyLogic/cairn`?** That install keeps working — see [Migrating from the old marketplace](#migrating-from-the-old-marketplace) to switch to this source.
 
 ### Antigravity
 
@@ -67,8 +61,6 @@ From your project root, extract the latest release into `.agents/plugins/cairn`,
 mkdir -p .agents/plugins/cairn
 curl -sL https://github.com/uHappyLogic/cairn-antigravity/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 -C .agents/plugins/cairn
 ```
-
-The `main` archive is always the latest release, since `main` advances only by release snapshots. To pin a release instead of tracking the latest, swap `refs/heads/main` in that URL for `refs/tags/<tag>`, using a tag from the [releases page](https://github.com/uHappyLogic/cairn-antigravity/releases).
 
 ### Bootstrap your project
 
@@ -120,16 +112,6 @@ Cairn is authored once under `core/` and every `hosts/<host>/` tree is rebuilt f
 - Questions — ask in [Discussions](https://github.com/uHappyLogic/cairn/discussions/new?category=q-a).
 - Vulnerabilities — report them privately as [SECURITY.md](SECURITY.md) describes, never in an issue.
 - Release notes — every release's notes, verbatim, in [CHANGELOG.md](CHANGELOG.md).
-
-## Migrating from the old marketplace
-
-**Already installed from `uHappyLogic/cairn`?** Installs pinned to `uHappyLogic/cairn` keep working and updating — that marketplace now serves `./hosts/claude` — but `cairn-claude` is the recommended source. To switch, remove the old marketplace, add the new one, and install again; the plugin id `cairn@cairn` is unchanged, so no project settings need editing:
-
-```
-/plugin marketplace remove cairn
-/plugin marketplace add uHappyLogic/cairn-claude
-/plugin install cairn@cairn
-```
 
 ## License
 
