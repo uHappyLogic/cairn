@@ -36,5 +36,9 @@ Each way is one fenced block in which every line is a concrete invocation naming
 
 `docs/workflow.md` and `docs/skill-reference.md` each gain one clause in the routing sentence their intro already carries, pointing at `docs/ways-of-using-cairn.md`, so the three pages a user of the workflow reads (how it flows, what each skill does, how to chain the skills headlessly) name one another; the new page is the only place headless invocation and the `cairn:` namespace form are documented, which makes each pointer content-driven like the pair's existing mutual links. `docs/design-claims.md` stays linked from the README's Design principles block alone, and the `CLAUDE.md` layout entries describing the two changed intros are updated with them.
 
+### Continuation flag retention
+
+The `-c` continuation flag is dropped: every line on the page is a fresh headless run, and the page mentions session continuation nowhere. The starting-state pass writes its analysis into `## Relevant starting state` for the passes that follow and the review pass reads `requirements.md` whole, so a fresh run per line loses nothing the pipeline persists, and that self-containment is what lets each line name its own host and model under the per-line host layout. Continuation is host-local, points at whatever conversation last ran in the directory, and sits outside the goal's lists of kept flags and mixing axes, so the flag legend stays at the goal's four flags.
+
 ## Out of Scope
 
