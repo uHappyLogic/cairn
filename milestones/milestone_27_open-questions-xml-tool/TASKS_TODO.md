@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Rewire Shared Answer Procedures
-
-Rewrite `core/shared/answer-procedure.md` and `core/shared/answer-with-recommendation-procedure.md` onto tool invocations: locate via the tool, fold the decision into `## Decisions` of `requirements.md`, remove the block via `remove` with `--option` set to the RECORDED OPTION, cascade mooted siblings via bare `remove`, and drop every restated boundary-line, entity-unescaping, re-query, line-range, and dependent-reconciliation prose that is now the tool's internals. The judgment mode for a literal answer collapses to one verdict — whether ANSWER plainly settles on one of the answered block's own `<alternative id>` values, judged in prose against that closed set and never parsed from ANSWER — passed as `--option`, with nothing passed otherwise; the fold-before-remove order stays, both files stay execution-neutral and silent, and the work is verified by reading the rendered procedures and a passing host rebuild.
-
----
-
 ## Rewire Single-Question Answer Skills
 
 Rewire `answer-open-question`, `answer-open-question-with-recommendation`, `answer-open-question-with-alternative`, and the `answer-open-question-with-recommendation` agent so their locate and lift steps are `lift` calls (the alternative skill lifting `<id> — <what-it-is>` for its named alternative), their clean stops are driven by the tool's `Error:` line, their path-scoped staging and commits name both `<MILESTONE_DIR>/open_questions.xml` and `<MILESTONE_DIR>/requirements.md` under the unchanged `Manual-answer:`, `Recommendation-answer:`, and `Alternative-answer:` subjects, and the redirect guard and first-`.` arg splits stay as they are. Verified by the rendered skills, every `{{PLUGIN_ROOT}}/tools/open_questions.py` reference resolving under the build's `dangling-plugin-root` check, and a passing host rebuild.
