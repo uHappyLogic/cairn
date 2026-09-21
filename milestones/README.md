@@ -13,9 +13,19 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_27_open-questions-xml-tool/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 27 — Open Questions XML Tool
+
+- Each milestone's open questions now live in a sibling `<MILESTONE_DIR>/open_questions.xml` — one `<open-question id="Short Title">` block per question under a bare `<open-questions>` root, created empty by `define-milestone-goal` — and `requirements.md` keeps its four prose sections with no `## Open questions` section; pre-split milestones (`milestone_01` through `milestone_27`) get no migration and no compatibility.
+- `core/tools/open_questions.py`, a stdlib-only Python 3.9+ tool rendered byte-identical into every host tree and run as `python3 {{PLUGIN_ROOT}}/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`, is the file's sole writer and owns every deterministic operation over it: `create`, `list` (with `--unannotated`), `locate`, `lift` (with `--alternative`), `add`, `strip`, `embed` (slicing the recommend agent's whole message and validating the fragment in place of the seven-test gate), `remove` (with `--option` reconciling `<depends-on>` dependents transitively in the same write), and `walk` (the answer sweep's dependency-graph dispatch order).
+- The tool re-renders the whole document in one canonical form on every write (2-space depth, children grouped by kind, one line per element, all five entities substituted), prints bare un-escaped values on reads and nothing on successful mutations, fails as one `Error: <reason>` line with the document unchanged, and takes free text (`add`'s question, `embed`'s message) on stdin as a quoted-delimiter heredoc.
+- Every skill, agent, and shared procedure that touches open questions was rewired from the `awk`/`sed`/`grep` boundary-line idiom onto tool calls, so runtime prose keeps only judgment — authoring question text, ranking significance, one prose verdict for a literal answer's `--option` — while entity escaping, indentation, whole-block replacement, dependent reconciliation, and the graph walk are the tool's internals; whole-set readers read `open_questions.xml` directly for reasoning only.
+- `capture-milestone-principle-updates` keeps its diff-line reconstruction, repointed at `open_questions.xml` (log filter on that file, one `git show` naming both files per commit) with the pre-split blockquote fallback dropped.
+- A pytest suite under `tests/` (one module per subcommand or concern, golden canonical fixtures, `run_tool` subprocess fixture) runs in the `drift-gate.yml` check job twice after the drift gate — `uv run pytest` under the pinned interpreter and `uv run --no-project --python 3.9 --with pytest pytest` as the floor run — and `init-milestone-base-workflow` checks once per project for a Python 3.9+ interpreter answering as `python3`, stopping before any write when none does.
+- `CLAUDE.md`, `README.md`, both distribution README templates, `docs/`, `CONTRIBUTING.md`, and this file state the split, the tool, and the Python 3.9+ prerequisite, and `hosts/` is rebuilt with `uv run scripts/build_hosts.py --check` passing.
 
 ### Milestone 26 — README landing page
 
@@ -297,3 +307,4 @@ Current milestone: `milestones/milestone_27_open-questions-xml-tool/`
 | 24 | Repo Hygiene Surface | `milestones/milestone_24_repo-hygiene-surface/` |
 | 25 | Traffic Adoption Badges | `milestones/milestone_25_traffic-adoption-badges/` |
 | 26 | README landing page | `milestones/milestone_26_readme-landing-page/` |
+| 27 | Open Questions XML Tool | `milestones/milestone_27_open-questions-xml-tool/` |
