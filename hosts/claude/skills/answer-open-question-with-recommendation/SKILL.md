@@ -52,7 +52,7 @@ Commit nothing — go no further.
 ### 2. Commit the recommendation answer
 
 Read and follow the shared commit procedure at
-`${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these inputs, using the
+`${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these three inputs, using the
 same `<MILESTONE_DIR>` the shared recording procedure resolved:
 
 - **PATHS** — this skill's own edits: `<MILESTONE_DIR>/open_questions.xml` and
@@ -63,7 +63,7 @@ same `<MILESTONE_DIR>` the shared recording procedure resolved:
   subjects, it reads this one as evidence about principles already in the store only, never as
   a source of new principles — those come from the `Manual-answer:` and `Alternative-answer:`
   override signals.
-- **Body** — the lifted recommendation: the "`<option>` — `<rationale>`" line the `lift` call
+- **BODY** — the lifted recommendation: the "`<option>` — `<rationale>`" line the `lift` call
   printed in step 1, verbatim — the answer that was recorded.
 
 That procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.

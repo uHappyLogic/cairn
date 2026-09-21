@@ -507,7 +507,7 @@ There is no round limit; the loop ends only on one of the two answers below.
 
 - **PATHS** — this skill's own change set: the fixed-path store `milestones/answer_decision_principles.md` (a `milestones/`-root artifact, **not** any `<MILESTONE_DIR>` file — this skill writes only that store).
 - **SUBJECT** — `Principle-capture: <milestone_id>`, with `<milestone_id>` the argument from step 1 used verbatim (e.g. `Principle-capture: milestone_12_user-guide`), the marker naming this skill's distinctive principle-capture function.
-- **Body** — **one short line per store change**, each naming the **change kind** — `add`,
+- **BODY** — **one short line per store change**, each naming the **change kind** — `add`,
   `revision`, `prune`, `merge`, or `generalization` — and the **Short Title of the override answer
   commit that drove it**, e.g. `prune: Mutate live machinery last — driven by Cascade parent order`.
   **Compose the body at commit time, against the final rewrite**: only after the acceptance, read
@@ -526,7 +526,7 @@ There is no round limit; the loop ends only on one of the two answers below.
   (step 8) and the store keeps no changelog — so it is never printed to the conversation.
 
 The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit
-(`git commit -m "<SUBJECT>" -m "<Body>"`). The rewrite is committed as it stands after the last
+that records BODY under SUBJECT. The rewrite is committed as it stands after the last
 review round, over the working-tree baseline, so edits admitted in step 2 ride in the same commit.
 Once the commit lands, discard the snapshot (`rm -f "$SNAPSHOT"`) and go to step 8 (captured).
 

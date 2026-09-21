@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Commit Procedure Optional BODY Input
-
-Give `core/shared/commit-procedure.md` a third, optional input, BODY — zero or more body lines the caller supplies already resolved, never a policy the procedure decides — and make its commit step run `git commit -m "<SUBJECT>" -m "<BODY>"` when a body is given and subject-only otherwise, then have the four body-supplying callers (`answer-open-question`, `answer-open-question-with-alternative`, `answer-open-question-with-recommendation`, `capture-milestone-principle-updates`) hand their body over as BODY exactly as they hand over PATHS and SUBJECT, with every body-less caller unchanged. Needed because the recommend sweep's per-question commits carry a lifted body and the procedure is the single source of truth for how a body reaches git. Verified by reading the procedure and each caller for the three-input contract, by a rebuild of both host trees with `uv run scripts/build_hosts.py --check` passing, and by `uv run pytest` still passing.
-
----
-
 ## Tool Sort Subcommand With Tests
 
 Add a `sort MILESTONE_DIR` subcommand to `core/tools/open_questions.py` — registered through `add_subcommand` and listed in the module docstring's `Subcommands:` — that rewrites the document with the `<recommendation>`-bearing blocks first in exactly `walk_order`'s order (origins, then dependents by depth, same-depth ties in prior document order) and every `<recommendation>`-less block last in stable prior document order, reusing `walk_order` rather than reimplementing it, printing nothing on success and one `Error:` line with the document unchanged on failure; `render_document` and every other subcommand keep writing blocks in their existing order. Needed so `walk` is by construction the annotated prefix of `list` on a sorted document. Verified by a new `tests/test_sort.py` (annotated prefix equals `walk`'s print, un-annotated blocks last in prior order, `sort` idempotent and the identity on an already-sorted document such as the `annotated` fixture, silent success, `Error:` on a missing document) passing under both `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest`, and by a rebuild with `uv run scripts/build_hosts.py --check` passing with the tool rendered byte-identical.

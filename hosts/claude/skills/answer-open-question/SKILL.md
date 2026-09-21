@@ -50,11 +50,11 @@ That procedure owns resolving the current milestone (the `<MILESTONE_DIR>` refer
 
 ### 4. Commit the manual answer
 
-Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these inputs, using the same `<MILESTONE_DIR>` resolved while recording:
+Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these three inputs, using the same `<MILESTONE_DIR>` resolved while recording:
 
 - **PATHS** — this skill's own edits: `<MILESTONE_DIR>/open_questions.xml` and `<MILESTONE_DIR>/requirements.md`.
 - **SUBJECT** — exactly `Manual-answer: <Short Title>` (the answered question's handle). The marker is the provenance `/capture-milestone-principle-updates` reads when it walks a milestone's answer commits across all three subjects: `Manual-answer:` and `Alternative-answer:` mark override signals it distills new principles from, while `Recommendation-answer:` marks evidence about existing principles only.
-- **Body** — the decision's rationale — but record only rationale that genuinely exists in this conversation. Never prompt the user for a rationale and never fabricate one. When `/discuss-open-question` deliberation is in context, the body captures that reasoning. On a cold answer (no deliberation), the body is the literal answer text — recorded verbatim, including any inline "because" clause the user typed; when the answer states no reasoning, the body holds the bare decision. The answer string is itself the cold path's rationale affordance — add no separate rationale prompt.
+- **BODY** — the decision's rationale — but record only rationale that genuinely exists in this conversation. Never prompt the user for a rationale and never fabricate one. When `/discuss-open-question` deliberation is in context, the body captures that reasoning. On a cold answer (no deliberation), the body is the literal answer text — recorded verbatim, including any inline "because" clause the user typed; when the answer states no reasoning, the body holds the bare decision. The answer string is itself the cold path's rationale affordance — add no separate rationale prompt.
 
 That procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit. Its no-op guard also covers this skill's clean-stop cases: if step 3 stopped on the tool's `Error:` line, step 2's redirect guard fired on the retired sentinel, or step 1 hit a parse error, neither file changed, so nothing is staged and nothing is committed.
 

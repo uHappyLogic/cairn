@@ -86,7 +86,7 @@ Do **not** spawn any subagent — there is no `answer-open-question-with-alterna
 ### 4. Commit the alternative answer
 
 Read and follow the shared commit procedure at
-`.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these inputs, using the
+`.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these three inputs, using the
 `<MILESTONE_DIR>` from step 1:
 
 - **PATHS** — this skill's own edits: `<MILESTONE_DIR>/open_questions.xml` and
@@ -97,7 +97,7 @@ Read and follow the shared commit procedure at
   subjects, it reads this one as an override signal, like `Manual-answer:`, and — because the
   body below carries no user rationale — asks the user then why the alternative was preferred;
   `Recommendation-answer:` commits are evidence about existing principles only.
-- **Body** — the lifted alternative: the "`<id>` — `<what-it-is>`" line the `lift` call printed
+- **BODY** — the lifted alternative: the "`<id>` — `<what-it-is>`" line the `lift` call printed
   in step 2, verbatim — the answer that was recorded.
 
 That procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
