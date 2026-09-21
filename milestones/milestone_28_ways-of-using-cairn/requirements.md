@@ -40,5 +40,9 @@ Each way is one fenced block in which every line is a concrete invocation naming
 
 The `-c` continuation flag is dropped: every line on the page is a fresh headless run, and the page mentions session continuation nowhere. The starting-state pass writes its analysis into `## Relevant starting state` for the passes that follow and the review pass reads `requirements.md` whole, so a fresh run per line loses nothing the pipeline persists, and that self-containment is what lets each line name its own host and model under the per-line host layout. Continuation is host-local, points at whatever conversation last ran in the directory, and sits outside the goal's lists of kept flags and mixing axes, so the flag legend stays at the goal's four flags.
 
+### claude-wait equivalent
+
+Where each private `claude-wait` alias stood, the page puts a shell comment line, such as `# wait until your account's usage window has reset`, keeping the pause at its position in the block; both `complete-all-tasks` lines stay, and the way's one-or-two-sentence intro states why: the heaviest run can stop at the host account's usage limit, and because every task commits on its own and a failed task's partial work is continued rather than redone, running the line again continues from the remaining tasks. A comment is a no-op in every shell, so every line of the single fenced block stays runnable as written on either host, the draft's verified run-wait-run pattern is promoted intact, and the note restates the private quota hack as the cairn property it relied on while naming no endpoint, credential store, or window length. No wait placeholder stands in the command position (it would stand for a tool the reader must write, not a value to look up, and break the every-line-runs property), the pause is not dropped, and the wait helper itself is not shipped.
+
 ## Out of Scope
 
