@@ -5,7 +5,7 @@ description: Answer an informational question about the current milestone from i
 
 # ask-in-milestone-context
 
-Answers an informational question about the current milestone, grounded in the real project state: the milestone's goal and recorded decisions, the tasks done and still pending, and the actual deliverables those tasks produced. The deliverable is **a clear answer** — not a decision, a new task, or an edited document. This skill reads; it never writes — it never creates or edits any file, not `requirements.md`, not the task lists, nothing.
+Answers an informational question about the current milestone, grounded in the real project state: the milestone's goal and recorded decisions, the tasks done and still pending, and the actual deliverables those tasks produced. The deliverable is **a clear answer** — not a decision, a new task, or an edited document. This skill reads; it never writes — it never creates or edits any file, not `requirements.md`, not `open_questions.xml`, not the task lists, nothing.
 
 Use it to look back ("how did the onboarding section end up covering setup?", "where did we put the troubleshooting steps?"), to take stock ("what's left in this milestone, and why is it ordered that way?", "what has this milestone changed so far?"), or to pull up relevant context on demand before deciding what to do next.
 
@@ -38,7 +38,8 @@ If the pointer is `none` (no active milestone), don't dead-end. Tell the user th
 
 Read in parallel, so the answer rests on the real state rather than memory:
 
-- `<MILESTONE_DIR>/requirements.md` — the goal, relevant starting state, recorded decisions, and any remaining open questions.
+- `<MILESTONE_DIR>/requirements.md` — the goal, relevant starting state, and recorded decisions.
+- `<MILESTONE_DIR>/open_questions.xml` — any remaining open questions, each an `<open-question>` block carrying whatever alternatives and recommendation the recommend sweep has embedded. Read it whole with the file-reading tool, exactly as you read `requirements.md`; that whole read is for reasoning only, and a locate, list, or lift of one block is a call to the plugin's open-question tool, `python3 .agents/plugins/cairn/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`, never a search of your own over the file.
 - `<MILESTONE_DIR>/TASKS_DONE.md` — completed tasks. Each entry's description and `**Verified:**` bar tell you *what the task was meant to achieve* — the intent behind the deliverable that now exists.
 - `<MILESTONE_DIR>/TASKS_TODO.md` — pending tasks, in priority order. Their ordering explains dependencies ("what's blocking what").
 - `CLAUDE.md` — the project's domain context, conventions, and real names for its systems and files, so your answer uses the project's vocabulary.

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Rewire Read-Only Question Consumers
-
-Repoint every whole-set reader at `<MILESTONE_DIR>/open_questions.xml` read directly with the file-reading tool for reasoning only — the `recommend-open-question` agent's grounding, `core/shared/recommend-procedure.md`'s sibling read, `discuss-open-question`'s context step (its locate via the tool), `ask-in-milestone-context`, and `modify-milestone-goal`'s impact analysis — each carrying the one rule that every locate, list, or lift goes through the tool, and drop the agent's indentation and escaping rules that `embed` now normalizes while keeping its element rendering and two-test self-check. Verified by the rendered files naming no `requirements.md` question read and a passing host rebuild.
-
----
-
 ## Rewire Review Pass And Derive Precondition
 
 Rewire `review-milestone-requirements` to author each new question with `add`, prune or dedup with bare `remove` (which strips dependents transitively), read `open_questions.xml` whole for reconciliation, report convergence as an empty `list`, and commit both `open_questions.xml` and `requirements.md` under `Requirements-review:`; rewire `derive-tasks` so its precondition is a `list` call whose non-empty output is the stop message's Short Titles. Verified by the rendered skills and a passing host rebuild.

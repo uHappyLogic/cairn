@@ -20,21 +20,25 @@ This procedure produces a recommendation for one question the caller supplies:
 ### 1. Ground in the real project state
 
 Before forming any view, read the context that bears on the question: the milestone's
-`requirements.md` and the actual project artifacts the question turns on. Prefer reading the
-live project over reasoning from memory — the point is to ground the recommendation in what
-the project actually is, not what you recall it to be. All of this reading is read-only;
-forming a recommendation changes nothing.
+`requirements.md`, its `open_questions.xml`, and the actual project artifacts the question
+turns on. Prefer reading the live project over reasoning from memory — the point is to ground
+the recommendation in what the project actually is, not what you recall it to be. All of this
+reading is read-only; forming a recommendation changes nothing.
 
 Part of that grounding is the project-wide answering-principle store
 `milestones/answer_decision_principles.md` — a fixed path at the `milestones/` root, above
 any one milestone. Read it in place and note any confirmed principle that bears on this
 question. Presence of a principle in that file means it is user-confirmed.
 
-Reading `requirements.md` also surfaces the sibling questions, and a recommendation already
-attached to a sibling that is itself still unanswered is legitimate input to this one.
+Reading `<MILESTONE_DIR>/open_questions.xml` whole — with the file-reading tool, exactly as
+`requirements.md` is read beside it — surfaces the sibling questions, and a recommendation
+already attached to a sibling that is itself still unanswered is legitimate input to this one.
 Whenever the recommendation you form leans on such a sibling's recommendation, disclose that
 dependency: name the sibling (its Short Title) and the option you assumed it will settle on.
-The caller decides how that disclosure is rendered.
+The caller decides how that disclosure is rendered. That whole read is for reasoning only:
+every locate, list, or lift of a block is a call to the plugin's open-question tool,
+`python3 ${CLAUDE_PLUGIN_ROOT}/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`, never a
+search over the file.
 
 ### 2. Enumerate the alternatives
 

@@ -44,13 +44,13 @@ If the intended change is genuinely ambiguous, state the revised wording you pro
 Reason about what the new goal may have invalidated. Do **not** write this analysis into the document and do **not** edit those sections — this is to inform what you surface in step 5:
 
 - Which `## Decisions` entries the new goal contradicts, moots, or leaves dangling.
-- Which open questions it newly settles, newly opens, or makes irrelevant.
+- Which open questions it newly settles, newly opens, or makes irrelevant — read `<MILESTONE_DIR>/open_questions.xml` whole with the file-reading tool for this, as you read `requirements.md` in step 1; that whole read is for reasoning only, and a locate, list, or lift of one block is a call to the plugin's open-question tool, `python3 ${CLAUDE_PLUGIN_ROOT}/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`.
 - Which `## Out of Scope` entries the new goal now pulls back in (or pushes out).
 - If `TASKS_TODO.md` / `TASKS_DONE.md` already hold tasks, which derived or completed tasks the new goal strands, contradicts, or leaves unaddressed.
 
 ### 4. Edit only the Goal
 
-Replace the body of the `## Goal` section with the revised goal text. Touch nothing else — not `## Decisions`, not the questions, not `## Out of Scope`, not the task lists. A single targeted edit, not a rewrite of the file.
+Replace the body of the `## Goal` section with the revised goal text. Touch nothing else — not `## Decisions`, not `open_questions.xml`, not `## Out of Scope`, not the task lists. A single targeted edit, not a rewrite of the file.
 
 ### 5. Commit the goal revision
 

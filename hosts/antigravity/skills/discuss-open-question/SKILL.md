@@ -5,7 +5,7 @@ description: Discuss a named open question in the current milestone requirements
 
 # discuss-open-question
 
-Facilitates a deliberation on a named `<open-question>` block in the current milestone's `requirements.md` where the user cannot give an immediate answer. The goal is a concrete decision by the end of the conversation — not a design document. The skill is purely conversational: it never edits `requirements.md` or any other file.
+Facilitates a deliberation on a named `<open-question>` block in the current milestone's `open_questions.xml` where the user cannot give an immediate answer. The goal is a concrete decision by the end of the conversation — not a design document. The skill is purely conversational: it never edits `open_questions.xml`, `requirements.md`, or any other file.
 
 ## Usage
 
@@ -13,7 +13,7 @@ Facilitates a deliberation on a named `<open-question>` block in the current mil
 /discuss-open-question <Short Title>
 ```
 
-The `<Short Title>` must match (case-insensitive) the `id` of an existing `<open-question>` block in the document.
+The `<Short Title>` must match (case-insensitive) the `id` of an existing `<open-question>` block in `<MILESTONE_DIR>/open_questions.xml`.
 
 **Example:**
 ```
@@ -28,17 +28,19 @@ Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILE
 
 ### 1. Locate the question
 
-Locating a block by its handle is a deterministic lookup, so query it with the line-oriented CLI (`awk`/`sed`/`grep`) keyed on the `<open-question …>` / `</open-question>` boundary lines — never a real XML processor (`xmllint`). Every `<open-question>` block lives under the single `## Open questions` section of `<MILESTONE_DIR>/requirements.md`, so those boundary lines within that one section enumerate the entire question set.
+Locating a block by its handle is a deterministic lookup, so it is a call to the plugin's open-question tool — the sole writer of `<MILESTONE_DIR>/open_questions.xml`, and the only way this skill ever locates, lists, or lifts a block:
 
-For each `<open-question …>` opening boundary line, pull its `id` attribute with the regex `id="([^"]*)"`. The captured value is stored **entity-escaped**, so reverse the five-predefined-entity substitution on it before comparing — replace `&lt;`→`<`, `&gt;`→`>`, `&quot;`→`"`, `&apos;`→`'`, and `&amp;`→`&` **last**. Then case-fold both that un-escaped `id` and the `<Short Title>` argument and compare: the block whose `id` case-folds equal to the title is the match.
+```
+python3 .agents/plugins/cairn/tools/open_questions.py locate <MILESTONE_DIR> "<Short Title>"
+```
 
-Pull the **whole matched block** — from its `<open-question …>` opening boundary line through the next `</open-question>` closing boundary line — as the question context the deliberation runs on: its `<question>` text plus any `<alternative>` / `<applied-principle>` / `<recommendation>` sub-elements the recommend sweep may already have embedded. That whole block is the **QUESTION** you carry into step 3.
+On success it prints the **whole matched block** verbatim — its `<question>` text plus any `<alternative>` / `<applied-principle>` / `<depends-on>` / `<recommendation>` sub-elements the recommend sweep may already have embedded. That block is the question context the deliberation runs on and the **QUESTION** you carry into step 3.
 
-If no block's `id` case-folds equal to the title, report the mismatch and list the available titles — deterministically enumerable by pulling `id="([^"]*)"` from every `<open-question …>` boundary line in the `## Open questions` section — so the user can retry.
+If it fails — no block's `id` matches the title — report the mismatch, quoting the tool's `Error:` line, which lists every id the document holds so the user can retry.
 
 ### 2. Gather context
 
-Before forming a view, read any project artifacts — deliverables, documents, or design notes — that bear on the question. Prefer reading the real project state over reasoning from memory. Read `requirements.md` and the bearing artifacts **whole** rather than querying via the CLI, which is reserved for the deterministic locate in step 1.
+Before forming a view, read any project artifacts — deliverables, documents, or design notes — that bear on the question. Prefer reading the real project state over reasoning from memory. Read `<MILESTONE_DIR>/requirements.md` (the goal, relevant starting state, and recorded decisions) and `<MILESTONE_DIR>/open_questions.xml` (the sibling blocks, with whatever the recommend sweep has embedded in them) **whole** with the file-reading tool, as you read the bearing artifacts. A whole read is for reasoning only; a locate, list, or lift of a block is the tool's job, as in step 1.
 
 ### 3. Present the discussion
 
@@ -59,7 +61,7 @@ After the opening, invite the user to push back, ask follow-up questions, or nar
 
 ### 5. On decision
 
-When the user lands on an answer, offer to invoke `/answer-open-question` with that answer to record it in the document. Do not edit the document yourself — that is `answer-open-question`'s responsibility.
+When the user lands on an answer, offer to invoke `/answer-open-question` with that answer to record it. Do not edit either document yourself — that is `answer-open-question`'s responsibility.
 
 If the deliberation instead reveals that the milestone **goal itself** needs to change — not just this question, but the objective the question hangs off — surface that explicitly and offer to invoke `/modify-milestone-goal` with the proposed revised goal. Still do not edit anything yourself; the user confirms the wording and that skill performs the write.
 
