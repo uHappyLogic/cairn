@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Rewire Answer Sweep Orchestrator
-
-Rewire `answer-all-open-questions-with-recommendation` to gather and order its questions with one tool walk call, to run each pre-dispatch re-check as a `lift` call whose failure is the skip and whose printed text is the commit body, and to commit each answer's staged `open_questions.xml` and `requirements.md` under `Recommendation-answer: <Short Title>`, deleting the prose graph walk, origin promotion, and re-read rules the tool now owns while keeping strictly sequential dispatch and the one-commit-per-answer rule. Verified by the rendered skill and a passing host rebuild.
-
----
-
 ## Rewire Recommend Sweep Orchestrator
 
 Rewire `recommend-all-open-questions` to gather in three tool calls — bare `list` (empty document stops the run), `list --unannotated` (empty means nothing to annotate), then `locate` over the surviving ids whose verbatim blocks are both the ranking input and the dispatch prompt — and to judge each return by the last-line `FAILED:` verdict alone before piping the whole message to `embed` through a quoted-delimiter heredoc, filling the one-slot repair template with the tool's `Error:` line, retaining one repair per question and the skip advisory. Delete the seven-test gate, its reason strings, and the whole-block-replacement `Edit`, state the hand-clear as `strip` followed by a re-run with no hand-edit exception, and commit `open_questions.xml` under `Recommendation-annotation:`; verified by the rendered skill and a passing host rebuild.
