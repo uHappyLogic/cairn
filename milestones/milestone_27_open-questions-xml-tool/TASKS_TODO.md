@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Tool List Locate And Lift Subcommands
-
-Add the tool's read subcommands: `list` printing bare ids in document order with a `--unannotated` filter for blocks carrying no `<recommendation>` element, `locate` taking one or more Short Titles and printing each block verbatim as the file holds it, and `lift` printing the recombined answer text — `<option> — <rationale>` from the block's `<recommendation option="…">` or `<id> — <what-it-is>` from a named `<alternative id="…">` with the `<advantage>`/`<drawback>` children excluded — with ids compared un-escaped and case-folded and a missing block, missing recommendation, or unmatched alternative id failing as one `Error:` line. These are what the rewired skills call in place of the `awk`/`sed`/`grep` idiom, and the work is verified by pytest cases covering each subcommand, its empty-set behaviour, and its error paths.
-
----
-
 ## Tool Add And Strip Subcommands
 
 Add `add`, which takes the Short Title as an argument, reads the question text from `sys.stdin.buffer` as UTF-8 (refusing a terminal stdin and reading exactly one body per call), and appends a bare block with only its `<question>` child in canonical form, and `strip`, which takes one or more Short Titles and deletes every child between each block's `<question>` element and its `</open-question>` line while touching no dependent and no `<depends-on>` tag naming the block, rejecting an unknown id with the document unchanged and doing nothing on an already-bare block. `add` is the review pass's authoring write and `strip` is the user's hand-clear replacement for a stale recommendation, and both are verified by pytest cases including the stdin-refusal and duplicate-id or unknown-id errors.

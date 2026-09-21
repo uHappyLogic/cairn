@@ -7,8 +7,21 @@ acts on the one file this module owns inside it, MILESTONE_DIR/open_questions.xm
 caller resolves the milestone; this module never reads milestones/README.md.
 
 Subcommands:
-  create MILESTONE_DIR   write the empty document, creating the directory when it is
-                         missing, and refuse to touch an existing document
+  create MILESTONE_DIR
+      write the empty document, creating the directory when it is missing, and refuse to
+      touch an existing document
+  list MILESTONE_DIR [--unannotated]
+      print the id of every <open-question> block, one per line in document order;
+      --unannotated keeps only the blocks carrying no <recommendation> element
+  locate MILESTONE_DIR SHORT_TITLE...
+      print each named block verbatim, as the document holds it, in the order named
+  lift MILESTONE_DIR SHORT_TITLE [--alternative ALTERNATIVE_ID]
+      print the block's answer text on one line: "<option> — <rationale>" from its
+      <recommendation option="…">, or with --alternative "<id> — <what-it-is>" from the
+      named <alternative id="…"> with its <advantage>/<drawback> children excluded
+
+A Short Title names a block by its id and ALTERNATIVE_ID names an alternative by its id;
+both are compared against the document's un-escaped values, case-folded.
 
 Document format, the canonical form every write re-renders the whole document into:
   - a bare <open-questions> root with no XML declaration and no attributes; the empty
@@ -346,6 +359,56 @@ def _write_bytes(path, data):
         raise
 
 
+# --- lookups --------------------------------------------------------------------------
+
+
+def id_key(value):
+    """The comparison form of an id: the un-escaped value, whitespace-folded and case-folded."""
+    return fold(value).casefold()
+
+
+def _quoted(values):
+    return ", ".join(f'"{value}"' for value in values)
+
+
+def find_question(document, short_title):
+    """The block whose id matches the Short Title; none matching is a ToolError that names
+    the ids the document does hold."""
+    wanted = id_key(short_title)
+    for question in document.questions:
+        if id_key(question.id) == wanted:
+            return question
+    held = _quoted(question.id for question in document.questions) or "no blocks"
+    raise ToolError(f'no <{BLOCK_TAG}> block has the id "{short_title}"; the document holds {held}')
+
+
+def find_questions(document, short_titles):
+    """The blocks the Short Titles name, once each in the order first named; every title is
+    resolved before anything is returned, so one unknown title fails the whole lookup."""
+    questions = []
+    seen = set()
+    for short_title in short_titles:
+        question = find_question(document, short_title)
+        if id_key(question.id) not in seen:
+            seen.add(id_key(question.id))
+            questions.append(question)
+    return questions
+
+
+def find_alternative(question, alternative_id):
+    """The block's alternative whose id matches; none matching is a ToolError that names the
+    ids the block does carry."""
+    wanted = id_key(alternative_id)
+    for alternative in question.alternatives:
+        if id_key(alternative.id) == wanted:
+            return alternative
+    context = f'<{BLOCK_TAG} id="{question.id}">'
+    if not question.alternatives:
+        raise ToolError(f"{context} carries no <alternative> elements")
+    held = _quoted(alternative.id for alternative in question.alternatives)
+    raise ToolError(f'{context} has no <alternative> with the id "{alternative_id}"; its alternatives are {held}')
+
+
 # --- subcommands ----------------------------------------------------------------------
 
 
@@ -355,6 +418,39 @@ def cmd_create(args):
         raise ToolError(f"{path} already exists")
     os.makedirs(args.milestone_dir, exist_ok=True)
     save_document(args.milestone_dir, Document())
+    return 0
+
+
+def cmd_list(args):
+    document = load_document(args.milestone_dir)
+    for question in document.questions:
+        if args.unannotated and question.recommendation is not None:
+            continue
+        print(question.id)
+    return 0
+
+
+def cmd_locate(args):
+    document = load_document(args.milestone_dir)
+    for question in find_questions(document, args.short_titles):
+        # The document is always the serializer's own output, so the block's canonical
+        # lines at its depth inside the root are the very lines the file holds.
+        for line in _question_lines(question, 1):
+            print(line)
+    return 0
+
+
+def cmd_lift(args):
+    document = load_document(args.milestone_dir)
+    question = find_question(document, args.short_title)
+    if args.alternative is None:
+        if question.recommendation is None:
+            raise ToolError(f'<{BLOCK_TAG} id="{question.id}"> carries no <recommendation> element')
+        head, body = question.recommendation.option, question.recommendation.rationale
+    else:
+        alternative = find_alternative(question, args.alternative)
+        head, body = alternative.id, alternative.text
+    print(" — ".join(part for part in (head, body) if part))
     return 0
 
 
@@ -383,6 +479,48 @@ def build_parser():
         cmd_create,
         "write the empty document into MILESTONE_DIR, creating the directory when it is "
         "missing; an existing document is refused and left untouched",
+    )
+
+    list_parser = add_subcommand(
+        "list",
+        cmd_list,
+        "print the id of every <open-question> block, one per line in document order; an "
+        "empty document prints nothing",
+    )
+    list_parser.add_argument(
+        "--unannotated",
+        action="store_true",
+        help="print only the blocks carrying no <recommendation> element",
+    )
+
+    locate_parser = add_subcommand(
+        "locate",
+        cmd_locate,
+        "print each named block verbatim, as the document holds it, in the order named",
+    )
+    locate_parser.add_argument(
+        "short_titles",
+        metavar="SHORT_TITLE",
+        nargs="+",
+        help="the id of a block, compared un-escaped and case-folded",
+    )
+
+    lift_parser = add_subcommand(
+        "lift",
+        cmd_lift,
+        "print the block's answer text on one line: \"<option> — <rationale>\" from its "
+        "<recommendation>, or with --alternative \"<id> — <what-it-is>\" from the named "
+        "<alternative>, its <advantage> and <drawback> children excluded",
+    )
+    lift_parser.add_argument(
+        "short_title",
+        metavar="SHORT_TITLE",
+        help="the id of the block, compared un-escaped and case-folded",
+    )
+    lift_parser.add_argument(
+        "--alternative",
+        metavar="ALTERNATIVE_ID",
+        help="lift the named <alternative> of the block instead of its <recommendation>",
     )
     return parser
 
