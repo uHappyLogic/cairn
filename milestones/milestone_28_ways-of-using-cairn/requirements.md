@@ -28,5 +28,9 @@ Every snippet line names a skill under the `cairn:` namespace, the form the Clau
 
 ## Decisions
 
+### Host layout within a way
+
+Each way is one fenced block in which every line is a concrete invocation naming its host binary (`claude` or `agy`) with that host's real flags, the host chosen per line exactly as the model and effort are. A single-host way names one host throughout; a mixed-host way names both in the one block, so it is an ordinary section under the same per-way template. The page's legend states once how a line is swapped to the other host (`claude` to `agy`, `--model`/`--effort` for `--add-dir`), and every line stays runnable as written. No way is split into per-host blocks, no host placeholder stands in for the binary, and there is no separate way per host.
+
 ## Out of Scope
 

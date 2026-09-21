@@ -1,28 +1,4 @@
 <open-questions>
-  <open-question id="Host layout within a way">
-    <question>Within one way, how are the two hosts presented: one fenced block per host under the same heading, one block with the host command as a placeholder, or a separate way per host? The draft keeps a Claude Code section and an Antigravity section apart, while the goal wants goal-oriented ways that a reader can run on either host.</question>
-    <alternative id="Block per host">
-      Under one ## way heading, two fenced blocks, the whole chain once in claude form and once in agy form, each under its own ### host sub-heading, mirroring the README&apos;s ### Claude Code / ### Antigravity layout under ## Installation.
-      <advantage>Every line copy-pastes verbatim onto its host with that host&apos;s real flag set (--model/--effort on Claude Code, --add-dir on Antigravity), in the layout the README already uses for the two hosts.</advantage>
-      <drawback>It doubles every chain, extends the goal&apos;s fixed per-way template past its single fenced block, and cannot express the goal&apos;s mixed-host way: a chain whose review runs on one host and whose recommend runs on the other is neither block, so the headline example would have to break the pattern.</drawback>
-    </alternative>
-    <alternative id="Host placeholder">
-      One fenced block per way whose lines read &lt;host&gt; -p &quot;/cairn:&lt;skill&gt;&quot; &lt;host-flags&gt;, with a legend resolving &lt;host&gt; to claude or agy and &lt;host-flags&gt; to that host&apos;s flag set.
-      <advantage>One block per way with no host duplication, reading the same for both hosts&apos; readers.</advantage>
-      <drawback>No line is runnable as written; because the two flag sets differ (the draft verifies --model/--effort only on Claude Code and --add-dir only on Antigravity) the flags must be abstracted too, hiding the model and effort axis behind a placeholder, and a chain that mixes hosts cannot be shown at all since every line names the same placeholder.</drawback>
-    </alternative>
-    <alternative id="Way per host">
-      Keep the draft&apos;s split: a Claude Code way and an Antigravity way for each goal, as the draft&apos;s ## Claude Code and ## Antigravity sections stand today.
-      <advantage>Zero abstraction: each snippet ships exactly as it was run on its host, keeping the promotion a word-for-word move like milestone 26&apos;s.</advantage>
-      <drawback>It contradicts the goal (ways organized by goal and runnable on either host), doubles the inventory, and has no place for a mixed-host way, so the goal&apos;s mixed-agent requirements review could not be written.</drawback>
-    </alternative>
-    <alternative id="Host per line">
-      One fenced block per way in which every line is a concrete invocation naming its host binary (claude or agy) with that host&apos;s real flags, the host chosen per line exactly as the model and effort are: a single-host way names one host throughout, a mixed-host way names both in the one block, and the page&apos;s legend states once how a line is swapped to the other host (claude to agy, --model/--effort for --add-dir).
-      <advantage>Hosts become a per-line mixing axis on par with models and effort, the goal&apos;s exact framing, so the mixed-host way is an ordinary section in the same template, every line runs as written, and each way stays one fenced block.</advantage>
-      <drawback>A single-host way runs unchanged only on the host it names; the other host&apos;s reader applies the legend&apos;s one-line swap rule, which must stay correct as either host&apos;s flag set changes and whose wording falls to the &quot;Placeholder notation and legend&quot; and &quot;Antigravity axis coverage&quot; siblings.</drawback>
-    </alternative>
-    <recommendation option="Host per line">The goal lists hosts beside models and effort as mechanics mixed within a chain, and those two are already chosen line by line, so choosing the host binary per line keeps the template&apos;s single fenced block, makes the mixed-host way an ordinary section, and leaves every line runnable as written with one legend sentence covering the swap to the other host.</recommendation>
-  </open-question>
   <open-question id="Placeholder notation and legend">
     <question>What notation do placeholders take (for example &lt;milestone_id&gt;, &lt;project-root&gt;), and where are they and the headless flags explained: in one legend section at the top of the page, or repeated beside each snippet that uses them?</question>
     <alternative id="Top legend section">
@@ -45,7 +21,6 @@
       <advantage>A block runs after the reader edits one assignment line instead of finding a token inside a command, and $PWD makes the mixed-agent review runnable as written from the project root.</advantage>
       <drawback>It breaks the notation the tree uses for the same values (&lt;milestone_id&gt; in the skill reference&apos;s usage headings and in workflow.md), adds shell-syntax lines that are not cairn mechanics and are wrong outside a POSIX shell, the assignment&apos;s right-hand side is a placeholder anyway (MILESTONE_ID=&lt;milestone_id&gt;), and --add-dir &quot;$PWD&quot; is not the value the draft verified.</drawback>
     </alternative>
-    <depends-on question="Host layout within a way" option="Host per line"/>
     <depends-on question="claude-wait equivalent" option="Comment line"/>
     <depends-on question="Model name specificity" option="Family aliases"/>
     <depends-on question="Antigravity axis coverage" option="Per-host axis legend"/>
@@ -68,7 +43,6 @@
       <advantage>The closest to milestone 26&apos;s word-for-word promotion: the one line the draft verified with the flag ships as it ran, explained once where it appears rather than promoted to an axis.</advantage>
       <drawback>A flag on one line only, tied to one host&apos;s session, reads as an unexplained inconsistency (why this review line and not the one in the subsequent-runs way), carries the same most-recent-conversation fragility, and the line is not shipping word for word anyway, since the first-run chains around it are already being rewritten (specify-milestone-starting-state gains its &lt;milestone_id&gt; argument, goto-next-milestone loses its id).</drawback>
     </alternative>
-    <depends-on question="Host layout within a way" option="Host per line"/>
     <recommendation option="Drop the flag">The starting-state pass exists to write its analysis into ## Relevant starting state for the passes that follow and the review pass reads requirements.md whole, so a fresh headless run per line loses nothing the pipeline persists; that self-containment is what lets each line name its own host and model under the Host per line layout, whereas -c is host-local, points at whatever conversation last ran in the directory, and sits outside the goal&apos;s lists of kept flags and mixing axes.</recommendation>
   </open-question>
   <open-question id="claude-wait equivalent">
@@ -93,7 +67,6 @@
       <advantage>The reader gets exactly the step the author ran and the chain needs no manual pause.</advantage>
       <drawback>The function reads the Claude Code OAuth token from the macOS Keychain, needs jq and curl, and calls an undocumented api/oauth/usage endpoint under a beta header, so it is macOS-only, one-host-only, and liable to break without notice; cairn would be shipping and maintaining a credential-touching hack that is no part of the plugin, in a docs page no drift gate or test covers.</drawback>
     </alternative>
-    <depends-on question="Host layout within a way" option="Host per line"/>
     <recommendation option="Comment line">The goal routes a private alias to a placeholder or a documented equivalent, and the comment line is the one of those two that keeps every line runnable as written inside the single fenced block the Host per line layout settles, since a whole-command placeholder stands for a tool the reader must write rather than a value to look up; it also promotes the draft&apos;s verified run-wait-run pattern intact while restating the quota hack as the cairn property it relied on, that per-task commits make the heaviest run safe to run again on either host.</recommendation>
   </open-question>
   <open-question id="Model name specificity">
@@ -113,7 +86,6 @@
       <advantage>Exact reproducibility: a reader months later runs precisely what the author ran, and nothing shifts underneath a snippet when a family&apos;s latest release changes.</advantage>
       <drawback>It is the stalest form, going out of date at every release, which is precisely what the CLI&apos;s alias mechanism exists to spare a caller, and the draft never ran full ids, so it would be an untested rewrite rather than the promotion of verified lines the goal describes.</drawback>
     </alternative>
-    <depends-on question="Host layout within a way" option="Host per line"/>
     <recommendation option="Family aliases">The CLI&apos;s own help defines opus and fable as aliases for each family&apos;s latest release, so the draft&apos;s values already name families rather than versions and date only when a family changes, every line stays runnable as written with the same per-line concreteness the host axis takes, and the goal&apos;s list of what becomes a placeholder leaves model names out; what settles it against generic tiers is the goal&apos;s word mechanics, which a placeholder the reader must resolve before pasting is not.</recommendation>
   </open-question>
   <open-question id="Antigravity axis coverage">
@@ -138,7 +110,6 @@
       <advantage>It corrects the omission with a sentence that never dates, since the page carries no value set that a CLI release could invalidate.</advantage>
       <drawback>The one difference a reader swapping a line between hosts actually trips on goes unstated (agy&apos;s --effort offers only low, medium, high, and it takes ids where claude takes aliases), so the Host per line swap rule sends the reader to a failing command, and the Family aliases sibling&apos;s drawback expressly hands this question the job of spelling the effort enum out per host.</drawback>
     </alternative>
-    <depends-on question="Host layout within a way" option="Host per line"/>
     <depends-on question="Model name specificity" option="Family aliases"/>
     <recommendation option="Per-host axis legend">agy --help lists --model and --effort beside --add-dir, so the axes exist on both hosts and the goal&apos;s every-available-axis clause is a statement of availability the page must make correctly, while showing only verified flags on the lines keeps the promotion honest about what ran; the legend the Host per line layout already needs for its one-line host swap is where the per-host forms are stated once (family alias against agy models id, low to max against low|medium|high), each sourced from and pointing at the CLI&apos;s own help, and what settles it against demonstrating the axis on Antigravity is that agy takes versioned ids only, which would import the staleness the Family aliases pick kept off the page.</recommendation>
   </open-question>
@@ -164,7 +135,6 @@
       <advantage>The page&apos;s headings map one to one onto workflow.md&apos;s phase sections and diagram nodes, so a reader moves from the diagram to the chain by heading.</advantage>
       <drawback>Phase names are pipeline structure rather than the goals the template&apos;s heading is meant to name, and folding the escalation chain into a sentence drops a goal the milestone goal itself lists as an example together with the six-line chain the draft verified for it.</drawback>
     </alternative>
-    <depends-on question="Host layout within a way" option="Host per line"/>
     <depends-on question="Model name specificity" option="Family aliases"/>
     <recommendation option="Lifecycle set">The goal&apos;s list is illustrative and the draft&apos;s snippets are what actually ran, so the inventory that ships every draft-chained goal once, in pipeline order, neither invents nor drops a verified chain; under the Host per line layout the two first runs and the Antigravity block collapse into per-line values of the same ways, and fixing the mixed chain as agy review then claude opus recommend and answer copies each line from the snippet that verified it on that host while placing the host swap between review and recommend, so the agent that surfaces the questions is not the agent that recommends on them, which is the mixed-agent review the goal names.</recommendation>
   </open-question>
