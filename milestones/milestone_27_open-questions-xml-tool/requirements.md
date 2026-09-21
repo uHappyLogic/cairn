@@ -52,6 +52,10 @@ No document names a runtime prerequisite for the installed plugin: `README.md`'s
 
 - Every invocation site runs the tool as `python3 {{PLUGIN_ROOT}}/<tool path> …` — one fixed, deterministic command with nothing restated per site — and the once-per-project bootstrap check in `init-milestone-base-workflow` executes `python3` to read its version, probing `python` only when that fails so its message can say the interpreter exists under the other name and must be exposed as `python3`. `python3` is the name PEP 394 guarantees and the one the stock macOS and Debian-family shells the agent usually runs in actually have; the platforms where only `python` exists are exactly what the bootstrap check is for, and probing the second name there — asking the user to expose it as `python3` — buys a per-site probe's coverage at no per-site cost. No invocation site carries a fallback expression, and the runtime prose never consults `python`.
 
+### Tool file resolution
+
+- Every tool invocation takes the already-resolved `<MILESTONE_DIR>` as an argument, and the tool joins it with the one file name it owns, `open_questions.xml`; the caller resolves the milestone exactly as it does today through `get-current-milestone.md`, and the tool never reads `milestones/README.md`. The tool sits below the skills exactly where the shared procedures do, and that layer takes resolved inputs from its caller — every question skill already holds `<MILESTONE_DIR>`, `define-milestone-goal` must write a milestone the pointer does not name, and a pytest case then needs only a `tmp_path` — so passing the directory keeps one pointer parser in the plugin and one file name inside the tool. The argument is the directory rather than the document path because the goal already binds the tool to `<MILESTONE_DIR>/open_questions.xml` and its creation, so the shorter argument the prose already carries wins.
+
 ## Out of Scope
 
 ## Open questions
@@ -73,34 +77,9 @@ No document names a runtime prerequisite for the installed plugin: `README.md`'s
     <advantage>Every file a milestone is born with comes from one deterministic, pytest-covered writer, so a scaffold can never be half-written or inconsistently formatted, and the skill&apos;s prose shrinks to its one judgment (the slug) and one invocation.</advantage>
     <drawback>It widens the tool from &quot;every deterministic operation over that document&quot; to a writer of three Markdown files it never reads back and that the rest of the pipeline edits by hand, moving `define-milestone-goal`&apos;s templates out of the skill that owns them into Python string literals with a test surface of their own — a tool-scope change the goal does not ask for, carrying the same definition-time interpreter dependency as the `create` subcommand, bought for three files a single file write each already creates deterministically.</drawback>
   </alternative>
-  <depends-on question="Tool file resolution" option="Milestone directory argument"/>
   <depends-on question="Canonical serialization format" option="Canonical writer, five entities"/>
   <depends-on question="Escape hatch under sole writer" option="Strip subcommand"/>
   <recommendation option="Tool create subcommand">The goal makes the tool the file&apos;s sole writer and the owner of its on-disk format, so the empty document is the serializer&apos;s to define and to write: one `create` call keeps that form in exactly one place, pinned by a test, with a converged document byte-identical to a fresh one and the sole-writer guarantee exception-free from the first byte, as the escape-hatch answer already keeps it at the other end of a block&apos;s life; the skill pays one invocation and one ordering rule (the tool call first, so a missing interpreter leaves nothing behind), while the interpreter dependency a template would spare it is only deferred to the next skill in the pipeline — which is what settles it against a template that is smaller to write but a second, untested copy of the format; scaffolding the whole milestone through the tool falls out on scope, since the goal binds the tool to this one document.</recommendation>
-</open-question>
-<open-question id="Tool file resolution">
-  <question>Does every tool invocation take the `open_questions.xml` path or the milestone directory as an argument the caller resolves, or does the tool resolve the current milestone from the `milestones/README.md` pointer itself?</question>
-  <alternative id="Milestone directory argument">
-    Every invocation takes the already-resolved `&lt;MILESTONE_DIR&gt;` as an argument and the tool joins it with the one file name it owns, so the caller resolves the milestone exactly as it does today and the tool never reads `milestones/README.md`.
-    <advantage>Matches how every layer below a skill already works — `commit-procedure.md` takes resolved PATHS, `answer-procedure.md` a resolved SHORT TITLE, the recommend agent an already-resolved `&lt;MILESTONE_DIR&gt;` it is told never to resolve itself — using the one token every question skill holds after its `get-current-milestone.md` step; it also serves `define-milestone-goal`, which by design writes a milestone the pointer does not name (the maintainer defines while it reads `none`), and a pytest case then needs nothing but a `tmp_path`.</advantage>
-    <drawback>The tool is milestone-layout-aware — `open_questions.xml` is a constant baked into it, so a test or one-off use cannot point it at an arbitrarily named file — and every call site spends a few tokens restating a directory the prose has already resolved.</drawback>
-  </alternative>
-  <alternative id="Document path argument">
-    Every invocation takes the explicit `open_questions.xml` path, making the tool a layout-agnostic XML document tool that knows nothing about milestones.
-    <advantage>The most general contract — any document of the right shape, anywhere, is a valid target, so fixtures and ad-hoc runs need no directory convention and a future consumer outside `milestones/` costs nothing.</advantage>
-    <drawback>Spreads the file name across every invocation site in the runtime prose instead of one tool-internal constant — a longer line per call against the goal&apos;s token-efficiency aim, and a rename that touches every skill — for generality no consumer needs, since the goal binds the tool to `&lt;MILESTONE_DIR&gt;/open_questions.xml` and to creating it by name.</drawback>
-  </alternative>
-  <alternative id="Tool resolves the pointer">
-    The tool takes no location argument — it finds `milestones/README.md` under the working directory, parses the `Current milestone:` line itself, and operates on that milestone&apos;s document.
-    <advantage>The shortest possible invocation, with no location for any runtime file to restate at any call site.</advantage>
-    <drawback>Duplicates `get-current-milestone.md` as Python that must track the snippet&apos;s prefix, backtick, and `none` rules (a second pointer parser free to drift from the prose every other runner follows), hard-codes a `milestones/README.md` lookup relative to the working directory where an argument could carry an absolute path, needs a fixture pointer file plus a chdir in every test, and cannot serve `define-milestone-goal`, whose milestone is by design not the current one — so however the empty-document creation question settles, the tool could not be that file&apos;s writer.</drawback>
-  </alternative>
-  <alternative id="Pointer default with override">
-    The tool resolves the pointer by default and accepts an optional `--milestone-dir` flag that bypasses it, for creation, tests, and any milestone the pointer does not name.
-    <advantage>Keeps the argument-free common case while still reaching a non-current milestone.</advantage>
-    <drawback>Carries every cost of the pointer-resolving form — the second parser, the working-directory assumption — plus a second code path and two ways to name the target, and the override is what every writer that matters ends up using (creation, every test) while the default saves only a few tokens at sites that already hold the directory.</drawback>
-  </alternative>
-  <recommendation option="Milestone directory argument">The tool sits below the skills exactly where the shared procedures do, and that layer takes resolved inputs from its caller — every question skill already holds `&lt;MILESTONE_DIR&gt;` from `get-current-milestone.md`, `define-milestone-goal` must write a milestone the pointer does not name, and a pytest case then needs only a `tmp_path` — so passing the directory keeps one pointer parser in the plugin and one file name inside the tool; the directory rather than the document path because the goal already binds the tool to `&lt;MILESTONE_DIR&gt;/open_questions.xml` and its creation, so the shorter argument the prose already carries wins.</recommendation>
 </open-question>
 <open-question id="Tool output contract">
   <question>What is the tool&apos;s output and error contract — what each operation prints on success (bare ids, whole blocks, lifted answer text) and how a failure is signalled (exit status and message form)?</question>
