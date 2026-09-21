@@ -28,9 +28,19 @@ Subcommands:
       <applied-principle>, <depends-on>, and <recommendation> elements — leaving the
       wrapper and <question> intact; no other block is touched, so a <depends-on> tag that
       names a stripped block stays where it is, and a block already bare is left as it is
+  remove MILESTONE_DIR SHORT_TITLE [--option RECORDED_OPTION]
+      delete the named block and, before the one write, reconcile the blocks that depend on
+      it: with --option (the option recorded as the answer, which must be one of the removed
+      block's own <alternative> ids or the call is refused with the document unchanged) a
+      surviving block whose <depends-on> names the removed id with that same option loses
+      only that tag, and every other block whose <depends-on> names the removed id is
+      stripped as by strip; without --option every such block is stripped; either way the
+      strip runs transitively over the blocks that depend on a stripped block, so no
+      <depends-on> tag is left naming a block removed or stripped by the call
 
-A Short Title names a block by its id and ALTERNATIVE_ID names an alternative by its id;
-both are compared against the document's un-escaped values, case-folded.
+A Short Title names a block by its id, ALTERNATIVE_ID names an alternative by its id, and
+RECORDED_OPTION names an alternative by its id too; all are compared against the document's
+un-escaped values, case-folded.
 
 A free-text body (the question text of add) travels on standard input, never as an
 argument: the tool reads sys.stdin.buffer to end of file exactly once per call and decodes
@@ -464,6 +474,69 @@ def strip_question(question):
     return True
 
 
+# --- removal and dependent reconciliation ---------------------------------------------
+
+
+def dependents_of(document, block_id):
+    """The blocks carrying a <depends-on> tag whose question names the given id (compared
+    un-escaped and case-folded), in document order."""
+    wanted = id_key(block_id)
+    return [
+        question
+        for question in document.questions
+        if any(id_key(dependency.question) == wanted for dependency in question.depends_on)
+    ]
+
+
+def check_recorded_option(question, recorded_option):
+    """A ToolError unless the recorded option is one of the block's own <alternative> ids,
+    compared un-escaped and case-folded: a mistyped option must fail loudly with the
+    document unchanged rather than strip every dependent silently."""
+    context = f'<{BLOCK_TAG} id="{question.id}">'
+    if not question.alternatives:
+        raise ToolError(f'--option "{recorded_option}" was given, but {context} carries no <alternative> elements')
+    wanted = id_key(recorded_option)
+    if not any(id_key(alternative.id) == wanted for alternative in question.alternatives):
+        held = _quoted(alternative.id for alternative in question.alternatives)
+        raise ToolError(f'--option "{recorded_option}" names none of the <alternative> ids of {context}, which are {held}')
+
+
+def remove_question(document, question, recorded_option=None):
+    """Delete the block from the document and reconcile every block that depends on it, all
+    on the parsed tree so the caller writes once. With a recorded option — one of the removed
+    block's own alternative ids, as check_recorded_option has confirmed — a dependent whose
+    every <depends-on> tag naming the removed block carries that same option (compared
+    un-escaped and case-folded) loses just those tags and keeps its other children, and every
+    other dependent is stripped as strip_question strips; without one every dependent is
+    stripped. The strip is transitive: a block whose <depends-on> names a block stripped here
+    is stripped in turn, until no tag names a block removed or stripped by this call. A tag
+    naming any other block is left as it is. Returns the ids of the blocks stripped, in the
+    order they were stripped."""
+    document.questions = [other for other in document.questions if other is not question]
+    removed = id_key(question.id)
+    recorded = None if recorded_option is None else id_key(recorded_option)
+
+    pending = []
+    for dependent in dependents_of(document, question.id):
+        tags = [dependency for dependency in dependent.depends_on if id_key(dependency.question) == removed]
+        if recorded is not None and all(id_key(tag.option) == recorded for tag in tags):
+            dependent.depends_on = [dependency for dependency in dependent.depends_on if id_key(dependency.question) != removed]
+        else:
+            pending.append(dependent)
+
+    stripped = []
+    seen = set()
+    while pending:
+        block = pending.pop(0)
+        if id_key(block.id) in seen:
+            continue
+        seen.add(id_key(block.id))
+        strip_question(block)
+        stripped.append(block.id)
+        pending.extend(dependents_of(document, block.id))
+    return stripped
+
+
 # --- subcommands ----------------------------------------------------------------------
 
 
@@ -533,6 +606,16 @@ def cmd_strip(args):
         changed = strip_question(question) or changed
     if changed:
         save_document(args.milestone_dir, document)
+    return 0
+
+
+def cmd_remove(args):
+    document = load_document(args.milestone_dir)
+    question = find_question(document, args.short_title)
+    if args.option is not None:
+        check_recorded_option(question, args.option)
+    remove_question(document, question, args.option)
+    save_document(args.milestone_dir, document)
     return 0
 
 
@@ -630,6 +713,28 @@ def build_parser():
         metavar="SHORT_TITLE",
         nargs="+",
         help="the id of a block, compared un-escaped and case-folded",
+    )
+
+    remove_parser = add_subcommand(
+        "remove",
+        cmd_remove,
+        "delete the named block and, in the same write, reconcile the blocks that depend on "
+        "it: with --option, a dependent whose <depends-on> names the block with that same "
+        "option loses only that tag and every other dependent is stripped as by strip; "
+        "without it every dependent is stripped; both transitively over the dependents of a "
+        "stripped block, so no <depends-on> tag is left naming a removed or stripped block",
+    )
+    remove_parser.add_argument(
+        "short_title",
+        metavar="SHORT_TITLE",
+        help="the id of the block, compared un-escaped and case-folded",
+    )
+    remove_parser.add_argument(
+        "--option",
+        metavar="RECORDED_OPTION",
+        help="the option recorded as the block's answer, one of its own <alternative> ids "
+        "(compared un-escaped and case-folded); any other value is refused with the document "
+        "unchanged",
     )
     return parser
 

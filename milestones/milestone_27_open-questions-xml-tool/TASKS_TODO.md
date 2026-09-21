@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Tool Remove With Dependent Reconciliation
-
-Add `remove`, which deletes the named block and, before its single write, reconciles that block's dependents: with `--option <recorded option>` a surviving block whose `<depends-on>` names the removed id with an equal un-escaped case-folded option loses only that tag while every other dependent of the removed id is stripped, and without the flag every dependent is stripped — both transitively over the dependents of stripped blocks, using the same per-block strip primitive. The tool must reject an `--option` naming none of the removed block's own `<alternative id>` values with the document unchanged, and pytest cases cover the tag-drop, strip-all, transitive, cycle, and rejected-option outcomes so no removal can leave a dangling tag.
-
----
-
 ## Tool Embed With Extraction And Validation
 
 Add `embed`, which takes the Short Title, reads the recommend agent's whole final message from stdin, slices from the first `<alternative` line through the last `</recommendation>` line (the identity on a clean return), parses the fragment, validates it — no wrapper or `<question>` line, at least one `<alternative>`, exactly one `<recommendation>` whose option names one of the fragment's alternatives, every `<depends-on question="…" option="…"/>` resolving one hop against a still-present block that carries embedded children and one of its `<alternative id>` values, no element of an unknown kind, and never child order — and re-renders the block with the children grouped by kind. Each miss, the two extraction misses included, is one `Error:` line that the orchestrator's repair template quotes verbatim, and pytest cases cover clean, prose-wrapped, misordered, and each failing fragment.

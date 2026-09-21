@@ -30,7 +30,7 @@ def test_missing_milestone_dir_is_a_usage_error(run_tool):
 def test_help_exits_zero_and_lists_the_subcommands(run_tool):
     result = run_tool("--help")
     assert result.returncode == 0
-    for subcommand in (b"create", b"list", b"locate", b"lift", b"add", b"strip"):
+    for subcommand in (b"create", b"list", b"locate", b"lift", b"add", b"strip", b"remove"):
         assert subcommand in result.stdout
     assert result.stderr == b""
 
