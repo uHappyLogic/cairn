@@ -48,6 +48,10 @@ No document names a runtime prerequisite for the installed plugin: `README.md`'s
 
 - The Python tool lives in a new top-level `core/tools/` directory, and both host definitions add `tools = "tools"` to their `[layout]` so it renders to `{{PLUGIN_ROOT}}/tools/` on every host. A program the runner executes is a different artifact kind from a procedure it follows, and the plugin keeps one top-level directory per kind, so this fourth directory keeps the `core/shared/*.md` procedure rules exact, gives the tool and any test layout beside it a home with rules of its own, and costs one build-validated line in each host `[layout]`. The name is `tools` rather than `bin` or `scripts` because it names what the runner does with the contents, reads as plain English, and overloads no directory the repository already reserves for maintainer build tooling.
 
+### Tool interpreter command
+
+- Every invocation site runs the tool as `python3 {{PLUGIN_ROOT}}/<tool path> …` — one fixed, deterministic command with nothing restated per site — and the once-per-project bootstrap check in `init-milestone-base-workflow` executes `python3` to read its version, probing `python` only when that fails so its message can say the interpreter exists under the other name and must be exposed as `python3`. `python3` is the name PEP 394 guarantees and the one the stock macOS and Debian-family shells the agent usually runs in actually have; the platforms where only `python` exists are exactly what the bootstrap check is for, and probing the second name there — asking the user to expose it as `python3` — buys a per-site probe's coverage at no per-site cost. No invocation site carries a fallback expression, and the runtime prose never consults `python`.
+
 ## Out of Scope
 
 ## Open questions
@@ -73,30 +77,6 @@ No document names a runtime prerequisite for the installed plugin: `README.md`'s
   <depends-on question="Canonical serialization format" option="Canonical writer, five entities"/>
   <depends-on question="Escape hatch under sole writer" option="Strip subcommand"/>
   <recommendation option="Tool create subcommand">The goal makes the tool the file&apos;s sole writer and the owner of its on-disk format, so the empty document is the serializer&apos;s to define and to write: one `create` call keeps that form in exactly one place, pinned by a test, with a converged document byte-identical to a fresh one and the sole-writer guarantee exception-free from the first byte, as the escape-hatch answer already keeps it at the other end of a block&apos;s life; the skill pays one invocation and one ordering rule (the tool call first, so a missing interpreter leaves nothing behind), while the interpreter dependency a template would spare it is only deferred to the next skill in the pipeline — which is what settles it against a template that is smaller to write but a second, untested copy of the format; scaffolding the whole milestone through the tool falls out on scope, since the goal binds the tool to this one document.</recommendation>
-</open-question>
-<open-question id="Interpreter command name">
-  <question>Which command runs the tool at every invocation site and in the bootstrap check — `python3`, `python`, or a probe that falls back between the two?</question>
-  <alternative id="Fixed python3">
-    Every invocation site and the bootstrap check run the tool as `python3 {{PLUGIN_ROOT}}/&lt;tool path&gt; …`, and the check probes `python3` alone.
-    <advantage>`python3` is the one command PEP 394 guarantees for a Python 3 interpreter and the one a stock macOS or Debian-family shell actually has — on this very machine `/usr/bin/python3` exists and `/usr/bin/python` does not — so the runtime prose carries one short fixed command at every site with nothing restated.</advantage>
-    <drawback>Not universal: a python.org installer on Windows provides `python.exe` and the `py` launcher but no `python3.exe` (only the Store build adds one), so under such an install every invocation fails and the bootstrap check reports that no Python 3.9+ exists when one does, with no hint that it answers to the other name.</drawback>
-  </alternative>
-  <alternative id="Fixed python">
-    Every invocation site and the bootstrap check use the bare `python` command.
-    <advantage>The name every Windows install and every activated virtual environment or conda environment expose, and the shortest spelling.</advantage>
-    <drawback>Absent from the shells the coding agent most often runs in — macOS ships no `python` since 12.3 (`/usr/bin/python` does not exist on this machine) and Debian-family systems provide it only through the optional `python-is-python3` package — and on a legacy system it can still be Python 2, so the fixed name fails or misfires exactly where `python3` succeeds.</drawback>
-  </alternative>
-  <alternative id="Per-site probe">
-    Every invocation site and the bootstrap check carry a fallback expression such as `$(command -v python3 || command -v python)` that picks whichever name is present at run time.
-    <advantage>Works unchanged wherever either name resolves to a 3.9+ interpreter, asking nothing of the user on any platform.</advantage>
-    <drawback>Restates one environment fact at every invocation site across the ten-odd runtime files the goal rewires — the very per-site restatement the goal folds into the tool, against its token-efficiency aim — adds a shell evaluation to every call, and a silent fallback can land on an interpreter the bootstrap never validated (a Python 2 `python`, or a virtual-environment `python` beside a system `python3`), so the once-checked prerequisite and the actual invocations can disagree.</drawback>
-  </alternative>
-  <alternative id="python3 with bootstrap probe">
-    Every invocation site runs the tool as `python3 …`, while the one-time bootstrap check executes `python3` to read its version and, only when that fails, probes `python`, so its message can say the interpreter exists under the other name and must be exposed as `python3`.
-    <advantage>The per-site probe&apos;s coverage at zero per-site cost — the runtime prose keeps one fixed deterministic command, the second name is consulted exactly once per project, the failure message names the precise remedy instead of a false no-interpreter verdict, and executing the command rather than merely locating it means a present-but-unrunnable shim (this machine&apos;s license-gated `/usr/bin/python3`) fails the check honestly.</advantage>
-    <drawback>A user whose only interpreter answers to `python` (a python.org install on Windows) must do one manual step before the tool runs, and whether the check stops or merely warns in that case is the still-open `Prerequisite check failure mode` question&apos;s call.</drawback>
-  </alternative>
-  <recommendation option="python3 with bootstrap probe">`python3` is the name PEP 394 guarantees and the one the stock macOS and Debian-family shells the agent usually runs in actually have, so fixing it at every site keeps the runtime prose to one short deterministic command with nothing restated; the platforms where only `python` exists are exactly what the once-per-project bootstrap check is for, and probing the second name there — asking the user to expose it as `python3` — buys the per-site probe&apos;s coverage at no per-site cost, which is what breaks the tie against a bare fixed `python3`.</recommendation>
 </open-question>
 <open-question id="Tool file resolution">
   <question>Does every tool invocation take the `open_questions.xml` path or the milestone directory as an argument the caller resolves, or does the tool resolve the current milestone from the `milestones/README.md` pointer itself?</question>
@@ -377,7 +357,6 @@ No document names a runtime prerequisite for the installed plugin: `README.md`'s
     <advantage>The user decides with the fact in front of them: a deliberate proceed covers the scaffold-now-install-later case and the check&apos;s blind spots, while stop stays the default on the ordinary path.</advantage>
     <drawback>It offers a proceed into a state in which nothing after the bootstrap can run, so the choice is between a stop and an unusable scaffold one re-run would recreate in seconds — an interactive branch, with prompt wording and a second success path to state, spent on a case the plugin&apos;s notice-and-confirm precedent reserves for a proceed that is genuinely useful (a repeat capture, a hand-edited store worth keeping); and a proceed converts the once-checked prerequisite into the same raw failure at `define-milestone-goal` as warn-and-continue, now with the user&apos;s consent on record.</drawback>
   </alternative>
-  <depends-on question="Interpreter command name" option="python3 with bootstrap probe"/>
   <depends-on question="Empty document creation" option="Tool create subcommand"/>
   <recommendation option="Stop before any write">The scaffold exists only to enable the skills that follow, and with the tool creating the empty document the very next one, `define-milestone-goal`, invokes it, so a scaffold written without an interpreter is unusable from its first step and the goal&apos;s checked-once clause holds only if the one check enforces — a warning would move the failure to a raw shell error inside a skill kept check-free by design; the stop costs one re-run of an idempotent, non-committing skill and nothing else, its message carries the remedy the probe identified, and it is the clean-stop-and-point idiom every unmet precondition in the plugin already uses, which is what settles it against a notice-and-confirm whose proceed could only yield a scaffold nothing can use.</recommendation>
 </open-question>
