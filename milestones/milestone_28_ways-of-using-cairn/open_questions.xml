@@ -138,23 +138,4 @@
     <depends-on question="Model name specificity" option="Family aliases"/>
     <recommendation option="Lifecycle set">The goal&apos;s list is illustrative and the draft&apos;s snippets are what actually ran, so the inventory that ships every draft-chained goal once, in pipeline order, neither invents nor drops a verified chain; under the Host per line layout the two first runs and the Antigravity block collapse into per-line values of the same ways, and fixing the mixed chain as agy review then claude opus recommend and answer copies each line from the snippet that verified it on that host while placing the host swap between review and recommend, so the agent that surfaces the questions is not the agent that recommends on them, which is the mixed-agent review the goal names.</recommendation>
   </open-question>
-  <open-question id="Sibling page cross-links">
-    <question>The three existing docs pages open with an intro naming their sibling pages. Do workflow.md and skill-reference.md gain a link to the new page, or is the README&apos;s How it works link the only inbound reference?</question>
-    <alternative id="README link only">
-      No docs page changes: the README&apos;s How it works sentence, which the goal already fixes, is the new page&apos;s only inbound navigation link, exactly as design-claims.md stands today.
-      <advantage>It matches the precedent this milestone&apos;s goal names, milestone 26&apos;s promotion of design-claims.md with the README as its only inbound link and no sibling link in either direction, and it touches nothing the goal does not name.</advantage>
-      <drawback>The new page is the sole home of headless invocation (the starting state records that none of the three pages mention -p, --model, --effort, --add-dir, or the permissions flag, and the reference names skills bare, never under cairn:), so a reader on either narrative page, such as a contributor CONTRIBUTING.md sends to workflow.md#workflow-pipeline to run the full pipeline, has no route to it but back through one below-the-fold README sentence.</drawback>
-    </alternative>
-    <alternative id="Workflow page only">
-      One clause in workflow.md&apos;s intro routing sentence points at the new page, since the requirements loop the chains repeat is that page&apos;s Iterating milestone requirements phase, while skill-reference.md stays unchanged as a per-skill lookup.
-      <advantage>It places the one link with the strongest content motivation where the reader who wants to run a phase unattended actually is, at the cost of a single edit beyond the goal&apos;s README sentence.</advantage>
-      <drawback>It breaks the mirrored intros that make the two narrative pages read as a pair, leaves the skill-reference reader, who sees only slash forms and bare skill names, with no route to the -p and cairn: form the chains use, and the asymmetry is a judgment a later editor must re-derive rather than a rule they can apply.</drawback>
-    </alternative>
-    <alternative id="Both intros link it">
-      workflow.md and skill-reference.md each gain one clause in the routing sentence their intro already carries, so the three pages a user of the workflow reads (how it flows, what each skill does, how to chain the skills headlessly) name one another, while design-claims.md stays, as today, linked from the README&apos;s Design principles block alone.
-      <advantage>A reader of either narrative page who wants to run from a shell reaches the only page that documents the headless and cairn: forms in one clause instead of back through the README, and the edit extends the pattern the pair already has, each naming the other in its routing sentence, rather than inventing a new one.</advantage>
-      <drawback>Two pages the goal does not name change, and their CLAUDE.md layout entries, which describe those intros, change with them; the rule it sets, every operational docs page names every other, grows with the square of the page count, though at today&apos;s count it is two one-clause edits.</drawback>
-    </alternative>
-    <recommendation option="Both intros link it">The new page is the only place headless invocation and the cairn: namespace form are documented, so a pointer from each narrative page is content-driven in exactly the way the pair&apos;s existing mutual links are, not a directory index, and the README-only precedent of design-claims.md fits a page written for a different reader; what breaks the tie with README link only is cost against reach: two one-clause edits against a reader on either narrative page having no route to the chains but the README.</recommendation>
-  </open-question>
 </open-questions>
