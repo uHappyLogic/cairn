@@ -1,11 +1,11 @@
 ---
 name: define-milestone-goal
-description: Create a new milestone directory with initialized requirements.md (Goal filled from the provided description) and empty TASKS files.
+description: Create a new milestone directory with initialized requirements.md (Goal filled from the provided description), an empty open_questions.xml, and empty TASKS files.
 ---
 
 # define-milestone-goal
 
-Creates a new milestone directory under `milestones/` with a `requirements.md` pre-filled with the goal, plus empty `TASKS_TODO.md` and `TASKS_DONE.md`. Does not populate the remaining sections — those are filled by subsequent skills (`/specify-milestone-starting-state`, `/review-milestone-requirements`, etc.). Defining a milestone does not activate it: this skill never updates `CLAUDE.md` or `milestones/README.md`, which change only when the milestone becomes the *current* active one via `/goto-next-milestone`.
+Creates a new milestone directory under `milestones/` with a `requirements.md` pre-filled with the goal, an empty `open_questions.xml` written by the plugin's open-question tool, plus empty `TASKS_TODO.md` and `TASKS_DONE.md`. Does not populate the remaining sections — those are filled by subsequent skills (`/specify-milestone-starting-state`, `/review-milestone-requirements`, etc.). Defining a milestone does not activate it: this skill never updates `CLAUDE.md` or `milestones/README.md`, which change only when the milestone becomes the *current* active one via `/goto-next-milestone`.
 
 ## Usage
 
@@ -42,7 +42,17 @@ Verify that `milestones/milestone_<NN>_<slug>/` does not already exist. If a mil
 
 ### 4. Create the milestone directory
 
-Create `milestones/milestone_<NN>_<slug>/` with three files. Use the zero-padded `<NN>` in the directory name and the integer (leading zeros stripped) `<N>` in the `requirements.md` heading.
+Create `milestones/milestone_<NN>_<slug>/` with four files, in the order below. Use the zero-padded `<NN>` in the directory name and the integer (leading zeros stripped) `<N>` in the `requirements.md` heading.
+
+**First, `open_questions.xml`** — run the plugin's open-question tool, which creates the directory and writes the empty document itself:
+
+```
+python3 ${CLAUDE_PLUGIN_ROOT}/tools/open_questions.py create milestones/milestone_<NN>_<slug>
+```
+
+It prints nothing on success. Never write `open_questions.xml` yourself — the tool is that file's sole writer, and this call is what makes it so from the first byte. If the call fails — the shell cannot find `python3`, or the tool exits non-zero with one `Error: <reason>` line on stderr — stop here without writing any of the Markdown files below, so the failure leaves nothing behind, and report it in full: quote the shell's or the tool's line verbatim (a missing interpreter is the Python 3.9+ prerequisite `/init-milestone-base-workflow` checks for).
+
+**Then the three Markdown files**, written into that directory:
 
 **`requirements.md`:**
 ```markdown
@@ -76,7 +86,7 @@ Create `milestones/milestone_<NN>_<slug>/` with three files. Use the zero-padded
 
 Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
 
-- **PATHS** — this skill's own change set: the three files it just created — `milestones/milestone_<NN>_<slug>/requirements.md`, `milestones/milestone_<NN>_<slug>/TASKS_TODO.md`, and `milestones/milestone_<NN>_<slug>/TASKS_DONE.md`.
+- **PATHS** — this skill's own change set: the four files it just created — `milestones/milestone_<NN>_<slug>/open_questions.xml`, `milestones/milestone_<NN>_<slug>/requirements.md`, `milestones/milestone_<NN>_<slug>/TASKS_TODO.md`, and `milestones/milestone_<NN>_<slug>/TASKS_DONE.md`.
 - **SUBJECT** — `Milestone-definition: milestone_<NN>_<slug>`.
 
 The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
@@ -91,4 +101,4 @@ Milestone defined.
 
 Do not add the created directory path, the goal text, or a next-step pointer.
 
-If instead the step-5 dirty-own-path guard fired (none of the three files changed, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the milestone files already existed; nothing committed.`
+If instead the step-5 dirty-own-path guard fired (none of the four files changed, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the milestone files already existed; nothing committed.`

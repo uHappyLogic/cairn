@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Define Milestone Creates Empty Document
-
-Make `define-milestone-goal` invoke `python3 {{PLUGIN_ROOT}}/tools/open_questions.py create <new milestone dir>` before writing its three Markdown files, so a missing interpreter leaves nothing behind, and pass the new `open_questions.xml` as a fourth path to its path-scoped `Milestone-definition:` commit. This is what makes the tool the file's sole writer from the first byte, verified by the rendered skill text and a passing host rebuild.
-
----
-
 ## Rewire Shared Answer Procedures
 
 Rewrite `core/shared/answer-procedure.md` and `core/shared/answer-with-recommendation-procedure.md` onto tool invocations: locate via the tool, fold the decision into `## Decisions` of `requirements.md`, remove the block via `remove` with `--option` set to the RECORDED OPTION, cascade mooted siblings via bare `remove`, and drop every restated boundary-line, entity-unescaping, re-query, line-range, and dependent-reconciliation prose that is now the tool's internals. The judgment mode for a literal answer collapses to one verdict — whether ANSWER plainly settles on one of the answered block's own `<alternative id>` values, judged in prose against that closed set and never parsed from ANSWER — passed as `--option`, with nothing passed otherwise; the fold-before-remove order stays, both files stay execution-neutral and silent, and the work is verified by reading the rendered procedures and a passing host rebuild.
