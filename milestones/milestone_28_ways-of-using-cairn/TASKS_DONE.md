@@ -16,3 +16,18 @@ Create the tracked `docs/ways-of-using-cairn.md` from the untracked `temp/CAIRN_
 - `README.md`, `CONTRIBUTING.md`, `docs/workflow.md`, and `docs/skill-reference.md` are untouched (`git diff --stat` empty for all four), and `uv run scripts/build_hosts.py --check` passes.
 
 ---
+
+## Link Page From README How It Works
+
+Extend the closing sentence of `README.md`'s `## How it works` section, the one linking `docs/workflow.md` and `docs/skill-reference.md`, with a link to `docs/ways-of-using-cairn.md` beside those two so the README routes readers to the headless command chains, and update the `CLAUDE.md` layout entry for `README.md` that describes that closing sentence. Verified by the section ending with all three links resolving to existing files and `CONTRIBUTING.md` left untouched.
+
+**Verified:**
+
+- The closing sentence of `README.md`'s `## How it works` section — the last paragraph before `## Self-dogfooding` — links `docs/workflow.md`, `docs/skill-reference.md`, and `docs/ways-of-using-cairn.md`, the third link added beside the two existing ones in that single sentence, its clause routing readers to the headless command chains ("how to chain the skills as headless command lines, mixing hosts, models, and effort levels").
+- All three link targets in that sentence resolve to existing files (each `docs/…` path extracted from the sentence passes `[ -f ]`; link count is exactly three).
+- The `README.md` diff is confined to that one sentence (`git diff --stat`: 1 insertion, 1 deletion, the closing-sentence line only); no other line changed.
+- The `CLAUDE.md` layout entry for `README.md` describes `## How it works` as closing with one sentence linking all three pages, naming `docs/ways-of-using-cairn.md` as where the skills are chained as headless command lines.
+- `CONTRIBUTING.md` is untouched (`git diff --stat -- CONTRIBUTING.md` empty).
+- `uv run scripts/build_hosts.py --check` passes.
+
+---

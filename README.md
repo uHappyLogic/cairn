@@ -105,7 +105,7 @@ Each milestone lives in `milestones/milestone_<N>_<slug>/` and contains four fil
 
 `milestones/README.md` is the source of truth for which milestone is active. Skills read and write the current-milestone pointer there; it is never ambiguous which milestone is open.
 
-How the skills move a milestone through those files is described in [docs/workflow.md](docs/workflow.md), and what each skill does is in [docs/skill-reference.md](docs/skill-reference.md).
+How the skills move a milestone through those files is described in [docs/workflow.md](docs/workflow.md), what each skill does is in [docs/skill-reference.md](docs/skill-reference.md), and how to chain the skills as headless command lines, mixing hosts, models, and effort levels, is in [docs/ways-of-using-cairn.md](docs/ways-of-using-cairn.md).
 
 ## Self-dogfooding
 
