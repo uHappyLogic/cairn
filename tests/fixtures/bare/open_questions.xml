@@ -1,0 +1,8 @@
+<open-questions>
+  <open-question id="First bare question">
+    <question>What is the first thing to decide?</question>
+  </open-question>
+  <open-question id="Second bare question">
+    <question>What follows from the first decision?</question>
+  </open-question>
+</open-questions>

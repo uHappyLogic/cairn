@@ -1,0 +1,13 @@
+<open-questions>
+  <open-question id="Ampersand &amp; angle &lt;brackets&gt;, &quot;quotes&quot;, &apos;apostrophes&apos;">
+    <question>Does text with &amp;, &lt;tag&gt;, &quot;double&quot; and &apos;single&apos; quotes survive a round trip?</question>
+    <alternative id="A &amp; B">
+      What &lt;it&gt; is &amp; isn&apos;t, &quot;quoted&quot;.
+      <advantage>Keeps &amp;, &lt;, &gt;, &quot;, and &apos; escaped in text.</advantage>
+      <drawback>Every apostrophe is stored as &apos;.</drawback>
+    </alternative>
+    <applied-principle>Five entities &amp; one rule</applied-principle>
+    <depends-on question="Some &quot;other&quot; question &amp; more" option="It&apos;s &lt;this&gt; one"/>
+    <recommendation option="A &amp; B">One rule for text &amp; attributes: &lt;, &gt;, &quot;, &apos;.</recommendation>
+  </open-question>
+</open-questions>

@@ -36,3 +36,4 @@ exclude = []
 skills = "skills"
 agents = "agents"
 shared = "shared"
+tools = "tools"

@@ -1,0 +1,41 @@
+<open-questions>
+  <open-question id="Escape hatch under sole writer">
+    <question>With the tool as the file&apos;s only writer, how does a user clear a stale recommendation to force its regeneration — a `strip` subcommand or a documented hand-edit exception?</question>
+    <alternative id="Strip subcommand">
+      The tool gains a `strip` subcommand that takes one or more Short Titles beside the milestone location every other subcommand takes and, for each named block, deletes every child between its `&lt;question&gt;` element and its `&lt;/open-question&gt;` line — the `&lt;alternative&gt;`, `&lt;applied-principle&gt;`, `&lt;depends-on&gt;`, and `&lt;recommendation&gt;` children — leaving the wrapper and `&lt;question&gt;` intact, touching no dependent and no `&lt;depends-on&gt;` tag that names the block, rejecting an unknown id with the document unchanged, and doing nothing on a block already bare; the user runs it and re-runs `/recommend-all-open-questions`, whose skip rule regenerates the now recommendation-less block.
+      <advantage>The sole-writer guarantee holds with no exception — the document on disk is always the tool&apos;s own output — and the operation is the per-block primitive the tool already needs for the transitive strip in `&lt;depends-on&gt;` reconciliation and the dependent-strip on prune, so exposing it costs an argparse entry, one pytest case, and one sentence in the sweep skill; the caller names an id instead of locating lines by eye in an entity-escaped document (for the coding agent acting on a user&apos;s request, one short command in place of an edit whose old text is the block&apos;s whole multi-kilobyte child set), a mistyped id fails loudly, and a half-deleted block the tool would refuse at every later call cannot arise.</advantage>
+      <drawback>A mutator no skill invokes — its only caller is the user, or the coding agent on the user&apos;s behalf, outside any skill — so unlike every other subcommand its invocation is carried by no runtime prose: the caller must know the tool&apos;s installed path (on the host whose plugin root is a variable substituted at skill load, the installed tool must first be found) and the milestone directory, all for an escape hatch that none of the 299 commits touching a `requirements.md` in this repository has ever exercised; and the strip lands uncommitted, riding into the next `Recommendation-annotation:` commit exactly as the hand-clear does today.</drawback>
+    </alternative>
+    <alternative id="Documented hand-edit exception">
+      The tool stays the only writer any skill or agent uses, and the sweep skill&apos;s escape-hatch sentence becomes the one documented exception: the user opens `open_questions.xml` and deletes every line between the block&apos;s `&lt;question&gt;` line and its `&lt;/open-question&gt;` line, which leaves a well-formed document the tool parses and re-renders on its next write — the reading of &quot;sole writer&quot; the plugin already gives the principle store, which `capture-milestone-principle-updates` alone writes yet the user may hand-edit for an urgent fix.
+      <advantage>Nothing to build, test, or document beyond rewording the sentence the sweep skill already carries and its echoes in the docs; the exception has a precedent in the principle store; and a hand-edit is the one path that still works when the interpreter or the tool itself is unavailable.</advantage>
+      <drawback>The exception lands on the one file whose escaping and indentation the goal makes tool-internal, so the user — or the coding agent acting for them — locates the lines by eye instead of naming an id (for the agent, an edit whose old text is the whole multi-kilobyte child set, the very token cost the goal exists to cut); a deletion one line too long leaves a document the tool refuses at every later call with nothing in the tool able to repair it, one line too short leaves the `&lt;recommendation&gt;` in place so the sweep silently skips the block; and &quot;the tool is the file&apos;s sole writer&quot; must carry a caveat everywhere it is stated.</drawback>
+    </alternative>
+    <alternative id="Strip behind a skill">
+      The `strip` subcommand of the first option plus a user-facing skill that wraps it — `strip-open-question-recommendation &lt;Short Title&gt;`, say — which resolves `&lt;MILESTONE_DIR&gt;`, invokes the tool, and commits the cleared block path-scoped under its own function-derived subject, the plugin&apos;s ordinary way to expose a file-changing user action.
+      <advantage>The user types a slash command with a Short Title and nothing else — no tool path, no milestone directory, the same on both hosts — and the clear is recorded as its own provenance-marked commit under the skill-layer commit rule instead of riding uncommitted into the next annotation commit.</advantage>
+      <drawback>A whole skill — SKILL.md, frontmatter with a 25-word description, a commit subject, a `docs/skill-reference.md` entry, a `CLAUDE.md` pipeline line, a rebuild of both host trees — for an escape hatch never yet exercised, existing solely to run one tool call because the sweep stays argument-free by design; and it splits one regeneration into two commits, the strip and then the sweep&apos;s annotation, where the annotation diff alone already records the replacement.</drawback>
+    </alternative>
+    <recommendation option="Strip subcommand">The goal gives the tool every deterministic edit to the document and a strip is one it already performs internally — the per-block primitive behind the transitive strip in reconciliation and the dependent-strip on prune — so exposing it is an argparse entry and a test, and in return the user gets an id-validated one-line call in place of an eye-located multi-kilobyte edit on the one file whose escaping and indentation the goal makes tool-internal, the on-disk document stays the tool&apos;s own output without a caveat, and the half-deleted block the tool would refuse at every later call cannot arise; one primitive serving the reconciliation walk transitively and the user one block at a time is one behaviour, not two, and dependents stay untouched exactly as the stale-tags-left-alone rule already says; a skill around it is an additive step to take only if the hatch, unexercised in every commit to date, ever becomes routine — which is what breaks the tie against building one now.</recommendation>
+  </open-question>
+  <open-question id="Root element form">
+    <question>Is the empty document a self-closing root or an open and close tag pair?</question>
+    <alternative id="Self-closing root">
+      The one rule for an element that holds nothing &amp; needs no body: write it as `&lt;open-questions/&gt;`.
+      <advantage>One serializer rule covers the root, `&lt;depends-on/&gt;`, and every other empty element alike.</advantage>
+      <drawback>The first `add` rewrites the root line instead of inserting between two existing lines.</drawback>
+    </alternative>
+    <alternative id="Open and close pair">
+      A two-line `&lt;open-questions&gt;` … `&lt;/open-questions&gt;` document with nothing between the tags.
+      <advantage>Adding or removing the last block is a pure insertion or deletion in the diff.</advantage>
+      <drawback>The root becomes the one element the self-closing rule does not cover.</drawback>
+    </alternative>
+    <applied-principle>One rule over two</applied-principle>
+    <applied-principle>Prefer the writer&apos;s invariant</applied-principle>
+    <depends-on question="Escape hatch under sole writer" option="Strip subcommand"/>
+    <recommendation option="Self-closing root">The serializer already writes every empty element self-closing, and the root is an element like any other; a second rule for one tag buys a slightly prettier first diff at the cost of a special case in the one place the format is defined.</recommendation>
+  </open-question>
+  <open-question id="Fixture bare block">
+    <question>Does a bare block sit beside annotated siblings without change?</question>
+  </open-question>
+</open-questions>

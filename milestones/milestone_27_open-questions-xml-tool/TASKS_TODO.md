@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Tool Module Serializer And Create Subcommand
-
-Create the stdlib-only `core/tools/open_questions.py` with its argparse frame (every subcommand takes the resolved `<MILESTONE_DIR>` and joins it with `open_questions.xml`), the parser and fixed-shape canonical serializer (bare `<open-questions>` root with no declaration, one element per line at 2 spaces per depth, children grouped by kind in the fixed order, text values folded to one line, `/>` self-closing tags, all five predefined entities in text and attributes), the output and error contract (bare un-escaped values on stdout, silent mutators, one `Error: <reason>` line on stderr with exit 1 and the document byte-for-byte unchanged, argparse's own exit 2, empty set as empty stdout with exit 0), and the `create` subcommand that writes the serializer's empty document and refuses an existing file. In the same change add `tools = "tools"` to both host `[layout]` tables so `uv run scripts/build_hosts.py` renders the tool into every host tree byte-identical to the source, and scaffold the root `tests/` suite — pytest in a `dev` dependency group, `pythonpath = ["core/tools"]` and `testpaths = ["tests"]` under `[tool.pytest.ini_options]`, golden `open_questions.xml` fixtures — so `uv run pytest` passes a `write(read(x)) == x` round-trip test plus `create` and contract cases, and the build's `--check`, `unfilled-placeholder`, and `host-name-in-core` gates pass over the new source.
-
----
-
 ## Tool List Locate And Lift Subcommands
 
 Add the tool's read subcommands: `list` printing bare ids in document order with a `--unannotated` filter for blocks carrying no `<recommendation>` element, `locate` taking one or more Short Titles and printing each block verbatim as the file holds it, and `lift` printing the recombined answer text — `<option> — <rationale>` from the block's `<recommendation option="…">` or `<id> — <what-it-is>` from a named `<alternative id="…">` with the `<advantage>`/`<drawback>` children excluded — with ids compared un-escaped and case-folded and a missing block, missing recommendation, or unmatched alternative id failing as one `Error:` line. These are what the rewired skills call in place of the `awk`/`sed`/`grep` idiom, and the work is verified by pytest cases covering each subcommand, its empty-set behaviour, and its error paths.
