@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Rewire Single-Question Answer Skills
-
-Rewire `answer-open-question`, `answer-open-question-with-recommendation`, `answer-open-question-with-alternative`, and the `answer-open-question-with-recommendation` agent so their locate and lift steps are `lift` calls (the alternative skill lifting `<id> — <what-it-is>` for its named alternative), their clean stops are driven by the tool's `Error:` line, their path-scoped staging and commits name both `<MILESTONE_DIR>/open_questions.xml` and `<MILESTONE_DIR>/requirements.md` under the unchanged `Manual-answer:`, `Recommendation-answer:`, and `Alternative-answer:` subjects, and the redirect guard and first-`.` arg splits stay as they are. Verified by the rendered skills, every `{{PLUGIN_ROOT}}/tools/open_questions.py` reference resolving under the build's `dangling-plugin-root` check, and a passing host rebuild.
-
----
-
 ## Rewire Answer Sweep Orchestrator
 
 Rewire `answer-all-open-questions-with-recommendation` to gather and order its questions with one tool walk call, to run each pre-dispatch re-check as a `lift` call whose failure is the skip and whose printed text is the commit body, and to commit each answer's staged `open_questions.xml` and `requirements.md` under `Recommendation-answer: <Short Title>`, deleting the prose graph walk, origin promotion, and re-read rules the tool now owns while keeping strictly sequential dispatch and the one-commit-per-answer rule. Verified by the rendered skill and a passing host rebuild.

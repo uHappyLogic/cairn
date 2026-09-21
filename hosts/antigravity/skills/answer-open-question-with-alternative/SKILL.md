@@ -29,105 +29,83 @@ before it is `<Short Title>` (the question handle); everything after it is `<Alt
 (the `id` of the `<alternative>` to record). Trim surrounding whitespace from both halves.
 
 - `<Short Title>` must match (case-insensitive, against the block's `id`) an existing
-  `<open-question>` block that the `/recommend-all-open-questions` sweep has already
-  annotated with `<alternative>` elements.
+  `<open-question>` block in `<MILESTONE_DIR>/open_questions.xml` that the
+  `/recommend-all-open-questions` sweep has already annotated with `<alternative>` elements.
 - `<Alternative Id>` must match (case-insensitive, against the `id` attribute) one of that
   block's embedded `<alternative id="...">` elements.
 
-The procedure resolves the current milestone itself, so nothing needs to be looked up first.
+The skill resolves the current milestone itself, so nothing needs to be looked up first.
 
 ## Workflow
 
 ### 1. Find the current milestone
 
 Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded
-task-list path. Hold `<MILESTONE_DIR>` — you need it for the delegated recording and the
-commit.
+task-list path. Hold `<MILESTONE_DIR>` — you need it for the lift, the delegated recording,
+and the commit.
 
-### 2. Locate the question and the chosen alternative
+### 2. Lift the chosen alternative into the answer
 
-Locating blocks by handle is a deterministic lookup, so query it with the line-oriented CLI
-(`awk`/`sed`/`grep`) keyed on the `<open-question …>` / `</open-question>` boundary lines
-rather than reading the whole file to eyeball a header. Every `<open-question>` block lives
-under the single `## Open questions` section of `<MILESTONE_DIR>/requirements.md`.
+Every read and write of `<MILESTONE_DIR>/open_questions.xml` is a call to the plugin's
+open-question tool, that file's sole writer — never read or edit it yourself. Run
 
-- **Find the question block.** For each `<open-question …>` opening boundary line, pull its
-  `id` attribute with the regex `id="([^"]*)"`. The captured value is stored
-  **entity-escaped**, so reverse the five-predefined-entity substitution on it before
-  comparing — replace `&lt;`→`<`, `&gt;`→`>`, `&quot;`→`"`, `&apos;`→`'`, and `&amp;`→`&`
-  **last**. Case-fold both that un-escaped `id` and `<Short Title>` and compare; the block
-  whose `id` case-folds equal is the match. It spans from its `<open-question …>` opening
-  boundary line through the next `</open-question>` closing boundary line — one
-  boundary-token pair per block.
+```
+python3 .agents/plugins/cairn/tools/open_questions.py lift <MILESTONE_DIR> "<Short Title>" --alternative "<Alternative Id>"
+```
 
-- **Find the chosen alternative within it.** Inside the matched block, scan its
-  `<alternative id="...">` opening lines, pull each `id` the same way (the same regex,
-  reverse entity-escaping), and case-fold-compare against `<Alternative Id>`. The
-  `<alternative>` whose `id` case-folds equal is the one to lift; it spans from its
-  `<alternative id="...">` opening line through its `</alternative>` closing line.
+On success it prints one line, "`<id>` — `<what-it-is>`": the chosen alternative's `id` as the
+document holds it, a spaced em dash, then the element's own what-it-is text, both as plain
+text, with its `<advantage>` and `<drawback>` children excluded (they are the trade-off
+analysis, not the decision). That whole line is **ANSWER** — the same anchor form the
+recommendation path uses for "`<option>` — `<rationale>`" — and its text before the first
+spaced em dash is **RECORDED OPTION**. Derive both from this print alone; never invent
+answer text.
 
-**Guard — clean stop, change nothing.** Stop without editing anything and report why if
-either lookup fails:
-- No block's `id` case-folds equal to `<Short Title>` (list the available question ids so the
-  user can retry).
-- The matched block carries **no** `<alternative>` elements at all — the
-  `/recommend-all-open-questions` sweep never annotated it. Point the user at
-  `/recommend-all-open-questions` first.
-- The block has alternatives but **none** whose `id` case-folds equal to `<Alternative Id>`
-  (list that block's available alternative ids so the user can retry).
+**Guard — clean stop, change nothing.** If the call fails, stop without editing anything and
+report why, quoting the tool's `Error:` line, which names the failed lookup:
+- no block's `id` matches `<Short Title>` — the line lists the ids the document holds, so the
+  user can retry;
+- the matched block carries **no** `<alternative>` elements at all — the
+  `/recommend-all-open-questions` sweep never annotated it; point the user at that sweep first;
+- the block has alternatives but none whose `id` matches `<Alternative Id>` — the line lists
+  that block's alternative ids, so the user can retry.
 
-### 3. Lift the alternative into the answer
+### 3. Record the answer via the shared recording core
 
-Within the chosen `<alternative id="...">` element, read two things as a single-element CLI
-read:
-
-- its `id` attribute (attribute-name-anchored regex, `id="([^"]*)"`), and
-- its **what-it-is text** — the element's own text node, i.e. everything between the
-  `<alternative …>` opening tag and its first child element (`<advantage>`). Ignore the child
-  `<advantage>` and `<drawback>` elements: they are the trade-off analysis, not the decision.
-
-Both are stored **entity-escaped**, so reverse the five-predefined-entity substitution on each
-— replace `&lt;`→`<`, `&gt;`→`>`, `&quot;`→`"`, `&apos;`→`'`, and `&amp;`→`&` **last** — to
-recover clean unescaped text. Derive **ANSWER** by recombining the un-escaped `id` with the
-un-escaped what-it-is text as "`<id>` — `<what-it-is>`" (the id, then a spaced em dash, then
-the what-it-is sentence). That string is the answer text — the same anchor form the
-recommendation path uses for "`<option>` — `<rationale>`". Never invent answer text.
-
-### 4. Record the answer via the shared recording core
-
-Hand the resolved **`<Short Title>`**, the derived **ANSWER**, and — as **RECORDED OPTION** —
-the un-escaped chosen alternative `id` from step 3 (the same value ANSWER opens with, passed
-separately so the core compares it to each dependent's assumed option as an exact id rather
-than parsing it out of ANSWER) to `.agents/plugins/cairn/shared/answer-procedure.md` and
-follow it unchanged **yourself, in this conversation** (its own step 1 re-resolves the
-milestone you already found — harmless). That procedure owns the recording work — locate,
-analyse, fold the decision into `## Decisions` as clean prose, remove the whole
-`<open-question …>`…`</open-question>` block, and cascade to any mooted siblings.
+Hand the resolved **`<Short Title>`**, the derived **ANSWER**, and the **RECORDED OPTION**
+from step 2 (the same value ANSWER opens with, passed separately so the core hands it to the
+tool as an exact id rather than parsing it out of ANSWER) to
+`.agents/plugins/cairn/shared/answer-procedure.md` and follow it unchanged **yourself, in this
+conversation** (its own step 1 re-resolves the milestone you already found — harmless). That
+procedure owns the recording work — locate, analyse, fold the decision into `## Decisions` of
+`requirements.md` as clean prose, remove the block from `open_questions.xml`, and cascade to
+any mooted siblings.
 
 Do **not** spawn any subagent — there is no `answer-open-question-with-alternative` agent.
 
-### 5. Commit the alternative answer
+### 4. Commit the alternative answer
 
 Read and follow the shared commit procedure at
 `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these inputs, using the
 `<MILESTONE_DIR>` from step 1:
 
-- **PATHS** — this skill's own edit: `<MILESTONE_DIR>/requirements.md`.
+- **PATHS** — this skill's own edits: `<MILESTONE_DIR>/open_questions.xml` and
+  `<MILESTONE_DIR>/requirements.md`.
 - **SUBJECT** — exactly `Alternative-answer: <Short Title>` (the answered question's handle).
   This distinct subject marks an override of the embedded recommendation: when
   `/capture-milestone-principle-updates` walks a milestone's answer commits across all three
   subjects, it reads this one as an override signal, like `Manual-answer:`, and — because the
   body below carries no user rationale — asks the user then why the alternative was preferred;
   `Recommendation-answer:` commits are evidence about existing principles only.
-- **Body** — the lifted alternative content (the `<id>` — `<what-it-is>` answer text derived in
-  step 3, with XML entities un-escaped) — the answer that was recorded.
+- **Body** — the lifted alternative: the "`<id>` — `<what-it-is>`" line the `lift` call printed
+  in step 2, verbatim — the answer that was recorded.
 
 That procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
-Its no-op guard also covers this skill's clean-stop cases: if the guard in step 2 fired or the
-recording core in step 4 stopped on a mismatch, `requirements.md` is unchanged, so nothing is
-staged and nothing is committed.
+Its no-op guard also covers this skill's clean-stop cases: if step 2 stopped on the tool's
+`Error:` line or the recording core in step 3 stopped on one, neither file changed, so
+nothing is staged and nothing is committed.
 
-### 6. Report findings
+### 5. Report findings
 
 On the success path — the alternative was recorded and committed — print exactly one fixed
 terse status line, carrying no identifier (no Short Title, no alternative id, no commit
@@ -138,15 +116,15 @@ Answer recorded.
 ```
 
 Do **not** re-narrate which question resolved, which alternative you recorded (its id or how it
-read), or how the document changed (the resolved block, the decision folded into
+read), or how the documents changed (the removed block, the decision folded into
 `## Decisions`, any cascading resolutions). Alongside the terse line keep only the one piece of
 genuinely git-absent advisory output: any new open questions the recorded decision may have
 introduced — surface these but do **not** add them to the document without user confirmation.
 
-**No-op case:** if step 5's dirty-own-path guard fired — nothing was committed because
-`requirements.md` was unchanged (the step 2 guard fired, or the recording core in step 4
-stopped on a mismatch) — do **not** print the terse success line. Instead print a single line
-stating that nothing was recorded and briefly why.
+**No-op case:** if step 4's dirty-own-path guard fired — nothing was committed because
+neither file changed (step 2 or the recording core in step 3 stopped on the tool's `Error:`
+line) — do **not** print the terse success line. Instead print a single line stating that
+nothing was recorded and briefly why.
 
 Then stay available: the user may now ask follow-up questions or request adjustments, with the
 full recording context still in hand.
