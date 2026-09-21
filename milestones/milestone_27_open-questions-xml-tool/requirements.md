@@ -40,36 +40,14 @@ No document names a runtime prerequisite for the installed plugin: `README.md`'s
 
 ## Decisions
 
+### `open_questions.xml` document shape
+
+- The root element of `open_questions.xml` is a bare `<open-questions>` — no XML declaration and no attributes. The empty file `define-milestone-goal` creates is that one empty root, and every `<open-question>` block sits one level inside it exactly as it stood under the old heading. An undeclared document is UTF-8 by the XML spec and stdlib ElementTree reads and writes it that way by default, the directory already names the milestone, and a declaration or root attribute stays available later as an additive change no reader breaks on.
+
 ## Out of Scope
 
 ## Open questions
 
-<open-question id="Root element shape">
-  <question>What is the root element of `open_questions.xml` — its tag name, whether the document opens with an XML declaration, and whether the root carries attributes such as the milestone id?</question>
-  <alternative id="Bare open-questions root">
-    The root is `&lt;open-questions&gt;` with no XML declaration and no attributes: the file `define-milestone-goal` creates is that one empty root, and every `&lt;open-question&gt;` block sits one level inside it exactly as it stood under the old heading.
-    <advantage>Nothing but the wrapper the goal requires — the XML spec reads an undeclared document as UTF-8, stdlib ElementTree parses it and (for UTF-8 output) writes it with no declaration by default, the tag keeps the `&lt;open-question&gt;` / `open_questions.xml` naming family, and both a declaration and root attributes remain available later as additive changes no ElementTree reader would break on.</advantage>
-    <drawback>The document is self-describing only by its path — `file(1)` reports it as plain text rather than XML because there is no `&lt;?xml` magic, and there is no in-band milestone id — so a copy seen outside its directory says nothing about which milestone it belongs to.</drawback>
-  </alternative>
-  <alternative id="Declared open-questions root">
-    The same `&lt;open-questions&gt;` root preceded by the conventional `&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;` first line, still with no attributes.
-    <advantage>Reads as a textbook `.xml` file — the encoding is stated rather than defaulted, and editors, `file(1)`, and any non-XML tooling that identifies XML by the `&lt;?xml` magic recognize it at once.</advantage>
-    <drawback>One fixed line that no consumer reads — the tool, the recommend agent&apos;s grounding, and capture&apos;s diff walk all key on `&lt;open-question` boundary lines — and stdlib ElementTree&apos;s own `xml_declaration=True` emits the single-quoted `&lt;?xml version=&apos;1.0&apos; encoding=&apos;utf-8&apos;?&gt;`, so the double-quoted header is a hand-written line the tool must keep byte-stable itself.</drawback>
-  </alternative>
-  <alternative id="Milestone-attributed root">
-    The `&lt;open-questions&gt;` root carries the milestone id as an attribute — `&lt;open-questions milestone=&quot;milestone_&lt;NN&gt;_&lt;slug&gt;&quot;&gt;` — written by `define-milestone-goal` and optionally cross-checked by the tool against the directory it reads from.
-    <advantage>The document identifies its milestone in-band, so a block seen out of context — a pasted file, a `git show` hunk — is attributable, and the tool can refuse a file copied into the wrong milestone directory.</advantage>
-    <drawback>A second copy of the directory name that nothing in the pipeline reads — every runner resolves `&lt;MILESTONE_DIR&gt;` from the `milestones/README.md` pointer and capture&apos;s commit walk is already path-scoped — and the cross-check adds a failure mode with no real-world trigger under the goal&apos;s no-migration stance.</drawback>
-  </alternative>
-  <alternative id="Short questions root">
-    A bare `&lt;questions&gt;` root with no declaration and no attributes, dropping the `open` qualifier the file name already carries.
-    <advantage>Shortest tag, and `open` is not repeated three times across `open_questions.xml`, the root, and each block.</advantage>
-    <drawback>`question` is already the text element inside every block, so the root and that element would differ only by a plural — an easy misread and a `grep &apos;&lt;question&apos;` hazard — and it breaks the `&lt;open-question&gt;` naming family the file name and the block tag share.</drawback>
-  </alternative>
-  <applied-principle>Drop-vs-replace by ambiguity</applied-principle>
-  <applied-principle>Prefer domain-neutral terms</applied-principle>
-  <recommendation option="Bare open-questions root">The root exists only to make the lifted section one well-formed document, so name it for the family it wraps and add nothing — an undeclared document is UTF-8 by the XML spec and stdlib ElementTree reads and writes it that way by default, the directory already names the milestone, and a declaration or attribute can be added later as an additive change without breaking any reader.</recommendation>
-</open-question>
 <open-question id="Empty document creation">
   <question>Does `define-milestone-goal` create the empty `open_questions.xml` by invoking a tool subcommand, keeping the tool the file&apos;s only writer, or by writing a fixed template itself?</question>
   <alternative id="Tool create subcommand">
@@ -354,7 +332,6 @@ No document names a runtime prerequisite for the installed plugin: `README.md`'s
     <advantage>Untouched blocks never change a byte, so a diff is exactly the spliced range and nothing else, a hand-edit outside the target block survives verbatim, and it is the most direct port of the boundary-line prose into Python.</advantage>
     <drawback>It guarantees no format at all — the layout and escapes are the union of what each writer passed (the agent&apos;s fragment indentation, a hand-edit, a differently indented `add`), so &quot;fixed indent per level&quot; can only be enforced by rejecting every deviating fragment (with a repair round each time) or left inconsistent; and every operation is line arithmetic over a document the tool also parses, two representations that must agree — the fragility the goal moves into one tool to retire, relocated rather than removed.</drawback>
   </alternative>
-  <depends-on question="Root element shape" option="Bare open-questions root"/>
   <recommendation option="Canonical writer, five entities">The guarantee the question asks for exists only if the writer normalizes, and the stdlib pretty-printer cannot render the mixed-content `&lt;alternative&gt;` one element per line, so the tool must own a small fixed-shape serializer in any case; owning it makes every write a full canonical re-render — same tree, same bytes, whatever the agent, a hand-edit, or an older write supplied — with every child one greppable line at 2 spaces per depth under the bare root and no column-0 exception for the blocks (every raw-line reader keys on the tag, not the column), and the five-entity rule wins the tie against minimal escaping because it is one rule for text and attributes, the convention every consumer already reverses, and the raw file&apos;s readers (the tool, the agent, `git diff`) pay nothing for it.</recommendation>
 </open-question>
 <open-question id="Test suite location">
