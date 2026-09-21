@@ -2,6 +2,30 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.6.0 — 2026-09-21
+
+### Open Questions XML Tool (milestone 27)
+
+- Each milestone's open questions now live in their own file, `<MILESTONE_DIR>/open_questions.xml` — one `<open-question id="Short Title">` block per question under a bare `<open-questions>` root, created empty by `/define-milestone-goal` — and `requirements.md` keeps only its four prose sections, with no `## Open questions` section. Milestones defined before this release get no migration and no compatibility: a question skill run against one stops on the tool's `Error: … does not exist` line.
+- A new stdlib-only Python tool, `tools/open_questions.py`, is that file's sole writer and owns every deterministic operation over it — `create`, `list`, `locate`, `lift`, `add`, `strip`, `embed`, `remove`, and `walk` — re-rendering the document in one canonical form on every write, printing bare values on reads and nothing on a successful mutation, and failing as one `Error: <reason>` line with the document unchanged.
+- **New runtime prerequisite:** the installed plugin needs a Python 3.9 or later interpreter answering as `python3`. `/init-milestone-base-workflow` checks for it once per project and stops before writing anything when none is found.
+- Every skill, agent, and shared procedure that touches open questions now calls the tool instead of driving `awk`/`sed`/`grep` over the document: the recommend sweep embeds each agent return through `embed` (which slices and validates the fragment), answering reconciles `<depends-on>` dependents through `remove --option`, and the answer sweep takes its dispatch order from `walk`.
+- `/capture-milestone-principle-updates` reads answer commits against `open_questions.xml` and drops its pre-XML blockquote fallback.
+- The tool ships with a pytest suite that CI runs under both the pinned interpreter and a Python 3.9 floor.
+
+### README landing page (milestone 26)
+
+- The root `README.md` is now a landing page: badges and the three-repository adoption table above `# Cairn`, the host-neutral one-liner, one simplified workflow loop diagram, per-host installation, `## Why Cairn?`, and a `## Design principles` block, with the old banner image removed and the pre-1.5.0 marketplace migration note demoted to an appendix.
+- The workflow narrative and the per-skill reference moved out of the README into `docs/workflow.md` and `docs/skill-reference.md`, every heading kept so old anchors survive path-prefixed; two stale skill-reference entries (`goto-next-milestone`, `finish-current-milestone`) were corrected in the move.
+- `docs/design-claims.md` records the 19 design claims behind cairn, each with the design it names and the metric that would test it.
+- Both distribution READMEs take the same landing shape, with a two-badge strip of that repository's unique-views and unique-clones counts above the title.
+
+### Traffic Adoption Badges (milestone 25)
+
+- Every one of the three repositories now publishes daily unique-views and unique-clones badges from a `traffic-data` branch written by the `traffic-badges` workflow, and the root README's adoption table reads all three (the workflow templates and build-gate change that made this possible shipped in 1.5.1).
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.5.1...1.6.0
+
 ## 1.5.1 — 2026-09-18
 
 ### Changes since 1.5.0
