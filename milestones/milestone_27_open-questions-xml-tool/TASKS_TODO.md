@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Run Pytest Suite In CI
-
-Extend the single `check` job of `.github/workflows/drift-gate.yml` with two steps after `uv run scripts/build_hosts.py --check`: the pinned run `uv run pytest` and the floor run `uv run --no-project --python 3.9 --with pytest pytest`, leaving the two SHA-pinned action lines, the job count, and the file name unchanged so the `ci` badge covers the drift gate and both runs. The suite must stay on the pytest API shared by the 3.9 and 3.13 interpreters, and the change is verified by both commands passing locally.
-
----
-
 ## Bootstrap Python Prerequisite Check
 
 Make `init-milestone-base-workflow` run an interpreter check first, ahead of its state detection: execute `python3` to read its version, probe `python` only when that fails, and when no Python 3.9+ interpreter answers stop before any write with a full message naming what it looked for, what it found, the install or expose-as-`python3` remedy, and that a re-run completes the bootstrap. Its `milestones/README.md` template must describe the four milestone files (`open_questions.xml` beside the three Markdown files), and the skill is verified by reading the rendered host trees and passing `uv run scripts/build_hosts.py --check` after a rebuild.

@@ -105,3 +105,20 @@ Add the answer sweep's walk subcommand, which gathers every block carrying a `<r
 - The tool stays stdlib-only (no new import; `walk_order` is a module-level function over `id_key` and the parsed `Document`), `grep '{{'` over `core/tools/open_questions.py` finds nothing, and no `claude`/`antigravity` word appears under `core/tools/`; `uv run scripts/build_hosts.py` rebuilt hosts/antigravity/ (37 files) and hosts/claude/ (38 files), `cmp` shows both `hosts/<host>/tools/open_questions.py` byte-identical to `core/tools/open_questions.py`, and `uv run scripts/build_hosts.py --check` passes.
 
 ---
+
+## Run Pytest Suite In CI
+
+Extend the single `check` job of `.github/workflows/drift-gate.yml` with two steps after `uv run scripts/build_hosts.py --check`: the pinned run `uv run pytest` and the floor run `uv run --no-project --python 3.9 --with pytest pytest`, leaving the two SHA-pinned action lines, the job count, and the file name unchanged so the `ci` badge covers the drift gate and both runs. The suite must stay on the pytest API shared by the 3.9 and 3.13 interpreters, and the change is verified by both commands passing locally.
+
+**Verified:**
+
+- `.github/workflows/drift-gate.yml` keeps exactly one job, `check`, whose `steps` list gained exactly two new steps after `- run: uv run scripts/build_hosts.py --check`, in this order: `- run: uv run pytest` (the pinned run, carrying no version literal) then `- run: uv run --no-project --python 3.9 --with pytest pytest` (the floor run) — read back from the file; `git diff --numstat` shows 2 lines added, 0 removed.
+- The two SHA-pinned action lines — `- uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1` and `- uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0` — are byte-identical to `HEAD` (`diff` over the `uses:` lines is empty), and neither pytest step carries an `if:` (the `!cancelled()` remedy stays reserved).
+- The file name `.github/workflows/drift-gate.yml` and its `name: drift-gate` are unchanged and no second workflow file was added (`.github/workflows/` still holds exactly `drift-gate.yml` and `traffic-badges.yml`), so the README `ci` badge URL reads one status covering the drift gate and both test runs; `on: [push, pull_request]`, `permissions: contents: read`, and `runs-on: ubuntu-latest` are unchanged.
+- The edited workflow parses under `yaml.safe_load` as one job with five steps — two `uses` and three `run` (`uv run scripts/build_hosts.py --check`, `uv run pytest`, `uv run --no-project --python 3.9 --with pytest pytest`).
+- The pinned run `uv run pytest` passes locally under the `.python-version` interpreter (CPython 3.13.5) against the locked `dev` group's pytest 9.1.1: 319 passed, exit 0.
+- The floor run `uv run --no-project --python 3.9 --with pytest pytest` passes locally under CPython 3.9.25 with the last pytest supporting 3.9 (pytest 8.4.2): 319 passed, exit 0 — the suite stays on the API both pytest majors share.
+- `pyproject.toml`, `uv.lock`, `.python-version`, `scripts/`, `core/`, and `tests/` are untouched — `git status --short` lists `.github/workflows/drift-gate.yml` as the only changed path beyond the two task-list files.
+- The project's done check `uv run scripts/build_hosts.py --check` still passes (the workflow file lies outside every rendered host tree).
+
+---
