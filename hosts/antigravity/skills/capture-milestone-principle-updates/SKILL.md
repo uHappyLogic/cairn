@@ -6,9 +6,10 @@ description: Distill reusable answering principles from a named milestone's reco
 # capture-milestone-principle-updates
 
 This is the on-demand harvester of the answer-principle-learning loop. Over a milestone, every
-recorded answer is one commit on the milestone's `requirements.md` under one of three subjects —
-`Manual-answer:`, `Alternative-answer:`, or `Recommendation-answer: <Short Title>` — whose body carries
-the recorded answer and whose diff preserves the analysis the user saw when recording it. This skill
+recorded answer is one commit touching the milestone's `open_questions.xml` and `requirements.md`
+under one of three subjects — `Manual-answer:`, `Alternative-answer:`, or
+`Recommendation-answer: <Short Title>` — whose body carries the recorded answer and whose diff
+preserves the analysis the user saw when recording it. This skill
 reads that finite, known-up-front set of commits for the milestone you name and distills from them
 the generalizable answering principles that the recommendation advisor can apply.
 
@@ -39,7 +40,8 @@ the `milestones/` root, **above** any one milestone, so principles accumulate ac
 ```
 
 > This skill writes **only** the principle store at the fixed path
-> `milestones/answer_decision_principles.md`. It does **not** touch any milestone's `requirements.md`.
+> `milestones/answer_decision_principles.md`. It does **not** touch any milestone's `requirements.md`
+> or `open_questions.xml`.
 > When a pass composes a store rewrite it writes it in place and — once the user has reviewed the
 > working-tree change with `git diff` and confirmed it — **commits** that rewrite itself (step 7); a
 > pass that distills nothing, or whose rewrite the user rejects, leaves the store as it stood and
@@ -101,13 +103,14 @@ Collect every answer commit for this milestone — all three provenances — wit
 log, using the `<milestone_id>` from step 1 verbatim in the path:
 
 ```
-git log --format='%h %s' -E --grep='^(Manual-answer|Alternative-answer|Recommendation-answer): ' -- milestones/<milestone_id>/requirements.md
+git log --format='%h %s' -E --grep='^(Manual-answer|Alternative-answer|Recommendation-answer): ' -- milestones/<milestone_id>/open_questions.xml
 ```
 
-- **The path filter is itself the lower boundary.** `milestones/<milestone_id>/requirements.md` does
-  not exist before `/define-milestone-goal` created it, so no earlier commit can touch it — there is
-  no need for a milestone-start marker or recorded base SHA. It is also the only boundary on the
-  harvest: no finish marker or upper bound is applied.
+- **The path filter is itself the lower boundary.** `milestones/<milestone_id>/open_questions.xml`
+  does not exist before `/define-milestone-goal` created it, so no earlier commit can touch it — there
+  is no need for a milestone-start marker or recorded base SHA. It is also the only boundary on the
+  harvest: no finish marker or upper bound is applied. The filter names `open_questions.xml` alone —
+  every answer removes its block from that file, so the one path selects exactly the answer commits.
 - **Every subject is `<Marker>: <Short Title>`.** The marker names the provenance and the remainder
   is the answered question's Short Title — the `id` of the `<open-question>` block the answer removed.
 
@@ -119,7 +122,7 @@ Otherwise, for **each** commit, read three things and build one per-commit recor
 **Read the subject, the body, and the diff.**
 
 ```
-git show <hash> --format='%s%n%n%b' -- milestones/<milestone_id>/requirements.md
+git show <hash> --format='%s%n%n%b' -- milestones/<milestone_id>/open_questions.xml milestones/<milestone_id>/requirements.md
 ```
 
 - **Subject → provenance and Short Title.** Split on the first `: `. The marker is the provenance
@@ -131,17 +134,19 @@ git show <hash> --format='%s%n%n%b' -- milestones/<milestone_id>/requirements.md
   "`<option>` — `<rationale>`" of the recommendation; an `Alternative-answer:` body is the chosen
   alternative's "`<id>` — `<what-it-is>`". No user rationale exists on either lifted path.
 - **Diff → the block the user saw, and the decision they recorded.** `shared/answer-procedure.md`
-  folds the decision into `## Decisions` and then removes the whole `<open-question>` block, so the
-  diff's **removed lines** (`-` prefix) hold the full block as it stood when the answer was recorded and
-  its **added lines** (`+` prefix) hold the new `## Decisions` entry. Locate the answered block among
-  the removed lines by its opening boundary `-<open-question id="…"` whose `id` matches the Short Title
-  (case-insensitive, entity-unescaped, attribute order immaterial) and read through its
-  `-</open-question>` closing line. Only the removed lines lying within those two boundaries feed
-  this record: every other removed line in the same diff — whether a whole sibling block the answer's
-  cascade mooted, or a stray line the cascade cleared from a sibling block that still stands in the
-  document — is outside the answered block and contributes nothing. From the
-  answered block reconstruct, reversing the five predefined XML entities (`&lt;` `&gt;` `&quot;`
-  `&apos;`, then `&amp;` last) on every value:
+  folds the decision into `## Decisions` of `requirements.md` and then removes the whole
+  `<open-question>` block from `open_questions.xml`, so the diff carries one hunk per file: the
+  `open_questions.xml` hunk's **removed lines** (`-` prefix) hold the full block as it stood when the
+  answer was recorded, and the `requirements.md` hunk's **added lines** (`+` prefix) hold the new
+  `## Decisions` entry. Locate the answered block among the `open_questions.xml` hunk's removed lines
+  by its opening boundary — the removed line carrying the `<open-question id="…">` tag whose `id`
+  matches the Short Title (case-insensitive, entity-unescaped, attribute order immaterial; keyed on the
+  tag, never its column) — and read through its `</open-question>` closing line. Only the removed
+  lines lying within those two boundaries feed this record: every other removed line in the same
+  diff — whether a whole sibling block the answer's cascade mooted, or a stray line the cascade
+  cleared from a sibling block that still stands in the document — is outside the answered block and
+  contributes nothing. From the answered block reconstruct, reversing the five predefined XML
+  entities (`&lt;` `&gt;` `&quot;` `&apos;`, then `&amp;` last) on every value:
   - the `<question>` text;
   - each `<alternative id="…">` — its `id`, its **what-it-is** text (the element's own text before its
     first child), and its `<advantage>` / `<drawback>` children — in document order: these are the
@@ -150,9 +155,8 @@ git show <hash> --format='%s%n%n%b' -- milestones/<milestone_id>/requirements.md
     cited (zero or more; each is one store `### <Short Title>`);
   - the `<recommendation option="…">…</recommendation>` element — its `option` attribute and its
     rationale text — or **none** when the block carries no `<recommendation>` element. A block the
-    recommend sweep never annotated has only a `<question>`; an answer recorded before the block form
-    existed removes no `<open-question>` at all (its removed lines are a `> **Deferred — …:**` or
-    `> **Open question — …:**` blockquote). Both are the **no-recommendation** case, never an error.
+    recommend sweep never annotated has only a `<question>`; that is the **no-recommendation** case,
+    never an error.
 
 **Classify the commit by two tests, in this order.**
 
@@ -195,7 +199,7 @@ what steps 4, 5, and 6 consume:
 | `provenance` | `Manual-answer` \| `Alternative-answer` \| `Recommendation-answer` |
 | `short_title` | the Short Title from the subject |
 | `body` | the trailer-stripped body, verbatim |
-| `recorded_decision` | the added `## Decisions` entry text from the diff |
+| `recorded_decision` | the added `## Decisions` entry text from the diff's `requirements.md` hunk |
 | `question` | the removed `<question>` text |
 | `alternatives` | ordered list of (`id`, what-it-is, advantages, drawbacks) the user saw; empty when the block carried none |
 | `applied_principles` | list of cited store Short Titles; empty when none |
@@ -557,7 +561,7 @@ it. No empty commit records the rejection. Go to step 8 (nothing captured).
   line, never a collapse into `Principles captured.` — stating that nothing was captured, that
   nothing was committed, and briefly which case ended the run. The four cases share this one-line
   shape and differ only in that brief reason:
-  - **empty commit range** (step 3): no answer commits touch this milestone's `requirements.md`;
+  - **empty commit range** (step 3): no answer commits touch this milestone's `open_questions.xml`;
   - **no candidates** (step 5): commits were in range, but none generalizes and none contradicts
     the store;
   - **composed store identical to its baseline** (step 6): everything the milestone teaches is
