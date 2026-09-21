@@ -28,6 +28,19 @@ Subcommands:
       <applied-principle>, <depends-on>, and <recommendation> elements — leaving the
       wrapper and <question> intact; no other block is touched, so a <depends-on> tag that
       names a stripped block stays where it is, and a block already bare is left as it is
+  embed MILESTONE_DIR SHORT_TITLE
+      put the recommend agent's returned children into the named block, which must carry no
+      <recommendation> yet: the agent's whole final message is the body read from standard
+      input, the fragment is sliced from its first line holding "<alternative" through its
+      last line holding "</recommendation>" (the identity on a clean return, discarding a
+      grounding summary or closing remark otherwise), parsed, and validated — no
+      <open-question> or <question> line, no text outside its elements, at least one
+      <alternative>, exactly one <recommendation> whose option names one of the fragment's
+      own alternatives, every <depends-on question="…" option="…"/> resolving one hop to a
+      block of the document that carries a <recommendation> and to one of that block's
+      <alternative> ids, no element of a kind the format does not define, and never the
+      order of its children — then written as the block's children grouped by kind in the
+      canonical order; every miss, the two extraction misses included, is one Error line
   remove MILESTONE_DIR SHORT_TITLE [--option RECORDED_OPTION]
       delete the named block and, before the one write, reconcile the blocks that depend on
       it: with --option (the option recorded as the answer, which must be one of the removed
@@ -42,10 +55,11 @@ A Short Title names a block by its id, ALTERNATIVE_ID names an alternative by it
 RECORDED_OPTION names an alternative by its id too; all are compared against the document's
 un-escaped values, case-folded.
 
-A free-text body (the question text of add) travels on standard input, never as an
-argument: the tool reads sys.stdin.buffer to end of file exactly once per call and decodes
-it as UTF-8 itself, and it refuses a terminal stdin so a call that forgot to pipe its body
-(a quoted heredoc, a redirected file) fails instead of blocking.
+A free-text body (the question text of add, the recommend agent's message of embed) travels
+on standard input, never as an argument: the tool reads sys.stdin.buffer to end of file
+exactly once per call and decodes it as UTF-8 itself, and it refuses a terminal stdin so a
+call that forgot to pipe its body (a quoted heredoc, a redirected file) fails instead of
+blocking.
 
 Document format, the canonical form every write re-renders the whole document into:
   - a bare <open-questions> root with no XML declaration and no attributes; the empty
@@ -78,12 +92,14 @@ Standard library only; runs on Python 3.9 and later.
 
 import argparse
 import os
+import re
 import stat
 import sys
 import tempfile
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from typing import List, Optional
+from xml.parsers import expat
 
 DOCUMENT_NAME = "open_questions.xml"
 ROOT_TAG = "open-questions"
@@ -188,6 +204,21 @@ def _parse_question(elem):
     _no_text(elem.text, context)
 
     question = Question(id=block_id)
+    question_texts = _parse_children(elem, context, question)
+    if not question_texts:
+        raise ToolError(f"{context} has no <question> element")
+    if len(question_texts) > 1:
+        raise ToolError(f"{context} carries {len(question_texts)} <question> elements")
+    question.question = question_texts[0]
+    return question
+
+
+def _parse_children(elem, context, question):
+    """Fill the block's alternatives, applied principles, depends-on tags, and recommendation
+    from the element's children in document order — the walk a block of the document and the
+    recommend agent's fragment share — and return the texts of its <question> children for the
+    caller to judge; a child the format does not define, text between the children, a repeated
+    alternative id, or a second <recommendation> is a ToolError."""
     question_texts = []
     recommendations = []
     alternative_ids = set()
@@ -218,16 +249,11 @@ def _parse_question(elem):
             raise ToolError(f"{context} carries an unexpected <{child.tag}> element")
         _no_text(child.tail, context)
 
-    if not question_texts:
-        raise ToolError(f"{context} has no <question> element")
-    if len(question_texts) > 1:
-        raise ToolError(f"{context} carries {len(question_texts)} <question> elements")
     if len(recommendations) > 1:
         raise ToolError(f"{context} carries {len(recommendations)} <recommendation> elements")
-    question.question = question_texts[0]
     if recommendations:
         question.recommendation = recommendations[0]
-    return question
+    return question_texts
 
 
 def _parse_alternative(elem, block_context):
@@ -537,6 +563,123 @@ def remove_question(document, question, recorded_option=None):
     return stripped
 
 
+# --- the recommend agent's fragment ---------------------------------------------------
+
+FRAGMENT = "the fragment"
+FRAGMENT_TAG = "fragment"
+# A start or end tag of the wrapper or of <question>, by name and a boundary after it.
+_BLOCK_TAG_LINE = re.compile(rf"</?({BLOCK_TAG}|question)(?=[\s/>])")
+
+
+def extract_fragment(message):
+    """The fragment inside the recommend agent's whole final message: its lines from the first
+    line holding "<alternative" through the last line holding "</recommendation>", joined —
+    the identity on a clean return, the discarding of a grounding summary above or a closing
+    remark below otherwise. A message missing either anchor line is a ToolError naming it."""
+    lines = message.splitlines()
+    starts = [index for index, line in enumerate(lines) if "<alternative" in line]
+    ends = [index for index, line in enumerate(lines) if "</recommendation>" in line]
+    if not starts:
+        raise ToolError("no <alternative> line to extract from")
+    if not ends:
+        raise ToolError("no </recommendation> line to extract to")
+    start, end = starts[0], ends[-1]
+    if end < start:
+        raise ToolError("the last </recommendation> line precedes the first <alternative> line")
+    return "\n".join(lines[start : end + 1])
+
+
+def parse_fragment(region):
+    """The children an extracted fragment describes, as a Question with no id and no question
+    text, once the fragment is well-formed and valid: no <open-question> or <question> line,
+    no text outside its elements, at least one <alternative>, exactly one <recommendation>
+    whose option names one of the fragment's own alternatives, and no element of a kind the
+    format does not define. The order of the children is not checked — the writer groups them
+    by kind — and a <depends-on> tag is checked against the document by check_dependencies."""
+    for line in region.splitlines():
+        found = _BLOCK_TAG_LINE.search(line)
+        if found:
+            tag = found.group(0) + ">"
+            article = "an" if tag.startswith("<o") else "a"
+            raise ToolError(
+                f"{FRAGMENT} contains {article} {tag} line; the <{BLOCK_TAG}> wrapper and its "
+                f"<question> element belong to the document, not to the fragment"
+            )
+    try:
+        root = ET.fromstring(f"<{FRAGMENT_TAG}>\n{region}\n</{FRAGMENT_TAG}>")
+    except ET.ParseError as error:
+        raise ToolError(f"{FRAGMENT} is not well-formed XML: {_parse_error_text(error)}")
+
+    children = list(root)
+    if fold(root.text):
+        raise ToolError(f"text precedes <alternative> on {FRAGMENT}'s opening line")
+    if children and fold(children[-1].tail):
+        raise ToolError(f"text trails </recommendation> on {FRAGMENT}'s closing line")
+    if any(fold(child.tail) for child in children[:-1]):
+        raise ToolError(f"{FRAGMENT} carries text between its elements")
+
+    fragment = Question(id="")
+    if _parse_children(root, FRAGMENT, fragment):
+        raise ToolError(f"{FRAGMENT} contains a <question> element")
+    if not fragment.alternatives:
+        raise ToolError(f"{FRAGMENT} contains no <alternative> element")
+    if fragment.recommendation is None:
+        raise ToolError(f"{FRAGMENT} contains no <recommendation> element")
+    wanted = id_key(fragment.recommendation.option)
+    if not any(id_key(alternative.id) == wanted for alternative in fragment.alternatives):
+        held = _quoted(alternative.id for alternative in fragment.alternatives)
+        raise ToolError(
+            f'the <recommendation> option "{fragment.recommendation.option}" names none of '
+            f"{FRAGMENT}'s <alternative> ids, which are {held}"
+        )
+    return fragment
+
+
+def _parse_error_text(error):
+    """The parser's reason with its line counted from the fragment's own first line (the parse
+    wraps the fragment in a root element on the line above it)."""
+    line, column = error.position
+    reason = expat.errors.messages.get(getattr(error, "code", None), "syntax error")
+    return f"{reason} at line {line - 1}, column {column}"
+
+
+def check_dependencies(document, question, fragment):
+    """A ToolError unless every <depends-on> tag of the fragment resolves one hop: its question
+    names a block of the document other than the one being embedded that carries a
+    <recommendation>, and its option is one of that block's own <alternative> ids — both
+    compared un-escaped and case-folded. The target's own tags are not followed and no cycle
+    is looked for."""
+    annotated = [other for other in document.questions if other is not question and other.recommendation is not None]
+    for dependency in fragment.depends_on:
+        wanted = id_key(dependency.question)
+        target = next((other for other in annotated if id_key(other.id) == wanted), None)
+        if target is None:
+            held = _quoted(other.id for other in annotated)
+            held = f"the annotated blocks are {held}" if held else "no other block carries one"
+            raise ToolError(
+                f'the <depends-on question="{dependency.question}"/> names no block that carries a '
+                f"<recommendation>; {held}"
+            )
+        option = id_key(dependency.option)
+        if not any(id_key(alternative.id) == option for alternative in target.alternatives):
+            held = _quoted(alternative.id for alternative in target.alternatives)
+            raise ToolError(
+                f'the <depends-on question="{dependency.question}" option="{dependency.option}"/> names '
+                f"none of that block's <alternative> ids, which are {held}"
+            )
+
+
+def embed_fragment(document, question, fragment):
+    """Make the fragment's children the block's children — its alternatives in their returned
+    order, applied principles, depends-on tags, and recommendation — once every <depends-on>
+    tag resolves against the document; the caller writes, and the writer groups them by kind."""
+    check_dependencies(document, question, fragment)
+    question.alternatives = list(fragment.alternatives)
+    question.principles = list(fragment.principles)
+    question.depends_on = list(fragment.depends_on)
+    question.recommendation = fragment.recommendation
+
+
 # --- subcommands ----------------------------------------------------------------------
 
 
@@ -606,6 +749,19 @@ def cmd_strip(args):
         changed = strip_question(question) or changed
     if changed:
         save_document(args.milestone_dir, document)
+    return 0
+
+
+def cmd_embed(args):
+    document = load_document(args.milestone_dir)
+    question = find_question(document, args.short_title)
+    if question.recommendation is not None:
+        raise ToolError(
+            f'<{BLOCK_TAG} id="{question.id}"> already carries a <recommendation> element; strip it first to embed a new one'
+        )
+    fragment = parse_fragment(extract_fragment(read_body("the recommend agent's message")))
+    embed_fragment(document, question, fragment)
+    save_document(args.milestone_dir, document)
     return 0
 
 
@@ -713,6 +869,24 @@ def build_parser():
         metavar="SHORT_TITLE",
         nargs="+",
         help="the id of a block, compared un-escaped and case-folded",
+    )
+
+    embed_parser = add_subcommand(
+        "embed",
+        cmd_embed,
+        "put the recommend agent's returned children into the named block, which must carry no "
+        "<recommendation> yet: the agent's whole final message is read from standard input "
+        "(pipe it as a quoted heredoc; a terminal stdin is refused), the fragment is sliced from "
+        "its first <alternative line through its last </recommendation> line, parsed, validated "
+        "(no <open-question> or <question> line, no text outside the elements, at least one "
+        "<alternative>, exactly one <recommendation> naming one of them, every <depends-on> "
+        "resolving to an annotated block and one of its <alternative> ids, no unknown element; "
+        "child order is not checked), and written grouped by kind; every miss is one Error line",
+    )
+    embed_parser.add_argument(
+        "short_title",
+        metavar="SHORT_TITLE",
+        help="the id of the block, compared un-escaped and case-folded",
     )
 
     remove_parser = add_subcommand(

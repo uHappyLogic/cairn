@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Tool Embed With Extraction And Validation
-
-Add `embed`, which takes the Short Title, reads the recommend agent's whole final message from stdin, slices from the first `<alternative` line through the last `</recommendation>` line (the identity on a clean return), parses the fragment, validates it — no wrapper or `<question>` line, at least one `<alternative>`, exactly one `<recommendation>` whose option names one of the fragment's alternatives, every `<depends-on question="…" option="…"/>` resolving one hop against a still-present block that carries embedded children and one of its `<alternative id>` values, no element of an unknown kind, and never child order — and re-renders the block with the children grouped by kind. Each miss, the two extraction misses included, is one `Error:` line that the orchestrator's repair template quotes verbatim, and pytest cases cover clean, prose-wrapped, misordered, and each failing fragment.
-
----
-
 ## Tool Dependency Walk Subcommand
 
 Add the answer sweep's walk subcommand, which gathers every block carrying a `<recommendation>` in document order, builds edges from each `<depends-on question="…">` value to the gathered block whose id matches (dropping an edge whose target is absent or un-annotated), and prints bare ids in dispatch order — origins first, then every block whose every resolvable edge is placed, same-depth ties in document order, a stranded set broken by promoting its document-order-first member to an origin — with an empty document or no annotated block printing nothing at exit 0. The orchestrator replaces its prose graph walk with this one call, and pytest cases cover a linear chain, a diamond, dropped edges, and a cycle.
