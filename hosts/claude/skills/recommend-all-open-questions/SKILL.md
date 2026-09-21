@@ -12,14 +12,18 @@ time**, and, per question, dispatches a read-only subagent — the non-interacti
 `<open-question>` block's XML sub-elements. The orchestrator is the only party in this sweep
 that changes the question document, `<MILESTONE_DIR>/open_questions.xml`, and every read and
 write it makes of that document is a call to the plugin's open-question tool — `list` and
-`locate` to gather, `embed` to write, `lift` to read back the line each commit records — never
-a direct read or edit. It embeds each accepted return **before dispatching the next
-question**, so every later recommendation may build on the sibling recommendations already
-embedded and declares each such use as a `<depends-on question="…" option="…"/>` child of its
-block, and it commits each annotation the moment it is embedded — one
-`Recommendation-annotation: <Short Title>` commit per annotated question, none for a skipped
-one. It is **argument-free**, records **no decisions**, and triggers **no cascades** — it only
-annotates. Each embedded recommendation is consumed later, when it is recorded as an answer, by
+`locate` to gather, `embed` to write, `lift` to read back the line each commit records, `sort`
+to reorder once at the end — never a direct read or edit. It embeds each accepted return
+**before dispatching the next question**, so every later recommendation may build on the
+sibling recommendations already embedded and declares each such use as a
+`<depends-on question="…" option="…"/>` child of its block, and it commits each annotation the
+moment it is embedded — one `Recommendation-annotation: <Short Title>` commit per annotated
+question, none for a skipped one. After the last dispatch it sorts the document once — the
+annotated blocks first, in the order the answer sweep will walk them, the un-annotated ones
+last — and commits that reorder as its own `Question-ordering: <milestone_id>` commit, a fixed
+end-of-run step of every run that found questions. It is **argument-free**, records **no
+decisions**, and triggers **no cascades** — it only annotates and orders. Each embedded
+recommendation is consumed later, when it is recorded as an answer, by
 `/answer-open-question-with-recommendation` or the
 `/answer-all-open-questions-with-recommendation` sweep.
 
@@ -60,7 +64,9 @@ python3 ${CLAUDE_PLUGIN_ROOT}/tools/open_questions.py list --unannotated <MILEST
 It prints, in document order, the ids of the blocks carrying no `<recommendation>` element —
 the ones this run annotates. Every other block already carries a recommendation and is
 **skipped** (step 2). If this call prints nothing, every block is already annotated: there is
-nothing to annotate, so go straight to step 4's no-op message.
+nothing to dispatch, so skip **c** and step 3 and go straight to step 4 — the end-of-run sort
+runs on every run that found questions, this one included, and step 5 then picks the report
+line from what the run committed. Never exit to the no-op line from here.
 
 **c. Their blocks.** Run one `locate` over every id **b** printed, each id quoted as its own
 argument:
@@ -163,7 +169,7 @@ all of it before the next question is dispatched.
 **a. Last-line verdict.** Read the return's **last non-whitespace line**. If that line begins
 with `FAILED:`, the return is an **explicit failure**: skip that question alone — embed nothing,
 leave its block untouched, note its Short Title with the reason (the text after `FAILED:`) for
-the step-4 advisory — and make no further attempt on it, **never a repair**, even when
+the step-5 advisory — and make no further attempt on it, **never a repair**, even when
 `<alternative>`…`</recommendation>` elements sit above that line. Only when the last
 non-whitespace line is **not** a `FAILED:` line does judging continue, and a `FAILED:` token
 appearing anywhere else in the message is then ordinary text with no special meaning. This
@@ -240,7 +246,7 @@ then commits it like any other.
 Only a **second** failure — the repaired return's last line begins `FAILED:`, or `embed` refuses
 it again — is a **skip of that question alone, never a run stop**: embed nothing for it, commit
 nothing for it, leave its block untouched, note its Short Title with that second reason (the
-`FAILED:` text or the second `Error:` line) for the step-4 advisory, and carry on with the other
+`FAILED:` text or the second `Error:` line) for the step-5 advisory, and carry on with the other
 questions.
 
 **d. Commit the annotation, before the next dispatch.** Every silent `embed` — a first return's
@@ -268,33 +274,88 @@ and only then dispatch the next question. A **skipped** question commits nothing
 commit is made for it. This sweep requires **no** clean working tree: each commit is path-scoped
 to the one document, so a dirty tree elsewhere stays out of it.
 
-### 4. Report
+When the last surviving question has been embedded and committed or skipped, step 3 is over:
+go to step 4. A loop whose every question was skipped falls through to the sort exactly as a
+loop that embedded every question does — it never exits to step 5's no-op line directly.
 
-On the success path, print exactly one fixed terse status line for the whole run —
-`Recommendations embedded.` — and nothing more: no annotated-vs-skipped breakdown, no
-per-question listing, and no consumer pointer to the `/answer-open-question-with-recommendation` /
-`/answer-all-open-questions-with-recommendation` skills.
+### 4. Sort the document once, after the last dispatch
 
-Alongside that line, print only the questions step 3 **still skipped after the repair path** — a
-return whose last non-whitespace line began `FAILED:` (sub-step a), or one `embed` refused
-**again** after its one repair attempt (sub-step c). List each as an advisory: its Short Title
-with the reason it was skipped on (the second reason where a repair was spent), one per line.
+This is a **fixed end-of-run step, reached on every run that found questions**: a run whose
+step 1b printed nothing and dispatched no one, a run whose every dispatch ended in a skip, and
+a run that embedded every question all arrive here, and none of them exits to step 5's no-op
+line without running it. Only a document with no questions at all (step 1a) stops short of it.
+Run it **once**, after the last question's own commit has landed (or at once when there was
+nothing to dispatch), never inside the dispatch loop:
+
+```
+python3 ${CLAUDE_PLUGIN_ROOT}/tools/open_questions.py sort <MILESTONE_DIR>
+```
+
+It rewrites the document with the `<recommendation>`-bearing blocks first, in exactly the
+order the answer sweep's `walk` will dispatch them, and every block still carrying none last in
+its prior order — so a reader of the document meets the questions whose answers no dependency
+can nullify before the questions that build on them — and it leaves a document already in
+that order as it is. A mutator, it prints nothing on success; a failure is one
+`Error: <reason>` line on stderr with the document unchanged — print that line and carry on to
+step 5 as a run whose sort committed nothing.
+
+Then commit the reorder as this run's own commit. Read and follow the shared commit procedure
+at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it
+these two inputs, and **no BODY**:
+
+- **PATHS** — `<MILESTONE_DIR>/open_questions.xml` (the one document the `sort` call rewrote).
+- **SUBJECT** — `Question-ordering: <milestone_id>`.
+
+That procedure owns the path-scoped staging (never `git add -A`), the dirty-own-path no-op
+guard, and the commit. Its guard is the sort's **only** no-op test: a document the sort left as
+it stood — already in sorted order, the identity — leaves the path unchanged, so the guard
+fires and nothing is committed, while a document in which the sort moved a block leaves the
+path dirty, so the reorder is committed. Never test the outcome yourself — no `list` before and
+after, no diff read — and never fold the reorder into a per-question commit: every
+`Recommendation-annotation:` commit of step 3 has already landed by the time the sort runs, so
+no annotation rides in the `Question-ordering:` commit and no reorder rides in an annotation
+commit — each subject stays true to what its commit holds. Hold whether this commit landed or
+the guard fired: step 5 reads it.
+
+### 5. Report
+
+Print exactly one fixed terse status line for the whole run, chosen by **what this run
+committed**: test these three in strict order and print the first that holds.
+
+1. **An `embed` wrote** — step 3 reached its sub-step **d** for at least one question, so at
+   least one `Recommendation-annotation: <Short Title>` commit landed — print
+   `Recommendations embedded.`, whether or not step 4's sort also committed.
+2. **Else the sort committed** — no `embed` wrote, but step 4's `Question-ordering:
+   <milestone_id>` commit landed because the sort moved a block — print `Questions reordered.`
+3. **Else nothing was committed** — no `embed` wrote and step 4's dirty-own-path guard fired —
+   print no success line; print instead a distinct one-line message stating that nothing
+   changed and why: every block already carried a `<recommendation>` element, or every
+   dispatched question was still skipped after its repair attempt in step 3, and the document
+   was already in sorted order.
+
+Each line is the whole of its output and names no identifier: no annotated-vs-skipped
+breakdown, no moved-block count, no per-question listing, and no consumer pointer to the
+`/answer-open-question-with-recommendation` / `/answer-all-open-questions-with-recommendation`
+skills. Those three lines are the whole vocabulary, and the strict order is what keeps each
+true to the git log: the success line means there are new recommendations to answer, the
+reorder line that the document was reordered and nothing else was committed, and the no-op
+line that this run left git history untouched.
+
+Alongside whichever line is chosen, print only the questions step 3 **still skipped after the
+repair path** — a return whose last non-whitespace line began `FAILED:` (sub-step a), or one
+`embed` refused **again** after its one repair attempt (sub-step c). List each as an advisory:
+its Short Title with the reason it was skipped on (the second reason where a repair was spent),
+one per line.
 This survives the terse-reporting rule because nothing else records it: the per-question commits
-and the annotated `open_questions.xml` show only the questions that *were* annotated, so a
-question left un-annotated is git-absent and the console must carry it. Re-running the sweep
-retries exactly those blocks, since they still lack a `<recommendation>` element.
+and the annotated `open_questions.xml` show only the questions that *were* annotated, and the
+`Question-ordering:` commit shows only where blocks moved, so a question left un-annotated is
+git-absent and the console must carry it. Re-running the sweep retries exactly those blocks,
+since they still lack a `<recommendation>` element.
 
 A question that **was** annotated gets **no console mention at all**, however its return reached
 the document: whether it arrived clean, whether the tool discarded surrounding text from it, or
 whether it was embedded only after the single repair attempt. The embedded block in the diff is
 the whole record, so a recovered return is reported exactly like a clean one — no
 recovered-or-repaired listing, no count, no note.
-
-If the sweep committed nothing — no `embed` call wrote, so step 3 reached its sub-step **d** for
-no question and made no per-question commit — do not print the terse success line; instead
-print a distinct one-line message stating that nothing changed and why (every block already
-carried a `<recommendation>` element, or every dispatched question was still skipped after its
-repair attempt in step 3), still followed by the still-skipped-question advisory when there was
-one.
 
 If there were no questions at all, say so and stop (step 1a) — nothing to report.
