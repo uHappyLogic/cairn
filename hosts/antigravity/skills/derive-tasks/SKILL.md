@@ -19,7 +19,7 @@ No arguments. The skill always reads from and writes to the current milestone di
 
 ## Preconditions
 
-- All open questions in the current milestone's `requirements.md` must be resolved (no `<open-question` block remains).
+- All open questions in the current milestone must be resolved: its `open_questions.xml` holds no `<open-question>` block, so the plugin's open-question tool's `list` prints nothing (checked in step 2).
 - `TASKS_TODO.md` should be empty or contain only stale tasks from a previous milestone; this skill replaces its contents.
 
 ## Workflow
@@ -38,7 +38,13 @@ Read the shared task format at `.agents/plugins/cairn/shared/task-format.md`. Th
 
 ### 2. Check for unresolved open questions
 
-Scan `requirements.md` for `<open-question` blocks. If any exist, stop immediately and output:
+Run
+
+```
+python3 .agents/plugins/cairn/tools/open_questions.py list <MILESTONE_DIR>
+```
+
+It prints the Short Title of every `<open-question>` block still in `<MILESTONE_DIR>/open_questions.xml`, one per line. If it prints nothing, the precondition holds — proceed. If it prints anything, stop immediately and output, with the printed lines as the bullets verbatim:
 
 ```
 Cannot derive tasks: the following open questions must be resolved first:
@@ -47,6 +53,8 @@ Cannot derive tasks: the following open questions must be resolved first:
 
 Run /answer-open-question for each one, then re-run /derive-tasks.
 ```
+
+If the call fails, its one `Error: <reason>` line on stderr is the report: print it and stop. This `list` call is the whole check — never read `open_questions.xml` to make it yourself.
 
 ### 3. Decompose into high-level task briefs
 

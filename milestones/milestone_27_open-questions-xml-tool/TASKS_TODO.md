@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Rewire Review Pass And Derive Precondition
-
-Rewire `review-milestone-requirements` to author each new question with `add`, prune or dedup with bare `remove` (which strips dependents transitively), read `open_questions.xml` whole for reconciliation, report convergence as an empty `list`, and commit both `open_questions.xml` and `requirements.md` under `Requirements-review:`; rewire `derive-tasks` so its precondition is a `list` call whose non-empty output is the stop message's Short Titles. Verified by the rendered skills and a passing host rebuild.
-
----
-
 ## Repoint Capture Diff Reconstruction
 
 Repoint `capture-milestone-principle-updates` so its answer-commit walk filters on `-- milestones/<milestone_id>/open_questions.xml`, each `git show` names both `open_questions.xml` and `requirements.md`, the removed lines of the `open_questions.xml` hunk feed the block reconstruction and the added lines of the `requirements.md` hunk fill the recorded decision, and the pre-split blockquote fallback is dropped since no compatibility with pre-split milestones is provided. Every other rule of the per-commit read stays uniform, verified by the rendered skill and a passing host rebuild.
