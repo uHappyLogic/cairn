@@ -1,1 +1,11 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Sort on a no-dispatch run">
+    <question>When the recommend sweep dispatches nothing — every block already carries a recommendation, or every dispatched question was still skipped after its repair — should it still run the tool&apos;s sort and commit any reorder under Question-ordering, or is the sort step reached only after at least one successful embed?</question>
+  </open-question>
+  <open-question id="Commit body through shared procedure">
+    <question>The per-question annotation commit carries the lifted recommendation line as its body, but the shared commit procedure takes only PATHS and SUBJECT: should it gain an optional BODY input that every caller may supply, or should the recommend sweep pass the body ad hoc while still following the procedure for the guard and path-scoped staging?</question>
+  </open-question>
+  <open-question id="Report line when only the sort commits">
+    <question>When a run embeds nothing but the final sort reorders the document and commits, which console line does the sweep print — the terse success line, the distinct nothing-annotated no-op line, or a third line — given that the success line reads as if recommendations were embedded?</question>
+  </open-question>
+</open-questions>
