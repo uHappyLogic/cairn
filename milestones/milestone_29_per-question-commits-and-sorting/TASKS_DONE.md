@@ -31,3 +31,20 @@ Add a `sort MILESTONE_DIR` subcommand to `core/tools/open_questions.py` — regi
 - `uv run scripts/build_hosts.py` rebuilt both host trees and `uv run scripts/build_hosts.py --check` passes ("Check passed: hosts/antigravity/ and hosts/claude/ match a fresh build of core/ at version 1.6.0."); `cmp` confirms `hosts/claude/tools/open_questions.py` and `hosts/antigravity/tools/open_questions.py` byte-identical to `core/tools/open_questions.py`.
 
 ---
+
+## Recommend Sweep Per-Question Commits
+
+Change `core/skills/recommend-all-open-questions/SKILL.md` so that after each silent `embed` in step 3 the orchestrator runs the tool's `lift <MILESTONE_DIR> "<Short Title>"` and commits through `{{PLUGIN_ROOT}}/shared/commit-procedure.md` with PATHS `<MILESTONE_DIR>/open_questions.xml`, SUBJECT `Recommendation-annotation: <Short Title>`, and BODY the lifted "`<option>` — `<rationale>`" line, before the next dispatch, while a skipped question commits nothing and the once-per-run `Recommendation-annotation: <milestone_id>` commit of step 4 and its "never inside the dispatch loop" wording are removed. Needed so the sweep's granularity mirrors the answer sweep's one commit per question. Verified by reading the skill against `answer-all-open-questions-with-recommendation`'s step 2 for the same lift-then-commit shape, and by a rebuild with `uv run scripts/build_hosts.py --check` passing.
+
+**Verified:**
+
+- In step 3 of `core/skills/recommend-all-open-questions/SKILL.md`, every silent `embed` — a first return's or a repaired return's — is followed by a new sub-step **d** that runs `python3 {{PLUGIN_ROOT}}/tools/open_questions.py lift <MILESTONE_DIR> "<Short Title>"` and holds its printed "`<option>` — `<rationale>`" line as the commit body, before the next dispatch (sub-step **b**'s silent branch and the repaired-return sentence both route to it).
+- Sub-step **d** commits through `{{PLUGIN_ROOT}}/shared/commit-procedure.md` with the three inputs named exactly as PATHS `<MILESTONE_DIR>/open_questions.xml`, SUBJECT `Recommendation-annotation: <Short Title>`, and BODY the lifted line — the same "Supply it these three inputs" shape the body-supplying callers use.
+- The skill states that a skipped question commits nothing, both in sub-step **d** and in the second-failure skip sentence of sub-step **c**, and that the sweep needs no clean working tree.
+- The once-per-run commit is gone: `grep` for `Recommendation-annotation: <milestone_id>`, `never inside the dispatch loop`, `once at the end of the run`, and `these two inputs` returns nothing in the skill; the old step 4 heading is removed and the report step is renumbered to `### 4. Report`.
+- Every cross-reference is consistent with the new structure: step 1b and the two advisory notes point at step 4, the report step's nothing-committed condition names "no `embed` call wrote, so step 3 reached its sub-step **d** for no question" instead of a removed step-4 guard, and the opening paragraph names `lift` among the tool calls and states one `Recommendation-annotation: <Short Title>` commit per annotated question.
+- Read against `answer-all-open-questions-with-recommendation`'s step 2, the shape is the same: one `lift` per question whose print is the body, one commit per question under a `<Marker>: <Short Title>` subject before the next dispatch, and "the per-question granularity is the point"; the one difference — the shared commit procedure's path-scoped stage rather than an agent-staged index — is the writer-is-the-orchestrator arrangement `requirements.md`'s starting state names.
+- `uv run scripts/build_hosts.py` rebuilt both host trees and `uv run scripts/build_hosts.py --check` passes ("Check passed: hosts/antigravity/ and hosts/claude/ match a fresh build of core/ at version 1.6.0."); `uv run pytest` still passes (347 passed).
+- `hosts/claude/skills/recommend-all-open-questions/SKILL.md` and `hosts/antigravity/skills/recommend-all-open-questions/SKILL.md` carry the change, each differing from `core/` only by its plugin-root literal.
+
+---

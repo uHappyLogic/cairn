@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Recommend Sweep Per-Question Commits
-
-Change `core/skills/recommend-all-open-questions/SKILL.md` so that after each silent `embed` in step 3 the orchestrator runs the tool's `lift <MILESTONE_DIR> "<Short Title>"` and commits through `{{PLUGIN_ROOT}}/shared/commit-procedure.md` with PATHS `<MILESTONE_DIR>/open_questions.xml`, SUBJECT `Recommendation-annotation: <Short Title>`, and BODY the lifted "`<option>` — `<rationale>`" line, before the next dispatch, while a skipped question commits nothing and the once-per-run `Recommendation-annotation: <milestone_id>` commit of step 4 and its "never inside the dispatch loop" wording are removed. Needed so the sweep's granularity mirrors the answer sweep's one commit per question. Verified by reading the skill against `answer-all-open-questions-with-recommendation`'s step 2 for the same lift-then-commit shape, and by a rebuild with `uv run scripts/build_hosts.py --check` passing.
-
----
-
 ## Recommend Sweep Sort Step And Report Lines
 
 Give `core/skills/recommend-all-open-questions/SKILL.md` a fixed end-of-run step, reached on every run that found questions (an empty `list --unannotated` print and an all-skipped dispatch loop both fall through to it instead of exiting to the no-op line), that runs the tool's `sort <MILESTONE_DIR>` once after the last dispatch and commits the reorder through the shared procedure with PATHS `<MILESTONE_DIR>/open_questions.xml`, SUBJECT `Question-ordering: <milestone_id>`, and no BODY, the dirty-own-path guard being the sort's only no-op test; then rewrite the report step to pick its line by what the run committed in strict order — an embed wrote: `Recommendations embedded.`; else the sort committed: `Questions reordered.`; else the distinct no-op line with its reason — with the still-skipped advisory printed alongside whichever line is chosen. Needed so a reader of the document meets the questions whose answers no dependency can nullify first, and so every terse line stays true to the git log. Verified by reading the skill for the three-way selection rule and the fall-through, and by a rebuild with `uv run scripts/build_hosts.py --check` passing.

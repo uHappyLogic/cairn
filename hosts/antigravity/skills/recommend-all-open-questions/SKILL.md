@@ -12,13 +12,16 @@ time**, and, per question, dispatches a read-only subagent — the non-interacti
 `<open-question>` block's XML sub-elements. The orchestrator is the only party in this sweep
 that changes the question document, `<MILESTONE_DIR>/open_questions.xml`, and every read and
 write it makes of that document is a call to the plugin's open-question tool — `list` and
-`locate` to gather, `embed` to write — never a direct read or edit. It embeds each accepted
-return **before dispatching the next question**, so every later recommendation may build on
-the sibling recommendations already embedded and declares each such use as a
-`<depends-on question="…" option="…"/>` child of its block. It is **argument-free**, records
-**no decisions**, and triggers **no cascades** — it only annotates. Each embedded recommendation
-is consumed later, when it is recorded as an answer, by `/answer-open-question-with-recommendation`
-or the `/answer-all-open-questions-with-recommendation` sweep.
+`locate` to gather, `embed` to write, `lift` to read back the line each commit records — never
+a direct read or edit. It embeds each accepted return **before dispatching the next
+question**, so every later recommendation may build on the sibling recommendations already
+embedded and declares each such use as a `<depends-on question="…" option="…"/>` child of its
+block, and it commits each annotation the moment it is embedded — one
+`Recommendation-annotation: <Short Title>` commit per annotated question, none for a skipped
+one. It is **argument-free**, records **no decisions**, and triggers **no cascades** — it only
+annotates. Each embedded recommendation is consumed later, when it is recorded as an answer, by
+`/answer-open-question-with-recommendation` or the
+`/answer-all-open-questions-with-recommendation` sweep.
 
 ## Usage
 
@@ -57,7 +60,7 @@ python3 .agents/plugins/cairn/tools/open_questions.py list --unannotated <MILEST
 It prints, in document order, the ids of the blocks carrying no `<recommendation>` element —
 the ones this run annotates. Every other block already carries a recommendation and is
 **skipped** (step 2). If this call prints nothing, every block is already annotated: there is
-nothing to annotate, so go straight to step 5's no-op message.
+nothing to annotate, so go straight to step 4's no-op message.
 
 **c. Their blocks.** Run one `locate` over every id **b** printed, each id quoted as its own
 argument:
@@ -115,10 +118,10 @@ expressed as prose, never as an element.
 
 Then dispatch one read-only subagent per surviving question, **strictly sequentially in that
 order — never in parallel**: dispatch a question, wait for its return, judge it (sub-steps a–c
-below, including its one repair attempt), and embed it — or skip it — **before dispatching the
-next question**. Each dispatch therefore reads an `open_questions.xml` that already carries
-every earlier question's embedded children, which is what lets a later recommendation build on
-those siblings' recommendations and declare each such use as a
+below, including its one repair attempt), and embed and commit it (sub-step d) — or skip it —
+**before dispatching the next question**. Each dispatch therefore reads an `open_questions.xml`
+that already carries every earlier question's embedded children, which is what lets a later
+recommendation build on those siblings' recommendations and declare each such use as a
 `<depends-on question="…" option="…"/>` element.
 
 Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the
@@ -152,14 +155,15 @@ those child elements, never the `<open-question>` wrapper or the `<question>` el
 orchestrator does **all** the writing, through the tool.
 
 **Judge every return in this fixed order — last-line verdict, then `embed`, then a single
-repair attempt when `embed` refuses.** The three stages are **one per-return pipeline**: as
-the return arrives, judge it, repair it once if judging failed, re-judge what comes back, then
-move on — all of it before the next question is dispatched.
+repair attempt when `embed` refuses — and commit what embedded.** The stages are **one
+per-return pipeline**: as the return arrives, judge it, repair it once if judging failed,
+re-judge what comes back, commit the annotation if it embedded (sub-step d), then move on —
+all of it before the next question is dispatched.
 
 **a. Last-line verdict.** Read the return's **last non-whitespace line**. If that line begins
 with `FAILED:`, the return is an **explicit failure**: skip that question alone — embed nothing,
 leave its block untouched, note its Short Title with the reason (the text after `FAILED:`) for
-the step-5 advisory — and make no further attempt on it, **never a repair**, even when
+the step-4 advisory — and make no further attempt on it, **never a repair**, even when
 `<alternative>`…`</recommendation>` elements sit above that line. Only when the last
 non-whitespace line is **not** a `FAILED:` line does judging continue, and a `FAILED:` token
 appearing anywhere else in the message is then ordinary text with no special meaning. This
@@ -185,7 +189,7 @@ no unknown element; child order is not checked — and writes the block re-rende
 form, so indentation, escaping, and child grouping are the tool's, never the return's or yours.
 
 - **Silent, exit 0** — the question is annotated. It gets no console mention, however its
-  return arrived. Move on to the next question.
+  return arrived. Commit it now (sub-step **d**), then move on to the next question.
 - **One `Error: <reason>` line on stderr, exit 1** — the return could not be embedded and the
   document is unchanged. Hold that line verbatim: it fills the repair template in **c**.
 
@@ -230,32 +234,41 @@ the template asks for the sub-elements and nothing else.
 
 Judge whatever comes back — the same agent's re-emitted message, or the fresh dispatch's return
 — by sub-steps a and b exactly as a first return is judged: the same last-line verdict, the same
-whole-message pipe to `embed`. A silent `embed` annotates it like any other.
+whole-message pipe to `embed`. A silent `embed` annotates it like any other, and sub-step **d**
+then commits it like any other.
 
 Only a **second** failure — the repaired return's last line begins `FAILED:`, or `embed` refuses
-it again — is a **skip of that question alone, never a run stop**: embed nothing for it, leave
-its block untouched, note its Short Title with that second reason (the `FAILED:` text or the
-second `Error:` line) for the step-5 advisory, and carry on with the other questions.
+it again — is a **skip of that question alone, never a run stop**: embed nothing for it, commit
+nothing for it, leave its block untouched, note its Short Title with that second reason (the
+`FAILED:` text or the second `Error:` line) for the step-4 advisory, and carry on with the other
+questions.
 
-### 4. Commit the annotations
+**d. Commit the annotation, before the next dispatch.** Every silent `embed` — a first return's
+or a repaired return's — is followed at once by this question's own commit: you are the
+orchestrator, and you commit **per question, inside the dispatch loop**. First run
 
-You are the orchestrator, so you commit **once at the end of the run** — here, after the last
-surviving question has been dispatched, judged, and embedded or skipped (step 3), never inside
-the dispatch loop — embedding happens per question, committing does not. Read and follow the
-shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps
-yourself. Supply it these two inputs:
+```
+python3 .agents/plugins/cairn/tools/open_questions.py lift <MILESTONE_DIR> "<Short Title>"
+```
 
-- **PATHS** — this run's own change set: `<MILESTONE_DIR>/open_questions.xml` (the document the
-  `embed` calls of step 3 wrote).
-- **SUBJECT** — `Recommendation-annotation: <milestone_id>`.
+It prints one line, "`<option>` — `<rationale>`", read from the `<recommendation>` element the
+`embed` call just wrote. **Hold that line as this question's commit body.** Then read and follow
+the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its
+steps yourself. Supply it these three inputs:
 
-The shared procedure owns the path-scoped staging (never `git add -A`), the dirty-own-path no-op
-guard, and the commit. Because that guard is dirty-own-path, a sweep that annotated nothing —
-every block already carried a `<recommendation>` element (step 1b printed nothing), or every
-dispatched question was **still skipped after its repair attempt** in step 3, so no `embed` call
-wrote — stages and commits nothing. This sweep requires **no** clean working tree.
+- **PATHS** — this question's own change: `<MILESTONE_DIR>/open_questions.xml` (the document the
+  `embed` call wrote).
+- **SUBJECT** — `Recommendation-annotation: <Short Title>` (the annotated question's handle).
+- **BODY** — the "`<option>` — `<rationale>`" line the `lift` call printed, verbatim.
 
-### 5. Report
+That procedure owns the path-scoped staging (never `git add -A`), the dirty-own-path no-op guard,
+and the commit. Commit once per annotated question — the per-question granularity is the point —
+and only then dispatch the next question. A **skipped** question commits nothing: a refused
+`embed` never writes, so there is nothing to lift and nothing for the guard to stage, and no
+commit is made for it. This sweep requires **no** clean working tree: each commit is path-scoped
+to the one document, so a dirty tree elsewhere stays out of it.
+
+### 4. Report
 
 On the success path, print exactly one fixed terse status line for the whole run —
 `Recommendations embedded.` — and nothing more: no annotated-vs-skipped breakdown, no
@@ -266,10 +279,10 @@ Alongside that line, print only the questions step 3 **still skipped after the r
 return whose last non-whitespace line began `FAILED:` (sub-step a), or one `embed` refused
 **again** after its one repair attempt (sub-step c). List each as an advisory: its Short Title
 with the reason it was skipped on (the second reason where a repair was spent), one per line.
-This survives the terse-reporting rule because nothing else records it: the commit and the
-annotated `open_questions.xml` show only the questions that *were* annotated, so a question left
-un-annotated is git-absent and the console must carry it. Re-running the sweep retries exactly
-those blocks, since they still lack a `<recommendation>` element.
+This survives the terse-reporting rule because nothing else records it: the per-question commits
+and the annotated `open_questions.xml` show only the questions that *were* annotated, so a
+question left un-annotated is git-absent and the console must carry it. Re-running the sweep
+retries exactly those blocks, since they still lack a `<recommendation>` element.
 
 A question that **was** annotated gets **no console mention at all**, however its return reached
 the document: whether it arrived clean, whether the tool discarded surrounding text from it, or
@@ -277,10 +290,11 @@ whether it was embedded only after the single repair attempt. The embedded block
 the whole record, so a recovered return is reported exactly like a clean one — no
 recovered-or-repaired listing, no count, no note.
 
-If the sweep committed nothing — its step-4 dirty-own-path no-op guard fired because no `embed`
-call wrote — do not print the terse success line; instead print a distinct one-line message
-stating that nothing changed and why (every block already carried a `<recommendation>` element,
-or every dispatched question was still skipped after its repair attempt in step 3), still
-followed by the still-skipped-question advisory when there was one.
+If the sweep committed nothing — no `embed` call wrote, so step 3 reached its sub-step **d** for
+no question and made no per-question commit — do not print the terse success line; instead
+print a distinct one-line message stating that nothing changed and why (every block already
+carried a `<recommendation>` element, or every dispatched question was still skipped after its
+repair attempt in step 3), still followed by the still-skipped-question advisory when there was
+one.
 
 If there were no questions at all, say so and stop (step 1a) — nothing to report.
