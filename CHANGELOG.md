@@ -2,6 +2,22 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.6.1 — 2026-09-21
+
+### Per-question recommendation commits and question sorting (milestone 29)
+
+- `/recommend-all-open-questions` now commits once per annotated question, inside its dispatch loop, under `Recommendation-annotation: <Short Title>` with the lifted "`<option>` — `<rationale>`" line as the commit body — mirroring the answer sweep's one-commit-per-question granularity. The single end-of-run `Recommendation-annotation: <milestone_id>` commit is retired.
+- `tools/open_questions.py` gained a `sort` subcommand that rewrites `open_questions.xml` with the recommendation-bearing blocks first, in the answer sweep's `walk` order, and every un-annotated block after them in its prior order; it is the identity on an already-sorted document and the only subcommand that reorders blocks.
+- The recommend sweep runs `sort` once at the end of every run that found questions and commits the reorder as its own `Question-ordering: <milestone_id>` commit, which lands only when a block actually moved — so a sweep that annotated nothing and moved nothing still commits nothing. Its success line is now `Recommendations embedded.` when an embed landed and `Questions reordered.` when only the sort did.
+- The shared commit procedure takes an optional commit body, and the answer skills and `/capture-milestone-principle-updates` pass their rationale through it rather than composing the commit themselves.
+
+### Ways of using Cairn (milestone 28)
+
+- New `docs/ways-of-using-cairn.md` documents headless invocation: a notation-and-flags legend (the `-p "/cairn:<skill>"` form, `--dangerously-skip-permissions`, `--model`, `--effort`, `--add-dir` with each host's accepted values, and the one-line `claude`/`agy` host swap) followed by five ways in pipeline order — starting a milestone, running a mixed-agent requirements review, putting more intelligence into a stuck milestone, executing tasks, and finishing a milestone — each with a fenced block of command lines runnable as written.
+- `README.md`, `docs/workflow.md`, and `docs/skill-reference.md` link the new page as where the skills are chained as headless command lines.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.6.0...1.6.1
+
 ## 1.6.0 — 2026-09-21
 
 ### Open Questions XML Tool (milestone 27)
