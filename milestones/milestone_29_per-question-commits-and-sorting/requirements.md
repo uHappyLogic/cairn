@@ -32,5 +32,9 @@ The once-per-run rule is stated in `docs/skill-reference.md`'s recommend-sweep e
 
 ## Decisions
 
+### Sort on every run
+
+The recommend sweep runs the tool's `sort` as a fixed end-of-run step on every run that found questions: an empty `list --unannotated` print and an all-skipped dispatch loop both fall through to it rather than exiting to the no-op line, and the dirty-own-path guard is the sort's only no-op test. A `Question-ordering: <milestone_id>` commit therefore lands exactly when the sort moved a block, so "sorted after the sweep" is a postcondition of every run rather than of the annotating moment, and a bare re-run is the one way to restore the order the answer path's tag drops and strips disturb; on an already-sorted document the sort is the identity, so an idempotent no-op run still commits nothing. The invariant "a sweep that annotated nothing commits nothing" narrows to "annotated nothing and moved nothing".
+
 ## Out of Scope
 

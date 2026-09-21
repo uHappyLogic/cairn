@@ -1,23 +1,4 @@
 <open-questions>
-  <open-question id="Sort on a no-dispatch run">
-    <question>When the recommend sweep dispatches nothing — every block already carries a recommendation, or every dispatched question was still skipped after its repair — should it still run the tool&apos;s sort and commit any reorder under Question-ordering, or is the sort step reached only after at least one successful embed?</question>
-    <alternative id="Sort on every run">
-      The sort is a fixed end-of-run step reached by every run that found questions — step 1b&apos;s empty print and an all-skipped dispatch loop both fall through to it instead of exiting to the no-op line — with the dirty-own-path guard as its only no-op test, so a run commits a Question-ordering commit exactly when the sort moved a block.
-      <advantage>The sweep gains an unconditional postcondition — the document is sorted after every run — and a bare re-run becomes the one way to restore order once the answer path has disturbed it: the goal makes the sweep the sole sorter and no other write reorders, and an agreeing answer untags a dependent into an origin that keeps sitting behind a still-dependent block (verified against the tool&apos;s own remove_question and walk_order: the all-annotated document B, C, D walks as B, D, C), a drift only a no-dispatch sort can repair; on an already-sorted document the sort is the identity, so the idempotent re-run still commits nothing and costs one tool call.</advantage>
-      <drawback>A run that annotated nothing can still produce a lone Question-ordering commit, so the sweep&apos;s no-op story gains a second cause — the report step must tell &quot;nothing changed&quot; from &quot;only the order changed&quot;, which is exactly the still-open sibling &quot;Report line when only the sort commits&quot; and keeps it live — and the recorded invariant &quot;a sweep that annotated nothing commits nothing&quot; narrows to &quot;annotated nothing and moved nothing&quot;.</drawback>
-    </alternative>
-    <alternative id="Sort only after an embed">
-      The sort step is gated on at least one successful embed in this run — a run whose step-1b list was empty, or whose every dispatch was still skipped after its repair, exits to the no-op line without calling sort — so a Question-ordering commit can only ever follow a Recommendation-annotation commit of the same run.
-      <advantage>A no-dispatch run stays a pure no-op with one cause and one line, the present step-1b early exit and step-5 no-op wording survive unchanged, and the sibling &quot;Report line when only the sort commits&quot; is mooted because its scenario cannot arise.</advantage>
-      <drawback>Sortedness then holds only at the moment of annotation: an all-annotated document the answer path left out of walk order, or stripped blocks stranded mid-document by a strip-then-all-skipped run, stay that way, and with the sweep the sole sorter there is no way to restore order short of a strip-and-regenerate detour that discards a recommendation or a review pass that happens to add a question — the goal&apos;s reading-order promise silently lapses with no remedy.</drawback>
-    </alternative>
-    <alternative id="Sort after any dispatch">
-      The sort opens step 4 and runs whenever the dispatch loop ran at all — an all-skipped run still sorts — while step 1b&apos;s empty print keeps its early exit straight to the no-op line, so an all-annotated document is never re-sorted.
-      <advantage>It is the smallest edit — the goal&apos;s &quot;once after its last dispatch&quot; taken literally, the step-1b exit untouched — and it still tidies the one drift an all-skipped run leaves, moving blocks a strip stranded mid-document to the end.</advantage>
-      <drawback>The rule is keyed on an incidental control-flow fact rather than a property anyone can rely on: the all-annotated document that drifted through the answer path — the only case a no-dispatch sort can repair — is exactly the case it excludes, so it delivers neither the first option&apos;s postcondition nor the second&apos;s clean no-op, and the report step still needs the only-the-sort-committed line.</drawback>
-    </alternative>
-    <recommendation option="Sort on every run">A guard-protected sort on every run is the one mode-free rule that makes &quot;sorted after the sweep&quot; a postcondition rather than a moment, and a bare re-run is the only repair the goal leaves for the order the answer path&apos;s tag drops and strips disturb, while on a sorted document the sort is the identity so the idempotent no-op run still commits nothing.</recommendation>
-  </open-question>
   <open-question id="Commit body through shared procedure">
     <question>The per-question annotation commit carries the lifted recommendation line as its body, but the shared commit procedure takes only PATHS and SUBJECT: should it gain an optional BODY input that every caller may supply, or should the recommend sweep pass the body ad hoc while still following the procedure for the guard and path-scoped staging?</question>
     <alternative id="Optional BODY input">
@@ -59,7 +40,6 @@
       <advantage>The two-line report step and its invariant survive untouched, and the selection rule stays &quot;did anything commit&quot;, with no per-skill carve-out and no third string.</advantage>
       <drawback>The line stops naming what the run did — the one thing a fixed line is for, as `Tasks derived.` and `Recommendations recorded.` show — so the user must open the git log to learn whether there is anything to answer, and the common embed case gives up its accurate line to serve the rare reorder-only one.</drawback>
     </alternative>
-    <depends-on question="Sort on a no-dispatch run" option="Sort on every run"/>
     <recommendation option="Third fixed line">With the sort running on every run, a reorder-only run is a real commit that neither existing line describes truthfully, and a second fixed line chosen by what the run committed — embed over reorder over nothing — keeps every line accurate, keeps the success line the cue that there is something to answer, and lets the skipped advisory sit under a line it does not contradict.</recommendation>
   </open-question>
 </open-questions>
