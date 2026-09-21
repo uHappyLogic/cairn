@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Bootstrap Python Prerequisite Check
-
-Make `init-milestone-base-workflow` run an interpreter check first, ahead of its state detection: execute `python3` to read its version, probe `python` only when that fails, and when no Python 3.9+ interpreter answers stop before any write with a full message naming what it looked for, what it found, the install or expose-as-`python3` remedy, and that a re-run completes the bootstrap. Its `milestones/README.md` template must describe the four milestone files (`open_questions.xml` beside the three Markdown files), and the skill is verified by reading the rendered host trees and passing `uv run scripts/build_hosts.py --check` after a rebuild.
-
----
-
 ## Define Milestone Creates Empty Document
 
 Make `define-milestone-goal` invoke `python3 {{PLUGIN_ROOT}}/tools/open_questions.py create <new milestone dir>` before writing its three Markdown files, so a missing interpreter leaves nothing behind, and pass the new `open_questions.xml` as a fourth path to its path-scoped `Milestone-definition:` commit. This is what makes the tool the file's sole writer from the first byte, verified by the rendered skill text and a passing host rebuild.

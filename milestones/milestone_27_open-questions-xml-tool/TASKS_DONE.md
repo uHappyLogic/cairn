@@ -122,3 +122,19 @@ Extend the single `check` job of `.github/workflows/drift-gate.yml` with two ste
 - The project's done check `uv run scripts/build_hosts.py --check` still passes (the workflow file lies outside every rendered host tree).
 
 ---
+
+## Bootstrap Python Prerequisite Check
+
+Make `init-milestone-base-workflow` run an interpreter check first, ahead of its state detection: execute `python3` to read its version, probe `python` only when that fails, and when no Python 3.9+ interpreter answers stop before any write with a full message naming what it looked for, what it found, the install or expose-as-`python3` remedy, and that a re-run completes the bootstrap. Its `milestones/README.md` template must describe the four milestone files (`open_questions.xml` beside the three Markdown files), and the skill is verified by reading the rendered host trees and passing `uv run scripts/build_hosts.py --check` after a rebuild.
+
+**Verified:**
+
+- `core/skills/init-milestone-base-workflow/SKILL.md` opens its workflow with a new `### 1. Check the Python prerequisite` step placed ahead of the state detection, which became `### 2. Detect existing state`; the four later steps were renumbered 3–6 with no other change, and the skill's opening paragraph states the check as a whole-skill rule (it stops before writing anything when no Python 3.9 or later interpreter answers as `python3`).
+- The check step tells the runner to execute `python3 --version` first and to run `python --version` only when `python3` is not found or reports a version below 3.9, with `python`'s result deciding nothing about passing; a numeric minor-by-minor comparison note keeps `3.10` and `3.13` later than `3.9` and `3.8` not.
+- On failure the step says **stop before any write** — create and edit nothing — and prints one full message stating, in order: what it looked for (a Python 3.9+ interpreter as `python3`, failing that as `python`), what it found (not found, or the exact version, for each name), the remedy (when `python` reported 3.9+, it exists under the other name and must be exposed as `python3`; otherwise install Python 3.9+ so `python3` resolves to it), and that re-running `/init-milestone-base-workflow` completes the bootstrap with nothing to undo.
+- The check runs on every invocation — the step says so explicitly, and because it precedes step 2 a re-run on an already-bootstrapped project gets the same check before the already-initialized stop.
+- The `milestones/README.md` template lists four files in order — `requirements.md` (goal, relevant starting state, decisions, out of scope), `open_questions.xml` (the open questions, one `<open-question>` block each under a single `<open-questions>` root, written only by the plugin's open-question tool), `TASKS_TODO.md`, `TASKS_DONE.md` — so `requirements.md` no longer claims "open questions"; the skill's `## Milestone Workflow` template for `CLAUDE.md` names the same four files, keeping the scaffold it writes self-consistent.
+- The runtime file names no host (a whole-word `claude`/`antigravity` grep over the rendered skill matches nothing beyond the `CLAUDE.md` filename) and its one `{{PLUGIN_ROOT}}/tools/open_questions.py` reference renders as `${CLAUDE_PLUGIN_ROOT}/tools/open_questions.py` and `.agents/plugins/cairn/tools/open_questions.py`, each naming an existing `hosts/<host>/tools/open_questions.py`; the frontmatter is untouched (21-word unquoted description, no colon or semicolon).
+- `uv run scripts/build_hosts.py` rebuilt hosts/antigravity/ (37 files) and hosts/claude/ (38 files); `git status --porcelain` shows exactly the core skill and its two rendered copies changed; both `hosts/claude/skills/init-milestone-base-workflow/SKILL.md` and `hosts/antigravity/skills/init-milestone-base-workflow/SKILL.md` carry the check step, the message parts, and the four-file templates, no `{{` remains in either, and `uv run scripts/build_hosts.py --check` passes.
+
+---
