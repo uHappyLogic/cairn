@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Tool Dependency Walk Subcommand
-
-Add the answer sweep's walk subcommand, which gathers every block carrying a `<recommendation>` in document order, builds edges from each `<depends-on question="…">` value to the gathered block whose id matches (dropping an edge whose target is absent or un-annotated), and prints bare ids in dispatch order — origins first, then every block whose every resolvable edge is placed, same-depth ties in document order, a stranded set broken by promoting its document-order-first member to an origin — with an empty document or no annotated block printing nothing at exit 0. The orchestrator replaces its prose graph walk with this one call, and pytest cases cover a linear chain, a diamond, dropped edges, and a cycle.
-
----
-
 ## Run Pytest Suite In CI
 
 Extend the single `check` job of `.github/workflows/drift-gate.yml` with two steps after `uv run scripts/build_hosts.py --check`: the pinned run `uv run pytest` and the floor run `uv run --no-project --python 3.9 --with pytest pytest`, leaving the two SHA-pinned action lines, the job count, and the file name unchanged so the `ci` badge covers the drift gate and both runs. The suite must stay on the pytest API shared by the 3.9 and 3.13 interpreters, and the change is verified by both commands passing locally.

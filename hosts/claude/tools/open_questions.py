@@ -50,6 +50,15 @@ Subcommands:
       stripped as by strip; without --option every such block is stripped; either way the
       strip runs transitively over the blocks that depend on a stripped block, so no
       <depends-on> tag is left naming a block removed or stripped by the call
+  walk MILESTONE_DIR
+      print the id of every block carrying a <recommendation>, one per line in the order the
+      answer sweep dispatches them: those blocks are gathered in document order, each one's
+      <depends-on question="…"> values are edges to the gathered block that id names (an edge
+      naming a block that is absent or carries no <recommendation> is dropped, so a block left
+      with no edge is an origin), and the blocks are placed origins first, then every block
+      whose every edge names a block already placed, same-depth ties in document order, a
+      stranded remainder (a cycle) broken by promoting its document-order-first block to an
+      origin; a document with no such block prints nothing
 
 A Short Title names a block by its id, ALTERNATIVE_ID names an alternative by its id, and
 RECORDED_OPTION names an alternative by its id too; all are compared against the document's
@@ -563,6 +572,40 @@ def remove_question(document, question, recorded_option=None):
     return stripped
 
 
+# --- the answer sweep's dispatch order ------------------------------------------------
+
+
+def walk_order(document):
+    """The blocks carrying a <recommendation>, in the order the answer sweep dispatches them.
+    Gathered in document order, each block's <depends-on question="…"> values are edges to the
+    gathered block that id names (compared un-escaped and case-folded; the option is not read),
+    and an edge naming a block that is absent or carries no <recommendation> is dropped — this
+    sweep never answers that block, so a block left with no edge is an ordinary origin. The
+    walk places the origins first in document order, then, repeatedly, every unplaced block
+    whose every edge names a placed block, in document order among themselves, so a target
+    always precedes its dependents; when blocks remain but each waits on another of them (a
+    <depends-on> cycle), the document-order-first remaining block is promoted to an origin and
+    the walk goes on. Deterministic and total: every gathered block is placed exactly once."""
+    gathered = [question for question in document.questions if question.recommendation is not None]
+    annotated = {id_key(question.id) for question in gathered}
+    edges = {
+        id_key(question.id): {id_key(dependency.question) for dependency in question.depends_on} & annotated
+        for question in gathered
+    }
+    placed = set()
+    order = []
+    remaining = gathered
+    while remaining:
+        ready = [question for question in remaining if edges[id_key(question.id)] <= placed]
+        if not ready:
+            ready = remaining[:1]
+        for question in ready:
+            order.append(question)
+            placed.add(id_key(question.id))
+        remaining = [question for question in remaining if id_key(question.id) not in placed]
+    return order
+
+
 # --- the recommend agent's fragment ---------------------------------------------------
 
 FRAGMENT = "the fragment"
@@ -775,6 +818,13 @@ def cmd_remove(args):
     return 0
 
 
+def cmd_walk(args):
+    document = load_document(args.milestone_dir)
+    for question in walk_order(document):
+        print(question.id)
+    return 0
+
+
 # --- command line ---------------------------------------------------------------------
 
 
@@ -909,6 +959,16 @@ def build_parser():
         help="the option recorded as the block's answer, one of its own <alternative> ids "
         "(compared un-escaped and case-folded); any other value is refused with the document "
         "unchanged",
+    )
+
+    add_subcommand(
+        "walk",
+        cmd_walk,
+        "print the id of every block carrying a <recommendation>, one per line in the answer "
+        "sweep's dispatch order: the blocks a block's <depends-on> tags name among them precede "
+        "it (a tag naming an absent or recommendation-less block is ignored), same-depth ties "
+        "fall in document order, and a cycle is broken by promoting its document-order-first "
+        "block to an origin; a document with no such block prints nothing",
     )
     return parser
 

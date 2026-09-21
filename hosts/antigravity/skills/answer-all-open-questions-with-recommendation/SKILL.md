@@ -35,72 +35,40 @@ Takes no arguments — it sweeps every `<open-question>` block in the current mi
 
 Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
-### 1. Gather the recommendation-bearing questions once and order them by the dependency graph
+### 1. Gather the recommendation-bearing questions in dispatch order with one call
 
-Fetch the recommendation-bearing set with the line-oriented boundary-line CLI — do **not** read
-the whole file to eyeball headers. Every `<open-question>` block lives under the single
-`## Open questions` section of `<MILESTONE_DIR>/requirements.md`, so that section is the one
-bounded region the CLI slices deterministically. Using `awk`/`sed`/`grep` keyed on the
-`<open-question …>` opening and `</open-question>` closing **boundary lines** — never a real XML
-processor (`xmllint`) — enumerate every block **in document order** (the order the CLI hands
-them back is the order their blocks appear in the section, and the walk below relies on it) and
-keep only those that **contain a `<recommendation>` element**, extracting each surviving block's
-`id` by the regex `id="([^"]*)"`. From each surviving block also extract the `question` value of
-every self-closing `<depends-on question="…" option="…"/>` line it carries — by an
-attribute-name-anchored regex on `question=`, so the read is independent of the order in which
-`question` and `option` appear on that line; the recommend sweep embeds one such line per
-sibling recommendation this block's recommendation assumed. Read only the `question` value here:
-the `option` value is what the recording core's cascade reconciles at answer time, and the
-orchestrator never acts on it. Recommendation-less blocks — those with **no `<recommendation>`
-element** — are **not gathered**: annotating them is the recommend sweep's job
-(`/recommend-all-open-questions`), never this one's.
-If no block carries a `<recommendation>` element, say so and stop.
+Run
 
-Order the gathered list by **walking the dependency graph built over it** — never by a judgment
-of which question is more significant. Build the graph from the gathered set alone: each gathered
-block is a node, and each of its `<depends-on question="…">` values is an edge from that block to
-the gathered block whose `id` case-folds equal to the value (both entity-unescaped, exactly as
-step 2's re-check matches `id`). **Drop every edge whose target is not in the gathered set** — the
-named block is absent from the document, or it is present but carries no `<recommendation>`
-element and so was never gathered. This sweep will never answer such a target, so the edge carries
-nothing to order against; dropping it is the whole treatment — never widen the gather to pull the
-target in, and leave the `<depends-on>` line itself in the document for the recording core's
-cascade. A question left with no resolvable edge after the drop is an ordinary origin.
+```
+python3 .agents/plugins/cairn/tools/open_questions.py walk <MILESTONE_DIR>
+```
 
-Then walk the graph **by depth**, placing each question exactly once:
+Its output is the gathered order: one line per `<open-question>` block that carries a
+`<recommendation>` element, the block's `id` (its Short Title) printed bare, already in dispatch
+order. The tool gathers those blocks in document order, treats each block's
+`<depends-on question="…">` value as an edge to the gathered block that id names — an edge naming
+a block that is absent or carries no `<recommendation>` is dropped, because this sweep never
+answers that block and the tag stays in the document for the recording core's cascade — and
+places every target before its dependents, same-depth ties in document order, breaking a
+`<depends-on>` cycle by promoting its document-order-first block to an origin. Recommendation-less
+blocks are not printed: annotating them is the recommend sweep's job
+(`/recommend-all-open-questions`), never this one's. Walking a target before its dependents is what
+lets each answer's cascade settle the dependents in turn — the tag removed where the recorded option
+agrees with what they assumed, their embedded children stripped where it does not — and a dependent
+so stripped is skipped by step 2's re-check: that is the cascade doing its job, not a gap in the
+order.
 
-- **Origins first.** Every question with no resolvable edge is an origin. Place all origins, in
-  **document order** among themselves.
-- **Next depth.** Place every not-yet-placed question whose every resolvable edge points at a
-  question already placed, again in document order among themselves. Repeat until every
-  question is placed. Same-depth questions cannot depend on one another, so document order is
-  the only tie-break needed and it is what the gather already yielded.
-- **Stranded set.** If questions remain but none of them has all its targets placed — each waits
-  on another of the remaining — the remainder is a `<depends-on>` cycle (reachable only through
-  the recommend sweep's hand-clear escape hatch, when a regenerated block declares a dependency
-  back on one of its former dependents). Promote the **document-order-first** remaining question
-  to an origin: place it next, count it as placed, and continue the depth walk over the rest.
-  Repeat the promotion each time the walk strands again. The cycle dissolves at the promoted
-  question's answer, whose cascade reconciles every dependent that assumed its option.
+If the call prints nothing, no block carries a `<recommendation>` element: say so and stop. If it
+fails, its one `Error: <reason>` line on stderr is the report: print it and stop.
 
-The walk is **deterministic and total** for any graph shape, cycles included: it depends only on
-the document's block order and the gathered `<depends-on>` values, places every gathered question
-exactly once, and always terminates. Walking a target before its dependents is what lets each
-answer's cascade settle the dependents in turn — removing the tag where the recorded option agrees
-with what they assumed, stripping their embedded children where it does not. The ordering decides
-only *which question goes first*, never *whether* a question gets answered: every gathered block
-carries a recommendation, so every question that still carries one when its turn comes gets
-recorded, and a dependent whose children a prior answer's cascade stripped is skipped by step 2's
-re-check — that is the cascade doing its job, not a gap in the walk.
-
-You walk this gathered, ordered list **exactly once** (step 2). **Do not wrap step 2 in an outer
-re-gather loop** — there is no such loop, and adding one is a defect.
+You walk this printed order **exactly once** (step 2). **Do not wrap step 2 in an outer re-gather
+loop** — there is no such loop, and adding one is a defect.
 
 ### 2. Walk the order once, dispatching the agent per surviving question
 
 For each question in the gathered order:
 
-**a. Re-check against the live document, and lift the commit body.** With the same line-oriented
+**a. Re-check against the live document, and lift the commit body.** With the line-oriented
 boundary-line CLI, confirm the block whose `id` case-folds equal to this question's Short Title
 **still exists and still contains a `<recommendation>` element**. A prior answer's cascade may have
 already removed the block; if it is gone — or its `<recommendation>` element is gone — **skip it**
