@@ -1,6 +1,6 @@
 # Workflow
 
-How a milestone moves through Cairn's skills: the six phases of the pipeline, how the skills commit what they change, and how the project learns from every answered question. What each individual skill does is in the [skill reference](skill-reference.md).
+How a milestone moves through Cairn's skills: the six phases of the pipeline, how the skills commit what they change, and how the project learns from every answered question. What each individual skill does is in the [skill reference](skill-reference.md), and how to chain the skills as headless command lines is in [ways of using Cairn](ways-of-using-cairn.md).
 
 ## Workflow pipeline
 

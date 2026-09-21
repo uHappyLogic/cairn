@@ -1,6 +1,6 @@
 # Skill reference
 
-What each of Cairn's skills and dispatched agents does. The phases they form, how they commit, and the [answer-principle-learning loop](workflow.md#the-answer-principle-learning-loop) are described in [workflow.md](workflow.md).
+What each of Cairn's skills and dispatched agents does. The phases they form, how they commit, and the [answer-principle-learning loop](workflow.md#the-answer-principle-learning-loop) are described in [workflow.md](workflow.md), and how to chain them as headless command lines is in [ways-of-using-cairn.md](ways-of-using-cairn.md).
 
 ### `init-milestone-base-workflow`
 

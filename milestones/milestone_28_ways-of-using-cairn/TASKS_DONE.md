@@ -31,3 +31,20 @@ Extend the closing sentence of `README.md`'s `## How it works` section, the one 
 - `uv run scripts/build_hosts.py --check` passes.
 
 ---
+
+## Cross-Link Sibling Docs Pages To Ways Page
+
+Add one clause to the routing sentence in the intro paragraph of each of `docs/workflow.md` and `docs/skill-reference.md` pointing at `docs/ways-of-using-cairn.md` as where the skills are chained headlessly, leaving `docs/design-claims.md` linked from the README's Design principles block alone, and update the two `CLAUDE.md` layout entries describing those intros. Verified by each intro linking the new page with the rest of both pages unchanged.
+
+**Verified:**
+
+- `docs/workflow.md`'s intro paragraph (the one between `# Workflow` and `## Workflow pipeline`) keeps its routing sentence and gains one clause, "and how to chain the skills as headless command lines is in [ways of using Cairn](ways-of-using-cairn.md)", linking the new page relative to `docs/` as the sentence already links `skill-reference.md`.
+- `docs/skill-reference.md`'s intro paragraph (the one between `# Skill reference` and the first `###` entry) keeps its routing sentence and gains one clause, "and how to chain them as headless command lines is in [ways-of-using-cairn.md](ways-of-using-cairn.md)", in the file-name link style that paragraph already uses for `workflow.md`.
+- Both new link targets resolve: `ways-of-using-cairn.md` extracted from each intro passes `[ -f docs/… ]`.
+- The rest of both pages is unchanged: `git diff --numstat` reports 1 insertion and 1 deletion per file, and `git diff -U0` shows the only changed hunk of each as `@@ -3 +3 @@`, the intro line.
+- `docs/design-claims.md` gains no clause and is untouched, staying linked from the README's Design principles block alone; `README.md` and `CONTRIBUTING.md` are untouched (`git diff --stat` empty for all three).
+- The `CLAUDE.md` layout entry for `docs/workflow.md` now describes `# Workflow` as sitting over a one-paragraph intro whose routing sentence links `skill-reference.md` and, as where the skills are chained as headless command lines, `ways-of-using-cairn.md`, before `## Workflow pipeline`.
+- The `CLAUDE.md` layout entry for `docs/skill-reference.md` now describes its one-line intro as linking `workflow.md`, its learning-loop section, and, as where the skills are chained as headless command lines, `ways-of-using-cairn.md`; the `CLAUDE.md` diff is those two entry lines only (`git diff --numstat`: 2 and 2).
+- `uv run scripts/build_hosts.py --check` passes.
+
+---
