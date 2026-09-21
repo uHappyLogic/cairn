@@ -1,1 +1,26 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Host layout within a way">
+    <question>Within one way, how are the two hosts presented: one fenced block per host under the same heading, one block with the host command as a placeholder, or a separate way per host? The draft keeps a Claude Code section and an Antigravity section apart, while the goal wants goal-oriented ways that a reader can run on either host.</question>
+  </open-question>
+  <open-question id="Placeholder notation and legend">
+    <question>What notation do placeholders take (for example &lt;milestone_id&gt;, &lt;project-root&gt;), and where are they and the headless flags explained: in one legend section at the top of the page, or repeated beside each snippet that uses them?</question>
+  </open-question>
+  <open-question id="Continuation flag retention">
+    <question>The draft passes -c (continue the previous session) on one review-milestone-requirements line only. Is session continuation a mechanic the page documents as an axis a reader can combine, or is the flag dropped so every line is a fresh headless run?</question>
+  </open-question>
+  <open-question id="claude-wait equivalent">
+    <question>The draft calls a private claude-wait alias before each complete-all-tasks run with no definition. What does the page put in its place: a documented equivalent (for example a note on waiting out a usage window), a placeholder, or nothing?</question>
+  </open-question>
+  <open-question id="Model name specificity">
+    <question>Do the chains name concrete models and effort levels as the draft does (opus, fable, high, xhigh, max), which go stale as models change, or generic tiers (for example a stronger and a faster model) with the concrete names left to the reader?</question>
+  </open-question>
+  <open-question id="Antigravity axis coverage">
+    <question>The draft&apos;s Antigravity lines carry only --add-dir and the permissions flag, no model or effort selection. Does the page state per host which mixing axes are available, or show only the flags the draft verified on each host?</question>
+  </open-question>
+  <open-question id="Initial way inventory">
+    <question>Which ways does the page ship with at promotion time? The draft holds six Claude Code snippets and one Antigravity block, none of which mixes hosts; the goal names a mixed-agent requirements review and putting more intelligence into a stuck milestone as examples, so the shipped list and the concrete chain of the mixed-host way need fixing.</question>
+  </open-question>
+  <open-question id="Sibling page cross-links">
+    <question>The three existing docs pages open with an intro naming their sibling pages. Do workflow.md and skill-reference.md gain a link to the new page, or is the README&apos;s How it works link the only inbound reference?</question>
+  </open-question>
+</open-questions>
