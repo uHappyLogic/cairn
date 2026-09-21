@@ -13,9 +13,18 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_28_ways-of-using-cairn/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 28 — Ways of using Cairn
+
+- `docs/ways-of-using-cairn.md` now exists, promoted from the untracked `temp/CAIRN_USAGE.md` as milestone 26 promoted `design-claims.md`: `# Ways of using Cairn` over a one-paragraph intro naming the three sibling docs pages, one `## Notation and flags` legend, then five `##` ways in pipeline order (Starting a milestone, Running a mixed-agent requirements review, Putting more intelligence into a stuck milestone, Executing tasks, Finishing a milestone), each a goal heading, one or two sentences on when to run it and what it yields, and one fenced block of concrete `claude`/`agy` invocations runnable as written.
+- The legend explains once the angle-bracket placeholder notation (`<milestone_id>`, `<project-root>`), the `-p "/cairn:<skill>"` line form, one sentence per headless flag (`--dangerously-skip-permissions`, `--model`, `--effort`, `--add-dir`) with its per-host form as each CLI's `--help` gives it, and the one-line host swap — making the page the one place headless invocation and the `cairn:` namespace form are documented.
+- The chains were generalized from the draft under the recorded decisions: each private `claude-wait` alias became a shell comment at the same position (both `complete-all-tasks` lines kept, the way's sentences stating the usage-limit resume), the absolute path became `<project-root>`, the project-specific milestone ids and the `-c` flag were dropped, `goto-next-milestone` runs bare, model and effort values (`opus`/`fable`, `high`/`xhigh`/`max`) stay verbatim as family aliases, and no `--model` or `--effort` was added to the Antigravity lines.
+- Host, model, and effort mixing is presented as mechanics only, with what a setting buys routed to `docs/design-claims.md`; the mixed-agent review way runs `review-milestone-requirements` on `agy` and the recommend and answer sweeps on `claude`, and the draft's Subsequent-runs and Antigravity blocks ship as that way's single-host reading through the legend's swap rather than as ways of their own.
+- `README.md`'s `## How it works` closing sentence, `docs/workflow.md`'s intro, and `docs/skill-reference.md`'s intro each link the new page as where the skills are chained as headless command lines, while `docs/design-claims.md` stays linked from the README's Design principles block alone and `CONTRIBUTING.md` is unmodified, so a contributed way arrives through the proposal-then-milestone route as one more section under the per-way template.
+- `CLAUDE.md`'s repository-layout block carries the new `docs/ways-of-using-cairn.md` entry and the updated `README.md`, `docs/workflow.md`, and `docs/skill-reference.md` entries, and `uv run scripts/build_hosts.py --check` passes.
 
 ### Milestone 27 — Open Questions XML Tool
 
@@ -308,3 +317,4 @@ Current milestone: `milestones/milestone_28_ways-of-using-cairn/`
 | 25 | Traffic Adoption Badges | `milestones/milestone_25_traffic-adoption-badges/` |
 | 26 | README landing page | `milestones/milestone_26_readme-landing-page/` |
 | 27 | Open Questions XML Tool | `milestones/milestone_27_open-questions-xml-tool/` |
+| 28 | Ways of using Cairn | `milestones/milestone_28_ways-of-using-cairn/` |
