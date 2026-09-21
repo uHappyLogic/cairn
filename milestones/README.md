@@ -13,9 +13,19 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_29_per-question-commits-and-sorting/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 29 — Per-question recommendation commits and question sorting
+
+- `recommend-all-open-questions` now commits per annotated question inside its dispatch loop: every silent `embed` is followed at once by the tool's `lift`, whose printed "`<option>` — `<rationale>`" line is the body of a path-scoped `Recommendation-annotation: <Short Title>` commit landed before the next dispatch, a skipped question commits nothing, and the once-per-run `Recommendation-annotation: <milestone_id>` commit with its "never inside the dispatch loop" rule is retired.
+- `core/tools/open_questions.py` gained a `sort MILESTONE_DIR` subcommand that rewrites the document with the `<recommendation>`-bearing blocks first in exactly `walk_order`'s order (reused by call, never reimplemented) and every `<recommendation>`-less block last in its prior document order, the identity on an already-sorted document and the only subcommand that reorders blocks, so `walk` is by construction the annotated prefix of `list` on a sorted document.
+- The sweep runs `sort` once as a fixed end-of-run step of every run that found questions (an empty `list --unannotated` print and an all-skipped loop both fall through to it) and commits the reorder as its own `Question-ordering: <milestone_id>` commit behind the dirty-own-path guard — the sort's only no-op test — so the commit lands exactly when the sort moved a block and "a sweep that annotated nothing and moved nothing commits nothing" is the narrowed invariant.
+- `core/shared/commit-procedure.md` takes an optional third input, BODY — caller-resolved body lines committed with `git commit -m "<SUBJECT>" -m "<BODY>"` when given and subject-only otherwise — and the four body-supplying callers (`answer-open-question`, `answer-open-question-with-alternative`, `answer-open-question-with-recommendation`, `capture-milestone-principle-updates`) hand their body over as BODY exactly as they hand over PATHS and SUBJECT.
+- The sweep's report step carries two fixed success lines, `Recommendations embedded.` and `Questions reordered.`, chosen by what the run committed in strict order (an embed wrote; else the sort committed; else the distinct no-op line), with the still-skipped advisory printed alongside whichever line is chosen — the terse-reporting rule's one stated carve-out.
+- `tests/test_sort.py` (28 tests) pins the sort's order, idempotence, identity on every golden fixture, silent success, and `Error:` on a missing document, with the suite at 347 passing under both `uv run pytest` and the Python 3.9 floor run.
+- `CLAUDE.md`, `docs/skill-reference.md`, and `docs/workflow.md` state the per-question granularity, the end-of-run sort and its commit, the BODY input, and the two-line report carve-out, and both host trees are rebuilt with `uv run scripts/build_hosts.py --check` passing.
 
 ### Milestone 28 — Ways of using Cairn
 
@@ -318,3 +328,4 @@ Current milestone: `milestones/milestone_29_per-question-commits-and-sorting/`
 | 26 | README landing page | `milestones/milestone_26_readme-landing-page/` |
 | 27 | Open Questions XML Tool | `milestones/milestone_27_open-questions-xml-tool/` |
 | 28 | Ways of using Cairn | `milestones/milestone_28_ways-of-using-cairn/` |
+| 29 | Per-question recommendation commits and question sorting | `milestones/milestone_29_per-question-commits-and-sorting/` |
