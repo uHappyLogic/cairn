@@ -109,3 +109,18 @@ No document names a runtime prerequisite for the installed plugin: `README.md`'s
 
 ## Open questions
 
+<open-question id="Tool module name">
+  <question>What is the file name of the Python tool under `core/tools/` that every `python3` invocation site and the pytest suite&apos;s import name?</question>
+</open-question>
+<open-question id="Build handling of tool files">
+  <question>Does the host build render the Python files under `core/tools/` through the same placeholder substitution, prose-drop patterns, unfilled-placeholder check, and host-name scan it applies to Markdown — so the tool source must avoid `{{` and host names — or does it copy and check them under different rules?</question>
+</open-question>
+<open-question id="Sweep list detail">
+  <question>How does the recommend orchestrator obtain each block&apos;s `&lt;question&gt;` text for its ranking and learn which blocks already carry a `&lt;recommendation&gt;` to skip, given that `list` prints bare ids — a `list` flag or extra column, or a whole-file read?</question>
+</open-question>
+<open-question id="Fragment child order">
+  <question>When a fragment passed to `embed` orders its children differently from the fixed alternatives, applied-principles, depends-on, recommendation sequence, does validation reject it or does the serializer reorder the children on write?</question>
+</open-question>
+<open-question id="CI test job placement">
+  <question>Do the two pytest runs join the existing drift-gate job, form a second job in that workflow, or live in a new workflow file, given that the README&apos;s ci badge reads the drift-gate workflow&apos;s status?</question>
+</open-question>
