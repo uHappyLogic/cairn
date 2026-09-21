@@ -19,9 +19,23 @@ Subcommands:
       print the block's answer text on one line: "<option> — <rationale>" from its
       <recommendation option="…">, or with --alternative "<id> — <what-it-is>" from the
       named <alternative id="…"> with its <advantage>/<drawback> children excluded
+  add MILESTONE_DIR SHORT_TITLE
+      append a bare block — the wrapper and its one <question> child — whose id is the
+      Short Title and whose question text is the body read from standard input; an id an
+      existing block already carries is refused
+  strip MILESTONE_DIR SHORT_TITLE...
+      delete every child but <question> from each named block — its <alternative>,
+      <applied-principle>, <depends-on>, and <recommendation> elements — leaving the
+      wrapper and <question> intact; no other block is touched, so a <depends-on> tag that
+      names a stripped block stays where it is, and a block already bare is left as it is
 
 A Short Title names a block by its id and ALTERNATIVE_ID names an alternative by its id;
 both are compared against the document's un-escaped values, case-folded.
+
+A free-text body (the question text of add) travels on standard input, never as an
+argument: the tool reads sys.stdin.buffer to end of file exactly once per call and decodes
+it as UTF-8 itself, and it refuses a terminal stdin so a call that forgot to pipe its body
+(a quoted heredoc, a redirected file) fails instead of blocking.
 
 Document format, the canonical form every write re-renders the whole document into:
   - a bare <open-questions> root with no XML declaration and no attributes; the empty
@@ -359,6 +373,22 @@ def _write_bytes(path, data):
         raise
 
 
+def read_body(what):
+    """The one free-text body a call carries on standard input, read to end of file once
+    and decoded as UTF-8; a terminal, closed, or non-UTF-8 stdin is a ToolError, so a call
+    that forgot to pipe its body fails instead of blocking."""
+    stream = sys.stdin
+    if stream is None or getattr(stream, "closed", False):
+        raise ToolError(f"{what} must be supplied on standard input, which is closed")
+    if stream.isatty():
+        raise ToolError(f"{what} must be piped on standard input (as a quoted heredoc or a redirected file), not typed at a terminal")
+    data = stream.buffer.read()
+    try:
+        return data.decode("utf-8")
+    except UnicodeDecodeError:
+        raise ToolError(f"{what} on standard input is not UTF-8 text")
+
+
 # --- lookups --------------------------------------------------------------------------
 
 
@@ -409,6 +439,31 @@ def find_alternative(question, alternative_id):
     raise ToolError(f'{context} has no <alternative> with the id "{alternative_id}"; its alternatives are {held}')
 
 
+# --- per-block edits ------------------------------------------------------------------
+
+
+def is_bare(question):
+    """Whether the block holds nothing but its <question>."""
+    return not (
+        question.alternatives or question.principles or question.depends_on or question.recommendation is not None
+    )
+
+
+def strip_question(question):
+    """Delete every child of the block but its <question> — the <alternative>,
+    <applied-principle>, <depends-on>, and <recommendation> elements — leaving the wrapper
+    and <question> intact and touching no other block. The one per-block primitive behind
+    the strip subcommand and the transitive strip of dependent reconciliation; returns
+    whether anything was deleted, so a block already bare reports no change."""
+    if is_bare(question):
+        return False
+    question.alternatives = []
+    question.principles = []
+    question.depends_on = []
+    question.recommendation = None
+    return True
+
+
 # --- subcommands ----------------------------------------------------------------------
 
 
@@ -451,6 +506,33 @@ def cmd_lift(args):
         alternative = find_alternative(question, args.alternative)
         head, body = alternative.id, alternative.text
     print(" — ".join(part for part in (head, body) if part))
+    return 0
+
+
+def cmd_add(args):
+    short_title = fold(args.short_title)
+    if not short_title:
+        raise ToolError("the Short Title is empty")
+    document = load_document(args.milestone_dir)
+    wanted = id_key(short_title)
+    for question in document.questions:
+        if id_key(question.id) == wanted:
+            raise ToolError(f'an <{BLOCK_TAG}> block with the id "{question.id}" already exists')
+    text = fold(read_body("the question text"))
+    if not text:
+        raise ToolError("the question text on standard input is empty")
+    document.questions.append(Question(id=short_title, question=text))
+    save_document(args.milestone_dir, document)
+    return 0
+
+
+def cmd_strip(args):
+    document = load_document(args.milestone_dir)
+    changed = False
+    for question in find_questions(document, args.short_titles):
+        changed = strip_question(question) or changed
+    if changed:
+        save_document(args.milestone_dir, document)
     return 0
 
 
@@ -521,6 +603,33 @@ def build_parser():
         "--alternative",
         metavar="ALTERNATIVE_ID",
         help="lift the named <alternative> of the block instead of its <recommendation>",
+    )
+
+    add_parser = add_subcommand(
+        "add",
+        cmd_add,
+        "append a bare block whose id is SHORT_TITLE and whose <question> text is the body "
+        "read from standard input as UTF-8 (pipe it as a quoted heredoc; a terminal stdin "
+        "is refused); an id an existing block already carries is refused",
+    )
+    add_parser.add_argument(
+        "short_title",
+        metavar="SHORT_TITLE",
+        help="the id of the new block, compared un-escaped and case-folded against the existing ids",
+    )
+
+    strip_parser = add_subcommand(
+        "strip",
+        cmd_strip,
+        "delete every child but <question> from each named block, leaving the wrapper and "
+        "<question> intact and every other block, <depends-on> tags naming it included, "
+        "untouched; a block already bare is left as it is",
+    )
+    strip_parser.add_argument(
+        "short_titles",
+        metavar="SHORT_TITLE",
+        nargs="+",
+        help="the id of a block, compared un-escaped and case-folded",
     )
     return parser
 

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Tool Add And Strip Subcommands
-
-Add `add`, which takes the Short Title as an argument, reads the question text from `sys.stdin.buffer` as UTF-8 (refusing a terminal stdin and reading exactly one body per call), and appends a bare block with only its `<question>` child in canonical form, and `strip`, which takes one or more Short Titles and deletes every child between each block's `<question>` element and its `</open-question>` line while touching no dependent and no `<depends-on>` tag naming the block, rejecting an unknown id with the document unchanged and doing nothing on an already-bare block. `add` is the review pass's authoring write and `strip` is the user's hand-clear replacement for a stale recommendation, and both are verified by pytest cases including the stdin-refusal and duplicate-id or unknown-id errors.
-
----
-
 ## Tool Remove With Dependent Reconciliation
 
 Add `remove`, which deletes the named block and, before its single write, reconciles that block's dependents: with `--option <recorded option>` a surviving block whose `<depends-on>` names the removed id with an equal un-escaped case-folded option loses only that tag while every other dependent of the removed id is stripped, and without the flag every dependent is stripped — both transitively over the dependents of stripped blocks, using the same per-block strip primitive. The tool must reject an `--option` naming none of the removed block's own `<alternative id>` values with the document unchanged, and pytest cases cover the tag-drop, strip-all, transitive, cycle, and rejected-option outcomes so no removal can leave a dangling tag.
