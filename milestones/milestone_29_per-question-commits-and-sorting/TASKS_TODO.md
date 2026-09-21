@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Tool Sort Subcommand With Tests
-
-Add a `sort MILESTONE_DIR` subcommand to `core/tools/open_questions.py` — registered through `add_subcommand` and listed in the module docstring's `Subcommands:` — that rewrites the document with the `<recommendation>`-bearing blocks first in exactly `walk_order`'s order (origins, then dependents by depth, same-depth ties in prior document order) and every `<recommendation>`-less block last in stable prior document order, reusing `walk_order` rather than reimplementing it, printing nothing on success and one `Error:` line with the document unchanged on failure; `render_document` and every other subcommand keep writing blocks in their existing order. Needed so `walk` is by construction the annotated prefix of `list` on a sorted document. Verified by a new `tests/test_sort.py` (annotated prefix equals `walk`'s print, un-annotated blocks last in prior order, `sort` idempotent and the identity on an already-sorted document such as the `annotated` fixture, silent success, `Error:` on a missing document) passing under both `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest`, and by a rebuild with `uv run scripts/build_hosts.py --check` passing with the tool rendered byte-identical.
-
----
-
 ## Recommend Sweep Per-Question Commits
 
 Change `core/skills/recommend-all-open-questions/SKILL.md` so that after each silent `embed` in step 3 the orchestrator runs the tool's `lift <MILESTONE_DIR> "<Short Title>"` and commits through `{{PLUGIN_ROOT}}/shared/commit-procedure.md` with PATHS `<MILESTONE_DIR>/open_questions.xml`, SUBJECT `Recommendation-annotation: <Short Title>`, and BODY the lifted "`<option>` — `<rationale>`" line, before the next dispatch, while a skipped question commits nothing and the once-per-run `Recommendation-annotation: <milestone_id>` commit of step 4 and its "never inside the dispatch loop" wording are removed. Needed so the sweep's granularity mirrors the answer sweep's one commit per question. Verified by reading the skill against `answer-all-open-questions-with-recommendation`'s step 2 for the same lift-then-commit shape, and by a rebuild with `uv run scripts/build_hosts.py --check` passing.

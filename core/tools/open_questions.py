@@ -59,6 +59,12 @@ Subcommands:
       whose every edge names a block already placed, same-depth ties in document order, a
       stranded remainder (a cycle) broken by promoting its document-order-first block to an
       origin; a document with no such block prints nothing
+  sort MILESTONE_DIR
+      rewrite the document with the blocks carrying a <recommendation> first, in exactly the
+      order walk prints them, and every block carrying none last, in its prior document
+      order — so on a sorted document walk prints exactly the annotated prefix of list; a
+      document already in that order is left as it is, and no other subcommand reorders
+      blocks
 
 A Short Title names a block by its id, ALTERNATIVE_ID names an alternative by its id, and
 RECORDED_OPTION names an alternative by its id too; all are compared against the document's
@@ -73,6 +79,8 @@ blocking.
 Document format, the canonical form every write re-renders the whole document into:
   - a bare <open-questions> root with no XML declaration and no attributes; the empty
     document is that one root element, written self-closing
+  - the <open-question> blocks in the order the document already holds them: add appends,
+    and only sort reorders
   - one element per line, indented two spaces per depth: the root at column 0, each
     <open-question id="Short Title"> at 2, its children at 4, and inside an alternative
     the what-it-is text, <advantage>, and <drawback> at 6
@@ -606,6 +614,17 @@ def walk_order(document):
     return order
 
 
+# --- the sorted document ---------------------------------------------------------------
+
+
+def sort_order(document):
+    """Every block of the document in the order sort writes them: the blocks carrying a
+    <recommendation> first, in exactly the order walk_order places them, then every block
+    carrying none, in its document order. A permutation of document.questions, so on a
+    document already in this order walk prints exactly the annotated prefix of list."""
+    return walk_order(document) + [question for question in document.questions if question.recommendation is None]
+
+
 # --- the recommend agent's fragment ---------------------------------------------------
 
 FRAGMENT = "the fragment"
@@ -825,6 +844,15 @@ def cmd_walk(args):
     return 0
 
 
+def cmd_sort(args):
+    document = load_document(args.milestone_dir)
+    ordered = sort_order(document)
+    if any(placed is not held for placed, held in zip(ordered, document.questions)):
+        document.questions = ordered
+        save_document(args.milestone_dir, document)
+    return 0
+
+
 # --- command line ---------------------------------------------------------------------
 
 
@@ -969,6 +997,15 @@ def build_parser():
         "it (a tag naming an absent or recommendation-less block is ignored), same-depth ties "
         "fall in document order, and a cycle is broken by promoting its document-order-first "
         "block to an origin; a document with no such block prints nothing",
+    )
+
+    add_subcommand(
+        "sort",
+        cmd_sort,
+        "rewrite the document with the blocks carrying a <recommendation> first, in exactly "
+        "the order walk prints them, and every block carrying none last, in its prior document "
+        "order, so that walk then prints the annotated prefix of list; a document already in "
+        "that order is left as it is",
     )
     return parser
 

@@ -14,3 +14,20 @@ Give `core/shared/commit-procedure.md` a third, optional input, BODY — zero or
 - `uv run pytest` passes (319 passed).
 
 ---
+
+## Tool Sort Subcommand With Tests
+
+Add a `sort MILESTONE_DIR` subcommand to `core/tools/open_questions.py` — registered through `add_subcommand` and listed in the module docstring's `Subcommands:` — that rewrites the document with the `<recommendation>`-bearing blocks first in exactly `walk_order`'s order (origins, then dependents by depth, same-depth ties in prior document order) and every `<recommendation>`-less block last in stable prior document order, reusing `walk_order` rather than reimplementing it, printing nothing on success and one `Error:` line with the document unchanged on failure; `render_document` and every other subcommand keep writing blocks in their existing order. Needed so `walk` is by construction the annotated prefix of `list` on a sorted document. Verified by a new `tests/test_sort.py` (annotated prefix equals `walk`'s print, un-annotated blocks last in prior order, `sort` idempotent and the identity on an already-sorted document such as the `annotated` fixture, silent success, `Error:` on a missing document) passing under both `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest`, and by a rebuild with `uv run scripts/build_hosts.py --check` passing with the tool rendered byte-identical.
+
+**Verified:**
+
+- `core/tools/open_questions.py` registers `sort` through `add_subcommand` in `build_parser`, taking `MILESTONE_DIR` alone — an extra argument or a missing directory is argparse's usage error with exit 2, and `--help` lists it beside the other nine subcommands.
+- The module docstring's `Subcommands:` list carries a `sort MILESTONE_DIR` entry, and its format list states that blocks stay in the order the document holds them, `add` appending and only `sort` reordering.
+- The written order is `sort_order(document)` = `walk_order(document)` followed by every `<recommendation>`-less block in its prior document order — the walk reused by call, never reimplemented (a monkeypatched `walk_order` changes what `sort` writes) — so after a sort `list` prints exactly `walk`'s ids then `list --unannotated`'s.
+- `sort` prints nothing on success; a missing or malformed document is one `Error: <reason>` line on stderr with exit 1, the document byte-for-byte unchanged and nothing created; a document already in sorted order is left untouched (same inode and mtime), the `annotated`, `bare`, `entities`, and `empty` fixtures included, and a second sort after a first writes nothing.
+- The diff to the tool is purely additive (0 removed lines): `render_document`, `save_document`, and every other `cmd_*` keep writing blocks in `document.questions` order, pinned by a test running `add`, `strip`, and `remove` on an unsorted document and by `render_document` on an unsorted `Document`.
+- `tests/test_sort.py` (28 tests) pins the annotated prefix equalling `walk`'s print, un-annotated blocks last in prior order, same-depth ties and cycle promotion matching `walk`, blocks moved verbatim with the document kept canonical, idempotence, the identity on every golden fixture, silent success, and the `Error:` on a missing document; `tests/test_contract.py`'s help enumeration gained `sort`.
+- `uv run pytest` passes (347 passed) and `uv run --no-project --python 3.9 --with pytest pytest` passes (347 passed under Python 3.9.25).
+- `uv run scripts/build_hosts.py` rebuilt both host trees and `uv run scripts/build_hosts.py --check` passes ("Check passed: hosts/antigravity/ and hosts/claude/ match a fresh build of core/ at version 1.6.0."); `cmp` confirms `hosts/claude/tools/open_questions.py` and `hosts/antigravity/tools/open_questions.py` byte-identical to `core/tools/open_questions.py`.
+
+---
