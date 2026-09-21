@@ -17,6 +17,8 @@ This repository is the Claude Code distribution of [Cairn](https://github.com/uH
 
 ## Installation
 
+Cairn has one runtime prerequisite: a **Python 3.9 or later** interpreter that answers as `python3` on your PATH. The skills drive the plugin's stdlib-only open-question tool with it (no packages to install), and `/init-milestone-base-workflow` checks it once per project, stopping with the remedy when it is missing.
+
 ### Claude Code
 
 In Claude Code, add the `cairn-claude` marketplace and install the plugin from it:

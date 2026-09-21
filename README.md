@@ -50,6 +50,8 @@ flowchart LR
 
 ## Installation
 
+Cairn has one runtime prerequisite: a **Python 3.9 or later** interpreter that answers as `python3` on your PATH. The skills drive the plugin's stdlib-only open-question tool with it (no packages to install), and `/init-milestone-base-workflow` checks it once per project, stopping with the remedy when it is missing.
+
 ### Claude Code
 
 ```
@@ -86,7 +88,7 @@ It works with any kind of project. Skills read your project's environment — it
 
 ## Design principles
 
-- **[The records are machine-readable.](docs/design-claims.md#11-the-records-are-machine-readable)** Open questions are XML blocks in one section, found by their boundary lines, so every answer, cascade, and prune is a deterministic line-range edit.
+- **[The records are machine-readable.](docs/design-claims.md#11-the-records-are-machine-readable)** Open questions are one XML document per milestone with a single stdlib tool as its only writer, so every answer, cascade, and prune is a validated tool call that rewrites the document in one canonical form.
 - **[Each decision has a record in git.](docs/design-claims.md#2-each-decision-has-a-record-in-git)** One answer is one path-scoped commit whose subject marks how it was made — manual, recommendation, or alternative — so the log is provenance and a revert reopens the question.
 - **[Advice gets better with each milestone.](docs/design-claims.md#5-advice-gets-better-with-each-milestone)** When you override a recommendation, the capture skill distills your reason into a project-wide principle store the recommender reads and cites on every later question.
 
@@ -94,9 +96,10 @@ All nineteen claims, each with its design and a metric to test it, are in [docs/
 
 ## How it works
 
-Each milestone lives in `milestones/milestone_<N>_<slug>/` and contains three files:
+Each milestone lives in `milestones/milestone_<N>_<slug>/` and contains four files:
 
-- `requirements.md` — goal, relevant starting state, decisions, and open questions
+- `requirements.md` — goal, relevant starting state, decisions, and out of scope, as prose Markdown
+- `open_questions.xml` — the open questions, one `<open-question>` block each under a single `<open-questions>` root; created empty with the milestone and written only by the plugin's open-question tool, never by hand — the milestone's requirements have converged when no block remains
 - `TASKS_TODO.md` — pending tasks ordered by priority (highest first)
 - `TASKS_DONE.md` — completed tasks in the same section format, each entry augmented with the acceptance bar the completer derived and verified the work against, recorded as a `**Verified:**` bullet list (one bullet per criterion)
 

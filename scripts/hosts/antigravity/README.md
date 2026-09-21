@@ -17,6 +17,8 @@ This repository is the Google Antigravity distribution of [Cairn](https://github
 
 ## Installation
 
+Cairn has one runtime prerequisite: a **Python 3.9 or later** interpreter that answers as `python3` on your PATH. The skills drive the plugin's stdlib-only open-question tool with it (no packages to install), and `/init-milestone-base-workflow` checks it once per project, stopping with the remedy when it is missing.
+
 ### Antigravity
 
 From your project root, extract the latest release into `.agents/plugins/cairn`, the path Antigravity loads the plugin from:

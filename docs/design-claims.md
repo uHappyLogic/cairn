@@ -5,8 +5,9 @@ design that makes it true and one metric for a test. The claims are written in
 ASD-STE100 Simplified Technical English, a controlled register whose short
 sentences and one-meaning-per-word vocabulary keep each claim unambiguous, so
 that it reads the same to a reader and to the author of a test. Each **Metric**
-line names the test that would check its claim; no test suite in the repository
-runs those tests yet.
+line names the test that would check its claim. The repository's test suite
+runs only the test of claim 11, against the open-question tool; no suite runs
+the other tests yet.
 
 ## Decisions
 
@@ -99,11 +100,12 @@ runs those tests yet.
 
 ### 11. The records are machine-readable.
 
-- **Design:** Open questions are XML blocks in one section. A line-oriented CLI
-  finds each block by its boundary lines. Each edit is a deterministic
-  line-range change.
+- **Design:** Open questions are one XML document for each milestone. One
+  stdlib tool is the only writer of that document. Each answer, cascade, prune,
+  and embed is a tool call. The tool validates the input and writes the whole
+  document again in one canonical form.
 - **Metric:** Golden-file diff of the document after an answer, a cascade, or
-  a prune.
+  a prune. The `tests/` suite runs this test on the tool.
 
 ### 12. Repository hygiene is structural.
 

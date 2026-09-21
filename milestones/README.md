@@ -4,9 +4,12 @@ This file tracks milestone progress. It is the source of truth for which milesto
 
 Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 
-- `requirements.md` — goal, relevant starting state, decisions, open questions
+- `requirements.md` — goal, relevant starting state, decisions, out of scope
+- `open_questions.xml` — the open questions, one `<open-question>` block each under a single `<open-questions>` root, written only by the plugin's open-question tool
 - `TASKS_TODO.md` — pending tasks ordered by priority (highest first)
 - `TASKS_DONE.md` — completed tasks
+
+Milestones defined before the open-questions split — `milestone_01` through `milestone_27` — hold the three Markdown files only, their questions long answered under a now-empty `## Open questions` heading of `requirements.md`. There is no migration of and no compatibility with those pre-split milestones: no skill reads that heading any more, and a question skill run against a milestone without an `open_questions.xml` stops on the tool's `Error:` line.
 
 ## Current Milestone
 
