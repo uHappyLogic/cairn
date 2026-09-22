@@ -1,1 +1,44 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Alternatives agent name">
+    <question>The recommend-open-question agent becomes an alternatives-only agent dispatched by /provide-alternatives-to-all-open-questions and is renamed to match its role. What is its new name (for example provide-alternatives-to-open-question), given that the orchestrator addresses it by its namespaced registry name and five files reference the old one?</question>
+  </open-question>
+  <open-question id="Strip command forms">
+    <question>The tool needs a partial strip that clears only the recommendation, depends-on, and applied-principle children while keeping the alternatives, and the full strip that clears every child still serves as the hatch for a stale alternative set. Is the partial strip a flag on the existing strip subcommand, a new subcommand, or the new default of strip with the full strip behind a flag?</question>
+  </open-question>
+  <open-question id="Embed shape selection">
+    <question>The embed subcommand must accept two fragment shapes: alternatives only (from the parallel agent) and recommendation only, with its depends-on and applied-principle children (from the inline recommendation pass). Does the tool tell them apart by inspecting the fragment, or does the caller name the shape with an explicit flag, and what must the target block already hold for each shape (no alternatives yet for the first, alternatives but no recommendation for the second)?</question>
+  </open-question>
+  <open-question id="Alternatives list filter">
+    <question>The parallel alternatives pass needs the ids of the blocks that carry no alternative elements, which the existing list --unannotated (no recommendation element) does not express. What is the new list filter called, and does --unannotated keep its current meaning?</question>
+  </open-question>
+  <open-question id="Inline embed ordering">
+    <question>The inline recommendation pass reasons over the whole question set at once but must still write each block with one embed call, and embed resolves every depends-on tag against a sibling that already carries a recommendation. Does the skill order its embed calls so every declared target is written before its dependents, or does the tool relax the one-hop check for this pass?</question>
+  </open-question>
+  <open-question id="Recommendation run commit subject and body">
+    <question>The inline recommendation pass commits once per run with its reasoning in the commit body. What is the subject (for example Recommendation-annotation: &lt;milestone_id&gt;), and what shape does the body take: one line per question in the lifted option-and-rationale form, or free prose covering the whole set?</question>
+  </open-question>
+  <open-question id="Alternatives pass commit subject and body">
+    <question>/provide-alternatives-to-all-open-questions embeds and commits each return as it lands. What is its commit subject (for example Alternatives-annotation: &lt;Short Title&gt;), what if anything goes in the body given that lift prints only recommendation or single-alternative lines, and what is its one fixed terse success line?</question>
+  </open-question>
+  <open-question id="Stale alternatives in recommendation pass">
+    <question>Alternatives are frozen, but a sibling&apos;s recorded decision can make an embedded alternative infeasible before the recommendation pass runs. When the inline pass judges a block&apos;s alternative set stale or dead, does it skip that block and print an advisory naming the full strip as the remedy, recommend the best surviving option and note the dead one in the rationale, or stop the run?</question>
+  </open-question>
+  <open-question id="Parallel dispatch host fallback">
+    <question>Runtime prose names capabilities, never hosts, and not every host can run several subagent dispatches at once. How does /provide-alternatives-to-all-open-questions key its dispatch on that capability, does it fall back to sequential dispatch where concurrency is unavailable, and is there a cap on dispatches in flight?</question>
+  </open-question>
+  <open-question id="Alternatives return repair">
+    <question>The current sweep judges every agent return by last-line verdict, then embed, then exactly one repair (a same-session continuation where the host can continue one, otherwise one fresh re-dispatch). Does the parallel alternatives pass keep that whole pipeline per return, with the shape reminder rewritten for an alternatives-only fragment whose anchors are the first &lt;alternative line and the last &lt;/alternative&gt; line?</question>
+  </open-question>
+  <open-question id="Discuss with frozen alternatives">
+    <question>/discuss-open-question must work on a block in any state and reuse embedded alternatives when present. In that case may it surface an option the embedded set lacks, and how does it present the embedded recommendation when the block carries one: as its own starting recommendation to defend or challenge, or as context beside a fresh one?</question>
+  </open-question>
+  <open-question id="Shared procedure split">
+    <question>recommend-procedure.md currently produces alternatives and recommendation as one unit and is referenced by the recommend agent and /discuss-open-question. With the alternatives agent needing only the enumeration half, the inline recommendation pass only the pick half, and discuss both, is the shared core split into two shared files or kept as one file with two separately referenceable steps?</question>
+  </open-question>
+  <open-question id="Existing recommendations on re-run">
+    <question>The inline recommendation pass reasons over the whole question set at once. On a re-run where some blocks already carry a recommendation, does it leave those untouched and recommend only on the blocks lacking one, as today&apos;s --unannotated idempotency does, or may it revise an existing recommendation in light of the whole set?</question>
+  </open-question>
+  <open-question id="Headless chain alternatives line">
+    <question>docs/ways-of-using-cairn.md chains invoke /recommend-all-open-questions three times at opus with effort xhigh or max, and the recommendation pass is meant for a strong model. Where does the new /provide-alternatives-to-all-open-questions line go in each chain, and with which model and effort values, given every line must be a concrete invocation that ran?</question>
+  </open-question>
+</open-questions>
