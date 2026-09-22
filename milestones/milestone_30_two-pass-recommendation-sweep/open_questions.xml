@@ -118,6 +118,28 @@
   </open-question>
   <open-question id="Stale alternatives in recommendation pass">
     <question>Alternatives are frozen, but a sibling&apos;s recorded decision can make an embedded alternative infeasible before the recommendation pass runs. When the inline pass judges a block&apos;s alternative set stale or dead, does it skip that block and print an advisory naming the full strip as the remedy, recommend the best surviving option and note the dead one in the rationale, or stop the run?</question>
+    <alternative id="Skip with advisory">
+      The inline pass writes no recommendation for a block whose alternative set it judges stale, and prints those Short Titles with the reason alongside its terse line, naming the full strip plus a re-run of the alternatives pass as the remedy.
+      <advantage>No pick is ever derived from a premise the recorded decisions contradict, and the shape already exists — it is the sweep&apos;s still-skipped advisory verbatim, git-absent and decision-critical — with one block&apos;s problem never touching the recommendations the run writes for the rest.</advantage>
+      <drawback>Nothing in the document records the verdict, so every later run re-gathers the block, re-judges it stale and re-skips it until the user acts, while the dead alternative stays embedded and liftable exactly as it would under any other option; and the remedy it names is the pipeline&apos;s most expensive one, discarding a whole parallel-dispatched alternative set even when one option of four died and the rest still stand.</drawback>
+    </alternative>
+    <alternative id="Recommend among survivors">
+      The pass recommends the best still-viable alternative and states in the rationale which option the recorded decision killed and why, falling back to the skip-with-advisory above only for a block where no alternative survives at all.
+      <advantage>It fits the case the frozen-alternatives design actually produces — a sibling decision that kills one option, or only the premise of one drawback, while the others stand — so the run converges instead of leaving a block no run can ever finish, and the staleness verdict lands in the committed document and the run&apos;s commit body rather than in a console line git never keeps.</advantage>
+      <drawback>The lift that records the answer prints the whole rationale, so the dead-option note is folded verbatim into the recorded decision prose, and the block keeps the dead &lt;alternative&gt; child where an alternative-derived answer can still lift it as a decision.</drawback>
+    </alternative>
+    <alternative id="Stop the run">
+      A stale set is treated as a precondition failure like a missing one: the pass names the block and stops before any write, pointing at the full strip and a re-run of both passes.
+      <advantage>One uniform input-not-fit-for-this-pass stop covers both faults, matching the stop the goal already gives the pass when any question lacks alternatives, and it leaves git untouched so no half-set of picks lands on a document the pass has judged inconsistent.</advantage>
+      <drawback>It gives one block a veto over a whole run of whole-set reasoning, the blast radius a per-block write exists to avoid, and unlike the missing-alternatives stop that one list call decides, it rests on a judgment the user cannot check before the run refuses — so a set with several stale blocks converges only after as many stop-fix-rerun cycles.</drawback>
+    </alternative>
+    <alternative id="Strip and advise">
+      The pass runs the full strip on the stale block itself, committing that clearing with the run, so the block reappears in the alternatives pass&apos;s dispatch set and is regenerated there.
+      <advantage>The document ends in a state that matches the verdict rather than carrying a set the pass has judged dead, so the block heals through the existing two-pass pipeline with nothing the user must know beyond re-running the first pass.</advantage>
+      <drawback>The recommendation pass becomes a destructive writer of the half it only consumes, discarding parallel-dispatched work on its own unreviewed judgment with no record of what it discarded beyond the diff, and it leaves the document failing this pass&apos;s own start precondition, so the next recommendation run stops on the block it just cleared.</drawback>
+    </alternative>
+    <depends-on question="Existing recommendations on re-run" option="Skip the annotated"/>
+    <recommendation option="Recommend among survivors">The frozen set is meant to outlive decisions that outdate part of it, and the narrowed cascade keeps the alternatives precisely so an override costs only a re-run of the pick, so a pass that refuses to pick whenever it sees staleness hands back the cost that narrowing was made to remove — naming the best surviving option and why the other died is exactly the hedge-free single pick with a stated reason the analytical core already asks for, and keeping the skip as the floor for a set with nothing left means the expensive full strip is named only when it truly is the remedy; only if a recorded decision could not carry a clause saying which option the earlier answer killed would skipping every stale block win instead.</recommendation>
   </open-question>
   <open-question id="Parallel dispatch host fallback">
     <question>Runtime prose names capabilities, never hosts, and not every host can run several subagent dispatches at once. How does /provide-alternatives-to-all-open-questions key its dispatch on that capability, does it fall back to sequential dispatch where concurrency is unavailable, and is there a cap on dispatches in flight?</question>
