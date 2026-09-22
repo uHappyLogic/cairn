@@ -33,19 +33,27 @@ Subcommands:
       standing; either way no other block is touched, so a <depends-on> tag that names a
       stripped block stays where it is, and a block holding nothing the call would delete is
       left as it is
-  embed MILESTONE_DIR SHORT_TITLE
-      put the recommend agent's returned children into the named block, which must carry no
-      <recommendation> yet: the agent's whole final message is the body read from standard
-      input, the fragment is sliced from its first line holding "<alternative" through its
-      last line holding "</recommendation>" (the identity on a clean return, discarding a
-      grounding summary or closing remark otherwise), parsed, and validated — no
-      <open-question> or <question> line, no text outside its elements, at least one
-      <alternative>, exactly one <recommendation> whose option names one of the fragment's
-      own alternatives, every <depends-on question="…" option="…"/> resolving one hop to a
-      block of the document that carries a <recommendation> and to one of that block's
-      <alternative> ids, no element of a kind the format does not define, and never the
-      order of its children — then written as the block's children grouped by kind in the
-      canonical order; every miss, the two extraction misses included, is one Error line
+  embed MILESTONE_DIR SHORT_TITLE (--alternatives | --recommendation)
+      put one half of a block's children into the named block, the half the required flag
+      names: the whole message carrying them is the body read from standard input, the
+      fragment is sliced out of it (the identity on a clean message, discarding a grounding
+      summary or closing remark otherwise), parsed, validated — no <open-question> or
+      <question> line, no text outside its elements, no element of a kind the format does
+      not define, no element of the other half, and never the order of its children — and
+      written as that half of the block's children, grouped by kind in the canonical order,
+      the other half left exactly as the block holds it; every miss, the two extraction
+      misses included, is one Error line. With --alternatives the block must carry no
+      <alternative> yet (bare strip is the hatch), the slice runs from the first line
+      holding "<alternative" through the last line holding "</alternative>", and the
+      fragment must hold at least one <alternative>. With --recommendation the block must
+      already carry at least one <alternative> and no <recommendation> yet (strip
+      --recommendation is the hatch), the slice runs from the first line holding
+      "<applied-principle", "<depends-on", or "<recommendation" through the last line
+      holding "</recommendation>", the fragment must hold exactly one <recommendation> whose
+      option names one of the block's own <alternative> ids, and every
+      <depends-on question="…" option="…"/> must resolve one hop to another block of the
+      document that carries <alternative> elements and to one of that block's <alternative>
+      ids — so the alternative set the first shape embedded stays frozen under the second
   remove MILESTONE_DIR SHORT_TITLE [--option RECORDED_OPTION]
       delete the named block and, before the one write, reconcile the blocks that depend on
       it: with --option (the option recorded as the answer, which must be one of the removed
@@ -76,7 +84,7 @@ A Short Title names a block by its id, ALTERNATIVE_ID names an alternative by it
 RECORDED_OPTION names an alternative by its id too; all are compared against the document's
 un-escaped values, case-folded.
 
-A free-text body (the question text of add, the recommend agent's message of embed) travels
+A free-text body (the question text of add, the message embed slices its fragment from) travels
 on standard input, never as an argument: the tool reads sys.stdin.buffer to end of file
 exactly once per call and decodes it as UTF-8 itself, and it refuses a terminal stdin so a
 call that forgot to pipe its body (a quoted heredoc, a redirected file) fails instead of
@@ -238,8 +246,8 @@ def _parse_question(elem):
 
 def _parse_children(elem, context, question):
     """Fill the block's alternatives, applied principles, depends-on tags, and recommendation
-    from the element's children in document order — the walk a block of the document and the
-    recommend agent's fragment share — and return the texts of its <question> children for the
+    from the element's children in document order — the walk a block of the document and an
+    embed fragment share — and return the texts of its <question> children for the
     caller to judge; a child the format does not define, text between the children, a repeated
     alternative id, or a second <recommendation> is a ToolError."""
     question_texts = []
@@ -644,46 +652,119 @@ def sort_order(document):
     return walk_order(document) + [question for question in document.questions if question.recommendation is None]
 
 
-# --- the recommend agent's fragment ---------------------------------------------------
+# --- the two embed shapes and their fragment ------------------------------------------
 
 FRAGMENT = "the fragment"
 FRAGMENT_TAG = "fragment"
 # A start or end tag of the wrapper or of <question>, by name and a boundary after it.
 _BLOCK_TAG_LINE = re.compile(rf"</?({BLOCK_TAG}|question)(?=[\s/>])")
+# Every child kind a block's fragment half may carry, across both shapes.
+CHILD_KINDS = ("alternative", "applied-principle", "depends-on", "recommendation")
 
 
-def extract_fragment(message):
-    """The fragment inside the recommend agent's whole final message: its lines from the first
-    line holding "<alternative" through the last line holding "</recommendation>", joined —
-    the identity on a clean return, the discarding of a grounding summary above or a closing
-    remark below otherwise. A message missing either anchor line is a ToolError naming it."""
+@dataclass(frozen=True)
+class Shape:
+    """One of the two halves embed puts into a block, named by the flag that selects it: the
+    child kinds the half holds, and the one kind among them the fragment must hold — whose
+    end tag also closes the slice extract_fragment takes out of the message."""
+
+    flag: str
+    kinds: tuple
+    required: str
+
+    @property
+    def name(self):
+        return self.flag.lstrip("-")
+
+    @property
+    def openings(self):
+        """The start-tag markers a slice may open on, one per kind of the half."""
+        return tuple(f"<{kind}" for kind in self.kinds)
+
+    @property
+    def opening_tags(self):
+        return _listed(f"<{kind}>" for kind in self.kinds)
+
+    @property
+    def closing(self):
+        """The end-tag marker the slice closes on."""
+        return f"</{self.required}>"
+
+
+ALTERNATIVES_SHAPE = Shape(flag="--alternatives", kinds=("alternative",), required="alternative")
+RECOMMENDATION_SHAPE = Shape(
+    flag="--recommendation", kinds=("applied-principle", "depends-on", "recommendation"), required="recommendation"
+)
+
+
+def _listed(items):
+    """The items as prose: "a", "a or b", "a, b, or c"."""
+    items = list(items)
+    if len(items) <= 1:
+        return "".join(items)
+    if len(items) == 2:
+        return f"{items[0]} or {items[1]}"
+    return ", ".join(items[:-1]) + f", or {items[-1]}"
+
+
+def _article(tag):
+    """The article before a tag or tag name read aloud: "an <alternative>", "a </question>"."""
+    return "an" if tag.lstrip("<").startswith(("a", "o")) else "a"
+
+
+def check_block_state(question, shape):
+    """A ToolError unless the block is in the state the shape writes into: for --alternatives
+    a block carrying no <alternative> yet (bare strip is the hatch); for --recommendation a
+    block already carrying at least one <alternative> — the frozen set the recommendation's
+    option is checked against — and no <recommendation> yet (strip --recommendation is the
+    hatch)."""
+    context = f'<{BLOCK_TAG} id="{question.id}">'
+    if shape == ALTERNATIVES_SHAPE:
+        if question.alternatives:
+            raise ToolError(f"{context} already carries <alternative> elements; strip it first to embed a new set")
+    else:
+        if not question.alternatives:
+            raise ToolError(f"{context} carries no <alternative> elements; embed --alternatives first")
+        if question.recommendation is not None:
+            raise ToolError(
+                f"{context} already carries a <recommendation> element; strip --recommendation first to embed a new one"
+            )
+
+
+def extract_fragment(message, shape):
+    """The shape's fragment inside a whole message: its lines from the first line holding one
+    of the shape's start-tag markers through the last line holding its end-tag marker, joined
+    — the identity on a clean message, the discarding of a grounding summary above or a
+    closing remark below otherwise. A message missing either anchor line is a ToolError
+    naming it."""
     lines = message.splitlines()
-    starts = [index for index, line in enumerate(lines) if "<alternative" in line]
-    ends = [index for index, line in enumerate(lines) if "</recommendation>" in line]
+    starts = [index for index, line in enumerate(lines) if any(opening in line for opening in shape.openings)]
+    ends = [index for index, line in enumerate(lines) if shape.closing in line]
     if not starts:
-        raise ToolError("no <alternative> line to extract from")
+        raise ToolError(f"no {shape.opening_tags} line to extract from")
     if not ends:
-        raise ToolError("no </recommendation> line to extract to")
+        raise ToolError(f"no {shape.closing} line to extract to")
     start, end = starts[0], ends[-1]
     if end < start:
-        raise ToolError("the last </recommendation> line precedes the first <alternative> line")
+        raise ToolError(f"the last {shape.closing} line precedes the first {shape.opening_tags} line")
     return "\n".join(lines[start : end + 1])
 
 
-def parse_fragment(region):
+def parse_fragment(region, shape):
     """The children an extracted fragment describes, as a Question with no id and no question
-    text, once the fragment is well-formed and valid: no <open-question> or <question> line,
-    no text outside its elements, at least one <alternative>, exactly one <recommendation>
-    whose option names one of the fragment's own alternatives, and no element of a kind the
-    format does not define. The order of the children is not checked — the writer groups them
-    by kind — and a <depends-on> tag is checked against the document by check_dependencies."""
+    text, once the fragment is well-formed and valid under the shape: no <open-question> or
+    <question> line, no text outside its elements, no element of a kind the format does not
+    define, no element of the other half, and the shape's required kind present — at least one
+    <alternative> for --alternatives, exactly one <recommendation> for --recommendation. The
+    order of the children is not checked (the writer groups them by kind), and what the
+    fragment must agree with in the document — the recommendation's option, every
+    <depends-on> tag — is checked by embed_fragment against the block."""
     for line in region.splitlines():
         found = _BLOCK_TAG_LINE.search(line)
         if found:
             tag = found.group(0) + ">"
-            article = "an" if tag.startswith("<o") else "a"
             raise ToolError(
-                f"{FRAGMENT} contains {article} {tag} line; the <{BLOCK_TAG}> wrapper and its "
+                f"{FRAGMENT} contains {_article(tag)} {tag} line; the <{BLOCK_TAG}> wrapper and its "
                 f"<question> element belong to the document, not to the fragment"
             )
     try:
@@ -692,27 +773,25 @@ def parse_fragment(region):
         raise ToolError(f"{FRAGMENT} is not well-formed XML: {_parse_error_text(error)}")
 
     children = list(root)
+    if not children:
+        raise ToolError(f"{FRAGMENT} contains no <{shape.required}> element")
     if fold(root.text):
-        raise ToolError(f"text precedes <alternative> on {FRAGMENT}'s opening line")
-    if children and fold(children[-1].tail):
-        raise ToolError(f"text trails </recommendation> on {FRAGMENT}'s closing line")
+        raise ToolError(f"text precedes <{children[0].tag}> on {FRAGMENT}'s opening line")
+    if fold(children[-1].tail):
+        raise ToolError(f"text trails </{children[-1].tag}> on {FRAGMENT}'s closing line")
     if any(fold(child.tail) for child in children[:-1]):
         raise ToolError(f"{FRAGMENT} carries text between its elements")
+    for child in children:
+        if child.tag in CHILD_KINDS and child.tag not in shape.kinds:
+            raise ToolError(f"{FRAGMENT} carries {_article(child.tag)} <{child.tag}> element, which {shape.flag} does not take")
 
     fragment = Question(id="")
     if _parse_children(root, FRAGMENT, fragment):
         raise ToolError(f"{FRAGMENT} contains a <question> element")
-    if not fragment.alternatives:
+    if shape == ALTERNATIVES_SHAPE and not fragment.alternatives:
         raise ToolError(f"{FRAGMENT} contains no <alternative> element")
-    if fragment.recommendation is None:
+    if shape == RECOMMENDATION_SHAPE and fragment.recommendation is None:
         raise ToolError(f"{FRAGMENT} contains no <recommendation> element")
-    wanted = id_key(fragment.recommendation.option)
-    if not any(id_key(alternative.id) == wanted for alternative in fragment.alternatives):
-        held = _quoted(alternative.id for alternative in fragment.alternatives)
-        raise ToolError(
-            f'the <recommendation> option "{fragment.recommendation.option}" names none of '
-            f"{FRAGMENT}'s <alternative> ids, which are {held}"
-        )
     return fragment
 
 
@@ -724,22 +803,37 @@ def _parse_error_text(error):
     return f"{reason} at line {line - 1}, column {column}"
 
 
+def check_recommendation_option(question, fragment):
+    """A ToolError unless the fragment's <recommendation> option is one of the block's own
+    <alternative> ids, compared un-escaped and case-folded: the recommendation half carries
+    no alternatives of its own, so the block's frozen set is what it is checked against."""
+    wanted = id_key(fragment.recommendation.option)
+    if not any(id_key(alternative.id) == wanted for alternative in question.alternatives):
+        context = f'<{BLOCK_TAG} id="{question.id}">'
+        held = _quoted(alternative.id for alternative in question.alternatives)
+        raise ToolError(
+            f'the <recommendation> option "{fragment.recommendation.option}" names none of the '
+            f"<alternative> ids of {context}, which are {held}"
+        )
+
+
 def check_dependencies(document, question, fragment):
     """A ToolError unless every <depends-on> tag of the fragment resolves one hop: its question
-    names a block of the document other than the one being embedded that carries a
-    <recommendation>, and its option is one of that block's own <alternative> ids — both
-    compared un-escaped and case-folded. The target's own tags are not followed and no cycle
-    is looked for."""
-    annotated = [other for other in document.questions if other is not question and other.recommendation is not None]
+    names a block of the document other than the one being embedded that carries
+    <alternative> elements, and its option is one of that block's own <alternative> ids —
+    both compared un-escaped and case-folded. Whether the target carries a <recommendation>
+    is not asked, so the recommendation pass may write its blocks in any order; the target's
+    own tags are not followed and no cycle is looked for."""
+    targets = [other for other in document.questions if other is not question and other.alternatives]
     for dependency in fragment.depends_on:
         wanted = id_key(dependency.question)
-        target = next((other for other in annotated if id_key(other.id) == wanted), None)
+        target = next((other for other in targets if id_key(other.id) == wanted), None)
         if target is None:
-            held = _quoted(other.id for other in annotated)
-            held = f"the annotated blocks are {held}" if held else "no other block carries one"
+            held = _quoted(other.id for other in targets)
+            held = f"the blocks carrying them are {held}" if held else "no other block carries any"
             raise ToolError(
-                f'the <depends-on question="{dependency.question}"/> names no block that carries a '
-                f"<recommendation>; {held}"
+                f'the <depends-on question="{dependency.question}"/> names no block that carries '
+                f"<alternative> elements; {held}"
             )
         option = id_key(dependency.option)
         if not any(id_key(alternative.id) == option for alternative in target.alternatives):
@@ -750,12 +844,19 @@ def check_dependencies(document, question, fragment):
             )
 
 
-def embed_fragment(document, question, fragment):
-    """Make the fragment's children the block's children — its alternatives in their returned
-    order, applied principles, depends-on tags, and recommendation — once every <depends-on>
-    tag resolves against the document; the caller writes, and the writer groups them by kind."""
+def embed_fragment(document, question, fragment, shape):
+    """Make the fragment's children the shape's half of the block's children, leaving the
+    other half as the block holds it: under --alternatives the block takes the fragment's
+    alternatives in their returned order and nothing else changes; under --recommendation,
+    once the recommendation's option names one of the block's own alternatives and every
+    <depends-on> tag resolves against the document, the block takes the fragment's applied
+    principles, depends-on tags, and recommendation and its alternatives stay frozen. The
+    caller writes, and the writer groups the children by kind."""
+    if shape == ALTERNATIVES_SHAPE:
+        question.alternatives = list(fragment.alternatives)
+        return
+    check_recommendation_option(question, fragment)
     check_dependencies(document, question, fragment)
-    question.alternatives = list(fragment.alternatives)
     question.principles = list(fragment.principles)
     question.depends_on = list(fragment.depends_on)
     question.recommendation = fragment.recommendation
@@ -837,14 +938,12 @@ def cmd_strip(args):
 
 
 def cmd_embed(args):
+    shape = args.shape
     document = load_document(args.milestone_dir)
     question = find_question(document, args.short_title)
-    if question.recommendation is not None:
-        raise ToolError(
-            f'<{BLOCK_TAG} id="{question.id}"> already carries a <recommendation> element; strip it first to embed a new one'
-        )
-    fragment = parse_fragment(extract_fragment(read_body("the recommend agent's message")))
-    embed_fragment(document, question, fragment)
+    check_block_state(question, shape)
+    fragment = parse_fragment(extract_fragment(read_body(f"the {shape.name} message"), shape), shape)
+    embed_fragment(document, question, fragment, shape)
     save_document(args.milestone_dir, document)
     return 0
 
@@ -987,19 +1086,41 @@ def build_parser():
     embed_parser = add_subcommand(
         "embed",
         cmd_embed,
-        "put the recommend agent's returned children into the named block, which must carry no "
-        "<recommendation> yet: the agent's whole final message is read from standard input "
-        "(pipe it as a quoted heredoc; a terminal stdin is refused), the fragment is sliced from "
-        "its first <alternative line through its last </recommendation> line, parsed, validated "
-        "(no <open-question> or <question> line, no text outside the elements, at least one "
-        "<alternative>, exactly one <recommendation> naming one of them, every <depends-on> "
-        "resolving to an annotated block and one of its <alternative> ids, no unknown element; "
-        "child order is not checked), and written grouped by kind; every miss is one Error line",
+        "put one half of a block's children into the named block, the half the required flag "
+        "names, leaving the other half as the block holds it: the whole message carrying them "
+        "is read from standard input (pipe it as a quoted heredoc; a terminal stdin is refused), "
+        "the fragment is sliced out of it — with --alternatives from the first <alternative line "
+        "through the last </alternative> line, with --recommendation from the first "
+        "<applied-principle, <depends-on, or <recommendation line through the last "
+        "</recommendation> line — parsed, validated (no <open-question> or <question> line, no "
+        "text outside the elements, no unknown element and none of the other half; with "
+        "--alternatives at least one <alternative> into a block carrying none yet; with "
+        "--recommendation exactly one <recommendation> naming one of the block's own "
+        "<alternative> ids, into a block carrying alternatives and no <recommendation> yet, "
+        "every <depends-on> resolving to another block carrying <alternative> elements and one "
+        "of its ids; child order is not checked), and written grouped by kind; every miss is one "
+        "Error line",
     )
     embed_parser.add_argument(
         "short_title",
         metavar="SHORT_TITLE",
         help="the id of the block, compared un-escaped and case-folded",
+    )
+    embed_shape = embed_parser.add_mutually_exclusive_group(required=True)
+    embed_shape.add_argument(
+        "--alternatives",
+        dest="shape",
+        action="store_const",
+        const=ALTERNATIVES_SHAPE,
+        help="embed the <alternative> elements into a block carrying none yet",
+    )
+    embed_shape.add_argument(
+        "--recommendation",
+        dest="shape",
+        action="store_const",
+        const=RECOMMENDATION_SHAPE,
+        help="embed the <recommendation>, <depends-on>, and <applied-principle> elements into a "
+        "block carrying <alternative> elements and no <recommendation> yet",
     )
 
     remove_parser = add_subcommand(
