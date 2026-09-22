@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Rename Agent To Alternatives-Only
-
-Move `core/agents/recommend-open-question.md` to `core/agents/provide-alternatives-to-open-question.md`, update its frontmatter `name`, and make it an alternatives-only read-only subagent that follows the enumeration procedure and returns only the `<alternative>` elements with their `<advantage>` and `<drawback>` children, its step-4 self-check bounded by first non-whitespace text starting `<alternative` and last non-whitespace text ending `</alternative>`, a `FAILED: <reason>` last line on failure. Re-point every reference to the old name under `core/` and `docs/`. Verified by the build passing and grep finding the old name in neither tree.
-
----
-
 ## Provide Alternatives Sweep Skill
 
 Create `core/skills/provide-alternatives-to-all-open-questions/SKILL.md`, an orchestrator that gathers with `list`, `list --without-alternatives`, and `locate`, dispatches `cairn:provide-alternatives-to-open-question` once per question lacking alternatives — all together where the host can run several agent dispatches at once and one after another where it cannot, in one capability-keyed sentence with no cap — and runs the three-stage per-return pipeline on each return as it lands (last-line `FAILED:` verdict, `embed --alternatives` through a quoted heredoc, one repair with the corrective template rewritten for the alternatives-only fragment). It commits each embedded return under `Alternatives-annotation: <Short Title>` with no body and reports `Alternatives embedded.`, the no-op line, or the still-skipped advisory. Verified by a frontmatter description within 25 words, the build passing, and a run over a milestone with bare blocks landing one commit per block.

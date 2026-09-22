@@ -71,3 +71,17 @@ Split `core/shared/recommend-procedure.md` into an enumeration half at a new `co
 - `uv run scripts/build_hosts.py` rebuilt both host trees (`alternatives-procedure.md` now rendered under `hosts/claude/shared/` and `hosts/antigravity/shared/` with the host's plugin-root literal substituted) and `uv run scripts/build_hosts.py --check` passes
 
 ---
+
+## Rename Agent To Alternatives-Only
+
+Move `core/agents/recommend-open-question.md` to `core/agents/provide-alternatives-to-open-question.md`, update its frontmatter `name`, and make it an alternatives-only read-only subagent that follows the enumeration procedure and returns only the `<alternative>` elements with their `<advantage>` and `<drawback>` children, its step-4 self-check bounded by first non-whitespace text starting `<alternative` and last non-whitespace text ending `</alternative>`, a `FAILED: <reason>` last line on failure. Re-point every reference to the old name under `core/` and `docs/`. Verified by the build passing and grep finding the old name in neither tree.
+
+**Verified:**
+
+- `core/agents/recommend-open-question.md` is gone and `core/agents/provide-alternatives-to-open-question.md` exists (a `git mv`, so history follows the file); its frontmatter reads `name: provide-alternatives-to-open-question`, a 17-word unquoted description with no colon or semicolon that `yaml.safe_load` accepts, and the Claude-only `color: blue` key the Antigravity render strips
+- The body is an alternatives-only read-only subagent: it follows `{{PLUGIN_ROOT}}/shared/alternatives-procedure.md` as its analytical core (never `recommend-procedure.md`), reads `requirements.md`, `open_questions.xml` whole (siblings as scope only, no sibling assumed settled), and the live project read-only, loads neither the principle store nor the disclosure duty, and renders only `<alternative id="...">` elements with what-it-is text and child `<advantage>`/`<drawback>` — its one mention of `<recommendation>`, `<applied-principle>`, and `<depends-on>` is the instruction to render none of them
+- Step 4 is the draft → self-check → emit step bounded by the two shape tests the tool's `embed --alternatives` extraction keys on — first non-whitespace text starts `<alternative`, last non-whitespace text ends `</alternative>` — and the failure return is `FAILED: <reason>` as the final line with nothing else; the file names no host and carries no bare `{{`
+- Every reference to the old name under `core/` and `docs/` is re-pointed: the sweep skill's dispatch site and re-dispatch branch now address `cairn:provide-alternatives-to-open-question`; `docs/skill-reference.md` carries the renamed subagent's entry rewritten to the alternatives-only contract and its three other mentions re-pointed (the discuss entry's disclosure sentence to the sweep, the answer agent's contrast and the sweep entry's dispatch to the new name); `docs/workflow.md`'s Recommendation-advisory bullet no longer names the agent — `grep -rn recommend-open-question core docs README.md` prints nothing
+- `uv run scripts/build_hosts.py` rebuilt both host trees (the renamed agent rendered under `hosts/claude/agents/` and `hosts/antigravity/agents/`, the old file gone from both), `uv run scripts/build_hosts.py --check` passes, and `grep -rn recommend-open-question hosts/claude hosts/antigravity` prints nothing
+
+---

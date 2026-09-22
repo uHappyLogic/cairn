@@ -131,8 +131,8 @@ recommendation build on those siblings' recommendations and declare each such us
 `<depends-on question="…" option="…"/>` element.
 
 Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the
-`recommend-open-question` agent (singular — the per-question subagent) under this plugin's
-namespace, `cairn:recommend-open-question` — one dispatch per surviving question. Pass it that
+`provide-alternatives-to-open-question` agent (singular — the per-question subagent) under this plugin's
+namespace, `cairn:provide-alternatives-to-open-question` — one dispatch per surviving question. Pass it that
 question's **Short Title**, the `<MILESTONE_DIR>` resolved in step 0, and the question's block
 exactly as `locate` printed it in step 1:
 
@@ -216,7 +216,7 @@ Repair by whichever of these two branches the host supports, in this order:
   `Agent` tool returned — send the corrective message below to **that same agent**. Its context
   is intact, so it re-emits from the analysis it already did.
 - **Re-dispatch one fresh agent.** Where the host cannot continue a finished agent session, or
-  the handle is gone, dispatch **one** fresh `cairn:recommend-open-question` agent for that
+  the handle is gone, dispatch **one** fresh `cairn:provide-alternatives-to-open-question` agent for that
   question with the `Agent` tool, passing the **same prompt** as the original dispatch with the
   corrective message below appended to it as a shape reminder. This second dispatch redoes the
   analysis, so it is the fallback branch, never the preferred one.
