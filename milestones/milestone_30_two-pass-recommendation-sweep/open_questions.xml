@@ -1,24 +1,4 @@
 <open-questions>
-  <open-question id="Alternatives agent name">
-    <question>The recommend-open-question agent becomes an alternatives-only agent dispatched by /provide-alternatives-to-all-open-questions and is renamed to match its role. What is its new name (for example provide-alternatives-to-open-question), given that the orchestrator addresses it by its namespaced registry name and five files reference the old one?</question>
-    <alternative id="Singularized skill name">
-      Name the agent `provide-alternatives-to-open-question` — the orchestrator&apos;s fixed name with `all-` dropped and the noun singularized — renaming `core/agents/recommend-open-question.md` to match, updating its frontmatter `name` key, and re-pointing the five references so the dispatch site addresses `cairn:provide-alternatives-to-open-question`.
-      <advantage>It is derived rather than invented: every orchestrator-and-agent pair in the plugin already stands in exactly this relation (`complete-all-tasks` to `complete-task`, `answer-all-open-questions-with-recommendation` to `answer-open-question-with-recommendation`, `recommend-all-open-questions` to `recommend-open-question`), so with the skill&apos;s spelling already fixed by the goal a reader derives one name from the other in either direction, the object noun stays the same `open-question` every question-scoped runner carries, and the singular-versus-plural contrast keeps doing the work it already does in this vocabulary — marking one question against the whole set.</advantage>
-      <drawback>At 37 characters it becomes the longest name in the runtime vocabulary, its `to` preposition is an artifact of the plural skill name rather than anything the agent itself needs, and `provide` is the vaguest verb in a vocabulary whose other verbs (complete, answer, recommend, derive) each name an act.</drawback>
-    </alternative>
-    <alternative id="Object-less short form">
-      Name the agent for its work alone — `provide-alternatives`, or `enumerate-alternatives` — dropping the `-to-open-question` tail on the grounds that the prompt already carries one question&apos;s Short Title.
-      <advantage>It is the shortest name that still says what the agent produces, reads cleanly at the dispatch site and in the registry, and puts the whole distinctive responsibility — alternatives, as against recommendations or answers — in two words.</advantage>
-      <drawback>It drops the object noun that every question-scoped runner in the plugin carries (`discuss-open-question`, `answer-open-question`, `recommend-open-question`), and losing the singular noun loses the one signal that distinguishes a per-question agent from its whole-set orchestrator, so the name no longer says what one dispatch covers.</drawback>
-    </alternative>
-    <alternative id="Analytical verb">
-      Name the agent for the analytical step it performs rather than reusing the skill&apos;s verb — `enumerate-alternatives-for-open-question`, matching the enumeration wording of the shared core it follows.
-      <advantage>`enumerate` names the actual work — producing a complete, honest, strawman-free set of options — where `provide` names only handing something over, and it ties the agent&apos;s name to the enumeration half of the shared procedure it will be given.</advantage>
-      <drawback>It breaks the mechanical skill-to-agent derivation every other pair keeps, leaving one pass described by two different verbs with neither name recoverable from the other, and it is longer still for a distinction no caller ever acts on.</drawback>
-    </alternative>
-    <applied-principle>Name by distinctive function</applied-principle>
-    <recommendation option="Singularized skill name">The goal already fixes the skill&apos;s spelling, and every orchestrator-and-agent pair here is the same name with `all-` dropped and the noun singularized, so the agent&apos;s name follows from the skill&apos;s instead of being chosen again — keeping `open-question` as the object noun the whole question family shares and the singular form as the marker of one-question scope; only if this agent were ever dispatched by something other than that one skill would a name of its own win instead.</recommendation>
-  </open-question>
   <open-question id="Embed shape selection">
     <question>The embed subcommand must accept two fragment shapes: alternatives only (from the parallel agent) and recommendation only, with its depends-on and applied-principle children (from the inline recommendation pass). Does the tool tell them apart by inspecting the fragment, or does the caller name the shape with an explicit flag, and what must the target block already hold for each shape (no alternatives yet for the first, alternatives but no recommendation for the second)?</question>
     <alternative id="Explicit shape flag">
