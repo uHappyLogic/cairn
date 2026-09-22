@@ -14,3 +14,17 @@ Add a `--recommendation` mode to the `strip` subcommand of `core/tools/open_ques
 - Host trees rebuilt with `uv run scripts/build_hosts.py`; `hosts/claude/tools/open_questions.py` and `hosts/antigravity/tools/open_questions.py` are byte-identical to `core/tools/open_questions.py` and `uv run scripts/build_hosts.py --check` passes
 
 ---
+## Tool Narrowed Answer Cascade
+
+Change `remove` so every option-less removal and every disagreeing dependent takes the partial strip — clearing the `<recommendation>`, `<depends-on>`, and `<applied-principle>` children but keeping the `<alternative>` children — transitively over dependents of stripped blocks as today. That keeps the parallel pass's alternatives across answers, so an override costs only a re-run of the recommendation pass. Verified by `tests/test_remove.py` re-pinned to the kept-alternatives outcome and both pytest runs passing.
+
+**Verified:**
+
+- `remove_question` passes every option-less and every disagreeing dependent to `strip_recommendation` instead of `strip_question`, transitively over `dependents_of` each stripped block exactly as before, so a stripped dependent keeps its `<alternative>` children verbatim and loses only its `<recommendation>`, `<depends-on>`, and `<applied-principle>` children — never again reading as bare
+- Agreeing dependents still lose only the tag, no `<depends-on>` tag is left naming a removed or stripped block, every surviving block's alternatives are unchanged by any removal (pinned over the annotated fixture and the seven-block dependency web with every option), and an `--option` naming none of the removed block's alternatives is still refused with the document unchanged
+- The tool's module usage text, the `remove_question` docstring, and the `remove` parser help state the narrowed contract ("stripped as by strip --recommendation, keeping its <alternative> elements"); no runtime prose file changed, that being the later prose task's
+- `tests/test_remove.py` is re-pinned to the kept-alternatives outcome: the strip-to-bare helper and every `is_bare`/bare-block assertion on a stripped dependent are replaced by the `pick_stripped`, `stripped`, and `stripped_lines` helpers, the dangling-tag tests detect a stripped block by its lost `<recommendation>`, and two new tests pin that a cascade strip keeps the alternatives line-for-line and never produces the bare block
+- `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` both pass, 365 tests each
+- Host trees rebuilt with `uv run scripts/build_hosts.py`; `hosts/claude/tools/open_questions.py` and `hosts/antigravity/tools/open_questions.py` are byte-identical to `core/tools/open_questions.py` and `uv run scripts/build_hosts.py --check` passes
+
+---

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Tool Narrowed Answer Cascade
-
-Change `remove` so every option-less removal and every disagreeing dependent takes the partial strip — clearing the `<recommendation>`, `<depends-on>`, and `<applied-principle>` children but keeping the `<alternative>` children — transitively over dependents of stripped blocks as today. That keeps the parallel pass's alternatives across answers, so an override costs only a re-run of the recommendation pass. Verified by `tests/test_remove.py` re-pinned to the kept-alternatives outcome and both pytest runs passing.
-
----
-
 ## Tool List Alternatives Filters
 
 Retire `list --unannotated` and give `list` two symmetric filters, `--without-alternatives` (blocks carrying no `<alternative>` children) and `--without-recommendation` (today's `--unannotated` meaning), re-pointing the five test files that spell the old flag (`test_list.py`, `test_sort.py`, `test_walk.py`, `test_embed.py`, `test_strip.py`). The alternatives pass dispatches on the first filter, the recommendation pass stops on it and skips on the second. Verified by both pytest runs passing with no `--unannotated` left under `core/tools/` or `tests/`.

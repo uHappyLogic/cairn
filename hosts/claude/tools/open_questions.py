@@ -50,9 +50,10 @@ Subcommands:
       block's own <alternative> ids or the call is refused with the document unchanged) a
       surviving block whose <depends-on> names the removed id with that same option loses
       only that tag, and every other block whose <depends-on> names the removed id is
-      stripped as by strip; without --option every such block is stripped; either way the
-      strip runs transitively over the blocks that depend on a stripped block, so no
-      <depends-on> tag is left naming a block removed or stripped by the call
+      stripped as by strip --recommendation, keeping its <alternative> elements; without
+      --option every such block is so stripped; either way the strip runs transitively over
+      the blocks that depend on a stripped block, so no <depends-on> tag is left naming a
+      block removed or stripped by the call
   walk MILESTONE_DIR
       print the id of every block carrying a <recommendation>, one per line in the order the
       answer sweep dispatches them: those blocks are gathered in document order, each one's
@@ -564,9 +565,11 @@ def remove_question(document, question, recorded_option=None):
     block's own alternative ids, as check_recorded_option has confirmed — a dependent whose
     every <depends-on> tag naming the removed block carries that same option (compared
     un-escaped and case-folded) loses just those tags and keeps its other children, and every
-    other dependent is stripped as strip_question strips; without one every dependent is
-    stripped. The strip is transitive: a block whose <depends-on> names a block stripped here
-    is stripped in turn, until no tag names a block removed or stripped by this call. A tag
+    other dependent is stripped as strip_recommendation strips — its <recommendation>,
+    <depends-on>, and <applied-principle> children deleted, its <alternative> children kept
+    for the recommendation pass to re-pick over; without one every dependent is so stripped.
+    The strip is transitive: a block whose <depends-on> names a block stripped here is
+    stripped in turn, until no tag names a block removed or stripped by this call. A tag
     naming any other block is left as it is. Returns the ids of the blocks stripped, in the
     order they were stripped."""
     document.questions = [other for other in document.questions if other is not question]
@@ -588,7 +591,7 @@ def remove_question(document, question, recorded_option=None):
         if id_key(block.id) in seen:
             continue
         seen.add(id_key(block.id))
-        strip_question(block)
+        strip_recommendation(block)
         stripped.append(block.id)
         pending.extend(dependents_of(document, block.id))
     return stripped
@@ -995,9 +998,10 @@ def build_parser():
         cmd_remove,
         "delete the named block and, in the same write, reconcile the blocks that depend on "
         "it: with --option, a dependent whose <depends-on> names the block with that same "
-        "option loses only that tag and every other dependent is stripped as by strip; "
-        "without it every dependent is stripped; both transitively over the dependents of a "
-        "stripped block, so no <depends-on> tag is left naming a removed or stripped block",
+        "option loses only that tag and every other dependent is stripped as by strip "
+        "--recommendation, keeping its <alternative> elements; without it every dependent is "
+        "so stripped; both transitively over the dependents of a stripped block, so no "
+        "<depends-on> tag is left naming a removed or stripped block",
     )
     remove_parser.add_argument(
         "short_title",

@@ -1,10 +1,12 @@
 """The remove subcommand: the named block deleted and its dependents reconciled before the
 one write — with --option a dependent whose <depends-on> names the removed id with that same
-option (un-escaped, case-folded) loses only the tag and every other dependent is stripped,
-without it every dependent is stripped, both transitively over the dependents of a stripped
-block — so no removal leaves a <depends-on> tag naming a removed or stripped block; an
---option naming none of the removed block's own <alternative> ids is refused with the
-document unchanged."""
+option (un-escaped, case-folded) loses only the tag and every other dependent takes the
+partial strip, without it every dependent takes it — its <recommendation>, <depends-on>, and
+<applied-principle> children deleted and its <alternative> children kept, as strip
+--recommendation strips — both transitively over the dependents of a stripped block, so no
+removal leaves a <depends-on> tag naming a removed or stripped block and no removal costs a
+dependent its alternatives; an --option naming none of the removed block's own <alternative>
+ids is refused with the document unchanged."""
 
 from pathlib import Path
 
@@ -40,12 +42,26 @@ def has_block(text, short_title):
     return f'  <open-question id="{open_questions.escape(short_title)}">' in text.split("\n")
 
 
-def bare_block(short_title, question):
-    return [
-        f'  <open-question id="{open_questions.escape(short_title)}">',
-        f"    <question>{open_questions.escape(question)}</question>",
-        "  </open-question>",
-    ]
+RECOMMENDATION_HALF = ("    <applied-principle>", "    <depends-on ", "    <recommendation ")
+
+
+def stripped_lines(lines):
+    """The block's lines after the cascade's partial strip: the wrapper, the <question>, and
+    every <alternative> line kept, the recommendation half's lines gone."""
+    return [line for line in lines if not line.startswith(RECOMMENDATION_HALF)]
+
+
+def pick_stripped(question):
+    """Whether the block holds its <alternative> children and nothing of the recommendation
+    half — the cascade's outcome for a stripped dependent."""
+    return bool(question.alternatives) and not (
+        question.principles or question.depends_on or question.recommendation is not None
+    )
+
+
+def stripped(block_id):
+    """The annotated block after the partial strip: its alternatives kept, the rest gone."""
+    return Question(id=block_id, question=f"What about {block_id}?", alternatives=annotated(block_id).alternatives)
 
 
 def annotated(block_id, depends_on=(), option="A", alternatives=("A", "B")):
@@ -217,27 +233,28 @@ def test_remove_drops_every_agreeing_tag_a_dependent_carries_for_the_removed_blo
     assert dependent.recommendation is not None
 
 
-# --- strip-all: no option, a differing option, or doubt --------------------------------
+# --- the partial strip: no option, a differing option, or doubt ------------------------
 
 
-def test_remove_without_an_option_strips_every_dependent(run_tool, milestone_dir):
+def test_remove_without_an_option_strips_every_dependent_keeping_its_alternatives(run_tool, milestone_dir):
     target = milestone_dir("annotated")
     before = read_fixture("annotated")
     result = run_tool("remove", str(target), HATCH)
     assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
     after = document_of(target).decode("utf-8")
     assert not has_block(after, HATCH)
-    assert block_lines(after, ROOT_FORM) == bare_block(
-        ROOT_FORM, "Is the empty document a self-closing root or an open and close tag pair?"
-    )
+    assert block_lines(after, ROOT_FORM) == stripped_lines(block_lines(before, ROOT_FORM))
     assert block_lines(after, BARE) == block_lines(before, BARE)
     assert after == (
         "<open-questions>\n"
-        + "\n".join(bare_block(ROOT_FORM, "Is the empty document a self-closing root or an open and close tag pair?"))
+        + "\n".join(stripped_lines(block_lines(before, ROOT_FORM)))
         + "\n"
         + "\n".join(block_lines(before, BARE))
         + "\n</open-questions>\n"
     )
+    root_form = by_id(load(target), ROOT_FORM)
+    assert [alternative.id for alternative in root_form.alternatives] == ["Self-closing root", "Open and close pair"]
+    assert (root_form.principles, root_form.depends_on, root_form.recommendation) == ([], [], None)
 
 
 def test_remove_with_a_differing_option_strips_the_dependent(run_tool, milestone_dir):
@@ -246,7 +263,8 @@ def test_remove_with_a_differing_option_strips_the_dependent(run_tool, milestone
     assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
     document = load(target)
     assert [question.id for question in document.questions] == [ROOT_FORM, BARE]
-    assert open_questions.is_bare(by_id(document, ROOT_FORM))
+    assert pick_stripped(by_id(document, ROOT_FORM))
+    assert by_id(document, ROOT_FORM).alternatives == by_id(open_questions.parse_document(read_fixture("annotated")), ROOT_FORM).alternatives
 
 
 def test_remove_strips_a_dependent_carrying_both_an_agreeing_and_a_differing_tag(run_tool, tmp_path):
@@ -257,7 +275,7 @@ def test_remove_strips_a_dependent_carrying_both_an_agreeing_and_a_differing_tag
     )
     result = run_tool("remove", str(target), "Target", "--option", "A")
     assert result.returncode == 0
-    assert open_questions.is_bare(by_id(load(target), "Dependent"))
+    assert by_id(load(target), "Dependent") == stripped("Dependent")
 
 
 def test_remove_without_an_option_strips_several_dependents_and_no_other_block(run_tool, tmp_path):
@@ -274,16 +292,29 @@ def test_remove_without_an_option_strips_several_dependents_and_no_other_block(r
     after = document_of(target).decode("utf-8")
     document = load(target)
     assert [question.id for question in document.questions] == ["First dependent", "Bystander", "Second dependent"]
-    assert open_questions.is_bare(by_id(document, "First dependent"))
-    assert open_questions.is_bare(by_id(document, "Second dependent"))
+    assert by_id(document, "First dependent") == stripped("First dependent")
+    assert by_id(document, "Second dependent") == stripped("Second dependent")
     assert block_lines(after, "Bystander") == block_lines(before, "Bystander")
 
 
-def test_remove_uses_the_strip_primitive_so_a_stripped_dependent_is_the_bare_block(run_tool, tmp_path):
+def test_remove_uses_the_partial_strip_primitive_so_a_stripped_dependent_keeps_its_alternatives(run_tool, tmp_path):
     target = write_document(tmp_path / "m", annotated("Target"), annotated("Dependent", depends_on=[("Target", "A")]))
+    before = document_of(target).decode("utf-8")
     run_tool("remove", str(target), "Target")
-    assert block_lines(document_of(target).decode("utf-8"), "Dependent") == bare_block("Dependent", "What about Dependent?")
-    assert by_id(load(target), "Dependent") == Question(id="Dependent", question="What about Dependent?")
+    assert block_lines(document_of(target).decode("utf-8"), "Dependent") == stripped_lines(block_lines(before, "Dependent"))
+    assert by_id(load(target), "Dependent") == stripped("Dependent")
+    assert not open_questions.is_bare(by_id(load(target), "Dependent"))
+
+
+def test_remove_never_strips_a_dependent_to_the_bare_block(run_tool, tmp_path):
+    document = Document([annotated("Target"), annotated("Dependent", depends_on=[("Target", "B")])])
+    expected = annotated("Dependent")
+    open_questions.remove_question(document, by_id(document, "Target"), "A")
+    dependent = by_id(document, "Dependent")
+    assert dependent.alternatives == expected.alternatives
+    assert (dependent.principles, dependent.depends_on, dependent.recommendation) == ([], [], None)
+    assert open_questions.strip_recommendation(dependent) is False
+    assert open_questions.strip_question(dependent) is True
 
 
 # --- transitive strip -----------------------------------------------------------------
@@ -304,7 +335,7 @@ def test_remove_strips_transitively_over_the_dependents_of_stripped_blocks(run_t
     document = load(target)
     assert [question.id for question in document.questions] == ["Child", "Grandchild", "Great-grandchild", "Unrelated"]
     for block_id in ("Child", "Grandchild", "Great-grandchild"):
-        assert open_questions.is_bare(by_id(document, block_id)), block_id
+        assert by_id(document, block_id) == stripped(block_id), block_id
     assert block_lines(document_of(target).decode("utf-8"), "Unrelated") == block_lines(before, "Unrelated")
 
 
@@ -336,8 +367,8 @@ def test_remove_with_a_differing_option_propagates_the_strip(run_tool, tmp_path)
     result = run_tool("remove", str(target), "Root", "--option", "A")
     assert result.returncode == 0
     document = load(target)
-    assert open_questions.is_bare(by_id(document, "Child"))
-    assert open_questions.is_bare(by_id(document, "Grandchild"))
+    assert by_id(document, "Child") == stripped("Child")
+    assert by_id(document, "Grandchild") == stripped("Grandchild")
 
 
 def test_remove_strips_an_untagged_dependent_that_also_depends_on_a_stripped_block(run_tool, tmp_path):
@@ -350,8 +381,8 @@ def test_remove_strips_an_untagged_dependent_that_also_depends_on_a_stripped_blo
     result = run_tool("remove", str(target), "Root", "--option", "A")
     assert result.returncode == 0
     document = load(target)
-    assert open_questions.is_bare(by_id(document, "Differing"))
-    assert open_questions.is_bare(by_id(document, "Agreeing"))
+    assert by_id(document, "Differing") == stripped("Differing")
+    assert by_id(document, "Agreeing") == stripped("Agreeing")
 
 
 def test_remove_strips_a_block_reached_through_two_stripped_blocks_once(run_tool, tmp_path):
@@ -363,9 +394,9 @@ def test_remove_strips_a_block_reached_through_two_stripped_blocks_once(run_tool
         annotated("Join", depends_on=[("Left", "A"), ("Right", "A")]),
     )
     document = load(target)
-    stripped = open_questions.remove_question(document, by_id(document, "Root"))
-    assert stripped == ["Left", "Right", "Join"]
-    assert all(open_questions.is_bare(question) for question in document.questions)
+    stripped_ids = open_questions.remove_question(document, by_id(document, "Root"))
+    assert stripped_ids == ["Left", "Right", "Join"]
+    assert all(pick_stripped(question) for question in document.questions)
 
 
 # --- cycles ---------------------------------------------------------------------------
@@ -383,7 +414,7 @@ def test_remove_terminates_on_a_cycle_among_the_dependents_and_strips_each_membe
     assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
     document = load(target)
     assert [question.id for question in document.questions] == ["Ring one", "Ring two", "Ring three"]
-    assert all(open_questions.is_bare(question) for question in document.questions)
+    assert all(pick_stripped(question) for question in document.questions)
 
 
 def test_remove_of_a_block_inside_a_cycle_strips_the_rest_of_the_cycle(run_tool, tmp_path):
@@ -427,7 +458,7 @@ def test_remove_terminates_on_a_self_dependent_block(run_tool, tmp_path):
     )
     result = run_tool("remove", str(target), "Target", "--option", "A")
     assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
-    assert open_questions.is_bare(by_id(load(target), "Narcissus"))
+    assert by_id(load(target), "Narcissus") == stripped("Narcissus")
 
 
 # --- no removal leaves a dangling tag --------------------------------------------------
@@ -452,13 +483,14 @@ def test_no_removal_on_the_annotated_fixture_leaves_a_dangling_tag(run_tool, mil
     after = load(target)
     removed = arguments[0]
     assert tags_naming(after, removed) == []
-    stripped = [
+    stripped_ids = [
         question.id
         for question in after.questions
-        if open_questions.is_bare(question) and not open_questions.is_bare(by_id(before, question.id))
+        if question.recommendation is None and by_id(before, question.id).recommendation is not None
     ]
-    for block_id in stripped:
+    for block_id in stripped_ids:
         assert tags_naming(after, block_id) == [], block_id
+        assert by_id(after, block_id).alternatives == by_id(before, block_id).alternatives
 
 
 def test_no_removal_on_a_dependency_web_leaves_a_dangling_tag(tmp_path):
@@ -484,7 +516,8 @@ def test_no_removal_on_a_dependency_web_leaves_a_dangling_tag(tmp_path):
             assert all(open_questions.id_key(question.id) != open_questions.id_key(block_id) for question in document.questions)
             assert tags_naming(document, block_id) == [], (block_id, recorded_option)
             for question in document.questions:
-                if open_questions.is_bare(question) and not open_questions.is_bare(by_id(before, question.id)):
+                assert question.alternatives == by_id(before, question.id).alternatives, (block_id, recorded_option, question.id)
+                if question.recommendation is None and by_id(before, question.id).recommendation is not None:
                     assert tags_naming(document, question.id) == [], (block_id, recorded_option, question.id)
             # The re-rendered document parses back to the same tree.
             text = open_questions.render_document(document)
@@ -658,7 +691,7 @@ def test_remove_writes_the_document_exactly_once(monkeypatch, milestone_dir):
     assert open_questions.main(["remove", str(target), HATCH]) == 0
     assert len(writes) == 1
     assert writes[0].encode("utf-8") == document_of(target)
-    assert open_questions.is_bare(by_id(open_questions.parse_document(writes[0]), ROOT_FORM))
+    assert pick_stripped(by_id(open_questions.parse_document(writes[0]), ROOT_FORM))
 
 
 def test_a_rejected_option_never_reaches_the_write(monkeypatch, milestone_dir, capsys):
@@ -693,19 +726,19 @@ def test_remove_question_deletes_the_block_and_returns_the_stripped_ids_in_order
             annotated("Downstream", depends_on=[("Differing", "A")]),
         ]
     )
-    stripped = open_questions.remove_question(document, by_id(document, "Root"), "A")
-    assert stripped == ["Differing", "Downstream"]
+    stripped_ids = open_questions.remove_question(document, by_id(document, "Root"), "A")
+    assert stripped_ids == ["Differing", "Downstream"]
     assert [question.id for question in document.questions] == ["Agreeing", "Differing", "Downstream"]
     agreeing = by_id(document, "Agreeing")
     assert agreeing.depends_on == [] and agreeing.recommendation is not None
-    assert open_questions.is_bare(by_id(document, "Differing"))
-    assert open_questions.is_bare(by_id(document, "Downstream"))
+    assert by_id(document, "Differing") == stripped("Differing")
+    assert by_id(document, "Downstream") == stripped("Downstream")
 
 
 def test_remove_question_without_an_option_strips_every_dependent_and_returns_them():
     document = Document([annotated("Root"), annotated("One", depends_on=[("Root", "A")]), annotated("Two", depends_on=[("ROOT", "A")])])
     assert open_questions.remove_question(document, by_id(document, "Root")) == ["One", "Two"]
-    assert all(open_questions.is_bare(question) for question in document.questions)
+    assert document == Document([stripped("One"), stripped("Two")])
 
 
 def test_remove_question_with_no_dependents_strips_nothing():
