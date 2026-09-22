@@ -6,6 +6,55 @@ Split the recommend sweep in two: a new `/provide-alternatives-to-all-open-quest
 
 ## Relevant starting state
 
+### The recommend sweep (`core/skills/recommend-all-open-questions/SKILL.md`)
+
+An argument-free orchestrator that gathers in three tool calls (`list`, `list --unannotated`, `locate` over the un-annotated ids), ranks the surviving questions most-significant-first by judgment, and dispatches the `cairn:recommend-open-question` agent once per question **strictly sequentially, never in parallel**, so each later dispatch reads the siblings already embedded and may declare `<depends-on question="…" option="…"/>` on them. Per return it applies a three-stage pipeline: last-line `FAILED:` verdict, then `embed` through a quoted heredoc, then exactly one repair (a `SendMessage` continuation of the same agent where the host can continue a session, otherwise one fresh re-dispatch with the same prompt plus a fixed one-slot shape-reminder template). It commits per annotated question (`Recommendation-annotation: <Short Title>`, the `lift` line as body), runs `sort` once after the last dispatch, commits the reorder as `Question-ordering: <milestone_id>` behind the dirty-own-path guard, and reports one of three lines (`Recommendations embedded.`, `Questions reordered.`, or a no-op line) plus a still-skipped advisory. Its stale-recommendation escape hatch is `strip <MILESTONE_DIR> "<Short Title>" …` followed by a re-run; the sweep leaves stale `<depends-on>` tags on surviving dependents alone after such a refresh.
+
+### The recommend agent (`core/agents/recommend-open-question.md`)
+
+A read-only subagent, prompt carrying the Short Title, `<MILESTONE_DIR>`, and the verbatim question block. It reads `requirements.md`, `open_questions.xml` whole, the live project, and the principle store, follows `core/shared/recommend-procedure.md` as its analytical core, and returns **both halves in one message**: the `<alternative>` elements (each with what-it-is text, `<advantage>`, `<drawback>`), zero or more `<applied-principle>`, zero or more `<depends-on>`, then one `<recommendation option="…">`. Its step 4 self-checks the draft against the two extraction anchors (first non-whitespace text starts `<alternative`, last ends `</recommendation>`); failure is a last line `FAILED: <reason>`. It carries the Claude-only `color: blue` frontmatter key. Its name is referenced in five files: the agent, the sweep skill, `core/shared/recommend-procedure.md`, `docs/skill-reference.md`, and `docs/workflow.md`; the host definitions' `renames` lists are empty, so a rename is a file move under `core/agents/` plus reference edits, and the dispatch site addresses the agent by its namespaced registry name.
+
+Because alternatives and recommendation are produced in one dispatch after siblings are annotated, alternative prose can lean on an assumed sibling option: in milestone 28's annotated document (commit `20807a6`), a `<drawback>` of "Initial way inventory" opens with "Under the Host per line layout…", the origin question's assumed option. Alternative ids and what-it-is text in that document do not reference sibling options. Milestone 28's graph was a star: eight questions, one origin ("Host layout within a way"), six blocks declaring a dependency on it, eleven `<depends-on>` tags in all.
+
+### The shared analytical core (`core/shared/recommend-procedure.md`)
+
+Execution-neutral; three steps: ground (live project, the fixed-path principle store as a weighted advisory factor, `open_questions.xml` read whole for sibling recommendations, with the caller-neutral disclosure duty naming any sibling and option assumed), enumerate 2–4 honest alternatives (what-it-is / key advantage / key drawback), recommend one with a tie-break. It produces alternatives and recommendation as one unit; it has no branch for a question that already carries embedded alternatives. Referenced by the recommend agent and by `discuss-open-question`.
+
+### `discuss-open-question`
+
+Conversational, file-free. Step 1 runs one `locate`, whose print — the `<question>` plus whatever `<alternative>` / `<applied-principle>` / `<depends-on>` / `<recommendation>` children the sweep embedded — is the QUESTION it carries into the shared core; step 2 reads `requirements.md` and `open_questions.xml` whole. It then follows `recommend-procedure.md` inline, producing alternatives and recommendation afresh regardless of what the block already holds, adds its own "what would change your mind" layer, and on a decision offers `answer-open-question` (and `modify-milestone-goal` when the goal must shift). It renders the disclosure duty as prose, never markup.
+
+### The answer-time cascade (`core/tools/open_questions.py` and `core/shared/answer-procedure.md`)
+
+`remove_question(document, question, recorded_option=None)` deletes the block and reconciles dependents in the same write: a dependent whose every tag naming the removed block carries the recorded option loses only those tags; every other dependent — and every dependent when no `--option` is given — is passed to `strip_question`, which sets `alternatives`, `principles`, `depends_on`, and `recommendation` all empty (the block keeps only its wrapper and `<question>`), transitively over `dependents_of` each stripped block. `strip_question` is the one per-block primitive behind both the `strip` subcommand and the cascade; `is_bare` tests all four child kinds. `check_recorded_option` refuses an `--option` naming none of the block's alternatives. Callers of the option-less form: `answer-procedure.md` step 5's judgment mode and step 6's mooted-sibling cascade, and `review-milestone-requirements`' prune/dedup, whose prose states in one sentence that the write "strips every block whose embedded analysis depended on it". `answer-open-question-with-alternative` passes the chosen alternative id as RECORDED OPTION, so its own target's dependents are reconciled by exact id; the strip it triggers is on the dependents that assumed a different option. Nothing in the tool distinguishes "clear the recommendation" from "clear everything".
+
+### Tool surface the goal names (`core/tools/open_questions.py`, 1036 lines, stdlib, Python 3.9+)
+
+- `list [--unannotated]` — the filter keeps blocks whose `recommendation is None`; there is no filter on alternatives.
+- `embed SHORT_TITLE` — refuses a block already carrying a `<recommendation>`; `extract_fragment` slices from the first line containing `<alternative` to the last containing `</recommendation>` and names either missing anchor in its `Error:` line; `parse_fragment` requires at least one `<alternative>` and exactly one `<recommendation>` naming one of the fragment's own alternatives; `embed_fragment` then **replaces all four child lists** of the block with the fragment's, after `check_dependencies` resolves every `<depends-on>` one hop against annotated siblings. There is no fragment shape without alternatives and none without a recommendation.
+- `strip SHORT_TITLE…` — full strip only, no flag.
+- `lift`, `locate`, `walk`, `sort`, `add`, `create`, `remove` — unchanged by the goal; `walk` and `sort` key on `recommendation`-bearing blocks and on `<depends-on question>` values only, so they are indifferent to whether a block holds alternatives.
+- The serializer groups children by kind in the fixed order question, alternative, applied-principle, depends-on, recommendation; a block with alternatives and no recommendation is already a legal canonical document (the `annotated` fixture family and `strip` tests cover mixed states).
+
+### The test suite (`tests/`, 12 files, 3,607 lines)
+
+One `test_<concern>.py` per subcommand, driven as a subprocess through `run_tool`; golden fixtures `empty`, `bare`, `entities`, `annotated`. `test_embed.py` (880 lines) pins every refusal reason string, including the two extraction-anchor misses; `test_remove.py` (741 lines) pins the strip-to-bare outcome of every disagreeing and option-less dependent, transitively; `test_strip.py` (275 lines) pins that `strip` deletes every kind of child and that `strip_question` treats any single child as something to strip; `test_list.py` pins `--unannotated` on the recommendation alone. Both runs (`uv run pytest` under the 3.13 pin, `uv run --no-project --python 3.9 --with pytest pytest`) pass at HEAD, and `uv run scripts/build_hosts.py --check` reports the host trees in sync.
+
+### Commit conventions touched
+
+`recommend-all-open-questions` today lands one `Recommendation-annotation: <Short Title>` per question with the lifted "`<option>` — `<rationale>`" line as body, plus `Question-ordering: <milestone_id>`; `capture-milestone-principle-updates` greps only the three answer markers path-scoped to `open_questions.xml`, so annotation and ordering subjects are never read by capture, and its diff read is scoped to the answered block's own `<open-question id>` lines. `core/shared/commit-procedure.md` takes PATHS, SUBJECT, and an optional multi-line BODY it forwards verbatim. Every dispatched agent stages or returns but never commits; the recommend agent is read-only and stages nothing.
+
+### Documentation surfaces
+
+- `docs/workflow.md` — the "Iterating milestone requirements" mermaid diagram has one node `ITM5["/recommend-all-open-questions"]` with edges from `/review-milestone-requirements` (annotate recommendations) and to `/discuss-open-question` and `/answer-open-question`; the README carries a simplified loop diagram (define → review → recommend → answer → derive → complete).
+- `docs/skill-reference.md` — one entry each for `recommend-all-open-questions` and the `recommend-open-question` subagent (23 entries total).
+- `docs/ways-of-using-cairn.md` — three headless chains invoke `claude -p "/cairn:recommend-all-open-questions"` with `--model "opus"` at effort `xhigh` or `max`; no chain names an alternatives step.
+- `CLAUDE.md` — the repository-layout entries for the sweep skill and agent, the pipeline listing, and four invariants (the sweep, the recommend agent's rendering, the answer-recording cascade, the dispatched-agent return contract) describe the single-pass design and the strip-to-bare cascade in detail; the frontmatter rule caps every description at 25 words.
+
+### Host capability constraints
+
+Runtime prose names capabilities, never hosts (the build's `host-name-in-core` guard). The sweep's repair branch is already keyed on "whether the host can continue a finished agent session"; no runtime file yet keys anything on whether a host can run several subagent dispatches at once. Both host definitions share the same key set with empty `renames` and `exclude`.
+
 ## Decisions
 
 ## Out of Scope
