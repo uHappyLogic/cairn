@@ -70,9 +70,10 @@ python3 {{PLUGIN_ROOT}}/tools/open_questions.py lift <MILESTONE_DIR> "<Short Tit
 ```
 
 If the call fails — one `Error:` line on stderr, exit 1 — **skip this question** and move on to
-the next: an earlier answer's cascade has removed the block or stripped its embedded children, and
-a stripped block is the recommend sweep's to regenerate, not this sweep's to answer. The failing
-call is the re-check and the skip in one; do not read the document to confirm it.
+the next: an earlier answer's cascade has removed the block or stripped its pick — its
+`<recommendation>`, `<depends-on>`, and `<applied-principle>` children, the `<alternative>` children
+kept — and a stripped block is the recommendation pass's to re-pick, not this sweep's to answer.
+The failing call is the re-check and the skip in one; do not read the document to confirm it.
 
 If the call succeeds, it prints one line, "`<option>` — `<rationale>`" — the same answer text the
 agent records. **Hold that line as this question's commit body** for **c**: the agent hands nothing

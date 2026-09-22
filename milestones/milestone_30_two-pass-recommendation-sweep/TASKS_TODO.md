@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Narrow Cascade Prose In Answer Path
-
-Rewrite the sentences in `core/shared/answer-procedure.md`, `core/skills/review-milestone-requirements/SKILL.md`, and `core/skills/answer-all-open-questions-with-recommendation/SKILL.md` that describe the cascade's strip outcome so they state the narrowed contract: a stripped dependent loses its `<recommendation>`, `<depends-on>`, and `<applied-principle>` children, keeps its `<alternative>` children, and is the recommendation pass's to re-pick. Verified by grep finding no runtime sentence still claiming a dependent is stripped to its `<question>` and the build passing.
-
----
-
 ## Sync CLAUDE.md To Two-Pass Shape
 
 Update `CLAUDE.md`: the layout entries for the new skill, the renamed agent, the new shared procedure, the tool's subcommand list, and the test files; the pipeline listing; the four invariants (the sweep, the agent's rendering, the answer-recording cascade, the dispatched-agent return contract); the commit conventions with `Alternatives-annotation: <Short Title>` and `Recommendation-annotation: <milestone_id>`; the reporting carve-out with `Alternatives embedded.`; and every `--unannotated` mention. Verified by grep finding no `--unannotated`, no `recommend-open-question`, and no strip-to-bare claim left, and every invariant describing the behaviour the runtime files now carry.

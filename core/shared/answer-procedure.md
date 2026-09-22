@@ -88,7 +88,10 @@ python3 {{PLUGIN_ROOT}}/tools/open_questions.py remove <MILESTONE_DIR> "<SHORT T
 
 whether or not the block carries embedded children. In that one write the tool deletes the
 block and reconciles every block that depended on it — a dependent that assumed the
-`--option` given keeps its analysis, every other dependent is stripped to its `<question>` —
+`--option` given loses only that tag and keeps its analysis; every other dependent, and every
+dependent when no `--option` is given, loses its `<recommendation>`, `<depends-on>`, and
+`<applied-principle>` children while keeping its `<alternative>` children, and is the
+recommendation pass's (`/recommend-all-open-questions`) to re-pick over that kept set —
 leaving no `<depends-on>` tag naming the removed block. What this step owns is deciding
 `--option`:
 
@@ -99,8 +102,8 @@ leaving no `<depends-on>` tag naming the removed block. What this step owns is d
   dependent by dependent. When it plainly does, pass that alternative's id as `--option`;
   when it settles on none of them, or only arguably on one, or the block carries no
   alternatives, pass nothing. Strip on doubt: a dependent whose assumed option the answer
-  only arguably preserves is exactly what a bare `remove` strips, and the next recommend
-  sweep regenerates it.
+  only arguably preserves is exactly what a bare `remove` strips of its pick, and the next
+  run of the recommendation pass re-picks it against the alternatives it kept.
 
 The tool refuses an `--option` naming none of the block's alternatives and leaves the
 document unchanged; its `Error:` line lists the ids, so correct the value against them (or

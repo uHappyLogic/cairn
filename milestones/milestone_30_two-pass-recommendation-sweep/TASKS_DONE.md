@@ -134,3 +134,18 @@ Update `core/skills/discuss-open-question/SKILL.md` to work on a question in any
 - Dry runs against a scratch milestone seeded from the `annotated` fixture: on "Root element form" `locate` printed the frozen two-option set with its standing pick, the set was reused with no departure, an own pick (`Self-closing root`) was formed and shown beside the standing pick with agreement stated and the reasons (shared ground, a non-load-bearing `<depends-on>` assumption, two cited principles absent from the live store); on "Fixture bare block" the enumeration procedure produced two honest options before the pick procedure picked one, with no standing pick to show; the scratch document's checksum was unchanged after both
 
 ---
+
+## Narrow Cascade Prose In Answer Path
+
+Rewrite the sentences in `core/shared/answer-procedure.md`, `core/skills/review-milestone-requirements/SKILL.md`, and `core/skills/answer-all-open-questions-with-recommendation/SKILL.md` that describe the cascade's strip outcome so they state the narrowed contract: a stripped dependent loses its `<recommendation>`, `<depends-on>`, and `<applied-principle>` children, keeps its `<alternative>` children, and is the recommendation pass's to re-pick. Verified by grep finding no runtime sentence still claiming a dependent is stripped to its `<question>` and the build passing.
+
+**Verified:**
+
+- `core/shared/answer-procedure.md` step 5 states the narrowed reconciliation of the one `remove` write: a dependent that assumed the `--option` given loses only that tag and keeps its analysis; every other dependent, and every dependent when no `--option` is given, loses its `<recommendation>`, `<depends-on>`, and `<applied-principle>` children while keeping its `<alternative>` children and is the recommendation pass's (`/recommend-all-open-questions`) to re-pick over that kept set — and its strip-on-doubt sentence says the bare `remove` strips the dependent of its pick and the next run of the recommendation pass re-picks it against the alternatives it kept, no longer that a recommend sweep regenerates it
+- `core/skills/review-milestone-requirements/SKILL.md` step 2 states the same narrowed outcome for a prune or dedup removal — transitive over dependents of stripped blocks, no `<depends-on>` tag left naming a removed or stripped block, the stripped block staying as a live question with its alternatives intact for the next `/recommend-all-open-questions` pass to re-pick — with "back to its `<question>`" and "regenerate" gone
+- `core/skills/answer-all-open-questions-with-recommendation/SKILL.md` step 2a describes the `lift` skip as the block removed or stripped of its pick (its `<recommendation>`, `<depends-on>`, and `<applied-principle>` children, the `<alternative>` children kept), a stripped block being the recommendation pass's to re-pick, not this sweep's to answer
+- `grep -rn` over the Markdown under `core/` finds no sentence claiming a dependent is stripped to its `<question>`: no "to its `<question>`", no "bare wrapper", no cascade "regenerate", and no "recommend sweep's to" outside the alternatives pass's own bare-`strip` hatch, which regenerates an alternative set by design
+- The three files still name no host, carry no bare `{{` outside `{{PLUGIN_ROOT}}` and no `## Rules` section, and `answer-procedure.md` stays execution-neutral with no commit or git wording
+- `uv run scripts/build_hosts.py` rebuilt both host trees and `uv run scripts/build_hosts.py --check` passes; the change set is the three `core/` files plus their six rendered copies under `hosts/claude/` and `hosts/antigravity/`
+
+---

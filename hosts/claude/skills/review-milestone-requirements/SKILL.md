@@ -76,7 +76,7 @@ Each removal, on either path, is one bare call — no `--option`, since a prune 
 python3 ${CLAUDE_PLUGIN_ROOT}/tools/open_questions.py remove <MILESTONE_DIR> "<Short Title>"
 ```
 
-In that one write the tool deletes the block and strips every block whose embedded analysis depended on it — and every block that depended on those in turn — back to its `<question>`, so no `<depends-on>` tag is left naming a removed or stripped block; a stripped block stays in the document as a live question for the next `/recommend-all-open-questions` pass to regenerate. Stripping decides nothing, records nothing under `## Decisions`, and adds nothing to the step-5 report — the committed diff is its record.
+In that one write the tool deletes the block and strips every block whose embedded pick depended on it — and every block that depended on those in turn — of its `<recommendation>`, `<depends-on>`, and `<applied-principle>` children, keeping its `<alternative>` children, so no `<depends-on>` tag is left naming a removed or stripped block; a stripped block stays in the document as a live question, its alternatives intact, for the next `/recommend-all-open-questions` pass to re-pick. Stripping decides nothing, records nothing under `## Decisions`, and adds nothing to the step-5 report — the committed diff is its record.
 
 You **never** record a decision, fold an answer into `## Decisions`, or otherwise resolve a question here. Recording answers belongs to `/answer-open-question` alone. This step only shapes the question set to match decisions that already exist — removing settled or repeated blocks, and with them the analysis that depended on them.
 
