@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Provide Alternatives Sweep Skill
-
-Create `core/skills/provide-alternatives-to-all-open-questions/SKILL.md`, an orchestrator that gathers with `list`, `list --without-alternatives`, and `locate`, dispatches `cairn:provide-alternatives-to-open-question` once per question lacking alternatives — all together where the host can run several agent dispatches at once and one after another where it cannot, in one capability-keyed sentence with no cap — and runs the three-stage per-return pipeline on each return as it lands (last-line `FAILED:` verdict, `embed --alternatives` through a quoted heredoc, one repair with the corrective template rewritten for the alternatives-only fragment). It commits each embedded return under `Alternatives-annotation: <Short Title>` with no body and reports `Alternatives embedded.`, the no-op line, or the still-skipped advisory. Verified by a frontmatter description within 25 words, the build passing, and a run over a milestone with bare blocks landing one commit per block.
-
----
-
 ## Inline Recommendation Pass Skill
 
 Rewrite `core/skills/recommend-all-open-questions/SKILL.md` as an inline skill that dispatches no agents: it stops when `list --without-alternatives` prints anything, gathers `list --without-recommendation`, reads the document whole, follows the pick procedure over the whole set at once, and embeds each block's `<recommendation>`, `<depends-on>`, and `<applied-principle>` with `embed --recommendation` in any order, leaving standing recommendations untouched, picking the best surviving alternative of a stale set with the killed option named in the rationale, and skipping only a set with nothing left (naming the full strip plus an alternatives re-run). It commits once per run under `Recommendation-annotation: <milestone_id>` with one `lift` line per annotated question as the body, gathered after the embeds and before the end-of-run sort and its `Question-ordering:` commit, keeping the three report lines with `strip --recommendation` plus a re-run as the revision hatch. Verified by the build passing and a run over a milestone whose blocks carry alternatives landing that one commit.
