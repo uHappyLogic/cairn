@@ -1,23 +1,4 @@
 <open-questions>
-  <open-question id="Strip command forms">
-    <question>The tool needs a partial strip that clears only the recommendation, depends-on, and applied-principle children while keeping the alternatives, and the full strip that clears every child still serves as the hatch for a stale alternative set. Is the partial strip a flag on the existing strip subcommand, a new subcommand, or the new default of strip with the full strip behind a flag?</question>
-    <alternative id="Flag on strip">
-      Keep `strip`&apos;s bare form clearing every child and add a mode flag — `strip --recommendation SHORT_TITLE…` — that clears only the `&lt;recommendation&gt;`, `&lt;depends-on&gt;` and `&lt;applied-principle&gt;` children and leaves the `&lt;alternative&gt;` set standing, the same narrowing the cascade applies internally through the one shared per-block primitive.
-      <advantage>It follows the polarity this tool already establishes, where the bare subcommand is the broad uniform treatment and a flag narrows it — `remove` bare strips every dependent and `--option` narrows, `list` bare prints every block and `--unannotated` narrows — so nothing shipped changes meaning: every existing `strip` call, `test_strip.py`&apos;s pinned strip-to-bare outcome, and every sentence saying strip clears every child stay true and unedited, and `strip --recommendation` reads as the exact mirror of an `embed` that names the same half with the same word.</advantage>
-      <drawback>The hatch the new design makes routine — clear a stale recommendation so the inline pass can re-run it — is the longer form, while the rarer and more expensive one is a bare word, so a mistyped `strip` discards an alternative set that cost a parallel agent dispatch.</drawback>
-    </alternative>
-    <alternative id="Partial by default">
-      Invert the subcommand: bare `strip` clears only the recommendation, depends-on and applied-principle children, and the full clear moves behind a flag such as `strip --all`.
-      <advantage>The bare word does the safe, now-routine thing and the one operation that throws away parallel-dispatch work must be asked for explicitly, so the expensive artifact is guarded by the command form itself rather than by the caller having read the right hatch sentence.</advantage>
-      <drawback>It silently redefines a shipped subcommand — same command, no error, different result — so an old chain or a user&apos;s muscle memory quietly stops clearing what it cleared, and every `strip` sentence in CLAUDE.md, `docs/`, and the sweep&apos;s hatch plus `test_strip.py`&apos;s pinned semantics must be re-pointed in one change, against the tool&apos;s own bare-is-broad polarity.</drawback>
-    </alternative>
-    <alternative id="New subcommand">
-      Leave `strip` untouched and add a second verb for the partial clear (for example `unrecommend SHORT_TITLE…`), both implemented over one shared per-block primitive.
-      <advantage>Each verb carries exactly one meaning and one argparse help text end to end, no flag can be omitted or mistyped, and `strip`&apos;s existing contract, tests, and every sentence describing it stand entirely unchanged.</advantage>
-      <drawback>It puts two names in front of one write whose only difference is which child kinds survive — precisely the case this tool spells as a mode flag everywhere else — adding an eleventh verb, its own test file, and a naming question of its own, and reading inconsistently beside an `embed` whose two shapes are named by flags.</drawback>
-    </alternative>
-    <recommendation option="Flag on strip">Two blast radii for one write is what this tool spells as a flag on the broad bare form, exactly as `remove --option` narrows `remove`, and keeping the full strip as the default leaves every shipped call, test, and sentence about `strip` true while the new flag reads as the mirror of embed&apos;s recommendation shape; only if a bare `strip` slip were unrecoverable, rather than one re-dispatch of the alternatives pass, would flipping the default win instead.</recommendation>
-  </open-question>
   <open-question id="Inline embed ordering">
     <question>The inline recommendation pass reasons over the whole question set at once but must still write each block with one embed call, and embed resolves every depends-on tag against a sibling that already carries a recommendation. Does the skill order its embed calls so every declared target is written before its dependents, or does the tool relax the one-hop check for this pass?</question>
     <alternative id="Skill orders embeds">
@@ -84,7 +65,6 @@
       <drawback>It makes `list` the first read filter with a required value, so a bare `--missing` is an argparse usage error rather than a meaningful call, and it buys extensibility for a format whose two annotation halves this very milestone freezes.</drawback>
     </alternative>
     <applied-principle>Name by distinctive function</applied-principle>
-    <depends-on question="Strip command forms" option="Flag on strip"/>
     <recommendation option="Element-named pair">Today&apos;s filter keeps its exact meaning and its job as the recommendation pass&apos;s idempotency skip but not its spelling, because the split leaves annotated with two referents — a block carrying alternatives is annotated, yet `--unannotated` would still print it — so each filter is named for the element it tests, which also keeps one pair of words meaning one pair of halves across `list`, `embed` and `strip`; only if this flag were typed by users outside this repository, rather than only by the two passes and the test suite, would the additive option&apos;s zero churn win instead.</recommendation>
   </open-question>
   <open-question id="Existing recommendations on re-run">
@@ -104,7 +84,6 @@
       <advantage>It buys the coherence of blanket re-recommendation at a fraction of the churn, rewriting only the picks the new whole-set view actually contradicts — the very case the skip option can address only with a prose note in someone else&apos;s rationale.</advantage>
       <drawback>Idempotency becomes a judgment rather than a filter, so two consecutive runs over an unchanged document can differ and a recommendation the user is about to answer can vanish under an unrelated re-run; it requires the pass to inspect and rule on blocks it is not writing, which is exactly the prose inspection the sweep&apos;s idempotency rule keeps out; and each silent overwrite needs its own advisory because the diff alone cannot say why a settled pick moved.</drawback>
     </alternative>
-    <depends-on question="Strip command forms" option="Flag on strip"/>
     <depends-on question="Alternatives list filter" option="Element-named pair"/>
     <recommendation option="Skip the annotated">The narrowed cascade already decides which blocks&apos; reasoning an answer invalidated, so the recommendation-less set is the set to write and the rest is the set to trust, and the recommendation-shape precondition makes that a refusal in the tool rather than a discretion in prose — keeping idempotency a filter, keeping a pick the user is mid-answer on stable, and leaving revision to a partial strip that now costs only the pick and never the alternatives; only if the whole-set view routinely contradicted recommendations the cascade had deliberately left standing would re-recommending the whole set win instead.</recommendation>
   </open-question>
