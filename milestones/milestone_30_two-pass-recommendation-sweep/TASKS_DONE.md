@@ -179,3 +179,18 @@ Update `docs/workflow.md`'s "Iterating milestone requirements" diagram and prose
 - `grep -rn` over `docs/` and `README.md` finds no `--unannotated`, no `recommend-open-question`, no "recommend sweep", no "to regenerate", and no per-question "sequentially" dispatch claim other than the answer sweep's own strictly sequential agent dispatch, which is unchanged and true
 
 ---
+
+## Headless Chains Add Alternatives Line
+
+Update `docs/ways-of-using-cairn.md`: insert `claude -p "/cairn:provide-alternatives-to-all-open-questions" --dangerously-skip-permissions --model "opus" --effort xhigh` between the review and recommend lines of every chain carrying a recommend line, change every `/cairn:recommend-all-open-questions` line to `--model "fable" --effort high`, and rewrite each affected way's settings sentence to name the two settings (the stuck-milestone way no longer states that every line runs at max). Ordered last because the two skills must exist before the page records them. Verified by every fenced line being runnable as written and the page's three sibling links intact.
+
+**Verified:**
+
+- Each of the three chains carrying a `/cairn:recommend-all-open-questions` line (Starting a milestone, Running a mixed-agent requirements review, Putting more intelligence into a stuck milestone) carries `claude -p "/cairn:provide-alternatives-to-all-open-questions" --dangerously-skip-permissions --model "opus" --effort xhigh;` directly between its review line and its recommend line — three insertions, each checked by position in its fenced block
+- Every `/cairn:recommend-all-open-questions` line (three) reads `--model "fable" --effort high`; no `opus` recommend line remains
+- Each affected way's settings sentence names the two settings (the alternatives line on `opus` at `--effort xhigh`, the recommend line on `fable` at `--effort high`), the mixed review's host swap now sits between the review line and the alternatives line, and the stuck-milestone way no longer states that every line runs at `--effort max` (it names the review line's `max`, the alternatives and answer lines' `xhigh`, and the recommend line's `high`)
+- Every fenced line is runnable as written: each `claude` or `agy` line parses as `-p "/cairn:<skill>"` with a skill name resolving to an existing `core/skills/<skill>/SKILL.md`, `--dangerously-skip-permissions` on every line, a model alias from the legend's `opus`/`fable` set and an effort from its Claude Code `low`–`max` set on every `claude` line, and `--add-dir "<project-root>"` with no `--model` or `--effort` on the `agy` line
+- The page's three sibling links (`design-claims.md`, `workflow.md` with its `#how-skills-commit` anchor resolving to the `## How skills commit` heading, `skill-reference.md`) are intact and every target exists under `docs/`
+- The two ways without a recommend line (Executing tasks, Finishing a milestone) are byte-for-byte unchanged (every diff hunk lies within the three affected ways), the page still carries exactly five `##` way sections, and `uv run scripts/build_hosts.py --check` passes (no file under `core/` or `scripts/hosts/` changed)
+
+---
