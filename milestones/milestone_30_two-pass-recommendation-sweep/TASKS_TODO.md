@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Sync Docs Pages To Two-Pass Shape
-
-Update `docs/workflow.md`'s "Iterating milestone requirements" diagram and prose to add a `/provide-alternatives-to-all-open-questions` node between the review and recommend nodes, the README's simplified loop diagram to match, and `docs/skill-reference.md` with an entry for the new skill, the renamed agent's entry, and rewritten `recommend-all-open-questions` and `discuss-open-question` entries. Verified by the mermaid blocks rendering, `--check` passing, and no stale flag or agent name left in `docs/` or `README.md`.
-
----
-
 ## Headless Chains Add Alternatives Line
 
 Update `docs/ways-of-using-cairn.md`: insert `claude -p "/cairn:provide-alternatives-to-all-open-questions" --dangerously-skip-permissions --model "opus" --effort xhigh` between the review and recommend lines of every chain carrying a recommend line, change every `/cairn:recommend-all-open-questions` line to `--model "fable" --effort high`, and rewrite each affected way's settings sentence to name the two settings (the stuck-milestone way no longer states that every line runs at max). Ordered last because the two skills must exist before the page records them. Verified by every fenced line being runnable as written and the page's three sibling links intact.

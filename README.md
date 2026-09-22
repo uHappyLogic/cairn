@@ -32,19 +32,20 @@ Milestone-driven development for your coding agent — any kind of work, one mil
 flowchart LR
     define["define"]
     review["review"]
+    alternatives["provide alternatives"]
     recommend["recommend"]
     answer["answer"]
     derive["derive"]
     complete["complete"]
 
-    define --> review --> recommend --> answer --> derive --> complete
+    define --> review --> alternatives --> recommend --> answer --> derive --> complete
     answer -.->|until no open questions remain| review
 
     classDef init fill:#eff6ff,stroke:#2563eb,color:#1e3a8a;
     classDef req fill:#faf5ff,stroke:#9333ea,color:#581c87;
     classDef auto fill:#ecfdf5,stroke:#059669,color:#064e3b;
     class define init;
-    class review,recommend,answer req;
+    class review,alternatives,recommend,answer req;
     class derive,complete auto;
 ```
 
