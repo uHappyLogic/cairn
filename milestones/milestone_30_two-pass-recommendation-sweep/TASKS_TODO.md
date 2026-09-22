@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Inline Recommendation Pass Skill
-
-Rewrite `core/skills/recommend-all-open-questions/SKILL.md` as an inline skill that dispatches no agents: it stops when `list --without-alternatives` prints anything, gathers `list --without-recommendation`, reads the document whole, follows the pick procedure over the whole set at once, and embeds each block's `<recommendation>`, `<depends-on>`, and `<applied-principle>` with `embed --recommendation` in any order, leaving standing recommendations untouched, picking the best surviving alternative of a stale set with the killed option named in the rationale, and skipping only a set with nothing left (naming the full strip plus an alternatives re-run). It commits once per run under `Recommendation-annotation: <milestone_id>` with one `lift` line per annotated question as the body, gathered after the embeds and before the end-of-run sort and its `Question-ordering:` commit, keeping the three report lines with `strip --recommendation` plus a re-run as the revision hatch. Verified by the build passing and a run over a milestone whose blocks carry alternatives landing that one commit.
-
----
-
 ## Discuss Reuses Frozen Alternatives
 
 Update `core/skills/discuss-open-question/SKILL.md` to work on a question in any state: when the block carries embedded `<alternative>` elements it reuses them as the option set (an option the set lacks may be put on the table marked as a departure), and when bare it follows the enumeration procedure first; it then follows the pick procedure to state one recommendation of its own, showing any embedded `<recommendation>` beside it as the sweep's standing pick and saying plainly whether the two agree and why. Verified by the skill referencing both procedures in order, the build passing, and a dry run on an annotated block and on a bare one.
