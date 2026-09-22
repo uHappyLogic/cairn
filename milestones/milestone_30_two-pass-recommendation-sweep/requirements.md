@@ -57,5 +57,9 @@ Runtime prose names capabilities, never hosts (the build's `host-name-in-core` g
 
 ## Decisions
 
+### Headless chains
+
+The alternatives line goes directly between the review line and the recommend line of every chain that carries a recommend line, as `claude -p "/cairn:provide-alternatives-to-all-open-questions" --dangerously-skip-permissions --model "opus" --effort xhigh`, and every `/cairn:recommend-all-open-questions` line becomes `--model "fable" --effort high`. The per-question alternatives fan-out runs at opus xhigh because enumeration is narrow, grounded reading and the uncapped fan-out's cost scales with the question count; the recommendation pass runs at fable high because it is the one whole-set judgment made once per run, the half the split exists to give the strongest model. Each affected way's settings sentence is rewritten to name the two settings (the stuck-milestone way no longer states that every line runs at max). The pair must run once on this repository before the page records it, so the documentation task is ordered after the two skills exist and the values are confirmed against the next milestone's first review pass.
+
 ## Out of Scope
 
