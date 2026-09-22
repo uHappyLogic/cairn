@@ -34,6 +34,22 @@
   </open-question>
   <open-question id="Shared procedure split">
     <question>recommend-procedure.md currently produces alternatives and recommendation as one unit and is referenced by the recommend agent and /discuss-open-question. With the alternatives agent needing only the enumeration half, the inline recommendation pass only the pick half, and discuss both, is the shared core split into two shared files or kept as one file with two separately referenceable steps?</question>
+    <alternative id="Two shared files">
+      Split the core into two shared procedures — an enumeration file that the alternatives agent and discuss-open-question follow, and a pick file that the inline recommendation pass and discuss-open-question follow (the pick half can keep the existing recommend-procedure.md path to limit reference churn) — each self-contained with its own grounding step.
+      <advantage>Each runner loads only the half it acts on, and each grounding step names only that half&apos;s inputs: the principle store and the sibling-dependency disclosure duty are pick-half concerns, while the alternatives agent, dispatched in parallel before any sibling carries a recommendation, has none to lean on — and each half has two runners, so both clear the plugin&apos;s shared-means-two-or-more-runners bar.</advantage>
+      <drawback>The genuinely common grounding discipline (prefer the live project over memory, read requirements.md and open_questions.xml whole for reasoning only) is stated in both files and can drift; discuss-open-question must reference both in order and say when the pick half runs against already-embedded alternatives, wording that depends on how &quot;Discuss with frozen alternatives&quot; settles.</drawback>
+    </alternative>
+    <alternative id="One file, two steps">
+      Keep recommend-procedure.md as one file and let each caller name the steps it follows — the alternatives agent grounding plus enumeration, the inline pass grounding plus the pick, discuss-open-question both.
+      <advantage>One grounding step with nothing duplicated, the smallest edit to a file three runners already reference, and a reader still sees the whole analytical arc in one place.</advantage>
+      <drawback>Every runner loads the half it must not act on — the alternatives agent would read a recommend-one step it is forbidden to perform, exactly the bleed the two-pass split exists to prevent — and the per-half divergences (principle store, disclosure duty, frozen alternatives) become conditionals inside shared steps, against the runtime rule that a file holds only what the runner acting on it needs.</drawback>
+    </alternative>
+    <alternative id="Grounding plus two halves">
+      Three shared files: one grounding procedure both halves reference, plus an enumeration file and a pick file that each add only their own analytical step.
+      <advantage>No grounding text is duplicated anywhere while each half still states only its own work.</advantage>
+      <drawback>Two hops of reference and three files for what is a 72-line procedure today, each runner still loading two of them so the load-minimality gain is small, and a grounding step alone is too thin to carry the Inputs contract every shared procedure here declares.</drawback>
+    </alternative>
+    <recommendation option="Two shared files">Two passes run by different runners at different times are two units of work, and their grounding genuinely diverges — the principle store and the sibling-disclosure duty belong to the pick half alone — so the halves are two texts rather than one duplicated; were the two grounding steps to come out word-for-word identical, the one-file option would win instead.</recommendation>
   </open-question>
   <open-question id="Existing recommendations on re-run">
     <question>The inline recommendation pass reasons over the whole question set at once. On a re-run where some blocks already carry a recommendation, does it leave those untouched and recommend only on the blocks lacking one, as today&apos;s --unannotated idempotency does, or may it revise an existing recommendation in light of the whole set?</question>
