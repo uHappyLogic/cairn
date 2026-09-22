@@ -48,6 +48,30 @@
   </open-question>
   <open-question id="Alternatives list filter">
     <question>The parallel alternatives pass needs the ids of the blocks that carry no alternative elements, which the existing list --unannotated (no recommendation element) does not express. What is the new list filter called, and does --unannotated keep its current meaning?</question>
+    <alternative id="Element-named pair">
+      Retire the `--unannotated` spelling and give `list` two symmetric negative filters named for the child kind each tests — `--without-alternatives` (the parallel pass&apos;s dispatch set, and the inline pass&apos;s one-call stop test) and `--without-recommendation`, which carries today&apos;s semantics unchanged as the recommendation pass&apos;s idempotency skip.
+      <advantage>Each flag states the element it tests, so neither pass&apos;s set has to be remembered from a convention, and the same two words name the same two halves across every surface this milestone touches — `embed --alternatives` / `--recommendation` and `strip --recommendation` — while the `without-` prefix keeps a filter&apos;s negative polarity explicit where a bare `--alternatives` would read as the blocks that have them; the split is precisely what costs `--unannotated` its single referent, since a block carrying alternatives is annotated yet that filter would still print it.</advantage>
+      <drawback>It renames a shipped flag, so the sweep skill, `docs/skill-reference.md`, the two CLAUDE.md entries and the five test files that spell `--unannotated` (`test_list.py`, `test_sort.py`, `test_walk.py`, `test_embed.py`, `test_strip.py`) must be re-pointed in the same change, and the tool&apos;s most-called read becomes the wordiest line in both passes.</drawback>
+    </alternative>
+    <alternative id="Additive flag only">
+      Leave `--unannotated` exactly as it is — spelling and meaning — and add one new flag beside it for the other half, for example `list --without-alternatives`, so nothing shipped changes.
+      <advantage>It is strictly additive: every existing call, pinned test assertion and sentence about `--unannotated` stays true and unedited, the recommendation pass keeps the gather line it already runs, and the whole tool diff is one argparse flag, one `cmd_list` branch and one test.</advantage>
+      <drawback>The two set-defining filters then rest on different naming principles — one on the element it tests, one on a word the split has just left with two possible referents — so every reader of either skill must carry the convention that annotated means the recommendation half alone, and a later child kind arrives with no pattern to follow.</drawback>
+    </alternative>
+    <alternative id="Repoint unannotated">
+      Give `--unannotated` the new meaning — blocks carrying no `&lt;alternative&gt;`, the wholly bare block the first pass targets — and move today&apos;s meaning to a second new flag such as `--unrecommended`.
+      <advantage>The plainest word then literally names the block with nothing embedded and points at the pipeline&apos;s new front, so the filter a user meets first is the one spelled most simply.</advantage>
+      <drawback>It is exactly the silent redefinition the sibling `strip` question rejected — same flag, no error, a different set — so every sentence and pinned test naming `--unannotated` is quietly false until re-pointed, it pays for two renames rather than one, and it leaves a pair whose two words differ only by a suffix.</drawback>
+    </alternative>
+    <alternative id="Single kind-valued flag">
+      Replace `--unannotated` with one filter that takes the child kind as its value — `list --missing alternatives` and `list --missing recommendation` — over an argparse `choices` list.
+      <advantage>One flag covers both halves and any later child kind with no further naming question, and because its value is the element name itself the filter can never be read in the wrong polarity.</advantage>
+      <drawback>It makes `list` the first read filter with a required value, so a bare `--missing` is an argparse usage error rather than a meaningful call, and it buys extensibility for a format whose two annotation halves this very milestone freezes.</drawback>
+    </alternative>
+    <applied-principle>Name by distinctive function</applied-principle>
+    <depends-on question="Embed shape selection" option="Explicit shape flag"/>
+    <depends-on question="Strip command forms" option="Flag on strip"/>
+    <recommendation option="Element-named pair">Today&apos;s filter keeps its exact meaning and its job as the recommendation pass&apos;s idempotency skip but not its spelling, because the split leaves annotated with two referents — a block carrying alternatives is annotated, yet `--unannotated` would still print it — so each filter is named for the element it tests, which also keeps one pair of words meaning one pair of halves across `list`, `embed` and `strip`; only if this flag were typed by users outside this repository, rather than only by the two passes and the test suite, would the additive option&apos;s zero churn win instead.</recommendation>
   </open-question>
   <open-question id="Inline embed ordering">
     <question>The inline recommendation pass reasons over the whole question set at once but must still write each block with one embed call, and embed resolves every depends-on tag against a sibling that already carries a recommendation. Does the skill order its embed calls so every declared target is written before its dependents, or does the tool relax the one-hop check for this pass?</question>
