@@ -58,3 +58,16 @@ Give `embed` a required, mutually exclusive `--alternatives` / `--recommendation
 - Host trees rebuilt with `uv run scripts/build_hosts.py`; `hosts/claude/tools/open_questions.py` and `hosts/antigravity/tools/open_questions.py` are byte-identical to `core/tools/open_questions.py` and `uv run scripts/build_hosts.py --check` passes
 
 ---
+
+## Split Shared Recommend Procedure
+
+Split `core/shared/recommend-procedure.md` into an enumeration half at a new `core/shared/alternatives-procedure.md` — its own grounding step plus the 2–4 honest alternatives with what-it-is / key advantage / key drawback, loading neither the principle store nor the disclosure duty — and a pick half that keeps the `recommend-procedure.md` path, self-contained with its own grounding step, the principle store as a weighted advisory factor, the sibling-dependency disclosure duty, and one hedge-free recommendation over an alternative set it takes as input. Two runners at different times are two units of work, so the halves are two texts. Verified by both files reading as execution-neutral procedures and `uv run scripts/build_hosts.py --check` passing after a rebuild.
+
+**Verified:**
+
+- `core/shared/alternatives-procedure.md` exists as the enumeration half: one QUESTION input, its own grounding step (`requirements.md`, the live project artifacts, the sibling questions read whole for scope only, with the one-sentence tool contract), then the 2–4 honest alternatives with what-it-is / key advantage / key drawback; it names neither the principle store nor the disclosure duty, and it states that no option presumes how a sibling will settle and that the set is the frozen option set every later pick chooses from
+- `core/shared/recommend-procedure.md` keeps its path as the pick half: QUESTION plus an ALTERNATIVES input taken as given (never widened or narrowed by the procedure), its own self-contained grounding step reading the fixed-path principle store, the sibling-dependency disclosure duty naming the sibling's Short Title and the assumed option label, one hedge-free recommendation with a tie-break, the principle as a weighted advisory factor cited when it bore, and the stale-set rule from `## Decisions` (pick the best surviving option naming what the decision closed; form no pick only when nothing survives), with the whole-set-at-once reading the inline pass needs stated as a per-question contract
+- Both files are execution-neutral: grep finds no commit, embed, git, heredoc, XML element markup, return-protocol token, or host name in either; every cross-reference uses `{{PLUGIN_ROOT}}`, and each half names the other as the counterpart it takes from or hands to
+- `uv run scripts/build_hosts.py` rebuilt both host trees (`alternatives-procedure.md` now rendered under `hosts/claude/shared/` and `hosts/antigravity/shared/` with the host's plugin-root literal substituted) and `uv run scripts/build_hosts.py --check` passes
+
+---

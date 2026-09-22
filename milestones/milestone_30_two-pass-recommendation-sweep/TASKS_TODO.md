@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Split Shared Recommend Procedure
-
-Split `core/shared/recommend-procedure.md` into an enumeration half at a new `core/shared/alternatives-procedure.md` — its own grounding step plus the 2–4 honest alternatives with what-it-is / key advantage / key drawback, loading neither the principle store nor the disclosure duty — and a pick half that keeps the `recommend-procedure.md` path, self-contained with its own grounding step, the principle store as a weighted advisory factor, the sibling-dependency disclosure duty, and one hedge-free recommendation over an alternative set it takes as input. Two runners at different times are two units of work, so the halves are two texts. Verified by both files reading as execution-neutral procedures and `uv run scripts/build_hosts.py --check` passing after a rebuild.
-
----
-
 ## Rename Agent To Alternatives-Only
 
 Move `core/agents/recommend-open-question.md` to `core/agents/provide-alternatives-to-open-question.md`, update its frontmatter `name`, and make it an alternatives-only read-only subagent that follows the enumeration procedure and returns only the `<alternative>` elements with their `<advantage>` and `<drawback>` children, its step-4 self-check bounded by first non-whitespace text starting `<alternative` and last non-whitespace text ending `</alternative>`, a `FAILED: <reason>` last line on failure. Re-point every reference to the old name under `core/` and `docs/`. Verified by the build passing and grep finding the old name in neither tree.
