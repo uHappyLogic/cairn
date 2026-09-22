@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Sync CLAUDE.md To Two-Pass Shape
-
-Update `CLAUDE.md`: the layout entries for the new skill, the renamed agent, the new shared procedure, the tool's subcommand list, and the test files; the pipeline listing; the four invariants (the sweep, the agent's rendering, the answer-recording cascade, the dispatched-agent return contract); the commit conventions with `Alternatives-annotation: <Short Title>` and `Recommendation-annotation: <milestone_id>`; the reporting carve-out with `Alternatives embedded.`; and every `--unannotated` mention. Verified by grep finding no `--unannotated`, no `recommend-open-question`, and no strip-to-bare claim left, and every invariant describing the behaviour the runtime files now carry.
-
----
-
 ## Sync Docs Pages To Two-Pass Shape
 
 Update `docs/workflow.md`'s "Iterating milestone requirements" diagram and prose to add a `/provide-alternatives-to-all-open-questions` node between the review and recommend nodes, the README's simplified loop diagram to match, and `docs/skill-reference.md` with an entry for the new skill, the renamed agent's entry, and rewritten `recommend-all-open-questions` and `discuss-open-question` entries. Verified by the mermaid blocks rendering, `--check` passing, and no stale flag or agent name left in `docs/` or `README.md`.
