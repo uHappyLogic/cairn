@@ -209,9 +209,9 @@ def test_embed_keeps_several_principles_and_dependencies(run_tool, milestone_dir
 
 def test_embed_makes_the_block_annotated_for_list_and_lift(run_tool, milestone_dir):
     target = milestone_dir("bare")
-    assert run_tool("list", "--unannotated", str(target)).stdout == b"First bare question\nSecond bare question\n"
+    assert run_tool("list", "--without-recommendation", str(target)).stdout == b"First bare question\nSecond bare question\n"
     assert embed(run_tool, target, "Second bare question", MINIMAL).returncode == 0
-    assert run_tool("list", "--unannotated", str(target)).stdout == b"First bare question\n"
+    assert run_tool("list", "--without-recommendation", str(target)).stdout == b"First bare question\n"
     assert run_tool("list", str(target)).stdout == b"First bare question\nSecond bare question\n"
     assert run_tool("lift", str(target), "Second bare question").stdout.decode("utf-8") == "Only — Nothing else applies.\n"
 

@@ -28,3 +28,17 @@ Change `remove` so every option-less removal and every disagreeing dependent tak
 - Host trees rebuilt with `uv run scripts/build_hosts.py`; `hosts/claude/tools/open_questions.py` and `hosts/antigravity/tools/open_questions.py` are byte-identical to `core/tools/open_questions.py` and `uv run scripts/build_hosts.py --check` passes
 
 ---
+## Tool List Alternatives Filters
+
+Retire `list --unannotated` and give `list` two symmetric filters, `--without-alternatives` (blocks carrying no `<alternative>` children) and `--without-recommendation` (today's `--unannotated` meaning), re-pointing the five test files that spell the old flag (`test_list.py`, `test_sort.py`, `test_walk.py`, `test_embed.py`, `test_strip.py`). The alternatives pass dispatches on the first filter, the recommendation pass stops on it and skips on the second. Verified by both pytest runs passing with no `--unannotated` left under `core/tools/` or `tests/`.
+
+**Verified:**
+
+- `list <MILESTONE_DIR> --without-alternatives` prints only the blocks carrying no `<alternative>` child and `list <MILESTONE_DIR> --without-recommendation` only the blocks carrying no `<recommendation>` child (today's `--unannotated` meaning, unchanged); either flag is accepted before or after the directory, both together print only the blocks carrying neither, and a block whose recommendation alone was stripped (`strip --recommendation`) prints under the second filter and not the first
+- `--unannotated` is retired: argparse rejects it as an unrecognized argument with exit 2, and grep finds no `--unannotated` under `core/tools/` or `tests/`
+- The five test files that spelled the old flag (`test_list.py`, `test_sort.py`, `test_walk.py`, `test_embed.py`, `test_strip.py`) are re-pointed to `--without-recommendation`, and `tests/test_list.py` pins both filters (each alone over the annotated, bare, entities, and empty fixtures, both together, the partially-stripped block, and the document left unchanged)
+- The tool's module usage text and the `list` parser help name both flags and state that a block prints under both only when it carries neither
+- `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` both pass, 371 tests each
+- Host trees rebuilt with `uv run scripts/build_hosts.py`; `hosts/claude/tools/open_questions.py` and `hosts/antigravity/tools/open_questions.py` are byte-identical to `core/tools/open_questions.py` and `uv run scripts/build_hosts.py --check` passes
+
+---

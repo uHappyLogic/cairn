@@ -1,5 +1,8 @@
 """The list subcommand: bare un-escaped ids, one per line in document order, with
---unannotated keeping only the blocks that carry no <recommendation> element."""
+--without-alternatives keeping only the blocks that carry no <alternative> element and
+--without-recommendation only the blocks that carry no <recommendation> element."""
+
+import pytest
 
 import open_questions
 
@@ -25,25 +28,49 @@ def test_list_of_an_empty_document_prints_nothing_and_exits_zero(run_tool, miles
     assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
 
 
-def test_list_unannotated_keeps_only_blocks_without_a_recommendation(run_tool, milestone_dir):
-    result = run_tool("list", str(milestone_dir("annotated")), "--unannotated")
+def test_list_without_recommendation_keeps_only_blocks_without_a_recommendation(run_tool, milestone_dir):
+    result = run_tool("list", str(milestone_dir("annotated")), "--without-recommendation")
     assert (result.returncode, result.stderr) == (0, b"")
     assert result.stdout == b"Fixture bare block\n"
 
 
-def test_list_unannotated_of_a_bare_document_prints_every_id(run_tool, milestone_dir):
-    result = run_tool("list", "--unannotated", str(milestone_dir("bare")))
+def test_list_without_alternatives_keeps_only_blocks_without_an_alternative(run_tool, milestone_dir):
+    result = run_tool("list", str(milestone_dir("annotated")), "--without-alternatives")
+    assert (result.returncode, result.stderr) == (0, b"")
+    assert result.stdout == b"Fixture bare block\n"
+
+
+def test_list_without_alternatives_keeps_a_block_whose_recommendation_alone_was_stripped(run_tool, milestone_dir):
+    target = milestone_dir("annotated")
+    assert run_tool("strip", str(target), "--recommendation", "Root element form").returncode == 0
+    assert run_tool("list", str(target), "--without-recommendation").stdout == b"Root element form\nFixture bare block\n"
+    assert run_tool("list", str(target), "--without-alternatives").stdout == b"Fixture bare block\n"
+
+
+def test_list_with_both_filters_keeps_only_blocks_carrying_neither(run_tool, milestone_dir):
+    target = milestone_dir("annotated")
+    assert run_tool("strip", str(target), "--recommendation", "Root element form").returncode == 0
+    result = run_tool("list", str(target), "--without-alternatives", "--without-recommendation")
+    assert (result.returncode, result.stderr) == (0, b"")
+    assert result.stdout == b"Fixture bare block\n"
+
+
+@pytest.mark.parametrize("flag", ["--without-alternatives", "--without-recommendation"])
+def test_list_filter_of_a_bare_document_prints_every_id(run_tool, milestone_dir, flag):
+    result = run_tool("list", flag, str(milestone_dir("bare")))
     assert (result.returncode, result.stderr) == (0, b"")
     assert result.stdout == b"First bare question\nSecond bare question\n"
 
 
-def test_list_unannotated_of_a_fully_annotated_document_prints_nothing(run_tool, milestone_dir):
-    result = run_tool("list", str(milestone_dir("entities")), "--unannotated")
+@pytest.mark.parametrize("flag", ["--without-alternatives", "--without-recommendation"])
+def test_list_filter_of_a_fully_annotated_document_prints_nothing(run_tool, milestone_dir, flag):
+    result = run_tool("list", str(milestone_dir("entities")), flag)
     assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
 
 
-def test_list_unannotated_of_an_empty_document_prints_nothing(run_tool, milestone_dir):
-    result = run_tool("list", str(milestone_dir("empty")), "--unannotated")
+@pytest.mark.parametrize("flag", ["--without-alternatives", "--without-recommendation"])
+def test_list_filter_of_an_empty_document_prints_nothing(run_tool, milestone_dir, flag):
+    result = run_tool("list", str(milestone_dir("empty")), flag)
     assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
 
 
@@ -52,7 +79,8 @@ def test_list_leaves_the_document_unchanged(run_tool, milestone_dir):
     document = target / open_questions.DOCUMENT_NAME
     before = document.read_bytes()
     run_tool("list", str(target))
-    run_tool("list", str(target), "--unannotated")
+    run_tool("list", str(target), "--without-alternatives")
+    run_tool("list", str(target), "--without-recommendation")
     assert document.read_bytes() == before
     assert sorted(path.name for path in target.iterdir()) == [open_questions.DOCUMENT_NAME]
 

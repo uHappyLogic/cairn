@@ -82,8 +82,8 @@ def test_sort_makes_walk_the_annotated_prefix_of_list(run_tool, tmp_path):
     silent(run_tool("sort", str(target)))
     walked = printed(run_tool("walk", str(target)))
     listed = printed(run_tool("list", str(target)))
-    unannotated = printed(run_tool("list", str(target), "--unannotated"))
-    assert listed == walked + unannotated
+    without_recommendation = printed(run_tool("list", str(target), "--without-recommendation"))
+    assert listed == walked + without_recommendation
     assert listed[: len(walked)] == ["A", "B", "C"]
 
 
@@ -91,7 +91,7 @@ def test_sort_keeps_the_un_annotated_blocks_in_their_prior_relative_order(run_to
     target = write_document(tmp_path, bare("Z"), annotated("A"), bare("M"), annotated("B", ["A"]), bare("A-bare"))
     silent(run_tool("sort", str(target)))
     assert ids_of(target) == ["A", "B", "Z", "M", "A-bare"]
-    assert printed(run_tool("list", str(target), "--unannotated")) == ["Z", "M", "A-bare"]
+    assert printed(run_tool("list", str(target), "--without-recommendation")) == ["Z", "M", "A-bare"]
 
 
 def test_sort_places_dependents_by_depth_with_same_depth_ties_in_prior_order(run_tool, tmp_path):

@@ -10,9 +10,11 @@ Subcommands:
   create MILESTONE_DIR
       write the empty document, creating the directory when it is missing, and refuse to
       touch an existing document
-  list MILESTONE_DIR [--unannotated]
+  list MILESTONE_DIR [--without-alternatives] [--without-recommendation]
       print the id of every <open-question> block, one per line in document order;
-      --unannotated keeps only the blocks carrying no <recommendation> element
+      --without-alternatives keeps only the blocks carrying no <alternative> element and
+      --without-recommendation only the blocks carrying no <recommendation> element, a
+      block printed under both flags only when it carries neither
   locate MILESTONE_DIR SHORT_TITLE...
       print each named block verbatim, as the document holds it, in the order named
   lift MILESTONE_DIR SHORT_TITLE [--alternative ALTERNATIVE_ID]
@@ -774,7 +776,9 @@ def cmd_create(args):
 def cmd_list(args):
     document = load_document(args.milestone_dir)
     for question in document.questions:
-        if args.unannotated and question.recommendation is not None:
+        if args.without_alternatives and question.alternatives:
+            continue
+        if args.without_recommendation and question.recommendation is not None:
             continue
         print(question.id)
     return 0
@@ -905,7 +909,12 @@ def build_parser():
         "empty document prints nothing",
     )
     list_parser.add_argument(
-        "--unannotated",
+        "--without-alternatives",
+        action="store_true",
+        help="print only the blocks carrying no <alternative> element",
+    )
+    list_parser.add_argument(
+        "--without-recommendation",
         action="store_true",
         help="print only the blocks carrying no <recommendation> element",
     )

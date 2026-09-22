@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Tool List Alternatives Filters
-
-Retire `list --unannotated` and give `list` two symmetric filters, `--without-alternatives` (blocks carrying no `<alternative>` children) and `--without-recommendation` (today's `--unannotated` meaning), re-pointing the five test files that spell the old flag (`test_list.py`, `test_sort.py`, `test_walk.py`, `test_embed.py`, `test_strip.py`). The alternatives pass dispatches on the first filter, the recommendation pass stops on it and skips on the second. Verified by both pytest runs passing with no `--unannotated` left under `core/tools/` or `tests/`.
-
----
-
 ## Tool Two-Shape Embed Subcommand
 
 Give `embed` a required, mutually exclusive `--alternatives` / `--recommendation` flag pair over one shared validation core: `--alternatives` slices between its own first and last `<alternative>` anchor lines, is accepted only when the block carries no `<alternative>` yet, and writes only the alternatives; `--recommendation` is accepted only when the block carries at least one `<alternative>` and no `<recommendation>` yet, validates the recommendation's `option` against the block's own alternative ids, resolves each `<depends-on>` against a sibling that carries `<alternative>` children and one of that sibling's ids (the target-carries-a-`<recommendation>` half of the check dropped), and writes only its own child kinds so the alternative set stays frozen between the passes. Verified by `tests/test_embed.py` pinning every refusal reason of both shapes under both pytest runs.

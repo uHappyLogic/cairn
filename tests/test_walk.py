@@ -71,12 +71,12 @@ def test_walk_of_a_document_with_no_annotated_block_prints_nothing_and_exits_zer
     assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
 
 
-def test_walk_gathers_exactly_the_complement_of_list_unannotated(run_tool, tmp_path):
+def test_walk_gathers_exactly_the_complement_of_list_without_recommendation(run_tool, tmp_path):
     target = write_document(tmp_path, annotated("A"), bare("U"), annotated("B", ["A"]), bare("V"), annotated("C"))
     walked = printed(run_tool("walk", str(target)))
-    unannotated = printed(run_tool("list", str(target), "--unannotated"))
+    without_recommendation = printed(run_tool("list", str(target), "--without-recommendation"))
     every = printed(run_tool("list", str(target)))
-    assert sorted(walked + unannotated) == sorted(every)
+    assert sorted(walked + without_recommendation) == sorted(every)
     assert walked == ["A", "C", "B"]
 
 
@@ -247,7 +247,7 @@ def test_walk_order_after_an_answer_omits_the_dependents_its_cascade_stripped(ru
     # the next walk gathers neither; recording A keeps them and their tags are simply dropped.
     stripped = write_document(tmp_path / "stripped", annotated("A"), annotated("B", ["A"]), annotated("C", ["A"], option="B"))
     assert run_tool("remove", str(stripped), "A", "--option", "B").returncode == 0
-    assert (run_tool("walk", str(stripped)).stdout, run_tool("list", str(stripped), "--unannotated").stdout) == (b"", b"B\nC\n")
+    assert (run_tool("walk", str(stripped)).stdout, run_tool("list", str(stripped), "--without-recommendation").stdout) == (b"", b"B\nC\n")
     assert run_tool("remove", str(target), "A", "--option", "A").returncode == 0
     assert printed(run_tool("walk", str(target))) == ["B", "C"]
 

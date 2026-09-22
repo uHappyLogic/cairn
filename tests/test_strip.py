@@ -114,7 +114,7 @@ def test_strip_of_several_blocks_strips_each(run_tool, milestone_dir):
         "Fixture bare block",
     ]
     assert all(open_questions.is_bare(question) for question in document.questions)
-    assert run_tool("list", str(target), "--unannotated").stdout == (
+    assert run_tool("list", str(target), "--without-recommendation").stdout == (
         b"Escape hatch under sole writer\nRoot element form\nFixture bare block\n"
     )
 
@@ -360,7 +360,7 @@ def test_strip_recommendation_of_several_blocks_strips_each(run_tool, milestone_
     for held, question in zip(before.questions, document.questions):
         assert question.alternatives == held.alternatives
         assert (question.principles, question.depends_on, question.recommendation) == ([], [], None)
-    assert run_tool("list", str(target), "--unannotated").stdout == (
+    assert run_tool("list", str(target), "--without-recommendation").stdout == (
         b"Escape hatch under sole writer\nRoot element form\nFixture bare block\n"
     )
 
