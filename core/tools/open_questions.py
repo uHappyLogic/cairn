@@ -23,11 +23,14 @@ Subcommands:
       append a bare block — the wrapper and its one <question> child — whose id is the
       Short Title and whose question text is the body read from standard input; an id an
       existing block already carries is refused
-  strip MILESTONE_DIR SHORT_TITLE...
+  strip MILESTONE_DIR [--recommendation] SHORT_TITLE...
       delete every child but <question> from each named block — its <alternative>,
       <applied-principle>, <depends-on>, and <recommendation> elements — leaving the
-      wrapper and <question> intact; no other block is touched, so a <depends-on> tag that
-      names a stripped block stays where it is, and a block already bare is left as it is
+      wrapper and <question> intact; with --recommendation delete only the <recommendation>,
+      <depends-on>, and <applied-principle> elements and leave the <alternative> elements
+      standing; either way no other block is touched, so a <depends-on> tag that names a
+      stripped block stays where it is, and a block holding nothing the call would delete is
+      left as it is
   embed MILESTONE_DIR SHORT_TITLE
       put the recommend agent's returned children into the named block, which must carry no
       <recommendation> yet: the agent's whole final message is the body read from standard
@@ -502,19 +505,30 @@ def is_bare(question):
     )
 
 
-def strip_question(question):
-    """Delete every child of the block but its <question> — the <alternative>,
-    <applied-principle>, <depends-on>, and <recommendation> elements — leaving the wrapper
-    and <question> intact and touching no other block. The one per-block primitive behind
-    the strip subcommand and the transitive strip of dependent reconciliation; returns
-    whether anything was deleted, so a block already bare reports no change."""
-    if is_bare(question):
+def strip_recommendation(question):
+    """Delete the block's <recommendation>, <depends-on>, and <applied-principle> elements —
+    the recommendation half — leaving its <alternative> elements, wrapper, and <question>
+    intact and touching no other block. The one per-block primitive behind strip
+    --recommendation and the partial strip of dependent reconciliation; returns whether
+    anything was deleted, so a block carrying none of the three reports no change."""
+    if not (question.principles or question.depends_on or question.recommendation is not None):
         return False
-    question.alternatives = []
     question.principles = []
     question.depends_on = []
     question.recommendation = None
     return True
+
+
+def strip_question(question):
+    """Delete every child of the block but its <question> — the <alternative> elements on top
+    of everything strip_recommendation deletes — leaving the wrapper and <question> intact
+    and touching no other block. The per-block primitive behind bare strip; returns whether
+    anything was deleted, so a block already bare reports no change."""
+    changed = strip_recommendation(question)
+    if question.alternatives:
+        question.alternatives = []
+        changed = True
+    return changed
 
 
 # --- removal and dependent reconciliation ---------------------------------------------
@@ -806,9 +820,10 @@ def cmd_add(args):
 
 def cmd_strip(args):
     document = load_document(args.milestone_dir)
+    strip = strip_recommendation if args.recommendation else strip_question
     changed = False
     for question in find_questions(document, args.short_titles):
-        changed = strip_question(question) or changed
+        changed = strip(question) or changed
     if changed:
         save_document(args.milestone_dir, document)
     return 0
@@ -940,13 +955,21 @@ def build_parser():
         cmd_strip,
         "delete every child but <question> from each named block, leaving the wrapper and "
         "<question> intact and every other block, <depends-on> tags naming it included, "
-        "untouched; a block already bare is left as it is",
+        "untouched; with --recommendation delete only the <recommendation>, <depends-on>, and "
+        "<applied-principle> children and leave the <alternative> children standing; a block "
+        "holding nothing the call would delete is left as it is",
     )
     strip_parser.add_argument(
         "short_titles",
         metavar="SHORT_TITLE",
         nargs="+",
         help="the id of a block, compared un-escaped and case-folded",
+    )
+    strip_parser.add_argument(
+        "--recommendation",
+        action="store_true",
+        help="delete only the <recommendation>, <depends-on>, and <applied-principle> children, "
+        "keeping the <alternative> children",
     )
 
     embed_parser = add_subcommand(

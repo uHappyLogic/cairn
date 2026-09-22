@@ -1,7 +1,9 @@
 """The strip subcommand: every child but <question> deleted from each named block, the
 wrapper and <question> kept, every other block — a <depends-on> tag naming the stripped
 block included — untouched, an unknown id refused with the document unchanged, and a bare
-block left as it is."""
+block left as it is; with --recommendation only the <recommendation>, <depends-on>, and
+<applied-principle> children deleted and the <alternative> children left standing, through
+the one per-block primitive the cascade's partial strip reuses."""
 
 from pathlib import Path
 
@@ -273,3 +275,206 @@ def test_strip_question_treats_any_single_child_as_something_to_strip(children):
     assert not open_questions.is_bare(question)
     assert open_questions.strip_question(question) is True
     assert question == Question(id="One child", question="What?")
+
+
+# --- strip --recommendation: the recommendation half alone -----------------------------
+
+
+RECOMMENDATION_HALF = ("<applied-principle>", "<depends-on ", "<recommendation ")
+
+
+def without_recommendation_half(lines):
+    """The block lines with every <applied-principle>, <depends-on>, and <recommendation> line
+    removed — what strip --recommendation leaves of a block."""
+    return [line for line in lines if not line.lstrip().startswith(RECOMMENDATION_HALF)]
+
+
+def test_strip_recommendation_keeps_the_alternatives_and_deletes_the_rest(run_tool, milestone_dir):
+    target = milestone_dir("annotated")
+    before = open_questions.load_document(str(target)).questions[1]
+    assert before.alternatives and before.principles and before.depends_on and before.recommendation is not None
+    result = run_tool("strip", str(target), "--recommendation", "Root element form")
+    assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
+    after = open_questions.load_document(str(target)).questions[1]
+    assert after == Question(id=before.id, question=before.question, alternatives=before.alternatives)
+    assert not open_questions.is_bare(after)
+    block = block_lines(document_of(target).decode("utf-8"), "Root element form")
+    assert block == without_recommendation_half(block_lines(read_fixture("annotated"), "Root element form"))
+    assert sum(line.startswith('    <alternative id="') for line in block) == 2
+    assert not any(line.lstrip().startswith(RECOMMENDATION_HALF) for line in block)
+
+
+def test_strip_recommendation_deletes_the_three_kinds_and_keeps_the_escaped_alternative(run_tool, milestone_dir):
+    target = milestone_dir("entities")
+    result = run_tool("strip", str(target), "--recommendation", ENTITIES_TITLE)
+    assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
+    assert document_of(target).decode("utf-8") == (
+        "<open-questions>\n"
+        '  <open-question id="Ampersand &amp; angle &lt;brackets&gt;, &quot;quotes&quot;, &apos;apostrophes&apos;">\n'
+        "    <question>Does text with &amp;, &lt;tag&gt;, &quot;double&quot; and &apos;single&apos; quotes survive a round trip?</question>\n"
+        '    <alternative id="A &amp; B">\n'
+        "      What &lt;it&gt; is &amp; isn&apos;t, &quot;quoted&quot;.\n"
+        "      <advantage>Keeps &amp;, &lt;, &gt;, &quot;, and &apos; escaped in text.</advantage>\n"
+        "      <drawback>Every apostrophe is stored as &apos;.</drawback>\n"
+        "    </alternative>\n"
+        "  </open-question>\n"
+        "</open-questions>\n"
+    )
+
+
+def test_strip_recommendation_touches_no_dependent_and_no_depends_on_tag_naming_the_block(run_tool, milestone_dir):
+    target = milestone_dir("annotated")
+    before = read_fixture("annotated")
+    result = run_tool("strip", str(target), "--recommendation", "Escape hatch under sole writer")
+    assert result.returncode == 0
+    after = document_of(target).decode("utf-8")
+    dependent = block_lines(after, "Root element form")
+    assert dependent == block_lines(before, "Root element form")
+    assert '    <depends-on question="Escape hatch under sole writer" option="Strip subcommand"/>' in dependent
+    assert block_lines(after, "Fixture bare block") == block_lines(before, "Fixture bare block")
+
+
+def test_strip_recommendation_keeps_every_other_line_of_the_document(run_tool, milestone_dir):
+    target = milestone_dir("annotated")
+    before = read_fixture("annotated")
+    run_tool("strip", str(target), "--recommendation", "Escape hatch under sole writer")
+    stripped = block_lines(before, "Escape hatch under sole writer")
+    expected = before.replace("\n".join(stripped), "\n".join(without_recommendation_half(stripped)))
+    assert document_of(target).decode("utf-8") == expected
+
+
+def test_strip_recommendation_keeps_the_document_canonical(run_tool, milestone_dir):
+    target = milestone_dir("annotated")
+    run_tool("strip", str(target), "--recommendation", "Root element form")
+    text = document_of(target).decode("utf-8")
+    assert open_questions.render_document(open_questions.parse_document(text)) == text
+
+
+def test_strip_recommendation_of_several_blocks_strips_each(run_tool, milestone_dir):
+    target = milestone_dir("annotated")
+    before = open_questions.load_document(str(target))
+    result = run_tool("strip", str(target), "--recommendation", "Root element form", "Escape hatch under sole writer")
+    assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
+    document = open_questions.load_document(str(target))
+    assert [question.id for question in document.questions] == [question.id for question in before.questions]
+    for held, question in zip(before.questions, document.questions):
+        assert question.alternatives == held.alternatives
+        assert (question.principles, question.depends_on, question.recommendation) == ([], [], None)
+    assert run_tool("list", str(target), "--unannotated").stdout == (
+        b"Escape hatch under sole writer\nRoot element form\nFixture bare block\n"
+    )
+
+
+def test_strip_recommendation_accepts_the_flag_in_any_position(run_tool, milestone_dir):
+    documents = []
+    for arguments in (
+        ("--recommendation", "{dir}", "Root element form", "Escape hatch under sole writer"),
+        ("{dir}", "--recommendation", "Root element form", "Escape hatch under sole writer"),
+        ("{dir}", "Root element form", "Escape hatch under sole writer", "--recommendation"),
+    ):
+        target = milestone_dir("annotated")
+        result = run_tool("strip", *(argument.format(dir=str(target)) for argument in arguments))
+        assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
+        documents.append(document_of(target))
+        (target / open_questions.DOCUMENT_NAME).unlink()
+        target.rmdir()
+    assert documents[0] == documents[1] == documents[2]
+    assert b"<recommendation" not in documents[0]
+    assert b"<alternative" in documents[0]
+
+
+def test_strip_recommendation_of_a_block_carrying_only_alternatives_does_nothing(run_tool, milestone_dir):
+    target = milestone_dir("annotated")
+    document = target / open_questions.DOCUMENT_NAME
+    assert run_tool("strip", str(target), "--recommendation", "Root element form").returncode == 0
+    before = document.read_bytes()
+    stat_before = document.stat()
+    result = run_tool("strip", str(target), "--recommendation", "Root element form", "Fixture bare block")
+    assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
+    assert document.read_bytes() == before
+    assert document.stat().st_ino == stat_before.st_ino
+    assert document.stat().st_mtime_ns == stat_before.st_mtime_ns
+
+
+def test_strip_recommendation_of_a_bare_block_does_nothing(run_tool, milestone_dir):
+    target = milestone_dir("bare")
+    document = target / open_questions.DOCUMENT_NAME
+    before = document.read_bytes()
+    stat_before = document.stat()
+    result = run_tool("strip", str(target), "--recommendation", "First bare question", "Second bare question")
+    assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
+    assert document.read_bytes() == before
+    assert document.stat().st_ino == stat_before.st_ino
+    assert document.stat().st_mtime_ns == stat_before.st_mtime_ns
+
+
+def test_strip_recommendation_of_an_unknown_id_fails_naming_the_ids_the_document_holds(run_tool, milestone_dir):
+    target = milestone_dir("annotated")
+    before = document_of(target)
+    result = run_tool("strip", str(target), "--recommendation", "Root element form", "Missing question")
+    assert result.returncode == 1
+    assert result.stdout == b""
+    assert result.stderr.decode("utf-8") == (
+        'Error: no <open-question> block has the id "Missing question"; the document holds '
+        '"Escape hatch under sole writer", "Root element form", "Fixture bare block"\n'
+    )
+    assert document_of(target) == before
+
+
+def test_bare_strip_after_strip_recommendation_clears_the_alternatives_too(run_tool, milestone_dir):
+    target = milestone_dir("annotated")
+    assert run_tool("strip", str(target), "--recommendation", "Root element form").returncode == 0
+    assert not open_questions.is_bare(open_questions.load_document(str(target)).questions[1])
+    result = run_tool("strip", str(target), "Root element form")
+    assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
+    assert block_lines(document_of(target).decode("utf-8"), "Root element form") == bare_block(
+        "Root element form", "Is the empty document a self-closing root or an open and close tag pair?"
+    )
+
+
+def test_main_strips_the_recommendation_half_in_process_silently(capsys, milestone_dir):
+    target = milestone_dir("annotated")
+    assert open_questions.main(["strip", str(target), "--recommendation", "Escape hatch under sole writer"]) == 0
+    assert capsys.readouterr() == ("", "")
+    question = open_questions.load_document(str(target)).questions[0]
+    assert question.recommendation is None and not question.depends_on and not question.principles
+    assert len(question.alternatives) == 3
+
+
+def test_strip_recommendation_is_the_per_block_primitive_and_reports_whether_it_changed_anything():
+    alternatives = [Alternative(id="A", text="a", advantages=["+"], drawbacks=["-"])]
+    question = Question(
+        id="Annotated",
+        question="What?",
+        alternatives=list(alternatives),
+        principles=["P"],
+        depends_on=[Dependency(question="Other", option="O")],
+        recommendation=Recommendation(option="A", rationale="because"),
+    )
+    assert open_questions.strip_recommendation(question) is True
+    assert question == Question(id="Annotated", question="What?", alternatives=alternatives)
+    assert not open_questions.is_bare(question)
+    assert open_questions.strip_recommendation(question) is False
+    assert question == Question(id="Annotated", question="What?", alternatives=alternatives)
+    assert open_questions.strip_question(question) is True
+    assert question == Question(id="Annotated", question="What?")
+
+
+@pytest.mark.parametrize(
+    "children",
+    [
+        {"principles": ["P"]},
+        {"depends_on": [Dependency(question="Other", option="O")]},
+        {"recommendation": Recommendation(option="A")},
+    ],
+)
+def test_strip_recommendation_treats_any_single_child_of_its_half_as_something_to_strip(children):
+    question = Question(id="One child", question="What?", alternatives=[Alternative(id="A", text="a")], **children)
+    assert open_questions.strip_recommendation(question) is True
+    assert question == Question(id="One child", question="What?", alternatives=[Alternative(id="A", text="a")])
+
+
+def test_strip_recommendation_leaves_a_block_carrying_only_alternatives_unchanged():
+    question = Question(id="Alternatives only", question="What?", alternatives=[Alternative(id="A", text="a")])
+    assert open_questions.strip_recommendation(question) is False
+    assert question == Question(id="Alternatives only", question="What?", alternatives=[Alternative(id="A", text="a")])

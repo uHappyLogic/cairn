@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Tool Partial Strip Flag
-
-Add a `--recommendation` mode to the `strip` subcommand of `core/tools/open_questions.py` that clears only the `<recommendation>`, `<depends-on>`, and `<applied-principle>` children of each named block and leaves its `<alternative>` children standing, implemented as the one shared per-block primitive the cascade will reuse, while bare `strip` keeps clearing every child. The milestone needs it as the cheap revision hatch of the inline recommendation pass. Verified by `tests/test_strip.py` pinning both forms under both pytest runs with the existing strip-to-bare tests left true.
-
----
-
 ## Tool Narrowed Answer Cascade
 
 Change `remove` so every option-less removal and every disagreeing dependent takes the partial strip — clearing the `<recommendation>`, `<depends-on>`, and `<applied-principle>` children but keeping the `<alternative>` children — transitively over dependents of stripped blocks as today. That keeps the parallel pass's alternatives across answers, so an override costs only a re-run of the recommendation pass. Verified by `tests/test_remove.py` re-pinned to the kept-alternatives outcome and both pytest runs passing.
