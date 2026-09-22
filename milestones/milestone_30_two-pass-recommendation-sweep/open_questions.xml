@@ -1,28 +1,4 @@
 <open-questions>
-  <open-question id="Embed shape selection">
-    <question>The embed subcommand must accept two fragment shapes: alternatives only (from the parallel agent) and recommendation only, with its depends-on and applied-principle children (from the inline recommendation pass). Does the tool tell them apart by inspecting the fragment, or does the caller name the shape with an explicit flag, and what must the target block already hold for each shape (no alternatives yet for the first, alternatives but no recommendation for the second)?</question>
-    <alternative id="Explicit shape flag">
-      One `embed` subcommand whose caller names the shape with a required, mutually exclusive flag pair — `--alternatives` for the parallel pass (sliced between its own first and last `&lt;alternative&gt;` anchor lines, accepted only when the block carries no `&lt;alternative&gt;` yet, the full strip being the hatch) and `--recommendation` for the inline pass (accepted only when the block carries at least one `&lt;alternative&gt;` and no `&lt;recommendation&gt;` yet, the partial strip being the hatch, with the recommendation&apos;s `option` validated against the block&apos;s own alternative ids since the fragment carries none) — each shape writing only its own child kinds and sharing one validation core.
-      <advantage>It matches the tool&apos;s established one-verb-with-a-mode-flag style (`list --unannotated`, `lift --alternative`, `remove --option`), keeps every call site self-describing about which pass it is, and lets each refusal name both what the pass asked for and what the block holds, while `--recommendation` never touching the `&lt;alternative&gt;` children makes the frozen alternative set a property of the tool rather than of caller discipline.</advantage>
-      <drawback>It is the tool&apos;s first subcommand with a required argument, the flag restates information the document already determines so it must be kept true at two call sites and in the repair template, and it reads inconsistently if the sibling question &quot;Strip command forms&quot; settles on a second subcommand rather than a flag on `strip`.</drawback>
-    </alternative>
-    <alternative id="Fragment inference">
-      `embed` keeps its single call form and decides the shape from the piped message — an `&lt;alternative&gt;` anchor line present means the alternatives shape, its absence with a `&lt;recommendation&gt;` line means the recommendation shape — then applies whichever precondition that shape implies.
-      <advantage>Nothing new appears at either call site or in the shape-reminder repair template, so the two passes state what to pipe and never what mode to pipe it in.</advantage>
-      <drawback>The slice anchors must be chosen before the parse, by substring tests over prose that these very agents write about `&lt;alternative&gt;` elements, and a return carrying both halves is indistinguishable from an intended one, so the recommendation pass could overwrite the frozen alternatives unless the tool infers a shape only to refuse it — the flag&apos;s job done blind — and every refusal names what the fragment lacks instead of what the pass expected.</drawback>
-    </alternative>
-    <alternative id="Block state selects">
-      No flag and no fragment guessing: the target block&apos;s current children select the shape, because the two preconditions are mutually exclusive and exhaustive over the legal states — a block with no `&lt;alternative&gt;` accepts only an alternatives fragment, a block with alternatives and no `&lt;recommendation&gt;` only a recommendation fragment, and a block with both is refused until one of the strips runs.
-      <advantage>The shape test and the precondition are one single test, so no flag can ever disagree with the document, nothing is inferred from prose, and both passes keep an identical one-line call form.</advantage>
-      <drawback>The caller cannot state its intent, so a block whose alternatives an answer-time cascade cleared silently becomes an alternatives-shape target and the recommendation pass&apos;s return is refused for holding no `&lt;alternative&gt;` element — blaming the fragment when the fault is the missing alternative set — and any later third shape breaks the exhaustiveness the whole scheme rests on.</drawback>
-    </alternative>
-    <alternative id="Two embed subcommands">
-      Retire the single `embed` for a pair, `embed-alternatives` and `embed-recommendation`, each with its own positional argument, help text, precondition, refusal strings, and test file.
-      <advantage>The shape is fixed at the call site and can never be omitted, and each subcommand&apos;s argparse help documents exactly one contract end to end.</advantage>
-      <drawback>It puts two names in front of one write path whose wrapper-line, well-formedness, stray-text and `&lt;depends-on&gt;` checks are shared, introduces the first two-word subcommand into a vocabulary of single verbs (create, list, locate, lift, add, strip, embed, remove, walk, sort), and re-points every documentation surface that names `embed` today.</drawback>
-    </alternative>
-    <recommendation option="Explicit shape flag">Two shapes of one write are exactly what a mode flag expresses in this tool&apos;s existing style, and naming the shape lets each refusal cite the pass&apos;s expectation alongside the block&apos;s state while the preconditions it enforces — no `&lt;alternative&gt;` yet for the alternatives shape, alternatives but no `&lt;recommendation&gt;` for the recommendation shape, whose option is checked against the block&apos;s own ids — are what keep the alternative set frozen between passes; only if the recommendation pass ever had to write into a block with no alternatives would block-state selection win instead.</recommendation>
-  </open-question>
   <open-question id="Parallel dispatch host fallback">
     <question>Runtime prose names capabilities, never hosts, and not every host can run several subagent dispatches at once. How does /provide-alternatives-to-all-open-questions key its dispatch on that capability, does it fall back to sequential dispatch where concurrency is unavailable, and is there a cap on dispatches in flight?</question>
     <alternative id="Capability branch uncapped">
@@ -83,7 +59,6 @@
       <advantage>Each verb carries exactly one meaning and one argparse help text end to end, no flag can be omitted or mistyped, and `strip`&apos;s existing contract, tests, and every sentence describing it stand entirely unchanged.</advantage>
       <drawback>It puts two names in front of one write whose only difference is which child kinds survive — precisely the case this tool spells as a mode flag everywhere else — adding an eleventh verb, its own test file, and a naming question of its own, and reading inconsistently beside an `embed` whose two shapes are named by flags.</drawback>
     </alternative>
-    <depends-on question="Embed shape selection" option="Explicit shape flag"/>
     <recommendation option="Flag on strip">Two blast radii for one write is what this tool spells as a flag on the broad bare form, exactly as `remove --option` narrows `remove`, and keeping the full strip as the default leaves every shipped call, test, and sentence about `strip` true while the new flag reads as the mirror of embed&apos;s recommendation shape; only if a bare `strip` slip were unrecoverable, rather than one re-dispatch of the alternatives pass, would flipping the default win instead.</recommendation>
   </open-question>
   <open-question id="Inline embed ordering">
@@ -103,7 +78,6 @@
       <advantage>Ordering, cycles and intermediate states all stop being questions at once, and one write matches the pass&apos;s whole-set reasoning and its single per-run commit exactly.</advantage>
       <drawback>It needs a second fragment format carrying the wrapper lines every current shape check refuses outright, with its own per-block anchors, preconditions and refusal strings, and it makes one bad block refuse the whole run&apos;s reasoning where a per-block call refuses one block and leaves the rest embedded.</drawback>
     </alternative>
-    <depends-on question="Embed shape selection" option="Explicit shape flag"/>
     <recommendation option="Resolve against alternatives">The check&apos;s recommendation half records a sequential-dispatch fact the inline pass abolishes, while the half that keeps a tag meaningful stays enforceable against the frozen alternatives every block must already carry, so dropping it removes a condition from the tool instead of adding a graph-ordering rule to prose the answer sweep deliberately emptied of one; only if a tag naming a recommendation-less sibling were worse than the edge `walk` already drops would ordering the embed calls win instead.</recommendation>
   </open-question>
   <open-question id="Alternatives return repair">
@@ -128,7 +102,6 @@
       <advantage>The two anchors then live in exactly one runtime file — the agent&apos;s self-check — so the pass can never drift from it, sparing this pass the duplication cost the shape flag already pays at its call sites.</advantage>
       <drawback>On the fresh-re-dispatch branch the new agent receives an error about a message it never sent and no statement of the shape to hit, which is close to the blind attempt the template was introduced to replace, and even on the continuation branch it withholds the one restatement that helps when the first self-check passed on a wrong reading.</drawback>
     </alternative>
-    <depends-on question="Embed shape selection" option="Explicit shape flag"/>
     <depends-on question="Parallel dispatch host fallback" option="Capability branch uncapped"/>
     <recommendation option="Whole pipeline kept">The pipeline is this repository&apos;s one worked answer to a malformed return, and the split gives it more to do rather than less — an unrepaired skip now holds up the recommendation pass, not merely its own block — so only the template changes, rewritten around the anchors the alternatives shape introduced; only if a repaired alternatives return proved no likelier to embed than a plain filtered re-run would dropping the repair win instead.</recommendation>
   </open-question>
@@ -155,7 +128,6 @@
       <drawback>It makes `list` the first read filter with a required value, so a bare `--missing` is an argparse usage error rather than a meaningful call, and it buys extensibility for a format whose two annotation halves this very milestone freezes.</drawback>
     </alternative>
     <applied-principle>Name by distinctive function</applied-principle>
-    <depends-on question="Embed shape selection" option="Explicit shape flag"/>
     <depends-on question="Strip command forms" option="Flag on strip"/>
     <recommendation option="Element-named pair">Today&apos;s filter keeps its exact meaning and its job as the recommendation pass&apos;s idempotency skip but not its spelling, because the split leaves annotated with two referents — a block carrying alternatives is annotated, yet `--unannotated` would still print it — so each filter is named for the element it tests, which also keeps one pair of words meaning one pair of halves across `list`, `embed` and `strip`; only if this flag were typed by users outside this repository, rather than only by the two passes and the test suite, would the additive option&apos;s zero churn win instead.</recommendation>
   </open-question>
@@ -176,7 +148,6 @@
       <advantage>It buys the coherence of blanket re-recommendation at a fraction of the churn, rewriting only the picks the new whole-set view actually contradicts — the very case the skip option can address only with a prose note in someone else&apos;s rationale.</advantage>
       <drawback>Idempotency becomes a judgment rather than a filter, so two consecutive runs over an unchanged document can differ and a recommendation the user is about to answer can vanish under an unrelated re-run; it requires the pass to inspect and rule on blocks it is not writing, which is exactly the prose inspection the sweep&apos;s idempotency rule keeps out; and each silent overwrite needs its own advisory because the diff alone cannot say why a settled pick moved.</drawback>
     </alternative>
-    <depends-on question="Embed shape selection" option="Explicit shape flag"/>
     <depends-on question="Strip command forms" option="Flag on strip"/>
     <depends-on question="Alternatives list filter" option="Element-named pair"/>
     <recommendation option="Skip the annotated">The narrowed cascade already decides which blocks&apos; reasoning an answer invalidated, so the recommendation-less set is the set to write and the rest is the set to trust, and the recommendation-shape precondition makes that a refusal in the tool rather than a discretion in prose — keeping idempotency a filter, keeping a pick the user is mid-answer on stable, and leaving revision to a partial strip that now costs only the pick and never the alternatives; only if the whole-set view routinely contradicted recommendations the cascade had deliberately left standing would re-recommending the whole set win instead.</recommendation>
