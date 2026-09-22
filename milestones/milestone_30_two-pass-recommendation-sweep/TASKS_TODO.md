@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Discuss Reuses Frozen Alternatives
-
-Update `core/skills/discuss-open-question/SKILL.md` to work on a question in any state: when the block carries embedded `<alternative>` elements it reuses them as the option set (an option the set lacks may be put on the table marked as a departure), and when bare it follows the enumeration procedure first; it then follows the pick procedure to state one recommendation of its own, showing any embedded `<recommendation>` beside it as the sweep's standing pick and saying plainly whether the two agree and why. Verified by the skill referencing both procedures in order, the build passing, and a dry run on an annotated block and on a bare one.
-
----
-
 ## Narrow Cascade Prose In Answer Path
 
 Rewrite the sentences in `core/shared/answer-procedure.md`, `core/skills/review-milestone-requirements/SKILL.md`, and `core/skills/answer-all-open-questions-with-recommendation/SKILL.md` that describe the cascade's strip outcome so they state the narrowed contract: a stripped dependent loses its `<recommendation>`, `<depends-on>`, and `<applied-principle>` children, keeps its `<alternative>` children, and is the recommendation pass's to re-pick. Verified by grep finding no runtime sentence still claiming a dependent is stripped to its `<question>` and the build passing.

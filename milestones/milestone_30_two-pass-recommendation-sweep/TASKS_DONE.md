@@ -117,3 +117,20 @@ Rewrite `core/skills/recommend-all-open-questions/SKILL.md` as an inline skill t
 - A run of the skill's mechanics over a scratch git milestone seeded from the annotated fixture: `list --without-alternatives` stopped it while the bare block stood; once that block carried alternatives and the standing recommendations were partially stripped, the three blocks were embedded in reverse document order (a dependent before its target) with the tool accepting each, a mistyped option was refused with the document byte-identical and the corrected call accepted, the three `lift` lines became the body of exactly one `Recommendation-annotation: milestone_99_scratch` commit, the sort was the identity so the guard fired and no `Question-ordering:` commit landed, a re-run's `--without-recommendation` printed nothing, and `strip --recommendation` re-surfaced one block under that filter while `--without-alternatives` stayed empty
 
 ---
+
+## Discuss Reuses Frozen Alternatives
+
+Update `core/skills/discuss-open-question/SKILL.md` to work on a question in any state: when the block carries embedded `<alternative>` elements it reuses them as the option set (an option the set lacks may be put on the table marked as a departure), and when bare it follows the enumeration procedure first; it then follows the pick procedure to state one recommendation of its own, showing any embedded `<recommendation>` beside it as the sweep's standing pick and saying plainly whether the two agree and why. Verified by the skill referencing both procedures in order, the build passing, and a dry run on an annotated block and on a bare one.
+
+**Verified:**
+
+- `core/skills/discuss-open-question/SKILL.md` references both shared procedures via `{{PLUGIN_ROOT}}` in order — `shared/alternatives-procedure.md` (line 54, the bare-block branch) before `shared/recommend-procedure.md` (line 56, the pick) — and every reference resolves in both rendered trees
+- Annotated block: step 3 reuses the embedded `<alternative>` elements as the option set exactly as embedded (id, what-it-is, advantage, drawback), never re-enumerates, keeps a frozen option a decision has since closed in view and noted as closed, and lets an option the set lacks onto the table only marked plainly as a departure from the frozen set — a literal answer matching no `<alternative id>` if recorded
+- Bare block: step 3 follows the enumeration procedure first, inline, with the located block as QUESTION, and its 2–4 alternatives are the option set for the rest of the deliberation, written nowhere
+- Either way the pick procedure then runs with the fixed option set as ALTERNATIVES and the skill states one recommendation of its own, formed afresh, with the disclosure duty and any principle citation rendered as prose
+- A block carrying a `<recommendation>` has it shown beside the own pick, labelled as the sweep's standing pick with its rationale and any `<applied-principle>`/`<depends-on>` it carries, followed by a plain statement of whether the two agree and why; a block carrying none leaves the own pick standing alone
+- The skill stays conversational and file-free (never edits, every locate/list/lift through the tool), names no host, has no bare `{{` outside its four placeholders and no `## Rules` section, and keeps its unquoted 21-word description
+- `uv run scripts/build_hosts.py` rebuilt both host trees (39 and 40 files) and `uv run scripts/build_hosts.py --check` passes
+- Dry runs against a scratch milestone seeded from the `annotated` fixture: on "Root element form" `locate` printed the frozen two-option set with its standing pick, the set was reused with no departure, an own pick (`Self-closing root`) was formed and shown beside the standing pick with agreement stated and the reasons (shared ground, a non-load-bearing `<depends-on>` assumption, two cited principles absent from the live store); on "Fixture bare block" the enumeration procedure produced two honest options before the pick procedure picked one, with no standing pick to show; the scratch document's checksum was unchanged after both
+
+---
