@@ -32,5 +32,9 @@ Three sentences describe the two commits: `docs/skill-reference.md` line 81 (`co
 
 `/complete-all-tasks` keeps committing the agent-staged index itself in step 2c, behind its own `git diff --cached --quiet` nothing-staged guard and its own `git commit` with no pathspec; it is not routed through `core/shared/commit-procedure.md`, whose PATHS-first contract stays unchanged, and the `complete-task` agent's return contract stays unchanged. The only changes to step 2c are the subject, which becomes `Task-completion: <TASK_NAME>` built from the heading step 2b already holds, and the removal of the `-m "<body>"` argument and the heading-in-body sentence, so the orchestrator commits subject-only.
 
+### Ask-in-context git-history claim
+
+The step 2 sentence of `core/skills/ask-in-milestone-context/SKILL.md` that calls the task-to-commit mapping "not keyed on the heading in the subject line" is rewritten as a marker-agnostic heading search: completion commits carry the task heading, so searching commit subjects and bodies for the heading text usually finds the commit, while the mapping stays best-effort and the fall-back to the live files and the "never the sole source" rule are kept. The sentence names neither the `Task-completion:` nor the retired `Tasklist-completion:` marker and describes no era of history.
+
 ## Out of Scope
 
