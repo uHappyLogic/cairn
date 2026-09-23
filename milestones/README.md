@@ -13,9 +13,19 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_30_two-pass-recommendation-sweep/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 30 — Two-pass recommendation sweep
+
+- A new `/provide-alternatives-to-all-open-questions` skill gathers the blocks lacking alternatives with `list --without-alternatives` and dispatches the renamed read-only `cairn:provide-alternatives-to-open-question` agent once per block — all together where the host can run several dispatches at once, one after another where it cannot, with no cap — embedding each return as it lands through `embed --alternatives` and committing it as a body-less `Alternatives-annotation: <Short Title>` commit.
+- `/recommend-all-open-questions` is now an inline pass that dispatches no agents: it stops while any block lacks alternatives, reasons over the whole `--without-recommendation` set at once, embeds each block's `<recommendation>`, `<depends-on>`, and `<applied-principle>` with `embed --recommendation` against frozen alternatives, picks the best surviving option of a stale set, and commits once per run under `Recommendation-annotation: <milestone_id>` with one `lift` line per annotated question as the body before the end-of-run sort.
+- `core/tools/open_questions.py` gained `strip --recommendation` (clearing only the pick-side children), `list --without-alternatives` and `--without-recommendation` in place of the retired `--unannotated`, and a two-shape `embed` whose `--alternatives` and `--recommendation` modes each write only their own child kinds over one shared validation core.
+- The answer-time cascade is narrowed: every option-less removal and every disagreeing dependent now loses only its `<recommendation>`, `<depends-on>`, and `<applied-principle>` children, transitively as before, and keeps its `<alternative>` children, so an override costs only a re-run of the recommendation pass.
+- `core/shared/recommend-procedure.md` is split into an enumeration half at `core/shared/alternatives-procedure.md`, which forms no preference and loads no principle store, and a pick half that keeps the principle store, the sibling-disclosure duty, and the stale-set rule.
+- `/discuss-open-question` works on a question in any state, reusing embedded alternatives as its option set (a missing option may be tabled as a departure) or enumerating first when the block is bare, and states its own recommendation beside any standing pick, saying whether the two agree.
+- `CLAUDE.md`, `docs/workflow.md`, `docs/skill-reference.md`, the README loop diagram, and the headless chains in `docs/ways-of-using-cairn.md` (an opus-xhigh alternatives line before a fable-high recommend line) describe the two-pass shape, and both host trees are rebuilt with `uv run scripts/build_hosts.py --check` passing.
 
 ### Milestone 29 — Per-question recommendation commits and question sorting
 
@@ -329,3 +339,4 @@ Current milestone: `milestones/milestone_30_two-pass-recommendation-sweep/`
 | 27 | Open Questions XML Tool | `milestones/milestone_27_open-questions-xml-tool/` |
 | 28 | Ways of using Cairn | `milestones/milestone_28_ways-of-using-cairn/` |
 | 29 | Per-question recommendation commits and question sorting | `milestones/milestone_29_per-question-commits-and-sorting/` |
+| 30 | Two-pass recommendation sweep | `milestones/milestone_30_two-pass-recommendation-sweep/` |
