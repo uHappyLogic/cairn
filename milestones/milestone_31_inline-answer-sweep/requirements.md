@@ -58,7 +58,11 @@ The sweep names no skipped question. A question whose `lift` call fails mid-run,
 
 ### New-question reporting
 
-The sweep carries no new-question advisory. Beside its terse status line it prints only the contradiction advisory the goal names, when it noticed a contradiction; it does not report new open questions a recorded decision may have raised, even though it now records inline. Those are left for the next `/review-milestone-requirements` pass, the sole author of question blocks. The single-question answer skills keep their new-question advisory unchanged.
+The sweep carries no new-question advisory. Beside its terse status line it prints only the contradiction advisory the goal names, when it noticed a contradiction, and the end-of-run completeness anomaly, when the check fires; it does not report new open questions a recorded decision may have raised, even though it now records inline. Those are left for the next `/review-milestone-requirements` pass, the sole author of question blocks. The single-question answer skills keep their new-question advisory unchanged.
+
+### End-of-run completeness check
+
+The sweep keeps one end-of-run `walk` call as a completeness check, not as a skipped-question advisory. A single pass either records a block or finds it stripped or removed by a cascade, so `walk` is expected to print nothing; any id it does print means a recommendation-bearing block was left unrecorded, and the sweep reports that as an anomaly beside its terse status line, alongside the contradiction advisory. The check never finds, records, or names skipped questions, so the skipped-question decision stands, and the run still does no document re-read. The goal's end-of-run sentence, which describes the `walk` print as the still-skipped advisory, is to be revised through `/modify-milestone-goal` to describe this completeness check instead.
 
 ### Retired agent in the invariants
 
