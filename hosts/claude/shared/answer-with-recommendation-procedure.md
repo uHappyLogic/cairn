@@ -1,34 +1,34 @@
 # Answer-with-recommendation procedure (shared core)
 
 This is the single source of truth for recording one open question's **embedded
-recommendation** as its answer in the current milestone. It composes over
+recommendation** as its answer in a milestone. It composes over
 `shared/answer-procedure.md` (the recording core): it lifts the `<recommendation>` element
 the recommend sweep embedded in the question block, then delegates the actual recording to
 that core unchanged. It is followed inline by the `answer-open-question-with-recommendation`
-skill and in isolation by the `answer-open-question-with-recommendation` agent. The caller
-supplies the one input below and wraps the result; this file describes only the work itself
-— resolve, lift, delegate.
+skill and, once per question, by the inline answer sweep. The caller supplies the inputs
+below and wraps the result; this file describes only the work itself — lift, delegate.
 
 ## Inputs
 
-This procedure records one recommendation-derived answer given one input the caller
+This procedure records one recommendation-derived answer given two inputs the caller
 supplies:
 
+- **MILESTONE_DIR** — the already-resolved directory of the milestone the question belongs
+  to, the `<MILESTONE_DIR>` every tool call below uses. The caller resolves it; this
+  procedure never looks the milestone up, and hands it on to the recording core as that
+  core's own `MILESTONE_DIR` input.
 - **SHORT TITLE** — the resolved handle of an existing `<open-question>` block to answer
   (its `id`, compared case-insensitively). The caller has already obtained it; lifting the
   block's `<recommendation>` element and delegating the recording are this procedure's job.
 
 The ANSWER is **not** an input here — this procedure *derives* it by lifting the block's
-embedded `<recommendation>` element. That derived ANSWER, together with SHORT TITLE and the
-lifted `option` value as RECORDED OPTION, is what it hands to `shared/answer-procedure.md`.
+embedded `<recommendation>` element. That derived ANSWER, together with MILESTONE_DIR,
+SHORT TITLE, and the lifted `option` value as RECORDED OPTION, is what it hands to
+`shared/answer-procedure.md`.
 
 ## Procedure
 
-### 1. Find the current milestone
-
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
-
-### 2. Lift the recommendation
+### 1. Lift the recommendation
 
 Run the plugin's open-question tool:
 
@@ -48,10 +48,10 @@ SHORT TITLE, or the matched block carries no `<recommendation>` element (the rec
 never annotated it, or the question was added afterward) — **stop without changing
 anything** and report why, quoting the tool's `Error:` line: nothing is recorded.
 
-### 3. Delegate to the recording core
+### 2. Delegate to the recording core
 
-Hand the resolved **SHORT TITLE**, the derived **ANSWER**, and the **RECORDED OPTION** lifted
-in step 2 (passed separately, so the core hands it to the tool as an exact id rather than
-parsing it out of ANSWER) to `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` and follow it
-unchanged. That procedure owns the recording work (locate, analyse, fold, remove, cascade);
+Hand the given **MILESTONE_DIR** and **SHORT TITLE**, the derived **ANSWER**, and the
+**RECORDED OPTION** lifted in step 1 (passed separately, so the core hands it to the tool
+as an exact id rather than parsing it out of ANSWER) to
+`${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md` and follow it unchanged. That procedure owns the recording work (locate, analyse, fold, remove, cascade);
 this procedure only lifts and delegates.
