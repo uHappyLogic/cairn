@@ -62,3 +62,21 @@ Delete `core/agents/answer-open-question-with-recommendation.md` and remove the 
 - `uv run scripts/build_hosts.py --check` passes with the rebuilt host trees (agent deletions and the skill edit in both hosts) in the change set.
 
 ---
+
+## Sync CLAUDE.md To Inline Sweep
+
+Update `CLAUDE.md` to the two-agent, inline-sweep shape: the layout table and pipeline listing name two dispatched subagents and no agent for the sweep, the "Mutation-in-agent inversion" invariant is deleted, the answer-sweep invariant describes only the inline shape with no retirement clause, the committing and dispatched-agent-return invariants no longer have the sweep commit an agent's staged index, and the success-path reporting invariant's advisory list gains the sweep's completeness anomaly beside the still-skipped questions the two annotating passes still report. The milestone needs it so the rationale layer matches the runtime it governs. Verified by `CLAUDE.md` naming the deleted agent nowhere and every invariant sentence about the sweep agreeing with the rewritten skill.
+
+**Verified:**
+
+- The `CLAUDE.md` layout table's `core/agents/*.md` row names two dispatched subagents, `complete-task` and `provide-alternatives-to-open-question`, and no agent for the sweep.
+- The pipeline listing describes `answer-open-question-with-recommendation` as recording one question's recommendation inline (no "agent for the sweep") and `answer-all-open-questions-with-recommendation` as an inline sweep in walk order dispatching no agent, one commit per answer.
+- The "Mutation-in-agent inversion" invariant is deleted; its still-true composition rationale (lift in `answer-with-recommendation-procedure.md` over `answer-procedure.md`, inputs-as-given contract shared with literal `answer-open-question`) survives inside the answer-sweep invariant without naming an agent.
+- The answer-sweep invariant describes only the inline shape (one `MILESTONE_DIR` resolution passed down, one `walk` walked once, whole-set read for reasoning only, strictly sequential recording from the procedure's lift step, lift failure as the silent skip, lift print as commit body, one commit per answer, every pick recorded as given, contradiction held and reported once, stop on a post-fold tool failure with a resumable tree, no re-gather loop, end-of-run `walk` as completeness check, new questions left to review), with no retirement clause and no mention of the deleted agent or an orchestrator.
+- The committing invariant has only `complete-all-tasks` commit an agent's staged index and states the inline answer sweep commits each answer itself through the commit procedure.
+- The dispatched-agent return contracts invariant names `complete-all-tasks` as the one other dispatch site and states the answer sweep dispatches nothing and has no return to judge.
+- The success-path reporting invariant's advisory list names the still-skipped questions the two annotating passes report, beside the answer sweep's contradiction pairs and completeness anomaly.
+- `grep` finds no mention of the deleted agent in `CLAUDE.md` (the one remaining `answer-open-question-with-recommendation` match is the pipeline's skill entry), and every sweep sentence agrees with the rewritten `core/skills/answer-all-open-questions-with-recommendation/SKILL.md`.
+- `uv run scripts/build_hosts.py --check` passes.
+
+---
