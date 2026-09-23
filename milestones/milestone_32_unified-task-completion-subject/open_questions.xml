@@ -47,6 +47,26 @@
   </open-question>
   <open-question id="CLAUDE.md invariant record">
     <question>Should the CLAUDE.md committing invariant record the unified Task-completion subject and name the retired Tasklist-completion marker as something a later editor must not restore, or is the runtime and docs change enough with no CLAUDE.md edit?</question>
+    <alternative id="No CLAUDE.md edit">
+      Leave `CLAUDE.md` as it is. The milestone changes only the runtime files, `docs/skill-reference.md`, `docs/workflow.md`, and the rebuilt `hosts/` trees. The committing invariant at line 95 already says every skill commits under a function-derived `&lt;Marker&gt;: &lt;descriptor&gt;` subject, and it names no completion subject at all.
+      <advantage>It follows the rule that only rationale lives in `CLAUDE.md` and the mechanics live in the runtime files. It adds no new copy of a literal subject string that could drift. Nothing in line 95 becomes false, because the bullet names neither `Tasklist-completion:` nor `Task-completion:`. Unifying the subject is also not a surprising design choice that a later editor would be tempted to undo.</advantage>
+      <drawback>Nothing warns a later editor against bringing back a separate orchestrator marker with the heading in the body. The old pattern will still look like precedent: 218 commits in history use it, and the ledgers of milestones 14, 15, 16, 18, 25, and 29 quote it. This option is also only complete if the orchestrator&apos;s own commit line and nothing-staged guard survive. If that commit is instead routed through the shared commit procedure, line 95&apos;s `complete-all-tasks` clause goes stale and needs editing anyway.</drawback>
+    </alternative>
+    <alternative id="Full invariant clause">
+      Extend the committing bullet at line 95 with one clause. It says that both completion runners commit subject-only under `Task-completion: &lt;Task Title&gt;`, with the task&apos;s `##` heading copied exactly. It also says the retired `Tasklist-completion:` marker, with its heading-in-body commits, must not be restored. Each point gets its rationale: one subject for one unit of work whichever runner makes it, and the heading visible in the subject line so history can be searched without reading commit bodies.
+      <advantage>It matches how `CLAUDE.md` already guards against regressions. Retired designs are named with the reason they must not come back, as in &quot;The old role-based commit split is retired&quot; and the retired recommendation commit and sentinel entries. So a later editor who finds the old marker in history or in the ledgers can see that it was deliberately replaced, and why.</advantage>
+      <drawback>It puts a literal subject format into an invariants file that says mechanics belong in the runtime files. That makes one more place to keep in sync with the two SKILL.md files and the docs. It also makes an already long bullet longer.</drawback>
+    </alternative>
+    <alternative id="Retirement-only clause">
+      Append only a short retirement note to line 95, in the style of &quot;The old role-based commit split is retired&quot;. It would say that the separate `Tasklist-completion:` marker is retired and both completion runners share one subject. The literal `Task-completion: &lt;Task Title&gt;` format stays in the runtime files and docs.
+      <advantage>It guards against the regression while copying no subject format into `CLAUDE.md`. That keeps the edit small and keeps mechanics out of the invariants file.</advantage>
+      <drawback>A bare retirement note without the reason gives a later editor little to weigh. They may not see why a per-runner marker is wrong, so the guard is weaker than one that states the rationale. It still adds a marker name to `CLAUDE.md` that must stay accurate.</drawback>
+    </alternative>
+    <alternative id="Defer to milestone finish">
+      Give no task in this milestone a `CLAUDE.md` edit. Leave it to `/finish-current-milestone` to decide at step 7 whether the unified subject counts as a lasting change to how the project works.
+      <advantage>It keeps this milestone&apos;s scope to the runtime files, the docs, and `hosts/`. The `CLAUDE.md` judgment is made once, when the final shape of the orchestrator&apos;s commit is known, rather than now.</advantage>
+      <drawback>Step 7&apos;s job is environment context, meaning new tools, conventions, and documentation locations. It is not recording invariants, so it may reasonably skip the change and leave `CLAUDE.md` silent by default. This question also stays open instead of being recorded in `## Decisions`, so whether `CLAUDE.md` changes rests on a later pass&apos;s discretion rather than a decision made here.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Workflow doc subject wording">
     <question>The How skills commit paragraph in docs/workflow.md says complete-all-tasks commits once per task without naming its subject; should it be extended to state that both completion runners share the Task-completion subject with the heading, or left unchanged since it is not made false by the change?</question>
