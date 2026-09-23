@@ -72,5 +72,9 @@ Before the loop the sweep reads `open_questions.xml` and `requirements.md` in th
 
 When any tool call fails after a question's decision has been folded into `requirements.md`, the sweep stops the whole run at once: it reports that question's Short Title with the tool's `Error:` line quoted verbatim and leaves the question's uncommitted edits in the working tree as they are, with no rollback, snapshot, or skip-and-continue. Every earlier answer is already committed, so what remains is the fold-before-remove superset (or, when a cascade `remove` failed, the recorded answer plus a partial cascade), a resumable tree rather than an untouched one, matching the `complete-task` return promise. The sweep never writes `open_questions.xml` outside the tool to undo such a state, and never continues past it, so a stranded fold cannot ride into the next answer's commit.
 
+### Headless chain sweep settings
+
+All four answer-sweep lines in `docs/ways-of-using-cairn.md` (the mixed-agent review and executing-tasks chains, and both lines of the stuck-milestone chain) move from `--model "opus"` at `--effort high` or `xhigh` to `--model "fable" --effort high`, the same settings as the `/cairn:recommend-all-open-questions` line. Opus suited the sweep when each question cost a fresh dispatch re-reading everything; inline, the whole-set context is paid once per run, and the run that holds the growing `requirements.md` across sequential folds and cascades has the same shape as the recommend line. Each affected way's settings sentence is rewritten to say so. Under milestone 30's run-before-record rule, the page edit lands only after a confirming run of the new settings on this repository.
+
 ## Out of Scope
 
