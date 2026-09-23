@@ -80,3 +80,18 @@ Update `CLAUDE.md` to the two-agent, inline-sweep shape: the layout table and pi
 - `uv run scripts/build_hosts.py --check` passes.
 
 ---
+
+## Sync Docs Pages To Inline Sweep
+
+Update `docs/skill-reference.md` (rewrite the sweep entry to the inline shape and delete the agent entry), `docs/workflow.md` (the commit paragraph and the phase narrative that have the sweep commit an agent's staged index), and `docs/design-claims.md` (the claims describing subagent context and the skill-agent split) so each describes the inline sweep and the two remaining agents. The milestone needs it so the reader-facing documentation matches the runtime. Verified by no page under `docs/` naming the deleted agent or describing the sweep as an orchestrator over an agent, and every design claim still reading true of the two-agent shape.
+
+**Verified:**
+
+- The `docs/skill-reference.md` entry for `answer-all-open-questions-with-recommendation` describes an inline skill that dispatches no agent: one milestone resolution per run, one `walk` as the whole gather and order walked exactly once, a whole read of `requirements.md` and `open_questions.xml` once for reasoning only, per-question recording through the shared procedure from its lift step (a failing `lift` the silent skip, its print the commit body), every pick recorded as given, one path-scoped `Recommendation-answer: <Short Title>` commit per answer before the next question, a run stop on a post-fold tool failure, an end-of-run `walk` completeness check, and a report of `Recommendations recorded.` or the no-op line beside only the contradiction pairs and the completeness anomaly, agreeing with `core/skills/answer-all-open-questions-with-recommendation/SKILL.md`.
+- The `answer-open-question-with-recommendation` (agent) entry is deleted from `docs/skill-reference.md`, and the alternative skill's entry no longer speaks of a "batch/agent form" or an orchestrator sweep.
+- The `docs/workflow.md` commit paragraph has only `/complete-all-tasks` commit its agent's staged index, lists the answer sweep among the batch skills that commit their own writes (inline, no agent, once per answer under `Recommendation-answer: <Short Title>` with the lifted line as body), and names `/complete-all-tasks` as the one orchestrator that stages nothing itself; the phase narrative describes the sweep as inline, dispatching no agent, committing each answer before recording the next.
+- In `docs/design-claims.md`, claim 13 has subagents do one task or one alternative set and states the batch recommend and answer skills dispatch no agent and read the question set once per run, and claim 19 names task completion as the only function with both a skill and an agent; every other claim (including 2, 6, 12, 14, and 15) still reads true of the two-agent, inline-sweep shape.
+- No page under `docs/` names the deleted agent or describes the sweep as an orchestrator over an agent: every remaining `answer-open-question-with-recommendation` match is the single-question skill, and the remaining orchestrator mentions are `/complete-all-tasks` and `/provide-alternatives-to-all-open-questions` only.
+- `uv run scripts/build_hosts.py --check` passes.
+
+---

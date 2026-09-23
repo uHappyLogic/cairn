@@ -123,9 +123,11 @@ the other tests yet.
 
 ### 13. Each unit of work runs with the smallest necessary context.
 
-- **Design:** One subagent does one task or one question, and then stops. The
-  orchestrator holds no work context. It gets a bare DONE, a bare FAILED, or
-  the ready-to-embed elements only. Task bodies are minimal. A shared procedure
+- **Design:** One subagent does one task or one alternative set, and then
+  stops. The orchestrator holds no work context. It gets a bare DONE, a bare
+  FAILED, or the ready-to-embed elements only. The batch recommend and answer
+  skills dispatch no agent. They read the question set one time for each run,
+  not one time for each question. Task bodies are minimal. A shared procedure
   loads only when a step needs it.
 - **Metric:** Tokens per task, orchestrator context size as the task count
   increases, and total cost per milestone.
@@ -178,8 +180,9 @@ the other tests yet.
 
 - **Design:** Cairn runs only by slash command. Each skill has one function. To
   record an answer, to change the goal, and to review the questions are 3
-  different skills. A skill and its agent differ only in where the procedure
-  runs: inline or isolated.
+  different skills. Task completion is the only function that has both a skill
+  and an agent. They use the same procedure and differ only in where it runs:
+  inline or isolated.
 - **Metric:** Count of file changes outside the skill's declared paths (must
   be 0).
 
