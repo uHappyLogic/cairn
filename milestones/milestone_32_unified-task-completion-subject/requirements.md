@@ -28,5 +28,9 @@ Three sentences describe the two commits: `docs/skill-reference.md` line 81 (`co
 
 ## Decisions
 
+### Orchestrator commit mechanics
+
+`/complete-all-tasks` keeps committing the agent-staged index itself in step 2c, behind its own `git diff --cached --quiet` nothing-staged guard and its own `git commit` with no pathspec; it is not routed through `core/shared/commit-procedure.md`, whose PATHS-first contract stays unchanged, and the `complete-task` agent's return contract stays unchanged. The only changes to step 2c are the subject, which becomes `Task-completion: <TASK_NAME>` built from the heading step 2b already holds, and the removal of the `-m "<body>"` argument and the heading-in-body sentence, so the orchestrator commits subject-only.
+
 ## Out of Scope
 
