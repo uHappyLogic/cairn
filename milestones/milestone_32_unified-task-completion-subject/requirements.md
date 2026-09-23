@@ -40,5 +40,9 @@ The step 2 sentence of `core/skills/ask-in-milestone-context/SKILL.md` that call
 
 In the `## How skills commit` paragraph of `docs/workflow.md`, the clause "`/complete-all-tasks` commits once per task" is extended to name its subject, `Task-completion: <task heading>` with no body, the same subject inline `/complete-task` uses, so the orchestrator is no longer the one batch skill in that paragraph whose subject goes unnamed.
 
+### CLAUDE.md invariant record
+
+The committing bullet of `CLAUDE.md` is extended with one clause stating that both completion runners commit subject-only under `Task-completion: <Task Title>`, with the task's `##` heading copied exactly, and that the retired `Tasklist-completion:` marker with its heading-in-body commits must not be restored, each with its rationale: one subject for one unit of work whichever runner makes it, and the heading visible in the subject line so history can be searched without reading commit bodies.
+
 ## Out of Scope
 
