@@ -56,6 +56,10 @@ The find-milestone step is removed from both `answer-with-recommendation-procedu
 
 The sweep names no skipped question. A question whose `lift` call fails mid-run, whether because an earlier cascade removed it as moot or stripped its pick, is skipped silently: the run prints only its terse status line or its no-op line, keeps no record of failed lifts during the loop, and adds no end-of-run call to find them. The commit diffs record the stripped blocks, and the next `/recommend-all-open-questions` pass picks them up through its `list --without-recommendation` filter. The CLAUDE.md invariant that stripped dependents get no console advisory stands unchanged.
 
+### New-question reporting
+
+The sweep carries no new-question advisory. Beside its terse status line it prints only the contradiction advisory the goal names, when it noticed a contradiction; it does not report new open questions a recorded decision may have raised, even though it now records inline. Those are left for the next `/review-milestone-requirements` pass, the sole author of question blocks. The single-question answer skills keep their new-question advisory unchanged.
+
 ### Retired agent in the invariants
 
 The "Mutation-in-agent inversion" invariant is deleted from `CLAUDE.md`, and the answer-sweep invariant is rewritten to describe only the inline shape, with no mention of the retired per-question recording agent and no retirement clause or reason. The inline description itself rules the agent out; the agent's history stays in `CHANGELOG.md`, `milestones/README.md`, and this milestone's commits.
