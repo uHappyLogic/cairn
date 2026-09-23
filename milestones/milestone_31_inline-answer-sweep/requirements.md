@@ -88,5 +88,9 @@ When any tool call fails after a question's decision has been folded into `requi
 
 All four answer-sweep lines in `docs/ways-of-using-cairn.md` (the mixed-agent review and executing-tasks chains, and both lines of the stuck-milestone chain) move from `--model "opus"` at `--effort high` or `xhigh` to `--model "fable" --effort high`, the same settings as the `/cairn:recommend-all-open-questions` line. Opus suited the sweep when each question cost a fresh dispatch re-reading everything; inline, the whole-set context is paid once per run, and the run that holds the growing `requirements.md` across sequential folds and cascades has the same shape as the recommend line. Each affected way's settings sentence is rewritten to say so. Under milestone 30's run-before-record rule, the page edit lands only after a confirming run of the new settings on this repository.
 
+### Confirming run for chain settings
+
+The headless-chain page edit is the last task of this milestone and lands inside it, and the confirming run is the next milestone's first inline answer sweep on this repository at `--model "fable" --effort high`. This follows milestone 30's precedent, where the headless-chain task landed within that milestone once both skills existed and the values were confirmed against the next milestone's first run; the previous decision's "only after a confirming run" wording is read in that sense, so the milestone's goal stays whole and the confirmation happens on a real sweep over new questions. If that run shows the settings fall short, the correction is a revert-then-correct in the milestone that ran it. No replay fixture of this milestone's own answers is built, the page edit is not deferred out of scope, and the recommendation pass's earlier fable-high runs do not count as the confirmation.
+
 ## Out of Scope
 
