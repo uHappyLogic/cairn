@@ -6,6 +6,26 @@ Every task-completion commit uses the same subject, `Task-completion: <Task Titl
 
 ## Relevant starting state
 
+### The two task-completion runners
+
+`core/skills/complete-task/SKILL.md` (inline) and `core/skills/complete-all-tasks/SKILL.md` (orchestrator) are the only two places a task-completion commit is made; both run `core/shared/complete-procedure.md`, and the dispatched `core/agents/complete-task.md` stages its change set path-scoped but never commits. The inline skill's step 2 hands the shared commit procedure two inputs, PATHS and the subject `Task-completion: <task heading>`, with no BODY, so it already commits subject-only under the task heading. The orchestrator's step 2c does not use the commit procedure: it commits the agent-staged index itself with `git commit -m "<subject>" -m "<body>"` behind a `git diff --cached --quiet` nothing-staged guard, under the subject `Tasklist-completion: <descriptor>` (the only descriptor ever used is `complete one milestone task`), with the task's `##` heading text as the body. Step 2b already holds that heading verbatim as `<TASK_NAME>` for the agent prompt, so the subject can be built from it without any new lookup.
+
+### Shared commit procedure
+
+`core/shared/commit-procedure.md` takes PATHS, SUBJECT, and an optional BODY, and composes nothing itself: a caller supplying no BODY gets a subject-only commit. Its step 1 guard checks PATHS with `git status --porcelain`, which the orchestrator cannot use as-is because it stages nothing itself and knows the agent's paths only through the staged index; that is why the orchestrator carries its own `git diff --cached --quiet` guard and its own `git commit` line.
+
+### Docs that describe these commits
+
+Three sentences describe the two commits: `docs/skill-reference.md` line 81 (`complete-all-tasks` entry: `Tasklist-completion:` subject with the heading in the body) and line 85 (`complete-task` entry: `Task-completion:` subject); `docs/workflow.md` line 164 (`## How skills commit`, listing `Task-completion:` among the example markers and stating that `/complete-all-tasks` commits once per task, without naming its subject). `core/skills/ask-in-milestone-context/SKILL.md` line 54 states that the task-to-commit mapping is best-effort and "not keyed on the heading in the subject line", a claim that becomes false once every completion subject carries the heading. `CLAUDE.md` line 95 names the orchestrator's per-task commit and its nothing-staged guard but no subject. `README.md`, `CHANGELOG.md`, and `docs/ways-of-using-cairn.md` name neither subject.
+
+### Built host trees
+
+`hosts/claude/` and `hosts/antigravity/` each hold a rendered copy of both SKILL.md files, byte-identical to `core/` apart from the `{{PLUGIN_ROOT}}` substitution; the four rendered files are the only `hosts/` files mentioning either subject. `uv run scripts/build_hosts.py --check` passes at HEAD (version 1.7.0), so the rebuild after the `core/` edit is the whole `hosts/` change.
+
+### Existing history
+
+`git log` holds 218 commits under `Tasklist-completion: complete one milestone task` (heading in the body) and 3 under `Task-completion: <heading>`. No skill or script reads either marker: `capture-milestone-principle-updates` greps only the three answer markers, and `/release-plugin` greps `Milestone-finish:` and `Principle-capture:`. The release skill's fallback for a range with no finished milestone reads commit bodies "where a subject is not self-explanatory", which is the only consumer that benefits from the heading moving into the subject. Milestone ledgers 14, 15, 16, 18, 25, and 29 quote the old `Tasklist-completion:` behaviour as a record of their time and are not runtime or docs files.
+
 ## Decisions
 
 ## Out of Scope
