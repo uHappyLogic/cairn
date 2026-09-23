@@ -52,7 +52,7 @@ Wait for the agent to return.
 After the subagent returns `DONE` (success confirmed, the task moved to `<MILESTONE_DIR>/TASKS_DONE.md`, and its change set staged), commit **the index the agent staged**. Stage nothing here yourself — the agent already did the path-scoped staging, so never `git add` and never `git add -A`:
 
 1. **No-op guard.** Check whether anything is actually staged (for example `git diff --cached --quiet`). If nothing is staged, this task produced no committable change: commit nothing, create no empty commit (there is no `--allow-empty` here), and go on to 2d.
-2. **Commit.** Commit the staged index under the subject `Tasklist-completion: <descriptor>` (e.g. `Tasklist-completion: complete one milestone task`), the marker naming this orchestrator's task-list-completion function — `git commit -m "<subject>" -m "<body>"` with no pathspec, since the staged index is exactly this task's change set. Put the task's `##` heading text (without the `##` prefix) in the commit **body**, not in the subject.
+2. **Commit.** Commit the staged index under the subject `Task-completion: <TASK_NAME>`, where `<TASK_NAME>` is the exact `##` heading text step 2b already holds — `git commit -m "Task-completion: <TASK_NAME>"` with no pathspec, since the staged index is exactly this task's change set.
 
 Commit once per task.
 
