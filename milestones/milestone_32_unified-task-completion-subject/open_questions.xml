@@ -4,6 +4,26 @@
   </open-question>
   <open-question id="Ask-in-context git-history claim">
     <question>The ask-in-milestone-context skill states that the task-to-commit mapping is best-effort and not keyed on the heading in the subject line; once every completion subject carries the heading verbatim, should that sentence be rewritten to say the mapping is keyed on the heading for commits made after this change, or left as-is because older history stays unkeyed?</question>
+    <alternative id="Rewrite as era-scoped keying">
+      Rewrite the step 2 sentence in `core/skills/ask-in-milestone-context/SKILL.md` (line 54) to say two things. Task-completion commits made from now on are keyed on the task&apos;s `##` heading in the `Task-completion:` subject. Older history maps only best-effort, because the 218 `Tasklist-completion: complete one milestone task` commits put the heading in the body. Git stays a supporting lens under the existing &quot;never the sole source&quot; rule.
+      <advantage>It is the most accurate account of what the runner will actually find. The runner is told that a `git log --grep` on the subject is reliable for new work, and why older milestones behave differently, in this repository and in every consuming project that already has orchestrator history.</advantage>
+      <drawback>The runtime skill now describes the history of a retired commit format. That cuts against the rule that runtime files hold only what the runner needs and name no retired mechanics. The sentence also goes stale again if the subject format ever changes. Headings are unique only within a milestone, and later fix-up commits carry no marker, so even the &quot;keyed&quot; half is keyed only within a milestone.</drawback>
+    </alternative>
+    <alternative id="Rewrite as marker-agnostic heading search">
+      Rewrite the sentence so it tells the runner to look for the task&apos;s heading text in completion commits, checking both subject and body, without naming either marker or either era. For example: completion commits carry the task heading, so a heading search usually finds the commit, but the mapping stays best-effort. Keep the fall-back to reading the live files.
+      <advantage>One instruction covers both new subjects and the old heading-in-body commits. A body-inclusive `git log --grep` matches both. The sentence becomes true for all history, not just future commits, and the retired `Tasklist-completion:` format never has to appear in runtime prose.</advantage>
+      <drawback>It is less precise than the era-scoped wording. The runner is not told that the subject alone is authoritative for new commits, so it may run a broader, noisier search than it needs to. It also relies on old bodies holding the bare heading, which is true of the orchestrator&apos;s past commits but is not stated anywhere the runner can check.</drawback>
+    </alternative>
+    <alternative id="Drop only the false clause">
+      Make the smallest possible edit: delete &quot;not keyed on the heading in the subject line&quot; and keep &quot;the task→commit mapping is best-effort&quot; and everything else in the bullet. The skill then makes no claim either way about subject keying.
+      <advantage>It removes the only statement the change makes false, as the milestone&apos;s starting state notes. It adds no new claim that could itself go stale, and it keeps the bullet&apos;s framing of git as a supporting lens. The edit is one clause in one runtime file, plus the rebuilt `hosts/` copies.</advantage>
+      <drawback>The runner loses a useful hint. New completion commits are now directly findable by heading in the subject, but the skill no longer says so. The runner will still treat the mapping as unreliable and may skip a cheap, exact lookup it could have used.</drawback>
+    </alternative>
+    <alternative id="Leave the sentence unchanged">
+      Leave line 54 as it is, on the reasoning that most existing history (218 of 221 completion commits) stays unkeyed in the subject. Under that reading, &quot;best-effort, not keyed on the heading in the subject line&quot; is still true of the history as a whole.
+      <advantage>Nothing changes, and the milestone stays limited to the two runners and the docs its Goal names. The sentence&apos;s practical advice (use git to enrich, never as the sole source, fall back to live files) is still sound whatever the subject format.</advantage>
+      <drawback>For every commit made after this change the sentence is literally false, and the starting state already flags it as a claim &quot;that becomes false&quot;. The runtime would keep a known-inaccurate statement about the very convention this milestone introduces, and the runner would be steered away from the one lookup the change makes reliable.</drawback>
+    </alternative>
   </open-question>
   <open-question id="CLAUDE.md invariant record">
     <question>Should the CLAUDE.md committing invariant record the unified Task-completion subject and name the retired Tasklist-completion marker as something a later editor must not restore, or is the runtime and docs change enough with no CLAUDE.md edit?</question>
