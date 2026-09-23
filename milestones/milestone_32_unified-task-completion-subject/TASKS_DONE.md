@@ -14,3 +14,16 @@ Change step 2c of `core/skills/complete-all-tasks/SKILL.md` so the orchestrator 
 - `uv run scripts/build_hosts.py --check` passes after the rebuild, with the rebuilt `hosts/claude/` and `hosts/antigravity/` copies of the skill in the change set.
 
 ---
+
+## Ask-In-Context Heading Search Wording
+
+Rewrite the step 2 sentence of `core/skills/ask-in-milestone-context/SKILL.md` that calls the task-to-commit mapping "not keyed on the heading in the subject line" as a marker-agnostic heading search: completion commits carry the task heading, so searching commit subjects and bodies for the heading text usually finds the commit, while the mapping stays best-effort, the fall-back to the live files and the "never the sole source" rule are kept, and the sentence names neither the `Task-completion:` nor the retired `Tasklist-completion:` marker and describes no era of history. The milestone needs it because the old claim becomes false once every completion subject carries the heading. Verified by the sentence's absence of both markers and of the old "not keyed" claim, and `uv run scripts/build_hosts.py --check` passing with the rebuilt host trees committed.
+
+**Verified:**
+
+- The step 2 git-history sentence of `core/skills/ask-in-milestone-context/SKILL.md` describes a marker-agnostic heading search: completion commits carry the task heading, so searching commit subjects and bodies for the heading text (`git log --grep`) usually finds the commit.
+- The sentence keeps the task-to-commit mapping best-effort, and the bullet keeps the fall-back to the live files and the "never the sole source" rule.
+- The sentence names neither `Task-completion:` nor `Tasklist-completion:`, describes no era of history, and no longer carries the "not keyed on the heading in the subject line" claim, in `core/` and both rendered `hosts/` copies.
+- `uv run scripts/build_hosts.py --check` passes after the rebuild, with the rebuilt `hosts/claude/` and `hosts/antigravity/` copies of the skill in the change set.
+
+---

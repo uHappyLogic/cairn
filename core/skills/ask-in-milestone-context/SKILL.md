@@ -51,7 +51,7 @@ Read only what the question needs — a "what's left?" question barely touches `
 For a question about *how finished work turned out* ("how did task X handle Y?", "where did Z go?"), the markdown artifacts give you intent — but the truth is in the deliverable. Go look:
 
 - **The live deliverable is primary.** Read the actual artifact the task produced. The `TASKS_DONE.md` entry tells you what to look for and what "done" meant; the deliverable itself tells you what was actually produced. When they diverge, the deliverable wins — and that divergence is often exactly what the user is asking about.
-- **Git history is a supporting lens, not the spine.** Completed tasks are committed, so `git log` and `git show` can pull up the diff for a done task — but the task→commit mapping is best-effort, not keyed on the heading in the subject line. Use git to enrich an answer ("this landed in commit abc123, touching these files"), never as the sole source — fall back to reading the live files when no clean commit matches.
+- **Git history is a supporting lens, not the spine.** Completed tasks are committed and their commits carry the task heading, so searching commit subjects and bodies for the heading text (`git log --grep`) usually finds the commit for a done task and `git show` pulls up its diff — but the task→commit mapping stays best-effort. Use git to enrich an answer ("this landed in commit abc123, touching these files"), never as the sole source — fall back to reading the live files when no clean commit matches.
 
 For a question about *direction or state* (decisions, what's pending and why), the markdown artifacts are usually enough; reach for the deliverables only when the user asks something the documents can't settle.
 
