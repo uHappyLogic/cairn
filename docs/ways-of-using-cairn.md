@@ -29,36 +29,36 @@ claude -p "/cairn:recommend-all-open-questions" --dangerously-skip-permissions -
 
 ## Running a mixed-agent requirements review
 
-Repeat this pass until `review-milestone-requirements` reports convergence: each pass reconciles the open questions against the recorded decisions and surfaces new gaps, embeds alternatives on every question that lacks them and a recommendation on every question that lacks one, and records each recommendation as a decision. The host changes between the review line and the alternatives line, so one agent surfaces the questions and another annotates them; the alternatives line runs on `opus` at `--effort xhigh` and the recommend line on `fable` at `--effort high`, and swapping every line to one host by the legend's rule gives the single-host form of the same pass.
+Repeat this pass until `review-milestone-requirements` reports convergence: each pass reconciles the open questions against the recorded decisions and surfaces new gaps, embeds alternatives on every question that lacks them and a recommendation on every question that lacks one, and records each recommendation as a decision. The host changes between the review line and the alternatives line, so one agent surfaces the questions and another annotates them; the alternatives line runs on `opus` at `--effort xhigh`, and the recommend and answer lines on `fable` at `--effort high`, each one inline pass over the whole set; swapping every line to one host by the legend's rule gives the single-host form of the same pass.
 
 ```sh
 agy -p "/cairn:review-milestone-requirements" --add-dir "<project-root>" --dangerously-skip-permissions
 claude -p "/cairn:provide-alternatives-to-all-open-questions" --dangerously-skip-permissions --model "opus" --effort xhigh;
 claude -p "/cairn:recommend-all-open-questions" --dangerously-skip-permissions --model "fable" --effort high;
-claude -p "/cairn:answer-all-open-questions-with-recommendation" --dangerously-skip-permissions --model "opus" --effort high;
+claude -p "/cairn:answer-all-open-questions-with-recommendation" --dangerously-skip-permissions --model "fable" --effort high;
 ```
 
 ## Putting more intelligence into a stuck milestone
 
-Run this when the review loop has not converged after passes at the settings above: it records the recommendations already embedded, runs one more review, alternatives, recommend, and answer pass — the review line on `opus` at `--effort max`, the alternatives line on `opus` at `--effort xhigh`, the recommend line on `fable` at `--effort high`, and the answer lines on `opus` at `--effort xhigh` — then derives the task list and completes it in the same chain, with no stop between.
+Run this when the review loop has not converged after passes at the settings above: it records the recommendations already embedded, runs one more review, alternatives, recommend, and answer pass — the review line on `opus` at `--effort max`, the alternatives line on `opus` at `--effort xhigh`, and the recommend line and both answer lines on `fable` at `--effort high`, each one inline pass over the whole set — then derives the task list and completes it in the same chain, with no stop between.
 
 ```sh
-claude -p "/cairn:answer-all-open-questions-with-recommendation" --dangerously-skip-permissions --model "opus" --effort xhigh;
+claude -p "/cairn:answer-all-open-questions-with-recommendation" --dangerously-skip-permissions --model "fable" --effort high;
 claude -p "/cairn:review-milestone-requirements" --dangerously-skip-permissions --model "opus" --effort max;
 claude -p "/cairn:provide-alternatives-to-all-open-questions" --dangerously-skip-permissions --model "opus" --effort xhigh;
 claude -p "/cairn:recommend-all-open-questions" --dangerously-skip-permissions --model "fable" --effort high;
-claude -p "/cairn:answer-all-open-questions-with-recommendation" --dangerously-skip-permissions --model "opus" --effort xhigh;
+claude -p "/cairn:answer-all-open-questions-with-recommendation" --dangerously-skip-permissions --model "fable" --effort high;
 claude -p "/cairn:derive-tasks" --dangerously-skip-permissions --model "fable" --effort high;
 claude -p "/cairn:complete-all-tasks" --dangerously-skip-permissions --model "opus" --effort xhigh;
 ```
 
 ## Executing tasks
 
-Run this once a review pass has left every open question carrying a recommendation: the first line records those recommendations as decisions, `derive-tasks` writes the task list, and `complete-all-tasks` works through it, one commit per task. `complete-all-tasks` is the heaviest run and can stop at the host account's usage limit, which is what each comment line waits out; because every task commits on its own and a failed task's partial work is continued rather than redone, running the line again continues from the remaining tasks.
+Run this once a review pass has left every open question carrying a recommendation: the first line records those recommendations as decisions, on `fable` at `--effort high` like the recommend line that picked them, one inline pass over the whole set; `derive-tasks` writes the task list, and `complete-all-tasks` works through it, one commit per task. `complete-all-tasks` is the heaviest run and can stop at the host account's usage limit, which is what each comment line waits out; because every task commits on its own and a failed task's partial work is continued rather than redone, running the line again continues from the remaining tasks.
 
 ```sh
 # wait until your account's usage window has reset
-claude -p "/cairn:answer-all-open-questions-with-recommendation" --dangerously-skip-permissions --model "opus" --effort high;
+claude -p "/cairn:answer-all-open-questions-with-recommendation" --dangerously-skip-permissions --model "fable" --effort high;
 claude -p "/cairn:derive-tasks" --dangerously-skip-permissions --model "fable" --effort high;
 claude -p "/cairn:complete-all-tasks" --dangerously-skip-permissions --model "opus" --effort xhigh;
 # wait until your account's usage window has reset

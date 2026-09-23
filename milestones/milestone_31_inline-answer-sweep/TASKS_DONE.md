@@ -95,3 +95,18 @@ Update `docs/skill-reference.md` (rewrite the sweep entry to the inline shape an
 - `uv run scripts/build_hosts.py --check` passes.
 
 ---
+
+## Headless Chains Move Sweep To Fable
+
+Move all four `/cairn:answer-all-open-questions-with-recommendation` lines in `docs/ways-of-using-cairn.md` (the mixed-agent review chain, the executing-tasks chain, and both lines of the stuck-milestone chain) from `--model "opus"` at `--effort high` or `xhigh` to `--model "fable" --effort high`, the same settings as the recommend line, and rewrite each affected way's settings sentence to say so. This is the last task of the milestone, and the confirming run is the next milestone's first inline answer sweep on this repository at those settings. Verified by the page holding exactly four sweep lines, every one at `--model "fable" --effort high`, no sweep line on `opus`, and each settings sentence matching its chain.
+
+**Verified:**
+
+- `docs/ways-of-using-cairn.md` holds exactly four `/cairn:answer-all-open-questions-with-recommendation` lines (the mixed-agent review chain, the executing-tasks chain, and both lines of the stuck-milestone chain), every one at `--model "fable" --effort high`, the same settings as the `/cairn:recommend-all-open-questions` line.
+- No sweep line on the page names `--model "opus"` (grep count 0).
+- The mixed-agent review settings sentence states the recommend and answer lines run on `fable` at `--effort high`, matching its chain.
+- The stuck-milestone settings sentence states the recommend line and both answer lines run on `fable` at `--effort high` (no longer `opus` at `--effort xhigh`), matching its chain.
+- The executing-tasks description states its answer line runs on `fable` at `--effort high`, matching its chain.
+- `uv run scripts/build_hosts.py --check` passes (no host-tree drift).
+
+---
