@@ -118,4 +118,7 @@
     </alternative>
     <recommendation option="Run-level new-question advisory">The answer core the sweep follows unchanged already tells its runner to surface what an answer leaves open rather than guess, and the three single-question skills report exactly that, so the sweep dropping it would be the only runner suppressing its own core&apos;s output; new questions are git-absent and decision-critical, the class of advisory the terse-reporting rule already admits, and the analysis is now free in context where the dispatched agent used to lose it.</recommendation>
   </open-question>
+  <open-question id="Sweep lift reuse">
+    <question>The answer sweep today runs its own lift call for each question before recording it, using the call&apos;s failure as the per-question skip and its printed line as the commit body, and the answer-with-recommendation procedure it then follows runs the same lift again in its own step 2. With the sweep inline and that procedure&apos;s contract now open to change, should the sweep drop its separate lift and use the procedure&apos;s own lift instead (its failure treated as the per-question skip, its printed line held as the commit body), or keep a separate lift before following the procedure, so each question is lifted twice?</question>
+  </open-question>
 </open-questions>
