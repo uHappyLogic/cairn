@@ -13,9 +13,18 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_31_inline-answer-sweep/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 31 — Inline answer sweep
+
+- `/answer-all-open-questions-with-recommendation` is now an inline single-writer skill that dispatches no agent: it gathers its order with one `walk` call, reads `open_questions.xml` and `requirements.md` whole once for reasoning only, then per question follows `answer-with-recommendation-procedure.md` from its lift step and commits each answer through the commit procedure under `Recommendation-answer: <Short Title>` with the lifted line as body, one commit per answer.
+- A failed `lift` is a silent skip, a tool failure after a fold stops the whole run leaving a resumable tree with no rollback, contradictions noticed at fold time are reported once as Short Title / Decisions-heading pairs, and one end-of-run `walk` serves as a completeness check whose any printed id is reported as an anomaly.
+- The `cairn:answer-open-question-with-recommendation` agent is deleted, so both host trees now hold two agents, `complete-task` and `provide-alternatives-to-open-question`.
+- `answer-with-recommendation-procedure.md` and `answer-procedure.md` no longer look the milestone up themselves; `MILESTONE_DIR` is a required input that every answer runner resolves once through `get-current-milestone.md` and passes down.
+- `CLAUDE.md` drops the mutation-in-agent inversion invariant and describes the sweep's inline shape, with the completeness anomaly added to the success-path reporting advisories; `docs/skill-reference.md`, `docs/workflow.md`, and `docs/design-claims.md` are synced to the two-agent, inline-sweep shape.
+- Every answer-sweep line in `docs/ways-of-using-cairn.md` moves to `--model "fable" --effort high`, matching the recommend line, with the next milestone's first inline sweep on this repository as its confirming run, and both host trees are rebuilt with `uv run scripts/build_hosts.py --check` passing.
 
 ### Milestone 30 — Two-pass recommendation sweep
 
@@ -340,3 +349,4 @@ Current milestone: `milestones/milestone_31_inline-answer-sweep/`
 | 28 | Ways of using Cairn | `milestones/milestone_28_ways-of-using-cairn/` |
 | 29 | Per-question recommendation commits and question sorting | `milestones/milestone_29_per-question-commits-and-sorting/` |
 | 30 | Two-pass recommendation sweep | `milestones/milestone_30_two-pass-recommendation-sweep/` |
+| 31 | Inline answer sweep | `milestones/milestone_31_inline-answer-sweep/` |
