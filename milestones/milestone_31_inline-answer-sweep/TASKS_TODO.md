@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Rewrite Sweep As Inline Skill
-
-Rewrite `core/skills/answer-all-open-questions-with-recommendation/SKILL.md` as an inline single-writer skill that dispatches no agent: it resolves `<MILESTONE_DIR>` once, gathers its order with one `walk` call, reads `open_questions.xml` and `requirements.md` whole once for reasoning only, then per question follows `shared/answer-with-recommendation-procedure.md` from its lift step (the lift's failure is the silent skip, its print the commit body) and commits each answer through `shared/commit-procedure.md` under the unchanged `Recommendation-answer: <Short Title>` subject, exactly as the Decisions on whole-set context read, sweep lift reuse, and skipped-question reporting state. It records every pick as given and never judges it, stops the whole run on a tool failure after a fold with the Short Title and the tool's `Error:` line quoted verbatim and no rollback, and closes with one end-of-run `walk` as a completeness check, reporting `Recommendations recorded.` or one distinct no-op line beside only two advisories: the contradiction pairs noticed at fold time (answered Short Title and conflicting Decisions heading) and any id the final `walk` printed as an anomaly, with no new-question advisory and no skipped question named. Verified by the skill text naming no agent, its frontmatter description staying within 25 words, and `uv run scripts/build_hosts.py --check` passing with the rebuilt host trees committed.
-
----
-
 ## Delete The Recording Agent
 
 Delete `core/agents/answer-open-question-with-recommendation.md` and remove the last runtime mention of that agent, the single-question skill's line telling the runner not to spawn it, so no runtime file names an agent that does not exist. The milestone needs it because the inline sweep was the agent's only consumer. Verified by both `hosts/claude/agents/` and `hosts/antigravity/agents/` holding exactly `complete-task.md` and `provide-alternatives-to-open-question.md` after `uv run scripts/build_hosts.py`, no file under `core/` naming the deleted agent, and `uv run scripts/build_hosts.py --check` passing with the rebuilt host trees committed.
