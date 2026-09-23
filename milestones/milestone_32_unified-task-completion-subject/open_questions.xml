@@ -21,6 +21,7 @@
       <advantage>The shared procedure gets the input it was designed for, a caller-known set of paths, so both completion runners commit through it with no change to its contract and no looking at the tree.</advantage>
       <drawback>It changes a dispatched agent&apos;s return contract. CLAUDE.md records that `complete-all-tasks` keeps a last-line token and that &quot;the agent hands back nothing to collect&quot;. The orchestrator would then need to parse and trust a list of paths, which brings back the problem of judging an unreliable return that the alternatives orchestrator needed a whole repair pipeline to handle. Re-staging the reported paths also runs the same risk of sweeping in unstaged hunks, and all of this is far outside this milestone&apos;s subject-only goal.</drawback>
     </alternative>
+    <recommendation option="Keep own commit line">The Goal is a subject-and-docs change, and the orchestrator already holds the heading it needs; every other route rewrites the shared procedure&apos;s PATHS-first contract or the agent&apos;s return contract, widening the milestone to fix a two-line duplication that CLAUDE.md already records as the intended arrangement.</recommendation>
   </open-question>
   <open-question id="Ask-in-context git-history claim">
     <question>The ask-in-milestone-context skill states that the task-to-commit mapping is best-effort and not keyed on the heading in the subject line; once every completion subject carries the heading verbatim, should that sentence be rewritten to say the mapping is keyed on the heading for commits made after this change, or left as-is because older history stays unkeyed?</question>
@@ -44,6 +45,7 @@
       <advantage>Nothing changes, and the milestone stays limited to the two runners and the docs its Goal names. The sentence&apos;s practical advice (use git to enrich, never as the sole source, fall back to live files) is still sound whatever the subject format.</advantage>
       <drawback>For every commit made after this change the sentence is literally false, and the starting state already flags it as a claim &quot;that becomes false&quot;. The runtime would keep a known-inaccurate statement about the very convention this milestone introduces, and the runner would be steered away from the one lookup the change makes reliable.</drawback>
     </alternative>
+    <recommendation option="Rewrite as marker-agnostic heading search">A heading search over subject and body is true of all history, old and new, in this repository and in consuming projects; it gives the runner the cheap lookup the change makes reliable while naming no marker or retired format, which the era-scoped wording would put into a runtime file and the clause-only deletion would withhold.</recommendation>
   </open-question>
   <open-question id="CLAUDE.md invariant record">
     <question>Should the CLAUDE.md committing invariant record the unified Task-completion subject and name the retired Tasklist-completion marker as something a later editor must not restore, or is the runtime and docs change enough with no CLAUDE.md edit?</question>
@@ -67,6 +69,8 @@
       <advantage>It keeps this milestone&apos;s scope to the runtime files, the docs, and `hosts/`. The `CLAUDE.md` judgment is made once, when the final shape of the orchestrator&apos;s commit is known, rather than now.</advantage>
       <drawback>Step 7&apos;s job is environment context, meaning new tools, conventions, and documentation locations. It is not recording invariants, so it may reasonably skip the change and leave `CLAUDE.md` silent by default. This question also stays open instead of being recorded in `## Decisions`, so whether `CLAUDE.md` changes rests on a later pass&apos;s discretion rather than a decision made here.</drawback>
     </alternative>
+    <depends-on question="Orchestrator commit mechanics" option="Keep own commit line"/>
+    <recommendation option="Full invariant clause">The regression risk is real, since 218 commits and six milestone ledgers make the old marker look like precedent, and CLAUDE.md already guards retired designs by naming them with their reason; a bare retirement note gives a later editor nothing to weigh, and deferring to the finish step leaves an invariant to a pass whose job is environment context.</recommendation>
   </open-question>
   <open-question id="Workflow doc subject wording">
     <question>The How skills commit paragraph in docs/workflow.md says complete-all-tasks commits once per task without naming its subject; should it be extended to state that both completion runners share the Task-completion subject with the heading, or left unchanged since it is not made false by the change?</question>
@@ -80,5 +84,6 @@
       <advantage>No edit, and no extra copy of the subject to keep in sync. docs/skill-reference.md, which the milestone edits anyway, remains the one place that states each runner&apos;s subject, and the workflow doc stays at narrative level.</advantage>
       <drawback>`/complete-all-tasks` remains the only batch skill in that paragraph whose subject goes unnamed. A reader has to go to docs/skill-reference.md to learn that it now shares `Task-completion:` with `/complete-task`. Since the Goal names docs/workflow.md as a doc to bring into line, leaving it untouched means that part of the Goal is met only because nothing in the file became wrong, not because the file was updated.</drawback>
     </alternative>
+    <recommendation option="Extend the clause">The paragraph names the subject and body of every other batch skill, so the orchestrator is the one gap, and the Goal lists docs/workflow.md among the docs to bring into line; one clause makes that explicit at the cost of a sentence that changes only if the subject does.</recommendation>
   </open-question>
 </open-questions>
