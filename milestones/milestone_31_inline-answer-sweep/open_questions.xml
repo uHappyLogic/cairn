@@ -34,5 +34,20 @@
   </open-question>
   <open-question id="Sweep new-question advisory">
     <question>The single-question skill reports, beside its terse line, any new open questions the recorded decision may have introduced, never adding them itself. The sweep today reports none. Now that the sweep records inline with the whole set in context, should it carry that same new-question advisory once for the run alongside the contradiction advisory, or remain limited to the contradiction advisory the goal names?</question>
+    <alternative id="Contradiction advisory only">
+      The sweep keeps to what the goal names. It prints its terse status line, the contradiction advisory when it noticed one, and the still-skipped advisory. It reports no new open questions a recorded decision may have raised, and leaves those for the next `/review-milestone-requirements` pass.
+      <advantage>It matches the goal&apos;s wording and today&apos;s sweep report exactly, so no new reporting rule is added. It also fits how the sweep is actually run: all four headless chain lines in docs/ways-of-using-cairn.md run it unattended, and in the review loop the next line is a review pass, which is the sole author of question blocks and surfaces new gaps anyway.</advantage>
+      <drawback>The sweep and the single-question skill run the same answer core but report differently. The core&apos;s analyse step already notices sub-questions it cannot settle and is told to &quot;surface the rest rather than guessing&quot;. In the sweep, those observations are dropped. In the &quot;Executing tasks&quot; chain the next line is derive-tasks rather than a review pass, so a gap a decision opened is never mentioned before the task list is written.</drawback>
+    </alternative>
+    <alternative id="Run-level new-question advisory">
+      The sweep collects the new open questions each recorded decision may have introduced as it loops. After the terse status line it prints them once for the whole run, next to the contradiction advisory. It never adds any of them to open_questions.xml, just as the single-question skill surfaces them without adding them.
+      <advantage>The same answer core then reports the same way whichever runner records it, so the sweep matches answer-open-question, answer-open-question-with-alternative, and answer-open-question-with-recommendation. It also puts to use the analysis the answer core&apos;s analyse step already does in context. Before, that analysis was lost inside the dispatched agent.</advantage>
+      <drawback>It adds a second decision-critical advisory to a run the goal describes with one advisory, and it relaxes the sweep&apos;s current &quot;enumerate nothing&quot; reporting rule. The reporting step, the CLAUDE.md terse-reporting invariant, and the skill reference would all have to name it. In a long unattended headless run, few people will read the listed items, and they overlap with what the next review pass surfaces.</drawback>
+    </alternative>
+    <alternative id="Fixed review-pointer line">
+      When at least one recorded decision seemed to raise a new open question, the sweep prints one fixed line with no identifiers pointing at `/review-milestone-requirements`. It does not list the questions, so the review pass stays their only author and enumerator.
+      <advantage>It keeps the useful signal, that a gap may have opened, without the sweep writing its own list. That keeps enumeration inside the review pass, the one runner that can reconcile a gap against recorded decisions and add a block. It also keeps the console output as terse as the one-line-per-run rule asks.</advantage>
+      <drawback>It is a third reporting form, matching neither the single-question skill (which lists questions) nor the goal&apos;s contradiction-only report. The reader learns only that something may be open, not what, and has to run a review to find out. In chains where a review pass already follows the sweep, the line adds nothing.</drawback>
+    </alternative>
   </open-question>
 </open-questions>
