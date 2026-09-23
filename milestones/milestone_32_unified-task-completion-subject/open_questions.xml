@@ -1,18 +1,4 @@
 <open-questions>
-  <open-question id="Workflow doc subject wording">
-    <question>The How skills commit paragraph in docs/workflow.md says complete-all-tasks commits once per task without naming its subject; should it be extended to state that both completion runners share the Task-completion subject with the heading, or left unchanged since it is not made false by the change?</question>
-    <alternative id="Extend the clause">
-      In the `## How skills commit` paragraph of docs/workflow.md, extend &quot;`/complete-all-tasks` commits once per task&quot; to name its subject: `Task-completion: &lt;task heading&gt;` with no body, the same subject inline `/complete-task` uses.
-      <advantage>The same paragraph already names the subject and body of each of the other four batch skills (`Recommendation-answer: &lt;Short Title&gt;` with the lifted line as body, `Alternatives-annotation: &lt;Short Title&gt;` with no body, and so on), so `/complete-all-tasks` is currently the only batch skill there without one. Naming it makes the paragraph consistent and puts the milestone&apos;s main claim, one shared subject for both completion runners, into the narrative doc. The Goal lists docs/workflow.md among the docs to bring into line, and this makes it do so explicitly.</advantage>
-      <drawback>It adds a third place where the subject is spelled out, besides the two runtime SKILL.md files and docs/skill-reference.md. A later change to the subject then has one more sentence to keep in sync. It also makes a paragraph that is already very long a little longer.</drawback>
-    </alternative>
-    <alternative id="Leave unchanged">
-      Leave the docs/workflow.md paragraph as it is. It already lists `Task-completion:` among the example markers and says only that `/complete-all-tasks` commits once per task, and the change makes neither statement false.
-      <advantage>No edit, and no extra copy of the subject to keep in sync. docs/skill-reference.md, which the milestone edits anyway, remains the one place that states each runner&apos;s subject, and the workflow doc stays at narrative level.</advantage>
-      <drawback>`/complete-all-tasks` remains the only batch skill in that paragraph whose subject goes unnamed. A reader has to go to docs/skill-reference.md to learn that it now shares `Task-completion:` with `/complete-task`. Since the Goal names docs/workflow.md as a doc to bring into line, leaving it untouched means that part of the Goal is met only because nothing in the file became wrong, not because the file was updated.</drawback>
-    </alternative>
-    <recommendation option="Extend the clause">The paragraph names the subject and body of every other batch skill, so the orchestrator is the one gap, and the Goal lists docs/workflow.md among the docs to bring into line; one clause makes that explicit at the cost of a sentence that changes only if the subject does.</recommendation>
-  </open-question>
   <open-question id="CLAUDE.md invariant record">
     <question>Should the CLAUDE.md committing invariant record the unified Task-completion subject and name the retired Tasklist-completion marker as something a later editor must not restore, or is the runtime and docs change enough with no CLAUDE.md edit?</question>
     <alternative id="No CLAUDE.md edit">

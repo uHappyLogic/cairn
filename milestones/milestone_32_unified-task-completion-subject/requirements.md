@@ -36,5 +36,9 @@ Three sentences describe the two commits: `docs/skill-reference.md` line 81 (`co
 
 The step 2 sentence of `core/skills/ask-in-milestone-context/SKILL.md` that calls the task-to-commit mapping "not keyed on the heading in the subject line" is rewritten as a marker-agnostic heading search: completion commits carry the task heading, so searching commit subjects and bodies for the heading text usually finds the commit, while the mapping stays best-effort and the fall-back to the live files and the "never the sole source" rule are kept. The sentence names neither the `Task-completion:` nor the retired `Tasklist-completion:` marker and describes no era of history.
 
+### Workflow doc subject wording
+
+In the `## How skills commit` paragraph of `docs/workflow.md`, the clause "`/complete-all-tasks` commits once per task" is extended to name its subject, `Task-completion: <task heading>` with no body, the same subject inline `/complete-task` uses, so the orchestrator is no longer the one batch skill in that paragraph whose subject goes unnamed.
+
 ## Out of Scope
 
