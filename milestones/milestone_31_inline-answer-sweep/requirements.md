@@ -64,5 +64,9 @@ The sweep carries no new-question advisory. Beside its terse status line it prin
 
 The "Mutation-in-agent inversion" invariant is deleted from `CLAUDE.md`, and the answer-sweep invariant is rewritten to describe only the inline shape, with no mention of the retired per-question recording agent and no retirement clause or reason. The inline description itself rules the agent out; the agent's history stays in `CHANGELOG.md`, `milestones/README.md`, and this milestone's commits.
 
+### Whole-set context read
+
+Before the loop the sweep reads `open_questions.xml` and `requirements.md` in the milestone directory whole, once, with the file-reading tool, for reasoning only — the idiom the review, recommendation, and discuss skills already use for whole-set reasoning. The snapshot gives the answer core's analyse step and the contradiction advisory their view of every sibling and recorded decision. The skill text keeps it apart from the live reads: the `walk` call still gathers and orders, the `lift` call stays the per-question re-check and skip, and the answer core's `locate` print and the live `requirements.md` take precedence over the snapshot once cascades land. The snapshot never gathers, orders, re-checks, or confirms a skip.
+
 ## Out of Scope
 
