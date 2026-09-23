@@ -78,11 +78,11 @@ Adds a single, already-clear issue to `TASKS_TODO.md` as a **brief-level task se
 
 ### `complete-all-tasks`
 
-Orchestrator: completes all tasks in `TASKS_TODO.md` top to bottom, spawning one subagent per task and committing after each success — **once per task**, committing the index the agent staged (its change set, plus the two task-list files, never `git add -A`) under a `Tasklist-completion:` subject with the task heading in the commit **body**. Stops on first failure.
+Orchestrator: completes all tasks in `TASKS_TODO.md` top to bottom, spawning one subagent per task and committing after each success — **once per task**, committing the index the agent staged (its change set, plus the two task-list files, never `git add -A`) under the subject `Task-completion: <task heading>` with no body — the same subject inline `/complete-task` uses. Stops on first failure.
 
 ### `complete-task <task_name>`
 
-Completes a single named task from `TASKS_TODO.md` **inline, in the current conversation**. Running inline keeps the work context (what changed, why, how it was verified) in the conversation so you can ask follow-up questions or request tweaks right after. It commits the task's change set path-scoped — the files it created or edited plus the two task-list files, never `git add -A` — under a `Task-completion:` subject. Use `/complete-all-tasks` to run the whole task list unattended.
+Completes a single named task from `TASKS_TODO.md` **inline, in the current conversation**. Running inline keeps the work context (what changed, why, how it was verified) in the conversation so you can ask follow-up questions or request tweaks right after. It commits the task's change set path-scoped — the files it created or edited plus the two task-list files, never `git add -A` — under the subject `Task-completion: <task heading>` with no body, the same subject `/complete-all-tasks` uses per task. Use `/complete-all-tasks` to run the whole task list unattended.
 
 ### `ask-in-milestone-context <question>`
 
