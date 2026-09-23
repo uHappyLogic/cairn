@@ -1,1 +1,14 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Orchestrator commit mechanics">
+    <question>Should the complete-all-tasks orchestrator keep committing the agent-staged index with its own git commit line behind its own nothing-staged guard, only changing the subject and dropping the body, or should its commit be routed through the shared commit procedure (which guards on PATHS the orchestrator does not know) by giving that procedure a staged-index mode?</question>
+  </open-question>
+  <open-question id="Ask-in-context git-history claim">
+    <question>The ask-in-milestone-context skill states that the task-to-commit mapping is best-effort and not keyed on the heading in the subject line; once every completion subject carries the heading verbatim, should that sentence be rewritten to say the mapping is keyed on the heading for commits made after this change, or left as-is because older history stays unkeyed?</question>
+  </open-question>
+  <open-question id="CLAUDE.md invariant record">
+    <question>Should the CLAUDE.md committing invariant record the unified Task-completion subject and name the retired Tasklist-completion marker as something a later editor must not restore, or is the runtime and docs change enough with no CLAUDE.md edit?</question>
+  </open-question>
+  <open-question id="Workflow doc subject wording">
+    <question>The How skills commit paragraph in docs/workflow.md says complete-all-tasks commits once per task without naming its subject; should it be extended to state that both completion runners share the Task-completion subject with the heading, or left unchanged since it is not made false by the change?</question>
+  </open-question>
+</open-questions>
