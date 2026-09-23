@@ -49,3 +49,16 @@ Rewrite `core/skills/answer-all-open-questions-with-recommendation/SKILL.md` as 
 - `uv run scripts/build_hosts.py` rebuilt `hosts/claude/` and `hosts/antigravity/` copies of the skill, and `uv run scripts/build_hosts.py --check` passes.
 
 ---
+
+## Delete The Recording Agent
+
+Delete `core/agents/answer-open-question-with-recommendation.md` and remove the last runtime mention of that agent, the single-question skill's line telling the runner not to spawn it, so no runtime file names an agent that does not exist. The milestone needs it because the inline sweep was the agent's only consumer. Verified by both `hosts/claude/agents/` and `hosts/antigravity/agents/` holding exactly `complete-task.md` and `provide-alternatives-to-open-question.md` after `uv run scripts/build_hosts.py`, no file under `core/` naming the deleted agent, and `uv run scripts/build_hosts.py --check` passing with the rebuilt host trees committed.
+
+**Verified:**
+
+- `core/agents/answer-open-question-with-recommendation.md` is deleted; `core/agents/` holds only `complete-task.md` and `provide-alternatives-to-open-question.md`.
+- The single-question skill's "Do **not** spawn the `answer-open-question-with-recommendation` agent." line is removed from `core/skills/answer-open-question-with-recommendation/SKILL.md`, and no file under `core/` names the deleted agent (remaining matches of the name are the same-named skill only).
+- After `uv run scripts/build_hosts.py`, both `hosts/claude/agents/` and `hosts/antigravity/agents/` hold exactly `complete-task.md` and `provide-alternatives-to-open-question.md`.
+- `uv run scripts/build_hosts.py --check` passes with the rebuilt host trees (agent deletions and the skill edit in both hosts) in the change set.
+
+---

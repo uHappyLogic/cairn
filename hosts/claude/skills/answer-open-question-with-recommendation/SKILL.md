@@ -43,8 +43,6 @@ procedure owns the lift → delegate work, composing over
 locate/analyse/fold/remove/cascade recording; every read and write of `open_questions.xml`
 in either is a call to the plugin's open-question tool.
 
-Do **not** spawn the `answer-open-question-with-recommendation` agent.
-
 Hold the one line the shared procedure's `lift` call prints, "`<option>` — `<rationale>`" —
 it is the commit body below.
 
