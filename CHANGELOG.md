@@ -2,6 +2,16 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.7.1 — 2026-09-23
+
+### Unified task-completion subject (milestone 32)
+
+- `/complete-all-tasks` now commits each task under `Task-completion: <task heading>` with no body, the same subject-only commit inline `/complete-task` makes. The fixed `Tasklist-completion: complete one milestone task` subject and its heading-in-body commits are retired, and existing history is left unchanged.
+- `/ask-in-milestone-context` now finds a task's commit by searching commit subjects and bodies for the task heading, whichever marker the commit uses. The match is still best-effort and is never its only source.
+- `docs/skill-reference.md` and `docs/workflow.md` describe the one `Task-completion:` commit that both completion runners now make.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.7.0...1.7.1
+
 ## 1.7.0 — 2026-09-23
 
 ### Inline answer sweep (milestone 31)

@@ -1,6 +1,6 @@
 [project]
 name = "cairn-tooling"
-version = "1.7.0"
+version = "1.7.1"
 description = "Development tooling for the cairn plugin (host build and version script)"
 requires-python = ">=3.11"
 dependencies = [
