@@ -48,5 +48,9 @@ Success paths print one fixed identifier-free status line per run; only git-abse
 
 ## Decisions
 
+### Milestone resolution
+
+The find-milestone step is removed from both `answer-with-recommendation-procedure.md` and `answer-procedure.md`; `MILESTONE_DIR` becomes a required input that every caller resolves once through `get-current-milestone.md` and passes in, the outer procedure handing it on to the recording core. The callers are `answer-open-question`, `answer-open-question-with-alternative` (which already resolves and holds it before delegating), the single-question `answer-open-question-with-recommendation` skill, and the inline sweep, which resolves it once per run so every `lift`, `locate`, `remove`, and commit in the run uses the directory it walked. Neither procedure branches on whether the input was supplied, matching how the alternatives agent already receives an already-resolved milestone directory.
+
 ## Out of Scope
 
