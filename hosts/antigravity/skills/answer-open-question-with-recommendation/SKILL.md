@@ -21,26 +21,32 @@ To record **every** recommendation-bearing question unattended instead, use
 `<Short Title>` must match (case-insensitive, against the block's `id`) an existing
 `<open-question>` block in `<MILESTONE_DIR>/open_questions.xml` that the
 `/recommend-all-open-questions` sweep has already annotated with a `<recommendation>`
-element. The procedure resolves the current milestone itself, so nothing needs to be looked
-up first.
+element. The skill resolves the current milestone itself, so nothing needs to be looked up
+first.
 
 ## Workflow
 
-### 1. Run the shared lift-then-delegate procedure inline
+### 1. Find the current milestone
+
+Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never
+use a hardcoded path. Hold `<MILESTONE_DIR>` — you need it for the delegated recording and
+the commit.
+
+### 2. Run the shared lift-then-delegate procedure inline
 
 Read and follow the shared procedure at
 `.agents/plugins/cairn/shared/answer-with-recommendation-procedure.md`, carrying out every step
-**yourself, in this conversation**. Pass it the `<Short Title>` from the invocation as its
-`SHORT TITLE` input. That procedure owns the find-milestone → lift → delegate work,
-composing over `.agents/plugins/cairn/shared/answer-procedure.md`, which owns the
+**yourself, in this conversation**. Pass it the `<MILESTONE_DIR>` from step 1 and the
+`<Short Title>` from the invocation as its `MILESTONE_DIR` and `SHORT TITLE` inputs. That
+procedure owns the lift → delegate work, composing over
+`.agents/plugins/cairn/shared/answer-procedure.md`, which owns the
 locate/analyse/fold/remove/cascade recording; every read and write of `open_questions.xml`
 in either is a call to the plugin's open-question tool.
 
 Do **not** spawn the `answer-open-question-with-recommendation` agent.
 
-The shared procedure resolves `<MILESTONE_DIR>` in its step 1 — hold that value; you need it
-for the commit below. Hold too the one line its `lift` call prints, "`<option>` —
-`<rationale>`" — it is the commit body below.
+Hold the one line the shared procedure's `lift` call prints, "`<option>` — `<rationale>`" —
+it is the commit body below.
 
 **Clean-stop-and-point:** if the shared procedure's `lift` call fails — the tool's `Error:`
 line says no block has that id, or that the matched block carries no `<recommendation>`
@@ -49,11 +55,11 @@ them to run `/recommend-all-open-questions` first (so the question gets an embed
 recommendation), or to record a literal answer via `/answer-open-question <Short Title>. <answer text>`.
 Commit nothing — go no further.
 
-### 2. Commit the recommendation answer
+### 3. Commit the recommendation answer
 
 Read and follow the shared commit procedure at
 `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these three inputs, using the
-same `<MILESTONE_DIR>` the shared recording procedure resolved:
+`<MILESTONE_DIR>` from step 1:
 
 - **PATHS** — this skill's own edits: `<MILESTONE_DIR>/open_questions.xml` and
   `<MILESTONE_DIR>/requirements.md`.
@@ -64,13 +70,13 @@ same `<MILESTONE_DIR>` the shared recording procedure resolved:
   a source of new principles — those come from the `Manual-answer:` and `Alternative-answer:`
   override signals.
 - **BODY** — the lifted recommendation: the "`<option>` — `<rationale>`" line the `lift` call
-  printed in step 1, verbatim — the answer that was recorded.
+  printed in step 2, verbatim — the answer that was recorded.
 
 That procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
-Its no-op guard also covers this skill's clean-stop case: if step 1 stopped on the `lift`
+Its no-op guard also covers this skill's clean-stop case: if step 2 stopped on the `lift`
 call's `Error:` line, neither file changed, so nothing is staged and nothing is committed.
 
-### 3. Report findings
+### 4. Report findings
 
 On the success path — the recommendation was recorded and committed — print exactly one fixed
 terse status line, carrying no identifier (no Short Title, no commit subject):
@@ -85,8 +91,8 @@ keep only the one piece of genuinely git-absent advisory output: any new open qu
 recorded decision may have introduced — surface these but do **not** add them to the document
 without user confirmation.
 
-**No-op case:** if step 2's dirty-own-path guard fired — nothing was committed because
-neither file changed (step 1's clean stop on the `lift` call's `Error:` line) — do **not**
+**No-op case:** if step 3's dirty-own-path guard fired — nothing was committed because
+neither file changed (step 2's clean stop on the `lift` call's `Error:` line) — do **not**
 print the terse success line. Instead print a single line stating that nothing was recorded
 and briefly why.
 

@@ -72,12 +72,11 @@ report why, quoting the tool's `Error:` line, which names the failed lookup:
 
 ### 3. Record the answer via the shared recording core
 
-Hand the resolved **`<Short Title>`**, the derived **ANSWER**, and the **RECORDED OPTION**
-from step 2 (the same value ANSWER opens with, passed separately so the core hands it to the
-tool as an exact id rather than parsing it out of ANSWER) to
-`.agents/plugins/cairn/shared/answer-procedure.md` and follow it unchanged **yourself, in this
-conversation** (its own step 1 re-resolves the milestone you already found — harmless). That
-procedure owns the recording work — locate, analyse, fold the decision into `## Decisions` of
+Hand the **`<MILESTONE_DIR>`** from step 1 as its `MILESTONE_DIR` input, the resolved
+**`<Short Title>`**, the derived **ANSWER**, and the **RECORDED OPTION** from step 2 (the same
+value ANSWER opens with, passed separately so the core hands it to the tool as an exact id
+rather than parsing it out of ANSWER) to `.agents/plugins/cairn/shared/answer-procedure.md` and
+follow it unchanged **yourself, in this conversation**. That procedure owns the recording work — locate, analyse, fold the decision into `## Decisions` of
 `requirements.md` as clean prose, remove the block from `open_questions.xml`, and cascade to
 any mooted siblings.
 
