@@ -2,5 +2,5 @@
   "$schema": "https://antigravity.google/schemas/v1/plugin.json",
   "name": "cairn",
   "description": "Milestone-driven development workflow — discuss goals, define milestones, derive and complete tasks, and archive milestones",
-  "version": "1.6.1"
+  "version": "1.7.0"
 }

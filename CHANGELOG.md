@@ -2,6 +2,27 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.7.0 — 2026-09-23
+
+### Inline answer sweep (milestone 31)
+
+- `/answer-all-open-questions-with-recommendation` now runs inline and dispatches no agent: it takes its order from one `walk` call, records each question's embedded recommendation in turn, and commits every answer as its own `Recommendation-answer: <Short Title>` commit with the lifted recommendation as the body.
+- A question whose recommendation can no longer be lifted is skipped silently. A tool failure after a decision is folded stops the whole run and leaves the tree resumable, with no rollback. Contradictions with existing decisions are reported once at the end, and a final `walk` reports any question left unanswered as an anomaly.
+- The `cairn:answer-open-question-with-recommendation` agent is retired, so each host now ships two agents: `complete-task` and `provide-alternatives-to-open-question`.
+- The shared answer procedures no longer look up the milestone themselves; every answer runner resolves it once and passes it down.
+- The headless answer-sweep lines in `docs/ways-of-using-cairn.md` now use `--model "fable" --effort high`, matching the recommend line.
+
+### Two-pass recommendation sweep (milestone 30)
+
+- New `/provide-alternatives-to-all-open-questions` skill: it dispatches the read-only `cairn:provide-alternatives-to-open-question` agent once for each question that lacks alternatives (in parallel where the host allows, with no cap), embeds each return as it lands, and commits it as a body-less `Alternatives-annotation: <Short Title>` commit.
+- `/recommend-all-open-questions` is now an inline pass that dispatches no agents. It stops while any question still lacks alternatives. Otherwise it reasons over every unrecommended question at once and picks the best surviving option when a set has gone stale. It commits once per run under `Recommendation-annotation: <milestone_id>`, with one lifted line per annotated question as the body, and then sorts the questions.
+- `tools/open_questions.py` gained `strip --recommendation`, which clears only a question's pick-side children, and `list --without-alternatives` / `--without-recommendation`, which replace the retired `--unannotated`. `embed` now takes an `--alternatives` or `--recommendation` mode, and each mode writes only its own children.
+- The answer-time cascade is narrower. A dependent that is stripped or no longer agrees loses only its recommendation, `<depends-on>`, and `<applied-principle>` children and keeps its alternatives, so overriding an answer costs only a re-run of the recommendation pass.
+- `/discuss-open-question` works on a question in any state: it reuses the embedded alternatives, or enumerates them first when there are none, and it states its own recommendation next to any existing pick, saying whether the two agree.
+- The README loop diagram, the docs, and the headless chains in `docs/ways-of-using-cairn.md` now describe the two-pass flow: an opus-xhigh alternatives line before a fable-high recommend line.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.6.1...1.7.0
+
 ## 1.6.1 — 2026-09-21
 
 ### Per-question recommendation commits and question sorting (milestone 29)
