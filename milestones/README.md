@@ -13,9 +13,17 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_32_unified-task-completion-subject/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 32 — Unified task-completion subject
+
+- `/complete-all-tasks` now commits each task subject-only under `Task-completion: <TASK_NAME>`, built from the `##` heading its step 2b already holds, the same subject inline `/complete-task` uses, so the fixed `Tasklist-completion: complete one milestone task` subject and its heading-in-body commits are retired.
+- The orchestrator still commits the agent-staged index itself behind its own `git diff --cached --quiet` nothing-staged guard, outside `core/shared/commit-procedure.md`, and the `complete-task` agent's return contract is unchanged.
+- `/ask-in-milestone-context` describes the task-to-commit mapping as a marker-agnostic heading search over commit subjects and bodies, still best-effort and never the sole source, replacing the claim that the mapping is not keyed on the heading in the subject line.
+- The `complete-all-tasks` and `complete-task` entries of `docs/skill-reference.md` and the `## How skills commit` paragraph of `docs/workflow.md` name the one subject-only `Task-completion: <task heading>` commit, and `docs/` no longer mentions `Tasklist-completion:`.
+- `CLAUDE.md`'s committing invariant records that both completion runners commit subject-only under the task heading and that the retired `Tasklist-completion:` marker must not be restored, with both rationales, and both host trees are rebuilt with `uv run scripts/build_hosts.py --check` passing; existing history is left as it is.
 
 ### Milestone 31 — Inline answer sweep
 
@@ -350,3 +358,4 @@ Current milestone: `milestones/milestone_32_unified-task-completion-subject/`
 | 29 | Per-question recommendation commits and question sorting | `milestones/milestone_29_per-question-commits-and-sorting/` |
 | 30 | Two-pass recommendation sweep | `milestones/milestone_30_two-pass-recommendation-sweep/` |
 | 31 | Inline answer sweep | `milestones/milestone_31_inline-answer-sweep/` |
+| 32 | Unified task-completion subject | `milestones/milestone_32_unified-task-completion-subject/` |
