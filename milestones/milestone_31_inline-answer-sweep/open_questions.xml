@@ -1,1 +1,23 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Milestone resolution per question">
+    <question>The shared answer-with-recommendation procedure resolves the current milestone as its own step 1 and takes only SHORT TITLE as input. When the inline sweep follows it once per question in one conversation, does it re-run that milestone lookup every time, or does the procedure gain an optional pre-resolved MILESTONE_DIR input that the sweep (and the single-question skill) may pass so the lookup runs once per run?</question>
+  </open-question>
+  <open-question id="Whole-set read form">
+    <question>The sweep reads the question set once for context before the loop. Is that a direct read of open_questions.xml and requirements.md with the file-reading tool, sanctioned for reasoning only, or does it rely on the per-question locate prints alone and read no document whole, given that the goal forbids judging picks and the answer core&apos;s own locate call is the fresh read after each cascade?</question>
+  </open-question>
+  <open-question id="Skipped-question report source">
+    <question>A question skipped because its lift call failed mid-run has lost its recommendation to an earlier answer&apos;s cascade, so the end-of-run walk cannot print it. Should the sweep list those skipped Short Titles alongside its terse status line as the still-skipped advisory, sourced from its own record of failed lift calls during the loop, or keep today&apos;s rule of enumerating nothing and let the next recommendation pass surface them?</question>
+  </open-question>
+  <open-question id="Mid-question failure handling">
+    <question>Today a FAILED agent return leaves the tree untouched and stops the loop. Inline, a remove call can fail after the decision was already folded into requirements.md, leaving the harmless superset uncommitted. On such a failure, does the sweep stop the whole run at once with the tool&apos;s Error line and the fold left in the working tree, roll the fold back before stopping, or skip that question and continue to the next?</question>
+  </open-question>
+  <open-question id="Retired-agent rationale home">
+    <question>CLAUDE.md records retired patterns that a later editor must not restore, such as the per-question recommendation commit and the sequential recommend-agent sweep. When the mutation-in-agent inversion invariant is deleted, should the rewritten answer-sweep invariant carry a sentence that the per-question recording agent is retired and must not be restored, with its reason, or is the deletion left unrecorded in the invariants?</question>
+  </open-question>
+  <open-question id="Headless chain sweep model">
+    <question>The four headless chain lines run the answer sweep on opus at effort high or xhigh, chosen when the reasoning happened inside dispatched agents. With the sweep now one inline run over the whole set like the recommend line, which runs on fable at effort high, do those lines keep opus and their current effort, or move to the same model and effort as the other inline reasoning line?</question>
+  </open-question>
+  <open-question id="Sweep new-question advisory">
+    <question>The single-question skill reports, beside its terse line, any new open questions the recorded decision may have introduced, never adding them itself. The sweep today reports none. Now that the sweep records inline with the whole set in context, should it carry that same new-question advisory once for the run alongside the contradiction advisory, or remain limited to the contradiction advisory the goal names?</question>
+  </open-question>
+</open-questions>
