@@ -2,4 +2,13 @@
   <open-question id="Sweep lift reuse">
     <question>The answer sweep today runs its own lift call for each question before recording it, using the call&apos;s failure as the per-question skip and its printed line as the commit body, and the answer-with-recommendation procedure it then follows runs the same lift again in its own step 2. With the sweep inline and that procedure&apos;s contract now open to change, should the sweep drop its separate lift and use the procedure&apos;s own lift instead (its failure treated as the per-question skip, its printed line held as the commit body), or keep a separate lift before following the procedure, so each question is lifted twice?</question>
   </open-question>
+  <open-question id="End-of-run walk retention">
+    <question>The goal still describes an end-of-run check in which a walk call&apos;s print is reported as the still-skipped advisory, while the recorded skipped-question decision has the sweep name no skipped question and add no end-of-run call to find them. Does the inline sweep keep any end-of-run walk call at all, and if it does not, is the goal&apos;s end-of-run sentence to be revised so the two documents agree?</question>
+  </open-question>
+  <open-question id="Contradiction advisory content">
+    <question>The goal says a contradiction the sweep happens to notice is reported once beside the terse status line while the run proceeds, but not what counts as one or what the advisory carries. Does a contradiction cover only a pick against an entry already under Decisions, or also a pick against a decision the same run recorded earlier and a pick against another standing pick, and does the advisory name the Short Titles and decisions involved or stay identifier-free?</question>
+  </open-question>
+  <open-question id="Confirming run for chain settings">
+    <question>The headless-chain decision lands the page edit only after a confirming run of the new fable-high sweep settings on this repository, but the inline sweep exists only once this milestone&apos;s tasks are complete, by which time this milestone&apos;s own questions are already answered. Which run counts as the confirming run, and does the documentation task wait within this milestone for a later milestone&apos;s first sweep or land on some other confirmation?</question>
+  </open-question>
 </open-questions>
