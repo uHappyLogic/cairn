@@ -68,5 +68,9 @@ The "Mutation-in-agent inversion" invariant is deleted from `CLAUDE.md`, and the
 
 Before the loop the sweep reads `open_questions.xml` and `requirements.md` in the milestone directory whole, once, with the file-reading tool, for reasoning only — the idiom the review, recommendation, and discuss skills already use for whole-set reasoning. The snapshot gives the answer core's analyse step and the contradiction advisory their view of every sibling and recorded decision. The skill text keeps it apart from the live reads: the `walk` call still gathers and orders, the `lift` call stays the per-question re-check and skip, and the answer core's `locate` print and the live `requirements.md` take precedence over the snapshot once cascades land. The snapshot never gathers, orders, re-checks, or confirms a skip.
 
+### Mid-question failure handling
+
+When any tool call fails after a question's decision has been folded into `requirements.md`, the sweep stops the whole run at once: it reports that question's Short Title with the tool's `Error:` line quoted verbatim and leaves the question's uncommitted edits in the working tree as they are, with no rollback, snapshot, or skip-and-continue. Every earlier answer is already committed, so what remains is the fold-before-remove superset (or, when a cascade `remove` failed, the recorded answer plus a partial cascade), a resumable tree rather than an untouched one, matching the `complete-task` return promise. The sweep never writes `open_questions.xml` outside the tool to undo such a state, and never continues past it, so a stranded fold cannot ride into the next answer's commit.
+
 ## Out of Scope
 
