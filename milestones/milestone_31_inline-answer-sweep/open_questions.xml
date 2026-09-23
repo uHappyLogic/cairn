@@ -24,6 +24,21 @@
   </open-question>
   <open-question id="End-of-run walk retention">
     <question>The goal still describes an end-of-run check in which a walk call&apos;s print is reported as the still-skipped advisory, while the recorded skipped-question decision has the sweep name no skipped question and add no end-of-run call to find them. Does the inline sweep keep any end-of-run walk call at all, and if it does not, is the goal&apos;s end-of-run sentence to be revised so the two documents agree?</question>
+    <alternative id="No walk, goal revised">
+      The inline sweep makes no end-of-run walk call. The goal&apos;s end-of-run sentence is then revised through `/modify-milestone-goal`, either dropped or reworded to say the sweep ends on its terse status line or no-op line, so the goal and the recorded skipped-question decision describe the same shape.
+      <advantage>The two documents stop contradicting each other at the source. Later readers, `derive-tasks`, and the task that rewrites the sweep SKILL.md see one consistent end-of-run shape. That shape already matches the recorded decision (no record of failed lifts, no end-of-run call) and the CLAUDE.md invariant that stripped dependents get no console advisory.</advantage>
+      <drawback>It takes a separate goal edit through `/modify-milestone-goal`, which only acts and never cascades, so it runs as its own step on top of recording this answer. The goal also loses the &quot;still-skipped questions&quot; phrasing it shares with the CLAUDE.md reporting invariant. That invariant&apos;s advisory list then needs its own check to see whether &quot;still-skipped questions&quot; still describes any runner.</drawback>
+    </alternative>
+    <alternative id="No walk, decision supersedes">
+      The inline sweep makes no end-of-run walk call, and this is recorded under `## Decisions` as overriding the goal&apos;s end-of-run sentence, which is left as written. The decision governs wherever the two differ.
+      <advantage>It is the cheapest resolution. One answer commit settles the behaviour with no goal edit, and the recorded decision already carries the operative rule, so nothing new has to be designed.</advantage>
+      <drawback>The Goal section keeps a sentence the milestone has decided against. `derive-tasks`, the completion procedure, and any later review pass read the goal first and may build or flag the end-of-run walk again. The next `/review-milestone-requirements` run is likely to raise this same mismatch as a new open question.</drawback>
+    </alternative>
+    <alternative id="Walk as completeness check">
+      The inline sweep keeps one end-of-run `walk` call, but not as a skipped-question advisory. Any id it prints means a recommendation-bearing block was left unrecorded, and that is reported as an anomaly beside the terse line. The goal sentence is revised to describe this check in place of the still-skipped advisory.
+      <advantage>It keeps a cheap, live, tool-based check that the run left no recommendation-bearing block behind, with no re-read of the document. It also stays within the recorded decision&apos;s letter, since it never finds or names skipped questions.</advantage>
+      <drawback>The check is close to a no-op. A `lift` fails only when a block is gone or carries no `&lt;recommendation&gt;`, and `walk` lists only recommendation-bearing blocks. After a single pass that records or stops, that leaves `walk` nothing to print unless something outside the run changed the document. The skill would gain a step and a reporting branch that almost never fires. It also goes against the spirit of the skipped-question decision&apos;s &quot;no end-of-run call&quot;.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Contradiction advisory content">
     <question>The goal says a contradiction the sweep happens to notice is reported once beside the terse status line while the run proceeds, but not what counts as one or what the advisory carries. Does a contradiction cover only a pick against an entry already under Decisions, or also a pick against a decision the same run recorded earlier and a pick against another standing pick, and does the advisory name the Short Titles and decisions involved or stay identifier-free?</question>
