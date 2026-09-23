@@ -13,7 +13,7 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: none
+Current milestone: `milestones/milestone_32_unified-task-completion-subject/`
 
 ## Milestone History
 
