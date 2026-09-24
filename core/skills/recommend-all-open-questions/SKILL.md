@@ -22,7 +22,7 @@ commit whose body is one lifted line per annotated question — then sorts the d
 the annotated blocks first in the order the answer sweep will walk them, and commits that
 reorder as its own `Question-ordering: <milestone_id>` commit, a fixed end-of-run step of every
 run that found questions. It is **argument-free**, records **no decisions**, triggers **no
-cascades**, and never touches a block's `<alternative>` children — it only picks and orders.
+cascades**, and never adds, drops, or edits a block's `<alternative>` — it only picks and orders.
 Each embedded recommendation is consumed later, when it is recorded as an answer, by
 `/answer-open-question-with-recommendation` or the
 `/answer-all-open-questions-with-recommendation` sweep.
@@ -209,7 +209,7 @@ the elements, no `<alternative>` element, exactly one `<recommendation>` whose `
 one of the block's own `<alternative>` ids, every `<depends-on>` resolving to another block
 of the document that carries `<alternative>` elements and to one of that block's ids, a target
 block carrying alternatives and no `<recommendation>` yet — and writes those elements into the
-existing block re-rendered in canonical form, its `<alternative>` children untouched.
+existing block re-rendered in canonical form, adding, dropping, and editing no `<alternative>`.
 
 - **Silent, exit 0** — the block is annotated. It gets no console mention. Move on to the next
   block.

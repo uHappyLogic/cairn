@@ -46,3 +46,18 @@ Update `tests/test_format.py`'s `NON_CANONICAL`/`CANONICAL` pin and the `tests/f
 - `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` both report 436 passed, 0 failed.
 
 ---
+
+## Reword Alternatives-Untouched Contract Sites
+
+Replace every claim that the recommendation pass or `embed --recommendation` leaves a block's `<alternative>` children untouched, in `core/skills/recommend-all-open-questions/SKILL.md`, `docs/skill-reference.md`, `docs/workflow.md`, and the `CLAUDE.md` invariants, with the frozen-set guarantee those files already use elsewhere: the pass never adds, drops, or edits an alternative, and none of these sites states child order. Confirm no skill prose positions elements itself and that the capture skill's element-agnostic reconstruction needs no change. Verified by grepping those files for the retired wording and finding none.
+
+**Verified:**
+
+- `core/skills/recommend-all-open-questions/SKILL.md` no longer says the pass "never touches a block's `<alternative>` children" (opening paragraph now: "never adds, drops, or edits a block's `<alternative>` — it only picks and orders") or that `embed --recommendation` leaves "its `<alternative>` children untouched" (the embed step now: "adding, dropping, and editing no `<alternative>`").
+- `docs/skill-reference.md`'s recommendation-pass entry now says `embed --recommendation` writes the block "without adding, dropping, or editing an `<alternative>`", and `docs/workflow.md` now says `embed --recommendation` "never adds, drops, or edits an `<alternative>`".
+- The `CLAUDE.md` invariants carry no alternatives-untouched claim (their only `<alternative>` statements are the cascade never clearing one and a stripped dependent keeping its alternatives, both still true), so no edit was needed there.
+- None of the reworded sentences states child order; the order stays stated only in the tool's module docstring and `--help`.
+- No skill, shared procedure, or agent prose positions elements itself: every order mention defers to the tool's canonical form. `core/skills/capture-milestone-principle-updates/SKILL.md` reconstructs the answered block keyed on tags between its boundary lines and reads alternatives in document order as the options the user saw, which stays true under the new order, so it needs no change.
+- Grepping the four files for `never touches` and `` `<alternative>` children untouched `` finds nothing; `uv run pytest` reports 436 passed.
+
+---
