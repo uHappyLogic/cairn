@@ -21,6 +21,7 @@
       <advantage>The mismatch is reported the first time the tool would have to decide where the named alternative goes, instead of being hidden behind a fallback layout. The repair path still works, because strip --recommendation clears the recommendation before the block is rendered, so the document can be fixed without a hand edit.</advantage>
       <drawback>Failures would depend on which block a subcommand happens to write. Every write re-renders the whole document, so an unrelated embed or add fails because some other block is inconsistent. locate also prints through _question_lines, so read-only printing of that block fails too unless it is exempted. The error then shows up far from its cause, and several subcommands&apos; contracts have to explain this.</drawback>
     </alternative>
+    <recommendation option="Recommendation half first, alternatives unmoved">One renderer rule then covers every recommendation-bearing block, the promotion being a stable move of the at most one alternative the option names, so an option naming nothing simply promotes nothing; writes never fail, the strip repair keeps working because load still accepts the block, and the mismatch already surfaces where it is refused today, at remove --option.</recommendation>
   </open-question>
   <open-question id="Documents in the old order">
     <question>An open_questions.xml written before this change keeps the recommendation last until some subcommand next writes it, and sort writes nothing when no block moves. Is that lazy conversion on the next write enough, or should some write path (for example sort, or every read) convert an old-order document right away?</question>
@@ -44,6 +45,7 @@
       <advantage>The conversion is deliberate, visible, and isolated in its own commit. No existing subcommand&apos;s write condition or read-only guarantee changes.</advantage>
       <drawback>It adds a subcommand or procedure used essentially once per document, which amounts to migration scaffolding. The project deliberately avoids migrations (pre-split milestones get none), and nothing ensures anyone actually runs it. Old-order documents that nobody converts fall back to lazy conversion anyway.</drawback>
     </alternative>
+    <recommendation option="Lazy conversion on next write">Every existing document holding blocks is this milestone&apos;s own, which is emptied before the change can land, and the project records no migrations; the goal already makes the reorder a property of every write and says sort keeps ordering blocks only, so widening sort, rewriting on read, or a one-shot subcommand would each add a contract change for a document that in practice never exists.</recommendation>
   </open-question>
   <open-question id="Alternatives-untouched contract wording">
     <question>The recommend-all-open-questions skill, docs/skill-reference.md, docs/workflow.md, and the CLAUDE.md invariants say the recommendation pass and embed --recommendation leave a block&apos;s &lt;alternative&gt; children untouched. Once embedding a recommendation moves the named alternative to the front, should that claim change to &quot;alternatives&apos; content and set unchanged, their order the renderer&apos;s&quot;, or be dropped wherever it appears?</question>
@@ -62,5 +64,6 @@
       <advantage>It is the smallest edit, and it removes a claim the new renderer makes literally false without writing a replacement contract that could drift from the tool.</advantage>
       <drawback>It throws away a guarantee that is still true and matters: the recommendation pass never changes the option set. The enumerate-versus-pick split recorded in CLAUDE.md depends on that set staying frozen, and once the statement is gone a later editor has no written rule stopping them from letting the pick pass rewrite or prune alternatives.</drawback>
     </alternative>
+    <recommendation option="Frozen set, order unstated">The guarantee the enumerate-versus-pick split actually needs is that the pass never adds, drops, or edits an alternative, which is the frozen-set wording these files already use; child order is the tool&apos;s by the standing invariant, so stating it once in the tool&apos;s canonical-form contract neither restates rendering mechanics at five prose sites nor leaves the frozen set unguarded as dropping the claim would.</recommendation>
   </open-question>
 </open-questions>
