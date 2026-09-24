@@ -28,5 +28,9 @@ The module docstring (also the `--help` text) states the canonical form: "each b
 
 ## Decisions
 
+### Unmatched recommendation option
+
+A recommendation-bearing block whose `<recommendation>` option names none of its `<alternative>` ids is still rendered recommendation half first (`<applied-principle>`, `<depends-on>`, `<recommendation>` ahead of all alternatives); only the promotion is skipped, so the alternatives keep their existing relative order. The renderer rule is one stable move of the at most one alternative the option names, so an option naming nothing promotes nothing. The parser keeps accepting such a block and no write fails on it, so `strip --recommendation` remains the repair path; the mismatch continues to surface where it is refused today, at `remove --option`.
+
 ## Out of Scope
 
