@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Recommendation-First Renderer Child Order
-
-Change `_question_lines` in `core/tools/open_questions.py` so a block carrying a `<recommendation>` renders, after its `<question>`, its `<applied-principle>` and `<depends-on>` elements, then the `<recommendation>`, then the one alternative the recommendation's option names, then the remaining alternatives in their existing relative order, while a block without a recommendation keeps today's order and an option naming none of the block's alternative ids promotes nothing (the recommendation half still renders first). The move is renderer-only and deterministic on every write: `sort` keeps ordering whole blocks only, `strip --recommendation` keeps the alternatives in their now-reordered list order, the parser still accepts any child order so an old-order document converts lazily on its next write, and no conversion subcommand is added. Verified by the existing suite still passing except the tests that pin the old order, and by rendering a recommendation-bearing block and observing the new order.
-
----
-
 ## Update Canonical-Form Contract Text
 
 Reword the canonical-form statement in the module docstring (the `--help` text) and the `embed` help of `core/tools/open_questions.py` so they state the new order once: a recommendation-bearing block groups its children as `<question>`, `<applied-principle>`, `<depends-on>`, `<recommendation>`, the named alternative, then the rest in relative order, and a block without a recommendation keeps `<question>`, the `<alternative>` elements, `<applied-principle>`, `<depends-on>`. This is the one place child order is stated, so the wording must cover the unmatched-option case (no promotion). Verified by `--help` output reading correctly and `tests/test_contract.py` passing.

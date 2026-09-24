@@ -349,25 +349,51 @@ def render_document(document):
 
 
 def _question_lines(question, depth):
+    """The lines of one block. A block carrying a <recommendation> renders its recommendation
+    half first, then the alternative its option names, then the rest in their relative order;
+    a block without one renders its alternatives before the other three kinds."""
     children = _element_lines(depth + 1, "question", (), question.question, ())
-    for alternative in question.alternatives:
+    if question.recommendation is None:
+        children.extend(_alternatives_lines(question.alternatives, depth + 1))
+        children.extend(_recommendation_half_lines(question, depth + 1))
+    else:
+        children.extend(_recommendation_half_lines(question, depth + 1))
+        children.extend(_alternatives_lines(_promoted(question.alternatives, question.recommendation.option), depth + 1))
+    return _element_lines(depth, BLOCK_TAG, (("id", question.id),), "", children)
+
+
+def _promoted(alternatives, option):
+    """The alternatives with the one whose id the option names moved to the front and the
+    rest in their relative order; an option naming none of them moves nothing."""
+    wanted = id_key(option)
+    named = [alternative for alternative in alternatives if id_key(alternative.id) == wanted]
+    return named + [alternative for alternative in alternatives if id_key(alternative.id) != wanted]
+
+
+def _alternatives_lines(alternatives, depth):
+    lines = []
+    for alternative in alternatives:
         body = []
         for advantage in alternative.advantages:
-            body.extend(_element_lines(depth + 2, "advantage", (), advantage, ()))
+            body.extend(_element_lines(depth + 1, "advantage", (), advantage, ()))
         for drawback in alternative.drawbacks:
-            body.extend(_element_lines(depth + 2, "drawback", (), drawback, ()))
-        children.extend(
-            _element_lines(depth + 1, "alternative", (("id", alternative.id),), alternative.text, body, text_inline=False)
-        )
+            body.extend(_element_lines(depth + 1, "drawback", (), drawback, ()))
+        lines.extend(_element_lines(depth, "alternative", (("id", alternative.id),), alternative.text, body, text_inline=False))
+    return lines
+
+
+def _recommendation_half_lines(question, depth):
+    """The block's <applied-principle>, <depends-on>, and <recommendation> lines, in that order."""
+    lines = []
     for principle in question.principles:
-        children.extend(_element_lines(depth + 1, "applied-principle", (), principle, ()))
+        lines.extend(_element_lines(depth, "applied-principle", (), principle, ()))
     for dependency in question.depends_on:
         attributes = (("question", dependency.question), ("option", dependency.option))
-        children.extend(_element_lines(depth + 1, "depends-on", attributes, "", ()))
+        lines.extend(_element_lines(depth, "depends-on", attributes, "", ()))
     if question.recommendation is not None:
         attributes = (("option", question.recommendation.option),)
-        children.extend(_element_lines(depth + 1, "recommendation", attributes, question.recommendation.rationale, ()))
-    return _element_lines(depth, BLOCK_TAG, (("id", question.id),), "", children)
+        lines.extend(_element_lines(depth, "recommendation", attributes, question.recommendation.rationale, ()))
+    return lines
 
 
 def _element_lines(depth, tag, attributes, text, children, text_inline=True):
