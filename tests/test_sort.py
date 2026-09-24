@@ -218,6 +218,38 @@ def test_sort_is_idempotent_and_a_second_sort_writes_nothing(run_tool, tmp_path,
     assert printed(run_tool("list", str(target))) == walked + [question.id for question in web if question.recommendation is None]
 
 
+OLD_ORDER = """\
+<open-questions>
+  <open-question id="Old">
+    <question>Which one?</question>
+    <alternative id="First">
+      First way.
+    </alternative>
+    <alternative id="Second">
+      Second way.
+    </alternative>
+    <applied-principle>Keep it short</applied-principle>
+    <recommendation option="Second">Second is shorter.</recommendation>
+  </open-question>
+  <open-question id="Later">
+    <question>And this?</question>
+  </open-question>
+</open-questions>
+"""
+
+
+def test_sort_writes_nothing_when_no_block_moved_even_on_an_old_order_document(run_tool, tmp_path):
+    # The recommendation-bearing block holds its children in the pre-promotion order, which a
+    # write would re-render; since no block moves, sort leaves the file exactly as written.
+    document = tmp_path / open_questions.DOCUMENT_NAME
+    document.write_text(OLD_ORDER, encoding="utf-8")
+    stat_before = document.stat()
+    silent(run_tool("sort", str(tmp_path)))
+    assert document.read_text(encoding="utf-8") == OLD_ORDER
+    assert (document.stat().st_ino, document.stat().st_mtime_ns) == (stat_before.st_ino, stat_before.st_mtime_ns)
+    assert open_questions.render_document(open_questions.parse_document(OLD_ORDER)) != OLD_ORDER
+
+
 # --- no other write reorders ----------------------------------------------------------------
 
 

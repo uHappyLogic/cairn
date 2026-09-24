@@ -358,11 +358,21 @@ def test_embed_recommendation_writes_its_half_and_leaves_the_alternatives_frozen
     frozen = document_of(target)
     assert_ok(embed_recommendation(run_tool, target, BARE, RECOMMENDATION))
     after = document_of(target).decode("utf-8")
-    assert block_lines(after, BARE) == BARE_HEAD + ALTERNATIVE_LINES + RECOMMENDATION_LINES + ["  </open-question>"]
-    assert block_lines(after, BARE)[2:12] == block_lines(frozen.decode("utf-8"), BARE)[2:12]
+    assert block_lines(after, BARE) == BARE_HEAD + RECOMMENDATION_LINES + ALTERNATIVE_LINES + ["  </open-question>"]
+    assert block_lines(after, BARE)[5:15] == block_lines(frozen.decode("utf-8"), BARE)[2:12]
     assert block_lines(after, HATCH) == block_lines(before, HATCH)
     assert block_lines(after, ROOT_FORM) == block_lines(before, ROOT_FORM)
     assert after == open_questions.render_document(load(target))
+
+
+def test_embed_recommendation_promotes_the_named_alternative_and_keeps_the_set_frozen(run_tool, milestone_dir):
+    target = milestone_dir("annotated")
+    assert_ok(embed_alternatives(run_tool, target, BARE, ALTERNATIVES))
+    assert_ok(embed_recommendation(run_tool, target, BARE, RECOMMENDATION.replace('option="Option A"', 'option="option b"')))
+    after = block_lines(document_of(target).decode("utf-8"), BARE)
+    promoted = RECOMMENDATION_LINES[:2] + ['    <recommendation option="option b">A wins because of one stated reason.</recommendation>']
+    assert after == BARE_HEAD + promoted + ALTERNATIVE_LINES[5:] + ALTERNATIVE_LINES[:5] + ["  </open-question>"]
+    assert [alternative.id for alternative in by_id(target, BARE).alternatives] == ["Option B", "Option A"]
 
 
 def test_embed_recommendation_the_minimal_fragment(run_tool, milestone_dir):
@@ -378,10 +388,10 @@ def test_embed_recommendation_the_minimal_fragment(run_tool, milestone_dir):
     assert block_lines(document_of(target).decode("utf-8"), FIRST) == [
         '  <open-question id="First bare question">',
         "    <question>What is the first thing to decide?</question>",
+        '    <recommendation option="Only">Nothing else applies.</recommendation>',
         '    <alternative id="Only">',
         "      Just this.",
         "    </alternative>",
-        '    <recommendation option="Only">Nothing else applies.</recommendation>',
         "  </open-question>",
     ]
 
@@ -435,7 +445,7 @@ def test_embed_recommendation_discards_alternative_lines_above_the_first_anchor_
     frozen = block_lines(document_of(target).decode("utf-8"), BARE)
     assert_ok(embed_recommendation(run_tool, target, BARE, ALTERNATIVES + "\n" + RECOMMENDATION))
     after = block_lines(document_of(target).decode("utf-8"), BARE)
-    assert after == frozen[:-1] + RECOMMENDATION_LINES + ["  </open-question>"]
+    assert after == frozen[:2] + RECOMMENDATION_LINES + frozen[2:]
     assert "      What option A is." not in after
 
 
@@ -546,6 +556,10 @@ def test_embed_groups_misordered_children_by_kind(run_tool, milestone_dir):
     assert block_lines(document_of(target).decode("utf-8"), BARE) == [
         '  <open-question id="Fixture bare block">',
         "    <question>Does a bare block sit beside annotated siblings without change?</question>",
+        "    <applied-principle>One rule over two</applied-principle>",
+        '    <depends-on question="Root element form" option="Self-closing root"/>',
+        '    <depends-on question="Escape hatch under sole writer" option="Strip subcommand"/>',
+        '    <recommendation option="Option A">A wins after all.</recommendation>',
         '    <alternative id="Option A">',
         "      What A is.",
         "      <advantage>A helps.</advantage>",
@@ -556,10 +570,6 @@ def test_embed_groups_misordered_children_by_kind(run_tool, milestone_dir):
         "      <advantage>B helps.</advantage>",
         "      <drawback>B costs.</drawback>",
         "    </alternative>",
-        "    <applied-principle>One rule over two</applied-principle>",
-        '    <depends-on question="Root element form" option="Self-closing root"/>',
-        '    <depends-on question="Escape hatch under sole writer" option="Strip subcommand"/>',
-        '    <recommendation option="Option A">A wins after all.</recommendation>',
         "  </open-question>",
     ]
 
@@ -614,13 +624,13 @@ def test_embed_normalizes_indentation_escaping_and_folded_text(run_tool, milesto
     assert block_lines(document_of(target).decode("utf-8"), FIRST) == [
         '  <open-question id="First bare question">',
         "    <question>What is the first thing to decide?</question>",
+        '    <depends-on question="Second bare question" option="Only"/>',
+        '    <recommendation option="tabs &amp; SPACES">It &gt; the rest.</recommendation>',
         '    <alternative id="Tabs &amp; spaces">',
         "      What it is, over three lines with &apos;quotes&apos; and &quot;doubles&quot;.",
         "      <advantage>Keeps &lt;raw&gt; text.</advantage>",
         "      <drawback>Costs extra space.</drawback>",
         "    </alternative>",
-        '    <depends-on question="Second bare question" option="Only"/>',
-        '    <recommendation option="tabs &amp; SPACES">It &gt; the rest.</recommendation>',
         "  </open-question>",
     ]
 

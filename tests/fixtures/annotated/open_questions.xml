@@ -1,6 +1,7 @@
 <open-questions>
   <open-question id="Escape hatch under sole writer">
     <question>With the tool as the file&apos;s only writer, how does a user clear a stale recommendation to force its regeneration — a `strip` subcommand or a documented hand-edit exception?</question>
+    <recommendation option="Strip subcommand">The goal gives the tool every deterministic edit to the document and a strip is one it already performs internally — the per-block primitive behind the transitive strip in reconciliation and the dependent-strip on prune — so exposing it is an argparse entry and a test, and in return the user gets an id-validated one-line call in place of an eye-located multi-kilobyte edit on the one file whose escaping and indentation the goal makes tool-internal, the on-disk document stays the tool&apos;s own output without a caveat, and the half-deleted block the tool would refuse at every later call cannot arise; one primitive serving the reconciliation walk transitively and the user one block at a time is one behaviour, not two, and dependents stay untouched exactly as the stale-tags-left-alone rule already says; a skill around it is an additive step to take only if the hatch, unexercised in every commit to date, ever becomes routine — which is what breaks the tie against building one now.</recommendation>
     <alternative id="Strip subcommand">
       The tool gains a `strip` subcommand that takes one or more Short Titles beside the milestone location every other subcommand takes and, for each named block, deletes every child between its `&lt;question&gt;` element and its `&lt;/open-question&gt;` line — the `&lt;alternative&gt;`, `&lt;applied-principle&gt;`, `&lt;depends-on&gt;`, and `&lt;recommendation&gt;` children — leaving the wrapper and `&lt;question&gt;` intact, touching no dependent and no `&lt;depends-on&gt;` tag that names the block, rejecting an unknown id with the document unchanged, and doing nothing on a block already bare; the user runs it and re-runs `/recommend-all-open-questions`, whose skip rule regenerates the now recommendation-less block.
       <advantage>The sole-writer guarantee holds with no exception — the document on disk is always the tool&apos;s own output — and the operation is the per-block primitive the tool already needs for the transitive strip in `&lt;depends-on&gt;` reconciliation and the dependent-strip on prune, so exposing it costs an argparse entry, one pytest case, and one sentence in the sweep skill; the caller names an id instead of locating lines by eye in an entity-escaped document (for the coding agent acting on a user&apos;s request, one short command in place of an edit whose old text is the block&apos;s whole multi-kilobyte child set), a mistyped id fails loudly, and a half-deleted block the tool would refuse at every later call cannot arise.</advantage>
@@ -16,10 +17,13 @@
       <advantage>The user types a slash command with a Short Title and nothing else — no tool path, no milestone directory, the same on both hosts — and the clear is recorded as its own provenance-marked commit under the skill-layer commit rule instead of riding uncommitted into the next annotation commit.</advantage>
       <drawback>A whole skill — SKILL.md, frontmatter with a 25-word description, a commit subject, a `docs/skill-reference.md` entry, a `CLAUDE.md` pipeline line, a rebuild of both host trees — for an escape hatch never yet exercised, existing solely to run one tool call because the sweep stays argument-free by design; and it splits one regeneration into two commits, the strip and then the sweep&apos;s annotation, where the annotation diff alone already records the replacement.</drawback>
     </alternative>
-    <recommendation option="Strip subcommand">The goal gives the tool every deterministic edit to the document and a strip is one it already performs internally — the per-block primitive behind the transitive strip in reconciliation and the dependent-strip on prune — so exposing it is an argparse entry and a test, and in return the user gets an id-validated one-line call in place of an eye-located multi-kilobyte edit on the one file whose escaping and indentation the goal makes tool-internal, the on-disk document stays the tool&apos;s own output without a caveat, and the half-deleted block the tool would refuse at every later call cannot arise; one primitive serving the reconciliation walk transitively and the user one block at a time is one behaviour, not two, and dependents stay untouched exactly as the stale-tags-left-alone rule already says; a skill around it is an additive step to take only if the hatch, unexercised in every commit to date, ever becomes routine — which is what breaks the tie against building one now.</recommendation>
   </open-question>
   <open-question id="Root element form">
     <question>Is the empty document a self-closing root or an open and close tag pair?</question>
+    <applied-principle>One rule over two</applied-principle>
+    <applied-principle>Prefer the writer&apos;s invariant</applied-principle>
+    <depends-on question="Escape hatch under sole writer" option="Strip subcommand"/>
+    <recommendation option="Self-closing root">The serializer already writes every empty element self-closing, and the root is an element like any other; a second rule for one tag buys a slightly prettier first diff at the cost of a special case in the one place the format is defined.</recommendation>
     <alternative id="Self-closing root">
       The one rule for an element that holds nothing &amp; needs no body: write it as `&lt;open-questions/&gt;`.
       <advantage>One serializer rule covers the root, `&lt;depends-on/&gt;`, and every other empty element alike.</advantage>
@@ -30,10 +34,6 @@
       <advantage>Adding or removing the last block is a pure insertion or deletion in the diff.</advantage>
       <drawback>The root becomes the one element the self-closing rule does not cover.</drawback>
     </alternative>
-    <applied-principle>One rule over two</applied-principle>
-    <applied-principle>Prefer the writer&apos;s invariant</applied-principle>
-    <depends-on question="Escape hatch under sole writer" option="Strip subcommand"/>
-    <recommendation option="Self-closing root">The serializer already writes every empty element self-closing, and the root is an element like any other; a second rule for one tag buys a slightly prettier first diff at the cost of a special case in the one place the format is defined.</recommendation>
   </open-question>
   <open-question id="Fixture bare block">
     <question>Does a bare block sit beside annotated siblings without change?</question>

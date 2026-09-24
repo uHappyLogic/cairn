@@ -85,19 +85,19 @@ CANONICAL = """\
 <open-questions>
   <open-question id="Spaced id">
     <question>Which way?</question>
-    <alternative id="First">
-      The first way, with &apos;quotes&apos; and &quot;doubles&quot; and a &gt; sign.
-      <advantage>Simple</advantage>
-      <drawback>Slow</drawback>
-    </alternative>
+    <applied-principle>Prefer the shorter path</applied-principle>
+    <depends-on question="Other" option="X"/>
+    <recommendation option="Second">Chosen because it is shorter.</recommendation>
     <alternative id="Second">
       The second way.
       <advantage>Fast</advantage>
       <drawback>Complex</drawback>
     </alternative>
-    <applied-principle>Prefer the shorter path</applied-principle>
-    <depends-on question="Other" option="X"/>
-    <recommendation option="Second">Chosen because it is shorter.</recommendation>
+    <alternative id="First">
+      The first way, with &apos;quotes&apos; and &quot;doubles&quot; and a &gt; sign.
+      <advantage>Simple</advantage>
+      <drawback>Slow</drawback>
+    </alternative>
   </open-question>
 </open-questions>
 """
@@ -128,6 +128,145 @@ def test_parse_builds_the_model():
                 recommendation=Recommendation("Second", "Chosen because it is shorter."),
             )
         ]
+    )
+
+
+def child_heads(text):
+    """The opening line of every child of the document's blocks, in document order."""
+    return [line.strip() for line in text.split("\n") if line.startswith("    <") and not line.startswith("    </")]
+
+
+def recommended(option, *alternative_ids, principles=("P",), depends_on=(Dependency("Other", "X"),)):
+    return Question(
+        id="Q",
+        question="Which?",
+        alternatives=[Alternative(alternative_id, f"{alternative_id} is this.") for alternative_id in alternative_ids],
+        principles=list(principles),
+        depends_on=list(depends_on),
+        recommendation=Recommendation(option, "Because."),
+    )
+
+
+def test_render_promotes_the_named_alternative_and_keeps_the_rest_in_relative_order():
+    text = render_document(Document([recommended("c", "A", "B", "C", "D")]))
+    assert child_heads(text) == [
+        "<question>Which?</question>",
+        "<applied-principle>P</applied-principle>",
+        '<depends-on question="Other" option="X"/>',
+        '<recommendation option="c">Because.</recommendation>',
+        '<alternative id="C">',
+        '<alternative id="A">',
+        '<alternative id="B">',
+        '<alternative id="D">',
+    ]
+    reparsed = parse_document(text).questions[0]
+    assert [alternative.id for alternative in reparsed.alternatives] == ["C", "A", "B", "D"]
+    assert render_document(parse_document(text)) == text
+
+
+def test_render_of_an_already_first_named_alternative_moves_only_the_recommendation_half():
+    text = render_document(Document([recommended("A", "A", "B", principles=(), depends_on=())]))
+    assert child_heads(text) == [
+        "<question>Which?</question>",
+        '<recommendation option="A">Because.</recommendation>',
+        '<alternative id="A">',
+        '<alternative id="B">',
+    ]
+
+
+def test_render_of_an_unmatched_option_puts_the_recommendation_half_first_and_promotes_nothing():
+    text = render_document(Document([recommended("Nope", "X", "Y", "Z")]))
+    assert child_heads(text) == [
+        "<question>Which?</question>",
+        "<applied-principle>P</applied-principle>",
+        '<depends-on question="Other" option="X"/>',
+        '<recommendation option="Nope">Because.</recommendation>',
+        '<alternative id="X">',
+        '<alternative id="Y">',
+        '<alternative id="Z">',
+    ]
+    assert render_document(parse_document(text)) == text
+
+
+def test_a_writer_saves_a_block_with_an_unmatched_option_without_failing(run_tool, tmp_path):
+    open_questions.save_document(str(tmp_path), Document([recommended("Nope", "Y", "X")]))
+    result = run_tool("add", str(tmp_path), "Later", stdin=b"Is there more?")
+    assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
+    text = (tmp_path / open_questions.DOCUMENT_NAME).read_text(encoding="utf-8")
+    assert child_heads(text) == [
+        "<question>Which?</question>",
+        "<applied-principle>P</applied-principle>",
+        '<depends-on question="Other" option="X"/>',
+        '<recommendation option="Nope">Because.</recommendation>',
+        '<alternative id="Y">',
+        '<alternative id="X">',
+        "<question>Is there more?</question>",
+    ]
+
+
+def test_render_of_a_block_without_a_recommendation_keeps_the_alternatives_first():
+    question = recommended("B", "A", "B")
+    question.recommendation = None
+    assert child_heads(render_document(Document([question]))) == [
+        "<question>Which?</question>",
+        '<alternative id="A">',
+        '<alternative id="B">',
+        "<applied-principle>P</applied-principle>",
+        '<depends-on question="Other" option="X"/>',
+    ]
+
+
+OLD_ORDER = """\
+<open-questions>
+  <open-question id="Old">
+    <question>Which one?</question>
+    <alternative id="First">
+      First way.
+    </alternative>
+    <alternative id="Second">
+      Second way.
+    </alternative>
+    <applied-principle>Keep it short</applied-principle>
+    <recommendation option="Second">Second is shorter.</recommendation>
+  </open-question>
+</open-questions>
+"""
+
+
+def test_an_old_order_document_stays_as_written_until_a_writer_next_saves_it(run_tool, tmp_path):
+    target = tmp_path / open_questions.DOCUMENT_NAME
+    target.write_text(OLD_ORDER, encoding="utf-8")
+    directory = str(tmp_path)
+    reading = (
+        ("list", directory),
+        ("list", "--without-recommendation", directory),
+        ("walk", directory),
+        ("locate", directory, "Old"),
+        ("lift", directory, "Old"),
+        ("sort", directory),
+    )
+    for args in reading:
+        result = run_tool(*args)
+        assert (result.returncode, result.stderr) == (0, b"")
+        assert target.read_text(encoding="utf-8") == OLD_ORDER
+    assert run_tool("add", str(tmp_path), "New", stdin=b"And this?").returncode == 0
+    assert target.read_text(encoding="utf-8") == (
+        "<open-questions>\n"
+        '  <open-question id="Old">\n'
+        "    <question>Which one?</question>\n"
+        "    <applied-principle>Keep it short</applied-principle>\n"
+        '    <recommendation option="Second">Second is shorter.</recommendation>\n'
+        '    <alternative id="Second">\n'
+        "      Second way.\n"
+        "    </alternative>\n"
+        '    <alternative id="First">\n'
+        "      First way.\n"
+        "    </alternative>\n"
+        "  </open-question>\n"
+        '  <open-question id="New">\n'
+        "    <question>And this?</question>\n"
+        "  </open-question>\n"
+        "</open-questions>\n"
     )
 
 

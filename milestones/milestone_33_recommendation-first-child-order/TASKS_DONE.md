@@ -28,3 +28,21 @@ Reword the canonical-form statement in the module docstring (the `--help` text) 
 - `tests/test_contract.py` passes under both `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` (11 passed each). The full suite is unchanged from the previous task at 400 passed and 27 failed, and every failure pins the old child order.
 
 ---
+
+## Realign Renderer Tests And Fixtures
+
+Update `tests/test_format.py`'s `NON_CANONICAL`/`CANONICAL` pin and the `tests/fixtures/annotated/open_questions.xml` golden file to the new child order so the round-trip identity holds, and add tests covering promotion of the named alternative, the unmatched-option case rendering the recommendation half first with no promotion and no write failure, a block without a recommendation keeping today's order, an old-order document staying as written until a writer next saves it, `sort` writing nothing when no block moved even on an old-order document, and `strip --recommendation` keeping the reordered alternative order. Verified by `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` both passing.
+
+**Verified:**
+
+- `tests/fixtures/annotated/open_questions.xml` and `tests/fixtures/entities/open_questions.xml` are re-rendered through the tool so every recommendation-bearing block reads `<question>`, `<applied-principle>`, `<depends-on>`, `<recommendation>`, then its alternatives (the named one already first in both); the golden round-trip identity holds for all four fixtures.
+- `tests/test_format.py`'s `CANONICAL` pin renders `NON_CANONICAL` recommendation half first with the named alternative `Second` promoted ahead of `First`, and the five literal expected blocks in `tests/test_embed.py` that placed alternatives before the recommendation half are realigned to the new order.
+- New tests cover promotion of the named alternative (`test_render_promotes_the_named_alternative_and_keeps_the_rest_in_relative_order`, `test_render_of_an_already_first_named_alternative_moves_only_the_recommendation_half`, and `test_embed_recommendation_promotes_the_named_alternative_and_keeps_the_set_frozen`).
+- New tests cover the unmatched-option case rendering the recommendation half first with no promotion (`test_render_of_an_unmatched_option_puts_the_recommendation_half_first_and_promotes_nothing`) and with no write failure, since `add` saves such a document with exit 0 (`test_a_writer_saves_a_block_with_an_unmatched_option_without_failing`).
+- A new test covers a block without a recommendation keeping today's order (`test_render_of_a_block_without_a_recommendation_keeps_the_alternatives_first`).
+- A new test covers an old-order document staying byte-identical through `list`, `list --without-recommendation`, `walk`, `locate`, `lift`, and `sort`, then being rewritten recommendation-first with its named alternative promoted by the next `add` (`test_an_old_order_document_stays_as_written_until_a_writer_next_saves_it`).
+- A new test covers `sort` writing nothing when no block moved on an old-order document: the bytes, inode, and mtime are unchanged, even though a re-render would differ (`test_sort_writes_nothing_when_no_block_moved_even_on_an_old_order_document`).
+- A new test covers `strip --recommendation` keeping the reordered alternative order `C`, `A`, `B` in both the model and the file (`test_strip_recommendation_keeps_the_reordered_alternative_order`).
+- `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` both report 436 passed, 0 failed.
+
+---

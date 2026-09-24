@@ -343,6 +343,30 @@ def test_strip_recommendation_keeps_every_other_line_of_the_document(run_tool, m
     assert document_of(target).decode("utf-8") == expected
 
 
+def test_strip_recommendation_keeps_the_reordered_alternative_order(run_tool, tmp_path):
+    # The recommendation named the last alternative, so the saved block holds it first; the
+    # strip keeps that stored order rather than restoring the order the alternatives arrived in.
+    question = Question(
+        id="Q",
+        question="Which?",
+        alternatives=[Alternative(id=alternative_id, text=f"{alternative_id} is this") for alternative_id in ("A", "B", "C")],
+        principles=["P"],
+        recommendation=Recommendation(option="C", rationale="Because."),
+    )
+    open_questions.save_document(str(tmp_path), open_questions.Document([question]))
+    assert [alternative.id for alternative in open_questions.load_document(str(tmp_path)).questions[0].alternatives] == ["C", "A", "B"]
+    result = run_tool("strip", "--recommendation", str(tmp_path), "Q")
+    assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
+    stripped = open_questions.load_document(str(tmp_path)).questions[0]
+    assert stripped == Question(id="Q", question="Which?", alternatives=[question.alternatives[2], question.alternatives[0], question.alternatives[1]])
+    assert [line for line in document_of(tmp_path).decode("utf-8").split("\n") if line.startswith("    <") and not line.startswith("    </")] == [
+        "    <question>Which?</question>",
+        '    <alternative id="C">',
+        '    <alternative id="A">',
+        '    <alternative id="B">',
+    ]
+
+
 def test_strip_recommendation_keeps_the_document_canonical(run_tool, milestone_dir):
     target = milestone_dir("annotated")
     run_tool("strip", str(target), "--recommendation", "Root element form")
