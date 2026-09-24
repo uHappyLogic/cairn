@@ -14,3 +14,17 @@ Change `_question_lines` in `core/tools/open_questions.py` so a block carrying a
 - `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` both report 400 passed, 27 failed, and every failure pins the old order: with the `annotated` and `entities` golden fixtures re-rendered through the tool in a scratch copy, only 6 remain, each a literal expected block in `tests/test_embed.py` or `tests/test_format.py` that places the alternatives before the recommendation half (realigned by the later test task).
 
 ---
+
+## Update Canonical-Form Contract Text
+
+Reword the canonical-form statement in the module docstring (the `--help` text) and the `embed` help of `core/tools/open_questions.py` so they state the new order once: a recommendation-bearing block groups its children as `<question>`, `<applied-principle>`, `<depends-on>`, `<recommendation>`, the named alternative, then the rest in relative order, and a block without a recommendation keeps `<question>`, the `<alternative>` elements, `<applied-principle>`, `<depends-on>`. This is the one place child order is stated, so the wording must cover the unmatched-option case (no promotion). Verified by `--help` output reading correctly and `tests/test_contract.py` passing.
+
+**Verified:**
+
+- The canonical-form bullet of the module docstring in `core/tools/open_questions.py` states the order once: a block carrying a `<recommendation>` renders `<question>`, `<applied-principle>`, `<depends-on>`, `<recommendation>`, the one `<alternative>` the option names, then the other alternatives in their relative order; a block carrying none renders `<question>`, the alternatives in their relative order, `<applied-principle>`, `<depends-on>`.
+- The same bullet covers the unmatched-option case: an option naming none of the alternatives promotes nothing, and the alternatives keep their relative order after the recommendation. It also states that the written order becomes the stored relative order, so a later `strip --recommendation` keeps it.
+- The docstring's `embed` entry and the argparse `embed` help no longer restate an order. Each says the other half's elements stay as the block holds them and the whole block is written in the canonical child order stated in the module docstring's document format. The retired "grouped by kind in the canonical order" and "written grouped by kind" wording is gone.
+- `python3 core/tools/open_questions.py --help` and `embed --help` read correctly and exit 0.
+- `tests/test_contract.py` passes under both `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` (11 passed each). The full suite is unchanged from the previous task at 400 passed and 27 failed, and every failure pins the old child order.
+
+---

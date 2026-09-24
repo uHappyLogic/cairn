@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Update Canonical-Form Contract Text
-
-Reword the canonical-form statement in the module docstring (the `--help` text) and the `embed` help of `core/tools/open_questions.py` so they state the new order once: a recommendation-bearing block groups its children as `<question>`, `<applied-principle>`, `<depends-on>`, `<recommendation>`, the named alternative, then the rest in relative order, and a block without a recommendation keeps `<question>`, the `<alternative>` elements, `<applied-principle>`, `<depends-on>`. This is the one place child order is stated, so the wording must cover the unmatched-option case (no promotion). Verified by `--help` output reading correctly and `tests/test_contract.py` passing.
-
----
-
 ## Realign Renderer Tests And Fixtures
 
 Update `tests/test_format.py`'s `NON_CANONICAL`/`CANONICAL` pin and the `tests/fixtures/annotated/open_questions.xml` golden file to the new child order so the round-trip identity holds, and add tests covering promotion of the named alternative, the unmatched-option case rendering the recommendation half first with no promotion and no write failure, a block without a recommendation keeping today's order, an old-order document staying as written until a writer next saves it, `sort` writing nothing when no block moved even on an old-order document, and `strip --recommendation` keeping the reordered alternative order. Verified by `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` both passing.
