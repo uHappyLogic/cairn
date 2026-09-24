@@ -2,6 +2,17 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.7.2 — 2026-09-24
+
+### Recommendation-first child order (milestone 33)
+
+- In `open_questions.xml`, a question that carries a recommendation now lists its children in this order: `<question>`, its `<applied-principle>` and `<depends-on>` elements, the `<recommendation>`, the `<alternative>` the recommendation names, then the other alternatives in their existing order. The pick is visible at the top of the block. A block without a recommendation keeps its previous order.
+- If a recommendation names none of the block's alternatives, the recommendation half is still written first and no alternative is moved. The write does not fail: `strip --recommendation` repairs the block, and `remove --option` still refuses the mismatch.
+- Existing documents change to the new order the next time the tool writes them. There is no migration step. `sort` still moves whole blocks only, and `strip --recommendation` keeps the reordered alternatives.
+- The tool's `--help` states the canonical child order once. `/recommend-all-open-questions` and the docs now say that the pass never adds, drops, or edits an `<alternative>`.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.7.1...1.7.2
+
 ## 1.7.1 — 2026-09-23
 
 ### Unified task-completion subject (milestone 32)
