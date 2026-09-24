@@ -27,5 +27,20 @@
   </open-question>
   <open-question id="Alternatives-untouched contract wording">
     <question>The recommend-all-open-questions skill, docs/skill-reference.md, docs/workflow.md, and the CLAUDE.md invariants say the recommendation pass and embed --recommendation leave a block&apos;s &lt;alternative&gt; children untouched. Once embedding a recommendation moves the named alternative to the front, should that claim change to &quot;alternatives&apos; content and set unchanged, their order the renderer&apos;s&quot;, or be dropped wherever it appears?</question>
+    <alternative id="Reword with order clause">
+      At every site that makes the claim, replace &quot;untouched&quot; with the question&apos;s proposed wording: the alternatives&apos; content and set are unchanged, and their order is the renderer&apos;s. The sites are recommend-all-open-questions SKILL.md line 25 (&quot;never touches a block&apos;s `&lt;alternative&gt;` children&quot;) and line 212, the embed --recommendation passage in docs/skill-reference.md, the matching passage in docs/workflow.md, and the CLAUDE.md invariant.
+      <advantage>Each site stays accurate and complete. A reader who sees the recommended alternative jump to the front in the Recommendation-annotation commit diff finds the move explained where the guarantee is stated, instead of reading it as the pass breaking its own contract.</advantage>
+      <drawback>The renderer&apos;s ordering rule then appears as a clause in skill prose and docs, while the tool&apos;s canonical-form docstring is already its single home. CLAUDE.md says runtime prose states the tool&apos;s contract in at most one sentence per site and never restates rendering mechanics, and every extra mention is one more place that must change if the ordering rule changes later.</drawback>
+    </alternative>
+    <alternative id="Frozen set, order unstated">
+      Replace &quot;untouched&quot; with the &quot;frozen set&quot; wording the skill and the tool already use elsewhere (SKILL.md lines 11, 66, 100, 114 and 131, and the tool&apos;s embed and strip help). Each site would then say the pass never adds, drops, or edits an alternative, and none of them would mention order. Where the order is stated at all, it is stated once, in the tool&apos;s module docstring and `--help` canonical-form contract, which this milestone rewrites anyway.
+      <advantage>It keeps the real guarantee the recommendation half needs, that the option set it picks from never changes. It matches vocabulary the files already use, and it leaves child order to the tool, so no prose site needs another edit if the ordering rule changes.</advantage>
+      <drawback>A reader of the skill or the docs alone gets no warning that embedding a recommendation reorders alternatives, and has to reach the tool&apos;s help to learn why the diff shows a moved `&lt;alternative&gt;`. The capture skill reads the alternatives &quot;in document order&quot; as &quot;the options the user saw&quot;, and that reading needs its own separate fix either way.</drawback>
+    </alternative>
+    <alternative id="Drop the claim">
+      Delete the untouched-alternatives claim from every site that makes it and add nothing in its place. The fragment checks the tool already makes (no `&lt;alternative&gt;` in a recommendation fragment, exactly one `&lt;recommendation&gt;` naming one of the block&apos;s own ids) are left to stand as the only statement of what the pass can and cannot change.
+      <advantage>It is the smallest edit, and it removes a claim the new renderer makes literally false without writing a replacement contract that could drift from the tool.</advantage>
+      <drawback>It throws away a guarantee that is still true and matters: the recommendation pass never changes the option set. The enumerate-versus-pick split recorded in CLAUDE.md depends on that set staying frozen, and once the statement is gone a later editor has no written rule stopping them from letting the pick pass rewrite or prune alternatives.</drawback>
+    </alternative>
   </open-question>
 </open-questions>
