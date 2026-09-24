@@ -13,9 +13,18 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_33_recommendation-first-child-order/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 33 — Recommendation-first child order
+
+- The open-question tool's renderer now writes a block carrying a `<recommendation>` as `<question>`, its `<applied-principle>` and `<depends-on>` elements, the `<recommendation>`, the one `<alternative>` its option names, then the remaining alternatives in their relative order, while a block without a recommendation keeps `<question>`, the alternatives, `<applied-principle>`, `<depends-on>`.
+- An option naming none of the block's alternatives still renders the recommendation half first and promotes nothing, with no write failure, leaving `strip --recommendation` as the repair path and `remove --option` as where the mismatch is refused.
+- The reorder is renderer-only and deterministic on every write: `sort` still orders whole blocks only and writes only when a block moved, `strip --recommendation` keeps the reordered alternatives, and an old-order document converts lazily on its next writer save with no conversion subcommand or migration.
+- The module docstring and `--help` state the new canonical child order once, including the unmatched-option case, and the `embed` help defers to it instead of restating an order.
+- The `annotated` and `entities` golden fixtures, the `test_format.py` canonical pin, and the literal blocks in `test_embed.py` are realigned, and new tests cover promotion, the unmatched option, recommendation-less blocks, lazy conversion, the no-move `sort`, and `strip --recommendation`, with 436 passing under both the pinned interpreter and the 3.9 floor.
+- `recommend-all-open-questions`, `docs/skill-reference.md`, and `docs/workflow.md` now state the frozen-set guarantee (the pass never adds, drops, or edits an `<alternative>`) in place of the alternatives-untouched claim, and both host trees are rebuilt with `uv run scripts/build_hosts.py --check` passing.
 
 ### Milestone 32 — Unified task-completion subject
 
@@ -359,3 +368,4 @@ Current milestone: `milestones/milestone_33_recommendation-first-child-order/`
 | 30 | Two-pass recommendation sweep | `milestones/milestone_30_two-pass-recommendation-sweep/` |
 | 31 | Inline answer sweep | `milestones/milestone_31_inline-answer-sweep/` |
 | 32 | Unified task-completion subject | `milestones/milestone_32_unified-task-completion-subject/` |
+| 33 | Recommendation-first child order | `milestones/milestone_33_recommendation-first-child-order/` |
