@@ -1,1 +1,11 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Unmatched recommendation option">
+    <question>The parser does not check that a stored &lt;recommendation&gt; option names one of the block&apos;s &lt;alternative&gt; ids; only embed --recommendation checks that. If a loaded block&apos;s option names no alternative, what should the renderer do: fall back to today&apos;s child order, still put the recommendation half first but leave the alternatives unmoved, or refuse the document with an Error: line?</question>
+  </open-question>
+  <open-question id="Documents in the old order">
+    <question>An open_questions.xml written before this change keeps the recommendation last until some subcommand next writes it, and sort writes nothing when no block moves. Is that lazy conversion on the next write enough, or should some write path (for example sort, or every read) convert an old-order document right away?</question>
+  </open-question>
+  <open-question id="Alternatives-untouched contract wording">
+    <question>The recommend-all-open-questions skill, docs/skill-reference.md, docs/workflow.md, and the CLAUDE.md invariants say the recommendation pass and embed --recommendation leave a block&apos;s &lt;alternative&gt; children untouched. Once embedding a recommendation moves the named alternative to the front, should that claim change to &quot;alternatives&apos; content and set unchanged, their order the renderer&apos;s&quot;, or be dropped wherever it appears?</question>
+  </open-question>
+</open-questions>
