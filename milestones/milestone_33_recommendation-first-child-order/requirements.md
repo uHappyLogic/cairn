@@ -36,5 +36,9 @@ A recommendation-bearing block whose `<recommendation>` option names none of its
 
 An `open_questions.xml` written before this change converts lazily: it keeps the recommendation last until an existing writer (`add`, a `strip` that changes something, `embed`, `remove`, or a `sort` that moves a block) next saves it, and the reorder happens then. Nothing beyond the renderer changes — `sort` keeps its "writes only when a block moved" rule, read-only subcommands stay non-writing, and no conversion subcommand or migration is added.
 
+### Alternatives-untouched contract wording
+
+Every site claiming the recommendation pass or `embed --recommendation` leaves a block's `<alternative>` children untouched (the `recommend-all-open-questions` SKILL.md, `docs/skill-reference.md`, `docs/workflow.md`, and the CLAUDE.md invariants) is reworded to the frozen-set guarantee these files already use: the pass never adds, drops, or edits an alternative. None of those sites mentions child order; the order is stated once, in the tool's module docstring and `--help` canonical-form contract.
+
 ## Out of Scope
 
