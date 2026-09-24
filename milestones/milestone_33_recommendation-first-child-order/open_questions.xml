@@ -4,6 +4,26 @@
   </open-question>
   <open-question id="Documents in the old order">
     <question>An open_questions.xml written before this change keeps the recommendation last until some subcommand next writes it, and sort writes nothing when no block moves. Is that lazy conversion on the next write enough, or should some write path (for example sort, or every read) convert an old-order document right away?</question>
+    <alternative id="Lazy conversion on next write">
+      Change nothing beyond the renderer: an old-order document keeps its recommendation last until one of the existing writers (add, strip that changes something, embed, remove, or a sort that moves a block) next saves it, and the reordering happens then.
+      <advantage>It adds no code, no subcommand, and no new write condition. Read-only subcommands (list, locate, lift, walk) stay non-writing, and sort keeps its &quot;writes only when a block moved&quot; rule. In practice the gap closes quickly, since any embed or answer on the milestone rewrites the whole file.</advantage>
+      <drawback>Until that next write, the file&apos;s bytes and the tool&apos;s canonical rendering differ. `cmd_locate` prints `_question_lines` on the stated assumption that the file always holds the serializer&apos;s own output, so its print (which callers use as commit bodies) can disagree with the file in the meantime. The first unrelated write then also carries a reorder diff for every recommendation-bearing block, mixed into a commit about something else, such as one answer.</drawback>
+    </alternative>
+    <alternative id="Sort writes when not canonical">
+      Widen `cmd_sort`&apos;s write condition from &quot;a block moved&quot; to &quot;the canonical rendering differs from the file&apos;s current bytes&quot;. That way the sort step that ends every recommendation pass also converts an old-order document, in its own separately committed reorder.
+      <advantage>The conversion happens at a predictable point, on a subcommand whose job is already &quot;put the document in canonical order&quot;. It lands in the dedicated sort commit behind the dirty-path guard instead of inside an answer or embed commit. Read-only subcommands stay non-writing.</advantage>
+      <drawback>It changes sort&apos;s documented contract, which today orders blocks only and writes only when one moves, and the goal restates that sort keeps ordering blocks only. It needs a byte comparison against the file plus new tests. It also only helps once someone runs a recommendation pass or sort, so a document that skips sort still converts lazily.</drawback>
+    </alternative>
+    <alternative id="Normalize on every load">
+      Have `load_document` (or every subcommand, reads included) rewrite the file in canonical form whenever it is not already, so any tool call, even list, locate, lift, or walk, converts an old-order document immediately.
+      <advantage>It closes the gap completely and at once. After any tool call the file is exactly the serializer&apos;s output, so `cmd_locate`&apos;s &quot;file holds canonical lines&quot; assumption holds for every print.</advantage>
+      <drawback>It turns read-only subcommands into writers. Read-only agents, read-only Q&amp;A, and the answer sweep&apos;s lift-as-skip then dirty `open_questions.xml` as a side effect no skill commits. That can trip the dirty-own-path guard or ride into an unrelated commit, and it breaks the tool&apos;s split between reads and writes.</drawback>
+    </alternative>
+    <alternative id="Explicit one-shot normalize">
+      Leave all existing subcommands as they are and give the maintainer or user an explicit conversion path, such as a small `normalize` subcommand or a documented no-op-style rewrite. They run it once against an old-order document and commit the result on its own.
+      <advantage>The conversion is deliberate, visible, and isolated in its own commit. No existing subcommand&apos;s write condition or read-only guarantee changes.</advantage>
+      <drawback>It adds a subcommand or procedure used essentially once per document, which amounts to migration scaffolding. The project deliberately avoids migrations (pre-split milestones get none), and nothing ensures anyone actually runs it. Old-order documents that nobody converts fall back to lazy conversion anyway.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Alternatives-untouched contract wording">
     <question>The recommend-all-open-questions skill, docs/skill-reference.md, docs/workflow.md, and the CLAUDE.md invariants say the recommendation pass and embed --recommendation leave a block&apos;s &lt;alternative&gt; children untouched. Once embedding a recommendation moves the named alternative to the front, should that claim change to &quot;alternatives&apos; content and set unchanged, their order the renderer&apos;s&quot;, or be dropped wherever it appears?</question>
