@@ -40,9 +40,10 @@ Subcommands:
       summary or closing remark otherwise), parsed, validated — no <open-question> or
       <question> line, no text outside its elements, no element of a kind the format does
       not define, no element of the other half, and never the order of its children — and
-      written as that half of the block's children, grouped by kind in the canonical order,
-      the other half left exactly as the block holds it; every miss, the two extraction
-      misses included, is one Error line. With --alternatives the block must carry no
+      written as that half of the block's children, the other half's elements left exactly
+      as the block holds them and the whole block placed in the canonical child order the
+      document format below states; every miss, the two extraction misses included, is one
+      Error line. With --alternatives the block must carry no
       <alternative> yet (bare strip is the hatch), the slice runs from the first line
       holding "<alternative" through the last line holding "</alternative>", and the
       fragment must hold at least one <alternative>. With --recommendation the block must
@@ -98,10 +99,15 @@ Document format, the canonical form every write re-renders the whole document in
   - one element per line, indented two spaces per depth: the root at column 0, each
     <open-question id="Short Title"> at 2, its children at 4, and inside an alternative
     the what-it-is text, <advantage>, and <drawback> at 6
-  - each block's children grouped by kind in the fixed order <question>, the
-    <alternative> elements (in their relative order), <applied-principle>, <depends-on>,
-    <recommendation>; inside an alternative the what-it-is text, then every <advantage>,
-    then every <drawback>
+  - each block's children grouped by kind: a block carrying a <recommendation> in the
+    order <question>, <applied-principle>, <depends-on>, <recommendation>, the one
+    <alternative> whose id the recommendation's option names, then the other <alternative>
+    elements in their relative order — an option naming none of them promotes nothing, the
+    alternatives keeping their relative order after the recommendation; a block carrying
+    none in the order <question>, the <alternative> elements (in their relative order),
+    <applied-principle>, <depends-on>; the order written is the alternatives' relative order
+    from then on, so a later strip --recommendation keeps it; inside an alternative the
+    what-it-is text, then every <advantage>, then every <drawback>
   - every text and attribute value folded to one line: whitespace runs collapsed to one
     space, ends trimmed
   - an element with neither text nor children written self-closing as <tag/>
@@ -349,25 +355,51 @@ def render_document(document):
 
 
 def _question_lines(question, depth):
+    """The lines of one block. A block carrying a <recommendation> renders its recommendation
+    half first, then the alternative its option names, then the rest in their relative order;
+    a block without one renders its alternatives before the other three kinds."""
     children = _element_lines(depth + 1, "question", (), question.question, ())
-    for alternative in question.alternatives:
+    if question.recommendation is None:
+        children.extend(_alternatives_lines(question.alternatives, depth + 1))
+        children.extend(_recommendation_half_lines(question, depth + 1))
+    else:
+        children.extend(_recommendation_half_lines(question, depth + 1))
+        children.extend(_alternatives_lines(_promoted(question.alternatives, question.recommendation.option), depth + 1))
+    return _element_lines(depth, BLOCK_TAG, (("id", question.id),), "", children)
+
+
+def _promoted(alternatives, option):
+    """The alternatives with the one whose id the option names moved to the front and the
+    rest in their relative order; an option naming none of them moves nothing."""
+    wanted = id_key(option)
+    named = [alternative for alternative in alternatives if id_key(alternative.id) == wanted]
+    return named + [alternative for alternative in alternatives if id_key(alternative.id) != wanted]
+
+
+def _alternatives_lines(alternatives, depth):
+    lines = []
+    for alternative in alternatives:
         body = []
         for advantage in alternative.advantages:
-            body.extend(_element_lines(depth + 2, "advantage", (), advantage, ()))
+            body.extend(_element_lines(depth + 1, "advantage", (), advantage, ()))
         for drawback in alternative.drawbacks:
-            body.extend(_element_lines(depth + 2, "drawback", (), drawback, ()))
-        children.extend(
-            _element_lines(depth + 1, "alternative", (("id", alternative.id),), alternative.text, body, text_inline=False)
-        )
+            body.extend(_element_lines(depth + 1, "drawback", (), drawback, ()))
+        lines.extend(_element_lines(depth, "alternative", (("id", alternative.id),), alternative.text, body, text_inline=False))
+    return lines
+
+
+def _recommendation_half_lines(question, depth):
+    """The block's <applied-principle>, <depends-on>, and <recommendation> lines, in that order."""
+    lines = []
     for principle in question.principles:
-        children.extend(_element_lines(depth + 1, "applied-principle", (), principle, ()))
+        lines.extend(_element_lines(depth, "applied-principle", (), principle, ()))
     for dependency in question.depends_on:
         attributes = (("question", dependency.question), ("option", dependency.option))
-        children.extend(_element_lines(depth + 1, "depends-on", attributes, "", ()))
+        lines.extend(_element_lines(depth, "depends-on", attributes, "", ()))
     if question.recommendation is not None:
         attributes = (("option", question.recommendation.option),)
-        children.extend(_element_lines(depth + 1, "recommendation", attributes, question.recommendation.rationale, ()))
-    return _element_lines(depth, BLOCK_TAG, (("id", question.id),), "", children)
+        lines.extend(_element_lines(depth, "recommendation", attributes, question.recommendation.rationale, ()))
+    return lines
 
 
 def _element_lines(depth, tag, attributes, text, children, text_inline=True):
@@ -1087,8 +1119,9 @@ def build_parser():
         "embed",
         cmd_embed,
         "put one half of a block's children into the named block, the half the required flag "
-        "names, leaving the other half as the block holds it: the whole message carrying them "
-        "is read from standard input (pipe it as a quoted heredoc; a terminal stdin is refused), "
+        "names, leaving the other half's elements as the block holds them: the whole message "
+        "carrying them is read from standard input (pipe it as a quoted heredoc; a terminal stdin "
+        "is refused), "
         "the fragment is sliced out of it — with --alternatives from the first <alternative line "
         "through the last </alternative> line, with --recommendation from the first "
         "<applied-principle, <depends-on, or <recommendation line through the last "
@@ -1098,7 +1131,8 @@ def build_parser():
         "--recommendation exactly one <recommendation> naming one of the block's own "
         "<alternative> ids, into a block carrying alternatives and no <recommendation> yet, "
         "every <depends-on> resolving to another block carrying <alternative> elements and one "
-        "of its ids; child order is not checked), and written grouped by kind; every miss is one "
+        "of its ids; child order is not checked), and written with the whole block in the "
+        "canonical child order the module docstring's document format states; every miss is one "
         "Error line",
     )
     embed_parser.add_argument(

@@ -61,3 +61,16 @@ Replace every claim that the recommendation pass or `embed --recommendation` lea
 - Grepping the four files for `never touches` and `` `<alternative>` children untouched `` finds nothing; `uv run pytest` reports 436 passed.
 
 ---
+
+## Rebuild Host Trees After Renderer Change
+
+Run `uv run scripts/build_hosts.py` so both `hosts/claude` and `hosts/antigravity` carry the changed tool source and skill prose, then confirm `uv run scripts/build_hosts.py --check` passes so `main` stays drift-free. Verified by the `--check` run exiting cleanly.
+
+**Verified:**
+
+- Before the rebuild, `uv run scripts/build_hosts.py --check` failed, naming `tools/open_questions.py` and `skills/recommend-all-open-questions/SKILL.md` as differing from the build in both hosts.
+- `uv run scripts/build_hosts.py` rebuilt `hosts/antigravity/` (39 files) and `hosts/claude/` (40 files) from `core/` at version 1.7.1, exiting 0, and changed only those four paths.
+- `hosts/claude/tools/open_questions.py` and `hosts/antigravity/tools/open_questions.py` are byte-identical to `core/tools/open_questions.py`, so both hosts carry the new renderer and contract text.
+- With the git-ignored `__pycache__` bytecode directories cleared from `core/tools/` and both host `tools/` directories, `uv run scripts/build_hosts.py --check` passes ("hosts/antigravity/ and hosts/claude/ match a fresh build of core/ at version 1.7.1") and exits 0.
+
+---
