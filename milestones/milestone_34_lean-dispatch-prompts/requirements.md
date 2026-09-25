@@ -62,5 +62,7 @@ The dispatched alternatives agent reads the question document through exactly tw
 
 The reworded whole-file allowance in the sole-writer invariant describes its holders as a class, naming no skill: a user-invoked skill running inline in the conversation, or a shared procedure followed by one, that needs the whole set to reason over may read the file directly, for reasoning only. Any present or future inline runner falls under it without an edit, and the class sits opposite the new dispatched-agent invariant along the inline/isolated line.
 
+The new dispatched-agent invariant constrains only what a dispatch prompt carries — what the orchestrator already holds and the agent cannot fetch itself — and so holds for both dispatched agents without qualification. The reading ban goes into the sole-writer invariant beside the whole-file allowance it narrows: dispatched agents reach the question document only through the tool. Scoped by its placement to that one document, it never reaches the `complete-task` agent's whole read of `TASKS_TODO.md`, which needs no carve-out.
+
 ## Out of Scope
 
