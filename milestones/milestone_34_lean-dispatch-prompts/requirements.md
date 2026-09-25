@@ -54,5 +54,9 @@ Milestone 33's `open_questions.xml` held three questions and reached about 15 KB
 
 Step 1 of `core/shared/alternatives-procedure.md` keeps a runner-neutral wording: it states only the analytical rule that sibling questions bound this question, supply scope and nothing more, and are never presumed settled, and it drops the instruction on how siblings are read. The procedure names no runner class and no reading mechanism; each consumer states its own sibling-scope source in its own step — `discuss-open-question` its existing whole read, the dispatched agent its `locate` and `list --with-question` calls.
 
+### The alternatives agent's reading of the question document
+
+The dispatched alternatives agent reads the question document through exactly two tool calls: one `locate` of its own Short Title and one `list --with-question` for sibling scope. It never runs `locate` on a sibling block, so it never sees a sibling's embedded picks. The agent file states this limit once, as its only source of sibling scope.
+
 ## Out of Scope
 
