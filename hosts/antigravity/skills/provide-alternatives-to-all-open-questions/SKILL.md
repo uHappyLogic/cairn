@@ -12,7 +12,7 @@ them per block against that frozen set. Per question it dispatches a read-only s
 returns the `<alternative>` elements as the block's XML sub-elements, and the orchestrator is
 the only party in this pass that changes the question document,
 `<MILESTONE_DIR>/open_questions.xml` — every read and write it makes of that document is a
-call to the plugin's open-question tool, `list` and `locate` to gather and `embed` to write,
+call to the plugin's open-question tool, `list` to gather and `embed` to write,
 never a direct read or edit. Alternatives are enumerated per question against the siblings as
 scope only, so the dispatches are independent: they run together where the host allows it, each
 return is judged and embedded as it lands, and each embedded return is committed the moment it
@@ -36,7 +36,7 @@ Takes no arguments — it sweeps every `<open-question>` block in the current mi
 Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`.
 Never use a hardcoded path.
 
-### 1. Gather the questions once, in three tool calls
+### 1. Gather the questions once, in two tool calls
 
 **a. Every question.** Run
 
@@ -57,22 +57,14 @@ python3 .agents/plugins/cairn/tools/open_questions.py list --without-alternative
 It prints, in document order, the ids of the blocks carrying no `<alternative>` element — the
 ones this run annotates. Every other block already carries its alternatives and is **skipped**
 (step 2). If this call prints nothing, every block already carries alternatives: there is
-nothing to dispatch, so skip **c** and step 3 and go straight to step 4's no-op line.
+nothing to dispatch, so skip step 3 and go straight to step 4's no-op line.
 
-**c. Their blocks.** Run one `locate` over every id **b** printed, each id quoted as its own
-argument:
-
-```
-python3 .agents/plugins/cairn/tools/open_questions.py locate <MILESTONE_DIR> "<id 1>" "<id 2>" …
-```
-
-It prints each block verbatim — its `<open-question id="…">` wrapper, its `<question>` child, and
-its closing tag — consecutively in the order named. Hold these blocks: each is the block its
-question's dispatch prompt carries, and nothing is rebuilt from them.
+Hold the ids **b** printed: each is the Short Title its question's dispatch prompt carries, and
+nothing else is gathered for a dispatch — the subagent fetches its own block.
 
 Gather this set **once**: there is **no** per-question live-re-check against the document and
 **no** outer re-gather loop. This run only adds children to blocks — it records no decisions
-and triggers no cascades — so the question set never shrinks under it and the gathered blocks
+and triggers no cascades — so the question set never shrinks under it and the gathered ids
 stay valid for the whole run.
 
 ### 2. Blocks already carrying alternatives are skipped (re-run idempotency)
@@ -119,8 +111,8 @@ wall-clock time.
 Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the
 `provide-alternatives-to-open-question` agent (singular — the per-question subagent) under this
 plugin's namespace, `cairn:provide-alternatives-to-open-question` — one dispatch per surviving
-question. Pass it that question's **Short Title**, the `<MILESTONE_DIR>` resolved in step 0, and
-the question's block exactly as `locate` printed it in step 1:
+question. Pass it that question's **Short Title** and the `<MILESTONE_DIR>` resolved in step 0,
+and nothing else — the two values the orchestrator already holds:
 
 ```
 Enumerate the alternatives for this single open question.
@@ -128,14 +120,12 @@ Enumerate the alternatives for this single open question.
 Short Title: <Short Title>
 
 Milestone directory: <MILESTONE_DIR>
-
-Question block:
-<the block as locate printed it>
 ```
 
-The block is the only question text the prompt carries: the subagent reads the milestone's
-documents itself, read-only, for whatever surrounding grounding it needs, so the orchestrator
-never reads them to assemble context.
+The prompt carries no question text and no block: the subagent fetches its own block and its
+sibling scope through the plugin's open-question tool and reads the milestone's documents
+itself, read-only, for whatever surrounding grounding it needs, so the orchestrator never reads
+them to assemble context.
 
 The subagent is **read-only** — it mutates nothing. It returns the ready-to-embed XML
 sub-elements as its final message — one `<alternative id="...">` element per option, each with

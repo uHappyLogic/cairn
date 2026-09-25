@@ -40,3 +40,17 @@ Rework `core/agents/provide-alternatives-to-open-question.md` so its inputs are 
 - `uv run scripts/build_hosts.py` rebuilt `hosts/claude/` and `hosts/antigravity/` (only their `agents/provide-alternatives-to-open-question.md` changed) and `uv run scripts/build_hosts.py --check` passed on the rebuilt trees.
 
 ---
+
+## Lean Alternatives Dispatch Prompt
+
+Reduce the dispatch in `core/skills/provide-alternatives-to-all-open-questions/SKILL.md` to the two slots the orchestrator already holds, the question's Short Title and the resolved milestone directory, dropping step 1's `locate` gather and the `Question block:` slot so the pass gathers in two `list` calls, with the repair path's re-dispatch still sending the same prompt plus the corrective message. Verified by the skill carrying no `locate` call and no block-holding prose, the per-return pipeline and commit steps unchanged, and `uv run scripts/build_hosts.py --check` passing on the rebuilt host trees.
+
+**Verified:**
+
+- Step 1 of `core/skills/provide-alternatives-to-all-open-questions/SKILL.md` gathers in two `list` calls (`list` and `list --without-alternatives`), sub-step c is gone, and the skill file contains no `locate` call or mention: a case-insensitive grep for `locate` returns nothing.
+- The dispatch template carries exactly two slots, `Short Title:` and `Milestone directory:`, and the `Question block:` slot and all block-holding prose ("Hold these blocks", "the block its question's dispatch prompt carries", "the block is the only question text the prompt carries") are gone; the prompt is stated to carry no question text and no block, the subagent fetching its own block and sibling scope through the tool.
+- The repair path's re-dispatch branch still sends the same prompt as the original dispatch with the corrective message appended.
+- The per-return pipeline (sub-steps 3a–3d) and step 4 are byte-unchanged: every diff hunk lands in the opening paragraph's gather sentence, step 1, or the step-3 dispatch paragraph, and the frontmatter description is unchanged at 20 words.
+- `uv run scripts/build_hosts.py` rebuilt `hosts/claude/` and `hosts/antigravity/` (only their `skills/provide-alternatives-to-all-open-questions/SKILL.md` changed) and `uv run scripts/build_hosts.py --check` passed on the rebuilt trees.
+
+---
