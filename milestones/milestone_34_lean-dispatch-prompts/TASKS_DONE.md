@@ -26,3 +26,17 @@ Rewrite step 1 of `core/shared/alternatives-procedure.md` so it states only the 
 - `uv run scripts/build_hosts.py` rebuilt `hosts/claude/` and `hosts/antigravity/` (only their `shared/alternatives-procedure.md` changed) and `uv run scripts/build_hosts.py --check` passed on the rebuilt trees.
 
 ---
+
+## Alternatives Agent Fetches Its Own Question
+
+Rework `core/agents/provide-alternatives-to-open-question.md` so its inputs are only the Short Title and the resolved milestone directory, and it reaches the question document through exactly two tool calls, one `locate` of its own Short Title for its block and one `list --with-question` for sibling scope, stated once as its only source of sibling scope, never running `locate` on a sibling, while still reading `requirements.md` whole as prose. Verified by the agent file naming no question-block input and no whole read of `open_questions.xml`, its description staying within the frontmatter cap, and `uv run scripts/build_hosts.py --check` passing on the rebuilt host trees.
+
+**Verified:**
+
+- `## Inputs` of `core/agents/provide-alternatives-to-open-question.md` lists exactly two inputs, **Short Title** and **Milestone directory**, and the file names no question-block input: a case-insensitive grep for `question block` returns nothing, and the prompt is stated to carry no question text and no block.
+- The agent reaches `open_questions.xml` through exactly two tool calls, both in step 1 as `python3 {{PLUGIN_ROOT}}/tools/open_questions.py …`: one `locate <MILESTONE_DIR> "<Short Title>"` on its own Short Title for its block (the block `locate` printed is the shared procedure's QUESTION input, and its `Error:` line is the `FAILED:` reason), and one `list --with-question <MILESTONE_DIR>` stated once as its only source of sibling scope, with the statement that it never runs `locate` on a sibling.
+- The file states no whole read of `open_questions.xml`: every `whole` hit names `requirements.md` (read whole with the file-reading tool as prose, in Inputs and in step 1) or the alternatives return; the retired whole-read sentence over `open_questions.xml` is gone and the file says never to open or search that file itself.
+- The frontmatter description is unchanged at 17 words, unquoted, one clause, with no colon or semicolon, within the 25-word cap the build enforces.
+- `uv run scripts/build_hosts.py` rebuilt `hosts/claude/` and `hosts/antigravity/` (only their `agents/provide-alternatives-to-open-question.md` changed) and `uv run scripts/build_hosts.py --check` passed on the rebuilt trees.
+
+---

@@ -15,46 +15,64 @@ either: the recommendation pass runs later, over the set you return, and forms t
 
 ## Inputs
 
-Your prompt contains the one question to enumerate alternatives for:
+Your prompt carries two values and nothing else — no question text and no block:
 
-- **Short Title** — the question's 2–5 word handle.
+- **Short Title** — the 2–5 word handle of the one question to enumerate alternatives for.
+  The orchestrator has already selected it, so you do **not** decide any global ordering.
 - **Milestone directory** — the already-resolved `<MILESTONE_DIR>` of the milestone the question
-  belongs to. You never resolve it yourself; from it you read `<MILESTONE_DIR>/requirements.md`
-  **read-only** to ground the alternatives in that milestone's goal, relevant starting state,
-  and recorded decisions, and `<MILESTONE_DIR>/open_questions.xml` **read-only** for the sibling
-  questions.
-- **Question block** — the question's full `<open-question>` block. This is your primary source,
-  and it is the only question text the prompt carries; everything else you need from the
-  milestone's documents you read yourself under the milestone directory above. The orchestrator
-  has already selected the target question, so you do **not** decide any global ordering. You
-  read those files and the project's live artifacts **read-only** and mutate nothing.
+  belongs to. You never resolve it yourself.
+
+Everything else you need you fetch yourself under that directory: the question's own block and
+its sibling scope through the plugin's open-question tool (step 1), and
+`<MILESTONE_DIR>/requirements.md`, read whole with the file-reading tool as prose, for the
+milestone's goal, relevant starting state, and recorded decisions. You read those documents and
+the project's live artifacts **read-only** and mutate nothing.
 
 ## Workflow
 
 ### 1. Ground in the real project state (read-only)
 
-Before listing any option, read the context that bears on the question — the milestone's
-`requirements.md`, its `open_questions.xml`, and the actual project artifacts the question turns
-on. Prefer the live project over reasoning from memory. All of this reading is read-only;
-enumerating alternatives changes nothing.
+Before listing any option, read the context that bears on the question — its own block, the
+milestone's `requirements.md`, its sibling questions, and the actual project artifacts the
+question turns on. Prefer the live project over reasoning from memory. All of this reading is
+read-only; enumerating alternatives changes nothing.
 
-Read `<MILESTONE_DIR>/open_questions.xml` whole with the file-reading tool, exactly as you read
-`requirements.md` beside it: it holds every sibling `<open-question>` block, and those siblings
-mark where this question ends and another begins, so an option that really answers a sibling
-is left to that sibling. They supply scope and nothing more — no sibling has settled on
-anything while alternatives are being enumerated, so no option you list presumes how a sibling
-will settle. That whole read feeds your reasoning only: every locate, list, or lift of a block
-is a call to the plugin's open-question tool,
-`python3 .agents/plugins/cairn/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`, never a search
-of your own over the file.
+You reach `open_questions.xml` through **exactly two** calls to the plugin's open-question tool,
+`python3 .agents/plugins/cairn/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`, and never
+open or search the file yourself:
+
+1. **Your block.** Run `locate` on your own Short Title, and on no other:
+
+   ```
+   python3 .agents/plugins/cairn/tools/open_questions.py locate <MILESTONE_DIR> "<Short Title>"
+   ```
+
+   It prints the question's `<open-question>` block verbatim; that block is your primary
+   source. If it stops on an `Error:` line instead, the prompt named no question the document
+   holds — end your session as step 4 describes, with that line as the reason.
+
+2. **Sibling scope.** Run `list --with-question`:
+
+   ```
+   python3 .agents/plugins/cairn/tools/open_questions.py list --with-question <MILESTONE_DIR>
+   ```
+
+   It prints every block as its id, a single tab, then its question text, one per line in
+   document order. That print is your **only** source of sibling scope: the siblings mark where
+   this question ends and another begins, and their id and question text is all of them you
+   see — you never run `locate` on a sibling, so no sibling's embedded alternatives or pick
+   reaches you and none is presumed settled.
+
+Read `<MILESTONE_DIR>/requirements.md` whole with the file-reading tool beside those two
+prints. All of it feeds your reasoning only.
 
 ### 2. Enumerate the alternatives
 
 Follow the shared procedure at `.agents/plugins/cairn/shared/alternatives-procedure.md` exactly
 — it is the single source of truth for the analytical core (ground, then enumerate the honest
 alternatives, each with what-it-is / key advantage / key drawback). Read it first, and treat
-the question in your prompt as its **QUESTION** input. Its grounding step overlaps step 1 —
-reuse that reading rather than repeating it.
+the block `locate` printed in step 1 as its **QUESTION** input. Its grounding step overlaps
+step 1 — reuse that reading rather than repeating it.
 
 ### 3. Render the XML sub-elements
 
@@ -108,10 +126,10 @@ Once both tests pass, **end your session with that checked draft as your final m
 `<alternative>` elements and nothing accompanying them. Those sub-elements are the success
 return.
 
-If you cannot produce that set — the prompt carries no usable question, the context is too
-thin to enumerate honest alternatives, or any other error stops you — **end your session with
-`FAILED: <reason>` as its final line** and return nothing else: no partial sub-elements above
-it, no prose standing in for them. `FAILED: <reason>` is the only alternative to the
-sub-elements; a reply that is neither is unusable to the orchestrator, which reads only what
-you return. You mutate nothing either way, so a failure leaves the project exactly as you
-found it.
+If you cannot produce that set — `locate` stopped on an `Error:` line for your Short Title,
+the context is too thin to enumerate honest alternatives, or any other error stops you — **end
+your session with `FAILED: <reason>` as its final line** and return nothing else: no partial
+sub-elements above it, no prose standing in for them. `FAILED: <reason>` is the only
+alternative to the sub-elements; a reply that is neither is unusable to the orchestrator, which
+reads only what you return. You mutate nothing either way, so a failure leaves the project
+exactly as you found it.
