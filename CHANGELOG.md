@@ -2,6 +2,17 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.7.3 — 2026-09-25
+
+### Lean dispatch prompts (milestone 34)
+
+- `/provide-alternatives-to-all-open-questions` now hands each dispatched agent only the question's Short Title and the resolved milestone directory. The agent fetches its own question block and its sibling scope through the tool itself, so the orchestrator no longer runs a `locate` per question and gathers in two `list` calls.
+- `tools/open_questions.py list` gained `--with-question`, printing each block's id and question text on one tab-separated line. It composes with both `--without-*` filters.
+- The `provide-alternatives-to-open-question` agent never reads `open_questions.xml` whole; it reaches the question document only through the tool, while still reading `requirements.md` as prose.
+- `CLAUDE.md` and `docs/skill-reference.md` record the lean dispatch-prompt invariant and the agent's two tool calls.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.7.2...1.7.3
+
 ## 1.7.2 — 2026-09-24
 
 ### Recommendation-first child order (milestone 33)

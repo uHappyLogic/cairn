@@ -52,7 +52,7 @@ Run `/init` to document your project — its domain context, working conventions
 
 ## Source
 
-Built from [uHappyLogic/cairn](https://github.com/uHappyLogic/cairn) at release tag [`1.7.2`](https://github.com/uHappyLogic/cairn/releases/tag/1.7.2), whose release page carries the notes for this version. The exact source commit this tree was built from is recorded in the body of this repository's `Release: 1.7.2` commit.
+Built from [uHappyLogic/cairn](https://github.com/uHappyLogic/cairn) at release tag [`1.7.3`](https://github.com/uHappyLogic/cairn/releases/tag/1.7.3), whose release page carries the notes for this version. The exact source commit this tree was built from is recorded in the body of this repository's `Release: 1.7.3` commit.
 
 ## License
 
