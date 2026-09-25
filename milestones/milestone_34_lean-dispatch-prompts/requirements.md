@@ -48,5 +48,7 @@ Milestone 33's `open_questions.xml` held three questions and reached about 15 KB
 
 `list` gains a `--with-question` flag that prints each block on one line in document order: the un-escaped id, a single tab, then the block's un-escaped question text. The tab is unambiguous by construction because every write folds whitespace runs to one space, so neither an id nor a question can contain one; the one-line, bare, un-escaped read contract stays intact. The docstring's `Subcommands:` section, the argparse help, and the output contract each state the tab separator, and tests assert a literal tab.
 
+`--with-question` changes only the line shape and composes freely with `--without-alternatives` and `--without-recommendation`, which keep selecting blocks exactly as they do now, alone or together; no new refusal path is added. `tests/test_list.py` covers the flag crossed with each filter.
+
 ## Out of Scope
 
