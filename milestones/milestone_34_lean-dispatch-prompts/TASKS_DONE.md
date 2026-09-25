@@ -54,3 +54,17 @@ Reduce the dispatch in `core/skills/provide-alternatives-to-all-open-questions/S
 - `uv run scripts/build_hosts.py` rebuilt `hosts/claude/` and `hosts/antigravity/` (only their `skills/provide-alternatives-to-all-open-questions/SKILL.md` changed) and `uv run scripts/build_hosts.py --check` passed on the rebuilt trees.
 
 ---
+
+## Record Dispatch Invariants in CLAUDE.md
+
+In the sole-writer invariant of `CLAUDE.md`, reword the whole-file allowance to name its holders as a class, a user-invoked skill running inline in the conversation or a shared procedure followed by one, and add beside it the reading ban that dispatched agents reach the question document only through the tool; then add a new invariant, scoped to dispatched agents, that a dispatch prompt carries only what the orchestrator already holds and the agent cannot fetch itself, holding for both dispatched agents without qualification and with its rationale. Verified by reading the two invariants against the milestone's recorded decisions and by the `complete-task` agent's whole read of `TASKS_TODO.md` needing no carve-out.
+
+**Verified:**
+
+- The sole-writer invariant's whole-file allowance names its holders as a class, "a user-invoked skill running inline in the conversation, or a shared procedure followed by one, that needs the whole set to reason over reads the file directly, for reasoning only", naming no skill.
+- Beside it, in the same invariant, the reading ban states that dispatched agents reach the question document only through the tool; its placement scopes it to `open_questions.xml`, and the `complete-task` agent's whole read of `TASKS_TODO.md` needs and gets no carve-out (the sentence only records why none is needed).
+- A new invariant, placed after "Dispatched-agent return contracts", states that a dispatch prompt carries only what the orchestrator already holds and the agent cannot fetch itself, holds for both dispatched agents without qualification (heading only for `complete-all-tasks`, Short Title plus `<MILESTONE_DIR>` for the alternatives orchestrator), and carries its rationale (no orchestrator work context, no double delivery, live fetch over snapshot, retired `Question block:` slot and `locate` gather not to be restored).
+- Both invariants read consistently against the milestone's `## Decisions` and the live dispatch sites (`core/agents/provide-alternatives-to-open-question.md` `## Inputs`, the `Short Title:`/`Milestone directory:` template in `provide-alternatives-to-all-open-questions/SKILL.md`, the heading-only prompt in `complete-all-tasks/SKILL.md`).
+- Only `CLAUDE.md` changed (`AGENTS.md` is a symlink to it, untouched); `uv run scripts/build_hosts.py --check` passed, `CLAUDE.md` being no build input.
+
+---
