@@ -53,6 +53,26 @@
   </open-question>
   <open-question id="Inline-runner allowance form">
     <question>When the CLAUDE.md whole-file allowance is reworded to name the inline runners, does it enumerate the skills by name (a list that must be maintained as skills change) or describe them as a class (for example, user-invoked skills running inline in the conversation) that any future inline runner falls under without an edit?</question>
+    <alternative id="Enumerate by name">
+      The reworded allowance lists the six inline runners that state the whole read today by name (review-milestone-requirements, recommend-all-open-questions, answer-all-open-questions-with-recommendation, discuss-open-question, ask-in-milestone-context, modify-milestone-goal). It also names the shared procedures they follow, alternatives-procedure.md for discuss-open-question and recommend-procedure.md, which are covered through their inline consumers.
+      <advantage>It is exact and can be checked. A maintainer can grep each named SKILL.md for its whole-read sentence and confirm the invariant matches the runtime one-to-one. Nothing is left to judgment about whether a borderline consumer qualifies, and CLAUDE.md already keeps hand-maintained enumerations of this kind, such as the skill pipeline list.</advantage>
+      <drawback>The list has to be kept up to date by hand, and nothing enforces it. No build step or test reads CLAUDE.md, so a skill that is added, renamed, or retired, or one that gains or drops the whole read, makes the list silently wrong. A future inline runner that relies on the allowance would seem to break the invariant until someone edits the list.</drawback>
+    </alternative>
+    <alternative id="Describe as a class">
+      The allowance describes its holders as a class without naming any skill. For example, it covers a user-invoked skill running inline in the conversation, and a shared procedure followed by one, when it needs the whole set to reason over. Any present or future inline runner falls under it without an edit.
+      <advantage>It needs no upkeep and matches how CLAUDE.md already words its other layer-scoped invariants, such as &quot;every file-changing user-invoked skill commits exactly its own paths&quot;. It also lines up with the dispatched-agent invariant it now sits beside, one class allowed and the other constrained, so the pair splits cleanly along the inline/isolated line and a new skill falls on one side by construction.</advantage>
+      <drawback>It is less concrete. A reader can no longer see which runners actually use the allowance, and a shared procedure with both kinds of consumer, like alternatives-procedure.md, sits on the line and needs the class wording to handle it explicitly. The drawback also depends on how the question on the shared procedure&apos;s sibling-scope wording settles.</drawback>
+    </alternative>
+    <alternative id="Class with current instances">
+      The allowance is stated as a class rule, as in the class option, followed by a parenthetical naming today&apos;s inline runners as examples (&quot;currently …&quot;). The class decides who holds the allowance, and the names are there only to help a reader find them.
+      <advantage>It keeps both strengths. The class wording means a new inline runner never breaks the invariant, and the named examples let a maintainer find the runtime sites that state the allowance without searching the tree.</advantage>
+      <drawback>The example list still goes out of date with nothing to catch it. It is harmless to the rule&apos;s meaning, but it misleads anyone who reads it as complete. It also adds exactly the kind of mirrored detail the &quot;rationale only in CLAUDE.md&quot; principle tries to keep out of the invariants.</drawback>
+    </alternative>
+    <alternative id="Define by exclusion">
+      The allowance stays unscoped but gains an exception clause. Any consumer except a dispatched agent may read the file directly for reasoning only. The inline runners are named implicitly as everything outside the new dispatched-agent invariant&apos;s scope.
+      <advantage>It is the smallest wording change. It adds one clause that points at the new dispatched-agent invariant instead of defining a second class. The two invariants cannot drift apart because one is defined as the other&apos;s complement, so no consumer falls in neither category.</advantage>
+      <drawback>It does not literally name the inline runners, as the milestone goal&apos;s wording (&quot;reworded to name the inline runners&quot;) asks. Any new kind of consumer that is neither an inline skill nor a dispatched agent, such as a headless chain step or a script, gets the whole-read allowance by default and never has to justify it.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Invariant reach over complete-task">
     <question>The new dispatched-agent invariant covers both dispatched agents: does it constrain only what a dispatch prompt carries (what the orchestrator holds and the agent cannot fetch), or also forbid a dispatched agent any whole read of a tool-owned document, and if the latter, how does it leave the complete-task agent&apos;s whole read of TASKS_TODO.md (a file no tool owns) untouched?</question>
