@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Runner-Neutral Sibling Scope Wording
-
-Rewrite step 1 of `core/shared/alternatives-procedure.md` so it states only the analytical rule that sibling questions bound this question, supply scope and nothing more, and are never presumed settled, dropping the instruction on how siblings are read so the procedure names no runner class and no reading mechanism. Confirm that `discuss-open-question` still states its own whole read of `open_questions.xml` in its own step, since each consumer now owns its sibling-scope source. Verified by reading the procedure for any remaining reading instruction and by `uv run scripts/build_hosts.py --check` passing on the rebuilt host trees.
-
----
-
 ## Alternatives Agent Fetches Its Own Question
 
 Rework `core/agents/provide-alternatives-to-open-question.md` so its inputs are only the Short Title and the resolved milestone directory, and it reaches the question document through exactly two tool calls, one `locate` of its own Short Title for its block and one `list --with-question` for sibling scope, stated once as its only source of sibling scope, never running `locate` on a sibling, while still reading `requirements.md` whole as prose. Verified by the agent file naming no question-block input and no whole read of `open_questions.xml`, its description staying within the frontmatter cap, and `uv run scripts/build_hosts.py --check` passing on the rebuilt host trees.

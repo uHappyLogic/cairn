@@ -29,14 +29,11 @@ question turns on. Prefer reading the live project over reasoning from memory �
 to ground each option in what the project actually is, not what you recall it to be. All of
 this reading is read-only; enumerating alternatives changes nothing.
 
-The sibling questions in `<MILESTONE_DIR>/open_questions.xml` — read whole with the
-file-reading tool, exactly as `requirements.md` is read beside it — mark where this question
-ends and another begins, so an option that really answers a sibling is left to that sibling.
-They supply scope and nothing more: no sibling has settled on anything while its alternatives
-are being enumerated, so no option here presumes how a sibling will settle. That whole read is
-for reasoning only: every locate, list, or lift of a block is a call to the plugin's
-open-question tool, `python3 .agents/plugins/cairn/tools/open_questions.py <subcommand>
-<MILESTONE_DIR> …`, never a search over the file.
+The milestone's sibling questions — the other open questions standing beside this one —
+bound it: they mark where this question ends and another begins, so an option that really
+answers a sibling is left to that sibling. They supply scope and nothing more: no sibling has
+settled on anything while its alternatives are being enumerated, so no option here presumes
+how a sibling will settle.
 
 ### 2. Enumerate the alternatives
 
