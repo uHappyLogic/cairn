@@ -58,5 +58,9 @@ Step 1 of `core/shared/alternatives-procedure.md` keeps a runner-neutral wording
 
 The dispatched alternatives agent reads the question document through exactly two tool calls: one `locate` of its own Short Title and one `list --with-question` for sibling scope. It never runs `locate` on a sibling block, so it never sees a sibling's embedded picks. The agent file states this limit once, as its only source of sibling scope.
 
+### The CLAUDE.md invariants
+
+The reworded whole-file allowance in the sole-writer invariant describes its holders as a class, naming no skill: a user-invoked skill running inline in the conversation, or a shared procedure followed by one, that needs the whole set to reason over may read the file directly, for reasoning only. Any present or future inline runner falls under it without an edit, and the class sits opposite the new dispatched-agent invariant along the inline/isolated line.
+
 ## Out of Scope
 
