@@ -10,11 +10,14 @@ Subcommands:
   create MILESTONE_DIR
       write the empty document, creating the directory when it is missing, and refuse to
       touch an existing document
-  list MILESTONE_DIR [--without-alternatives] [--without-recommendation]
+  list MILESTONE_DIR [--without-alternatives] [--without-recommendation] [--with-question]
       print the id of every <open-question> block, one per line in document order;
       --without-alternatives keeps only the blocks carrying no <alternative> element and
       --without-recommendation only the blocks carrying no <recommendation> element, a
-      block printed under both flags only when it carries neither
+      block printed under both flags only when it carries neither; --with-question changes
+      only the line shape, printing each selected block as its id, a single tab, then its
+      <question> text, and composes with either filter or both, which select exactly as
+      they do without it
   locate MILESTONE_DIR SHORT_TITLE...
       print each named block verbatim, as the document holds it, in the order named
   lift MILESTONE_DIR SHORT_TITLE [--alternative ALTERNATIVE_ID]
@@ -116,8 +119,10 @@ Document format, the canonical form every write re-renders the whole document in
   - UTF-8, LF line ends, one trailing newline
 
 Output and error contract:
-  - a read prints only the bare, un-escaped values the caller needs, one per line; an
-    empty result set is empty stdout with exit status 0
+  - a read prints only the bare, un-escaped values the caller needs, one per line; a line
+    carrying two values (list --with-question) separates them with a single tab, which no
+    value can contain since every write folds whitespace runs to one space; an empty
+    result set is empty stdout with exit status 0
   - a mutator prints nothing on success
   - every failure is exactly one line "Error: <reason>" on stderr with exit status 1, and
     a non-zero exit leaves the document byte-for-byte unchanged; a malformed invocation
@@ -913,7 +918,10 @@ def cmd_list(args):
             continue
         if args.without_recommendation and question.recommendation is not None:
             continue
-        print(question.id)
+        if args.with_question:
+            print(f"{question.id}\t{question.question}")
+        else:
+            print(question.id)
     return 0
 
 
@@ -1048,6 +1056,12 @@ def build_parser():
         "--without-recommendation",
         action="store_true",
         help="print only the blocks carrying no <recommendation> element",
+    )
+    list_parser.add_argument(
+        "--with-question",
+        action="store_true",
+        help="print each block as its id, a single tab, then its <question> text, the "
+        "filters selecting exactly as they do without it",
     )
 
     locate_parser = add_subcommand(
