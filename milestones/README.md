@@ -13,9 +13,18 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_34_lean-dispatch-prompts/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 34 — Lean dispatch prompts
+
+- The open-question tool's `list` gained a `--with-question` flag printing each block as the un-escaped id, a single tab, then the un-escaped question text, composing with both `--without-*` filters and adding no refusal path, with tests passing under both the pinned interpreter and the 3.9 floor.
+- `/provide-alternatives-to-all-open-questions` now gathers in two `list` calls with no `locate`, and its dispatch prompt carries only the question's Short Title and the resolved milestone directory, the repair re-dispatch still sending the same prompt plus the corrective message.
+- The `provide-alternatives-to-open-question` agent fetches its own block with one `locate` and its sibling scope with one `list --with-question`, never locating a sibling or reading `open_questions.xml` whole, while still reading `requirements.md` whole as prose.
+- Step 1 of `alternatives-procedure.md` states only the analytical sibling-scope rule, naming no runner class or reading mechanism, so each consumer states its own sibling-scope source.
+- `CLAUDE.md` scopes the whole-file allowance to inline runners as a class, bans dispatched agents from reaching the question document other than through the tool, and adds an invariant that a dispatch prompt carries only what the orchestrator holds and the agent cannot fetch itself.
+- `docs/skill-reference.md` describes the two-call gather and the agent's two tool calls, and both host trees are rebuilt with `uv run scripts/build_hosts.py --check` passing.
 
 ### Milestone 33 — Recommendation-first child order
 
@@ -369,3 +378,4 @@ Current milestone: `milestones/milestone_34_lean-dispatch-prompts/`
 | 31 | Inline answer sweep | `milestones/milestone_31_inline-answer-sweep/` |
 | 32 | Unified task-completion subject | `milestones/milestone_32_unified-task-completion-subject/` |
 | 33 | Recommendation-first child order | `milestones/milestone_33_recommendation-first-child-order/` |
+| 34 | Lean dispatch prompts | `milestones/milestone_34_lean-dispatch-prompts/` |
