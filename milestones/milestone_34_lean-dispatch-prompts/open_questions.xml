@@ -1,6 +1,26 @@
 <open-questions>
   <open-question id="Question-text list line shape">
     <question>What is the new list flag called, and what line shape does it print for each block — how are the id and the folded question text separated on one line so that an id containing spaces, punctuation, or the separator itself stays unambiguous to a reader?</question>
+    <alternative id="Tab-separated with-question">
+      Add a --with-question flag to list that prints each block on one line in document order: the id, a single tab, then the question&apos;s text, both un-escaped. Neither value can ever contain a tab, because every write folds each text and attribute value with a whitespace split, which turns every tab into one space.
+      <advantage>Nothing can make it ambiguous, because the separator cannot occur in either value. An id with spaces, ampersands, angle brackets, quotes, an em dash, or a colon stays exact. The read contract of bare, un-escaped values, one line per block, still holds, now with two tab-separated fields. The flag name also matches the existing --without-alternatives and --without-recommendation pattern.</advantage>
+      <drawback>A tab looks like ordinary whitespace in a terminal or in a model&apos;s view of tool output. A reader cannot see where an id with spaces ends unless it knows the separator is a tab, so the contract has to state the separator in the docstring, the argparse help, and the output contract. Tests have to check for a literal tab rather than a visible mark.</drawback>
+    </alternative>
+    <alternative id="Em-dash separator like lift">
+      Add a --with-question flag that prints each block on one line as the id, then space, em dash, space, then the question&apos;s text. This is the same separator lift already uses between an option and its rationale.
+      <advantage>It is easy to read, and it reuses a separator that the tool contract and the answer procedures already know from lift, so it adds no new output idiom.</advantage>
+      <drawback>Nothing stops an id or a question from containing space, em dash, space itself, because Short Titles are free text. For an id like that, the split point is ambiguous by construction. The only protection is splitting at the first occurrence, which is correct only while the id itself holds no em dash. The question explicitly asks for protection against exactly this case.</drawback>
+    </alternative>
+    <alternative id="Two-line block, indented question">
+      Add a --with-question flag that prints each block as two lines: the bare id flush left, then the question&apos;s text on the next line indented by two spaces. Any line starting at column 0 is an id, and any indented line is that id&apos;s question.
+      <advantage>It is unambiguous both visually and by construction: folding trims the ends of every value, so no id starts with whitespace, and no id or question contains a line break. The id reads exactly as the list output shows it, with no separator character to explain.</advantage>
+      <drawback>It drops the one-line-per-block shape the question asks for and changes the read contract from one value per line to a fixed two-line record per block. Readers and tests have to handle pairs of lines, and the output is twice as long as the other options.</drawback>
+    </alternative>
+    <alternative id="Quoted id prefix">
+      Add a --with-question flag that prints each block on one line as the id wrapped in double quotes, then a space, then the question&apos;s text. Any double quote inside the id is escaped with a backslash, so the id ends at the first unescaped closing quote.
+      <advantage>The id&apos;s boundary is visible and unambiguous whatever characters the id contains, including spaces, dashes, colons, and tabs. A human or model reader can see where the id stops without knowing about an invisible separator.</advantage>
+      <drawback>It breaks the tool&apos;s rule that reads print bare, un-escaped values. It adds a new escaping rule to a read output, and consumers would have to reverse that rule before passing the id to locate or any other subcommand. That is the kind of escaping detail the runtime prose is not supposed to restate.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Question-text flag with filters">
     <question>Does the new question-text flag combine with the existing --without-alternatives and --without-recommendation filters (printing the filtered blocks with their text), or is it refused alongside them so the flag stays a single-purpose whole-set listing?</question>
