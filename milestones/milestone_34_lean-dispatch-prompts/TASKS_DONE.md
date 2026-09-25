@@ -68,3 +68,16 @@ In the sole-writer invariant of `CLAUDE.md`, reword the whole-file allowance to 
 - Only `CLAUDE.md` changed (`AGENTS.md` is a symlink to it, untouched); `uv run scripts/build_hosts.py --check` passed, `CLAUDE.md` being no build input.
 
 ---
+
+## Update Docs for Lean Dispatch
+
+Update the `provide-alternatives-to-all-open-questions` and `provide-alternatives-to-open-question` entries of `docs/skill-reference.md` so the pass gathers in two `list` calls with no `locate` and the agent is given only its Short Title and milestone directory, fetching its block with `locate` and its sibling scope with `list --with-question` while reading `requirements.md` whole, and correct any other sentence under `docs/` that describes the prompt's contents or the agent's whole read of `open_questions.xml`. Verified by grepping `docs/` for the retired descriptions and finding none.
+
+**Verified:**
+
+- The `provide-alternatives-to-all-open-questions` entry of `docs/skill-reference.md` states that the pass gathers once in two calls to the tool, `list` and `list --without-alternatives`, runs no `locate` and holds no block, and dispatches each subagent a prompt carrying only that question's Short Title and the resolved milestone directory, no question text and no block; the retired `locate` gather and "the block each dispatch prompt carries" are gone.
+- The `provide-alternatives-to-open-question` entry states the agent is given only its Short Title and milestone directory, reaches `open_questions.xml` through exactly two tool calls, `locate` of its own Short Title for its block and `list --with-question` (id, tab, question text) as its only source of sibling scope, never runs `locate` on a sibling, never reads `open_questions.xml` whole, and reads `requirements.md` whole with the file-reading tool as prose; the retired "its block as the tool's `locate` printed it" and whole read of `open_questions.xml` are gone.
+- No other sentence under `docs/` describes the prompt's contents or the agent's whole read: `docs/workflow.md`, `docs/ways-of-using-cairn.md`, `docs/design-claims.md`, and `README.md` name the per-question dispatch without the prompt's slots, and a scan of `docs/` for the retired phrasings (the three-call gather with `locate`, "block each dispatch prompt carries", "its block as the tool's `locate` printed it", "reading `requirements.md` and `open_questions.xml` whole", `Question block`) returns zero hits.
+- Only `docs/skill-reference.md` changed; `uv run scripts/build_hosts.py --check` passed, `docs/` being no build input.
+
+---
