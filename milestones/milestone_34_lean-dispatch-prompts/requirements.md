@@ -50,5 +50,9 @@ Milestone 33's `open_questions.xml` held three questions and reached about 15 KB
 
 `--with-question` changes only the line shape and composes freely with `--without-alternatives` and `--without-recommendation`, which keep selecting blocks exactly as they do now, alone or together; no new refusal path is added. `tests/test_list.py` covers the flag crossed with each filter.
 
+### Sibling scope in the shared enumeration half
+
+Step 1 of `core/shared/alternatives-procedure.md` keeps a runner-neutral wording: it states only the analytical rule that sibling questions bound this question, supply scope and nothing more, and are never presumed settled, and it drops the instruction on how siblings are read. The procedure names no runner class and no reading mechanism; each consumer states its own sibling-scope source in its own step — `discuss-open-question` its existing whole read, the dispatched agent its `locate` and `list --with-question` calls.
+
 ## Out of Scope
 
