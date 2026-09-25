@@ -1,1 +1,20 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Question-text list line shape">
+    <question>What is the new list flag called, and what line shape does it print for each block — how are the id and the folded question text separated on one line so that an id containing spaces, punctuation, or the separator itself stays unambiguous to a reader?</question>
+  </open-question>
+  <open-question id="Question-text flag with filters">
+    <question>Does the new question-text flag combine with the existing --without-alternatives and --without-recommendation filters (printing the filtered blocks with their text), or is it refused alongside them so the flag stays a single-purpose whole-set listing?</question>
+  </open-question>
+  <open-question id="Shared procedure sibling-scope wording">
+    <question>The shared alternatives procedure&apos;s grounding step tells its reader to read open_questions.xml whole with the file-reading tool, and it is followed by both the dispatched agent (which must not) and the inline discuss-open-question skill (which may): does the shared step keep a runner-neutral wording that names the sibling scope without prescribing how it is obtained, leaving each consumer to state its own source, or does it carry both instructions?</question>
+  </open-question>
+  <open-question id="Sibling locate allowance">
+    <question>With sibling scope supplied as one id-and-question line per block, may the dispatched agent still run locate on a sibling block (to see alternatives an earlier pass embedded on it) when it judges that bears on the boundary between two questions, or is its reading of the question document limited to its own block and the list print?</question>
+  </open-question>
+  <open-question id="Inline-runner allowance form">
+    <question>When the CLAUDE.md whole-file allowance is reworded to name the inline runners, does it enumerate the skills by name (a list that must be maintained as skills change) or describe them as a class (for example, user-invoked skills running inline in the conversation) that any future inline runner falls under without an edit?</question>
+  </open-question>
+  <open-question id="Invariant reach over complete-task">
+    <question>The new dispatched-agent invariant covers both dispatched agents: does it constrain only what a dispatch prompt carries (what the orchestrator holds and the agent cannot fetch), or also forbid a dispatched agent any whole read of a tool-owned document, and if the latter, how does it leave the complete-task agent&apos;s whole read of TASKS_TODO.md (a file no tool owns) untouched?</question>
+  </open-question>
+</open-questions>
