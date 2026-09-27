@@ -50,3 +50,15 @@ When a question asks whether a run should print an advisory about items it skipp
 When a question asks whether a durable instructions file should carry a retirement note or a do-not-restore ban for a design the file no longer describes, eliminate the note when the positive description of the current shape already rules the retired design out; keep an explicit ban only where the current description leaves the retired shape a natural reading. Keep measurement-bound figures out of durable rationale, since they go stale; the history belongs in the changelog and the milestone record.
 
 *Origin: Retired-agent rationale home — the mutation-in-agent inversion invariant was deleted with no retirement clause, because the inline sweep description already rules the recording agent out.*
+
+### Strongest setting on the whole-set judgment
+
+When a question allocates model strength, effort, or budget across pipeline stages, eliminate the candidate that mirrors one setting across every stage. Keep the one that puts the strongest setting on the stage making one whole-set judgment per run, and the cheaper setting on the per-item fan-out whose cost scales with item count, provided a per-item miss costs one item's redo rather than a run. That a stage's output is frozen does not earn it the strongest setting; only an unbounded miss cost does.
+
+*Origin: Headless chain alternatives line — the per-question alternatives fan-out runs at the cheaper model and the once-per-run recommendation pass at the stronger one, over the mirror pick that put one strong setting on both lines.*
+
+### Check tier claims against the live environment
+
+When a candidate's ranking rests on a claim about the environment outside the repository — which model is the stronger tier, which host has a capability, what a CLI accepts — eliminate any pick that carries that claim from memory or from the analysis's own assumption. Keep only a pick whose claim was checked against the live source, such as the CLI's model list or the host's documentation, before it was weighted: a recommendation built on an inverted premise inverts its own conclusion while still reading as sound.
+
+*Origin: Headless chain alternatives line — the embedded analysis treated fable as the mid tier and opus as the strong model; the CLI lists both as family aliases with Fable the more capable, so the mirror pick's strength placement inverted.*
