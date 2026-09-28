@@ -60,4 +60,4 @@ Milestone activated.
 
 Do not add the activated milestone's path or title, or a next-step pointer.
 
-If instead the step-4 dirty-own-path guard fired (the `Current milestone:` pointer was unchanged, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the pointer already named that milestone; nothing committed.`
+If instead the step-4 dirty-own-path guard fired (the `Current milestone:` pointer was unchanged, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the pointer line already matched the last commit; nothing committed.`

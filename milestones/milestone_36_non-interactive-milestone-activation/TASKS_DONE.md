@@ -27,3 +27,16 @@ Replace the three-way branch on the remainder in step 2 of `core/skills/goto-nex
 - `uv run scripts/build_hosts.py` rebuilt both host trees and `uv run scripts/build_hosts.py --check` passed against them.
 
 ---
+
+## Reword No-Change Branch Example Reason
+
+In step 5 of `core/skills/goto-next-milestone/SKILL.md`, keep the no-change branch but rewrite its example reason to say only that the pointer line already matched the last commit, dropping the claim that the pointer already named that milestone, which step 1 has just contradicted. The branch still prints its one distinct no-op line, never `Milestone activated.`, and commits nothing. Verified by reading the step and by `uv run scripts/build_hosts.py --check` passing against the rebuilt host trees.
+
+**Verified:**
+
+- Step 5 of `core/skills/goto-next-milestone/SKILL.md` keeps the no-change branch for when the step-4 dirty-own-path guard fires.
+- The branch's example reason reads `No change — the pointer line already matched the last commit; nothing committed.`, saying only that the pointer line matched the last commit, and no longer claims the pointer already named that milestone.
+- The branch still prints its one distinct no-op line, never `Milestone activated.`, and commits nothing.
+- `uv run scripts/build_hosts.py` rebuilt both host trees and `uv run scripts/build_hosts.py --check` passed against them.
+
+---
