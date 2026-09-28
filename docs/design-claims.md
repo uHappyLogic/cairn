@@ -112,10 +112,9 @@ the other tests yet.
 - **Design:** Each skill stages only its own paths, never all files. Each
   commit subject has a marker that names the skill function. A pass that
   changes nothing makes no commit. The work tree is clean after each skill,
-  with two exceptions. The bootstrap skill does not commit and leaves its
-  changes staged for the user. A failed run leaves its partial work in the
-  tree for the next run. The console shows one status line and does not
-  repeat the diff.
+  with one exception. A failed run leaves its partial work in the tree for
+  the next run. The console shows one status line and does not repeat the
+  diff.
 - **Metric:** Count of unknown subjects, unscoped stages, and dirty trees after
   a run (each must be 0).
 

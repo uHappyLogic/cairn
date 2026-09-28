@@ -44,3 +44,19 @@ Replace the multi-line confirmation in `core/skills/init-milestone-base-workflow
 - `uv run scripts/build_hosts.py` rebuilt `hosts/claude/` and `hosts/antigravity/`, whose rendered skills carry the same step 3 and step 8 lines, and `uv run scripts/build_hosts.py --check` passed.
 
 ---
+
+## Update Invariant And Docs For Committing Bootstrap
+
+Update every statement in `CLAUDE.md`, `docs/workflow.md`, `docs/design-claims.md`, and `docs/skill-reference.md` that the bootstrap does not commit or that Python is the workflow's one runtime prerequisite: the pipeline tag "non-committing" and the "one non-committing exemption" clause of the committing invariant, the exemption paragraph and the "one runtime prerequisite" wording in `docs/workflow.md`, design claim 12's "two exceptions" sentence (which drops to the one failed-run exception), and the skill-reference entry, so each now records git as a second prerequisite checked first, the `Workflow-bootstrap: milestones` commit, and the terse report. The criterion is the decision, not a hand list, so grep for further statements rather than stopping at the sites named. Verified by a repository-wide grep finding no remaining claim, outside the historical `CHANGELOG.md` entries and `milestones/`, that the bootstrap leaves files uncommitted or staged or that Python is the one prerequisite.
+
+**Verified:**
+
+- `CLAUDE.md`'s pipeline listing tags `init-milestone-base-workflow` with the git work-tree check first, then python3 ≥ 3.9, then the scaffold, and `commits under Workflow-bootstrap: milestones`, replacing "non-committing".
+- The "Committing is a property of the skill layer" invariant in `CLAUDE.md` drops "the one non-committing exemption" clause and states there is no exemption: the bootstrap checks for a git work tree first (git as the second prerequisite beside Python), commits subject-only under `Workflow-bootstrap: milestones`, and sweeps uncommitted changes already in its paths into that commit by design.
+- `docs/workflow.md`'s One-time setup paragraph names two runtime prerequisites, git first then Python 3.9+, and says the bootstrap commits under `Workflow-bootstrap: milestones`; the How skills commit exemption paragraph is replaced by a statement that the bootstrap is no exception (git check first, commit with no body, pre-existing uncommitted changes in its paths swept in).
+- `docs/design-claims.md` claim 12 says the work tree is clean after each skill "with one exception", the failed-run partial work, with the bootstrap sentence removed.
+- The `docs/skill-reference.md` entry records both prerequisites (git checked first by one `git rev-parse --is-inside-work-tree` probe with its remedy, then Python), the `Workflow-bootstrap: milestones` subject-only commit and its paths, and the terse report (`Workflow bootstrapped.` on success, `Workflow already bootstrapped — nothing changed.` on the no-op stop, no itemization or next-step pointer).
+- A repository-wide grep (excluding `.git`, `milestones/`, and `CHANGELOG.md`) for "non-committing", "one runtime prerequisite", "does not commit", "staging is left", "leaves its changes", "two exceptions", "exemption", and "changes staged" finds no remaining claim that the bootstrap leaves files uncommitted or staged, the only `CLAUDE.md` hit being the sentence denying the exemption; the one remaining "one runtime prerequisite" wording is in `README.md` and its two `scripts/hosts/*/README.md` copies (and their rendered `hosts/*/README.md`), which the following task "Record Git As Second README Prerequisite" owns.
+- `uv run scripts/build_hosts.py --check` passes (no file under `core/` or `scripts/hosts/` changed).
+
+---
