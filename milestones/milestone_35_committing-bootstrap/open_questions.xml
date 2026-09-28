@@ -1,23 +1,4 @@
 <open-questions>
-  <open-question id="Git-check remedy wording">
-    <question>When the project is not a git repository, does the stop message tell the user to run git init and re-run, or does the skill offer to initialize the repository itself, and does the message follow the four-part shape of the Python stop message (what it looked for, what it found, the remedy, that a re-run completes the bootstrap)?</question>
-    <recommendation option="Four-part stop, user runs git init">It matches the goal&apos;s &quot;stopping before it writes anything&quot;, copies the stop shape the Python check already has so both prerequisites read alike, never prompts so it behaves identically in a headless chain, and keeps a repository-creating decision with the user; offering to run git init adds a prompt no chain can answer and creates a .git outside the skill&apos;s own paths, and a terse one-liner gives a wrong remedy when git itself is missing.</recommendation>
-    <alternative id="Four-part stop, user runs git init">
-      The git check copies the step 1 Python template. It stops before any write and prints one message giving what it looked for (a git work tree at the workspace root), what it found (either the `git` executable is missing or the directory is not a work tree), the remedy that fits (install git, or run `git init` in the workspace root), and that running `/init-milestone-base-workflow` again completes the bootstrap with nothing to undo. The skill never runs `git init` itself.
-      <advantage>It matches the goal&apos;s wording &quot;stopping before it writes anything when the project is not a git repository&quot; and reuses a stop shape the skill already has, so the two prerequisite checks read the same. It also never prompts, so it behaves the same in a headless chain. Choosing where the repository lives stays with the user, which matters when the workspace root might be the wrong directory for it.</advantage>
-      <drawback>The most common case, a fresh project with no repository yet, always costs a stop, a manual `git init`, and a second run. If the &quot;Work-tree check strictness&quot; question settles on stricter pass rules, the &quot;what it found&quot; part needs more cases, such as being inside a larger repository but not at its top level.</drawback>
-    </alternative>
-    <alternative id="Offer to run git init">
-      When no work tree is found, the skill asks the user whether to run `git init` in the workspace root. If the user agrees, it initializes the repository and continues the bootstrap in the same run. If the user declines, or no one can answer, it falls back to a four-part stop message like the Python one.
-      <advantage>Interactive users get through the common fresh-project case in one run without leaving the skill, and nothing is created without explicit consent.</advantage>
-      <drawback>It adds a consent prompt that no other prerequisite check has, and that prompt cannot be answered in a headless chain. It also stretches the goal&apos;s &quot;stopping before it writes anything&quot;: with consent, the skill creates a `.git` directory, which is outside the paths it owns. The skill would also have to handle a brand-new repository with no commits and no configured identity before its first commit could succeed.</drawback>
-    </alternative>
-    <alternative id="Terse one-line stop">
-      The skill stops before any write with a single short line, for example &quot;not a git repository — run git init and re-run /init-milestone-base-workflow&quot;. It does not follow the four-part shape and does not tell a missing `git` executable apart from a directory that is not a repository.
-      <advantage>It is the smallest runtime change. It also fits the terse console-reporting style the other committing skills use.</advantage>
-      <drawback>The skill&apos;s two prerequisite checks would report failures in different shapes. When git itself is not installed, the one-line remedy is wrong, and nothing in the message says so. The user loses the found-versus-expected detail that the Python check deliberately gives.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Pre-existing dirty paths">
     <question>When CLAUDE.md or milestones/README.md already carries uncommitted changes before the bootstrap runs (for example a CLAUDE.md just written by /init and never committed), does the bootstrap&apos;s path-scoped commit sweep those unrelated hunks into its own commit, stop before writing, or proceed and note it?</question>
     <applied-principle>Report only unrecoverable signals</applied-principle>
@@ -94,7 +75,6 @@
   </open-question>
   <open-question id="Prerequisite check order">
     <question>Does the git work-tree check run before or after the Python check, does a project failing both get one combined stop message or two separate stops on successive runs, and does the git check run on every invocation including a re-run on an already-bootstrapped project, as the Python check does?</question>
-    <depends-on question="Git-check remedy wording" option="Four-part stop, user runs git init"/>
     <recommendation option="Git first, sequential">Both checks run on every invocation as separate stops with their own four-part message, so the health-check property is kept and step 1&apos;s template is reused rather than restructured, and the git check goes first because it guards the more basic capability every committing skill needs and is the failure a fresh directory most often hits, with the cheapest remedy; the opening-paragraph and skill-reference edits it forces are already in the milestone&apos;s docs work.</recommendation>
     <alternative id="Git first, sequential">
       Put the git work-tree check first, ahead of the Python check, with both still running on every invocation before state detection. Each check stops on its own with its own message, so a project that fails both learns about git first and about Python on the next run.
@@ -145,7 +125,6 @@
   <open-question id="Work-tree check strictness">
     <question>Does the git prerequisite pass whenever the workspace root is inside any git work tree (for example a subdirectory of a larger repository), or only when the workspace root is itself the repository&apos;s top level, and does a freshly initialized repository with no commits yet pass?</question>
     <applied-principle>Report only unrecoverable signals</applied-principle>
-    <depends-on question="Git-check remedy wording" option="Four-part stop, user runs git init"/>
     <recommendation option="Any work tree, unborn allowed">One `git rev-parse --is-inside-work-tree` probe asks for exactly what the shared commit procedure needs, which works from a subdirectory and on an unborn HEAD, so monorepo subprojects and brand-new repositories pass and a plain &quot;git init, then re-run&quot; remedy is sufficient; top-level-only refuses correct subprojects and invites a nested git init, commit-required enforces nothing the procedure needs, and a nested-repository advisory lands after the commit has already gone where the enclosing repository&apos;s own log shows it.</recommendation>
     <alternative id="Any work tree, unborn allowed">
       The check passes whenever the workspace root is inside any git work tree. That covers a subdirectory of a larger repository and a freshly initialized repository with no commits yet. A single probe such as `git rev-parse --is-inside-work-tree` decides it, and no commit is required to exist.
