@@ -55,7 +55,11 @@ Probe the workspace root in parallel and record what already exists:
 - Does `milestones/README.md` exist? If so, does it contain a `Current milestone:` line?
 - Does `CLAUDE.md` exist? If so, read it and note whether it already contains a `## Milestone Workflow` section.
 
-Use these findings to decide which steps below are no-ops. If **all** of the following are already present — `milestones/`, `milestones/README.md`, and a `Current milestone:` line in `milestones/README.md` — the project is already initialized: report that and stop without changing anything.
+Use these findings to decide which steps below are no-ops. If **all** of the following are already present — `milestones/`, `milestones/README.md`, and a `Current milestone:` line in `milestones/README.md` — the project is already initialized: stop without changing anything and print this one line and nothing else:
+
+```
+Workflow already bootstrapped — nothing changed.
+```
 
 ### 4. Create the milestones/ directory
 
@@ -91,7 +95,7 @@ _No milestones completed yet._
 |---|-------|------|
 ```
 
-If `milestones/README.md` **already exists**, do not overwrite it. Instead, ensure it contains a `## Current Milestone` section with a `Current milestone:` line; if either is missing, insert the section (with `Current milestone: none`) after the file's top-level heading, and leave the rest of the file untouched. Report that the file was preserved.
+If `milestones/README.md` **already exists**, do not overwrite it. Instead, ensure it contains a `## Current Milestone` section with a `Current milestone:` line; if either is missing, insert the section (with `Current milestone: none`) after the file's top-level heading, and leave the rest of the file untouched.
 
 > The README intentionally carries both a `## Milestone History` section (written by `/finish-current-milestone`) and a `## Completed Milestones` table (written by `/goto-next-milestone`). Keep both so neither skill fails.
 
@@ -113,14 +117,12 @@ which milestone is current. Never advance the pointer without first running
 `/finish-current-milestone`.
 ```
 
-After creating it, suggest the user run `/init` to document the project in `CLAUDE.md` — its domain context, working conventions, available tools, and how work is verified as done. The workflow skills read this environment context from `CLAUDE.md`.
-
 **If `CLAUDE.md` already exists**, update it without disturbing existing content:
 
 - If it has **no** `## Milestone Workflow` section, append the `## Milestone Workflow` section (the paragraph shown above) to the end of the file.
 - If the section already exists, leave it exactly as-is — do not rewrite or re-template it.
 
-Never write a current-milestone pointer into `CLAUDE.md`; the pointer lives only in `milestones/README.md`. Never document the project's environment context in `CLAUDE.md` yourself either — recommending `/init` is as far as this skill goes.
+Never write a current-milestone pointer into `CLAUDE.md`; the pointer lives only in `milestones/README.md`. Never document the project's environment context in `CLAUDE.md` yourself either.
 
 ### 7. Commit the bootstrap
 
@@ -135,9 +137,12 @@ The shared procedure owns the path-scoped staging, the dirty-own-path no-op guar
 
 ### 8. Confirm
 
-Report:
-- Which items were created (`milestones/`, `milestones/README.md`, `CLAUDE.md` sections) vs. already present and left untouched.
-- The current-milestone pointer in `milestones/README.md` is initialized to `none`.
-- Suggested next steps, in order:
-  1. `/init` — document the project in `CLAUDE.md`: its domain context, working conventions, available tools, and how work is verified as done (run once, if not already documented).
-  2. `/define-milestone-goal <goal>` — define the first milestone.
+On the success path — the commit in step 7 recorded the bootstrap — print exactly one fixed terse status line and nothing else:
+
+```
+Workflow bootstrapped.
+```
+
+Do not list which items were created or left untouched, the pointer's initial value, the commit, or any next-step or handoff pointer; the commit diff shows which files were created or appended to.
+
+If instead the step-7 dirty-own-path guard fired (none of the paths changed, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the scaffold was already committed; nothing committed.`

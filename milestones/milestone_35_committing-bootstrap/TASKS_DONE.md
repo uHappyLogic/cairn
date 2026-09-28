@@ -30,3 +30,17 @@ Retire the "It does not commit — staging is left to the user" exemption in `co
 - `uv run scripts/build_hosts.py` rebuilt `hosts/claude/` and `hosts/antigravity/`, whose rendered skills carry step 7 with each host's resolved commit-procedure path, and `uv run scripts/build_hosts.py --check` passed.
 
 ---
+
+## Replace Bootstrap Report With Terse Lines
+
+Replace the multi-line confirmation in `core/skills/init-milestone-base-workflow/SKILL.md` with the reporting shape the other setup skills use: on success exactly one fixed identifier-free status line, `Workflow bootstrapped.`, and on the already-initialized stop one distinct no-op line, cutting the created-versus-preserved itemization, the pointer-initialized line, the numbered next steps, and the suggestion to run `/init` (including the one in the `CLAUDE.md` step), so the skill prints no next-step or handoff pointer. The commit diff now shows which files were created or appended to, which is why the itemization goes. Verified by reading the rendered skill and by `uv run scripts/build_hosts.py --check` passing with the rebuilt `hosts/` trees committed alongside.
+
+**Verified:**
+
+- Step 8 "Confirm" of `core/skills/init-milestone-base-workflow/SKILL.md` prints, on the success path, exactly one fixed identifier-free status line `Workflow bootstrapped.` and nothing else.
+- The already-initialized stop in step 3 prints one distinct no-op line, `Workflow already bootstrapped — nothing changed.`, and nothing else.
+- The created-versus-preserved itemization (including step 5's "Report that the file was preserved"), the pointer-initialized line, and the numbered next steps are gone from the skill.
+- The suggestion to run `/init` is gone, including the one in the `CLAUDE.md` step (step 6), and the skill prints no next-step or handoff pointer; a grep of the rendered skills for "suggest", "next step", "recommend", "preserved", and "initialized to" finds nothing.
+- `uv run scripts/build_hosts.py` rebuilt `hosts/claude/` and `hosts/antigravity/`, whose rendered skills carry the same step 3 and step 8 lines, and `uv run scripts/build_hosts.py --check` passed.
+
+---

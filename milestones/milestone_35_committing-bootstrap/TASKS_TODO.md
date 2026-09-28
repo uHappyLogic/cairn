@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Replace Bootstrap Report With Terse Lines
-
-Replace the multi-line confirmation in `core/skills/init-milestone-base-workflow/SKILL.md` with the reporting shape the other setup skills use: on success exactly one fixed identifier-free status line, `Workflow bootstrapped.`, and on the already-initialized stop one distinct no-op line, cutting the created-versus-preserved itemization, the pointer-initialized line, the numbered next steps, and the suggestion to run `/init` (including the one in the `CLAUDE.md` step), so the skill prints no next-step or handoff pointer. The commit diff now shows which files were created or appended to, which is why the itemization goes. Verified by reading the rendered skill and by `uv run scripts/build_hosts.py --check` passing with the rebuilt `hosts/` trees committed alongside.
-
----
-
 ## Update Invariant And Docs For Committing Bootstrap
 
 Update every statement in `CLAUDE.md`, `docs/workflow.md`, `docs/design-claims.md`, and `docs/skill-reference.md` that the bootstrap does not commit or that Python is the workflow's one runtime prerequisite: the pipeline tag "non-committing" and the "one non-committing exemption" clause of the committing invariant, the exemption paragraph and the "one runtime prerequisite" wording in `docs/workflow.md`, design claim 12's "two exceptions" sentence (which drops to the one failed-run exception), and the skill-reference entry, so each now records git as a second prerequisite checked first, the `Workflow-bootstrap: milestones` commit, and the terse report. The criterion is the decision, not a hand list, so grep for further statements rather than stopping at the sites named. Verified by a repository-wide grep finding no remaining claim, outside the historical `CHANGELOG.md` entries and `milestones/`, that the bootstrap leaves files uncommitted or staged or that Python is the one prerequisite.
