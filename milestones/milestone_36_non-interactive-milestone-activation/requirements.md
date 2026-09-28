@@ -32,5 +32,9 @@ Besides this skill's two prompts, only `answer-open-question-with-alternative` (
 
 ## Decisions
 
+### Documentation scope
+
+`CLAUDE.md` and `docs/workflow.md` join this milestone's change set beyond the documents the Goal lists. In `CLAUDE.md`, the `goto-next-milestone` pipeline line names the lowest-numbered undone pick, and a new invariant records that pick and states that the retired single-candidate confirmation and multiple-candidate choice prompts must not be restored. In `docs/workflow.md`, the "advances the pointer" sentence of "Initializing a milestone" says the skill activates the lowest-numbered undone milestone without asking.
+
 ## Out of Scope
 
