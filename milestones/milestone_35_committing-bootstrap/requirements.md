@@ -37,5 +37,9 @@ No file in the repository references G04; the identifier lives outside the repo,
 
 - When the project is not a git repository, the git check copies the Python check's stop shape: it stops before any write and prints one message giving what it looked for (a git work tree at the workspace root), what it found (the `git` executable missing, or the directory not a work tree), the remedy that fits (install git, or run `git init` in the workspace root), and that a re-run completes the bootstrap with nothing to undo. The skill never prompts and never runs `git init` itself.
 
+### Reporting
+
+- The bootstrap's success report becomes one fixed, identifier-free status line such as "Workflow bootstrapped.", and the already-initialized stop prints one distinct no-op line. The created-versus-preserved itemization, the pointer-initialized line, the numbered next steps, and the suggestion to run `/init` are all cut; the commit diff shows which files were created or appended to, and the bootstrap prints no next-step or handoff pointer, like the other setup skills.
+
 ## Out of Scope
 
