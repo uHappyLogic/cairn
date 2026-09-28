@@ -1,28 +1,4 @@
 <open-questions>
-  <open-question id="Abandoned lower milestone">
-    <question>With the choice removed, a defined milestone that the user no longer wants but never finished is picked on every run and blocks every higher-numbered one, since the skill stops only on a non-none pointer or on no candidate. Is that accepted as-is, with deleting the directory as the way out, or does the skill or its documentation need to state how to skip such a milestone?</question>
-    <recommendation option="Document removal as the way out">CONTRIBUTING step 2 now advises leaving exactly the directory the new rule would activate first, so that sentence must require the revert and the skill-reference entry names directory removal as the way out, while the runtime file stays free of user-facing prose and no new argument or invented finish is added.</recommendation>
-    <alternative id="Document removal as the way out">
-      Keep the lowest-numbered pick unchanged and say how to skip a milestone in the documentation only. The goto-next-milestone entry in docs/skill-reference.md would state that an unwanted milestone is skipped by removing its directory, for example by reverting its Milestone-definition commit. The CONTRIBUTING.md sentence that allows leaving an abandoned reservation as a candidate would be corrected to require the revert.
-      <advantage>It tells users about the trap where they look for skill behaviour, and it fixes the one existing sentence that now advises the wrong thing. The runtime SKILL.md gets no user-facing prose, which matches the project rule that runtime files carry only what the runner needs.</advantage>
-      <drawback>It reaches outside the goal&apos;s file list, since CONTRIBUTING.md is not named there. Whether that edit belongs in this milestone depends on how the scope of out-of-list documents is settled. Also, deleting the highest-numbered directory lets /define-milestone-goal&apos;s max-plus-one rule reissue that number later.</drawback>
-    </alternative>
-    <alternative id="Accept silently">
-      Keep the behaviour the goal describes and add nothing. An unwanted milestone that was never finished stays the lowest-numbered pick until someone removes its directory, for example by reverting its Milestone-definition commit. Neither the skill nor any document mentions this way out.
-      <advantage>It needs no extra edits beyond the files the goal already lists. It keeps the milestone&apos;s scope to removing the two prompts, and the SKILL.md stays free of prose meant for the user rather than the runner.</advantage>
-      <drawback>The trap is invisible, and the project already sets it. CONTRIBUTING.md step 2 says an abandoned contribution may be left on main &quot;as a /goto-next-milestone candidate&quot;. Under the new rule, that directory would be activated by the next headless &quot;Starting a milestone&quot; chain in docs/ways-of-using-cairn.md, or by a contributor&apos;s first goto run, in place of the intended milestone, and nothing would warn anyone.</drawback>
-    </alternative>
-    <alternative id="Document activate-then-finish">
-      Treat an unwanted milestone as something to close rather than delete, and document that. The user lets /goto-next-milestone activate it, clears or moves any remaining tasks, and runs /finish-current-milestone. That adds a Milestone History entry and a Completed Milestones row, which removes it from the candidate set while keeping the directory and its history.
-      <advantage>It needs no change to any skill and keeps every defined milestone&apos;s directory and number in the tree. Nothing is deleted, and no number can be reissued.</advantage>
-      <drawback>The history would record a milestone that accomplished nothing as done. That conflicts with finish&apos;s rule that summary bullets are never invented accomplishments, and it blurs Milestone History for later capture and release notes. It also takes three steps, including a commit that activates a milestone nobody wants.</drawback>
-    </alternative>
-    <alternative id="Optional target argument">
-      Add a non-interactive override: /goto-next-milestone accepts an optional milestone directory or number. With it, the skill activates that milestone. Without it, the skill keeps the lowest-numbered pick, so a user can step past an abandoned milestone without removing it.
-      <advantage>It fixes the blocking directly while staying prompt-free. The override also works in headless chains and on a contributor&apos;s branch, where a stale reservation on main would otherwise be picked first.</advantage>
-      <drawback>It adds a feature the goal never asked for and grows the milestone&apos;s scope. The skill currently takes no arguments, so this means argument validation and matching against done milestones, plus new text in both documents. It also does not stop the no-argument run, including the headless chain, from picking the abandoned milestone.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Stale table attribution note">
     <question>The README template in init-milestone-base-workflow says the ## Completed Milestones table is written by /goto-next-milestone, but the finish skill writes it and goto-next-milestone only reads it at most. Is correcting that note in scope for this milestone, given it sits outside the files the goal lists?</question>
     <applied-principle>Description over retirement note</applied-principle>

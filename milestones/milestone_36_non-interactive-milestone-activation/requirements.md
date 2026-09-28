@@ -44,5 +44,9 @@ The candidate step of `/goto-next-milestone` states the zero-stripped integer ru
 
 The no-change branch of the report step stays, since the commit procedure's dirty-own-path guard can still fire when an uncommitted hand edit had reset the pointer to `none` and the path the skill writes matches the last commit. Its example reason is rewritten to say only that the pointer line already matched the last commit, dropping the claim that the pointer already named that milestone, which step 1 has just contradicted. The branch prints its one distinct no-op line, never `Milestone activated.`, and commits nothing.
 
+### Skipping an unwanted milestone
+
+The lowest-numbered pick stays unchanged: a defined milestone that was never finished is activated on every run until its directory is removed, and the way out is documented rather than built. The `goto-next-milestone` entry of `docs/skill-reference.md` states that an unwanted milestone is skipped by removing its directory, for example by reverting its `Milestone-definition:` commit. `CONTRIBUTING.md` joins the change set for one sentence: step 2's allowance to leave an abandoned reservation on `main` as a candidate is corrected to require the revert. The runtime `SKILL.md` carries no user-facing prose about it, the skill gains no target argument, and an unwanted milestone is never activated and finished to retire it.
+
 ## Out of Scope
 
