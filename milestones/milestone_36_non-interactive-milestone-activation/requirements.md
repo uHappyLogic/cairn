@@ -36,5 +36,9 @@ Besides this skill's two prompts, only `answer-open-question-with-alternative` (
 
 `CLAUDE.md` and `docs/workflow.md` join this milestone's change set beyond the documents the Goal lists. In `CLAUDE.md`, the `goto-next-milestone` pipeline line names the lowest-numbered undone pick, and a new invariant records that pick and states that the retired single-candidate confirmation and multiple-candidate choice prompts must not be restored. In `docs/workflow.md`, the "advances the pointer" sentence of "Initializing a milestone" says the skill activates the lowest-numbered undone milestone without asking.
 
+### Candidate number rule
+
+The candidate step of `/goto-next-milestone` states the zero-stripped integer rule as a standalone sentence: a candidate is a directory matching `milestone_<digits>_<slug>`, its number is read by stripping leading zeros and compared as an integer, so ordering holds past milestone 99 and matches the parse rule `/define-milestone-goal` uses. A `milestone_*` directory whose prefix is not all digits never matches the pattern and is silently left out of the candidate set: no third stop is added and no advisory is printed.
+
 ## Out of Scope
 
