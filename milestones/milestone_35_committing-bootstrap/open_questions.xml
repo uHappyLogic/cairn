@@ -1,1 +1,26 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Bootstrap commit subject">
+    <question>What function-derived subject does the bootstrap commit carry, given it has no milestone id to serve as descriptor (a marker such as Workflow-bootstrap: with what descriptor), and is the commit subject-only like the other setup skills or does it carry a body naming which files were created versus preserved?</question>
+  </open-question>
+  <open-question id="Prerequisite check order">
+    <question>Does the git work-tree check run before or after the Python check, does a project failing both get one combined stop message or two separate stops on successive runs, and does the git check run on every invocation including a re-run on an already-bootstrapped project, as the Python check does?</question>
+  </open-question>
+  <open-question id="Git-check remedy wording">
+    <question>When the project is not a git repository, does the stop message tell the user to run git init and re-run, or does the skill offer to initialize the repository itself, and does the message follow the four-part shape of the Python stop message (what it looked for, what it found, the remedy, that a re-run completes the bootstrap)?</question>
+  </open-question>
+  <open-question id="Pre-existing dirty paths">
+    <question>When CLAUDE.md or milestones/README.md already carries uncommitted changes before the bootstrap runs (for example a CLAUDE.md just written by /init and never committed), does the bootstrap&apos;s path-scoped commit sweep those unrelated hunks into its own commit, stop before writing, or proceed and note it?</question>
+  </open-question>
+  <open-question id="Bootstrap reporting shape">
+    <question>Does the bootstrap&apos;s step 6 report become the one fixed identifier-free status line the other committing skills print, with a distinct line for the already-initialized no-op path, and does the suggestion to run /init and /define-milestone-goal next survive as an advisory or get cut along with the created-versus-preserved itemization?</question>
+  </open-question>
+  <open-question id="Documentation update scope">
+    <question>Beyond the three places the goal names, are the CLAUDE.md pipeline listing that tags the skill non-committing, design claim 12&apos;s &quot;two exceptions&quot; sentence, and the README&apos;s &quot;one runtime prerequisite&quot; sentence with its two host copies under scripts/hosts also updated to record git as a second prerequisite and the bootstrap as committing?</question>
+  </open-question>
+  <open-question id="Headless bootstrap chain line">
+    <question>Should docs/ways-of-using-cairn.md gain a chain that starts from an empty repository with the bootstrap line, now that the bootstrap commits and a headless chain can include it without leaving files behind, or do the chains keep assuming an already-bootstrapped repository?</question>
+  </open-question>
+  <open-question id="Work-tree check strictness">
+    <question>Does the git prerequisite pass whenever the workspace root is inside any git work tree (for example a subdirectory of a larger repository), or only when the workspace root is itself the repository&apos;s top level, and does a freshly initialized repository with no commits yet pass?</question>
+  </open-question>
+</open-questions>
