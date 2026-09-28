@@ -1,2 +1,37 @@
 # TASKS TODO
 
+## Define Candidates By Number And History Headings
+
+Rewrite the candidate-collection half of step 2 in `core/skills/goto-next-milestone/SKILL.md` so a candidate is a directory matching `milestone_<digits>_<slug>` whose number is read by stripping leading zeros and compared as an integer, stated as a standalone sentence, with a `milestone_*` directory whose prefix is not all digits silently left out of the set, adding no third stop and no advisory. A directory counts as done when that number matches an integer N parsed from a `### Milestone N — Title` heading under `## Milestone History`, with the `## Completed Milestones` table never consulted. Verified by reading the step and by `uv run scripts/build_hosts.py --check` passing against the rebuilt host trees.
+
+---
+
+## Activate Lowest Candidate Without Prompts
+
+Replace the three-way branch on the remainder in step 2 of `core/skills/goto-next-milestone/SKILL.md` with activating the lowest-numbered candidate outright, removing the single-candidate confirmation and the multiple-candidate choice and adding no target argument. The skill stops only when step 1 finds the `Current milestone:` pointer not reading `none` (pointing at `/finish-current-milestone`) or when no candidate exists (pointing at `/define-milestone-goal`), while steps 3 to 5 keep the pointer overwrite, the `Milestone-activation:` commit, and the fixed `Milestone activated.` line. Verified by reading the file for no question to the user on any path and by `uv run scripts/build_hosts.py --check` passing against the rebuilt host trees.
+
+---
+
+## Reword No-Change Branch Example Reason
+
+In step 5 of `core/skills/goto-next-milestone/SKILL.md`, keep the no-change branch but rewrite its example reason to say only that the pointer line already matched the last commit, dropping the claim that the pointer already named that milestone, which step 1 has just contradicted. The branch still prints its one distinct no-op line, never `Milestone activated.`, and commits nothing. Verified by reading the step and by `uv run scripts/build_hosts.py --check` passing against the rebuilt host trees.
+
+---
+
+## Delete Bootstrap README Template Note
+
+Delete the blockquote under the README template in `core/skills/init-milestone-base-workflow/SKILL.md` that credits the `## Completed Milestones` table to `/goto-next-milestone`, without rewording it, so the template's two sections stay and no sentence names which skill writes or reads them. Verified by reading the template and by `uv run scripts/build_hosts.py --check` passing against the rebuilt host trees.
+
+---
+
+## Update Invariant And Docs For Lowest Pick
+
+In `CLAUDE.md`, make the `goto-next-milestone` pipeline line name the lowest-numbered undone pick and add an invariant recording that pick and stating that the retired single-candidate confirmation and multiple-candidate choice prompts must not be restored. In `docs/workflow.md`, `docs/skill-reference.md`, and `docs/ways-of-using-cairn.md`, rewrite the sentences that describe what the skill activates so they say it activates the lowest-numbered undone milestone without asking, stopping only on a pointer not reading `none` or on no undone milestone. Verified by reading each passage against the Goal and the Documentation scope decision.
+
+---
+
+## Document Skipping An Unwanted Milestone
+
+Document the way out of an unwanted defined milestone: the `goto-next-milestone` entry of `docs/skill-reference.md` states that it is skipped by removing its directory, for example by reverting its `Milestone-definition:` commit, and step 2 of `CONTRIBUTING.md` is corrected so an abandoned reservation on `main` must be reverted rather than left as a candidate. The runtime `SKILL.md` gains no prose about it. Verified by reading both passages.
+
+---
