@@ -23,15 +23,15 @@ Read `milestones/README.md` and find the line whose prefix is `Current milestone
 
 ### 2. Find the candidate milestone
 
-Read `milestones/README.md` and scan `milestones/` to collect:
-- All directories matching `milestone_<N>_<slug>/`
-- All milestone dirs already listed in the `## Milestone History` section (these are completed)
+A milestone directory is a directory under `milestones/` whose name matches `milestone_<digits>_<slug>`. Its number is read by stripping leading zeros from `<digits>` and is compared as an integer (e.g. `milestone_01_foo` → number `1`). A `milestone_*` directory whose prefix is not all digits does not match and is silently left out of the candidate set.
 
-The **candidates** are directories that exist in `milestones/` but do not appear in `## Milestone History`.
+Read `milestones/README.md` and collect the done numbers: the integer N parsed from each `### Milestone N — Title` heading under `## Milestone History`. Never consult the `## Completed Milestones` table for this.
+
+The **candidates** are the milestone directories in `milestones/` whose number matches no done number.
 
 - **Zero candidates**: stop. Tell the user to run `/define-milestone-goal` first to create a milestone.
 - **One candidate**: confirm the path and title with the user, then proceed.
-- **Multiple candidates**: list them (number, slug, path) and ask the user which one to activate before proceeding. When deriving the number from the directory slug, strip leading zeros and treat it as an integer (e.g. `milestone_01_foo` → number `1`).
+- **Multiple candidates**: list them (number, slug, path) and ask the user which one to activate before proceeding.
 
 ### 3. Update milestones/README.md
 

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Define Candidates By Number And History Headings
-
-Rewrite the candidate-collection half of step 2 in `core/skills/goto-next-milestone/SKILL.md` so a candidate is a directory matching `milestone_<digits>_<slug>` whose number is read by stripping leading zeros and compared as an integer, stated as a standalone sentence, with a `milestone_*` directory whose prefix is not all digits silently left out of the set, adding no third stop and no advisory. A directory counts as done when that number matches an integer N parsed from a `### Milestone N — Title` heading under `## Milestone History`, with the `## Completed Milestones` table never consulted. Verified by reading the step and by `uv run scripts/build_hosts.py --check` passing against the rebuilt host trees.
-
----
-
 ## Activate Lowest Candidate Without Prompts
 
 Replace the three-way branch on the remainder in step 2 of `core/skills/goto-next-milestone/SKILL.md` with activating the lowest-numbered candidate outright, removing the single-candidate confirmation and the multiple-candidate choice and adding no target argument. The skill stops only when step 1 finds the `Current milestone:` pointer not reading `none` (pointing at `/finish-current-milestone`) or when no candidate exists (pointing at `/define-milestone-goal`), while steps 3 to 5 keep the pointer overwrite, the `Milestone-activation:` commit, and the fixed `Milestone activated.` line. Verified by reading the file for no question to the user on any path and by `uv run scripts/build_hosts.py --check` passing against the rebuilt host trees.
