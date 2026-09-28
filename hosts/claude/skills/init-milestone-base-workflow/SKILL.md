@@ -5,7 +5,7 @@ description: Bootstrap the milestone workflow in a project by creating the miles
 
 # init-milestone-base-workflow
 
-Bootstraps the milestone-driven workflow inside a project. It first checks the one runtime prerequisite of the workflow skills — a Python 3.9 or later interpreter answering as `python3` — and stops before writing anything when none does. It then creates the `milestones/` directory and `milestones/README.md` (with the grep-able `Current milestone:` pointer line), and ensures `CLAUDE.md` contains the `## Milestone Workflow` guidance. Run this **once** per project, before any other workflow skill.
+Bootstraps the milestone-driven workflow inside a project. It first checks that the workspace root lies inside a git work tree, then that a Python 3.9 or later interpreter answers as `python3` — the two runtime prerequisites of the workflow skills — and stops before writing anything when either check fails. It then creates the `milestones/` directory and `milestones/README.md` (with the grep-able `Current milestone:` pointer line), and ensures `CLAUDE.md` contains the `## Milestone Workflow` guidance. Run this **once** per project, before any other workflow skill.
 
 This skill is additive and idempotent: it creates missing scaffolding and inserts missing sections into existing files, but never overwrites or rewrites content that is already there. It does not commit — staging is left to the user.
 
@@ -19,11 +19,26 @@ No arguments.
 
 ## Workflow
 
-### 1. Check the Python prerequisite
+### 1. Check the git prerequisite
 
-The workflow skills drive the plugin's open-question tool as `python3 ${CLAUDE_PLUGIN_ROOT}/tools/open_questions.py`, so every project this skill bootstraps needs a Python 3.9 or later interpreter reachable as `python3`. Check it here, before the state detection and on every invocation — a re-run on an already-bootstrapped project gets the same check.
+The workflow skills commit their own changes with git, so every project this skill bootstraps needs its workspace root inside a git work tree. Check it here, first, before the Python check and the state detection and on every invocation — a re-run on an already-bootstrapped project gets the same check.
 
-Run `python3 --version`. If it prints a version of 3.9 or later, the check passes: continue to step 2. Compare the version numerically, minor by minor — `3.10` and `3.13` are later than `3.9`, `3.8` is not.
+Run `git rev-parse --is-inside-work-tree` once, in the workspace root. If it prints `true`, the check passes: continue to step 2. It passes anywhere inside a work tree — a subdirectory of a larger repository, or a freshly initialized repository with no commits yet — with no existing commit required, no match with the repository's top level required, and no advisory printed when the two differ.
+
+Otherwise — the shell reports `git` as not found, or the probe prints `false` or fails with a not-a-repository error — **stop before any write**: create and edit nothing, prompt for nothing, and never run `git init` yourself. Print one full message that states, in order:
+
+- **What it looked for** — a git work tree at the workspace root.
+- **What it found** — that the `git` executable is missing, or that the directory is not a work tree.
+- **The remedy** — install git when the executable is missing; otherwise run `git init` in the workspace root.
+- **That a re-run completes the bootstrap** — once the remedy is applied, run `/init-milestone-base-workflow` again; it picks up with nothing to undo, since this stop wrote nothing.
+
+This stop is separate from the Python check's: a project failing both learns about git here and about Python on the next run.
+
+### 2. Check the Python prerequisite
+
+The workflow skills drive the plugin's open-question tool as `python3 ${CLAUDE_PLUGIN_ROOT}/tools/open_questions.py`, so every project this skill bootstraps needs a Python 3.9 or later interpreter reachable as `python3`. Check it here, after the git check, before the state detection and on every invocation — a re-run on an already-bootstrapped project gets the same check.
+
+Run `python3 --version`. If it prints a version of 3.9 or later, the check passes: continue to step 3. Compare the version numerically, minor by minor — `3.10` and `3.13` are later than `3.9`, `3.8` is not.
 
 Otherwise — `python3` is not found, or it reports a version below 3.9 — run `python --version` as well. Its result decides nothing about passing; it only makes the message below precise. Then **stop before any write**: create and edit nothing, and print one full message that states, in order:
 
@@ -32,7 +47,7 @@ Otherwise — `python3` is not found, or it reports a version below 3.9 — run 
 - **The remedy** — when `python` reported 3.9 or later, that interpreter exists under the other name and must be exposed as `python3` (a `python3` symlink or alias on the PATH, or the platform's equivalent); otherwise install Python 3.9 or later so that `python3` resolves to it.
 - **That a re-run completes the bootstrap** — once `python3 --version` reports 3.9 or later, run `/init-milestone-base-workflow` again; it picks up with nothing to undo, since this stop wrote nothing.
 
-### 2. Detect existing state
+### 3. Detect existing state
 
 Probe the workspace root in parallel and record what already exists:
 
@@ -42,11 +57,11 @@ Probe the workspace root in parallel and record what already exists:
 
 Use these findings to decide which steps below are no-ops. If **all** of the following are already present — `milestones/`, `milestones/README.md`, and a `Current milestone:` line in `milestones/README.md` — the project is already initialized: report that and stop without changing anything.
 
-### 3. Create the milestones/ directory
+### 4. Create the milestones/ directory
 
 If `milestones/` does not exist, create it. Create no `milestone_<N>_<slug>/` directory inside it — that is `/define-milestone-goal`'s job.
 
-### 4. Create milestones/README.md
+### 5. Create milestones/README.md
 
 If `milestones/README.md` does **not** exist, create it with this exact structure:
 
@@ -80,7 +95,7 @@ If `milestones/README.md` **already exists**, do not overwrite it. Instead, ensu
 
 > The README intentionally carries both a `## Milestone History` section (written by `/finish-current-milestone`) and a `## Completed Milestones` table (written by `/goto-next-milestone`). Keep both so neither skill fails.
 
-### 5. Ensure CLAUDE.md carries the workflow guidance
+### 6. Ensure CLAUDE.md carries the workflow guidance
 
 **If `CLAUDE.md` does not exist**, create it with this minimal content:
 
@@ -107,7 +122,7 @@ After creating it, suggest the user run `/init` to document the project in `CLAU
 
 Never write a current-milestone pointer into `CLAUDE.md`; the pointer lives only in `milestones/README.md`. Never document the project's environment context in `CLAUDE.md` yourself either — recommending `/init` is as far as this skill goes.
 
-### 6. Confirm
+### 7. Confirm
 
 Report:
 - Which items were created (`milestones/`, `milestones/README.md`, `CLAUDE.md` sections) vs. already present and left untouched.
