@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Delete Bootstrap README Template Note
-
-Delete the blockquote under the README template in `core/skills/init-milestone-base-workflow/SKILL.md` that credits the `## Completed Milestones` table to `/goto-next-milestone`, without rewording it, so the template's two sections stay and no sentence names which skill writes or reads them. Verified by reading the template and by `uv run scripts/build_hosts.py --check` passing against the rebuilt host trees.
-
----
-
 ## Update Invariant And Docs For Lowest Pick
 
 In `CLAUDE.md`, make the `goto-next-milestone` pipeline line name the lowest-numbered undone pick and add an invariant recording that pick and stating that the retired single-candidate confirmation and multiple-candidate choice prompts must not be restored. In `docs/workflow.md`, `docs/skill-reference.md`, and `docs/ways-of-using-cairn.md`, rewrite the sentences that describe what the skill activates so they say it activates the lowest-numbered undone milestone without asking, stopping only on a pointer not reading `none` or on no undone milestone. Verified by reading each passage against the Goal and the Documentation scope decision.

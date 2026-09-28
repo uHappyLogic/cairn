@@ -40,3 +40,16 @@ In step 5 of `core/skills/goto-next-milestone/SKILL.md`, keep the no-change bran
 - `uv run scripts/build_hosts.py` rebuilt both host trees and `uv run scripts/build_hosts.py --check` passed against them.
 
 ---
+
+## Delete Bootstrap README Template Note
+
+Delete the blockquote under the README template in `core/skills/init-milestone-base-workflow/SKILL.md` that credits the `## Completed Milestones` table to `/goto-next-milestone`, without rewording it, so the template's two sections stay and no sentence names which skill writes or reads them. Verified by reading the template and by `uv run scripts/build_hosts.py --check` passing against the rebuilt host trees.
+
+**Verified:**
+
+- The blockquote under the README template in step 5 of `core/skills/init-milestone-base-workflow/SKILL.md` that credited `## Completed Milestones` to `/goto-next-milestone` is deleted outright, with no replacement sentence (the diff is two removed lines, the quote and its trailing blank).
+- The README template still carries both the `## Milestone History` section and the `## Completed Milestones` table.
+- No sentence in the file names which skill writes or reads either section; the only remaining mentions of them are the template's own headings.
+- `uv run scripts/build_hosts.py` rebuilt both host trees and `uv run scripts/build_hosts.py --check` passed against them.
+
+---

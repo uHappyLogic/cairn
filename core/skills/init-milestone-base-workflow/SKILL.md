@@ -97,8 +97,6 @@ _No milestones completed yet._
 
 If `milestones/README.md` **already exists**, do not overwrite it. Instead, ensure it contains a `## Current Milestone` section with a `Current milestone:` line; if either is missing, insert the section (with `Current milestone: none`) after the file's top-level heading, and leave the rest of the file untouched.
 
-> The README intentionally carries both a `## Milestone History` section (written by `/finish-current-milestone`) and a `## Completed Milestones` table (written by `/goto-next-milestone`). Keep both so neither skill fails.
-
 ### 6. Ensure CLAUDE.md carries the workflow guidance
 
 **If `CLAUDE.md` does not exist**, create it with this minimal content:
