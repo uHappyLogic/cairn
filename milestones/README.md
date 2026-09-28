@@ -13,9 +13,19 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_36_non-interactive-milestone-activation/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 36 — Non-interactive milestone activation
+
+- `/goto-next-milestone` now runs without asking anything, activating the lowest-numbered undone milestone outright, with the single-candidate confirmation and multiple-candidate choice removed and no target argument added.
+- It stops only when the `Current milestone:` pointer does not read `none` or when no undone milestone exists, keeping the `Milestone-activation:` commit and the terse `Milestone activated.` line.
+- A candidate is a `milestone_<digits>_<slug>` directory whose zero-stripped number is compared as an integer, counted as done only when it matches a `### Milestone N — Title` heading under `## Milestone History`, with the `## Completed Milestones` table never consulted.
+- The skill's no-change branch keeps its distinct no-op line, its example reason now saying only that the pointer line already matched the last commit.
+- The bootstrap README template's stale note crediting the `## Completed Milestones` table to `/goto-next-milestone` is deleted.
+- `CLAUDE.md` gains an invariant against restoring the retired prompts, and `docs/workflow.md`, `docs/skill-reference.md`, and `docs/ways-of-using-cairn.md` describe the lowest-numbered pick.
+- `docs/skill-reference.md` and `CONTRIBUTING.md` document skipping an unwanted milestone by reverting its `Milestone-definition:` commit, and both host trees are rebuilt with `uv run scripts/build_hosts.py --check` passing.
 
 ### Milestone 35 — Committing Bootstrap
 
@@ -389,3 +399,4 @@ Current milestone: `milestones/milestone_36_non-interactive-milestone-activation
 | 33 | Recommendation-first child order | `milestones/milestone_33_recommendation-first-child-order/` |
 | 34 | Lean dispatch prompts | `milestones/milestone_34_lean-dispatch-prompts/` |
 | 35 | Committing Bootstrap | `milestones/milestone_35_committing-bootstrap/` |
+| 36 | Non-interactive milestone activation | `milestones/milestone_36_non-interactive-milestone-activation/` |
