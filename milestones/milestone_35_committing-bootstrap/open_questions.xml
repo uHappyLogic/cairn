@@ -112,5 +112,25 @@
   </open-question>
   <open-question id="Work-tree check strictness">
     <question>Does the git prerequisite pass whenever the workspace root is inside any git work tree (for example a subdirectory of a larger repository), or only when the workspace root is itself the repository&apos;s top level, and does a freshly initialized repository with no commits yet pass?</question>
+    <alternative id="Any work tree, unborn allowed">
+      The check passes whenever the workspace root is inside any git work tree. That covers a subdirectory of a larger repository and a freshly initialized repository with no commits yet. A single probe such as `git rev-parse --is-inside-work-tree` decides it, and no commit is required to exist.
+      <advantage>The check asks for exactly what the shared commit procedure needs and nothing more. That procedure&apos;s path-scoped `git status --porcelain -- &lt;PATHS&gt;`, `git add` and `git commit` all work from a subdirectory and on an unborn HEAD, where the bootstrap commit simply becomes the root commit. Monorepo subprojects are served, and a plain &quot;git init, then re-run&quot; remedy is enough to pass.</advantage>
+      <drawback>If the workspace root happens to sit inside an enclosing repository the user never meant to use (for example a home directory tracked as a dotfiles repository), the check passes silently. The bootstrap commit, and every later skill&apos;s commit, then lands in that outer repository with no warning.</drawback>
+    </alternative>
+    <alternative id="Top level only, unborn allowed">
+      The check passes only when the repository&apos;s top level (`git rev-parse --show-toplevel`) is the workspace root itself. A freshly initialized repository with no commits still passes. A workspace root that is only a subdirectory of a larger work tree stops before any write, like the Python check.
+      <advantage>It rules out committing into an accidental enclosing repository. Every Cairn commit then goes to a repository rooted exactly where `milestones/` and `CLAUDE.md` live, which matches the workflow&apos;s assumption that everything is anchored at the workspace root.</advantage>
+      <drawback>It refuses monorepo subprojects that the commit procedure would handle correctly. The obvious remedy for such a project, running `git init` in the subdirectory, creates a nested repository, which is worse than the case it guards against. Comparing the two paths also has to cope with symlinked or aliased paths (such as `/var` versus `/private/var` on macOS), or it can fail a root that is really correct.</drawback>
+    </alternative>
+    <alternative id="Any work tree, commit required">
+      The check passes inside any git work tree, including a subdirectory, but only once HEAD resolves to at least one commit. A freshly initialized repository with no commits stops, with a remedy asking for an initial commit first.
+      <advantage>The bootstrap commit never becomes the project&apos;s root commit, so the repository&apos;s history starts with the user&apos;s own content rather than with Cairn scaffolding.</advantage>
+      <drawback>The commit procedure never needs this, so the check is stricter than any requirement it enforces. It also makes &quot;git init, then re-run&quot; insufficient on its own: whether that is acceptable depends on how the remedy wording is settled. Either way, the user gets an extra manual step before a brand-new project can be bootstrapped.</drawback>
+    </alternative>
+    <alternative id="Any work tree, advise when nested">
+      The check passes inside any git work tree, including one with no commits yet. When the repository&apos;s top level differs from the workspace root, the bootstrap still proceeds but also prints an advisory naming the enclosing top level.
+      <advantage>Monorepo subprojects and fresh repositories are served as in the permissive option. The one case that risks committing into an unintended enclosing repository is still made visible to the user, without refusing it.</advantage>
+      <drawback>The advisory does not block, so the scaffolding commit has already landed in the enclosing repository by the time the user reads it. It also adds an output line beyond the single fixed status line the committing skills print. Whether that extra line is allowed depends on how the bootstrap&apos;s reporting shape is settled.</drawback>
+    </alternative>
   </open-question>
 </open-questions>
