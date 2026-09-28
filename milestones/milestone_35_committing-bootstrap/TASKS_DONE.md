@@ -60,3 +60,16 @@ Update every statement in `CLAUDE.md`, `docs/workflow.md`, `docs/design-claims.m
 - `uv run scripts/build_hosts.py --check` passes (no file under `core/` or `scripts/hosts/` changed).
 
 ---
+
+## Record Git As Second README Prerequisite
+
+Reword the "one runtime prerequisite" paragraph in `README.md` and its two host copies under `scripts/hosts/*/README.md` so git (a work tree at the project root) stands beside Python 3.9 as a second prerequisite that `/init-milestone-base-workflow` checks first, and rebuild `hosts/` so the rendered host READMEs match. Verified by the three sources agreeing and by `uv run scripts/build_hosts.py --check` passing with the rebuilt trees committed alongside.
+
+**Verified:**
+
+- `README.md`'s Installation paragraph no longer says "one runtime prerequisite"; it names two runtime prerequisites, **git** (the project root inside a git work tree that every skill commits into) and a **Python 3.9 or later** interpreter answering as `python3`, and says `/init-milestone-base-workflow` checks both once per project, git first, stopping with the remedy when either is missing.
+- `scripts/hosts/claude/README.md` and `scripts/hosts/antigravity/README.md` carry the identical reworded paragraph, so the three sources agree; the literal `3.9` stays in each.
+- `uv run scripts/build_hosts.py` rebuilt `hosts/claude/README.md` and `hosts/antigravity/README.md` with the same paragraph, and `uv run scripts/build_hosts.py --check` passed.
+- A repository-wide grep (excluding `.git`, `milestones/`, and `CHANGELOG.md`) for "one runtime prerequisite" and "one prerequisite" finds nothing.
+
+---
