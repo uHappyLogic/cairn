@@ -1,1 +1,20 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Done-milestone matching key">
+    <question>The goal excludes directories &quot;listed in ## Milestone History&quot;, but that section&apos;s headings carry only the integer number and a title (### Milestone N — Title), never the directory name, while the ## Completed Milestones table pairs the number with the backticked directory path. Which structure, and which field of it, does the skill match a milestone_&lt;NN&gt;_&lt;slug&gt; directory against to decide it is done: the number in the History headings, the path in the Completed Milestones table, or both?</question>
+  </open-question>
+  <open-question id="Number ordering rule">
+    <question>The lowest-numbered pick needs a rule for reading the number out of milestone_&lt;NN&gt;_&lt;slug&gt;, and the only such rule in the skill today (strip leading zeros, compare as integers) lives inside the multiple-candidate branch that is being removed. Does the integer rule survive as a standalone sentence of the candidate step, and does a directory whose prefix does not parse as an integer get skipped or stop the run?</question>
+  </open-question>
+  <open-question id="Unreachable no-change branch">
+    <question>Once the skill only proceeds when the pointer reads none and always overwrites it with a path, the commit procedure&apos;s dirty-own-path guard can no longer fire, so the &quot;No change — the pointer already named that milestone&quot; line in the confirm step becomes unreachable. Does that branch stay as a defensive fallback or is it removed along with the prompts?</question>
+  </open-question>
+  <open-question id="Abandoned lower milestone">
+    <question>With the choice removed, a defined milestone that the user no longer wants but never finished is picked on every run and blocks every higher-numbered one, since the skill stops only on a non-none pointer or on no candidate. Is that accepted as-is, with deleting the directory as the way out, or does the skill or its documentation need to state how to skip such a milestone?</question>
+  </open-question>
+  <open-question id="Stale table attribution note">
+    <question>The README template in init-milestone-base-workflow says the ## Completed Milestones table is written by /goto-next-milestone, but the finish skill writes it and goto-next-milestone only reads it at most. Is correcting that note in scope for this milestone, given it sits outside the files the goal lists?</question>
+  </open-question>
+  <open-question id="CLAUDE.md and workflow.md updates">
+    <question>The goal names docs/skill-reference.md, docs/ways-of-using-cairn.md, and the host trees as the documents to update, while CLAUDE.md&apos;s pipeline listing describes the skill and its invariants section records every retired interactive behaviour elsewhere as a must-not-restore rule, and docs/workflow.md says the skill advances the pointer. Do CLAUDE.md (pipeline line and a new invariant on the lowest-numbered pick and the retired prompts) and docs/workflow.md get updated in this milestone too?</question>
+  </open-question>
+</open-questions>
