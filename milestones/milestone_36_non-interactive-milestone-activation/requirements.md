@@ -40,5 +40,9 @@ Besides this skill's two prompts, only `answer-open-question-with-alternative` (
 
 The candidate step of `/goto-next-milestone` states the zero-stripped integer rule as a standalone sentence: a candidate is a directory matching `milestone_<digits>_<slug>`, its number is read by stripping leading zeros and compared as an integer, so ordering holds past milestone 99 and matches the parse rule `/define-milestone-goal` uses. A `milestone_*` directory whose prefix is not all digits never matches the pattern and is silently left out of the candidate set: no third stop is added and no advisory is printed.
 
+### No-change branch
+
+The no-change branch of the report step stays, since the commit procedure's dirty-own-path guard can still fire when an uncommitted hand edit had reset the pointer to `none` and the path the skill writes matches the last commit. Its example reason is rewritten to say only that the pointer line already matched the last commit, dropping the claim that the pointer already named that milestone, which step 1 has just contradicted. The branch prints its one distinct no-op line, never `Milestone activated.`, and commits nothing.
+
 ## Out of Scope
 
