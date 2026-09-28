@@ -27,6 +27,21 @@
   </open-question>
   <open-question id="Git-check remedy wording">
     <question>When the project is not a git repository, does the stop message tell the user to run git init and re-run, or does the skill offer to initialize the repository itself, and does the message follow the four-part shape of the Python stop message (what it looked for, what it found, the remedy, that a re-run completes the bootstrap)?</question>
+    <alternative id="Four-part stop, user runs git init">
+      The git check copies the step 1 Python template. It stops before any write and prints one message giving what it looked for (a git work tree at the workspace root), what it found (either the `git` executable is missing or the directory is not a work tree), the remedy that fits (install git, or run `git init` in the workspace root), and that running `/init-milestone-base-workflow` again completes the bootstrap with nothing to undo. The skill never runs `git init` itself.
+      <advantage>It matches the goal&apos;s wording &quot;stopping before it writes anything when the project is not a git repository&quot; and reuses a stop shape the skill already has, so the two prerequisite checks read the same. It also never prompts, so it behaves the same in a headless chain. Choosing where the repository lives stays with the user, which matters when the workspace root might be the wrong directory for it.</advantage>
+      <drawback>The most common case, a fresh project with no repository yet, always costs a stop, a manual `git init`, and a second run. If the &quot;Work-tree check strictness&quot; question settles on stricter pass rules, the &quot;what it found&quot; part needs more cases, such as being inside a larger repository but not at its top level.</drawback>
+    </alternative>
+    <alternative id="Offer to run git init">
+      When no work tree is found, the skill asks the user whether to run `git init` in the workspace root. If the user agrees, it initializes the repository and continues the bootstrap in the same run. If the user declines, or no one can answer, it falls back to a four-part stop message like the Python one.
+      <advantage>Interactive users get through the common fresh-project case in one run without leaving the skill, and nothing is created without explicit consent.</advantage>
+      <drawback>It adds a consent prompt that no other prerequisite check has, and that prompt cannot be answered in a headless chain. It also stretches the goal&apos;s &quot;stopping before it writes anything&quot;: with consent, the skill creates a `.git` directory, which is outside the paths it owns. The skill would also have to handle a brand-new repository with no commits and no configured identity before its first commit could succeed.</drawback>
+    </alternative>
+    <alternative id="Terse one-line stop">
+      The skill stops before any write with a single short line, for example &quot;not a git repository — run git init and re-run /init-milestone-base-workflow&quot;. It does not follow the four-part shape and does not tell a missing `git` executable apart from a directory that is not a repository.
+      <advantage>It is the smallest runtime change. It also fits the terse console-reporting style the other committing skills use.</advantage>
+      <drawback>The skill&apos;s two prerequisite checks would report failures in different shapes. When git itself is not installed, the one-line remedy is wrong, and nothing in the message says so. The user loses the found-versus-expected detail that the Python check deliberately gives.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Pre-existing dirty paths">
     <question>When CLAUDE.md or milestones/README.md already carries uncommitted changes before the bootstrap runs (for example a CLAUDE.md just written by /init and never committed), does the bootstrap&apos;s path-scoped commit sweep those unrelated hunks into its own commit, stop before writing, or proceed and note it?</question>
