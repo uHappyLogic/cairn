@@ -4,6 +4,26 @@
   </open-question>
   <open-question id="Number ordering rule">
     <question>The lowest-numbered pick needs a rule for reading the number out of milestone_&lt;NN&gt;_&lt;slug&gt;, and the only such rule in the skill today (strip leading zeros, compare as integers) lives inside the multiple-candidate branch that is being removed. Does the integer rule survive as a standalone sentence of the candidate step, and does a directory whose prefix does not parse as an integer get skipped or stop the run?</question>
+    <alternative id="Integer rule, silent skip">
+      Keep the zero-stripped integer rule as a standalone sentence of the candidate step, and define candidates as directories matching `milestone_&lt;digits&gt;_&lt;slug&gt;` only. A directory whose prefix is not all digits never matches the pattern, so it is quietly left out of the candidate set.
+      <advantage>It is the smallest edit that still orders correctly past milestone 99. It moves the existing sentence out of the branch being removed, matches the parse rule `/define-milestone-goal` already uses for max-plus-one, and adds no new stop to a skill whose goal allows exactly two.</advantage>
+      <drawback>A misnamed directory (for example `milestone_3a_fix` or one created by hand) is ignored with no signal. The user may then wonder why a milestone they defined is never activated, and the skill leaves no trace explaining it.</drawback>
+    </alternative>
+    <alternative id="Integer rule, stop on unparseable">
+      Keep the integer rule as a standalone sentence, and make any `milestone_*` directory whose number does not parse as an integer stop the run with a message naming the directory, before anything is written.
+      <advantage>A malformed directory is never silently passed over or mis-ordered. The user hears about it right away, and an unattended `claude -p` chain fails loudly instead of activating some other milestone.</advantage>
+      <drawback>It adds a third stop condition when the goal says the skill stops in only two cases, so the goal text or a recorded decision would need to widen that. It also halts every activation over a stray directory that `/define-milestone-goal`&apos;s naming rule should never have produced.</drawback>
+    </alternative>
+    <alternative id="Integer rule, skip with advisory">
+      Keep the integer rule as a standalone sentence, leave directories whose prefix does not parse out of the candidate set, and have the run print one advisory line naming each skipped directory next to the terse `Milestone activated.` line.
+      <advantage>The run still finishes under the goal&apos;s two stop cases, and the user still learns that a directory was ignored. This fits the terse-reporting rule&apos;s allowance for decision-critical advisories that git does not record.</advantage>
+      <drawback>It adds a second line to the success-path output and a new reporting branch to the skill, all for a case the project&apos;s own naming makes nearly impossible. It also stretches the &quot;one fixed identifier-free status line&quot; rule toward per-item output.</drawback>
+    </alternative>
+    <alternative id="Lexical order, no rule">
+      Drop the explicit number rule and pick the candidate whose directory name sorts first. This relies on `/define-milestone-goal` always zero-padding the number to two digits.
+      <advantage>The candidate step needs no parse sentence and no handling for unparseable prefixes, so it is the shortest possible text.</advantage>
+      <drawback>Ordering breaks at milestone 100: `milestone_100_…` sorts before `milestone_99_…` because define pads to two digits, not three. The order would also differ silently from the integer rule `/define-milestone-goal` uses, and a misnamed directory would land at an arbitrary place in the order.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Unreachable no-change branch">
     <question>Once the skill only proceeds when the pointer reads none and always overwrites it with a path, the commit procedure&apos;s dirty-own-path guard can no longer fire, so the &quot;No change — the pointer already named that milestone&quot; line in the confirm step becomes unreachable. Does that branch stay as a defensive fallback or is it removed along with the prompts?</question>
