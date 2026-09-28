@@ -28,5 +28,9 @@ No file in the repository references G04; the identifier lives outside the repo,
 
 ## Decisions
 
+### Bootstrap commit
+
+- The bootstrap's commit carries the constant, subject-only subject `Workflow-bootstrap: milestones` and no body. The descriptor names the scaffold root the bootstrap creates, since there is no milestone id to serve as one; which files were created or appended to is left to the path-scoped commit's own diff.
+
 ## Out of Scope
 
