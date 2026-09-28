@@ -68,3 +68,15 @@ In `CLAUDE.md`, make the `goto-next-milestone` pipeline line name the lowest-num
 - Each passage agrees with the Goal and the Documentation scope decision in `requirements.md`, and `uv run scripts/build_hosts.py --check` still passes (no `core/` input changed).
 
 ---
+
+## Document Skipping An Unwanted Milestone
+
+Document the way out of an unwanted defined milestone: the `goto-next-milestone` entry of `docs/skill-reference.md` states that it is skipped by removing its directory, for example by reverting its `Milestone-definition:` commit, and step 2 of `CONTRIBUTING.md` is corrected so an abandoned reservation on `main` must be reverted rather than left as a candidate. The runtime `SKILL.md` gains no prose about it. Verified by reading both passages.
+
+**Verified:**
+
+- The `goto-next-milestone` entry of `docs/skill-reference.md` states that a defined milestone never finished is picked on every run, so an unwanted one is skipped by removing its directory, for example by reverting its `Milestone-definition:` commit.
+- Step 2 of `CONTRIBUTING.md` no longer allows an abandoned reservation on `main` to be left as a `/goto-next-milestone` candidate; it requires the maintainer to revert its `Milestone-definition:` commit, since the skill would otherwise activate it as the lowest-numbered undone milestone.
+- `core/skills/goto-next-milestone/SKILL.md` is unchanged and carries no prose about skipping an unwanted milestone; `uv run scripts/build_hosts.py --check` still passes.
+
+---
