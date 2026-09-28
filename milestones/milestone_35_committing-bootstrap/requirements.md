@@ -45,6 +45,7 @@ No file in the repository references G04; the identifier lives outside the repo,
 ### Documentation
 
 - The documentation update is criterion-based, not a hand list: every statement that the bootstrap does not commit, or that Python is the workflow's one runtime prerequisite, is updated. Beyond the three sites the goal names, that covers the `CLAUDE.md` pipeline tag "non-committing", design claim 12's "two exceptions" sentence (which drops to the one failed-run exception), the "one runtime prerequisite" wording in `README.md`, its two host copies under `scripts/hosts/*/README.md`, `docs/workflow.md`, and `docs/skill-reference.md`, with git recorded as a second prerequisite. The host READMEs are rebuilt into `hosts/` so the drift gate passes.
+- `docs/ways-of-using-cairn.md` gains a new project-setup section placed before "Starting a milestone": its fenced block runs the bootstrap line and a `define-milestone-goal "<goal>"` line from a fresh git repository and hands off to the existing "Starting a milestone" chain. `git init` and `/init` are named in prose as preconditions, not as chain lines, and the `<goal>` placeholder is added to the page's notation legend.
 
 ## Out of Scope
 
