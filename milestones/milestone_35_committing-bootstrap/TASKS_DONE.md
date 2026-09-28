@@ -73,3 +73,18 @@ Reword the "one runtime prerequisite" paragraph in `README.md` and its two host 
 - A repository-wide grep (excluding `.git`, `milestones/`, and `CHANGELOG.md`) for "one runtime prerequisite" and "one prerequisite" finds nothing.
 
 ---
+
+## Add Project-Setup Chain To Headless Page
+
+Add to `docs/ways-of-using-cairn.md` a project-setup section placed before "Starting a milestone" whose fenced block runs the bootstrap line and a `define-milestone-goal "<goal>"` line from a fresh git repository and hands off to the existing "Starting a milestone" chain, naming `git init` and `/init` in prose as preconditions rather than chain lines, and add the `<goal>` placeholder to the page's notation legend. This is the chain the committing bootstrap makes possible, since the page's premise is that every skill commits what it changes. Verified by reading the page: the section precedes "Starting a milestone", its lines follow the legend's notation, and the legend lists three placeholders.
+
+**Verified:**
+
+- `docs/ways-of-using-cairn.md` has a new `## Setting up a project` section placed after `## Notation and flags` and immediately before `## Starting a milestone`.
+- Its one fenced `sh` block holds exactly two lines, `claude -p "/cairn:init-milestone-base-workflow"` then `claude -p "/cairn:define-milestone-goal <goal>"`, each a complete invocation in the legend's notation (host binary, `/cairn:` slash command, `--dangerously-skip-permissions`, `--model`, `--effort`, trailing `;` like the other `claude` lines).
+- The section's prose says it runs in a fresh git repository and hands off to the `Starting a milestone` chain by link (the pointer still reads `none`, `<milestone_id>` is the directory `define-milestone-goal` created).
+- `git init` and `/init` are named in the prose as preconditions and appear on no chain line.
+- The notation legend states "three placeholders" and defines `<goal>`, `<milestone_id>`, and `<project-root>`.
+- `uv run scripts/build_hosts.py --check` passed (the page is outside the build's inputs).
+
+---

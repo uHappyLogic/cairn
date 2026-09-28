@@ -4,7 +4,7 @@ How to chain Cairn's skills as headless command lines, one goal per section: eac
 
 ## Notation and flags
 
-Every line is one headless run, `claude -p "/cairn:<skill>"` on Claude Code or `agy -p "/cairn:<skill>"` on Antigravity, where `/cairn:<skill>` is the skill's slash command under the plugin's `cairn:` namespace and the process exits when the skill finishes. Angle brackets mark the only text you substitute; every other token runs as written. The page uses two placeholders: `<milestone_id>` is the milestone's directory name under `milestones/`, exactly as the skill reference spells it in `specify-milestone-starting-state <milestone_id>`, and `<project-root>` is the absolute path of the repository the run works in.
+Every line is one headless run, `claude -p "/cairn:<skill>"` on Claude Code or `agy -p "/cairn:<skill>"` on Antigravity, where `/cairn:<skill>` is the skill's slash command under the plugin's `cairn:` namespace and the process exits when the skill finishes. Angle brackets mark the only text you substitute; every other token runs as written. The page uses three placeholders: `<goal>` is the milestone's goal description, exactly as the skill reference spells it in `define-milestone-goal <overall_goal_description>`, written as plain prose with no double quote since it sits inside the line's quoted prompt; `<milestone_id>` is the milestone's directory name under `milestones/`, exactly as the skill reference spells it in `specify-milestone-starting-state <milestone_id>`; and `<project-root>` is the absolute path of the repository the run works in.
 
 The flags on the lines:
 
@@ -14,6 +14,15 @@ The flags on the lines:
 - `--add-dir` adds one more directory to the run's workspace; it exists on both hosts, and the Antigravity lines pass the project root through it.
 
 To move a line to the other host, change the binary (`claude` to `agy`, or back), give `--model` and `--effort` values that host accepts or omit both to run at its defaults, as every `agy` line on this page does, keep `--dangerously-skip-permissions` as it stands, and carry `--add-dir "<project-root>"` on every `agy` line as the lines below do.
+
+## Setting up a project
+
+Run this once per project, in a fresh git repository: it bootstraps the workflow, committing `milestones/README.md` with the current-milestone pointer at `none` and the `CLAUDE.md` workflow guidance, then defines the first milestone and commits its directory without activating it, so the pointer still reads `none` and the [Starting a milestone](#starting-a-milestone) chain runs next, with `<milestone_id>` the directory `define-milestone-goal` created. Two preconditions come before the chain rather than in it: `git init` in the project root, since the bootstrap stops before writing anything outside a git work tree, and one `/init` run, whose `CLAUDE.md` environment context the later skills read and which the bootstrap sweeps into its own commit.
+
+```sh
+claude -p "/cairn:init-milestone-base-workflow" --dangerously-skip-permissions --model "opus" --effort high;
+claude -p "/cairn:define-milestone-goal <goal>" --dangerously-skip-permissions --model "opus" --effort high;
+```
 
 ## Starting a milestone
 
