@@ -13,9 +13,18 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_35_committing-bootstrap/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 35 — Committing Bootstrap
+
+- `/init-milestone-base-workflow` now checks for a git work tree first with one `git rev-parse --is-inside-work-tree` probe, ahead of the Python check, stopping before any write with its own four-part message and never running `git init` itself.
+- The bootstrap commits its scaffold through the shared commit procedure under the subject-only `Workflow-bootstrap: milestones`, with `milestones/README.md` always and `CLAUDE.md` only when it created or appended to it, sweeping uncommitted changes already in those paths into the commit by design.
+- The bootstrap's multi-line report is replaced by the terse `Workflow bootstrapped.` success line and a distinct `Workflow already bootstrapped — nothing changed.` no-op line, with no itemization, `/init` suggestion, or next-step pointer.
+- `CLAUDE.md`'s pipeline listing and committing invariant, `docs/workflow.md`, design claim 12, and `docs/skill-reference.md` now state there is no non-committing exemption and record git as a second prerequisite checked first.
+- `README.md` and its two host copies name git and Python 3.9 as the two runtime prerequisites, and both host trees are rebuilt with `uv run scripts/build_hosts.py --check` passing.
+- `docs/ways-of-using-cairn.md` gains a "Setting up a project" chain running the bootstrap and `define-milestone-goal "<goal>"` from a fresh git repository, handing off to "Starting a milestone", with `<goal>` added to the notation legend.
 
 ### Milestone 34 — Lean dispatch prompts
 
@@ -379,3 +388,4 @@ Current milestone: `milestones/milestone_35_committing-bootstrap/`
 | 32 | Unified task-completion subject | `milestones/milestone_32_unified-task-completion-subject/` |
 | 33 | Recommendation-first child order | `milestones/milestone_33_recommendation-first-child-order/` |
 | 34 | Lean dispatch prompts | `milestones/milestone_34_lean-dispatch-prompts/` |
+| 35 | Committing Bootstrap | `milestones/milestone_35_committing-bootstrap/` |
