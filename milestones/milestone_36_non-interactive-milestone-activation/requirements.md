@@ -52,5 +52,9 @@ The lowest-numbered pick stays unchanged: a defined milestone that was never fin
 
 `core/skills/init-milestone-base-workflow/SKILL.md` joins the change set for one edit: the blockquote under its README template, which credits the `## Completed Milestones` table to `/goto-next-milestone`, is deleted rather than reworded. The template's two sections stay and no sentence names which skill writes or reads them, so nothing is left to go stale again and the wording hangs on nothing about how done milestones are matched. The edit rides in the host-tree rebuild the Goal already requires.
 
+### Done-milestone matching
+
+The skill decides a directory is done by number against `## Milestone History` alone: it parses the integer N out of each `### Milestone N — Title` heading and counts a `milestone_<NN>_<slug>` directory as done when its zero-stripped number matches one of those numbers. The `## Completed Milestones` table is not consulted, since it is never backfilled and a missing row would re-activate a finished milestone with no prompt left to catch it.
+
 ## Out of Scope
 
