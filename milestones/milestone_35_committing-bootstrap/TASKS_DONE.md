@@ -14,3 +14,19 @@ Add to `core/skills/init-milestone-base-workflow/SKILL.md` a git prerequisite ch
 - `uv run scripts/build_hosts.py` rebuilt `hosts/claude/` and `hosts/antigravity/`, whose rendered skills carry the same step order and stops, and `uv run scripts/build_hosts.py --check` passed.
 
 ---
+
+## Commit Bootstrap Scaffold Through Shared Procedure
+
+Retire the "It does not commit — staging is left to the user" exemption in `core/skills/init-milestone-base-workflow/SKILL.md` by adding a commit step after the `CLAUDE.md` step that follows `{{PLUGIN_ROOT}}/shared/commit-procedure.md` with PATHS of `milestones/README.md` always plus `CLAUDE.md` only on runs where the skill created or appended to it (keyed on the edit being made, never by diffing), the constant subject-only SUBJECT `Workflow-bootstrap: milestones` and no BODY, handing the paths over unchanged so uncommitted changes already present in them are swept into the commit with no pre-write status probe, stop, confirmation, hunk-level staging, or advisory. This closes the milestone's goal that every file-changing skill commits its own paths. Verified by reading the rendered skill against `define-milestone-goal` step 5 and `finish-current-milestone` step 8 for shape, and by `uv run scripts/build_hosts.py --check` passing with the rebuilt `hosts/` trees committed alongside.
+
+**Verified:**
+
+- The opening paragraph of `core/skills/init-milestone-base-workflow/SKILL.md` no longer says "It does not commit — staging is left to the user" and instead states that the skill commits the files it created or edited as one path-scoped commit.
+- A new step 7 "Commit the bootstrap" sits after step 6 (the `CLAUDE.md` step) and before the renumbered step 8 "Confirm", and follows `{{PLUGIN_ROOT}}/shared/commit-procedure.md`, carrying out its steps itself.
+- Its PATHS are always `milestones/README.md`, plus `CLAUDE.md` only on runs where step 6 created it or appended the `## Milestone Workflow` section, keyed on whether the edit was made and never on diffing or inspecting content.
+- Its SUBJECT is the constant `Workflow-bootstrap: milestones`, and it supplies no BODY, so the commit is subject-only.
+- The step hands the paths over unchanged, so uncommitted changes already present in them are swept into the commit, with no status probe beforehand, no stop, no confirmation, no hunk-level staging, and no advisory.
+- Read against `define-milestone-goal` step 5 and `finish-current-milestone` step 8, the step has the same shape: the "Read and follow the shared commit procedure" opener, the PATHS and SUBJECT bullets, the conditional-inclusion sentence modelled on the finish step, and the closing "The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit." line.
+- `uv run scripts/build_hosts.py` rebuilt `hosts/claude/` and `hosts/antigravity/`, whose rendered skills carry step 7 with each host's resolved commit-procedure path, and `uv run scripts/build_hosts.py --check` passed.
+
+---

@@ -7,7 +7,7 @@ description: Bootstrap the milestone workflow in a project by creating the miles
 
 Bootstraps the milestone-driven workflow inside a project. It first checks that the workspace root lies inside a git work tree, then that a Python 3.9 or later interpreter answers as `python3` — the two runtime prerequisites of the workflow skills — and stops before writing anything when either check fails. It then creates the `milestones/` directory and `milestones/README.md` (with the grep-able `Current milestone:` pointer line), and ensures `CLAUDE.md` contains the `## Milestone Workflow` guidance. Run this **once** per project, before any other workflow skill.
 
-This skill is additive and idempotent: it creates missing scaffolding and inserts missing sections into existing files, but never overwrites or rewrites content that is already there. It does not commit — staging is left to the user.
+This skill is additive and idempotent: it creates missing scaffolding and inserts missing sections into existing files, but never overwrites or rewrites content that is already there. It commits the files it created or edited as one path-scoped commit.
 
 ## Usage
 
@@ -21,7 +21,7 @@ No arguments.
 
 ### 1. Check the git prerequisite
 
-The workflow skills commit their own changes with git, so every project this skill bootstraps needs its workspace root inside a git work tree. Check it here, first, before the Python check and the state detection and on every invocation — a re-run on an already-bootstrapped project gets the same check.
+This skill and the workflow skills commit their own changes with git, so every project this skill bootstraps needs its workspace root inside a git work tree. Check it here, first, before the Python check and the state detection and on every invocation — a re-run on an already-bootstrapped project gets the same check.
 
 Run `git rev-parse --is-inside-work-tree` once, in the workspace root. If it prints `true`, the check passes: continue to step 2. It passes anywhere inside a work tree — a subdirectory of a larger repository, or a freshly initialized repository with no commits yet — with no existing commit required, no match with the repository's top level required, and no advisory printed when the two differ.
 
@@ -122,7 +122,18 @@ After creating it, suggest the user run `/init` to document the project in `CLAU
 
 Never write a current-milestone pointer into `CLAUDE.md`; the pointer lives only in `milestones/README.md`. Never document the project's environment context in `CLAUDE.md` yourself either — recommending `/init` is as far as this skill goes.
 
-### 7. Confirm
+### 7. Commit the bootstrap
+
+Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
+
+- **PATHS** — this skill's own change set: **always** `milestones/README.md` (created or edited in step 5), and **additionally** `CLAUDE.md` **only on runs where step 6 created it or appended the `## Milestone Workflow` section to it**. When step 6 left an existing section as-is, `CLAUDE.md` is not in the set and the commit covers `milestones/README.md` alone. This conditional inclusion is keyed on whether this skill's step 6 made the edit — decided as the edit is (or is not) made, never by diffing or inspecting content.
+- **SUBJECT** — `Workflow-bootstrap: milestones`.
+
+Supply no BODY: the commit is subject-only. Hand the paths over unchanged — uncommitted changes already present in them before this run (for example a `CLAUDE.md` just written by `/init`) are swept into this commit, with no status probe beforehand, no stop, no confirmation, no hunk-level staging, and no advisory.
+
+The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
+
+### 8. Confirm
 
 Report:
 - Which items were created (`milestones/`, `milestones/README.md`, `CLAUDE.md` sections) vs. already present and left untouched.
