@@ -48,5 +48,9 @@ The no-change branch of the report step stays, since the commit procedure's dirt
 
 The lowest-numbered pick stays unchanged: a defined milestone that was never finished is activated on every run until its directory is removed, and the way out is documented rather than built. The `goto-next-milestone` entry of `docs/skill-reference.md` states that an unwanted milestone is skipped by removing its directory, for example by reverting its `Milestone-definition:` commit. `CONTRIBUTING.md` joins the change set for one sentence: step 2's allowance to leave an abandoned reservation on `main` as a candidate is corrected to require the revert. The runtime `SKILL.md` carries no user-facing prose about it, the skill gains no target argument, and an unwanted milestone is never activated and finished to retire it.
 
+### Bootstrap README template note
+
+`core/skills/init-milestone-base-workflow/SKILL.md` joins the change set for one edit: the blockquote under its README template, which credits the `## Completed Milestones` table to `/goto-next-milestone`, is deleted rather than reworded. The template's two sections stay and no sentence names which skill writes or reads them, so nothing is left to go stale again and the wording hangs on nothing about how done milestones are matched. The edit rides in the host-tree rebuild the Goal already requires.
+
 ## Out of Scope
 
