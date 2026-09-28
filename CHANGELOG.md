@@ -2,6 +2,24 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.7.4 — 2026-09-28
+
+### Non-interactive milestone activation (milestone 36)
+
+- `/goto-next-milestone` no longer asks anything: it activates the lowest-numbered undone milestone outright. The single-candidate confirmation and the multiple-candidate choice are gone, and no target argument was added, so the skill can head a headless chain.
+- It stops only when the `Current milestone:` pointer does not read `none` or when no undone milestone exists.
+- A milestone counts as done only when its number matches a `### Milestone N — Title` heading under `## Milestone History`; the `## Completed Milestones` table is never consulted.
+- To skip a defined milestone you do not want, revert its `Milestone-definition:` commit; `docs/skill-reference.md` and `CONTRIBUTING.md` document this.
+
+### Committing Bootstrap (milestone 35)
+
+- `/init-milestone-base-workflow` now checks for a git work tree first, ahead of the Python check, and stops before writing anything outside one. It never runs `git init` itself.
+- The bootstrap now commits its scaffold under `Workflow-bootstrap: milestones`, including any uncommitted changes already in `milestones/README.md` or a `CLAUDE.md` it created or appended to, so a headless chain starting with it leaves nothing uncommitted.
+- Its report is now the single line `Workflow bootstrapped.`, or `Workflow already bootstrapped — nothing changed.` when there was nothing to do.
+- The README names git and Python 3.9 as the two runtime prerequisites, and `docs/ways-of-using-cairn.md` gains a "Setting up a project" chain that runs the bootstrap and `define-milestone-goal "<goal>"` from a fresh git repository.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.7.3...1.7.4
+
 ## 1.7.3 — 2026-09-25
 
 ### Lean dispatch prompts (milestone 34)
