@@ -37,6 +37,7 @@ No file in the repository references G04; the identifier lives outside the repo,
 
 - When the project is not a git repository, the git check copies the Python check's stop shape: it stops before any write and prints one message giving what it looked for (a git work tree at the workspace root), what it found (the `git` executable missing, or the directory not a work tree), the remedy that fits (install git, or run `git init` in the workspace root), and that a re-run completes the bootstrap with nothing to undo. The skill never prompts and never runs `git init` itself.
 - The git work-tree check runs first, ahead of the Python check, and both run on every invocation before state detection, including a re-run on an already-bootstrapped project. Each check stops on its own with its own four-part message, so a project failing both learns about git first and about Python on the next run; there is no combined stop. The opening paragraph and the skill reference are updated so the git check is presented as the first thing the skill does.
+- The git check passes whenever the workspace root is inside any git work tree, decided by a single `git rev-parse --is-inside-work-tree` probe: a subdirectory of a larger repository passes, and so does a freshly initialized repository with no commits yet, where the bootstrap commit becomes the root commit. No top-level match and no existing commit is required, and no advisory is printed when the repository's top level differs from the workspace root.
 
 ### Reporting
 
