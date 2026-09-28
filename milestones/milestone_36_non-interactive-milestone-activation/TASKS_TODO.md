@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Activate Lowest Candidate Without Prompts
-
-Replace the three-way branch on the remainder in step 2 of `core/skills/goto-next-milestone/SKILL.md` with activating the lowest-numbered candidate outright, removing the single-candidate confirmation and the multiple-candidate choice and adding no target argument. The skill stops only when step 1 finds the `Current milestone:` pointer not reading `none` (pointing at `/finish-current-milestone`) or when no candidate exists (pointing at `/define-milestone-goal`), while steps 3 to 5 keep the pointer overwrite, the `Milestone-activation:` commit, and the fixed `Milestone activated.` line. Verified by reading the file for no question to the user on any path and by `uv run scripts/build_hosts.py --check` passing against the rebuilt host trees.
-
----
-
 ## Reword No-Change Branch Example Reason
 
 In step 5 of `core/skills/goto-next-milestone/SKILL.md`, keep the no-change branch but rewrite its example reason to say only that the pointer line already matched the last commit, dropping the claim that the pointer already named that milestone, which step 1 has just contradicted. The branch still prints its one distinct no-op line, never `Milestone activated.`, and commits nothing. Verified by reading the step and by `uv run scripts/build_hosts.py --check` passing against the rebuilt host trees.

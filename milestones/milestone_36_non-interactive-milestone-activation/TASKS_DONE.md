@@ -12,3 +12,18 @@ Rewrite the candidate-collection half of step 2 in `core/skills/goto-next-milest
 - `uv run scripts/build_hosts.py` rebuilt both host trees and `uv run scripts/build_hosts.py --check` passed against them.
 
 ---
+
+## Activate Lowest Candidate Without Prompts
+
+Replace the three-way branch on the remainder in step 2 of `core/skills/goto-next-milestone/SKILL.md` with activating the lowest-numbered candidate outright, removing the single-candidate confirmation and the multiple-candidate choice and adding no target argument. The skill stops only when step 1 finds the `Current milestone:` pointer not reading `none` (pointing at `/finish-current-milestone`) or when no candidate exists (pointing at `/define-milestone-goal`), while steps 3 to 5 keep the pointer overwrite, the `Milestone-activation:` commit, and the fixed `Milestone activated.` line. Verified by reading the file for no question to the user on any path and by `uv run scripts/build_hosts.py --check` passing against the rebuilt host trees.
+
+**Verified:**
+
+- Step 2 of `core/skills/goto-next-milestone/SKILL.md` no longer branches three ways on the remainder: with candidates it activates the lowest-numbered one outright, and the single-candidate confirmation and the multiple-candidate choice are gone.
+- The Usage section still takes no arguments; no target argument was added.
+- The skill stops only in step 1 when the `Current milestone:` pointer does not read `none` (pointing at `/finish-current-milestone`) and in step 2 when no candidate exists (pointing at `/define-milestone-goal`).
+- Steps 3 to 5 still overwrite the pointer line, commit `milestones/README.md` under `Milestone-activation: milestone_<number>_<slug>`, and print the fixed `Milestone activated.` line.
+- Reading the whole file finds no question to the user on any path.
+- `uv run scripts/build_hosts.py` rebuilt both host trees and `uv run scripts/build_hosts.py --check` passed against them.
+
+---
