@@ -25,31 +25,6 @@
       <drawback>It is the only setup commit with a body, and most of that body repeats what the diff shows. Preserved files are not in PATHS at all, so the body describes files the commit does not contain. Whether the body adds anything depends on how the reporting-shape question is settled: it only preserves information when the console itemization is removed.</drawback>
     </alternative>
   </open-question>
-  <open-question id="Prerequisite check order">
-    <question>Does the git work-tree check run before or after the Python check, does a project failing both get one combined stop message or two separate stops on successive runs, and does the git check run on every invocation including a re-run on an already-bootstrapped project, as the Python check does?</question>
-    <depends-on question="Git-check remedy wording" option="Four-part stop, user runs git init"/>
-    <recommendation option="Git first, sequential">Both checks run on every invocation as separate stops with their own four-part message, so the health-check property is kept and step 1&apos;s template is reused rather than restructured, and the git check goes first because it guards the more basic capability every committing skill needs and is the failure a fresh directory most often hits, with the cheapest remedy; the opening-paragraph and skill-reference edits it forces are already in the milestone&apos;s docs work.</recommendation>
-    <alternative id="Git first, sequential">
-      Put the git work-tree check first, ahead of the Python check, with both still running on every invocation before state detection. Each check stops on its own with its own message, so a project that fails both learns about git first and about Python on the next run.
-      <advantage>The failure most likely in a fresh directory is reported first, and it has the cheapest remedy (git init). Commit capability is also the more basic requirement, because every committing skill needs it while only the question skills need python3. Each stop still keeps its own single four-part message.</advantage>
-      <drawback>Step 1 is renumbered and the Python check is no longer the opening check the skill&apos;s opening paragraph describes, so the prose and docs/skill-reference.md that present the Python check as the first thing the skill does need edits. A project failing both still needs two runs.</drawback>
-    </alternative>
-    <alternative id="Python first, sequential">
-      Keep step 1 as it is and add the git work-tree check as a new step right after it, before state detection. Both checks run on every invocation. Each check stops on its own with its own message, so a project that fails both is stopped by the Python check first and hears about git only on the next run.
-      <advantage>It extends the existing step 1 template without changing it. Each stop keeps its single four-part message unchanged, the Python check&apos;s wording and position stay as they are, and a re-run on an already-bootstrapped project gets both checks the same way.</advantage>
-      <drawback>A project missing both prerequisites needs two failed runs before it learns everything it must fix. The order puts the rarer failure (no suitable python3) ahead of the one a fresh empty directory is most likely to hit (not a git repository).</drawback>
-    </alternative>
-    <alternative id="Both checks, one combined stop">
-      Run both checks on every invocation before state detection, always evaluating both, and stop once with a single message when either fails. The message covers each failing prerequisite in the four-part shape (what it looked for, what it found, the remedy) and ends with one closing line saying that a re-run completes the bootstrap.
-      <advantage>A project failing both prerequisites learns everything it must fix in one run. The order question goes away except as the order of sections in the message, which matters most for first-time users bootstrapping an empty directory.</advantage>
-      <drawback>Step 1&apos;s one-check, one-message template has to be restructured into a collect-then-report step, so the Python check&apos;s stop logic and message are rewritten rather than left alone. The stop message is longer and has more branches, and how it is laid out depends on how the sibling question about git-check remedy wording settles the git message&apos;s shape.</drawback>
-    </alternative>
-    <alternative id="Git check only when writing">
-      Keep the Python check first and on every invocation. Run the git work-tree check after state detection and only on the path that will write, so a re-run on an already-bootstrapped project stops as &quot;already initialized&quot; without checking for git.
-      <advantage>The check is required only where it matters. A no-op re-run writes nothing and commits nothing, so it has no need for a git repository, and the scaffolding step&apos;s precondition stays next to the commit it protects.</advantage>
-      <drawback>It departs from the Python check&apos;s every-invocation rule, so the two prerequisites behave differently. A re-run would no longer serve as a health check: an already-bootstrapped project that is not a git repository gets told it is initialized, and then every later committing skill fails at the commit procedure, which assumes a work tree and checks for none.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Git-check remedy wording">
     <question>When the project is not a git repository, does the stop message tell the user to run git init and re-run, or does the skill offer to initialize the repository itself, and does the message follow the four-part shape of the Python stop message (what it looked for, what it found, the remedy, that a re-run completes the bootstrap)?</question>
     <recommendation option="Four-part stop, user runs git init">It matches the goal&apos;s &quot;stopping before it writes anything&quot;, copies the stop shape the Python check already has so both prerequisites read alike, never prompts so it behaves identically in a headless chain, and keeps a repository-creating decision with the user; offering to run git init adds a prompt no chain can answer and creates a .git outside the skill&apos;s own paths, and a terse one-liner gives a wrong remedy when git itself is missing.</recommendation>
@@ -141,6 +116,31 @@
       Update only the three places the goal names: the CLAUDE.md invariant, the exemption paragraph in docs/workflow.md, and the skill reference. The CLAUDE.md pipeline tag, design claim 12 and the README prerequisite sentences are left for a follow-up, or for a later review pass to raise.
       <advantage>It keeps to exactly the scope the goal wrote, so the milestone&apos;s docs work is small and predictable and nothing outside the stated boundary changes.</advantage>
       <drawback>Stale, now-false statements go out with the release. CLAUDE.md would contradict itself: line 51 would still tag the skill &quot;non-committing&quot; under a corrected invariant on line 95. Design claim 12 would still promise an exemption that no longer exists, and the README would stay silent on the new git requirement. That defeats the goal&apos;s aim of recording that every file-changing skill commits, and it leaves a known inconsistency for someone to find later.</drawback>
+    </alternative>
+  </open-question>
+  <open-question id="Prerequisite check order">
+    <question>Does the git work-tree check run before or after the Python check, does a project failing both get one combined stop message or two separate stops on successive runs, and does the git check run on every invocation including a re-run on an already-bootstrapped project, as the Python check does?</question>
+    <depends-on question="Git-check remedy wording" option="Four-part stop, user runs git init"/>
+    <recommendation option="Git first, sequential">Both checks run on every invocation as separate stops with their own four-part message, so the health-check property is kept and step 1&apos;s template is reused rather than restructured, and the git check goes first because it guards the more basic capability every committing skill needs and is the failure a fresh directory most often hits, with the cheapest remedy; the opening-paragraph and skill-reference edits it forces are already in the milestone&apos;s docs work.</recommendation>
+    <alternative id="Git first, sequential">
+      Put the git work-tree check first, ahead of the Python check, with both still running on every invocation before state detection. Each check stops on its own with its own message, so a project that fails both learns about git first and about Python on the next run.
+      <advantage>The failure most likely in a fresh directory is reported first, and it has the cheapest remedy (git init). Commit capability is also the more basic requirement, because every committing skill needs it while only the question skills need python3. Each stop still keeps its own single four-part message.</advantage>
+      <drawback>Step 1 is renumbered and the Python check is no longer the opening check the skill&apos;s opening paragraph describes, so the prose and docs/skill-reference.md that present the Python check as the first thing the skill does need edits. A project failing both still needs two runs.</drawback>
+    </alternative>
+    <alternative id="Python first, sequential">
+      Keep step 1 as it is and add the git work-tree check as a new step right after it, before state detection. Both checks run on every invocation. Each check stops on its own with its own message, so a project that fails both is stopped by the Python check first and hears about git only on the next run.
+      <advantage>It extends the existing step 1 template without changing it. Each stop keeps its single four-part message unchanged, the Python check&apos;s wording and position stay as they are, and a re-run on an already-bootstrapped project gets both checks the same way.</advantage>
+      <drawback>A project missing both prerequisites needs two failed runs before it learns everything it must fix. The order puts the rarer failure (no suitable python3) ahead of the one a fresh empty directory is most likely to hit (not a git repository).</drawback>
+    </alternative>
+    <alternative id="Both checks, one combined stop">
+      Run both checks on every invocation before state detection, always evaluating both, and stop once with a single message when either fails. The message covers each failing prerequisite in the four-part shape (what it looked for, what it found, the remedy) and ends with one closing line saying that a re-run completes the bootstrap.
+      <advantage>A project failing both prerequisites learns everything it must fix in one run. The order question goes away except as the order of sections in the message, which matters most for first-time users bootstrapping an empty directory.</advantage>
+      <drawback>Step 1&apos;s one-check, one-message template has to be restructured into a collect-then-report step, so the Python check&apos;s stop logic and message are rewritten rather than left alone. The stop message is longer and has more branches, and how it is laid out depends on how the sibling question about git-check remedy wording settles the git message&apos;s shape.</drawback>
+    </alternative>
+    <alternative id="Git check only when writing">
+      Keep the Python check first and on every invocation. Run the git work-tree check after state detection and only on the path that will write, so a re-run on an already-bootstrapped project stops as &quot;already initialized&quot; without checking for git.
+      <advantage>The check is required only where it matters. A no-op re-run writes nothing and commits nothing, so it has no need for a git repository, and the scaffolding step&apos;s precondition stays next to the commit it protects.</advantage>
+      <drawback>It departs from the Python check&apos;s every-invocation rule, so the two prerequisites behave differently. A re-run would no longer serve as a health check: an already-bootstrapped project that is not a git repository gets told it is initialized, and then every later committing skill fails at the commit procedure, which assumes a work tree and checks for none.</drawback>
     </alternative>
   </open-question>
   <open-question id="Headless bootstrap chain line">
