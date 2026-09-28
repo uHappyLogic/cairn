@@ -27,6 +27,21 @@
   </open-question>
   <open-question id="Unreachable no-change branch">
     <question>Once the skill only proceeds when the pointer reads none and always overwrites it with a path, the commit procedure&apos;s dirty-own-path guard can no longer fire, so the &quot;No change — the pointer already named that milestone&quot; line in the confirm step becomes unreachable. Does that branch stay as a defensive fallback or is it removed along with the prompts?</question>
+    <alternative id="Keep As Fallback">
+      Leave step 5&apos;s no-change branch as it is, with its current example line `No change — the pointer already named that milestone; nothing committed.`, and remove only the confirmation and choice prompts from step 2.
+      <advantage>This is the smallest edit. The skill keeps the same reporting shape as every other committing skill (define-milestone-goal, modify-milestone-goal, specify-milestone-starting-state, init-milestone-base-workflow, and review-milestone-requirements all carry a distinct no-change line for when the dirty-own-path guard fires). It also still covers a case the premise overlooks. Say the committed README already points at milestone X and someone resets it to none by hand without committing. The skill then writes X back, the file matches HEAD again, `git status --porcelain` shows it clean, and the guard fires. So the branch is rare but can still be reached.</advantage>
+      <drawback>The reason in the example line no longer fits how the guard can actually fire. Step 1 has just confirmed the pointer read none, so &quot;the pointer already named that milestone&quot; contradicts what the skill saw. A reader could also take the branch as a sign that re-activating the current milestone is still a supported path, when the non-interactive design rules that out.</drawback>
+    </alternative>
+    <alternative id="Keep, Reword Reason">
+      Keep the no-change branch in step 5 but rewrite its example reason to the one case that can still reach it. The pointer the skill wrote matches the last commit because an uncommitted edit had reset it to none. The skill still prints no terse line and commits nothing.
+      <advantage>The skill still says exactly what happens when the guard fires, so it never prints `Milestone activated.` for a run that recorded nothing. The message also tells the truth about the one real cause, and the reporting shape stays consistent with the other committing skills.</advantage>
+      <drawback>It adds prose about a hand-edit case that almost never happens, to a skill whose milestone goal is simplification. It also puts a claim about how the workflow is misused into runtime prose, and that claim has to be kept accurate if the pointer or commit mechanics change later.</drawback>
+    </alternative>
+    <alternative id="Remove The Branch">
+      Delete step 5&apos;s no-change paragraph along with the prompts. The skill then prints only `Milestone activated.`, and the rare case where nothing gets committed is left to the commit procedure&apos;s own instruction to report the no-op and return cleanly.
+      <advantage>The skill gets shorter and matches the new design, where every run that passes step 1 writes a new path and commits it. That removes the misleading reason and the idea that re-activation is still possible.</advantage>
+      <drawback>The uncommitted-reset case can still reach the guard, and step 5 would then no longer say what to print. The runner could print `Milestone activated.` for a run that committed nothing, or produce a free-form message. That breaks the rule that no-op passes print one distinct line. It is also the only committing skill that would lack a no-change branch.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Abandoned lower milestone">
     <question>With the choice removed, a defined milestone that the user no longer wants but never finished is picked on every run and blocks every higher-numbered one, since the skill stops only on a non-none pointer or on no candidate. Is that accepted as-is, with deleting the directory as the way out, or does the skill or its documentation need to state how to skip such a milestone?</question>
