@@ -94,4 +94,4 @@ Verifies all tasks are done, writes a completion summary to `milestones/README.m
 
 ### `goto-next-milestone`
 
-Activates an already-defined milestone: scans `milestones/` for a defined-but-not-yet-active directory (one `/define-milestone-goal` created) and updates `milestones/README.md` to point to it as the current milestone. Creates no files or directories. Only runnable after `/finish-current-milestone` has cleared the active pointer.
+Activates the lowest-numbered undone milestone without asking: scans `milestones/` for the directories `/define-milestone-goal` created whose number has no heading under `## Milestone History`, and updates `milestones/README.md` to point at the lowest-numbered one as the current milestone. It stops only when the pointer does not read `none` (run `/finish-current-milestone` first) or when no undone milestone exists (run `/define-milestone-goal` first). Creates no files or directories.

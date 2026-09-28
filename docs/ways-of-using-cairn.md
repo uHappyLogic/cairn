@@ -26,7 +26,7 @@ claude -p "/cairn:define-milestone-goal <goal>" --dangerously-skip-permissions -
 
 ## Starting a milestone
 
-Run this once a milestone is defined and the previous one is finished, so the current-milestone pointer reads `none`: it activates the milestone, writes its starting state, surfaces the first review pass's open questions, embeds a set of alternatives on each, and picks a recommendation from every set. The alternatives line runs on `opus` at `--effort xhigh`, one subagent per question, and the recommend line on `fable` at `--effort high`, one inline pass over the whole set.
+Run this once a milestone is defined and the previous one is finished, so the current-milestone pointer reads `none`: it activates the lowest-numbered undone milestone without asking (the first line stops only if the pointer does not read `none` or no undone milestone exists), writes its starting state, surfaces the first review pass's open questions, embeds a set of alternatives on each, and picks a recommendation from every set. The alternatives line runs on `opus` at `--effort xhigh`, one subagent per question, and the recommend line on `fable` at `--effort high`, one inline pass over the whole set.
 
 ```sh
 claude -p "/cairn:goto-next-milestone" --dangerously-skip-permissions --model "opus" --effort high;

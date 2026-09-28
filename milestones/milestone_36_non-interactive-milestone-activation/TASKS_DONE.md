@@ -53,3 +53,18 @@ Delete the blockquote under the README template in `core/skills/init-milestone-b
 - `uv run scripts/build_hosts.py` rebuilt both host trees and `uv run scripts/build_hosts.py --check` passed against them.
 
 ---
+
+## Update Invariant And Docs For Lowest Pick
+
+In `CLAUDE.md`, make the `goto-next-milestone` pipeline line name the lowest-numbered undone pick and add an invariant recording that pick and stating that the retired single-candidate confirmation and multiple-candidate choice prompts must not be restored. In `docs/workflow.md`, `docs/skill-reference.md`, and `docs/ways-of-using-cairn.md`, rewrite the sentences that describe what the skill activates so they say it activates the lowest-numbered undone milestone without asking, stopping only on a pointer not reading `none` or on no undone milestone. Verified by reading each passage against the Goal and the Documentation scope decision.
+
+**Verified:**
+
+- The `goto-next-milestone` line of the `CLAUDE.md` skills pipeline reads `activates the lowest-numbered undone milestone without asking; requires the pointer to read none`.
+- `CLAUDE.md` gains an invariant, placed after the `finish-current-milestone` precedence invariant, recording that the skill activates the lowest-numbered undone milestone without asking (done by number against `## Milestone History` headings, the only stops a pointer not reading `none` and no undone milestone) and stating that the retired single-candidate confirmation and multiple-candidate choice prompts must not be restored.
+- The "Initializing a milestone" sentence of `docs/workflow.md` no longer says the skill advances the pointer; it says the skill activates the lowest-numbered undone milestone without asking, stopping only when the pointer does not read `none` or no undone milestone exists.
+- The `goto-next-milestone` entry of `docs/skill-reference.md` says the skill activates the lowest-numbered undone milestone without asking and stops only when the pointer does not read `none` or no undone milestone exists.
+- The "Starting a milestone" passage of `docs/ways-of-using-cairn.md` says the chain activates the lowest-numbered undone milestone without asking, with its first line stopping only if the pointer does not read `none` or no undone milestone exists.
+- Each passage agrees with the Goal and the Documentation scope decision in `requirements.md`, and `uv run scripts/build_hosts.py --check` still passes (no `core/` input changed).
+
+---

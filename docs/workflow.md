@@ -27,7 +27,7 @@ flowchart TD
 
 ### Initializing a milestone
 
-From a ready scaffold — or looping back from a just-closed milestone (the dashed **next milestone** entry from `D5`) — shape and open the next milestone. `/discuss-milestone-goal` optionally sharpens a vague idea, `/define-milestone-goal` creates the milestone directory, seeds `requirements.md`, and has the open-question tool write an empty `open_questions.xml` beside it, and `/goto-next-milestone` advances the pointer — leaving the milestone goal defined.
+From a ready scaffold — or looping back from a just-closed milestone (the dashed **next milestone** entry from `D5`) — shape and open the next milestone. `/discuss-milestone-goal` optionally sharpens a vague idea, `/define-milestone-goal` creates the milestone directory, seeds `requirements.md`, and has the open-question tool write an empty `open_questions.xml` beside it, and `/goto-next-milestone` activates the lowest-numbered undone milestone without asking, stopping only when the pointer does not read `none` or no undone milestone exists — leaving the milestone goal defined.
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'fontFamily':'ui-sans-serif, system-ui','lineColor':'#94a3b8','primaryBorderColor':'#475569'},'flowchart':{'wrappingWidth':9999,'curve':'basis'}}}%%
