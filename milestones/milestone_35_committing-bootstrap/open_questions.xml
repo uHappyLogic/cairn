@@ -1,6 +1,26 @@
 <open-questions>
   <open-question id="Bootstrap commit subject">
     <question>What function-derived subject does the bootstrap commit carry, given it has no milestone id to serve as descriptor (a marker such as Workflow-bootstrap: with what descriptor), and is the commit subject-only like the other setup skills or does it carry a body naming which files were created versus preserved?</question>
+    <alternative id="Fixed scaffold descriptor">
+      The commit carries the constant subject `Workflow-bootstrap: milestones` and no body. The descriptor names the scaffold root that the bootstrap creates, since there is no milestone id to use. This matches the subject-only `Milestone-definition:`, `Milestone-activation:` and `Milestone-finish:` setup commits.
+      <advantage>The subject is fixed and searchable with `git log --grep=&apos;^Workflow-bootstrap: &apos;`. It follows the house `&lt;Marker&gt;: &lt;descriptor&gt;` shape that the commit procedure&apos;s SUBJECT input and design claim 12&apos;s zero-unknown-subjects metric expect, and it adds no body logic. Nothing is lost by leaving out a body: the path-scoped commit&apos;s own diff already shows whether `milestones/README.md` and `CLAUDE.md` were created or appended to.</advantage>
+      <drawback>The descriptor says almost nothing that the marker doesn&apos;t already say. If a later re-run repairs a partial scaffold (for example a README that has lost its `Current milestone:` line, which step 2 does not count as initialized), it makes a second commit with the same subject. The two commits can then only be told apart by their diffs.</drawback>
+    </alternative>
+    <alternative id="Plugin-named descriptor">
+      The commit carries the constant subject `Workflow-bootstrap: cairn` and no body. The descriptor names the workflow being installed rather than a path.
+      <advantage>In a consuming project&apos;s history, where the other subjects belong to that project, the subject says which tool put `milestones/` and the `## Milestone Workflow` section of `CLAUDE.md` there. It keeps the fixed, searchable, subject-only form. The runtime files already name the plugin in their `cairn:&lt;agent&gt;` dispatch names, so no new naming rule is needed.</advantage>
+      <drawback>The descriptor names the plugin, not the thing the commit acts on. That breaks the pattern of every other descriptor, which names the milestone, question or task that the commit touched. The plugin name also becomes a literal in the committed history of every bootstrapped project, so a rename would leave old histories using the old name.</drawback>
+    </alternative>
+    <alternative id="Touched-paths descriptor">
+      The descriptor lists exactly the paths the pass committed, taken from the same PATHS set the skill passes to the commit procedure: `Workflow-bootstrap: milestones/README.md, CLAUDE.md`, or just `milestones/README.md` when `CLAUDE.md` was left alone. The commit has no body.
+      <advantage>The subject shows what the bootstrap wrote without opening the commit. It is built from values the skill already has at edit time (step 5 knows whether it touched `CLAUDE.md`), with no content inspection, and it stays subject-only.</advantage>
+      <drawback>Unlike every other marker, the subject changes from run to run and has no stable descriptor to search on. It repeats the file list that the commit&apos;s diff already records. It also makes the descriptor slot hold a list, which the existing `&lt;Marker&gt;: &lt;descriptor&gt;` subjects never do.</drawback>
+    </alternative>
+    <alternative id="Fixed subject with body">
+      The commit carries a constant subject such as `Workflow-bootstrap: milestones`. Its BODY has one line per scaffold item, recording whether that item was created, had a section inserted, or was preserved untouched (`milestones/`, `milestones/README.md`, the `## Milestone Workflow` section of `CLAUDE.md`). This keeps step 6&apos;s created-versus-preserved itemization in the commit.
+      <advantage>History keeps the one fact the diff cannot show: which items already existed and were deliberately left alone. That matters most if the console report shrinks to a single status line. It uses the commit procedure&apos;s existing optional BODY input, as `Principle-capture:` and the recommendation commits already do.</advantage>
+      <drawback>It is the only setup commit with a body, and most of that body repeats what the diff shows. Preserved files are not in PATHS at all, so the body describes files the commit does not contain. Whether the body adds anything depends on how the reporting-shape question is settled: it only preserves information when the console itemization is removed.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Prerequisite check order">
     <question>Does the git work-tree check run before or after the Python check, does a project failing both get one combined stop message or two separate stops on successive runs, and does the git check run on every invocation including a re-run on an already-bootstrapped project, as the Python check does?</question>
