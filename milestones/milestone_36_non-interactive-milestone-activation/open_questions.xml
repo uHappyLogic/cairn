@@ -66,5 +66,25 @@
   </open-question>
   <open-question id="CLAUDE.md and workflow.md updates">
     <question>The goal names docs/skill-reference.md, docs/ways-of-using-cairn.md, and the host trees as the documents to update, while CLAUDE.md&apos;s pipeline listing describes the skill and its invariants section records every retired interactive behaviour elsewhere as a must-not-restore rule, and docs/workflow.md says the skill advances the pointer. Do CLAUDE.md (pipeline line and a new invariant on the lowest-numbered pick and the retired prompts) and docs/workflow.md get updated in this milestone too?</question>
+    <alternative id="Update CLAUDE.md and workflow.md">
+      Add both files to this milestone&apos;s change set. In CLAUDE.md, the `goto-next-milestone` pipeline line would name the lowest-numbered undone pick, and a new invariant would record that pick and state that the retired confirmation and choice prompts must not be restored. In docs/workflow.md, the &quot;advances the pointer&quot; sentence of &quot;Initializing a milestone&quot; would say that the skill activates the lowest-numbered undone milestone without asking.
+      <advantage>Every document that describes the skill changes in the same milestone as the behaviour, and the removal gets written down as a must-not-restore rule. That follows the convention CLAUDE.md already uses for every other retired behaviour, and milestone 35 did the same thing when its &quot;Update Invariant And Docs For Committing Bootstrap&quot; task edited CLAUDE.md.</advantage>
+      <drawback>The work goes beyond the documents the Goal lists, so derive-tasks will only see the extra edits if a recorded decision widens the scope. It also adds a sentence to docs/workflow.md that is not strictly needed, because &quot;advances the pointer&quot; is still true under the new behaviour.</drawback>
+    </alternative>
+    <alternative id="Update CLAUDE.md only">
+      Update CLAUDE.md&apos;s pipeline line and add the new invariant on the lowest-numbered pick and the retired prompts. Leave docs/workflow.md unchanged, because its phase-level sentence &quot;`/goto-next-milestone` advances the pointer&quot; and its mermaid node do not describe the prompts and are still correct.
+      <advantage>The edit goes where the rationale has to live. CLAUDE.md&apos;s invariants section exists so that a later editor does not add back something that looks missing, and a confirmation prompt before overwriting the pointer is exactly that kind of plausible &quot;fix&quot;. Meanwhile no edit is spent on a narrative sentence that is not wrong.</advantage>
+      <drawback>It still adds a file outside the Goal&apos;s list, and it needs a recorded decision to do so. docs/workflow.md&apos;s description stays generic, so a reader of the phase narrative would not learn about the deterministic pick without following the link to docs/skill-reference.md.</drawback>
+    </alternative>
+    <alternative id="Pipeline line accuracy only">
+      Change only the wording that describes the skill: reword CLAUDE.md&apos;s pipeline line (and optionally the docs/workflow.md sentence) to say it activates the lowest-numbered undone milestone. Add no new invariant.
+      <advantage>It is the smallest change that keeps every description of the skill accurate. It also keeps the invariants section, which is already long, for design decisions with lasting rationale rather than the removal of two prompts.</advantage>
+      <drawback>Nothing records why the prompts are gone. A later editor who sees an unconfirmed pointer overwrite could add a confirmation back, when CLAUDE.md has written &quot;must not be restored&quot; for every comparable retirement, including the non-committing bootstrap exemption that milestone 35 retired.</drawback>
+    </alternative>
+    <alternative id="Keep to the Goal&apos;s document list">
+      Update only docs/skill-reference.md, docs/ways-of-using-cairn.md and the rebuilt host trees, as the Goal says, and leave CLAUDE.md and docs/workflow.md to a later pass. That later pass could be finish-current-milestone&apos;s step 7 or a follow-up milestone.
+      <advantage>It keeps to the Goal as written, so no scope has to be widened or recorded. Neither file is inaccurate today: the pipeline line (&quot;activates an already-defined milestone; requires the pointer to read none&quot;) and &quot;advances the pointer&quot; both stay true.</advantage>
+      <drawback>finish-current-milestone&apos;s step 7 only updates CLAUDE.md for lasting environment-context changes, not for design invariants, so the must-not-restore rule would probably never be written. The milestone would ship a behaviour change whose rationale sits nowhere that editors read, unlike the precedent set by milestones 34 and 35.</drawback>
+    </alternative>
   </open-question>
 </open-questions>
