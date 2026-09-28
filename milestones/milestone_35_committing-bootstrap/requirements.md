@@ -41,5 +41,9 @@ No file in the repository references G04; the identifier lives outside the repo,
 
 - The bootstrap's success report becomes one fixed, identifier-free status line such as "Workflow bootstrapped.", and the already-initialized stop prints one distinct no-op line. The created-versus-preserved itemization, the pointer-initialized line, the numbered next steps, and the suggestion to run `/init` are all cut; the commit diff shows which files were created or appended to, and the bootstrap prints no next-step or handoff pointer, like the other setup skills.
 
+### Documentation
+
+- The documentation update is criterion-based, not a hand list: every statement that the bootstrap does not commit, or that Python is the workflow's one runtime prerequisite, is updated. Beyond the three sites the goal names, that covers the `CLAUDE.md` pipeline tag "non-committing", design claim 12's "two exceptions" sentence (which drops to the one failed-run exception), the "one runtime prerequisite" wording in `README.md`, its two host copies under `scripts/hosts/*/README.md`, `docs/workflow.md`, and `docs/skill-reference.md`, with git recorded as a second prerequisite. The host READMEs are rebuilt into `hosts/` so the drift gate passes.
+
 ## Out of Scope
 
