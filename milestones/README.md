@@ -13,9 +13,19 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_37_mechanical-milestone-definition/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 37 — Mechanical milestone definition
+
+- A new stdlib-only Python 3.9+ tool, `core/tools/define_milestone.py`, takes the title as `--title` and the goal text on stdin and creates `milestones/milestone_<NN>_<slug>/` with all four files, the empty `open_questions.xml` included.
+- The tool numbers a milestone max-plus-one over the same `milestone_<digits>_<slug>` scan `goto-next-milestone` uses, pads to at least two digits, and derives the slug from the first five cleaned words of the folded title.
+- Its only conflict check is an exclusive create of the target directory; on any failure it prints one `Error:` line, removes exactly what it created in reverse order, and refuses outright when the `milestones` root is missing.
+- On success it prints the `Milestone-definition:` commit subject and the milestone directory path, which `/define-milestone-goal` hands unchanged to the commit procedure, leaving the model only the choice of title.
+- The Markdown templates live only as string constants in the tool, and the skill's SKILL.md names the four files without restating their contents.
+- The open-question tool's `create` subcommand is removed, so it works only on existing documents, and a parity test pins the new tool's empty document to `render_document(Document())`.
+- Flat per-concern test files cover the new tool under both interpreter runs, and `CLAUDE.md`, `CONTRIBUTING.md`, `README.md`, `docs/`, and the bootstrap now describe the plugin's Python tools in count-free wording.
 
 ### Milestone 36 — Non-interactive milestone activation
 
@@ -400,3 +410,4 @@ Current milestone: `milestones/milestone_37_mechanical-milestone-definition/`
 | 34 | Lean dispatch prompts | `milestones/milestone_34_lean-dispatch-prompts/` |
 | 35 | Committing Bootstrap | `milestones/milestone_35_committing-bootstrap/` |
 | 36 | Non-interactive milestone activation | `milestones/milestone_36_non-interactive-milestone-activation/` |
+| 37 | Mechanical milestone definition | `milestones/milestone_37_mechanical-milestone-definition/` |
