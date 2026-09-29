@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Definition Tool Test Suite
-
-Add flat per-concern test files under `tests/` for `define_milestone.py`, one per concern named in the Test suite extension decision (numbering and padding, slug derivation, conflicts, failure cleanup, output and exit contract), plus the parity test from the Creating open_questions.xml decision that the written document parses with `open_questions.load_document` and equals `render_document(Document())`. Extend `conftest.py` with a second pinned tool path, a `run_define` subprocess fixture beside `run_tool`, and a helper that builds milestone-root layouts under `tmp_path`, changing no `pyproject.toml` setting. Verified by both suite runs passing, `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest`, with no `__pycache__` left under `core/tools/`.
-
----
-
 ## Rewrite Define Skill Around Tool
 
 Rewrite `core/skills/define-milestone-goal/SKILL.md` so its single `<overall_goal_description>` argument stays and the model's only work is choosing the title, running `python3 {{PLUGIN_ROOT}}/tools/define_milestone.py --title` with the goal text on stdin as a quoted heredoc, handing the tool's two printed lines unchanged to the commit procedure as PATHS (the directory) and SUBJECT, and printing `Milestone defined.` or the distinct no-change line, while a failure quotes the tool's `Error:` line or the shell's missing-interpreter line verbatim and stops. The number, slug, and conflict steps are gone, the skill names the four files the tool creates and states none of their contents, and its frontmatter description stays one clause of 25 words or fewer. Verified by rebuilding both host trees so `uv run scripts/build_hosts.py --check` passes and by one run of the rewritten steps in a throwaway git repository that ends in a `Milestone-definition:` commit holding exactly the four files.

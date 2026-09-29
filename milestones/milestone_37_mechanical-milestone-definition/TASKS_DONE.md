@@ -18,3 +18,18 @@ Create `core/tools/define_milestone.py`, a stdlib-only Python 3.9+ tool that tak
 - `uv run scripts/build_hosts.py` renders the tool byte-identical into `hosts/claude/tools/` and `hosts/antigravity/tools/`, and `uv run scripts/build_hosts.py --check` passes (no bare `{{`, no host name in the source).
 
 ---
+
+## Add Definition Tool Test Suite
+
+Add flat per-concern test files under `tests/` for `define_milestone.py`, one per concern named in the Test suite extension decision (numbering and padding, slug derivation, conflicts, failure cleanup, output and exit contract), plus the parity test from the Creating open_questions.xml decision that the written document parses with `open_questions.load_document` and equals `render_document(Document())`. Extend `conftest.py` with a second pinned tool path, a `run_define` subprocess fixture beside `run_tool`, and a helper that builds milestone-root layouts under `tmp_path`, changing no `pyproject.toml` setting. Verified by both suite runs passing, `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest`, with no `__pycache__` left under `core/tools/`.
+
+**Verified:**
+
+- `tests/conftest.py` pins a second tool path `DEFINE_TOOL = REPO_ROOT / "core" / "tools" / "define_milestone.py"`, adds a `run_define(*args, stdin=..., cwd=...)` fixture beside `run_tool` (a `sys.executable -B` subprocess run from the given workspace, stdin always piped), and a `workspace(*directories, files=(), root=True)` helper that builds a milestones-root layout under `tmp_path`; `pyproject.toml` is unchanged.
+- Flat per-concern test files exist beside the existing ones, one per concern of the Test suite extension decision: `tests/test_define_numbering.py` (numbering and padding), `tests/test_define_slug.py` (slug derivation, with title folding), `tests/test_define_conflicts.py` (conflicts, with the missing root), `tests/test_define_cleanup.py` (failure cleanup), and `tests/test_define_output.py` (output and exit contract, with goal handling).
+- `tests/test_define_parity.py` holds the Creating open_questions.xml parity test: the `open_questions.xml` the tool writes equals `render_document(Document())` byte for byte and parses with `open_questions.load_document` to `Document()`.
+- `uv run pytest` passes (531 tests, 84 of them in the six new files).
+- `uv run --no-project --python 3.9 --with pytest pytest` passes (531 tests).
+- `find core/tools -name __pycache__` prints nothing after both runs.
+
+---
