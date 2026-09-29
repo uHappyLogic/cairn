@@ -76,5 +76,9 @@ Both `scripts/hosts/claude/settings.toml` and `scripts/hosts/antigravity/setting
 
 - The skill keeps its single `<overall_goal_description>` argument. The model reads it, chooses the title, and passes that title to the tool as `--title` with the goal text on stdin; no separate title argument is added. The headless invocation in `docs/ways-of-using-cairn.md`, the `discuss-milestone-goal` handoff, the `docs/skill-reference.md` entry, and `CONTRIBUTING.md` keep their current invocation shape.
 
+### Test suite extension
+
+- define_milestone.py is covered by flat per-concern test files beside the existing ones under `tests/`, one per concern of the tool (numbering and padding, slug derivation, conflicts, failure cleanup, output and exit contract). `conftest.py` gains a second pinned tool path and a `run_define` subprocess fixture next to `run_tool`, plus a helper that builds milestone-root layouts under `tmp_path`. The existing `testpaths` and `pythonpath` settings already cover the new files, so both interpreter runs and the CI job collect them with no configuration change.
+
 ## Out of Scope
 
