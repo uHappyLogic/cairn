@@ -68,5 +68,9 @@ Both `scripts/hosts/claude/settings.toml` and `scripts/hosts/antigravity/setting
 
 - define_milestone.py has its own `main()` and failure helper modelled on the open-question tool's, mirroring its contract verbatim: stdout and stderr are reconfigured to UTF-8, `ToolError` and `OSError` map to one folded `Error:` line on stderr with exit status 1, every other exception is caught the same way so no traceback ever escapes, argparse keeps its usage message with exit status 2, and stdout stays empty on every failure path. The handling is copied, not shared, so the open-question tool is not refactored.
 
+### Goal text handling
+
+- The goal text read from stdin is written under `## Goal` exactly as received: interior newlines, blank lines, and Markdown are kept byte for byte, and only leading and trailing whitespace is trimmed, so a heredoc's final newline adds no blank line before `## Relevant starting state`. A terminal, closed, or non-UTF-8 stdin is refused under the same rules the open-question tool's stdin reader applies, and empty or whitespace-only text is refused with its own `Error:` line. No heading guard and no Markdown normalization is applied.
+
 ## Out of Scope
 
