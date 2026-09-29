@@ -51,7 +51,7 @@ flowchart LR
 
 ## Installation
 
-Cairn has two runtime prerequisites: **git**, with your project root inside a git work tree that every skill commits into, and a **Python 3.9 or later** interpreter that answers as `python3` on your PATH. The skills drive the plugin's stdlib-only open-question tool with Python (no packages to install), and `/init-milestone-base-workflow` checks both once per project, git first, stopping with the remedy when either is missing.
+Cairn has two runtime prerequisites: **git**, with your project root inside a git work tree that every skill commits into, and a **Python 3.9 or later** interpreter that answers as `python3` on your PATH. The skills drive the plugin's stdlib-only Python tools with it (no packages to install), and `/init-milestone-base-workflow` checks both once per project, git first, stopping with the remedy when either is missing.
 
 ### Claude Code
 
@@ -89,7 +89,7 @@ It works with any kind of project. Skills read your project's environment — it
 
 ## Design principles
 
-- **[The records are machine-readable.](docs/design-claims.md#11-the-records-are-machine-readable)** Open questions are one XML document per milestone with a single stdlib tool as its only writer, so every answer, cascade, and prune is a validated tool call that rewrites the document in one canonical form.
+- **[The records are machine-readable.](docs/design-claims.md#11-the-records-are-machine-readable)** Open questions are one XML document per milestone, created empty with the milestone and written from then on only by the plugin's stdlib open-question tool, so every answer, cascade, and prune is a validated tool call that rewrites the document in one canonical form.
 - **[Each decision has a record in git.](docs/design-claims.md#2-each-decision-has-a-record-in-git)** One answer is one path-scoped commit whose subject marks how it was made — manual, recommendation, or alternative — so the log is provenance and a revert reopens the question.
 - **[Advice gets better with each milestone.](docs/design-claims.md#5-advice-gets-better-with-each-milestone)** When you override a recommendation, the capture skill distills your reason into a project-wide principle store the recommender reads and cites on every later question.
 

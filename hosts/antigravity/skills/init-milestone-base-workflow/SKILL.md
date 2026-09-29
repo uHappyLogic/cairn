@@ -36,7 +36,7 @@ This stop is separate from the Python check's: a project failing both learns abo
 
 ### 2. Check the Python prerequisite
 
-The workflow skills drive the plugin's open-question tool as `python3 .agents/plugins/cairn/tools/open_questions.py`, so every project this skill bootstraps needs a Python 3.9 or later interpreter reachable as `python3`. Check it here, after the git check, before the state detection and on every invocation — a re-run on an already-bootstrapped project gets the same check.
+The workflow skills run the plugin's stdlib-only Python tools, kept in its `tools` directory, as `python3`, so every project this skill bootstraps needs a Python 3.9 or later interpreter reachable as `python3`. Check it here, after the git check, before the state detection and on every invocation — a re-run on an already-bootstrapped project gets the same check.
 
 Run `python3 --version`. If it prints a version of 3.9 or later, the check passes: continue to step 3. Compare the version numerically, minor by minor — `3.10` and `3.13` are later than `3.9`, `3.8` is not.
 

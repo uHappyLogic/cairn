@@ -100,12 +100,13 @@ the other tests yet.
 
 ### 11. The records are machine-readable.
 
-- **Design:** Open questions are one XML document for each milestone. One
-  stdlib tool is the only writer of that document. Each answer, cascade, prune,
-  and embed is a tool call. The tool validates the input and writes the whole
+- **Design:** Open questions are one XML document for each milestone. A
+  stdlib tool creates the document empty with the milestone. After that, the
+  open-question tool is the only writer of the document. Each answer, cascade,
+  prune, and embed is a tool call. The tool validates the input and writes the whole
   document again in one canonical form.
 - **Metric:** Golden-file diff of the document after an answer, a cascade, or
-  a prune. The `tests/` suite runs this test on the tool.
+  a prune. The `tests/` suite runs this test on the open-question tool.
 
 ### 12. Repository hygiene is structural.
 
