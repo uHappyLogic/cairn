@@ -40,5 +40,9 @@ Both `scripts/hosts/claude/settings.toml` and `scripts/hosts/antigravity/setting
 
 - define_milestone.py writes the empty `open_questions.xml` (`<open-questions/>` followed by a newline) itself, with its own atomic write, and imports nothing from open_questions.py. The `create` subcommand and `cmd_create` are removed from the open-question tool, which from then on works only on documents that already exist. A test checks that define_milestone.py's output parses with `open_questions.load_document` and equals `render_document(Document())`, so the two tools cannot drift apart on the empty document's bytes. The sole-writer rule is reworded: define_milestone.py creates the document, and the open-question tool is its only writer after that.
 
+### Failure cleanup
+
+- define_milestone.py records every path it creates, in creation order: the milestones root if it had to create it, the milestone directory, then each of the four files. On any failure it removes them in reverse order, using a plain unlink for files and a non-recursive rmdir for directories, so it never removes anything it did not create; a stray file another process dropped into the directory makes the cleanup stop and report rather than delete it. If the cleanup itself fails, the single `Error:` line gives the original reason followed by the paths that could not be removed.
+
 ## Out of Scope
 
