@@ -56,5 +56,9 @@ Both `scripts/hosts/claude/settings.toml` and `scripts/hosts/antigravity/setting
 
 - `--title` is treated the way the open-question tool treats a Short Title: whitespace runs and newlines collapse to one space, the ends are trimmed, and the value is refused with one `Error:` line only when it is empty after that fold. The folded title is written into the `# Milestone <N>: <title>` heading with its words, case, and punctuation unchanged; there is no length cap and no character check. The slug is derived from the folded form.
 
+### Milestones root
+
+- The tool always resolves the milestones root as `milestones` relative to the working directory, the workspace root every other skill assumes, and takes no root argument or flag. When that directory does not exist it prints one `Error:` line naming it and pointing at `/init-milestone-base-workflow`, and writes nothing: creating the root stays the bootstrap's job alone, so the tool never creates it and its footprint stays inside the one milestone directory.
+
 ## Out of Scope
 

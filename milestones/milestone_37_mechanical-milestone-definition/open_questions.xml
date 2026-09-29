@@ -1,33 +1,4 @@
 <open-questions>
-  <open-question id="Milestones root and cold start">
-    <question>Is the milestones root a fixed path relative to the working directory or a tool argument, and when that root is missing does the tool create it or refuse, given that the bootstrap skill owns creating it?</question>
-    <recommendation option="Fixed root, refuse if missing">Every skill and shared procedure addresses milestones/ from the workspace root and the goal names only --title and stdin as the tool&apos;s inputs, so a root argument or flag is surface no production call uses; refusing a missing root keeps creating it the bootstrap&apos;s job, whose README pointer the later skills need anyway, and keeps the tool&apos;s footprint entirely inside the one milestone directory, while a README sentinel would tie the tool to a file it otherwise never reads.</recommendation>
-    <alternative id="Fixed root, refuse if missing">
-      The tool always resolves the root as `milestones` relative to the working directory (the workspace root, as every other skill assumes) and, when that directory does not exist, prints one `Error:` line naming it and pointing at `/init-milestone-base-workflow`, writing nothing.
-      <advantage>It matches how every other skill and shared procedure already addresses `milestones/` (from the workspace root, never through an argument). It keeps creating the root the bootstrap&apos;s job alone. Because the tool never creates the root, failure cleanup never has to decide whether to remove a root the tool made.</advantage>
-      <drawback>A cold-start project that skipped the bootstrap can no longer define its first milestone, which today&apos;s skill allows because `create` runs `os.makedirs`. Tests must run the tool as a subprocess with `cwd` set to a temporary directory instead of passing a path. It also breaks from the open-question tool&apos;s positional-directory shape.</drawback>
-    </alternative>
-    <alternative id="Fixed root, create if missing">
-      The tool always resolves `milestones` relative to the working directory and, like `cmd_create`&apos;s `os.makedirs(..., exist_ok=True)`, creates the root along with the milestone directory when it is missing, so a cold start yields milestone `01` with no prior step.
-      <advantage>It keeps today&apos;s behaviour exactly: the current skill&apos;s cold-start rule and the `create` call both work on a project with no `milestones/` yet. The headless chain in `ways-of-using-cairn.md` cannot be stopped by a missing directory.</advantage>
-      <drawback>It can leave a `milestones/` with no `README.md` or `Current milestone:` pointer, so `goto-next-milestone` and `get-current-milestone.md` fail later and further from the cause. It blurs the bootstrap&apos;s ownership of the root. The leave-nothing-behind promise now has to track and remove a root the tool created, which ties this option to how the failure-cleanup question settles.</drawback>
-    </alternative>
-    <alternative id="Fixed root, require bootstrap sentinel">
-      The tool resolves `milestones` relative to the working directory and refuses with one `Error:` line unless `milestones/README.md` also exists. It checks only that the file exists, never its contents, and so treats a completed bootstrap, not just the bare directory, as the precondition.
-      <advantage>It refuses at the earliest point every state the later workflow cannot use, including a bare `milestones/` directory left by hand or by an older run. It does this by reusing the file the bootstrap&apos;s own already-initialized probe keys on.</advantage>
-      <drawback>The tool gains a dependency on a file it otherwise never touches, which comes close to the pointer file that defining a milestone deliberately does not involve. It is stricter than today&apos;s skill, and a project whose README lives elsewhere or was renamed is refused even though defining would work.</drawback>
-    </alternative>
-    <alternative id="Root as positional argument">
-      The skill passes the milestones root explicitly as a required positional argument (for example `define_milestone.py milestones --title ...`), in the same shape as the open-question tool&apos;s positional `MILESTONE_DIR`, and the tool refuses with one `Error:` line when that directory is missing.
-      <advantage>The tool depends on no working-directory assumption. Tests point it at a `tmp_path` copy the way `conftest.py`&apos;s `milestone_dir` fixture already does for the open-question tool, and the invocation shape stays uniform across the plugin&apos;s two tools.</advantage>
-      <drawback>Every production call passes the same literal `milestones`, so the argument is ceremony. It also lets a caller point the tool at any directory, so the printed paths and the commit subject have to be defined relative to that argument rather than the workspace, which depends on how the success-output question settles.</drawback>
-    </alternative>
-    <alternative id="Optional root flag, default milestones">
-      The tool takes an optional `--root` flag that defaults to `milestones` relative to the working directory, so the skill&apos;s call omits it and tests override it, with refusal when the resolved root is missing.
-      <advantage>The skill&apos;s invocation stays as short as the fixed-path options, and tests still get the working-directory independence of an explicit argument without changing directory.</advantage>
-      <drawback>The option exists only for tests: it gives two ways to name the same root and an untested production default. It adds contract surface the goal does not ask for (the goal names only `--title` and stdin).</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Number scan and padding">
     <question>Which directory names count in the milestone-number scan (only names shaped milestone_&lt;digits&gt;_&lt;slug&gt;, with non-digit prefixes ignored?), and how is the number zero-padded once it reaches three digits?</question>
     <recommendation option="Goto-aligned scan, natural width">Using goto-next-milestone&apos;s exact definition of a milestone directory (whole-name match, digits only, integer comparison, silent skip of anything else) is what keeps the two tools from ever disagreeing about which directories exist and what their numbers are; the two-digit minimum preserves all 37 existing names and grows past 99 without a ceiling, whereas a cap at 99 buys lexical ordering with a hard stop and a strict refusal lets one stray directory block every definition in a headless chain.</recommendation>
