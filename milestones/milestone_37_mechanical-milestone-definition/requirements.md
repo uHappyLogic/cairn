@@ -44,5 +44,9 @@ Both `scripts/hosts/claude/settings.toml` and `scripts/hosts/antigravity/setting
 
 - define_milestone.py records every path it creates, in creation order: the milestones root if it had to create it, the milestone directory, then each of the four files. On any failure it removes them in reverse order, using a plain unlink for files and a non-recursive rmdir for directories, so it never removes anything it did not create; a stray file another process dropped into the directory makes the cleanup stop and report rather than delete it. If the cleanup itself fails, the single `Error:` line gives the original reason followed by the paths that could not be removed.
 
+### Success output
+
+- On success define_milestone.py prints exactly two unlabeled lines to stdout: first the commit subject `Milestone-definition: milestone_<NN>_<slug>`, then the milestone directory path `milestones/milestone_<NN>_<slug>/`, relative to the working directory. It does not list the four files: the directory is the whole PATHS input to the commit procedure, whose status guard and path-scoped add cover exactly the files the tool just created in that fresh directory. The skill passes both lines to the commit procedure as they are and composes neither.
+
 ## Out of Scope
 
