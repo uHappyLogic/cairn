@@ -84,5 +84,9 @@ Both `scripts/hosts/claude/settings.toml` and `scripts/hosts/antigravity/setting
 
 - Every surface that states a tool count (`CLAUDE.md`'s "one stdlib-only Python tool", `CONTRIBUTING.md`'s "the one program", the bootstrap's Python-check justification that names only `open_questions.py`, and the like in `docs/workflow.md`) is reworded to count-free wording such as "the plugin's stdlib-only Python tools under `tools/`", so the prose stays true if a third tool is added. `define_milestone.py` is named only where its behaviour is described: the `CLAUDE.md` repository layout line and the `define-milestone-goal` entry in `docs/skill-reference.md`. The `CLAUDE.md` parenthetical about the open-question tool's sole-writer role is reworded, not dropped.
 
+### Markdown template ownership
+
+- The `requirements.md`, `TASKS_TODO.md`, and `TASKS_DONE.md` templates live only as string constants in `core/tools/define_milestone.py`. The skill's SKILL.md names the four files the tool creates and states none of their contents, so no prose copy can drift from what the tool writes; no separate template files are added under `core/tools/`. The section layout other skills rely on stays described where it already is: `CLAUDE.md`'s milestone file structure, `docs/skill-reference.md`, and the tool's own tests.
+
 ## Out of Scope
 
