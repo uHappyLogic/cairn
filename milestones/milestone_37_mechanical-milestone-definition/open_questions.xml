@@ -245,5 +245,25 @@
   </open-question>
   <open-question id="Markdown template ownership">
     <question>Do the requirements.md, TASKS_TODO.md, and TASKS_DONE.md templates move out of the skill&apos;s prose into the tool source, so SKILL.md no longer states any file contents, or does the skill keep them as documentation?</question>
+    <alternative id="Tool-only templates">
+      The three Markdown templates live only as string constants in core/tools/define_milestone.py. SKILL.md names the four files the tool creates and states none of their contents. The section layout that other skills rely on stays described where it already is: CLAUDE.md&apos;s milestone file structure, docs/skill-reference.md, and the tool&apos;s own tests.
+      <advantage>There is one source of truth for the file contents. The runtime skill carries only what its runner still needs, which follows the no-editor-facing-prose invariant and matches how the open-question skills treat open_questions.xml, whose rendered form lives only in the tool. It also leaves no second copy that can drift from what the tool actually writes.</advantage>
+      <drawback>Specify-milestone-starting-state, review-milestone-requirements, derive-tasks and modify-milestone-goal depend on those headings (## Relevant starting state, ## Decisions, ## Out of Scope, # TASKS TODO). Once this lands, the exact skeleton is visible only by reading Python source or a golden test fixture. A contributor who changes a heading in the tool gets no prompt in the skill layer to check those skills.</drawback>
+    </alternative>
+    <alternative id="Tool templates, skill summary">
+      The tool holds the templates verbatim. SKILL.md adds one sentence naming what the files contain (the numbered title heading, the goal under ## Goal, the three empty sections, and the two TASKS headings) but no code blocks, and does not say how the files are written.
+      <advantage>The skill stays mechanical and states no byte-level contents that could drift, but a reader of the skill still sees the section contract that downstream skills rely on without opening the tool source.</advantage>
+      <drawback>The one sentence still restates part of the tool&apos;s output in prose and is not checked against the tool, so it can quietly drift when the tool changes. A runner that no longer writes the files also gains nothing from it, which puts it close to the editor-facing prose the runtime-file invariant keeps out of SKILL.md.</drawback>
+    </alternative>
+    <alternative id="Skill keeps verbatim copy">
+      The tool holds the templates as the executable source. SKILL.md keeps its current requirements.md, TASKS_TODO.md and TASKS_DONE.md code blocks unchanged, labelled as documentation of what the tool writes. A test under tests/ could optionally pull those blocks out of SKILL.md and compare them with the tool&apos;s output.
+      <advantage>The change is smallest and loses the least information. Anyone reading the skill sees exactly what a new milestone looks like, in the same place as today, and an optional sync test could catch drift mechanically.</advantage>
+      <drawback>The same text lives in two places. Without the sync test, the SKILL.md copy is a second source that no step uses and that can go stale unnoticed. With the test, the suite starts reading runtime Markdown prose, a new kind of coupling it doesn&apos;t have today. Either way the runner loads contents it must not act on, which cuts against a fully mechanical skill.</drawback>
+    </alternative>
+    <alternative id="Separate template files">
+      The three skeletons move into plain Markdown template files next to the tool under core/tools/ (for example a templates/ subdirectory). The tool locates them from its own file path and fills in the number, title and goal. SKILL.md states no contents.
+      <advantage>There is one source of truth that stays readable as Markdown rather than as Python string literals, so a contributor can see and edit the milestone skeleton directly without touching code or keeping a copy in the skill.</advantage>
+      <drawback>It adds non-Python files to core/tools/. The host build renders them into both host trees and runs its text checks on them (no bare {{, no host name). The tool then needs a file-location step and a new failure mode for a missing or unreadable template. It is also a placeholder-substitution scheme that the stdlib-only single-module tools don&apos;t use today, and it spreads one tool&apos;s behaviour across several files.</drawback>
+    </alternative>
   </open-question>
 </open-questions>
