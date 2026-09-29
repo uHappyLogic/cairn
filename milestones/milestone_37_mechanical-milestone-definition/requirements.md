@@ -88,5 +88,9 @@ Both `scripts/hosts/claude/settings.toml` and `scripts/hosts/antigravity/setting
 
 - The `requirements.md`, `TASKS_TODO.md`, and `TASKS_DONE.md` templates live only as string constants in `core/tools/define_milestone.py`. The skill's SKILL.md names the four files the tool creates and states none of their contents, so no prose copy can drift from what the tool writes; no separate template files are added under `core/tools/`. The section layout other skills rely on stays described where it already is: `CLAUDE.md`'s milestone file structure, `docs/skill-reference.md`, and the tool's own tests.
 
+### Conflict definition
+
+- The tool's only conflict check is creating the target directory exclusively, with a create that fails if anything already sits at `milestones/milestone_<NN>_<slug>`, whether a directory, a file, or a symlink; that existing entry becomes the one `Error:` line, refused before anything is written. There is no second pass over the root: a slug reused under another number and the same number under another slug are both allowed, since max-plus-one numbering over the goto-aligned scan means no counted directory can already hold the computed number.
+
 ## Out of Scope
 
