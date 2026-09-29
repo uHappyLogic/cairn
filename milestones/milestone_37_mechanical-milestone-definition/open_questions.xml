@@ -50,6 +50,26 @@
   </open-question>
   <open-question id="Number scan and padding">
     <question>Which directory names count in the milestone-number scan (only names shaped milestone_&lt;digits&gt;_&lt;slug&gt;, with non-digit prefixes ignored?), and how is the number zero-padded once it reaches three digits?</question>
+    <alternative id="Goto-aligned scan, natural width">
+      Only directories directly under the milestones root whose whole name matches `milestone_[0-9]+_&lt;non-empty slug&gt;` (ASCII digits only) count. Any other entry, including a `milestone_*` name with a non-digit prefix and any file, is skipped without a message. The number is read as an integer with leading zeros stripped, and the new number is formatted with a minimum of two digits (`{:02d}`), so `99` is followed by `100` and the width grows on its own with no cap.
+      <advantage>It uses the same definition of a milestone directory that goto-next-milestone already states: silently skip anything whose prefix is not all digits, and compare numbers as integers. The two tools therefore never disagree about which directories are milestones or what their numbers are. All 37 existing names keep their two-digit form, and nothing breaks at 100.</advantage>
+      <drawback>From 100 on, a plain lexical listing puts `milestone_100_*` before `milestone_11_*`. Integer comparison in goto-next-milestone is unaffected, but anyone scanning the directory by eye loses the ordering. Skipping malformed `milestone_*` names silently also means a mistyped directory, for example `milestone_4x_foo`, is ignored rather than surfaced.</drawback>
+    </alternative>
+    <alternative id="Goto-aligned scan, cap at 99">
+      The scan is the same as in the natural-width option: whole-name matches on directories only, everything else skipped silently, and numbers compared as integers. The tool keeps the two-digit form as a hard invariant. When max-plus-one would exceed 99, it refuses with one `Error:` line instead of producing a three-digit name.
+      <advantage>Every milestone name keeps the same width, so lexical order always equals numeric order in `ls`, in globs and in any tooling that sorts names as strings. The limit is stated explicitly instead of the format changing silently at some later point.</advantage>
+      <drawback>This sets a hard ceiling on a workflow that is already at milestone 37. A long-lived project would hit a refusal with no path forward other than renaming history or changing the tool. That is a real limit bought for a cosmetic benefit, because the number comparisons already work on integers.</drawback>
+    </alternative>
+    <alternative id="Strict scan, refuse malformed names">
+      Directories whose names match `milestone_[0-9]+_&lt;slug&gt;` count, and padding uses the two-digit minimum with natural growth. Any directory that starts with `milestone_` but does not fully match the shape (a non-digit prefix, a missing or empty slug) makes the tool stop with one `Error:` line naming it, instead of skipping it.
+      <advantage>A malformed or hand-made directory that might hold an intended number is surfaced before a new milestone is numbered around it. This fits the tool&apos;s broader promise to refuse loudly and leave nothing behind rather than guess.</advantage>
+      <drawback>It departs from goto-next-milestone&apos;s documented silent skip, so the two tools would disagree about what a stray `milestone_*` directory means. One leftover directory would also block every new definition until someone renames or removes it by hand, which costs most in a headless chain where nobody is present to fix it.</drawback>
+    </alternative>
+    <alternative id="Inclusive scan of any entry">
+      Every entry under the milestones root whose name begins with `milestone_&lt;digits&gt;_` counts toward the maximum, whether it is a directory or a file and whatever follows the prefix. Padding uses the two-digit minimum with natural growth.
+      <advantage>A new milestone can never reuse a number that appears anywhere under the root, including one held by a stray file or a half-created entry. The numbering stays monotone even when the directory contents are not clean.</advantage>
+      <drawback>A stray file can push the numbering forward and leave a gap. The definition of &quot;a milestone&quot; also becomes broader than goto-next-milestone&apos;s directory-only definition, so the two tools read the same root differently. How much this matters depends on how the sibling conflict question treats a non-directory entry at the target path.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Conflict definition">
     <question>What counts as a conflict the tool refuses on, beyond the target directory already existing: a slug already used under another number, the same number under another slug, or a non-directory entry at the target path?</question>
