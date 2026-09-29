@@ -46,6 +46,11 @@ def test_the_empty_document_is_one_self_closing_root():
     assert render_document(parse_document("<open-questions>\n</open-questions>\n")) == "<open-questions/>\n"
 
 
+def test_the_empty_fixture_is_what_the_serializer_renders_for_no_questions():
+    empty = (FIXTURES / "empty" / open_questions.DOCUMENT_NAME).read_bytes()
+    assert render_document(Document()).encode("utf-8") == empty
+
+
 def test_escape_substitutes_the_five_predefined_entities():
     assert escape("""& < > " '""") == "&amp; &lt; &gt; &quot; &apos;"
     assert escape("&amp;") == "&amp;amp;"

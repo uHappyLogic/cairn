@@ -25,7 +25,7 @@ FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
 @pytest.fixture
 def run_tool():
-    """Run the tool as a subprocess: run_tool("create", str(dir), stdin=b"...")."""
+    """Run the tool as a subprocess: run_tool("add", str(dir), "Short Title", stdin=b"...")."""
 
     def run(*args, stdin=None):
         return subprocess.run(

@@ -48,3 +48,19 @@ Rewrite `core/skills/define-milestone-goal/SKILL.md` so its single `<overall_goa
 - One run of the rewritten steps in a throwaway git repository (a `milestones/` root, pointer `none`) printed `Milestone-definition: milestone_01_getting-started-guide` and `milestones/milestone_01_getting-started-guide/`, and committing that directory under that subject produced a `Milestone-definition:` commit holding exactly the four files, leaving the tree clean.
 
 ---
+
+## Remove Create From Open-Question Tool
+
+Remove the `create` subcommand from `core/tools/open_questions.py` (`cmd_create`, its parser registration, and its docstring entry) so the tool works only on documents that already exist, and reword the module docstring's sole-writer claim so `define_milestone.py` creates the document and this tool is its only writer after that. Delete `tests/test_create.py`, keeping only its check that the `empty` fixture is what the serializer renders for no questions, and rewrite the `tests/test_contract.py` cases that drive `create` against a surviving subcommand. Verified by both suite runs passing, `python3 core/tools/open_questions.py --help` no longer listing `create`, and both host trees rebuilt so `--check` passes.
+
+**Verified:**
+
+- `core/tools/open_questions.py` no longer holds `cmd_create`, its `create` parser registration, or its docstring entry, and no longer creates a directory (no `os.makedirs`); every subcommand works only on an existing document.
+- The module docstring's sole-writer claim now reads that `define_milestone.py` creates the empty document together with its milestone directory and this module is the document's only writer from then on, no subcommand creating it; the parser description and the MILESTONE_DIR help no longer speak of a directory "to hold" the document.
+- `python3 core/tools/open_questions.py --help` lists `list`, `locate`, `lift`, `add`, `strip`, `embed`, `remove`, `walk`, and `sort` and no `create`; `open_questions.py create` is refused by argparse as an invalid choice with exit status 2.
+- `tests/test_create.py` is deleted; its check that the `empty` fixture is what the serializer renders for no questions survives as `test_the_empty_fixture_is_what_the_serializer_renders_for_no_questions` in `tests/test_format.py`.
+- The `tests/test_contract.py` cases that drove `create` now drive surviving subcommands: the missing-MILESTONE_DIR usage error via `list`, the one-Error-line failure via `locate` of an unknown title, the operating-system failure via `list` on a file standing in for the directory, `main`'s tool-error line via `list` on a missing document, and `main`'s silent mutator via `strip` on the `annotated` fixture; the help test also asserts `create` is absent; the `conftest.py` `run_tool` example no longer names `create`.
+- `uv run pytest` passes (527 tests) and `uv run --no-project --python 3.9 --with pytest pytest` passes (527 tests), with no `__pycache__` under `core/tools/`.
+- `uv run scripts/build_hosts.py` rebuilt both host trees and `uv run scripts/build_hosts.py --check` passes.
+
+---

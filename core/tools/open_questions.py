@@ -1,15 +1,15 @@
-"""Sole writer of a milestone's open_questions.xml, the open-question document.
+"""The only writer of a milestone's existing open_questions.xml, the open-question document.
 
 Usage: python3 <plugin root>/tools/open_questions.py <subcommand> MILESTONE_DIR [...]
 
-Every subcommand takes the already-resolved milestone directory as its first argument and
-acts on the one file this module owns inside it, MILESTONE_DIR/open_questions.xml. The
-caller resolves the milestone; this module never reads milestones/README.md.
+define_milestone.py creates the empty document together with its milestone directory; from
+then on this module is the document's only writer. Every subcommand takes the
+already-resolved milestone directory as its first argument and acts on the one file this
+module writes inside it, MILESTONE_DIR/open_questions.xml, which must already exist: no
+subcommand creates it. The caller resolves the milestone; this module never reads
+milestones/README.md.
 
 Subcommands:
-  create MILESTONE_DIR
-      write the empty document, creating the directory when it is missing, and refuse to
-      touch an existing document
   list MILESTONE_DIR [--without-alternatives] [--without-recommendation] [--with-question]
       print the id of every <open-question> block, one per line in document order;
       --without-alternatives keeps only the blocks carrying no <alternative> element and
@@ -902,15 +902,6 @@ def embed_fragment(document, question, fragment, shape):
 # --- subcommands ----------------------------------------------------------------------
 
 
-def cmd_create(args):
-    path = document_path(args.milestone_dir)
-    if os.path.lexists(path):
-        raise ToolError(f"{path} already exists")
-    os.makedirs(args.milestone_dir, exist_ok=True)
-    save_document(args.milestone_dir, Document())
-    return 0
-
-
 def cmd_list(args):
     document = load_document(args.milestone_dir)
     for question in document.questions:
@@ -1020,7 +1011,7 @@ def cmd_sort(args):
 def build_parser():
     parser = argparse.ArgumentParser(
         prog="open_questions.py",
-        description="Read and write a milestone's open_questions.xml, the one file this tool owns.",
+        description="Read and write a milestone's existing open_questions.xml, the one file this tool writes.",
     )
     subcommands = parser.add_subparsers(dest="subcommand", metavar="<subcommand>", required=True)
 
@@ -1029,17 +1020,10 @@ def build_parser():
         subparser.add_argument(
             "milestone_dir",
             metavar="MILESTONE_DIR",
-            help="the resolved milestone directory holding (or to hold) open_questions.xml",
+            help="the resolved milestone directory holding open_questions.xml",
         )
         subparser.set_defaults(func=func)
         return subparser
-
-    add_subcommand(
-        "create",
-        cmd_create,
-        "write the empty document into MILESTONE_DIR, creating the directory when it is "
-        "missing; an existing document is refused and left untouched",
-    )
 
     list_parser = add_subcommand(
         "list",
