@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Milestone Definition Tool
-
-Create `core/tools/define_milestone.py`, a stdlib-only Python 3.9+ tool that takes the title as `--title` and the goal text on stdin and, following the Milestones root, Number scan and padding, Title handling, Slug derivation, Conflict definition, Goal text handling, Markdown template ownership, and Creating open_questions.xml decisions, creates `milestones/milestone_<NN>_<slug>/` with its four files from string constants, importing nothing from `open_questions.py`. On success it prints exactly two unlabeled lines, `Milestone-definition: milestone_<NN>_<slug>` then `milestones/milestone_<NN>_<slug>/`; on any failure it applies the Failure cleanup decision (the directory and its files only, since the tool never creates the root) and the Exit status and stream contract decision through its own `main()` and failure helper copied from the open-question tool's. Verified by hand-running the tool against a scratch `milestones` root through the success, missing-root, conflict, empty-title, and empty-goal paths, and by rebuilding both host trees with `uv run scripts/build_hosts.py` so `--check` passes (no bare `{{`, no host name in the source).
-
----
-
 ## Add Definition Tool Test Suite
 
 Add flat per-concern test files under `tests/` for `define_milestone.py`, one per concern named in the Test suite extension decision (numbering and padding, slug derivation, conflicts, failure cleanup, output and exit contract), plus the parity test from the Creating open_questions.xml decision that the written document parses with `open_questions.load_document` and equals `render_document(Document())`. Extend `conftest.py` with a second pinned tool path, a `run_define` subprocess fixture beside `run_tool`, and a helper that builds milestone-root layouts under `tmp_path`, changing no `pyproject.toml` setting. Verified by both suite runs passing, `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest`, with no `__pycache__` left under `core/tools/`.
