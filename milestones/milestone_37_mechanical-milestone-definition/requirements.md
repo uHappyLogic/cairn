@@ -64,5 +64,9 @@ Both `scripts/hosts/claude/settings.toml` and `scripts/hosts/antigravity/setting
 
 - Only directories directly under the milestones root whose whole name matches `milestone_<digits>_<non-empty slug>` (ASCII digits only) count in the number scan, the same definition of a milestone directory that `goto-next-milestone` uses; any other entry, including a `milestone_*` name with a non-digit prefix and any file, is skipped without a message. Numbers are read as integers with leading zeros stripped, the new number is max-plus-one, and it is formatted with a minimum of two digits (`{:02d}`), so `99` is followed by `100` and the width grows on its own with no cap.
 
+### Exit status and stream contract
+
+- define_milestone.py has its own `main()` and failure helper modelled on the open-question tool's, mirroring its contract verbatim: stdout and stderr are reconfigured to UTF-8, `ToolError` and `OSError` map to one folded `Error:` line on stderr with exit status 1, every other exception is caught the same way so no traceback ever escapes, argparse keeps its usage message with exit status 2, and stdout stays empty on every failure path. The handling is copied, not shared, so the open-question tool is not refactored.
+
 ## Out of Scope
 
