@@ -72,5 +72,9 @@ Both `scripts/hosts/claude/settings.toml` and `scripts/hosts/antigravity/setting
 
 - The goal text read from stdin is written under `## Goal` exactly as received: interior newlines, blank lines, and Markdown are kept byte for byte, and only leading and trailing whitespace is trimmed, so a heredoc's final newline adds no blank line before `## Relevant starting state`. A terminal, closed, or non-UTF-8 stdin is refused under the same rules the open-question tool's stdin reader applies, and empty or whitespace-only text is refused with its own `Error:` line. No heading guard and no Markdown normalization is applied.
 
+### Skill argument and title choice
+
+- The skill keeps its single `<overall_goal_description>` argument. The model reads it, chooses the title, and passes that title to the tool as `--title` with the goal text on stdin; no separate title argument is added. The headless invocation in `docs/ways-of-using-cairn.md`, the `discuss-milestone-goal` handoff, the `docs/skill-reference.md` entry, and `CONTRIBUTING.md` keep their current invocation shape.
+
 ## Out of Scope
 
