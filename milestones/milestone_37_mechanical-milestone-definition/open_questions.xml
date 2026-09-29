@@ -1,1 +1,44 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Slug word normalization">
+    <question>How does the tool turn the first five words of the title into the kebab-case slug: what counts as a word, how are punctuation, apostrophes, digits, and non-ASCII letters handled, are stop words kept, and what happens when the result is empty?</question>
+  </open-question>
+  <open-question id="Title constraints">
+    <question>Does the tool validate the value of --title (non-empty, a single line, a length cap, characters that would break the Markdown heading), and is the title written into the requirements.md heading verbatim or normalized?</question>
+  </open-question>
+  <open-question id="Milestones root and cold start">
+    <question>Is the milestones root a fixed path relative to the working directory or a tool argument, and when that root is missing does the tool create it or refuse, given that the bootstrap skill owns creating it?</question>
+  </open-question>
+  <open-question id="Number scan and padding">
+    <question>Which directory names count in the milestone-number scan (only names shaped milestone_&lt;digits&gt;_&lt;slug&gt;, with non-digit prefixes ignored?), and how is the number zero-padded once it reaches three digits?</question>
+  </open-question>
+  <open-question id="Conflict definition">
+    <question>What counts as a conflict the tool refuses on, beyond the target directory already existing: a slug already used under another number, the same number under another slug, or a non-directory entry at the target path?</question>
+  </open-question>
+  <open-question id="Open-question code reuse">
+    <question>How does define_milestone.py reach the open-question tool&apos;s code to create open_questions.xml: importing it as a sibling module located from its own file path, or running open_questions.py create as a subprocess?</question>
+  </open-question>
+  <open-question id="Failure cleanup scope">
+    <question>When a failure happens after some files were written, what exactly does the tool remove (the files it wrote, the milestone directory it created, a milestones root it created) and what does it report when the cleanup itself fails?</question>
+  </open-question>
+  <open-question id="Success output shape">
+    <question>What exactly does the tool print on success: the order of the commit subject and the four file paths, whether each is on its own line with or without a label, and whether the paths are relative to the working directory or absolute?</question>
+  </open-question>
+  <open-question id="Exit status contract">
+    <question>Does the new tool mirror the open-question tool&apos;s stream and exit-status contract (one Error: line on stderr with exit 1, argparse usage with exit 2, empty stdout on failure, never a traceback)?</question>
+  </open-question>
+  <open-question id="Goal text handling">
+    <question>Is the goal text read from stdin written under the Goal heading verbatim (newlines and blank lines preserved) or normalized, and is an empty, terminal, or non-UTF-8 stdin refused as the open-question tool refuses it?</question>
+  </open-question>
+  <open-question id="Skill argument and title choice">
+    <question>Does the skill keep its single goal-description argument with the model deriving the title from it, or take a separate title argument, and does the headless invocation in ways-of-using-cairn.md change accordingly?</question>
+  </open-question>
+  <open-question id="Test suite extension">
+    <question>Does the new tool get its own pytest coverage under tests/ following the existing per-subcommand convention, with a second subprocess runner fixture in conftest.py and fixtures for milestone-root layouts, run under both interpreters and in CI?</question>
+  </open-question>
+  <open-question id="Documentation of two tools">
+    <question>Which surfaces that describe the plugin as shipping one Python tool (CLAUDE.md, CONTRIBUTING.md, the bootstrap&apos;s Python-check justification, docs/skill-reference.md, docs/workflow.md) are updated to name the second tool, and how?</question>
+  </open-question>
+  <open-question id="Markdown template ownership">
+    <question>Do the requirements.md, TASKS_TODO.md, and TASKS_DONE.md templates move out of the skill&apos;s prose into the tool source, so SKILL.md no longer states any file contents, or does the skill keep them as documentation?</question>
+  </open-question>
+</open-questions>
