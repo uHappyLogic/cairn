@@ -80,5 +80,9 @@ Both `scripts/hosts/claude/settings.toml` and `scripts/hosts/antigravity/setting
 
 - define_milestone.py is covered by flat per-concern test files beside the existing ones under `tests/`, one per concern of the tool (numbering and padding, slug derivation, conflicts, failure cleanup, output and exit contract). `conftest.py` gains a second pinned tool path and a `run_define` subprocess fixture next to `run_tool`, plus a helper that builds milestone-root layouts under `tmp_path`. The existing `testpaths` and `pythonpath` settings already cover the new files, so both interpreter runs and the CI job collect them with no configuration change.
 
+### Documentation of two tools
+
+- Every surface that states a tool count (`CLAUDE.md`'s "one stdlib-only Python tool", `CONTRIBUTING.md`'s "the one program", the bootstrap's Python-check justification that names only `open_questions.py`, and the like in `docs/workflow.md`) is reworded to count-free wording such as "the plugin's stdlib-only Python tools under `tools/`", so the prose stays true if a third tool is added. `define_milestone.py` is named only where its behaviour is described: the `CLAUDE.md` repository layout line and the `define-milestone-goal` entry in `docs/skill-reference.md`. The `CLAUDE.md` parenthetical about the open-question tool's sole-writer role is reworded, not dropped.
+
 ## Out of Scope
 
