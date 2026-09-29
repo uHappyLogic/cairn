@@ -48,5 +48,9 @@ Both `scripts/hosts/claude/settings.toml` and `scripts/hosts/antigravity/setting
 
 - On success define_milestone.py prints exactly two unlabeled lines to stdout: first the commit subject `Milestone-definition: milestone_<NN>_<slug>`, then the milestone directory path `milestones/milestone_<NN>_<slug>/`, relative to the working directory. It does not list the four files: the directory is the whole PATHS input to the commit procedure, whose status guard and path-scoped add cover exactly the files the tool just created in that fresh directory. The skill passes both lines to the commit procedure as they are and composes neither.
 
+### Slug derivation
+
+- The slug is the first five whitespace-separated words of the title, each lowercased, with apostrophes deleted, accents folded to their ASCII base with NFKD, and any remaining run of characters outside `[a-z0-9]` inside a word turned into one hyphen with edge hyphens trimmed, so a hyphenated compound such as `Multi-Host` stays one word. Words that clean down to nothing are skipped and the five are filled from the words that follow; stop words and digits are kept. When no word survives the tool refuses with one `Error:` line.
+
 ## Out of Scope
 
