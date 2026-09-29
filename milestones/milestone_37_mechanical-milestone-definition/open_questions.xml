@@ -151,6 +151,21 @@
   </open-question>
   <open-question id="Skill argument and title choice">
     <question>Does the skill keep its single goal-description argument with the model deriving the title from it, or take a separate title argument, and does the headless invocation in ways-of-using-cairn.md change accordingly?</question>
+    <alternative id="Model-derived title">
+      Keep the single `&lt;overall_goal_description&gt;` argument. The model reads it, picks a title, and passes that title to the tool as `--title`, with the goal text on stdin. `docs/ways-of-using-cairn.md`, the `discuss-milestone-goal` handoff, `docs/skill-reference.md` and `CONTRIBUTING.md` stay as they are.
+      <advantage>This is what the Goal already describes (&quot;the model&apos;s only work in the skill is choosing the title&quot;). No call site changes, so the headless `claude -p &quot;/cairn:define-milestone-goal &lt;goal&gt;&quot;` line and every handoff that suggests `/define-milestone-goal &quot;&lt;refined goal&gt;&quot;` keep working as they are.</advantage>
+      <drawback>The title fixes the slug, and the slug fixes the milestone id. That makes the directory name model-chosen and not repeatable, so a headless chain still can&apos;t know `&lt;milestone_id&gt;` before the run. It also keeps today&apos;s inconsistency, where the 37 existing headings mix Title Case and sentence case, unless the skill adds a rule for the title&apos;s form.</drawback>
+    </alternative>
+    <alternative id="Required title argument">
+      Add a required title to the invocation, for example `/define-milestone-goal &lt;title&gt;. &lt;goal&gt;`, split on the first `.` the way `answer-open-question` already splits its argument. The skill passes the title to `--title` word for word. The headless line in `docs/ways-of-using-cairn.md`, its placeholder legend, the `discuss-milestone-goal` handoff and the `docs/skill-reference.md` heading all change to the two-part form.
+      <advantage>The model no longer chooses anything, so the skill is fully mechanical. The user or chain author fixes the title, and with it the slug, before the run. The setup chain&apos;s `&lt;milestone_id&gt;` becomes predictable from what was passed, apart from the scanned number, and headings follow one convention because a person wrote them.</advantage>
+      <drawback>It changes a documented interface across several sites, and every existing invocation that passes only a goal would break or be misread. It also goes against the Goal&apos;s statement that the model chooses the title, so the Goal would need revising. A title that itself contains the delimiter can&apos;t be expressed without an escape rule.</drawback>
+    </alternative>
+    <alternative id="Optional title prefix">
+      Keep the goal-only form as the default and also accept an optional leading title marked by a fixed delimiter, such as a first line or a `&lt;title&gt;.` prefix. The skill passes that title word for word when it is present and has the model derive one when it is absent. `docs/ways-of-using-cairn.md` keeps its line and gains, at most, a note on the explicit form.
+      <advantage>Existing invocations and handoffs stay valid, and anyone who wants a repeatable milestone id, such as a headless chain or the maintainer reserving a contributor&apos;s milestone, can still pin the title. The Goal&apos;s statement that the model chooses the title stays true for the default path.</advantage>
+      <drawback>The skill gets two modes, plus a parsing rule for recognising whether a title was given. A goal that happens to start in the delimited shape would be split by mistake. The default path keeps the model-chosen, non-repeatable directory name, so the determinism is only there for users who ask for it.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Test suite extension">
     <question>Does the new tool get its own pytest coverage under tests/ following the existing per-subcommand convention, with a second subprocess runner fixture in conftest.py and fixtures for milestone-root layouts, run under both interpreters and in CI?</question>
