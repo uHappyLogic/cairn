@@ -168,6 +168,26 @@
   </open-question>
   <open-question id="Goal text handling">
     <question>Is the goal text read from stdin written under the Goal heading verbatim (newlines and blank lines preserved) or normalized, and is an empty, terminal, or non-UTF-8 stdin refused as the open-question tool refuses it?</question>
+    <alternative id="Verbatim body, ends trimmed">
+      Write the stdin text under `## Goal` exactly as received: interior newlines, blank lines and Markdown are kept byte for byte, and only leading and trailing whitespace is trimmed, so the heredoc&apos;s final newline does not add a blank line before `## Relevant starting state`. Terminal, closed and non-UTF-8 stdin are refused with the same `read_body` rules the open-question tool uses, and empty or whitespace-only text is refused with its own `Error:` line.
+      <advantage>Keeps multi-paragraph goals intact. Milestones 06 and 11 already have four- and five-paragraph goals with bold text and backticks. The template&apos;s plain substitution of `&lt;overall_goal_description&gt;` also has this behaviour today, so the change keeps what the skill does now while its stdin refusals match the open-question tool&apos;s.</advantage>
+      <drawback>Nothing stops the goal from carrying a line that starts with `## `. Such a line opens a new section in `requirements.md` and can confuse the skills that find `## Goal`, `## Decisions` and the other sections by their headings. Sharing `read_body` rather than copying it also depends on how the new tool reaches the open-question tool&apos;s code.</drawback>
+    </alternative>
+    <alternative id="Folded to one paragraph">
+      Run the goal through the open-question tool&apos;s `fold` (every run of whitespace and newlines becomes one space, ends trimmed) and write it as a single paragraph. This is the same normalization and empty-after-fold refusal `add` applies to question text, alongside the same `read_body` refusals for terminal, closed and non-UTF-8 stdin.
+      <advantage>Reuses one existing, tested rule from the open-question tool, so the output is fully predictable and cannot add a heading, list or stray blank line to `requirements.md`.</advantage>
+      <drawback>Destroys paragraph breaks, lists and code blocks. Multi-paragraph goals like those of milestones 06 and 11 would be merged into one wall of text, a step back from what the skill writes today.</drawback>
+    </alternative>
+    <alternative id="Verbatim with heading guard">
+      Keep the text verbatim with the ends trimmed, as in the first option, and also refuse with one `Error:` line any goal that has a line starting with a Markdown heading marker at the section level or above (`#` or `##`). Stdin is refused on the same `read_body` grounds as the open-question tool, and empty text is refused too.
+      <advantage>Keeps multi-paragraph goals while making sure the file&apos;s section structure, which later skills rely on to find and edit sections, cannot be broken by the goal text.</advantage>
+      <drawback>Adds a refusal rule that must be specified and tested, and it rejects some legitimate goals, such as ones quoting a heading or using a `##` sub-heading. The model then has to rewrite the goal and call the tool again. `modify-milestone-goal` also edits `## Goal` without that guard, so the rule would hold only at definition time.</drawback>
+    </alternative>
+    <alternative id="Light Markdown normalization">
+      Keep the paragraph structure but tidy it mechanically. CRLF line endings become LF, trailing whitespace is stripped from each line, runs of blank lines collapse to one, and the ends are trimmed. Stdin is refused on the same `read_body` grounds, and text left empty after normalization is refused too.
+      <advantage>Gives clean, consistent Markdown whatever the shell, editor or headless caller produced, while keeping the paragraphs, lists and emphasis that folding would lose.</advantage>
+      <drawback>The output is no longer verbatim, and every rule needs its own specification and tests. Removing trailing whitespace can quietly change meaning, because two trailing spaces in Markdown are a hard line break and whitespace inside a fenced code block may matter.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Skill argument and title choice">
     <question>Does the skill keep its single goal-description argument with the model deriving the title from it, or take a separate title argument, and does the headless invocation in ways-of-using-cairn.md change accordingly?</question>
