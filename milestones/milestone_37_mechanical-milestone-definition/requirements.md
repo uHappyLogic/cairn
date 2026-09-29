@@ -52,5 +52,9 @@ Both `scripts/hosts/claude/settings.toml` and `scripts/hosts/antigravity/setting
 
 - The slug is the first five whitespace-separated words of the title, each lowercased, with apostrophes deleted, accents folded to their ASCII base with NFKD, and any remaining run of characters outside `[a-z0-9]` inside a word turned into one hyphen with edge hyphens trimmed, so a hyphenated compound such as `Multi-Host` stays one word. Words that clean down to nothing are skipped and the five are filled from the words that follow; stop words and digits are kept. When no word survives the tool refuses with one `Error:` line.
 
+### Title handling
+
+- `--title` is treated the way the open-question tool treats a Short Title: whitespace runs and newlines collapse to one space, the ends are trimmed, and the value is refused with one `Error:` line only when it is empty after that fold. The folded title is written into the `# Milestone <N>: <title>` heading with its words, case, and punctuation unchanged; there is no length cap and no character check. The slug is derived from the folded form.
+
 ## Out of Scope
 
