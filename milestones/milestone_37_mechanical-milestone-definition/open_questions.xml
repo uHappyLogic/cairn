@@ -4,6 +4,21 @@
   </open-question>
   <open-question id="Title constraints">
     <question>Does the tool validate the value of --title (non-empty, a single line, a length cap, characters that would break the Markdown heading), and is the title written into the requirements.md heading verbatim or normalized?</question>
+    <alternative id="Fold and refuse empty">
+      Treat --title the way the open-question tool already treats a Short Title: collapse whitespace runs and newlines to one space, trim the ends, refuse the value only when it is empty after that fold, and write the folded title into the `# Milestone N: title` heading with its words, case and punctuation unchanged. There is no length cap and no character check.
+      <advantage>It reuses a rule the project already has, the `fold` helper plus the &quot;the Short Title is empty&quot; refusal in `open_questions.py`, so the two tools behave the same way. It removes the one real way a title can break the heading (an embedded newline) by repairing it rather than refusing it. It also keeps the model&apos;s chosen wording exactly, which the goal leaves as the model&apos;s only creative act.</advantage>
+      <drawback>Some bad input is repaired silently instead of reported. A caller who passes a multi-line or badly spaced title gets a different heading than it sent and no signal. With no length cap, a run-on title lands in the heading as it is. Any slug built from the title&apos;s first words also sees the folded form.</drawback>
+    </alternative>
+    <alternative id="Strict refusal, verbatim write">
+      Validate --title and refuse, with one Error: line, anything that is not already a clean heading title: empty or whitespace-only, containing a newline or other control character, longer than a fixed cap (for example 80 characters, above the longest existing title of 56), or ending in a space-then-`#` run that Markdown would strip as a closing sequence. A title that passes is written into the heading exactly as given.
+      <advantage>Nothing is ever changed silently. The heading is byte-for-byte what the caller passed, and every rejected case names its reason, which suits a headless chain where a quietly repaired title would go unnoticed. The cap and the closing-hash check also block the rare inputs that would render wrongly even after whitespace folding.</advantage>
+      <drawback>It adds several validation rules, each needing its own test and its own error message, and the cap is an arbitrary number with no precedent in the project. A title the model chose reasonably (for example with a doubled space) fails the whole run instead of going through. That makes the skill&apos;s model redo work the tool could have done.</drawback>
+    </alternative>
+    <alternative id="Fold and normalize case">
+      Fold and refuse-empty as in the first option, then also normalize the title&apos;s casing to one house style (for example sentence case) before writing the heading, so every tool-made heading follows the same convention.
+      <advantage>It ends the inconsistency the starting state records: the 37 existing headings mix Title Case (`Public Release Preparation`) and sentence case (`Non-interactive milestone activation`). Future headings stay uniform whatever casing the model happens to choose.</advantage>
+      <drawback>Mechanical case conversion damages proper nouns, acronyms and mixed-case identifiers such as XML, SkillsBench or a file name, and the tool cannot tell those apart from ordinary words. The heading can then read worse than what the model wrote. The change also moves a stylistic judgment out of the skill, even though the goal leaves choosing the title as the model&apos;s work.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Milestones root and cold start">
     <question>Is the milestones root a fixed path relative to the working directory or a tool argument, and when that root is missing does the tool create it or refuse, given that the bootstrap skill owns creating it?</question>
