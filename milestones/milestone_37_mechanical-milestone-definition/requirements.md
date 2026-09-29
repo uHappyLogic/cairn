@@ -60,5 +60,9 @@ Both `scripts/hosts/claude/settings.toml` and `scripts/hosts/antigravity/setting
 
 - The tool always resolves the milestones root as `milestones` relative to the working directory, the workspace root every other skill assumes, and takes no root argument or flag. When that directory does not exist it prints one `Error:` line naming it and pointing at `/init-milestone-base-workflow`, and writes nothing: creating the root stays the bootstrap's job alone, so the tool never creates it and its footprint stays inside the one milestone directory.
 
+### Number scan and padding
+
+- Only directories directly under the milestones root whose whole name matches `milestone_<digits>_<non-empty slug>` (ASCII digits only) count in the number scan, the same definition of a milestone directory that `goto-next-milestone` uses; any other entry, including a `milestone_*` name with a non-digit prefix and any file, is skipped without a message. Numbers are read as integers with leading zeros stripped, the new number is max-plus-one, and it is formatted with a minimum of two digits (`{:02d}`), so `99` is followed by `100` and the width grows on its own with no cap.
+
 ## Out of Scope
 
