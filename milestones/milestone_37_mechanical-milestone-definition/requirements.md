@@ -36,5 +36,9 @@ Both `scripts/hosts/claude/settings.toml` and `scripts/hosts/antigravity/setting
 
 ## Decisions
 
+### Creating open_questions.xml
+
+- define_milestone.py writes the empty `open_questions.xml` (`<open-questions/>` followed by a newline) itself, with its own atomic write, and imports nothing from open_questions.py. The `create` subcommand and `cmd_create` are removed from the open-question tool, which from then on works only on documents that already exist. A test checks that define_milestone.py's output parses with `open_questions.load_document` and equals `render_document(Document())`, so the two tools cannot drift apart on the empty document's bytes. The sole-writer rule is reworded: define_milestone.py creates the document, and the open-question tool is its only writer after that.
+
 ## Out of Scope
 
