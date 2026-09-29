@@ -1,11 +1,11 @@
 ---
 name: define-milestone-goal
-description: Create a new milestone directory with initialized requirements.md (Goal filled from the provided description), an empty open_questions.xml, and empty TASKS files.
+description: Create a new milestone directory with its four starting files from the provided goal description.
 ---
 
 # define-milestone-goal
 
-Creates a new milestone directory under `milestones/` with a `requirements.md` pre-filled with the goal, an empty `open_questions.xml` written by the plugin's open-question tool, plus empty `TASKS_TODO.md` and `TASKS_DONE.md`. Does not populate the remaining sections — those are filled by subsequent skills (`/specify-milestone-starting-state`, `/review-milestone-requirements`, etc.). Defining a milestone does not activate it: this skill never updates `CLAUDE.md` or `milestones/README.md`, which change only when the milestone becomes the *current* active one via `/goto-next-milestone`.
+Creates a new milestone directory under `milestones/` holding the four files every milestone starts with — `requirements.md`, `open_questions.xml`, `TASKS_TODO.md`, and `TASKS_DONE.md` — all created by the plugin's milestone-definition tool, which also works out the milestone's number and directory name. Your only work is choosing the milestone's title, handing the tool's output to the commit procedure, and reporting the result; the files are filled in by the skills that follow (`/specify-milestone-starting-state`, `/review-milestone-requirements`, etc.). Defining a milestone does not activate it: this skill never updates `CLAUDE.md` or `milestones/README.md`, which change only when the milestone becomes the *current* active one via `/goto-next-milestone`.
 
 ## Usage
 
@@ -22,83 +22,41 @@ Creates a new milestone directory under `milestones/` with a `requirements.md` p
 
 ## Workflow
 
-### 1. Determine the milestone number
+### 1. Choose the title
 
-Scan the `milestones/` directory for subdirectories whose names match the pattern `milestone_<NN>_*` (e.g. `milestone_01_public-release-prep`). For each matching directory, extract the numeric prefix and parse it as an integer, stripping any leading zeros (`01` → `1`, `09` → `9`). Take the maximum integer found and add 1 to get the next milestone number. Format the result zero-padded to two digits (e.g. `1` → `01`, `9` → `09`, `10` → `10`).
+Read `<overall_goal_description>` and choose a short title that names the milestone's objective (e.g. `Getting-started guide` for the example above). The tool derives the directory name from the title's first words, so lead with the words that identify the milestone.
 
-If `milestones/` contains no matching directories (cold start), treat the maximum as `0`, so the first milestone number is `1`, formatted `01`.
+### 2. Create the milestone
 
-Do not read the milestone number from `CLAUDE.md` or from `milestones/README.md`'s pointer — the scan is the sole source.
-
-### 2. Derive the milestone slug
-
-Convert `<overall_goal_description>` to a short kebab-case slug (3–5 words max) that captures the essence of the goal. The full directory name is `milestone_<NN>_<slug>` where `<NN>` is the zero-padded two-digit number from step 1.
-
-**Example:** "add a getting-started guide that walks a new user through their first session" → `milestone_12_getting-started-guide` (if the next number happens to be 12)
-
-### 3. Check for conflicts
-
-Verify that `milestones/milestone_<NN>_<slug>/` does not already exist. If a milestone with that number exists under any slug, stop and report the conflict.
-
-### 4. Create the milestone directory
-
-Create `milestones/milestone_<NN>_<slug>/` with four files, in the order below. Use the zero-padded `<NN>` in the directory name and the integer (leading zeros stripped) `<N>` in the `requirements.md` heading.
-
-**First, `open_questions.xml`** — run the plugin's open-question tool, which creates the directory and writes the empty document itself:
+From the workspace root, run the tool once, passing the title as one quoted argument and `<overall_goal_description>` unchanged on standard input through a **quoted-delimiter heredoc** (`<<'EOF'`, so nothing inside is expanded; pick a delimiter line the goal text does not contain):
 
 ```
-python3 ${CLAUDE_PLUGIN_ROOT}/tools/open_questions.py create milestones/milestone_<NN>_<slug>
-```
-
-It prints nothing on success. Never write `open_questions.xml` yourself — the tool is that file's sole writer, and this call is what makes it so from the first byte. If the call fails — the shell cannot find `python3`, or the tool exits non-zero with one `Error: <reason>` line on stderr — stop here without writing any of the Markdown files below, so the failure leaves nothing behind, and report it in full: quote the shell's or the tool's line verbatim (a missing interpreter is the Python 3.9+ prerequisite `/init-milestone-base-workflow` checks for).
-
-**Then the three Markdown files**, written into that directory:
-
-**`requirements.md`:**
-```markdown
-# Milestone <N>: <title>
-
-## Goal
-
+python3 ${CLAUDE_PLUGIN_ROOT}/tools/define_milestone.py --title "<title>" <<'EOF'
 <overall_goal_description>
-
-## Relevant starting state
-
-## Decisions
-
-## Out of Scope
-
+EOF
 ```
 
-**`TASKS_TODO.md`:**
-```markdown
-# TASKS TODO
+On success the tool prints exactly two lines: the commit subject, then the milestone directory path. Hold both unchanged for step 3; compose, reword, and re-derive neither.
 
-```
+If the call fails — the shell cannot find `python3`, or the tool exits non-zero with one `Error: <reason>` line on stderr — stop here and report it in full, quoting the shell's or the tool's line verbatim (a missing interpreter is the Python 3.9+ prerequisite `/init-milestone-base-workflow` checks for). The tool leaves nothing behind on failure, so there is nothing to clean up and nothing to commit.
 
-**`TASKS_DONE.md`:**
-```markdown
-# TASKS DONE
+### 3. Commit the new milestone
 
-```
+Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs, both exactly as the tool printed them in step 2:
 
-### 5. Commit the new milestone
-
-Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
-
-- **PATHS** — this skill's own change set: the four files it just created — `milestones/milestone_<NN>_<slug>/open_questions.xml`, `milestones/milestone_<NN>_<slug>/requirements.md`, `milestones/milestone_<NN>_<slug>/TASKS_TODO.md`, and `milestones/milestone_<NN>_<slug>/TASKS_DONE.md`.
-- **SUBJECT** — `Milestone-definition: milestone_<NN>_<slug>`.
+- **PATHS** — the milestone directory path, the tool's second line; the directory holds exactly the four files the tool just created.
+- **SUBJECT** — the tool's first line.
 
 The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
 
-### 6. Confirm
+### 4. Confirm
 
-On the success path — the commit in step 5 recorded the new milestone — print exactly one fixed terse status line and nothing else:
+On the success path — the commit in step 3 recorded the new milestone — print exactly one fixed terse status line and nothing else:
 
 ```
 Milestone defined.
 ```
 
-Do not add the created directory path, the goal text, or a next-step pointer.
+Do not add the created directory path, the title, the goal text, or a next-step pointer.
 
-If instead the step-5 dirty-own-path guard fired (none of the four files changed, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the milestone files already existed; nothing committed.`
+If instead the step-3 dirty-own-path guard fired (nothing under the milestone directory changed, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the milestone directory holds no uncommitted files; nothing committed.`

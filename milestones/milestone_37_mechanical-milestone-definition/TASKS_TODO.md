@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Rewrite Define Skill Around Tool
-
-Rewrite `core/skills/define-milestone-goal/SKILL.md` so its single `<overall_goal_description>` argument stays and the model's only work is choosing the title, running `python3 {{PLUGIN_ROOT}}/tools/define_milestone.py --title` with the goal text on stdin as a quoted heredoc, handing the tool's two printed lines unchanged to the commit procedure as PATHS (the directory) and SUBJECT, and printing `Milestone defined.` or the distinct no-change line, while a failure quotes the tool's `Error:` line or the shell's missing-interpreter line verbatim and stops. The number, slug, and conflict steps are gone, the skill names the four files the tool creates and states none of their contents, and its frontmatter description stays one clause of 25 words or fewer. Verified by rebuilding both host trees so `uv run scripts/build_hosts.py --check` passes and by one run of the rewritten steps in a throwaway git repository that ends in a `Milestone-definition:` commit holding exactly the four files.
-
----
-
 ## Remove Create From Open-Question Tool
 
 Remove the `create` subcommand from `core/tools/open_questions.py` (`cmd_create`, its parser registration, and its docstring entry) so the tool works only on documents that already exist, and reword the module docstring's sole-writer claim so `define_milestone.py` creates the document and this tool is its only writer after that. Delete `tests/test_create.py`, keeping only its check that the `empty` fixture is what the serializer renders for no questions, and rewrite the `tests/test_contract.py` cases that drive `create` against a surviving subcommand. Verified by both suite runs passing, `python3 core/tools/open_questions.py --help` no longer listing `create`, and both host trees rebuilt so `--check` passes.

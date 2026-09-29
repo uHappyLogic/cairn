@@ -33,3 +33,18 @@ Add flat per-concern test files under `tests/` for `define_milestone.py`, one pe
 - `find core/tools -name __pycache__` prints nothing after both runs.
 
 ---
+
+## Rewrite Define Skill Around Tool
+
+Rewrite `core/skills/define-milestone-goal/SKILL.md` so its single `<overall_goal_description>` argument stays and the model's only work is choosing the title, running `python3 {{PLUGIN_ROOT}}/tools/define_milestone.py --title` with the goal text on stdin as a quoted heredoc, handing the tool's two printed lines unchanged to the commit procedure as PATHS (the directory) and SUBJECT, and printing `Milestone defined.` or the distinct no-change line, while a failure quotes the tool's `Error:` line or the shell's missing-interpreter line verbatim and stops. The number, slug, and conflict steps are gone, the skill names the four files the tool creates and states none of their contents, and its frontmatter description stays one clause of 25 words or fewer. Verified by rebuilding both host trees so `uv run scripts/build_hosts.py --check` passes and by one run of the rewritten steps in a throwaway git repository that ends in a `Milestone-definition:` commit holding exactly the four files.
+
+**Verified:**
+
+- `core/skills/define-milestone-goal/SKILL.md` keeps its single `<overall_goal_description>` argument (Usage and example unchanged) and its steps are now: choose the title; run `python3 {{PLUGIN_ROOT}}/tools/define_milestone.py --title "<title>"` with `<overall_goal_description>` on stdin through a quoted `<<'EOF'` heredoc; hand the tool's two printed lines unchanged to the commit procedure as PATHS (the directory, second line) and SUBJECT (first line); print `Milestone defined.` or the distinct no-change line.
+- A failure (missing `python3` or a non-zero exit with one `Error:` line) stops the skill with the shell's or the tool's line quoted verbatim.
+- The number, slug, and conflict steps and the `open_questions.py create` call are gone; the skill names the four files the tool creates (`requirements.md`, `open_questions.xml`, `TASKS_TODO.md`, `TASKS_DONE.md`) and states none of their contents (no heading, section, or template text remains).
+- The frontmatter description, `Create a new milestone directory with its four starting files from the provided goal description.`, is one clause of 15 words with no colon or semicolon and loads with `yaml.safe_load`.
+- `uv run scripts/build_hosts.py` rebuilt both host trees and `uv run scripts/build_hosts.py --check` passes.
+- One run of the rewritten steps in a throwaway git repository (a `milestones/` root, pointer `none`) printed `Milestone-definition: milestone_01_getting-started-guide` and `milestones/milestone_01_getting-started-guide/`, and committing that directory under that subject produced a `Milestone-definition:` commit holding exactly the four files, leaving the tree clean.
+
+---
