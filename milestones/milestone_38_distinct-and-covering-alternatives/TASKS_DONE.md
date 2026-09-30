@@ -76,3 +76,19 @@ Write the one throwaway conversion script under `temp/` that prepares a scratch 
 - It refuses a work tree outside the system temp directory (tried on a source repository: it stopped on its `Error:` line), a dirty tree, and a milestone that already has `open_questions.xml`; the source repositories' `HEAD` and status were identical before and after the runs, and every scratch clone was deleted.
 
 ---
+
+## Fix Re-Run Cases And Control Sample
+
+Fix, in an uncommitted manifest under `temp/`, the cases the re-run check will use: all 20 historical cases rated strong candidates (16 where the answer took a direction no option represented, 4 where it took a combination on an axis the set never laid out) and a control sample of eight to ten refinement overrides picked by a stratified seeded draw, with the grouping features (source project, how many alternatives the historical set held, and whether its judged verdict flagged near-duplicates) fixed before the draw and the seed fixed before any run. Fixing the selection first keeps it independent of every run's outcome. It is verified by the manifest holding exactly those counts with every group represented and by the draw reproducing under its recorded seed, with nothing from the benchmark data entering a committed file.
+
+**Verified:**
+
+- An uncommitted manifest exists under `temp/` (`temp/rerun-check/manifest.json`, written by `temp/rerun-check/draw_cases.py`), and `git status` shows nothing new to commit from it because `temp/` is gitignored.
+- The manifest holds exactly 20 re-run cases, all the strong candidates and nothing else: 16 where the answer took a direction no option represented and 4 where it took a combination on an axis the set never laid out.
+- The manifest holds a control sample of 10 refinement overrides, within the eight-to-ten bound, drawn from the 65 deduplicated refinement overrides.
+- The grouping features (source project, size of the historical alternative set, and the judged near-duplicate flag) and their bins are fixed as constants in the draw script before the draw, yielding 9 non-empty groups, and every group is represented by at least one drawn control case.
+- The seed is recorded in the manifest before any run, and re-running the draw in verify mode under that seed reproduces the recorded re-run and control selection exactly, under both the system `python3` and Python 3.9.
+- Every selected case resolves read-only to an answer commit and its parent in its source repository, with its milestone directory and pre-split status recorded; no source repository was written to.
+- No committed file carries any case, project, question, or commit detail from the benchmark data; the only committed change is this task-list move with aggregate counts.
+
+---

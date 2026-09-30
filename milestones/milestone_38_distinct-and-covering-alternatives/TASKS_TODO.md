@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Fix Re-Run Cases And Control Sample
-
-Fix, in an uncommitted manifest under `temp/`, the cases the re-run check will use: all 20 historical cases rated strong candidates (16 where the answer took a direction no option represented, 4 where it took a combination on an axis the set never laid out) and a control sample of eight to ten refinement overrides picked by a stratified seeded draw, with the grouping features (source project, how many alternatives the historical set held, and whether its judged verdict flagged near-duplicates) fixed before the draw and the seed fixed before any run. Fixing the selection first keeps it independent of every run's outcome. It is verified by the manifest holding exactly those counts with every group represented and by the draw reproducing under its recorded seed, with nothing from the benchmark data entering a committed file.
-
----
-
 ## Run Paired Alternatives Re-Run Check
 
 Run the one-off check over the fixed re-run and control cases: each case in a scratch clone outside this working copy at the parent of its answer commit (converted first where pre-split), the alternatives pass run back to back under the unchanged `alternatives-procedure.md` from the commit before the rewrite and under the new rules, both with `--model "opus"` at `--effort high`, and a separate blind judge agent deciding recovery of the missing direction and both control tests for each rule version's set. The change counts as verified when the new rules recover the missing direction in at least 5 more of the 20 re-run cases than the baseline, net of the paired cases they win minus those they lose, and fail no more control cases than the baseline; on a shortfall, revise the enumeration wording once and re-run the check, and record the aggregate shortfall if it persists. It is verified by the recovered-direction counts, the baseline counts, the margin, and the control outcomes recorded as aggregates only in this task's `**Verified:**` bullets, with every clone deleted, the source repositories only read, and no benchmark or private-project information in any committed artifact.
