@@ -47,31 +47,6 @@
       <drawback>It needs a rounding rule, and on a small denominator one case moves the share by many points. So it is only more useful than a fixed count if the pre-split case handling actually removes cases, and with the full 20 it behaves exactly like the five-case count.</drawback>
     </alternative>
   </open-question>
-  <open-question id="Check run model setting">
-    <question>The new-rules run and the baseline run of the one-off check use the same model and effort setting. Which model and effort setting do they use?</question>
-    <applied-principle>Check tier claims against the live environment</applied-principle>
-    <recommendation option="Documented pass setting">The verdict should describe the pass as it is actually run: `docs/ways-of-using-cairn.md` puts every alternatives line on `opus` at `--effort xhigh`, both values the CLI accepts, and a gain shown only at a setting no chain uses would say nothing about real runs; if the unchanged rules already recover the directions there, that is a finding the check should report.</recommendation>
-    <alternative id="Documented pass setting">
-      Both runs use `--model &quot;opus&quot;` at `--effort xhigh`. This is the setting `docs/ways-of-using-cairn.md` gives every `provide-alternatives-to-all-open-questions` line, and it is the one used on every re-run case and control case.
-      <advantage>The verdict measures the rules under the conditions the alternatives pass actually runs in. A recovery margin found here carries straight over to the documented chains, with no reasoning needed about a different model or effort level.</advantage>
-      <drawback>At a high effort level the unchanged rules may already recover many missing directions. That ceiling can shrink the gap the check has to show, so whether this setting clears the bar depends on the margin the Recovery margin value question fixes. Also, `opus` is a family alias that resolves to the latest release, so both runs must happen while the alias points at the same release.</drawback>
-    </alternative>
-    <alternative id="Maximum effort setting">
-      Both runs use `--model &quot;opus&quot;` at `--effort max`, the highest effort Claude Code accepts. The check tests the rules at the most reasoning the host can give, above the documented pass setting.
-      <advantage>The comparison gives each rule version its best chance. If the new rules still recover clearly more missing directions at maximum effort, the gain comes from the wording and cannot be explained by extra reasoning budget.</advantage>
-      <drawback>No documented chain runs the alternatives pass at `max`, so the result describes a setting nobody uses for this pass. It is also the costliest and slowest option: every case is run twice, the paired baseline and the new rules. And the ceiling effect is at its strongest here, which can leave too little gap for whatever margin its sibling question fixes.</drawback>
-    </alternative>
-    <alternative id="Reduced effort setting">
-      Both runs use a lower effort than the documented pass: `--effort high` or below, on `opus` or `fable`. Every setting in that range has the same trade-off, cheaper runs that depend more on the written rules. The chosen setting is used for every re-run case and control case.
-      <advantage>With less reasoning budget, the enumerator relies more on what the procedure tells it to do. The difference between the old and new wording is then less likely to be hidden by the model finding missing directions by itself, and running twice per case costs less.</advantage>
-      <drawback>The alternatives pass is never run at this setting in the documented chains. A margin found here may not hold at `xhigh`, and a verdict of &quot;verified&quot; could overstate the gain in real use.</drawback>
-    </alternative>
-    <alternative id="Unpinned recorded setting">
-      The requirements fix no model or effort. The runs use whatever the executing session supplies, either host defaults with both flags omitted or a setting the runner picks when the check starts. The setting actually used is recorded next to the committed aggregate results, and both runs of each case still share it.
-      <advantage>Nothing is committed ahead of time, and nothing more has to be decided before the check can run. The pairing decision already makes the comparison fair whichever setting is used.</advantage>
-      <drawback>The margin for &quot;clearly more&quot; is fixed before the runs, but the setting it is measured under is not. The setting could then be chosen, or rerun, after early results are seen, which weakens the fixed-in-advance principle behind the margin decision. Host defaults can also change between separate sessions, so a check spread over time may not have used one setting throughout.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Control failure effect">
     <question>The one-off check&apos;s verdict is defined only by how many missing directions the new rules recover compared with the baseline. What effect does a failed control case (a lost direction, or a near-duplicate or filler option) have on whether the change counts as verified?</question>
     <recommendation option="No worse than baseline">It applies the recovery verdict&apos;s own paired logic to the controls, using baseline runs the check already makes and fixing no new number; a regression the rewrite causes gates the verdict, while judging noise and flaws the unchanged rules also show do not.</recommendation>

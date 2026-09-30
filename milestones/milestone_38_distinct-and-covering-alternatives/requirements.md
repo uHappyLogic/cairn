@@ -69,6 +69,7 @@ No benchmark harness, eval directory, or judge exists in the repository. Neither
 - If the check falls short of its bar, the milestone revises the enumeration wording once and re-runs the check. If it still falls short after that single round, the milestone records the aggregate shortfall and finishes with the best wording it has.
 - Whether a re-run set contains the direction the historical answer took is decided by a separate judge agent with its own context, given only the historical answer, the recorded missing direction, and the re-run set, and not told which rule version produced the set. The user receives only its verdicts.
 - The check sets no absolute pass share: the change counts as verified when the new rules recover the missing direction in clearly more of the same cases than the unchanged rules recover when run with the same model, with the margin for "clearly more" fixed before the runs.
+- Both the new-rules run and the baseline run use `--model "opus"` at `--effort high`, the setting the alternatives pass actually runs at in the maintainer's chains, on every re-run case and control case. The two runs of a case are made back to back, so the `opus` alias resolves to the same release for both.
 
 ### Documentation
 
