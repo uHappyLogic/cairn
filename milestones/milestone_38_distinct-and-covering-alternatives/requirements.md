@@ -47,6 +47,7 @@ No benchmark harness, eval directory, or judge exists in the repository. Neither
 ### Question authoring
 
 - `review-milestone-requirements` step 3 gains the one-axis rule as a third requirement on the question text — each question asks one choice — and names no test for detecting a second axis; detection is left to the author's judgment, as with the step's other authoring rules. Designing a detection test is left to a separate future milestone: the candidate tests (an independent-settlement test, surface-wording cues, an option-grid preview, and an independence test prompted by wording cues) are carried into the uncommitted `temp/` idea document on how `review-milestone-requirements` frames questions.
+- Choices in one gap that constrain each other, so that not every pairing is viable, are authored by `review-milestone-requirements` as a single multi-axis question, a named exception to the one-axis rule. Both choices are asked at once, and the enumeration weighs every combination in reasoning and describes only the viable ones.
 
 ### Enumeration rules
 

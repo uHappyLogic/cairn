@@ -1,23 +1,4 @@
 <open-questions>
-  <open-question id="Interdependent axes">
-    <question>When two choices in one gap constrain each other so that not every pairing is viable, does review-milestone-requirements author them as two one-axis questions or as one multi-axis question?</question>
-    <recommendation option="Single multi-axis question">The goal already provides for a multi-axis question whose combinations are weighed and whose viable ones are described, so coupled choices belong in the one block that sees both; every option is then a coherent pairing and any answer path records one consistent decision, which the split forms cannot guarantee.</recommendation>
-    <alternative id="Single multi-axis question">
-      review-milestone-requirements authors the coupled choices as one question, as a named exception to the one-axis rule. Both choices are asked at once, and the enumeration excludes the pairings that cannot work: it weighs every combination in reasoning and describes only the viable ones, as the milestone goal already requires for a multi-axis question.
-      <advantage>The pairings that cannot work are visible and removed in the one place that sees both choices together. Every option in the set is a coherent combination, so any answer, whether a pick, a lifted alternative or a manual answer, records one consistent decision in a single fold. The benchmark&apos;s cases of an answer taking a combination the set never laid out are addressed directly.</advantage>
-      <drawback>The one-axis authoring rule gets an exception, and review must judge when two choices really constrain each other. Where that judgment is loose, compound questions come back through the exception and the set grows by combinations, which is the growth the upstream rule was meant to prevent. How much this matters depends on how the compound-question test is framed.</drawback>
-    </alternative>
-    <alternative id="Two concurrent one-axis questions">
-      review-milestone-requirements always authors the two choices as two one-axis questions, raised in the same pass. Each question&apos;s alternatives are enumerated independently, since siblings are scope only and never assumed settled. The pairings that cannot work are left to the existing machinery: the recommendation pass&apos;s depends-on tags on the pick, and the cascade in remove --option when an answer is recorded.
-      <advantage>The one-axis rule has no exception, so review needs no judgment about coupling. Nothing new is added to the authoring step, to the enumeration or to the tool. The constraint is handled by reconciliation that already exists and is tested, and each set stays small and focused on one axis.</advantage>
-      <drawback>Each set is enumerated without knowing how the other question will settle, so both sets carry options that are only viable in some pairings. A manual answer or lifted alternative can record a pairing that cannot work, and the cascade only strips dependent picks, never the alternatives. As a result, a combination that neither set lays out stays invisible, which is the benchmark&apos;s pattern of an answer taking a combination the set never showed.</drawback>
-    </alternative>
-    <alternative id="Upstream question first">
-      review-milestone-requirements authors only the choice that constrains the other as a one-axis question now. It holds back the dependent choice, which a later review pass raises as a new gap once the first choice is recorded, through the step-3 check for gaps that recent decisions exposed.
-      <advantage>The one-axis rule keeps no exception, and the dependent question&apos;s alternatives are enumerated after the constraint is recorded in the Decisions section. The grounding step then already rules out the pairings that cannot work, so no set carries an option that is only viable in some pairings, and the existing review loop does the sequencing.</advantage>
-      <drawback>Convergence takes an extra round of review, alternatives, recommendation and answer. The upstream choice is enumerated and picked without its consequences for the dependent choice laid out beside it. When the constraint runs both ways, no choice is clearly upstream, and review must still pick an order arbitrarily. The held-back choice can also be overlooked if a later pass does not recognise it as exposed.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Authoring rule verification">
     <question>How is the one-axis authoring rule of review-milestone-requirements verified, given that the milestone&apos;s one-off check re-runs only the alternatives pass?</question>
     <recommendation option="Synthetic compound fixture">It is the only cheap option that runs the real review skill against a gap whose correct split is known in advance, it uses no private data, and the fixture can hold one independent pair and one coupled pair so both the split and its exception are exercised before the milestone finishes.</recommendation>
@@ -267,7 +248,6 @@
   </open-question>
   <open-question id="Sibling-owned axes">
     <question>When an axis of the underlying decision is already the subject of a sibling open question, does an alternative set&apos;s coverage extend to that axis, or does the existing rule that an option answering a sibling is left to that sibling bound it?</question>
-    <depends-on question="Interdependent axes" option="Single multi-axis question"/>
     <recommendation option="Bound with named constraint">Each axis stays decided in exactly one block, which is what keeps the parallel alternatives pass and the scope-only sibling rule safe, while the required condition in the drawback gives the recommendation pass the cross-question constraint it turns into a dependency; choices coupled tightly enough to need laid-out combinations never reach two blocks.</recommendation>
     <alternative id="Bound with named constraint">
       Siblings still bound the set, so no option varies on a sibling-owned axis. But the enumeration step now explicitly requires each option to name any sibling-owned axis its viability depends on, stated as a condition in its drawback without naming the expected outcome. This turns today&apos;s optional &quot;say so in its drawback&quot; into a required statement.
