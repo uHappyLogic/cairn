@@ -68,6 +68,31 @@
   </open-question>
   <open-question id="What-it-is length">
     <question>Once an option&apos;s what-it-is text must also state where the option stands on each axis, does that field of alternatives-procedure.md keep its one-sentence limit, get a different stated limit, or carry no limit?</question>
+    <alternative id="Keep one sentence">
+      The what-it-is field in step 2 of alternatives-procedure.md keeps its &quot;one sentence&quot; limit. That one sentence now has to name the option&apos;s position on every axis of the decision, and the agent file&apos;s rendering step can keep calling the field &quot;the what-it-is sentence&quot; unchanged.
+      <advantage>What gets recorded stays short. On the Alternative-answer: path, `lift --alternative` prints `&lt;id&gt; — &lt;what-it-is&gt;`, and that line is folded into `## Decisions` and used as the commit body. With one sentence, a recorded decision stays one crisp line. The limit also keeps rationale in the advantage and drawback fields, and it needs no wording change in core/agents/provide-alternatives-to-open-question.md, discuss-open-question, or capture-milestone-principle-updates.</advantage>
+      <drawback>On a question with several axes, a sentence that must place the option on every axis turns into a long run-on or gets clipped. Clipping it drops the very position statements the goal requires. How often this happens depends on how the sibling questions on authoring settle. It bites only if multi-axis questions still reach the alternatives pass.</drawback>
+    </alternative>
+    <alternative id="One sentence per axis">
+      The one-sentence limit is replaced by a limit that grows with the question&apos;s shape. The field allows roughly one short sentence or clause per axis the option takes a position on, so a one-axis question still gets one sentence.
+      <advantage>The length bound follows the growth the goal expects. A multi-axis option gets room to state every position without running on, and a one-axis option stays as terse as it is today. So the rule scales with the axis count, in keeping with the goal&apos;s removal of the fixed count guideline.</advantage>
+      <drawback>The bound depends on the enumerator&apos;s own count of the axes, so a wrong axis count also bends the length. On multi-axis questions, several sentences now go into the lifted `&lt;id&gt; — &lt;what-it-is&gt;` line folded into `## Decisions`. The tool folds all element text to one line, so that becomes one long line. The agent file&apos;s &quot;what-it-is sentence&quot; wording also has to change.</drawback>
+    </alternative>
+    <alternative id="Fixed short cap">
+      The field gets a different fixed limit that does not depend on the axis count, such as &quot;at most two or three sentences&quot; or &quot;a short paragraph&quot;. Within that limit it must state the option&apos;s position on each axis.
+      <advantage>It is simple to state and to check, and it gives multi-axis options noticeably more room than one sentence. It also keeps a hard ceiling, so the lifted decision line in `## Decisions` and in capture&apos;s reconstruction can never grow past a known size.</advantage>
+      <drawback>The number is arbitrary relative to the question&apos;s structure. It still squeezes a question with many interdependent axes, and on one-axis questions it invites padding up to the cap. The procedure otherwise bans padding, and the goal drops a count guideline for exactly this kind of reason.</drawback>
+    </alternative>
+    <alternative id="Content-scoped, no count">
+      The sentence count is dropped and replaced by a content bound. The what-it-is text holds only what the option is, meaning its position on each axis, and any reason for or against it belongs in the advantage and drawback fields. Its length then follows from how many positions there are to state.
+      <advantage>It ties the field to what it is for, not to a number, so it fits every question shape without an arbitrary figure. It also keeps the lifted what-it-is line, which becomes the recorded decision, free of rationale. That line stays a clean statement of what was chosen.</advantage>
+      <drawback>A qualitative bound is harder for the subagent to apply consistently than a sentence count, and an enumerator can still write long position prose. With no ceiling, a verbose option carries straight into `## Decisions` and commit bodies, because the tool sets no length limit and only folds the text to one line.</drawback>
+    </alternative>
+    <alternative id="No stated limit">
+      The field states no length limit or scope bound at all. It only has to state where the option stands on each axis, and length is left to the procedure&apos;s existing ban on padding and to the enumerator&apos;s judgment.
+      <advantage>This is the smallest change to the procedure&apos;s wording. Nothing about the field&apos;s form can ever conflict with the requirement to state every axis position, and the field is treated consistently with the goal&apos;s removal of the count guideline.</advantage>
+      <drawback>Nothing stops the what-it-is text from growing into a paragraph that repeats the advantage and drawback. Such text degrades what `lift --alternative` records as the decision and what capture-milestone-principle-updates reads as each option&apos;s what-it-is. It also makes the options that discuss-open-question presents harder to compare.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Defer direction">
     <question>Is postponing the decision, leaving the question unanswered for a later milestone, a direction an alternative set may list, as distinct from the direction of not doing the thing the question is about?</question>
