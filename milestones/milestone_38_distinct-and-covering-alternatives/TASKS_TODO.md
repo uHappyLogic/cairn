@@ -1,2 +1,73 @@
 # TASKS TODO
 
+## Rewrite Alternatives Procedure Enumeration Step
+
+Rewrite step 2 of `core/shared/alternatives-procedure.md` under the milestone's Enumeration rules decisions: a mandatory axes-first move (premises and degree or parameter values treated as axes, every combination weighed in reasoning on a multi-axis question and each viable one described), distinctness and coverage as the tests the set must pass, the separate instruction to weigh not doing the thing (postponing folded into it as at most one option), the what-it-is field bounded by content instead of one sentence, the sibling-owned-axis condition in the drawback, and no count guideline. This is the milestone's core change, the rule set every later task verifies or documents. It is verified by reading the rewritten step against each Enumeration rules decision with step 1 and the no-preference rule intact, and by `uv run scripts/build_hosts.py --check` passing on the rebuilt host trees.
+
+---
+
+## Align Enumeration Restatements With Rewritten Procedure
+
+Bring the two runtime restatements of step 2 into line with the rewritten procedure: `core/agents/provide-alternatives-to-open-question.md` stops calling the first field a sentence, and `core/skills/discuss-open-question/SKILL.md` step 3 drops its "2–4" count, each deferring to the procedure rather than restating its rules. Without this the subagent and the inline runner would still carry the retired count and length limits beside the new rules. It is verified by a search of `core/` finding no count guideline and no one-sentence limit on alternatives, and by `uv run scripts/build_hosts.py --check` passing on the rebuilt host trees.
+
+---
+
+## Add One-Axis Rule To Question Authoring
+
+Add to step 3 of `core/skills/review-milestone-requirements/SKILL.md` a third requirement on the question text — each question asks one choice, with no test named for detecting a second axis — plus the named exception that choices in one gap that constrain each other, so that not every pairing is viable, are authored as a single multi-axis question. This prevents upstream the set growth the new enumeration rules would otherwise produce on compound questions. It is verified by reading step 3 against the two Question authoring decisions with step 2's tidy-only boundary untouched, and by `uv run scripts/build_hosts.py --check` passing on the rebuilt host trees.
+
+---
+
+## Verify One-Axis Rule With Compound Fixture
+
+Build the small throwaway fixture milestone under `temp/` whose `requirements.md` deliberately leaves a gap holding one independent pair of axes and one coupled pair, and run `review-milestone-requirements` against it in a scratch working copy with the rebuilt plugin tree, to check the one-axis rule and its exception as authored. The run passes when it authors one question per axis for the independent pair and a single multi-axis question for the coupled pair; if it does not, revise the failing step-3 wording once (never the fixture), re-run the fixture with one run, and record any remaining shortfall while keeping the best wording. It is verified by the question set the final run authored, described in this task's record.
+
+---
+
+## Write Pre-Split Case Conversion Script
+
+Write the one throwaway conversion script under `temp/` that prepares a scratch clone of a milestone predating `open_questions.xml`: it creates the empty document in the milestone directory, turns every question of the open-questions section of `requirements.md` into a bare block through the tool's `add` (the historical Short Title and question text only), deletes that section, and commits the converted state inside the clone. The re-run check needs it so pre-split and post-split cases run through the unchanged alternatives pass alike and count in one tally. It is verified by running it in a scratch clone checked out at a pre-split commit and confirming the tool's `list` prints that milestone's questions, the section is gone from `requirements.md`, and the source repository is untouched.
+
+---
+
+## Fix Re-Run Cases And Control Sample
+
+Fix, in an uncommitted manifest under `temp/`, the cases the re-run check will use: all 20 historical cases rated strong candidates (16 where the answer took a direction no option represented, 4 where it took a combination on an axis the set never laid out) and a control sample of eight to ten refinement overrides picked by a stratified seeded draw, with the grouping features (source project, how many alternatives the historical set held, and whether its judged verdict flagged near-duplicates) fixed before the draw and the seed fixed before any run. Fixing the selection first keeps it independent of every run's outcome. It is verified by the manifest holding exactly those counts with every group represented and by the draw reproducing under its recorded seed, with nothing from the benchmark data entering a committed file.
+
+---
+
+## Run Paired Alternatives Re-Run Check
+
+Run the one-off check over the fixed re-run and control cases: each case in a scratch clone outside this working copy at the parent of its answer commit (converted first where pre-split), the alternatives pass run back to back under the unchanged `alternatives-procedure.md` from the commit before the rewrite and under the new rules, both with `--model "opus"` at `--effort high`, and a separate blind judge agent deciding recovery of the missing direction and both control tests for each rule version's set. The change counts as verified when the new rules recover the missing direction in at least 5 more of the 20 re-run cases than the baseline, net of the paired cases they win minus those they lose, and fail no more control cases than the baseline; on a shortfall, revise the enumeration wording once and re-run the check, and record the aggregate shortfall if it persists. It is verified by the recovered-direction counts, the baseline counts, the margin, and the control outcomes recorded as aggregates only in this task's `**Verified:**` bullets, with every clone deleted, the source repositories only read, and no benchmark or private-project information in any committed artifact.
+
+---
+
+## State New Rules In Skill Reference And Claims
+
+Update `docs/skill-reference.md` to state the enumeration rules briefly in the `discuss-open-question`, `provide-alternatives-to-all-open-questions`, and alternatives-subagent entries and the one-axis rule in the `review-milestone-requirements` entry, and rewrite claim 4's Design in `docs/design-claims.md` to say the alternatives are distinct and cover the decision, with no count and its Metric line left as it is. Both pages otherwise still describe the retired count guideline. It is verified by reading those entries against the final runtime wording, finding no count guideline for alternatives left in either page, and confirming `docs/workflow.md` is unedited.
+
+---
+
+## Lower Alternatives Pass Effort In Usage Chains
+
+In `docs/ways-of-using-cairn.md`, move every `provide-alternatives-to-all-open-questions` line from `--effort xhigh` to `--effort high` on `opus` and change each prose sentence naming that line's effort with it, so the page shows the setting the alternatives pass actually runs at. It is verified by no alternatives-pass line or sentence on the page naming `xhigh`, with every other chain line's settings unchanged.
+
+---
+
+## Add Distinct And Covering Invariant Bullet
+
+Add one dedicated bullet to the invariants section of `CLAUDE.md` explaining why an alternative set must be distinct and covering (every two options differ in substance on an axis, and the set covers the underlying decision, including dropping the thing where viable), why the "two to four" count guideline was removed and must not be restored, why each option states its axis positions, and how the one-axis authoring rule in `review-milestone-requirements` stops the set from growing. It records the rationale the runtime files leave out, stating the rule and its generic failure patterns without measurement figures. It is verified by reading the bullet against the final runtime wording and confirming it carries no figure and nothing from the benchmark data.
+
+---
+
+## Write Benchmark Harness Idea Document
+
+Write the uncommitted idea document under `temp/` for a committed benchmark harness, drawing on how the one-off re-run check was prepared, run, and judged. The goal names it as one of the milestone's two idea documents, since the repository holds no harness, eval directory, or judge. It is verified by the file existing under `temp/`, describing the harness concretely enough to seed a future milestone, and `git status` showing nothing new to commit from it.
+
+---
+
+## Write Question Framing Idea Document
+
+Write the uncommitted idea document under `temp/` on further improvements to how `review-milestone-requirements` frames questions: shared premises, splitting existing compound questions, and the four candidate tests for detecting a second axis (an independent-settlement test, surface-wording cues, an option-grid preview, and an independence test prompted by wording cues). The goal names it as the second idea document, and the one-axis decision carries those detection tests into it for a separate future milestone. It is verified by the file existing under `temp/` with every one of those topics covered and `git status` showing nothing new to commit from it.
+
+---
