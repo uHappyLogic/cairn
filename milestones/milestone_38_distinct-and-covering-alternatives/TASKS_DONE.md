@@ -142,3 +142,20 @@ In `docs/ways-of-using-cairn.md`, move every `provide-alternatives-to-all-open-q
 - The diff against the previous page touches only those six lines; every other chain line's host, model, and effort is unchanged.
 
 ---
+
+## Add Distinct And Covering Invariant Bullet
+
+Add one dedicated bullet to the invariants section of `CLAUDE.md` explaining why an alternative set must be distinct and covering (every two options differ in substance on an axis, and the set covers the underlying decision, including dropping the thing where viable), why the "two to four" count guideline was removed and must not be restored, why each option states its axis positions, and how the one-axis authoring rule in `review-milestone-requirements` stops the set from growing. It records the rationale the runtime files leave out, stating the rule and its generic failure patterns without measurement figures. It is verified by reading the bullet against the final runtime wording and confirming it carries no figure and nothing from the benchmark data.
+
+**Verified:**
+
+- `CLAUDE.md` `## Invariants to preserve when editing skills` carries one new dedicated bullet, "An alternative set is distinct and covering, with no count.", placed directly after the two-halves-of-the-analytical-core bullet; `AGENTS.md` shows it through its symlink.
+- The bullet explains why a set must be distinct (every two options differ in substance on at least one axis) and covering (the set covers the underlying decision rather than the question's wording, including not doing the thing where honestly viable), with the reason that the set is the only menu every later pick chooses from.
+- The bullet explains why the "typically two to four" guideline was removed and states it must not be restored (a count is a shortlist size, not a completeness test; it invites padding and trimming and hides a multi-axis question's growth).
+- The bullet explains why each option's what-it-is field states its position on every axis (distinctness and coverage are checkable only against stated positions; that text is what `lift --alternative` folds into `## Decisions` and capture reads back).
+- The bullet explains how the one-axis authoring rule in `review-milestone-requirements` stops the set from growing, including the coupled-choices exception and that no detection test is named.
+- Read against the final runtime wording (`core/shared/alternatives-procedure.md` step 2 as revised, including the none position per axis and values taken from the underlying decision, and `core/skills/review-milestone-requirements/SKILL.md` step 3), the bullet matches it and contradicts nothing.
+- The bullet names the rule's generic failure patterns (near-duplicate options, an unrepresented direction, an unlaid-out combination, a shared premise) and carries no measurement figure (its only digit is the procedure's step number) and no case, project, question, or answer detail from the benchmark data.
+- `uv run scripts/build_hosts.py --check` passes.
+
+---
