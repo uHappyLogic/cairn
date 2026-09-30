@@ -1,39 +1,4 @@
 <open-questions>
-  <open-question id="Aggregate result home">
-    <question>Only aggregate results of the one-off check may be committed, and the new `CLAUDE.md` invariant carries no measurement figures. In which committed file are the check&apos;s aggregate results recorded?</question>
-    <applied-principle>Description over retirement note</applied-principle>
-    <recommendation option="Task Verified bullets">The completion procedure already writes each task&apos;s evidence as `**Verified:**` bullets, so the counts, the margin, and the control outcomes land in the milestone record with no new file or convention, and the public docs and `requirements.md` stay free of one-off figures that would go stale.</recommendation>
-    <alternative id="Task Verified bullets">
-      The aggregate results go in the `**Verified:**` bullets of the check&apos;s task entry in the milestone&apos;s `TASKS_DONE.md`. That file already holds each completed task&apos;s acceptance bar and evidence, so the results stay inside the milestone&apos;s own records. `docs/` and `requirements.md` stay as they are.
-      <advantage>It needs no new file and no new convention. `complete-procedure.md` already writes the evidence for a finished task into `**Verified:**` bullets, so recording the recovered-direction counts, the baseline counts, the margin, and the control outcomes there fits the pipeline exactly. The milestone directory also keeps its fixed set of four files.</advantage>
-      <drawback>The results sit in the milestone&apos;s task record, which is mainly read by later runs of that milestone&apos;s own completion. Anyone checking design claim 4 or the new `CLAUDE.md` invariant would have to know which milestone and which task to open. Whether the results end up split across several task entries also depends on how `derive-tasks` breaks up the check.</drawback>
-    </alternative>
-    <alternative id="Requirements decisions entry">
-      The aggregate results go in the milestone&apos;s `requirements.md`, as a verification-outcome entry under `## Decisions` next to the verification decisions it measures. `TASKS_DONE.md` points to that entry and does not repeat the figures.
-      <advantage>The result sits right beside the bar, the baseline design, and the fallback rule it is judged against, which include &quot;records the aggregate shortfall&quot;. A reader of the requirements sees both the rule and whether it passed in one place.</advantage>
-      <drawback>`## Decisions` holds choices, not measurements. A result entry would mix outcomes into a section that the answer core folds decisions into and that `capture-milestone-principle-updates` and review passes read as decisions. It is also written after the requirements have converged, which is not how that file is normally used.</drawback>
-    </alternative>
-    <alternative id="Milestone history summary">
-      The aggregate results go in this milestone&apos;s entry under `## Milestone History` in `milestones/README.md`, written by `finish-current-milestone` as one or two summary bullets. No other committed file carries the figures.
-      <advantage>The finish step writes this summary anyway, and it is the project-wide record a new session reads first. The outcome becomes visible across milestones with no extra file and no extra step.</advantage>
-      <drawback>History bullets are short accomplishment lines written at finish time. Several counts plus a baseline comparison and control outcomes would crowd them. The figures also would not exist in any committed place until the milestone finishes, so a revise-and-re-run round in between leaves no committed record.</drawback>
-    </alternative>
-    <alternative id="Design claim evidence">
-      The aggregate results go in `docs/design-claims.md` under claim 4, as a short evidence statement next to its unchanged Metric line. That records a first measured result for the claim about alternative quality.
-      <advantage>The result sits in the public document that makes the claim it supports. That makes it the most useful place for outside readers and for the grant and benchmark goals, and it turns a claim the page says no suite tests into one with recorded evidence.</advantage>
-      <drawback>It changes the structure of a page whose claims all follow a fixed Design/Metric shape, and it goes beyond the recorded documentation decision, which rewrites only claim 4&apos;s Design and keeps its Metric line. A one-off, single-model result from a small sample may also read as a stronger or more lasting guarantee than it is.</drawback>
-    </alternative>
-    <alternative id="Dedicated results document">
-      The aggregate results go in a new committed file of their own outside the milestone directory, for example a verification-results page under `docs/`. That page holds the counts, the margin, the baseline comparison, and the control outcomes, and other records link to it.
-      <advantage>There is room for the full aggregate picture without crowding any existing format. The file could also later hold the results of the committed benchmark harness that the uncommitted `temp/` idea document proposes.</advantage>
-      <drawback>It adds a new committed document and a new convention for a one-off check. That page then has to be listed in `CLAUDE.md`&apos;s repository layout and kept current. It also raises a greater risk that details from the private benchmark leak past &quot;aggregate results and generic pattern descriptions&quot; as the page grows.</drawback>
-    </alternative>
-    <alternative id="No committed record">
-      The aggregate results stay only in the uncommitted `temp/` benchmark material and are reported to the user in the session. No committed file records them, and the committed artifacts state the rules without any evidence.
-      <advantage>There is no chance at all that anything from the benchmark data or the private projects reaches a committed artifact. No committed format has to change to hold measurements.</advantage>
-      <drawback>The recorded decisions expect a committed outcome (&quot;records the aggregate shortfall&quot;, &quot;counts as verified&quot;), so none of this milestone&apos;s evidence would survive in git. That goes against the principle that the repository is the memory, and a later reader could not tell whether the rewrite was ever verified.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Fixture failure response">
     <question>The one-axis authoring rule is verified by running `review-milestone-requirements` against a synthetic fixture with one independent pair and one coupled pair of axes. What does the milestone do when that run does not author the questions as expected?</question>
     <recommendation option="Revise once then finish">It is the rule the one-off check already follows, so both verification parts handle a miss the same way with bounded effort, and leaving the fixture unchanged once it has run keeps the test honest.</recommendation>
