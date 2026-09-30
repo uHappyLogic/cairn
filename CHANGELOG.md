@@ -2,6 +2,24 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.7.5 — 2026-09-30
+
+### Distinct and covering alternatives (milestone 38)
+
+- The alternatives pass now maps the decision space axes-first: it names the axes of the underlying decision — degrees and taken-for-granted premises included, each with a none position — and builds every option as one position on each axis.
+- Every alternative set must be distinct (any two options differ in substance on some axis) and covering (it spans the underlying decision, with not doing the thing weighed on every question and postponing folded into it). The "two to four options" guideline is gone; a set's size now follows from its axes.
+- An option's what-it-is field states its position on every axis instead of being capped at one sentence, and an option that hinges on a sibling question's outcome names that as a condition in its drawback.
+- `/review-milestone-requirements` authors each new question as one choice, asking choices that constrain each other together as one multi-axis question.
+- `docs/ways-of-using-cairn.md` now runs the alternatives pass at `--effort high`.
+
+### Mechanical milestone definition (milestone 37)
+
+- `/define-milestone-goal` now creates the milestone through a new stdlib-only Python tool, `define_milestone.py`, which numbers it max-plus-one, derives the slug from the title, and writes all four files including the empty `open_questions.xml`; the model only chooses the title.
+- On any failure the tool prints one `Error:` line and removes exactly what it created, and it refuses outright when the `milestones` directory is missing.
+- The open-question tool's `create` subcommand is removed; it now works only on existing documents.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.7.4...1.7.5
+
 ## 1.7.4 — 2026-09-28
 
 ### Non-interactive milestone activation (milestone 36)
