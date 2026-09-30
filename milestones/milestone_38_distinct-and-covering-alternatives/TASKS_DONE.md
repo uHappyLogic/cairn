@@ -44,3 +44,19 @@ Add to step 3 of `core/skills/review-milestone-requirements/SKILL.md` a third re
 - `uv run scripts/build_hosts.py` rebuilt `hosts/claude/` and `hosts/antigravity/`, and `uv run scripts/build_hosts.py --check` passes.
 
 ---
+
+## Verify One-Axis Rule With Compound Fixture
+
+Build the small throwaway fixture milestone under `temp/` whose `requirements.md` deliberately leaves a gap holding one independent pair of axes and one coupled pair, and run `review-milestone-requirements` against it in a scratch working copy with the rebuilt plugin tree, to check the one-axis rule and its exception as authored. The run passes when it authors one question per axis for the independent pair and a single multi-axis question for the coupled pair; if it does not, revise the failing step-3 wording once (never the fixture), re-run the fixture with one run, and record any remaining shortfall while keeping the best wording. It is verified by the question set the final run authored, described in this task's record.
+
+**Verified:**
+
+- A throwaway fixture milestone exists under the gitignored `temp/one-axis-fixture/`: a small synthetic project whose `requirements.md` leaves one gap holding an independent pair of choices (the export file format and whether the export includes archived notes) and one gap holding a coupled pair (the on-disk storage format and the sync transport, where one pairing of the four is not viable). Nothing in it comes from the benchmark data.
+- `review-milestone-requirements` ran once against the fixture in a fresh scratch git working copy under the system temp directory, headless with `--model "fable" --effort high`, with the rebuilt `hosts/claude` tree loaded through `--plugin-dir` and the installed copy of the plugin disabled; the run's init record lists the plugin at `hosts/claude` and its tool calls read only that tree.
+- For the independent pair the run authored one question per axis: a question on the export file format and a separate question on whether archived notes are included.
+- For the coupled pair the run authored a single multi-axis question asking both the storage format and the sync transport at once, naming why they constrain each other and that not every pairing is viable.
+- Every other question the run authored (storage location, note ids across devices, sync destination setup, sync conflict behaviour) asks one choice.
+- The first run passed, so the step-3 wording was not revised and no re-run was needed; there is no shortfall to record.
+- The scratch working copy was deleted after its question set was read, and this repository's tracked tree is unchanged by the run: the fixture, its run script, and the run transcript stay under the gitignored `temp/`.
+
+---
