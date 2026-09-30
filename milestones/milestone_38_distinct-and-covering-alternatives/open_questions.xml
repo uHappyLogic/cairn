@@ -71,6 +71,21 @@
   </open-question>
   <open-question id="Defer direction">
     <question>Is postponing the decision, leaving the question unanswered for a later milestone, a direction an alternative set may list, as distinct from the direction of not doing the thing the question is about?</question>
+    <alternative id="Distinct defer direction">
+      The enumeration step names postponement as its own direction, separate from not doing the thing. A set lists it only when grounding shows it is honestly viable, meaning the milestone&apos;s goal does not need the question settled now and a later milestone could settle it. It would be recorded as an `## Out of Scope` or later-milestone decision, because derive-tasks will not start while any question is open.
+      <advantage>It keeps apart two answers that land differently: dropping the thing is a final rejection, while postponing it leaves the thing possible later. Because each is a separate option, the recommendation pass and the answer sweep can pick and record a deferral without anyone having to override the set.</advantage>
+      <drawback>Nearly every question could in principle be postponed, so the enumerator needs a viability test to stop a defer option from being added to every set as filler. The option&apos;s what-it-is text also has to state a destination (Out of Scope, or a named later milestone), which the enumerator may have no grounds to choose.</drawback>
+    </alternative>
+    <alternative id="Folded into drop-it">
+      Postponement is not a separate direction. It counts as one form of the &quot;not in this milestone&quot; direction, so a set lists at most one option for not doing the thing now, and the answer text says whether that means never or later.
+      <advantage>Sets stay lean because two options that look almost the same to the pick never appear side by side. That fits the milestone&apos;s rule that every two alternatives must differ in substance. It also avoids a second viability judgment.</advantage>
+      <drawback>It merges a final rejection with a postponement. The difference then appears only if the user writes a literal answer, and a recommendation or alternative lift records the &quot;not now&quot; option without saying which one was meant.</drawback>
+    </alternative>
+    <alternative id="Never listed">
+      An alternative set covers only the substantive directions of the underlying decision and never lists postponement. Postponing is treated as something done to the question, not an answer to it: the user can always record it through a literal answer, and review-milestone-requirements can flag a question that lies outside the goal.
+      <advantage>Every set stays about the decision itself. A fallback that is always available is never repeated in each block, and the enumerator has no universal escape hatch that could crowd out the harder not-doing direction the goal asks sets to cover.</advantage>
+      <drawback>The recommendation pass and the answer sweep can never pick a postponement, because they choose only from the set. A question that honestly should wait for a later milestone therefore always needs a manual override, which is the kind of coverage gap this milestone sets out to close.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Sibling-owned axes">
     <question>When an axis of the underlying decision is already the subject of a sibling open question, does an alternative set&apos;s coverage extend to that axis, or does the existing rule that an option answering a sibling is left to that sibling bound it?</question>
