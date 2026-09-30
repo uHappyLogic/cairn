@@ -68,6 +68,7 @@ No benchmark harness, eval directory, or judge exists in the repository. Neither
 - Each case runs in a clone outside this working copy: the source repository is cloned into a scratch directory (for example under the system temp directory), the parent of the answer commit is checked out, and the alternatives pass runs there with the rebuilt `hosts/claude` plugin tree loaded explicitly. The clone is deleted once its set has been read, and the source repository is only ever read.
 - If the check falls short of its bar, the milestone revises the enumeration wording once and re-runs the check. If it still falls short after that single round, the milestone records the aggregate shortfall and finishes with the best wording it has.
 - Whether a re-run set contains the direction the historical answer took is decided by a separate judge agent with its own context, given only the historical answer, the recorded missing direction, and the re-run set, and not told which rule version produced the set. The user receives only its verdicts.
+- The check sets no absolute pass share: the change counts as verified when the new rules recover the missing direction in clearly more of the same cases than the unchanged rules recover when run with the same model, with the margin for "clearly more" fixed before the runs.
 
 ### Documentation
 
