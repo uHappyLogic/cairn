@@ -1,28 +1,4 @@
 <open-questions>
-  <open-question id="Check baseline run">
-    <question>Does the one-off check also run the unchanged enumeration rules on the same cases with the same model, so that a difference in the result can be attributed to the new wording and not to the model?</question>
-    <recommendation option="Paired single baseline">One extra run per case is the cheapest design that separates the wording&apos;s effect from the model&apos;s and that can also show a case where the new rules lose a direction the old ones find, which the recovered-only baseline never can; repeated runs exceed a one-off check.</recommendation>
-    <alternative id="Paired single baseline">
-      Run the unchanged `alternatives-procedure.md`, taken from the commit before the rewrite, once on every re-run case with the same model and effort setting as the new-rules run. Compare each case&apos;s two sets side by side.
-      <advantage>Separates the wording&apos;s effect from the model&apos;s for every case, and costs only one extra run per case. It also shows where the old rules already recover the missing direction with today&apos;s model, and where the new rules lose something the old ones found.</advantage>
-      <drawback>Doubles the cost of the check and needs the pre-change procedure runnable in the same grounded setting. With a single sample per arm, one lucky or unlucky run can still create or hide a difference, so the attribution holds only for a clear margin. How the pairs are counted also depends on how the pass bar is expressed.</drawback>
-    </alternative>
-    <alternative id="No baseline run">
-      Run only the rewritten enumeration rules over the chosen cases, and judge each new set against the historical set already on record in the benchmark material, with no fresh run of the unchanged rules.
-      <advantage>Cheapest and simplest form of the check: it needs half the runs, and there is no need to make the pre-change procedure loadable next to the rebuilt `hosts/claude` tree that the maintainer&apos;s install points at.</advantage>
-      <drawback>The historical sets came from older models, efforts and procedure versions, often grounded in a different project state. A recovered direction could therefore be the model&apos;s doing rather than the new wording&apos;s, so the check cannot show that the rewrite caused an improvement. At most it can note this as a caveat.</drawback>
-    </alternative>
-    <alternative id="Repeated paired runs">
-      Run both the unchanged and the rewritten rules several times per case with the same model and effort setting, and compare how often each arm&apos;s sets contain the previously missing direction.
-      <advantage>Controls for the model&apos;s run-to-run variation as well as the model itself. A difference in hit rate between the arms can be credited to the wording with real confidence.</advantage>
-      <drawback>Multiplies the run count and the review load well past a one-off check, since every extra set must be judged for a match. It also turns the result into rates, which the pass bar and whoever judges matches would have to accommodate.</drawback>
-    </alternative>
-    <alternative id="Baseline on recovered cases">
-      Run the new rules first, then run the unchanged rules with the same model and effort setting only on the cases where the new set recovered the missing direction. The goal is to confirm the old rules would not have recovered it too.
-      <advantage>Puts the attribution test exactly where a claimed improvement needs it, and costs fewer extra runs than a full paired baseline when the new rules recover only part of the cases.</advantage>
-      <drawback>It is lopsided: it never shows cases where the old rules would have done better than the new ones. The cases it baselines are chosen by the new rules&apos; own result, so it can confirm gains but never find losses.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Check run location">
     <question>Where does the one-off check run the alternatives pass so that each case is grounded in its historical project state while the repositories the cases come from receive no commits or other changes?</question>
     <recommendation option="Clone outside tree">It is the only option that both leaves the source repositories untouched by construction and runs the pass exactly as shipped over a full historical tree, with no ancestor instructions from this repository leaking into the grounding; the explicitly loaded plugin tree also lets the unchanged rules run in the same setting.</recommendation>
@@ -190,7 +166,6 @@
   </open-question>
   <open-question id="Check match judgment">
     <question>Who decides whether a re-run alternative set contains the direction the historical answer took: the agent carrying out the check, or the user reviewing the sets?</question>
-    <depends-on question="Check baseline run" option="Paired single baseline"/>
     <recommendation option="Independent blind judge">With sets from both rule versions to mix, a judge that does not know which version produced a set removes the self-grading bias at no cost in user time, and its verdicts stay comparable across the two arms, which is what the comparison needs.</recommendation>
     <alternative id="Independent blind judge">
       A separate judge agent decides each match. It gets its own context with only the historical answer, the recorded missing direction, and the re-run set, and it is not told which rule version produced the set. The user receives only its verdicts.
@@ -220,7 +195,6 @@
   </open-question>
   <open-question id="Check pass bar">
     <question>What share of the re-run cases must contain the previously missing direction for the one-off check to count the change as verified?</question>
-    <depends-on question="Check baseline run" option="Paired single baseline"/>
     <recommendation option="Beats baseline">The historical sets came from older models, so an absolute share could be met by the model alone; only a margin over the unchanged rules on the same cases credits the result to the wording, with the margin for clearly more fixed before the runs.</recommendation>
     <alternative id="Beats baseline">
       Set no absolute share. The change counts as verified when the new rules recover the missing direction in clearly more of the same cases than the unchanged rules recover when run with the same model.

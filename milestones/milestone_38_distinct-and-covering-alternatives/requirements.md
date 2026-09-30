@@ -62,6 +62,7 @@ No benchmark harness, eval directory, or judge exists in the repository. Neither
 - The one-axis authoring rule is verified with a synthetic compound fixture: a small throwaway milestone under `temp/` whose `requirements.md` deliberately leaves a gap with two or more independent axes, against which `review-milestone-requirements` is run in a scratch working copy to check that it authors one question per axis. The fixture holds one independent pair and one coupled pair, so both the split and its interdependence exception are exercised.
 - The one-off check re-runs all 20 historical cases already rated strong candidates (16 where the answer took a direction no option represented, 4 where it took a combination on an axis the set never laid out) and adds no other missed-direction cases.
 - The check also re-runs control cases: a small fixed sample of the refinement overrides, the manual answers that refined an option the historical set already listed. For each, it checks that the re-run set still holds that option's direction and has no near-duplicate or filler options.
+- The check runs a paired single baseline: the unchanged `alternatives-procedure.md`, taken from the commit before the rewrite, is run once on every re-run case with the same model and effort setting as the new-rules run, and each case's two sets are compared side by side.
 
 ## Out of Scope
 
