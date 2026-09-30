@@ -57,5 +57,9 @@ No benchmark harness, eval directory, or judge exists in the repository. Neither
 - The what-it-is field drops its one-sentence limit for a content bound with no count: it holds only what the option is, meaning its position on each axis, and any reason for or against it belongs in the advantage and drawback fields. Its length follows from how many positions there are to state.
 - Postponing the decision is not a separate direction: it counts as one form of the "not in this milestone" direction, so a set lists at most one option for not doing the thing now, and the answer text says whether that means never or later.
 
+### Verification
+
+- The one-axis authoring rule is verified with a synthetic compound fixture: a small throwaway milestone under `temp/` whose `requirements.md` deliberately leaves a gap with two or more independent axes, against which `review-milestone-requirements` is run in a scratch working copy to check that it authors one question per axis. The fixture holds one independent pair and one coupled pair, so both the split and its interdependence exception are exercised.
+
 ## Out of Scope
 
