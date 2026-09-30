@@ -1,33 +1,4 @@
 <open-questions>
-  <open-question id="Check match judgment">
-    <question>Who decides whether a re-run alternative set contains the direction the historical answer took: the agent carrying out the check, or the user reviewing the sets?</question>
-    <recommendation option="Independent blind judge">With sets from both rule versions to mix, a judge that does not know which version produced a set removes the self-grading bias at no cost in user time, and its verdicts stay comparable across the two arms, which is what the comparison needs.</recommendation>
-    <alternative id="Independent blind judge">
-      A separate judge agent decides each match. It gets its own context with only the historical answer, the recorded missing direction, and the re-run set, and it is not told which rule version produced the set. The user receives only its verdicts.
-      <advantage>It removes the self-grading bias of the agent carrying out the check while still asking nothing of the user. Hiding which rules produced each set makes the verdicts comparable across runs.</advantage>
-      <drawback>Setting up a separate, blinded judging step adds work to a one-off check. The judge is still a model making a fuzzy call with no human anchor. How much the blinding is worth depends on whether the check also produces sets from the unchanged rules to mix in.</drawback>
-    </alternative>
-    <alternative id="Agent judges alone">
-      The agent running the check decides each match by comparing the re-run set against the missing direction already recorded for that case in the benchmark&apos;s judged verdicts, and hands the user only the tally and a short aggregate summary.
-      <advantage>It takes the least of the user&apos;s time and fits a headless or scripted run. It also reuses the same kind of judgment that produced the 20 strong-candidate ratings, so the check measures against the same yardstick that selected its cases.</advantage>
-      <drawback>The agent that wrote or ran the new rules is grading its own work, and &quot;contains the direction&quot; is a fuzzy semantic call. A lenient reading of near-misses could pass the change without anyone catching it, and no human ever sees the sets the verdict rests on.</drawback>
-    </alternative>
-    <alternative id="User judges every set">
-      The agent puts each case in front of the user: the historical question, the direction the answer took, and the re-run set. It gives no verdict of its own, and the user decides for every case whether the set contains that direction.
-      <advantage>The person whose answers produced the overrides decides whether each missing direction now appears, which is the most faithful reading of what &quot;the direction the answer took&quot; meant. The verdict carries no model bias.</advantage>
-      <drawback>It costs the most user time, because every case&apos;s set must be read in full. User judgments are harder to repeat identically on a later re-run, and the user may not recall the context behind older answers from other projects.</drawback>
-    </alternative>
-    <alternative id="Agent proposes, user ratifies">
-      The agent records a verdict and a one-line reason for every case, and the user reviews and confirms or overturns each one before the tally counts.
-      <advantage>The user holds the final say on every case at a fraction of the reading cost, since each verdict comes with the specific option the agent believes matches. Overturned verdicts also show where the agent&apos;s judgment of a match is unreliable.</advantage>
-      <drawback>A proposed verdict anchors the reviewer, so review tends to become rubber-stamping and the human check is weaker than it looks. The user still has to open every case, so the saving over judging every set directly may be small.</drawback>
-    </alternative>
-    <alternative id="Agent judges, user audits doubts">
-      The agent decides each match and marks as uncertain any case where the closest option is only near the historical direction. The user adjudicates only the uncertain cases, plus optionally a small spot-check of the confident ones.
-      <advantage>Human attention goes where the call is actually hard, so the user&apos;s time grows with the number of ambiguous cases rather than the number of re-run cases. Clear hits and clear misses pass without review.</advantage>
-      <drawback>It relies on the agent to know which of its own calls are doubtful. A confidently wrong verdict escapes review unless a spot-check happens to catch it, so the tally is only partly human-verified.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Check pass bar">
     <question>What share of the re-run cases must contain the previously missing direction for the one-off check to count the change as verified?</question>
     <recommendation option="Beats baseline">The historical sets came from older models, so an absolute share could be met by the model alone; only a margin over the unchanged rules on the same cases credits the result to the wording, with the margin for clearly more fixed before the runs.</recommendation>
