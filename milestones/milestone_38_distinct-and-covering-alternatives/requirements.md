@@ -60,6 +60,7 @@ No benchmark harness, eval directory, or judge exists in the repository. Neither
 ### Verification
 
 - The one-axis authoring rule is verified with a synthetic compound fixture: a small throwaway milestone under `temp/` whose `requirements.md` deliberately leaves a gap with two or more independent axes, against which `review-milestone-requirements` is run in a scratch working copy to check that it authors one question per axis. The fixture holds one independent pair and one coupled pair, so both the split and its interdependence exception are exercised.
+- The one-off check re-runs all 20 historical cases already rated strong candidates (16 where the answer took a direction no option represented, 4 where it took a combination on an axis the set never laid out) and adds no other missed-direction cases.
 
 ## Out of Scope
 
