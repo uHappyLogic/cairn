@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add One-Axis Rule To Question Authoring
-
-Add to step 3 of `core/skills/review-milestone-requirements/SKILL.md` a third requirement on the question text — each question asks one choice, with no test named for detecting a second axis — plus the named exception that choices in one gap that constrain each other, so that not every pairing is viable, are authored as a single multi-axis question. This prevents upstream the set growth the new enumeration rules would otherwise produce on compound questions. It is verified by reading step 3 against the two Question authoring decisions with step 2's tidy-only boundary untouched, and by `uv run scripts/build_hosts.py --check` passing on the rebuilt host trees.
-
----
-
 ## Verify One-Axis Rule With Compound Fixture
 
 Build the small throwaway fixture milestone under `temp/` whose `requirements.md` deliberately leaves a gap holding one independent pair of axes and one coupled pair, and run `review-milestone-requirements` against it in a scratch working copy with the rebuilt plugin tree, to check the one-axis rule and its exception as authored. The run passes when it authors one question per axis for the independent pair and a single multi-axis question for the coupled pair; if it does not, revise the failing step-3 wording once (never the fixture), re-run the fixture with one run, and record any remaining shortfall while keeping the best wording. It is verified by the question set the final run authored, described in this task's record.

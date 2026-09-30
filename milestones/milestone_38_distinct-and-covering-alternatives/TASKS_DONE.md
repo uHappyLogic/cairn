@@ -30,3 +30,17 @@ Bring the two runtime restatements of step 2 into line with the rewritten proced
 - `uv run scripts/build_hosts.py --check` passes on the rebuilt `hosts/claude/` and `hosts/antigravity/` trees.
 
 ---
+
+## Add One-Axis Rule To Question Authoring
+
+Add to step 3 of `core/skills/review-milestone-requirements/SKILL.md` a third requirement on the question text — each question asks one choice, with no test named for detecting a second axis — plus the named exception that choices in one gap that constrain each other, so that not every pairing is viable, are authored as a single multi-axis question. This prevents upstream the set growth the new enumeration rules would otherwise produce on compound questions. It is verified by reading step 3 against the two Question authoring decisions with step 2's tidy-only boundary untouched, and by `uv run scripts/build_hosts.py --check` passing on the rebuilt host trees.
+
+**Verified:**
+
+- `core/skills/review-milestone-requirements/SKILL.md` step 3's question-text requirement now carries a third requirement: each question asks one choice, and a gap holding two choices becomes two questions, one per choice.
+- The same passage names the exception from the second Question authoring decision: choices in one gap that constrain each other, so that not every pairing is viable, are authored as a single multi-axis question asking both choices at once.
+- The added wording names no test for detecting a second axis, matching the first Question authoring decision; the detection tests are left to the `temp/` idea document.
+- Step 2 (prune, dedup, flag-on-doubt, and the never-record boundary) is unchanged: the diff under `core/` is one line, inside step 3.
+- `uv run scripts/build_hosts.py` rebuilt `hosts/claude/` and `hosts/antigravity/`, and `uv run scripts/build_hosts.py --check` passes.
+
+---
