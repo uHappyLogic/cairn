@@ -1,23 +1,4 @@
 <open-questions>
-  <open-question id="Drop-it direction rule">
-    <question>Does the enumeration step of alternatives-procedure.md carry its own explicit instruction to weigh the direction of not doing the thing the question is about, or is that direction left to follow from the general coverage requirement?</question>
-    <recommendation option="Explicit drop-it check">Not doing the thing is the most frequently missed direction and the one the goal names, a general completeness rule already failed to reach it, and the honestly-viable condition keeps the instruction inside the existing ban on strawmen at the cost of one sentence.</recommendation>
-    <alternative id="Explicit drop-it check">
-      Step 2 of alternatives-procedure.md gets its own instruction, separate from the general coverage requirement, telling the enumerator to weigh the direction of not doing the thing the question is about on every question. The enumerator lists that direction as an option when it is honestly viable and leaves it out otherwise, with no dedicated place to record that it was considered.
-      <advantage>It targets the gap the benchmark aggregate names as the most frequent missing direction. The goal calls out this direction by name. The procedure&apos;s current requirement that the set be &quot;complete now&quot; already implied coverage and still missed it in practice, so a separate instruction is the most likely to change what the enumerator produces.</advantage>
-      <drawback>It singles out one direction among the many the coverage rule is supposed to reach. Because it applies to every question, it pulls against the procedure&apos;s existing ban on strawmen and padding: the enumerator may add a token &quot;don&apos;t do it&quot; option where no one would really choose it. The block also has nowhere to record that the direction was weighed and rejected.</drawback>
-    </alternative>
-    <alternative id="Named inside coverage rule">
-      Step 2 states the general coverage requirement (the set covers the underlying decision, not the question&apos;s wording) and names not doing the thing, where honestly viable, as an example within that same sentence, following the goal&apos;s own parenthetical. There is no separate instruction and no check the enumerator must run on every question.
-      <advantage>It makes the most frequently missed direction visible where the enumerator reads the coverage rule, without adding a special-case rule or a per-question step. The procedure stays one general principle, and the wording tracks the goal closely.</advantage>
-      <drawback>An example inside a general rule is weaker than an instruction and can be skimmed past. If the rewritten wording is not enough, the milestone&apos;s one-off re-run may still show sets that miss the direction, which weakens the case that the change is verified.</drawback>
-    </alternative>
-    <alternative id="Left to general coverage">
-      Step 2 states only the general coverage requirement, that the set covers the underlying decision rather than the question&apos;s wording. Dropping the thing is never mentioned and is expected to follow from applying that requirement.
-      <advantage>It keeps the enumeration rules to general principles with no special cases, so the procedure does not privilege one direction and adds no pressure to pad sets with a &quot;don&apos;t do it&quot; option where it isn&apos;t viable.</advantage>
-      <drawback>The existing requirement that the set be &quot;complete now&quot; was already general and still let this direction go missing more often than any other, so relying on generality alone may not change behaviour. Whether this option is enough depends on how strongly the separately open rules on premise rejection and axis identification are written.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Degree variants representation">
     <question>When several candidate options are one approach at different degrees or parameter values, how does the alternative set represent that approach?</question>
     <recommendation option="One option per material degree">Treating degree as an axis needs no special case, every lifted or recommended option records a complete decision on every answer path, and merging values whose trade-off is the same is the same substance test that rules out near-duplicates everywhere else in the set.</recommendation>
