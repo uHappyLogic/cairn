@@ -1,6 +1,26 @@
 <open-questions>
   <open-question id="Axis identification step">
     <question>In the rewritten enumeration step of alternatives-procedure.md, is the enumerator told to first identify the axes of the decision and derive the options from them, or are distinctness and coverage stated only as properties the finished set must have?</question>
+    <alternative id="Axes-first derivation">
+      Step 2 of alternatives-procedure.md opens with a required move: name the axes the underlying decision turns on, then build the options as positions on those axes (on a multi-axis question, as combinations weighed in reasoning), and state distinctness and coverage as the tests the resulting set must pass. Axis identification comes before any candidate is drafted, and the step is mandatory.
+      <advantage>The goal already has each option state where it stands on each axis and has every combination weighed on a multi-axis question, and both assume the axes were named first. A generation step targets the recorded failure mode directly: 12 overrides took a combination on an axis the set never laid out, and 20 took a direction no option represented. The fixed step is also something the one-off re-run can check.</advantage>
+      <drawback>It is the most prescriptive wording. It adds a step to every enumeration, including the inline one in discuss-open-question, and on a plainly one-axis question it can produce invented axes or a mechanical cross-product that pads the set. The axes are never rendered, because the tool gives a block no place for a statement about the whole set, so the step shows only indirectly, through each option&apos;s what-it-is prose.</drawback>
+    </alternative>
+    <alternative id="Draft-then-axis audit">
+      The enumerator drafts candidates freely as now, and then must name the axes the decision turns on and check the draft against them: add a missing position or viable combination, and merge any two options that do not differ in substance on some axis. Axis identification comes after drafting, as a required check.
+      <advantage>Candidates are still generated naturally from the question, and a concrete audit is added that catches near-duplicates (13 historical sets held them) as well as gaps. The audit can be written as a short check at the end of the step instead of a rewrite of how options are produced.</advantage>
+      <drawback>The draft anchors on the question&apos;s wording, which is where the misses come from, so axes read off the drafted candidates tend to be the axes those candidates already vary on. An axis none of them varies on can stay invisible to the audit, and not doing the thing at all is the most frequent missing direction.</drawback>
+    </alternative>
+    <alternative id="Properties only">
+      Step 2 says only what the finished set must be: every two options differ in substance on at least one axis, and the set covers the underlying decision rather than the question&apos;s wording. It prescribes no method for reaching that. Axis identification is never required.
+      <advantage>It is the shortest and least prescriptive rewrite. It keeps the procedure describing outcomes, as the current &quot;complete now&quot; sentence does, leaves the enumerator free to reason however suits the question, and avoids ritual steps on simple questions.</advantage>
+      <drawback>The current rule already requires a complete set without saying how to reach one, and the benchmark shows that property-level wording let directions and combinations go missing. It also asks each option to state its position on axes the enumerator was never told to identify, so the requirement can be met in name while the axes stay implicit.</drawback>
+    </alternative>
+    <alternative id="Properties with advisory axes">
+      Distinctness and coverage are the binding requirements. Naming the decision&apos;s axes and deriving options from them is offered as the recommended way to meet them, not as a mandatory step, so the enumerator can skip it where the axes are obvious. Axis identification comes first but is optional.
+      <advantage>It points the enumerator at the method that produces covering sets without forcing it on one-axis questions, so it avoids most of the padding risk of a mandatory step while still putting axes in front of the model.</advantage>
+      <drawback>An optional method is the easiest part of the wording to skip, and the runs most likely to skip it are the hurried ones that miss directions. The softer wording also makes the one-off check harder to read, because a shortfall could come from the rule or from the step being skipped.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Drop-it direction rule">
     <question>Does the enumeration step of alternatives-procedure.md carry its own explicit instruction to weigh the direction of not doing the thing the question is about, or is that direction left to follow from the general coverage requirement?</question>
