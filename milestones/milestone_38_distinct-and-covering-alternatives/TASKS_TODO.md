@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Align Enumeration Restatements With Rewritten Procedure
-
-Bring the two runtime restatements of step 2 into line with the rewritten procedure: `core/agents/provide-alternatives-to-open-question.md` stops calling the first field a sentence, and `core/skills/discuss-open-question/SKILL.md` step 3 drops its "2–4" count, each deferring to the procedure rather than restating its rules. Without this the subagent and the inline runner would still carry the retired count and length limits beside the new rules. It is verified by a search of `core/` finding no count guideline and no one-sentence limit on alternatives, and by `uv run scripts/build_hosts.py --check` passing on the rebuilt host trees.
-
----
-
 ## Add One-Axis Rule To Question Authoring
 
 Add to step 3 of `core/skills/review-milestone-requirements/SKILL.md` a third requirement on the question text — each question asks one choice, with no test named for detecting a second axis — plus the named exception that choices in one gap that constrain each other, so that not every pairing is viable, are authored as a single multi-axis question. This prevents upstream the set growth the new enumeration rules would otherwise produce on compound questions. It is verified by reading step 3 against the two Question authoring decisions with step 2's tidy-only boundary untouched, and by `uv run scripts/build_hosts.py --check` passing on the rebuilt host trees.

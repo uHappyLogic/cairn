@@ -95,7 +95,7 @@ children, in exactly this shape:
 ```
 
 - One `<alternative id="...">` element per alternative, carrying the shared procedure's three
-  fields: the what-it-is sentence as the element's own text, then a child `<advantage>`
+  fields: the what-it-is text as the element's own text, then a child `<advantage>`
   element (the strongest reason to choose it) and a child `<drawback>` element (the main cost
   or risk it carries). The `id` is the option's Short-Title-style label — it is what the
   recommendation pass's `<recommendation option="...">` element and the answer path's
@@ -118,8 +118,9 @@ emitting them, run the two mechanical tests the tool that embeds your return key
 2. The draft's **last non-whitespace text is `</alternative>`**.
 
 If either test fails, revise the draft until both pass. Everything your grounding turned up is
-spent inside the elements — a bearing fact goes into an option's what-it-is text, its
-`<advantage>`, or its `<drawback>`; the rest is dropped. Do any thinking you still need in an
+spent inside the elements — a bearing fact goes into whichever field the shared procedure
+gives it, an option's what-it-is text, its `<advantage>`, or its `<drawback>`; the rest is
+dropped. Do any thinking you still need in an
 earlier turn, never in the final message.
 
 Once both tests pass, **end your session with that checked draft as your final message** — the

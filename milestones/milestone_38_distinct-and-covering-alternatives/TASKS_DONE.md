@@ -17,3 +17,16 @@ Rewrite step 2 of `core/shared/alternatives-procedure.md` under the milestone's 
 - `uv run scripts/build_hosts.py --check` passes on the rebuilt `hosts/claude/` and `hosts/antigravity/` trees.
 
 ---
+
+## Align Enumeration Restatements With Rewritten Procedure
+
+Bring the two runtime restatements of step 2 into line with the rewritten procedure: `core/agents/provide-alternatives-to-open-question.md` stops calling the first field a sentence, and `core/skills/discuss-open-question/SKILL.md` step 3 drops its "2–4" count, each deferring to the procedure rather than restating its rules. Without this the subagent and the inline runner would still carry the retired count and length limits beside the new rules. It is verified by a search of `core/` finding no count guideline and no one-sentence limit on alternatives, and by `uv run scripts/build_hosts.py --check` passing on the rebuilt host trees.
+
+**Verified:**
+
+- `core/agents/provide-alternatives-to-open-question.md` no longer calls the first field a sentence: its rendering step carries "the what-it-is text as the element's own text", and its self-check routes each bearing fact into whichever field the shared procedure gives it rather than restating the field rules.
+- `core/skills/discuss-open-question/SKILL.md` step 3 no longer states "2–4": a bare block's options are enumerated "as that procedure lays them out", deferring to `alternatives-procedure.md` for the set's rules.
+- A search of `core/` for count guidelines and one-sentence limits on alternatives (`2–4`, `two to four`, `2 to 4`, `typically two`, `what-it-is sentence`, `one sentence`) finds none applying to alternatives; the remaining hits are unrelated (the Short Title's 2–5 word handle and one-sentence restatements in other skills).
+- `uv run scripts/build_hosts.py --check` passes on the rebuilt `hosts/claude/` and `hosts/antigravity/` trees.
+
+---
