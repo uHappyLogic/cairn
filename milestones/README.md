@@ -13,9 +13,19 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_38_distinct-and-covering-alternatives/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 38 — Distinct and covering alternatives
+
+- Step 2 of `core/shared/alternatives-procedure.md` now maps the decision space axes-first: it names the axes of the underlying decision (degrees and taken-for-granted premises included, each with a none position) and builds every option as one position on each axis.
+- An alternative set must pass two stated tests, distinct (every two options differ in substance on an axis) and covering (the underlying decision, with not doing the thing weighed on every question and postponing folded into it), and the "two to four" count guideline is gone.
+- The what-it-is field is bounded by content instead of one sentence, and an option whose viability hinges on a sibling-owned axis names that as a condition in its drawback.
+- `review-milestone-requirements` authors each new question as one choice, with coupled choices asked together as one multi-axis question, a rule a synthetic compound fixture confirmed on its first run.
+- A paired blind-judged re-run over 20 historical missed-direction cases and 10 controls fell short of its +5 margin in both rounds (net -2 each), so the change is recorded as unverified and ships the revised wording, which met the control comparison.
+- `docs/skill-reference.md`, `docs/design-claims.md` claim 4, and `docs/ways-of-using-cairn.md` (alternatives pass now `--effort high`) describe the new rules, and `CLAUDE.md` gains a distinct-and-covering invariant against restoring the count.
+- Two uncommitted idea documents under `temp/` propose a committed benchmark harness and further improvements to how questions are framed.
 
 ### Milestone 37 — Mechanical milestone definition
 
@@ -411,3 +421,4 @@ Current milestone: `milestones/milestone_38_distinct-and-covering-alternatives/`
 | 35 | Committing Bootstrap | `milestones/milestone_35_committing-bootstrap/` |
 | 36 | Non-interactive milestone activation | `milestones/milestone_36_non-interactive-milestone-activation/` |
 | 37 | Mechanical milestone definition | `milestones/milestone_37_mechanical-milestone-definition/` |
+| 38 | Distinct and covering alternatives | `milestones/milestone_38_distinct-and-covering-alternatives/` |
