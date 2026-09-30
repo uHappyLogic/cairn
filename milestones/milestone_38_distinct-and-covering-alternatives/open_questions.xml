@@ -1,23 +1,4 @@
 <open-questions>
-  <open-question id="Control sample size">
-    <question>The one-off check re-runs a small fixed sample of the refinement overrides as control cases. How many control cases does the sample hold?</question>
-    <recommendation option="About ten cases">One failed control is about a tenth of the sample rather than a third, so the control result does not turn on a single unusual case, and the sample stays small beside the pool at roughly 16 to 20 added runs.</recommendation>
-    <alternative id="About ten cases">
-      A moderate sample of eight to ten refinement overrides, about half the size of the 20-case missed-direction set. Each case is run under both rule versions, which adds roughly 16–20 runs.
-      <advantage>It is big enough for a rough failure rate, where one failed control is about 10% rather than a third of the sample. It leaves room to spread the cases across source projects or question types, and it still stays clearly &quot;small&quot; next to the pool of 65.</advantage>
-      <drawback>It raises the check&apos;s run count by about 40–50% and does the same for the controls&apos; judging load. The extra cases buy little if a failed control ends up only noted rather than affecting the verdict. The judging cost also depends on who makes the two control judgments (a sibling question), which is heavier if a person rather than the blind judge agent reviews every set.</drawback>
-    </alternative>
-    <alternative id="Three to five cases">
-      A token sample of three to five refinement overrides out of the 65 available. Each one runs under both the new rules and the unchanged baseline, since the paired baseline covers every re-run case. That adds roughly six to ten runs to the 40 needed for the 20 missed-direction cases.
-      <advantage>It is the cheapest option and matches the recorded &quot;small fixed sample&quot; most literally. It is still enough to catch a gross regression, where the new rules drop the direction the historical answer refined or pad the set with near-duplicates or filler, because such a failure shows up on nearly any case.</advantage>
-      <drawback>It can only show that a regression exists, not how often it happens. A single failure is 20–33% of the sample, so one unusual case can swing the result. If failed controls turn out to affect the verdict (a sibling question), that verdict would rest on one or two cases. If the sample has to be stratified by some property (another sibling question), there may be fewer slots than strata.</drawback>
-    </alternative>
-    <alternative id="Twenty cases, parity">
-      A sample of 20 refinement overrides, the same size as the missed-direction set, so the check has equal numbers of regression cases and recovery cases.
-      <advantage>Control failures and recovered directions can be reported as rates over the same number of cases in the aggregate results. Any regression the rewrite causes would then be measured with the same precision as the improvement it is meant to deliver.</advantage>
-      <drawback>It doubles the check&apos;s runs and judging to about 80 runs across both rule versions. At nearly a third of the 65 refinement overrides, it stretches what the recorded decision calls a &quot;small&quot; sample. The eligible pool may also be smaller than 65 if pre-split cases can&apos;t be re-run as they are (a sibling question), which would make 20 cases harder to fill without letting the pool shape the selection.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Control check judge">
     <question>For each control case the one-off check tests that the re-run set still holds the refined option&apos;s direction and has no near-duplicate or filler options. Who makes those two judgments: the blind judge agent that decides the missed-direction cases, or someone else?</question>
     <recommendation option="Same blind judge">Every verdict comes from one judging setup under one blindness rule, and the user still receives only verdicts; the extra brief only swaps the refined option in for the missing direction, and having the same judge rate both rule versions&apos; sets for a case lets any shallowness in its filler calls fall on both sides alike.</recommendation>
@@ -49,7 +30,6 @@
   </open-question>
   <open-question id="Control sample selection">
     <question>The one-off check re-runs a small fixed sample of the refinement overrides as control cases. By what method are those control cases picked from the refinement overrides?</question>
-    <depends-on question="Control sample size" option="About ten cases"/>
     <recommendation option="Stratified seeded draw">The refinement overrides are concentrated in one source project and in three-option sets, so a plain draw would mostly repeat the common kind; the grouping features are already recorded per case in the benchmark material, so stratifying costs little, and the draw stays seeded and random inside each group.</recommendation>
     <alternative id="Stratified seeded draw">
       Split the refinement overrides into groups by features that bear on the control checks (source project, how many alternatives the historical set held, and whether the judged verdict flagged near-duplicates in it), then make a seeded random draw inside each group so every group is represented.
