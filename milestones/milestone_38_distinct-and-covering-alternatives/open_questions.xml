@@ -42,31 +42,6 @@
       <drawback>The existing requirement that the set be &quot;complete now&quot; was already general and still let this direction go missing more often than any other, so relying on generality alone may not change behaviour. Whether this option is enough depends on how strongly the separately open rules on premise rejection and axis identification are written.</drawback>
     </alternative>
   </open-question>
-  <open-question id="Wording premise rule">
-    <question>Does the enumeration step of alternatives-procedure.md tell the enumerator to find what the question&apos;s wording takes for granted and weigh rejecting it, or is covering the underlying decision stated without such a step?</question>
-    <depends-on question="Axis identification step" option="Axes-first derivation"/>
-    <recommendation option="Premises as axes">One mechanism then covers both the axes the question names and the ones its wording hides, a premise-rejecting option states its stance like any other option, and rejecting a premise usually makes the remaining axes moot, so it adds one option rather than a cross-product.</recommendation>
-    <alternative id="Premises as axes">
-      Premise-finding is folded into the enumeration&apos;s axis work rather than stated as a rule of its own: each assumption the wording takes for granted is treated as one more axis of the decision, with accepting and rejecting it as its values, so rejecting a premise comes out of the same step that lays out the other axes.
-      <advantage>A single mechanism covers both the axes the question names and the ones its wording hides, so the procedure gains no separate premise rule. A premise-rejecting option then carries its stance on every other axis like any other option, and does not stand outside the set&apos;s structure.</advantage>
-      <drawback>It only works if the enumeration step contains an explicit axis step, so its viability depends on how the Axis identification step sibling settles. Treating every premise as an axis also multiplies the combinations the goal says must all be weighed, and on a multi-axis question that can make the set grow more than the problem requires.</drawback>
-    </alternative>
-    <alternative id="Explicit premise step">
-      The enumeration step of alternatives-procedure.md gets its own instruction: before listing options, name what the question&apos;s wording takes for granted (an assumed need, mechanism, or framing), then for each such premise weigh an option that rejects it, and list that option only where it is honestly viable. On the axes it touches, this option adds a dedicated process step, so a premise is examined on every question and not only when the enumerator happens to notice it.
-      <advantage>It targets a failure the benchmark aggregate shows directly: 9 of 106 overriding answers rejected a premise that every listed option shared. A named step makes the enumerator look for exactly the assumption that a wording-bound set carries silently, rather than hoping the general coverage requirement brings it up.</advantage>
-      <drawback>It lengthens a procedure that every alternatives subagent and discuss-open-question follow on every question, although most questions have no premise worth rejecting. It also invites premise-rejecting options that are really strawmen, which works against the existing ban on padding. How much it overlaps other rules depends on how the Drop-it direction rule and Axis identification step siblings settle, because not doing the thing is itself the rejection of one premise.</drawback>
-    </alternative>
-    <alternative id="Coverage property only">
-      The enumeration step says only that the set must cover the underlying decision and not the question&apos;s wording, with no step for finding premises. Spotting and rejecting a premise is left to the enumerator&apos;s judgment under that one requirement, and premise problems on the authoring side are left to the &quot;shared premises&quot; idea document the milestone writes under temp/.
-      <advantage>It keeps the procedure short and states the outcome without prescribing a method, the same approach step 2 already takes with &quot;complete now&quot;. It adds no rule that could push premise-rejecting options into a set whose premises are sound.</advantage>
-      <drawback>The current procedure already asks for completeness without defining it, and the historical sets still missed shared premises. A bare &quot;underlying decision&quot; requirement may be too abstract to change what the enumerator actually does, and nothing points it at the particular assumption every option shares.</drawback>
-    </alternative>
-    <alternative id="Shared-premise set test">
-      There is no process step. Instead, the coverage requirement comes with one concrete test the finished set must pass: if every listed option shares an assumption the question&apos;s wording introduced, the set must either include an option that rejects that assumption or leave it out only because rejecting it is not viable in this project. The check sits in step 2 next to the completeness requirement.
-      <advantage>It aims precisely at the benchmark category, a premise that every option shared, while leaving the enumeration method free. Because the test only fires when all the options agree on an assumption, it adds nothing to sets that already vary on it.</advantage>
-      <drawback>Running the test still requires the enumerator to see the shared assumption, which is the step that failed in the historical cases, so it may catch little more than the bare property does. A self-check the finished set must pass is also harder to verify in the one-off re-run than a visible step.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Degree variants representation">
     <question>When several candidate options are one approach at different degrees or parameter values, how does the alternative set represent that approach?</question>
     <recommendation option="One option per material degree">Treating degree as an axis needs no special case, every lifted or recommended option records a complete decision on every answer path, and merging values whose trade-off is the same is the same substance test that rules out near-duplicates everywhere else in the set.</recommendation>
@@ -142,31 +117,6 @@
       An alternative set covers only the substantive directions of the underlying decision and never lists postponement. Postponing is treated as something done to the question, not an answer to it: the user can always record it through a literal answer, and review-milestone-requirements can flag a question that lies outside the goal.
       <advantage>Every set stays about the decision itself. A fallback that is always available is never repeated in each block, and the enumerator has no universal escape hatch that could crowd out the harder not-doing direction the goal asks sets to cover.</advantage>
       <drawback>The recommendation pass and the answer sweep can never pick a postponement, because they choose only from the set. A question that honestly should wait for a later milestone therefore always needs a manual override, which is the kind of coverage gap this milestone sets out to close.</drawback>
-    </alternative>
-  </open-question>
-  <open-question id="Sibling-owned axes">
-    <question>When an axis of the underlying decision is already the subject of a sibling open question, does an alternative set&apos;s coverage extend to that axis, or does the existing rule that an option answering a sibling is left to that sibling bound it?</question>
-    <depends-on question="Interdependent axes" option="Single multi-axis question"/>
-    <recommendation option="Bound with named constraint">Each axis stays decided in exactly one block, which is what keeps the parallel alternatives pass and the scope-only sibling rule safe, while the required condition in the drawback gives the recommendation pass the cross-question constraint it turns into a dependency; choices coupled tightly enough to need laid-out combinations never reach two blocks.</recommendation>
-    <alternative id="Bound with named constraint">
-      Siblings still bound the set, so no option varies on a sibling-owned axis. But the enumeration step now explicitly requires each option to name any sibling-owned axis its viability depends on, stated as a condition in its drawback without naming the expected outcome. This turns today&apos;s optional &quot;say so in its drawback&quot; into a required statement.
-      <advantage>It shows interdependence across questions without duplicating any decision. The recommendation pass gets the constraint in the option text, where it can become a depends-on tag. The block format needs no set-level statement, which the tool would refuse anyway.</advantage>
-      <drawback>Unviable pairings are described one option at a time rather than laid out as combinations, so a combination spanning two questions is still never an option anyone can pick. It also adds a duty the enumerator must remember for every option, and the drawback field gets longer.</drawback>
-    </alternative>
-    <alternative id="Siblings bound coverage">
-      Keep the existing step-1 rule as the limit on coverage. The set covers only the axes of the underlying decision that no sibling question owns, so no option varies on a sibling-owned axis, and each option&apos;s what-it-is text states its position only on the axes this question owns.
-      <advantage>Each axis is decided in exactly one block. This keeps the rule that siblings supply scope and are never assumed settled, which is what lets the alternatives pass annotate blocks in parallel. It also keeps sets small, so one-axis-per-question authoring actually limits growth.</advantage>
-      <drawback>Where a sibling-owned axis constrains this one, no set shows which pairings are unviable. The 12 historical overrides that took a combination on an axis the set never laid out could still fall between two questions, because each block&apos;s coverage stops at the boundary.</drawback>
-    </alternative>
-    <alternative id="Coverage spans sibling axes">
-      Retire the rule that an option answering a sibling is left to that sibling. Every axis of the underlying decision is laid out and each option states where it stands on it, including axes a sibling question also owns.
-      <advantage>This is the most literal reading of the goal&apos;s &quot;cover the underlying decision&quot; and &quot;every combination weighed&quot; requirements. Each set becomes a complete map of the decision, so an answer taking a cross-question combination can always find it listed.</advantage>
-      <drawback>The same axis gets decided in two blocks. Recording one question&apos;s answer can fix a stance on a sibling&apos;s axis and conflict with that sibling&apos;s later answer, which causes more strip-and-re-run cascades. Stating a position on a sibling axis also comes close to presuming how that sibling settles, which step 2 forbids. Sets grow in exactly the way one-axis authoring is meant to prevent.</drawback>
-    </alternative>
-    <alternative id="Extend only for interdependence">
-      Siblings bound coverage by default. The one exception is a sibling-owned axis that constrains this question&apos;s axis so that not every pairing is viable: then the set lays out the viable combinations across both axes, and each option states its position on both.
-      <advantage>It targets the missed-combination failure without duplicating independent sibling decisions. Fuller coverage applies only where a single-axis set would really mislead.</advantage>
-      <drawback>The enumerator has to judge interdependence per question, a conditional rule that is harder to apply the same way every time. Where it applies, it brings back the double-decided axis and the answer-time conflicts. Its merit turns on how the question of authoring interdependent axes settles, since that question decides whether such pairs reach two blocks in the first place.</drawback>
     </alternative>
   </open-question>
   <open-question id="Compound question test">
@@ -357,66 +307,6 @@
       <drawback>It measures enumeration without the project reading that the procedure&apos;s step 1 requires. Missing directions that the real project would have made obvious, such as a section whose facts are already owned elsewhere, may not come up, so a pass or a fail says little about how the shipped pass behaves.</drawback>
     </alternative>
   </open-question>
-  <open-question id="Check match judgment">
-    <question>Who decides whether a re-run alternative set contains the direction the historical answer took: the agent carrying out the check, or the user reviewing the sets?</question>
-    <depends-on question="Check baseline run" option="Paired single baseline"/>
-    <recommendation option="Independent blind judge">With sets from both rule versions to mix, a judge that does not know which version produced a set removes the self-grading bias at no cost in user time, and its verdicts stay comparable across the two arms, which is what the comparison needs.</recommendation>
-    <alternative id="Independent blind judge">
-      A separate judge agent decides each match. It gets its own context with only the historical answer, the recorded missing direction, and the re-run set, and it is not told which rule version produced the set. The user receives only its verdicts.
-      <advantage>It removes the self-grading bias of the agent carrying out the check while still asking nothing of the user. Hiding which rules produced each set makes the verdicts comparable across runs.</advantage>
-      <drawback>Setting up a separate, blinded judging step adds work to a one-off check. The judge is still a model making a fuzzy call with no human anchor. How much the blinding is worth depends on whether the check also produces sets from the unchanged rules to mix in.</drawback>
-    </alternative>
-    <alternative id="Agent judges alone">
-      The agent running the check decides each match by comparing the re-run set against the missing direction already recorded for that case in the benchmark&apos;s judged verdicts, and hands the user only the tally and a short aggregate summary.
-      <advantage>It takes the least of the user&apos;s time and fits a headless or scripted run. It also reuses the same kind of judgment that produced the 20 strong-candidate ratings, so the check measures against the same yardstick that selected its cases.</advantage>
-      <drawback>The agent that wrote or ran the new rules is grading its own work, and &quot;contains the direction&quot; is a fuzzy semantic call. A lenient reading of near-misses could pass the change without anyone catching it, and no human ever sees the sets the verdict rests on.</drawback>
-    </alternative>
-    <alternative id="User judges every set">
-      The agent puts each case in front of the user: the historical question, the direction the answer took, and the re-run set. It gives no verdict of its own, and the user decides for every case whether the set contains that direction.
-      <advantage>The person whose answers produced the overrides decides whether each missing direction now appears, which is the most faithful reading of what &quot;the direction the answer took&quot; meant. The verdict carries no model bias.</advantage>
-      <drawback>It costs the most user time, because every case&apos;s set must be read in full. User judgments are harder to repeat identically on a later re-run, and the user may not recall the context behind older answers from other projects.</drawback>
-    </alternative>
-    <alternative id="Agent proposes, user ratifies">
-      The agent records a verdict and a one-line reason for every case, and the user reviews and confirms or overturns each one before the tally counts.
-      <advantage>The user holds the final say on every case at a fraction of the reading cost, since each verdict comes with the specific option the agent believes matches. Overturned verdicts also show where the agent&apos;s judgment of a match is unreliable.</advantage>
-      <drawback>A proposed verdict anchors the reviewer, so review tends to become rubber-stamping and the human check is weaker than it looks. The user still has to open every case, so the saving over judging every set directly may be small.</drawback>
-    </alternative>
-    <alternative id="Agent judges, user audits doubts">
-      The agent decides each match and marks as uncertain any case where the closest option is only near the historical direction. The user adjudicates only the uncertain cases, plus optionally a small spot-check of the confident ones.
-      <advantage>Human attention goes where the call is actually hard, so the user&apos;s time grows with the number of ambiguous cases rather than the number of re-run cases. Clear hits and clear misses pass without review.</advantage>
-      <drawback>It relies on the agent to know which of its own calls are doubtful. A confidently wrong verdict escapes review unless a spot-check happens to catch it, so the tally is only partly human-verified.</drawback>
-    </alternative>
-  </open-question>
-  <open-question id="Check pass bar">
-    <question>What share of the re-run cases must contain the previously missing direction for the one-off check to count the change as verified?</question>
-    <depends-on question="Check baseline run" option="Paired single baseline"/>
-    <recommendation option="Beats baseline">The historical sets came from older models, so an absolute share could be met by the model alone; only a margin over the unchanged rules on the same cases credits the result to the wording, with the margin for clearly more fixed before the runs.</recommendation>
-    <alternative id="Beats baseline">
-      Set no absolute share. The change counts as verified when the new rules recover the missing direction in clearly more of the same cases than the unchanged rules recover when run with the same model.
-      <advantage>A pass can be credited to the new wording and not to the model. Newer models may already recover some directions that the historical run missed, and an absolute share cannot separate that effect from the wording change.</advantage>
-      <drawback>It only means something if the check also runs the unchanged rules, which the sibling question on a baseline run decides. It doubles the number of runs. With a small number of cases it still needs a stated margin for &quot;clearly more&quot;, so the arbitrary cut-off is moved, not removed.</drawback>
-    </alternative>
-    <alternative id="Majority bar">
-      Set a fixed share of more than half: the change counts as verified when most of the re-run cases now contain the direction their historical set missed. The bar is stated as a share, so it applies unchanged whichever set of cases the check re-runs.
-      <advantage>It is a simple bar that can be failed, and the new rules can reasonably reach it. Some historical misses turned on facts nobody had when the question was asked, so no enumeration rule could recover them. A majority bar leaves room for those cases and still requires the rules to fix the typical miss.</advantage>
-      <drawback>The cut-off at one half is arbitrary. The cases are a small, hand-picked set, not a random sample, so a single case can move the result across the line, and the verdict says little about how the rules perform on new questions.</drawback>
-    </alternative>
-    <alternative id="High bar">
-      Set a fixed share well above half, around three quarters or more: the change counts as verified only when nearly every re-run case now contains the direction its historical set missed.
-      <advantage>Passing it is strong evidence that the rewritten enumeration step does what the goal claims, which is to cover the underlying decision, including the direction of not doing the thing. A borderline improvement cannot be reported as success.</advantage>
-      <drawback>Some misses may not be recoverable by any enumeration rule, so a failure can reflect the chosen cases rather than the wording. That makes a shortfall more likely, and what happens then depends on how the sibling question on shortfall response settles.</drawback>
-    </alternative>
-    <alternative id="Per-category bar">
-      Apply a share bar separately to each kind of historical miss: a direction no option represented, a combination on an axis the set never laid out, and a premise every option shared. The change counts as verified only when each kind meets its bar.
-      <advantage>Each new rule is checked on its own. A pass driven only by the frequent &quot;not doing the thing&quot; misses cannot hide that the rules on combinations or premises had no effect.</advantage>
-      <drawback>Split across three kinds, each group holds only a few cases, so each share is very noisy. Every case also needs a category label, which is extra judging work on data that must stay outside the repository.</drawback>
-    </alternative>
-    <alternative id="No numeric bar">
-      Set no pass share. The check re-runs the cases, records the aggregate share that now contains the missing direction, and the user decides from that result whether the change is verified.
-      <advantage>It does not claim statistical meaning for a threshold chosen in advance on a small, non-random set of cases. This suits a check that runs once and whose committed trace is limited to aggregate results by the milestone&apos;s privacy rule.</advantage>
-      <drawback>The check can no longer fail by a stated rule, so &quot;verified&quot; becomes a judgment made after seeing the result. It also gives the sibling question on shortfall response no defined trigger to act on.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Check shortfall response">
     <question>If the one-off check falls short of its bar, does the milestone revise the enumeration wording and re-run the check, or record the shortfall and finish?</question>
     <recommendation option="One revision round">A single bounded round makes a real attempt to close a measured gap while guaranteeing the milestone ends, and it limits tuning against the same small case set, which an open-ended loop or a judged out-of-reach exclusion would not.</recommendation>
@@ -498,6 +388,116 @@
       Record the rationale in docs/design-claims.md instead of CLAUDE.md. Claim 4, which currently promises &quot;2 to 4 real alternatives&quot;, is rewritten to state the distinct-and-covering property and the evidence pattern behind it. CLAUDE.md stays unchanged.
       <advantage>Claim 4 has to be corrected anyway because its count is now wrong. Putting the reason where the property is claimed and its metric is named keeps the justification next to the promise it supports, and CLAUDE.md gets no heavier.</advantage>
       <drawback>design-claims.md is aimed at readers evaluating the plugin, not the file a maintainer or agent loads before editing core/. So it doesn&apos;t protect against a count cap being reinstated during an edit, which is the job CLAUDE.md&apos;s &quot;Rationale lives here&quot; rule assigns. It also overlaps with the separate Documentation scope question.</drawback>
+    </alternative>
+  </open-question>
+  <open-question id="Wording premise rule">
+    <question>Does the enumeration step of alternatives-procedure.md tell the enumerator to find what the question&apos;s wording takes for granted and weigh rejecting it, or is covering the underlying decision stated without such a step?</question>
+    <depends-on question="Axis identification step" option="Axes-first derivation"/>
+    <recommendation option="Premises as axes">One mechanism then covers both the axes the question names and the ones its wording hides, a premise-rejecting option states its stance like any other option, and rejecting a premise usually makes the remaining axes moot, so it adds one option rather than a cross-product.</recommendation>
+    <alternative id="Premises as axes">
+      Premise-finding is folded into the enumeration&apos;s axis work rather than stated as a rule of its own: each assumption the wording takes for granted is treated as one more axis of the decision, with accepting and rejecting it as its values, so rejecting a premise comes out of the same step that lays out the other axes.
+      <advantage>A single mechanism covers both the axes the question names and the ones its wording hides, so the procedure gains no separate premise rule. A premise-rejecting option then carries its stance on every other axis like any other option, and does not stand outside the set&apos;s structure.</advantage>
+      <drawback>It only works if the enumeration step contains an explicit axis step, so its viability depends on how the Axis identification step sibling settles. Treating every premise as an axis also multiplies the combinations the goal says must all be weighed, and on a multi-axis question that can make the set grow more than the problem requires.</drawback>
+    </alternative>
+    <alternative id="Explicit premise step">
+      The enumeration step of alternatives-procedure.md gets its own instruction: before listing options, name what the question&apos;s wording takes for granted (an assumed need, mechanism, or framing), then for each such premise weigh an option that rejects it, and list that option only where it is honestly viable. On the axes it touches, this option adds a dedicated process step, so a premise is examined on every question and not only when the enumerator happens to notice it.
+      <advantage>It targets a failure the benchmark aggregate shows directly: 9 of 106 overriding answers rejected a premise that every listed option shared. A named step makes the enumerator look for exactly the assumption that a wording-bound set carries silently, rather than hoping the general coverage requirement brings it up.</advantage>
+      <drawback>It lengthens a procedure that every alternatives subagent and discuss-open-question follow on every question, although most questions have no premise worth rejecting. It also invites premise-rejecting options that are really strawmen, which works against the existing ban on padding. How much it overlaps other rules depends on how the Drop-it direction rule and Axis identification step siblings settle, because not doing the thing is itself the rejection of one premise.</drawback>
+    </alternative>
+    <alternative id="Coverage property only">
+      The enumeration step says only that the set must cover the underlying decision and not the question&apos;s wording, with no step for finding premises. Spotting and rejecting a premise is left to the enumerator&apos;s judgment under that one requirement, and premise problems on the authoring side are left to the &quot;shared premises&quot; idea document the milestone writes under temp/.
+      <advantage>It keeps the procedure short and states the outcome without prescribing a method, the same approach step 2 already takes with &quot;complete now&quot;. It adds no rule that could push premise-rejecting options into a set whose premises are sound.</advantage>
+      <drawback>The current procedure already asks for completeness without defining it, and the historical sets still missed shared premises. A bare &quot;underlying decision&quot; requirement may be too abstract to change what the enumerator actually does, and nothing points it at the particular assumption every option shares.</drawback>
+    </alternative>
+    <alternative id="Shared-premise set test">
+      There is no process step. Instead, the coverage requirement comes with one concrete test the finished set must pass: if every listed option shares an assumption the question&apos;s wording introduced, the set must either include an option that rejects that assumption or leave it out only because rejecting it is not viable in this project. The check sits in step 2 next to the completeness requirement.
+      <advantage>It aims precisely at the benchmark category, a premise that every option shared, while leaving the enumeration method free. Because the test only fires when all the options agree on an assumption, it adds nothing to sets that already vary on it.</advantage>
+      <drawback>Running the test still requires the enumerator to see the shared assumption, which is the step that failed in the historical cases, so it may catch little more than the bare property does. A self-check the finished set must pass is also harder to verify in the one-off re-run than a visible step.</drawback>
+    </alternative>
+  </open-question>
+  <open-question id="Sibling-owned axes">
+    <question>When an axis of the underlying decision is already the subject of a sibling open question, does an alternative set&apos;s coverage extend to that axis, or does the existing rule that an option answering a sibling is left to that sibling bound it?</question>
+    <depends-on question="Interdependent axes" option="Single multi-axis question"/>
+    <recommendation option="Bound with named constraint">Each axis stays decided in exactly one block, which is what keeps the parallel alternatives pass and the scope-only sibling rule safe, while the required condition in the drawback gives the recommendation pass the cross-question constraint it turns into a dependency; choices coupled tightly enough to need laid-out combinations never reach two blocks.</recommendation>
+    <alternative id="Bound with named constraint">
+      Siblings still bound the set, so no option varies on a sibling-owned axis. But the enumeration step now explicitly requires each option to name any sibling-owned axis its viability depends on, stated as a condition in its drawback without naming the expected outcome. This turns today&apos;s optional &quot;say so in its drawback&quot; into a required statement.
+      <advantage>It shows interdependence across questions without duplicating any decision. The recommendation pass gets the constraint in the option text, where it can become a depends-on tag. The block format needs no set-level statement, which the tool would refuse anyway.</advantage>
+      <drawback>Unviable pairings are described one option at a time rather than laid out as combinations, so a combination spanning two questions is still never an option anyone can pick. It also adds a duty the enumerator must remember for every option, and the drawback field gets longer.</drawback>
+    </alternative>
+    <alternative id="Siblings bound coverage">
+      Keep the existing step-1 rule as the limit on coverage. The set covers only the axes of the underlying decision that no sibling question owns, so no option varies on a sibling-owned axis, and each option&apos;s what-it-is text states its position only on the axes this question owns.
+      <advantage>Each axis is decided in exactly one block. This keeps the rule that siblings supply scope and are never assumed settled, which is what lets the alternatives pass annotate blocks in parallel. It also keeps sets small, so one-axis-per-question authoring actually limits growth.</advantage>
+      <drawback>Where a sibling-owned axis constrains this one, no set shows which pairings are unviable. The 12 historical overrides that took a combination on an axis the set never laid out could still fall between two questions, because each block&apos;s coverage stops at the boundary.</drawback>
+    </alternative>
+    <alternative id="Coverage spans sibling axes">
+      Retire the rule that an option answering a sibling is left to that sibling. Every axis of the underlying decision is laid out and each option states where it stands on it, including axes a sibling question also owns.
+      <advantage>This is the most literal reading of the goal&apos;s &quot;cover the underlying decision&quot; and &quot;every combination weighed&quot; requirements. Each set becomes a complete map of the decision, so an answer taking a cross-question combination can always find it listed.</advantage>
+      <drawback>The same axis gets decided in two blocks. Recording one question&apos;s answer can fix a stance on a sibling&apos;s axis and conflict with that sibling&apos;s later answer, which causes more strip-and-re-run cascades. Stating a position on a sibling axis also comes close to presuming how that sibling settles, which step 2 forbids. Sets grow in exactly the way one-axis authoring is meant to prevent.</drawback>
+    </alternative>
+    <alternative id="Extend only for interdependence">
+      Siblings bound coverage by default. The one exception is a sibling-owned axis that constrains this question&apos;s axis so that not every pairing is viable: then the set lays out the viable combinations across both axes, and each option states its position on both.
+      <advantage>It targets the missed-combination failure without duplicating independent sibling decisions. Fuller coverage applies only where a single-axis set would really mislead.</advantage>
+      <drawback>The enumerator has to judge interdependence per question, a conditional rule that is harder to apply the same way every time. Where it applies, it brings back the double-decided axis and the answer-time conflicts. Its merit turns on how the question of authoring interdependent axes settles, since that question decides whether such pairs reach two blocks in the first place.</drawback>
+    </alternative>
+  </open-question>
+  <open-question id="Check match judgment">
+    <question>Who decides whether a re-run alternative set contains the direction the historical answer took: the agent carrying out the check, or the user reviewing the sets?</question>
+    <depends-on question="Check baseline run" option="Paired single baseline"/>
+    <recommendation option="Independent blind judge">With sets from both rule versions to mix, a judge that does not know which version produced a set removes the self-grading bias at no cost in user time, and its verdicts stay comparable across the two arms, which is what the comparison needs.</recommendation>
+    <alternative id="Independent blind judge">
+      A separate judge agent decides each match. It gets its own context with only the historical answer, the recorded missing direction, and the re-run set, and it is not told which rule version produced the set. The user receives only its verdicts.
+      <advantage>It removes the self-grading bias of the agent carrying out the check while still asking nothing of the user. Hiding which rules produced each set makes the verdicts comparable across runs.</advantage>
+      <drawback>Setting up a separate, blinded judging step adds work to a one-off check. The judge is still a model making a fuzzy call with no human anchor. How much the blinding is worth depends on whether the check also produces sets from the unchanged rules to mix in.</drawback>
+    </alternative>
+    <alternative id="Agent judges alone">
+      The agent running the check decides each match by comparing the re-run set against the missing direction already recorded for that case in the benchmark&apos;s judged verdicts, and hands the user only the tally and a short aggregate summary.
+      <advantage>It takes the least of the user&apos;s time and fits a headless or scripted run. It also reuses the same kind of judgment that produced the 20 strong-candidate ratings, so the check measures against the same yardstick that selected its cases.</advantage>
+      <drawback>The agent that wrote or ran the new rules is grading its own work, and &quot;contains the direction&quot; is a fuzzy semantic call. A lenient reading of near-misses could pass the change without anyone catching it, and no human ever sees the sets the verdict rests on.</drawback>
+    </alternative>
+    <alternative id="User judges every set">
+      The agent puts each case in front of the user: the historical question, the direction the answer took, and the re-run set. It gives no verdict of its own, and the user decides for every case whether the set contains that direction.
+      <advantage>The person whose answers produced the overrides decides whether each missing direction now appears, which is the most faithful reading of what &quot;the direction the answer took&quot; meant. The verdict carries no model bias.</advantage>
+      <drawback>It costs the most user time, because every case&apos;s set must be read in full. User judgments are harder to repeat identically on a later re-run, and the user may not recall the context behind older answers from other projects.</drawback>
+    </alternative>
+    <alternative id="Agent proposes, user ratifies">
+      The agent records a verdict and a one-line reason for every case, and the user reviews and confirms or overturns each one before the tally counts.
+      <advantage>The user holds the final say on every case at a fraction of the reading cost, since each verdict comes with the specific option the agent believes matches. Overturned verdicts also show where the agent&apos;s judgment of a match is unreliable.</advantage>
+      <drawback>A proposed verdict anchors the reviewer, so review tends to become rubber-stamping and the human check is weaker than it looks. The user still has to open every case, so the saving over judging every set directly may be small.</drawback>
+    </alternative>
+    <alternative id="Agent judges, user audits doubts">
+      The agent decides each match and marks as uncertain any case where the closest option is only near the historical direction. The user adjudicates only the uncertain cases, plus optionally a small spot-check of the confident ones.
+      <advantage>Human attention goes where the call is actually hard, so the user&apos;s time grows with the number of ambiguous cases rather than the number of re-run cases. Clear hits and clear misses pass without review.</advantage>
+      <drawback>It relies on the agent to know which of its own calls are doubtful. A confidently wrong verdict escapes review unless a spot-check happens to catch it, so the tally is only partly human-verified.</drawback>
+    </alternative>
+  </open-question>
+  <open-question id="Check pass bar">
+    <question>What share of the re-run cases must contain the previously missing direction for the one-off check to count the change as verified?</question>
+    <depends-on question="Check baseline run" option="Paired single baseline"/>
+    <recommendation option="Beats baseline">The historical sets came from older models, so an absolute share could be met by the model alone; only a margin over the unchanged rules on the same cases credits the result to the wording, with the margin for clearly more fixed before the runs.</recommendation>
+    <alternative id="Beats baseline">
+      Set no absolute share. The change counts as verified when the new rules recover the missing direction in clearly more of the same cases than the unchanged rules recover when run with the same model.
+      <advantage>A pass can be credited to the new wording and not to the model. Newer models may already recover some directions that the historical run missed, and an absolute share cannot separate that effect from the wording change.</advantage>
+      <drawback>It only means something if the check also runs the unchanged rules, which the sibling question on a baseline run decides. It doubles the number of runs. With a small number of cases it still needs a stated margin for &quot;clearly more&quot;, so the arbitrary cut-off is moved, not removed.</drawback>
+    </alternative>
+    <alternative id="Majority bar">
+      Set a fixed share of more than half: the change counts as verified when most of the re-run cases now contain the direction their historical set missed. The bar is stated as a share, so it applies unchanged whichever set of cases the check re-runs.
+      <advantage>It is a simple bar that can be failed, and the new rules can reasonably reach it. Some historical misses turned on facts nobody had when the question was asked, so no enumeration rule could recover them. A majority bar leaves room for those cases and still requires the rules to fix the typical miss.</advantage>
+      <drawback>The cut-off at one half is arbitrary. The cases are a small, hand-picked set, not a random sample, so a single case can move the result across the line, and the verdict says little about how the rules perform on new questions.</drawback>
+    </alternative>
+    <alternative id="High bar">
+      Set a fixed share well above half, around three quarters or more: the change counts as verified only when nearly every re-run case now contains the direction its historical set missed.
+      <advantage>Passing it is strong evidence that the rewritten enumeration step does what the goal claims, which is to cover the underlying decision, including the direction of not doing the thing. A borderline improvement cannot be reported as success.</advantage>
+      <drawback>Some misses may not be recoverable by any enumeration rule, so a failure can reflect the chosen cases rather than the wording. That makes a shortfall more likely, and what happens then depends on how the sibling question on shortfall response settles.</drawback>
+    </alternative>
+    <alternative id="Per-category bar">
+      Apply a share bar separately to each kind of historical miss: a direction no option represented, a combination on an axis the set never laid out, and a premise every option shared. The change counts as verified only when each kind meets its bar.
+      <advantage>Each new rule is checked on its own. A pass driven only by the frequent &quot;not doing the thing&quot; misses cannot hide that the rules on combinations or premises had no effect.</advantage>
+      <drawback>Split across three kinds, each group holds only a few cases, so each share is very noisy. Every case also needs a category label, which is extra judging work on data that must stay outside the repository.</drawback>
+    </alternative>
+    <alternative id="No numeric bar">
+      Set no pass share. The check re-runs the cases, records the aggregate share that now contains the missing direction, and the user decides from that result whether the change is verified.
+      <advantage>It does not claim statistical meaning for a threshold chosen in advance on a small, non-random set of cases. This suits a check that runs once and whose committed trace is limited to aggregate results by the milestone&apos;s privacy rule.</advantage>
+      <drawback>The check can no longer fail by a stated rule, so &quot;verified&quot; becomes a judgment made after seeing the result. It also gives the sibling question on shortfall response no defined trigger to act on.</drawback>
     </alternative>
   </open-question>
 </open-questions>
