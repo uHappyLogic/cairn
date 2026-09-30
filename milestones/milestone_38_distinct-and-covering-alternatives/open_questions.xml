@@ -1,29 +1,4 @@
 <open-questions>
-  <open-question id="Enumeration rationale record">
-    <question>Does CLAUDE.md gain an invariant entry explaining why alternative sets must be distinct and covering and why the count guideline is gone, or does the procedure&apos;s own wording carry that alone?</question>
-    <applied-principle>Description over retirement note</applied-principle>
-    <recommendation option="New invariant entry">A count guideline and a tidy shortlist are the natural reading a later editor would restore when a set grows large, runtime files may not carry that editor-facing reason, and the existing two-halves bullet is about file separation; the entry states the rule and its generic failure patterns without measurement figures.</recommendation>
-    <alternative id="New invariant entry">
-      Add a dedicated invariant bullet to CLAUDE.md. It explains why an alternative set must be distinct and covering: every two options differ in substance on an axis, and the set covers the underlying decision, including dropping the thing where that is viable. It also explains why the &quot;two to four&quot; count guideline was removed and must not be restored, why each option states its axis positions, and how the one-axis authoring rule in review-milestone-requirements stops the set from growing. The rationale uses only aggregate findings and generic patterns from the benchmark.
-      <advantage>This follows the repository&apos;s rule that runtime files carry no editor-facing prose and that rationale belongs in CLAUDE.md. It also gives later editors an explicit &quot;do not fix back&quot; guard, so they won&apos;t reinstate a count cap or a tidy shortlist when a set grows large. That is exactly the kind of well-meant regression the other invariant entries exist to prevent.</advantage>
-      <drawback>It adds another long bullet to a list that is already dense, and its wording has to be kept in step with the procedure text. The benchmark-privacy rule also limits the evidence to aggregates, so the rationale can&apos;t point to the concrete cases that motivated it.</drawback>
-    </alternative>
-    <alternative id="Extend existing invariant">
-      Leave the invariant list&apos;s structure alone and add a short clause to the existing bullet &quot;The two halves of the analytical core&quot;. The clause says that the enumeration half maps the decision space (distinct, covering, no count guideline) and why. The review-side one-axis authoring rule is noted briefly in the &quot;Tidy vs. record&quot; bullet or left out.
-      <advantage>The rationale sits next to the invariant that already defines the enumeration half&apos;s role, so CLAUDE.md gets only a small addition and there is no new top-level entry to keep aligned.</advantage>
-      <drawback>That bullet is about why the two halves are separate files, not what makes a set complete, so the new rule sits in a bullet whose heading doesn&apos;t point to it and is easy to miss. Splitting the enumeration and authoring rationale across two bullets also hides that they are two halves of one design.</drawback>
-    </alternative>
-    <alternative id="Procedure wording alone">
-      Make no CLAUDE.md change for this rule. The rewritten step 2 of alternatives-procedure.md carries the requirement and the runner-facing reason for it, as it already does for &quot;complete now&quot;. The history is left to milestone 38&apos;s recorded decisions and commits.
-      <advantage>There is only one place to maintain, and it is the text the runner actually reads, so rule and reason can&apos;t drift apart. It also keeps CLAUDE.md for decisions that are truly structural rather than prose-quality rules.</advantage>
-      <drawback>Nothing tells a later editor that removing the count guideline was deliberate. The runtime-prose rule keeps editor-facing rationale such as &quot;do not restore the cap&quot; out of the procedure, so a future cleanup could put &quot;typically two to four&quot; back without anything flagging a regression. Milestone decisions and commit history are not places an editor checks before editing.</drawback>
-    </alternative>
-    <alternative id="Rationale in design claims">
-      Record the rationale in docs/design-claims.md instead of CLAUDE.md. Claim 4, which currently promises &quot;2 to 4 real alternatives&quot;, is rewritten to state the distinct-and-covering property and the evidence pattern behind it. CLAUDE.md stays unchanged.
-      <advantage>Claim 4 has to be corrected anyway because its count is now wrong. Putting the reason where the property is claimed and its metric is named keeps the justification next to the promise it supports, and CLAUDE.md gets no heavier.</advantage>
-      <drawback>design-claims.md is aimed at readers evaluating the plugin, not the file a maintainer or agent loads before editing core/. So it doesn&apos;t protect against a count cap being reinstated during an edit, which is the job CLAUDE.md&apos;s &quot;Rationale lives here&quot; rule assigns. It also overlaps with the separate Documentation scope question.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Wording premise rule">
     <question>Does the enumeration step of alternatives-procedure.md tell the enumerator to find what the question&apos;s wording takes for granted and weigh rejecting it, or is covering the underlying decision stated without such a step?</question>
     <recommendation option="Premises as axes">One mechanism then covers both the axes the question names and the ones its wording hides, a premise-rejecting option states its stance like any other option, and rejecting a premise usually makes the remaining axes moot, so it adds one option rather than a cross-product.</recommendation>
