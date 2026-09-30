@@ -57,6 +57,7 @@ No benchmark harness, eval directory, or judge exists in the repository. Neither
 - The what-it-is field drops its one-sentence limit for a content bound with no count: it holds only what the option is, meaning its position on each axis, and any reason for or against it belongs in the advantage and drawback fields. Its length follows from how many positions there are to state.
 - Postponing the decision is not a separate direction: it counts as one form of the "not in this milestone" direction, so a set lists at most one option for not doing the thing now, and the answer text says whether that means never or later.
 - Premise-finding is folded into the axis work rather than stated as a rule of its own: each assumption the question's wording takes for granted is treated as one more axis of the decision, with accepting and rejecting it as its values, so rejecting a premise comes out of the same step that lays out the other axes.
+- Sibling questions still bound a set's coverage, so no option varies on a sibling-owned axis. The enumeration step requires each option to name any sibling-owned axis its viability depends on, stated as a condition in its drawback without naming the expected outcome.
 
 ### Verification
 

@@ -1,28 +1,4 @@
 <open-questions>
-  <open-question id="Sibling-owned axes">
-    <question>When an axis of the underlying decision is already the subject of a sibling open question, does an alternative set&apos;s coverage extend to that axis, or does the existing rule that an option answering a sibling is left to that sibling bound it?</question>
-    <recommendation option="Bound with named constraint">Each axis stays decided in exactly one block, which is what keeps the parallel alternatives pass and the scope-only sibling rule safe, while the required condition in the drawback gives the recommendation pass the cross-question constraint it turns into a dependency; choices coupled tightly enough to need laid-out combinations never reach two blocks.</recommendation>
-    <alternative id="Bound with named constraint">
-      Siblings still bound the set, so no option varies on a sibling-owned axis. But the enumeration step now explicitly requires each option to name any sibling-owned axis its viability depends on, stated as a condition in its drawback without naming the expected outcome. This turns today&apos;s optional &quot;say so in its drawback&quot; into a required statement.
-      <advantage>It shows interdependence across questions without duplicating any decision. The recommendation pass gets the constraint in the option text, where it can become a depends-on tag. The block format needs no set-level statement, which the tool would refuse anyway.</advantage>
-      <drawback>Unviable pairings are described one option at a time rather than laid out as combinations, so a combination spanning two questions is still never an option anyone can pick. It also adds a duty the enumerator must remember for every option, and the drawback field gets longer.</drawback>
-    </alternative>
-    <alternative id="Siblings bound coverage">
-      Keep the existing step-1 rule as the limit on coverage. The set covers only the axes of the underlying decision that no sibling question owns, so no option varies on a sibling-owned axis, and each option&apos;s what-it-is text states its position only on the axes this question owns.
-      <advantage>Each axis is decided in exactly one block. This keeps the rule that siblings supply scope and are never assumed settled, which is what lets the alternatives pass annotate blocks in parallel. It also keeps sets small, so one-axis-per-question authoring actually limits growth.</advantage>
-      <drawback>Where a sibling-owned axis constrains this one, no set shows which pairings are unviable. The 12 historical overrides that took a combination on an axis the set never laid out could still fall between two questions, because each block&apos;s coverage stops at the boundary.</drawback>
-    </alternative>
-    <alternative id="Coverage spans sibling axes">
-      Retire the rule that an option answering a sibling is left to that sibling. Every axis of the underlying decision is laid out and each option states where it stands on it, including axes a sibling question also owns.
-      <advantage>This is the most literal reading of the goal&apos;s &quot;cover the underlying decision&quot; and &quot;every combination weighed&quot; requirements. Each set becomes a complete map of the decision, so an answer taking a cross-question combination can always find it listed.</advantage>
-      <drawback>The same axis gets decided in two blocks. Recording one question&apos;s answer can fix a stance on a sibling&apos;s axis and conflict with that sibling&apos;s later answer, which causes more strip-and-re-run cascades. Stating a position on a sibling axis also comes close to presuming how that sibling settles, which step 2 forbids. Sets grow in exactly the way one-axis authoring is meant to prevent.</drawback>
-    </alternative>
-    <alternative id="Extend only for interdependence">
-      Siblings bound coverage by default. The one exception is a sibling-owned axis that constrains this question&apos;s axis so that not every pairing is viable: then the set lays out the viable combinations across both axes, and each option states its position on both.
-      <advantage>It targets the missed-combination failure without duplicating independent sibling decisions. Fuller coverage applies only where a single-axis set would really mislead.</advantage>
-      <drawback>The enumerator has to judge interdependence per question, a conditional rule that is harder to apply the same way every time. Where it applies, it brings back the double-decided axis and the answer-time conflicts. Its merit turns on how the question of authoring interdependent axes settles, since that question decides whether such pairs reach two blocks in the first place.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Check match judgment">
     <question>Who decides whether a re-run alternative set contains the direction the historical answer took: the agent carrying out the check, or the user reviewing the sets?</question>
     <recommendation option="Independent blind judge">With sets from both rule versions to mix, a judge that does not know which version produced a set removes the self-grading bias at no cost in user time, and its verdicts stay comparable across the two arms, which is what the comparison needs.</recommendation>
