@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Write Pre-Split Case Conversion Script
-
-Write the one throwaway conversion script under `temp/` that prepares a scratch clone of a milestone predating `open_questions.xml`: it creates the empty document in the milestone directory, turns every question of the open-questions section of `requirements.md` into a bare block through the tool's `add` (the historical Short Title and question text only), deletes that section, and commits the converted state inside the clone. The re-run check needs it so pre-split and post-split cases run through the unchanged alternatives pass alike and count in one tally. It is verified by running it in a scratch clone checked out at a pre-split commit and confirming the tool's `list` prints that milestone's questions, the section is gone from `requirements.md`, and the source repository is untouched.
-
----
-
 ## Fix Re-Run Cases And Control Sample
 
 Fix, in an uncommitted manifest under `temp/`, the cases the re-run check will use: all 20 historical cases rated strong candidates (16 where the answer took a direction no option represented, 4 where it took a combination on an axis the set never laid out) and a control sample of eight to ten refinement overrides picked by a stratified seeded draw, with the grouping features (source project, how many alternatives the historical set held, and whether its judged verdict flagged near-duplicates) fixed before the draw and the seed fixed before any run. Fixing the selection first keeps it independent of every run's outcome. It is verified by the manifest holding exactly those counts with every group represented and by the draw reproducing under its recorded seed, with nothing from the benchmark data entering a committed file.

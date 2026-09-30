@@ -60,3 +60,19 @@ Build the small throwaway fixture milestone under `temp/` whose `requirements.md
 - The scratch working copy was deleted after its question set was read, and this repository's tracked tree is unchanged by the run: the fixture, its run script, and the run transcript stay under the gitignored `temp/`.
 
 ---
+
+## Write Pre-Split Case Conversion Script
+
+Write the one throwaway conversion script under `temp/` that prepares a scratch clone of a milestone predating `open_questions.xml`: it creates the empty document in the milestone directory, turns every question of the open-questions section of `requirements.md` into a bare block through the tool's `add` (the historical Short Title and question text only), deletes that section, and commits the converted state inside the clone. The re-run check needs it so pre-split and post-split cases run through the unchanged alternatives pass alike and count in one tally. It is verified by running it in a scratch clone checked out at a pre-split commit and confirming the tool's `list` prints that milestone's questions, the section is gone from `requirements.md`, and the source repository is untouched.
+
+**Verified:**
+
+- The script exists as `temp/convert_presplit_case.py` under the gitignored `temp/` (`git check-ignore` names the `temp/` rule), taking the scratch clone and the milestone directory as arguments, so `git status` shows nothing new to commit from it.
+- It creates `open_questions.xml` holding the empty canonical document (`<open-questions/>` and a newline), then adds each historical question as a bare block through `open_questions.py add` of the rebuilt `hosts/claude` tree, passing only the historical Short Title and the question text on stdin; no historical alternative or recommendation enters the document.
+- It reads both historical question layouts: XML blocks inside the `## Open questions` section (with or without the retired `status` attribute) and the older Markdown blockquotes opening `**Open question — <Title>:**` or `**Deferred — <Title>:**`, including those the oldest layout kept inline in other sections, whose alternatives and recommendation would otherwise stay readable in `requirements.md`.
+- It deletes the `## Open questions` section and every question blockquote from `requirements.md`, then commits exactly `open_questions.xml` and `requirements.md` inside the clone under a `Pre-split conversion: <milestone directory>` subject.
+- Run in scratch clones under the system temp directory checked out at the parents of three pre-split answer commits (one per layout: XML section, blockquote section, inline blockquotes with no section), the tool's `list` printed each milestone's historical questions in document order, the answered question among them; `requirements.md` held no `## Open questions` heading, question block, or question blockquote afterwards, the rest of the file unchanged; each clone's tree was clean with the conversion commit on top.
+- Its parser, run over the pre-split parent `requirements.md` of every pre-split case the re-run check can draw from, found at least one question in each, found the answered question's Short Title in each, and left no question marker behind.
+- It refuses a work tree outside the system temp directory (tried on a source repository: it stopped on its `Error:` line), a dirty tree, and a milestone that already has `open_questions.xml`; the source repositories' `HEAD` and status were identical before and after the runs, and every scratch clone was deleted.
+
+---
