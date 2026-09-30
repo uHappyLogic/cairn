@@ -1,6 +1,7 @@
 <open-questions>
   <open-question id="Pre-split case handling">
     <question>Some of the historical cases chosen for the one-off check come from milestones that predate `open_questions.xml`, where the question blocks sit inside `requirements.md` and the alternatives pass stops on the open-question tool&apos;s `Error:` line. How are those cases re-run?</question>
+    <recommendation option="Scripted full conversion">Most of the re-run cases and nearly all refinement overrides predate the split, so conversion is the common path rather than a few exceptions; one script gives both paired runs the same prepared state and keeps each question&apos;s siblings, so pre-split and post-split cases count in one tally.</recommendation>
     <alternative id="Scripted full conversion">
       Right after checking out the parent commit, each scratch clone runs one throwaway conversion script kept under `temp/`. The script converts the whole milestone and does the same thing for the baseline run and the new-rules run. It creates an empty `open_questions.xml` in the pre-split milestone directory. It then uses the tool&apos;s `add` to turn every question of that milestone&apos;s open-questions section in `requirements.md` into a bare block: the historical Short Title and question text only, with no alternatives, recommendation or status. Finally it deletes that section from `requirements.md` and commits the converted state inside the clone. After that, the unchanged alternatives pass runs on the case&apos;s question with the rebuilt `hosts/claude` tree loaded, exactly as it does for post-split cases.
       <advantage>All 20 cases go through the same real pass and agent, as the recorded decisions require. The case&apos;s question keeps its original siblings, which the agent sees through `list --with-question`, so its set is bounded the way the historical set was. The prepared state is also identical by construction for both paired runs. Deleting the section keeps the historical alternative set out of the agent&apos;s whole read of `requirements.md`, so the re-run is not anchored on the set it is meant to improve on.</advantage>
@@ -19,15 +20,16 @@
   </open-question>
   <open-question id="Recovery margin value">
     <question>The one-off check counts the change as verified when the new rules recover the missing direction in clearly more of the re-run cases than the unchanged rules, with the margin fixed before the runs. What is that margin?</question>
-    <alternative id="Net three cases">
-      The margin is a fixed count. The new rules must recover the missing direction in at least 3 more of the 20 re-run cases than the unchanged baseline does, which is the net of the paired cases the new rules win minus those they lose. It is counted over whichever cases are actually re-run. Margins of 2 to 4 cases carry the same trade-off and fall under this option.
-      <advantage>A prose-only change measured by one run per rule version can realistically clear this bar. So a rewrite that genuinely helps is unlikely to be pushed into the single revision round, or into a recorded shortfall, just because the bar was set high.</advantage>
-      <drawback>With one baseline run and one new-rules run over only 20 cases, run-to-run variation in the pass can swing a few cases either way. A net gain of 2 to 4 is hard to tell apart from chance, so &quot;verified&quot; would carry little evidential weight. Its meaning as a share of cases also depends on how many cases survive the pre-split case handling.</drawback>
-    </alternative>
+    <recommendation option="Net five cases">A net gain of five of the 20 cases is the smallest that paired runs would rarely show by chance, so a pass means something, and it stays reachable because the baseline sets missed these directions to begin with; with all 20 cases re-run, a fixed count needs no share or rounding rule.</recommendation>
     <alternative id="Net five cases">
       The margin is a fixed count. The new rules must recover the missing direction in at least 5 more of the 20 re-run cases than the baseline, net of paired wins minus losses. That is a quarter of the cases, counted over whichever cases are actually re-run. Margins of 5 to 7 cases carry the same trade-off and fall under this option.
       <advantage>This is the smallest net gain that a one-sided sign test over the paired cases would already find unlikely to be chance: 5 wins against 0 losses has a probability of about 0.03. So a pass is credible evidence, and the bar is still one a working rewrite can reach, given that the baseline sets missed these directions by construction.</advantage>
       <drawback>A real but modest improvement, such as recovering 3 or 4 more directions, counts as a failure. It uses up the one revision round and can end in a recorded shortfall for a change that did help. The bar also tightens as a share of cases if the pre-split case handling removes cases.</drawback>
+    </alternative>
+    <alternative id="Net three cases">
+      The margin is a fixed count. The new rules must recover the missing direction in at least 3 more of the 20 re-run cases than the unchanged baseline does, which is the net of the paired cases the new rules win minus those they lose. It is counted over whichever cases are actually re-run. Margins of 2 to 4 cases carry the same trade-off and fall under this option.
+      <advantage>A prose-only change measured by one run per rule version can realistically clear this bar. So a rewrite that genuinely helps is unlikely to be pushed into the single revision round, or into a recorded shortfall, just because the bar was set high.</advantage>
+      <drawback>With one baseline run and one new-rules run over only 20 cases, run-to-run variation in the pass can swing a few cases either way. A net gain of 2 to 4 is hard to tell apart from chance, so &quot;verified&quot; would carry little evidential weight. Its meaning as a share of cases also depends on how many cases survive the pre-split case handling.</drawback>
     </alternative>
     <alternative id="Net half the cases">
       The margin is a fixed count. The new rules must recover the missing direction in at least 10 more of the 20 re-run cases than the baseline, net of paired wins minus losses. Margins of about 8 cases and up carry the same trade-off and fall under this option.
@@ -47,6 +49,8 @@
   </open-question>
   <open-question id="Check run model setting">
     <question>The new-rules run and the baseline run of the one-off check use the same model and effort setting. Which model and effort setting do they use?</question>
+    <applied-principle>Check tier claims against the live environment</applied-principle>
+    <recommendation option="Documented pass setting">The verdict should describe the pass as it is actually run: `docs/ways-of-using-cairn.md` puts every alternatives line on `opus` at `--effort xhigh`, both values the CLI accepts, and a gain shown only at a setting no chain uses would say nothing about real runs; if the unchanged rules already recover the directions there, that is a finding the check should report.</recommendation>
     <alternative id="Documented pass setting">
       Both runs use `--model &quot;opus&quot;` at `--effort xhigh`. This is the setting `docs/ways-of-using-cairn.md` gives every `provide-alternatives-to-all-open-questions` line, and it is the one used on every re-run case and control case.
       <advantage>The verdict measures the rules under the conditions the alternatives pass actually runs in. A recovery margin found here carries straight over to the documented chains, with no reasoning needed about a different model or effort level.</advantage>
@@ -70,15 +74,17 @@
   </open-question>
   <open-question id="Control sample selection">
     <question>The one-off check re-runs a small fixed sample of the refinement overrides as control cases. By what method are those control cases picked from the refinement overrides?</question>
-    <alternative id="Seeded random draw">
-      Pick the control cases by a random draw over every refinement override, using a seed fixed and written down before any run, with no filtering or weighting by the case&apos;s features.
-      <advantage>No one&apos;s judgment shapes which cases get in, so the new rules cannot be flattered by the choice of controls, and anyone holding the seed and the case list can reproduce the exact sample.</advantage>
-      <drawback>With a small sample, chance decides the mix. The refinement overrides are heavily concentrated in one source project and mostly come from sets of three options, so the draw may miss the less common cases where a regression would show, for example a historical set that already held near-duplicates or had only two options. If a drawn case comes from a milestone that predates open_questions.xml, whether it can run at all depends on how pre-split cases end up being handled.</drawback>
-    </alternative>
+    <depends-on question="Control sample size" option="About ten cases"/>
+    <recommendation option="Stratified seeded draw">The refinement overrides are concentrated in one source project and in three-option sets, so a plain draw would mostly repeat the common kind; the grouping features are already recorded per case in the benchmark material, so stratifying costs little, and the draw stays seeded and random inside each group.</recommendation>
     <alternative id="Stratified seeded draw">
       Split the refinement overrides into groups by features that bear on the control checks (source project, how many alternatives the historical set held, and whether the judged verdict flagged near-duplicates in it), then make a seeded random draw inside each group so every group is represented.
       <advantage>Keeps the unbiased random choice but guarantees the sample covers the kinds of set where the new rules could plausibly lose a refined direction or add filler, rather than repeating the most common kind.</advantage>
       <drawback>It takes more setup: the grouping features have to be picked and fixed before the draw, and a small sample may not reach every group, so some groups get one case or none. How well it works depends on the sample size, which is still an open question.</drawback>
+    </alternative>
+    <alternative id="Seeded random draw">
+      Pick the control cases by a random draw over every refinement override, using a seed fixed and written down before any run, with no filtering or weighting by the case&apos;s features.
+      <advantage>No one&apos;s judgment shapes which cases get in, so the new rules cannot be flattered by the choice of controls, and anyone holding the seed and the case list can reproduce the exact sample.</advantage>
+      <drawback>With a small sample, chance decides the mix. The refinement overrides are heavily concentrated in one source project and mostly come from sets of three options, so the draw may miss the less common cases where a regression would show, for example a historical set that already held near-duplicates or had only two options. If a drawn case comes from a milestone that predates open_questions.xml, whether it can run at all depends on how pre-split cases end up being handled.</drawback>
     </alternative>
     <alternative id="Paired with tested cases">
       Pick the control cases by a fixed rule tied to the 20 missed-direction cases: take refinement overrides from the same source milestones as those cases (with a seeded draw where there are more candidates than places), so each control shares project and period with a tested case.
@@ -98,15 +104,17 @@
   </open-question>
   <open-question id="Control sample size">
     <question>The one-off check re-runs a small fixed sample of the refinement overrides as control cases. How many control cases does the sample hold?</question>
-    <alternative id="Three to five cases">
-      A token sample of three to five refinement overrides out of the 65 available. Each one runs under both the new rules and the unchanged baseline, since the paired baseline covers every re-run case. That adds roughly six to ten runs to the 40 needed for the 20 missed-direction cases.
-      <advantage>It is the cheapest option and matches the recorded &quot;small fixed sample&quot; most literally. It is still enough to catch a gross regression, where the new rules drop the direction the historical answer refined or pad the set with near-duplicates or filler, because such a failure shows up on nearly any case.</advantage>
-      <drawback>It can only show that a regression exists, not how often it happens. A single failure is 20–33% of the sample, so one unusual case can swing the result. If failed controls turn out to affect the verdict (a sibling question), that verdict would rest on one or two cases. If the sample has to be stratified by some property (another sibling question), there may be fewer slots than strata.</drawback>
-    </alternative>
+    <depends-on question="Control failure effect" option="No worse than baseline"/>
+    <recommendation option="About ten cases">One failed control is about a tenth of the sample rather than a third, so the control result does not turn on a single unusual case, and the sample stays small beside the pool at roughly 16 to 20 added runs.</recommendation>
     <alternative id="About ten cases">
       A moderate sample of eight to ten refinement overrides, about half the size of the 20-case missed-direction set. Each case is run under both rule versions, which adds roughly 16–20 runs.
       <advantage>It is big enough for a rough failure rate, where one failed control is about 10% rather than a third of the sample. It leaves room to spread the cases across source projects or question types, and it still stays clearly &quot;small&quot; next to the pool of 65.</advantage>
       <drawback>It raises the check&apos;s run count by about 40–50% and does the same for the controls&apos; judging load. The extra cases buy little if a failed control ends up only noted rather than affecting the verdict. The judging cost also depends on who makes the two control judgments (a sibling question), which is heavier if a person rather than the blind judge agent reviews every set.</drawback>
+    </alternative>
+    <alternative id="Three to five cases">
+      A token sample of three to five refinement overrides out of the 65 available. Each one runs under both the new rules and the unchanged baseline, since the paired baseline covers every re-run case. That adds roughly six to ten runs to the 40 needed for the 20 missed-direction cases.
+      <advantage>It is the cheapest option and matches the recorded &quot;small fixed sample&quot; most literally. It is still enough to catch a gross regression, where the new rules drop the direction the historical answer refined or pad the set with near-duplicates or filler, because such a failure shows up on nearly any case.</advantage>
+      <drawback>It can only show that a regression exists, not how often it happens. A single failure is 20–33% of the sample, so one unusual case can swing the result. If failed controls turn out to affect the verdict (a sibling question), that verdict would rest on one or two cases. If the sample has to be stratified by some property (another sibling question), there may be fewer slots than strata.</drawback>
     </alternative>
     <alternative id="Twenty cases, parity">
       A sample of 20 refinement overrides, the same size as the missed-direction set, so the check has equal numbers of regression cases and recovery cases.
@@ -116,6 +124,8 @@
   </open-question>
   <open-question id="Control check judge">
     <question>For each control case the one-off check tests that the re-run set still holds the refined option&apos;s direction and has no near-duplicate or filler options. Who makes those two judgments: the blind judge agent that decides the missed-direction cases, or someone else?</question>
+    <depends-on question="Control failure effect" option="No worse than baseline"/>
+    <recommendation option="Same blind judge">Every verdict comes from one judging setup under one blindness rule, and the user still receives only verdicts; the extra brief only swaps the refined option in for the missing direction, and having the same judge rate both rule versions&apos; sets for a case lets any shallowness in its filler calls fall on both sides alike.</recommendation>
     <alternative id="Same blind judge">
       The blind judge agent that decides the missed-direction cases also makes both control judgments. For each control case it receives an extra brief made of the historical answer, the listed option that answer refined, and the re-run set. It is not told which rule version produced the set.
       <advantage>Every verdict the check produces comes from one judge under one blindness rule. This includes the control verdicts on the baseline sets from the paired single baseline. The user still receives only verdicts, and the milestone builds and calibrates only one judging setup.</advantage>
@@ -144,6 +154,12 @@
   </open-question>
   <open-question id="Control failure effect">
     <question>The one-off check&apos;s verdict is defined only by how many missing directions the new rules recover compared with the baseline. What effect does a failed control case (a lost direction, or a near-duplicate or filler option) have on whether the change counts as verified?</question>
+    <recommendation option="No worse than baseline">It applies the recovery verdict&apos;s own paired logic to the controls, using baseline runs the check already makes and fixing no new number; a regression the rewrite causes gates the verdict, while judging noise and flaws the unchanged rules also show do not.</recommendation>
+    <alternative id="No worse than baseline">
+      Control failures gate the verdict relative to the paired baseline. The control tests are also judged on the unchanged-rules set for each control case, and the change counts as verified only if the new rules fail no more control cases than the baseline does, on both failure kinds together. Failing that comparison counts as falling short and starts the single revise-and-re-run round.
+      <advantage>It uses the same paired-comparison logic as the recovery verdict and the baseline runs that are already required. That separates real regressions caused by the rewrite from judging noise and from flaws the historical sets already had.</advantage>
+      <drawback>It doubles the control judgments. It also lets the new rules keep baseline-level near-duplicates and filler (13 historical sets already had near-duplicates), even though the milestone&apos;s new distinctness rule is meant to remove them.</drawback>
+    </alternative>
     <alternative id="Hard veto">
       Control failures gate the verdict with zero tolerance. The change counts as verified only if the recovery margin is met and every control case passes both of its tests: the refined option&apos;s direction is kept, and the set has no near-duplicate or filler option. This is an absolute bar on the new-rules sets alone, and any control failure counts as falling short, which starts the single revise-and-re-run round.
       <advantage>It gives the strongest guard against the main risk of an axes-first rewrite with no count guideline, which is a set that finds new directions by drifting away from directions users actually took or by growing filler. It also needs no extra number fixed before the runs.</advantage>
@@ -153,11 +169,6 @@
       Control failures gate the verdict above a tolerance that is fixed before the runs. That tolerance is a count or share of control cases allowed to fail, with both failure kinds counted together. The bar is absolute on the new-rules sets alone. Exceeding the tolerance counts as falling short and starts the single revise-and-re-run round, and failures within it are reported in the aggregate results.
       <advantage>Controls still decide the outcome, but one borderline judgment cannot sink the whole check. This matches how the recovery margin is fixed in advance.</advantage>
       <drawback>It adds a second number to choose before the runs, with nothing in the benchmark to set it by. On a small sample, any tolerance above zero is close to either a veto or no gate at all. What it means depends on the control sample size, which a sibling question owns.</drawback>
-    </alternative>
-    <alternative id="No worse than baseline">
-      Control failures gate the verdict relative to the paired baseline. The control tests are also judged on the unchanged-rules set for each control case, and the change counts as verified only if the new rules fail no more control cases than the baseline does, on both failure kinds together. Failing that comparison counts as falling short and starts the single revise-and-re-run round.
-      <advantage>It uses the same paired-comparison logic as the recovery verdict and the baseline runs that are already required. That separates real regressions caused by the rewrite from judging noise and from flaws the historical sets already had.</advantage>
-      <drawback>It doubles the control judgments. It also lets the new rules keep baseline-level near-duplicates and filler (13 historical sets already had near-duplicates), even though the milestone&apos;s new distinctness rule is meant to remove them.</drawback>
     </alternative>
     <alternative id="Lost direction only">
       The verdict depends on the failure kind. A control case that loses the refined option&apos;s direction gates the verdict with zero tolerance and starts the single revise-and-re-run round. A near-duplicate or filler option is reported in the aggregate results and does not affect whether the change counts as verified.
@@ -172,6 +183,8 @@
   </open-question>
   <open-question id="Aggregate result home">
     <question>Only aggregate results of the one-off check may be committed, and the new `CLAUDE.md` invariant carries no measurement figures. In which committed file are the check&apos;s aggregate results recorded?</question>
+    <applied-principle>Description over retirement note</applied-principle>
+    <recommendation option="Task Verified bullets">The completion procedure already writes each task&apos;s evidence as `**Verified:**` bullets, so the counts, the margin, and the control outcomes land in the milestone record with no new file or convention, and the public docs and `requirements.md` stay free of one-off figures that would go stale.</recommendation>
     <alternative id="Task Verified bullets">
       The aggregate results go in the `**Verified:**` bullets of the check&apos;s task entry in the milestone&apos;s `TASKS_DONE.md`. That file already holds each completed task&apos;s acceptance bar and evidence, so the results stay inside the milestone&apos;s own records. `docs/` and `requirements.md` stay as they are.
       <advantage>It needs no new file and no new convention. `complete-procedure.md` already writes the evidence for a finished task into `**Verified:**` bullets, so recording the recovered-direction counts, the baseline counts, the margin, and the control outcomes there fits the pipeline exactly. The milestone directory also keeps its fixed set of four files.</advantage>
@@ -205,6 +218,7 @@
   </open-question>
   <open-question id="Fixture failure response">
     <question>The one-axis authoring rule is verified by running `review-milestone-requirements` against a synthetic fixture with one independent pair and one coupled pair of axes. What does the milestone do when that run does not author the questions as expected?</question>
+    <recommendation option="Revise once then finish">It is the rule the one-off check already follows, so both verification parts handle a miss the same way with bounded effort, and leaving the fixture unchanged once it has run keeps the test honest.</recommendation>
     <alternative id="Revise once then finish">
       Rules for rounds and outcome: the milestone follows the same rule the one-off check already uses. There is one round of revision, applied to the step-3 authoring wording that failed. That is either the one-axis rule or the exception for coupled choices. The fixture then runs again. If it still authors wrongly, the milestone records the shortfall and finishes with the best wording it has. Changes allowed: the rule wording only, never the fixture. Runs per verdict: one run of `review-milestone-requirements`.
       <advantage>It matches the recorded &quot;revise once, re-run, then record and finish&quot; decision for the one-off check, so both verification parts handle failure the same way. Effort is bounded, so the milestone cannot stall on a small synthetic test.</advantage>
