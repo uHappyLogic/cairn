@@ -159,3 +159,17 @@ Add one dedicated bullet to the invariants section of `CLAUDE.md` explaining why
 - `uv run scripts/build_hosts.py --check` passes.
 
 ---
+
+## Write Benchmark Harness Idea Document
+
+Write the uncommitted idea document under `temp/` for a committed benchmark harness, drawing on how the one-off re-run check was prepared, run, and judged. The goal names it as one of the milestone's two idea documents, since the repository holds no harness, eval directory, or judge. It is verified by the file existing under `temp/`, describing the harness concretely enough to seed a future milestone, and `git status` showing nothing new to commit from it.
+
+**Verified:**
+
+- The idea document exists as `temp/benchmark-harness-idea.md`, and `git check-ignore` names the `temp/` rule of `.gitignore` for it.
+- It draws on the one-off re-run check in three parts, how the case set was prepared (population, classification, seeded stratified draw, pre-split conversion), how the paired runs were made (scratch clones, bare-block preparation, headless agent dispatch with the version tree loaded, the pass's return pipeline and repair), and how the sets were judged (blind shuffled briefs, a no-tools judge, the paired tally), plus the lessons the check taught.
+- It describes the harness concretely enough to seed a future milestone: a location and directory layout, a case format, the runner, the judge, the tally and report, later suites mapped to design claims, open decisions for the milestone, and a seed goal.
+- It keeps the benchmark-data privacy rule for the committed harness: it proposes a corpus of synthetic fixture cases and allows the private corpus only as a local-only input, never shipped.
+- `git status --porcelain` shows nothing new to commit from it; the only change this task commits is this task-list move, which carries no benchmark or private-project information.
+
+---
