@@ -119,35 +119,6 @@
       <drawback>The recommendation pass and the answer sweep can never pick a postponement, because they choose only from the set. A question that honestly should wait for a later milestone therefore always needs a manual override, which is the kind of coverage gap this milestone sets out to close.</drawback>
     </alternative>
   </open-question>
-  <open-question id="Compound question test">
-    <question>What test does review-milestone-requirements apply when authoring a question to decide that a gap holds more than one axis and must be authored as several questions?</question>
-    <recommendation option="Independence test with cues">The verdict rests on the decision&apos;s structure, the same notion of an axis the enumeration uses, so wording can neither force a false split nor excuse a hidden one, while the cheap cues make the judgment actually fire on the common bundled shapes a bare semantic rule lets slip past.</recommendation>
-    <alternative id="Independence test with cues">
-      The independent-settlement test is the rule, and a short list of surface cues (two interrogatives, &quot;and&quot; joining choices, one choice per listed item) is named only as prompts to apply that test. The deciding test is semantic, and wording signals only trigger the check.
-      <advantage>The cheap cues catch the common case reliably, and the verdict still rests on the decision&apos;s structure. A cue never forces a false split, and a question with no cue can still be split.</advantage>
-      <drawback>It is the longest of these prose additions to step 3, and two mechanisms have to be read together. A compound question with no cue in its wording still depends on judgment alone, so the gain over the plain independence test is only in the cases the cues catch.</drawback>
-    </alternative>
-    <alternative id="Independent-settlement test">
-      Review-milestone-requirements states one semantic test in step 3: a gap holds more than one axis when it contains two choices that could each be settled while the other stays open. Each such choice becomes its own question. The test judges the structure of the decision, not the question&apos;s wording, and it is applied by the author&apos;s judgment with no surface cues.
-      <advantage>It names the same thing the rewritten alternatives procedure calls an axis, a choice that varies on its own. Authoring and enumeration then share one definition, and a question that passes the test is one the enumerator can cover without laying out combinations.</advantage>
-      <drawback>It rests entirely on the author&apos;s judgment, with nothing in the question text to check it against, so a compound question can still slip through unnoticed. It also has to say what happens when two choices constrain each other: the test counts them as not independently settleable, but whether they then become one question or two is the separate Interdependent axes question, so this option&apos;s fit depends on how that one settles.</drawback>
-    </alternative>
-    <alternative id="Surface-wording cues">
-      Review-milestone-requirements gives a lexical test to apply to the drafted question text. A question is split when it joins two interrogatives, joins two choices with &quot;and&quot;, or asks for a separate choice about each item in a list. The test works on the wording, not the decision structure, and it is mechanical rather than a matter of judgment.
-      <advantage>It is cheap, predictable, and checkable by anyone reading the question afterwards, which gives the Authoring rule verification question something concrete to test against.</advantage>
-      <drawback>It checks the wording, and the milestone exists because wording differs from the underlying decision. It misses a second axis packed into a single clause, and it wrongly splits a one-axis &quot;X or Y&quot; question whose &quot;or&quot; only lists options. That is the same wording-over-decision error the enumeration rewrite is correcting.</drawback>
-    </alternative>
-    <alternative id="Option-grid preview">
-      Before calling add, the author sketches the options the question would admit and checks whether they differ along more than one dimension, forming a grid rather than a line. If they do, the question is split along those dimensions. The test judges the structure of the decision by previewing the option space, and it is applied in reasoning only, with nothing written into the block.
-      <advantage>It catches hidden axes that neither the wording nor an abstract independence check exposes. It uses the same axis-and-combination vocabulary as the new rule for enumerating over several axes, so a question that passes it is exactly one that will not make the alternative set grow combinatorially.</advantage>
-      <drawback>It moves part of the enumeration work upstream into the review pass, which blurs the boundary between authoring a question and enumerating its alternatives. It also costs reasoning on every new gap, and the sketched options are thrown away, so the alternatives pass later does that work again.</drawback>
-    </alternative>
-    <alternative id="Rule without a named test">
-      Step 3 gains the one-axis rule as a third requirement on the question text, &quot;each question asks one choice&quot;, and states no test for detecting a second axis. Detection is left to the author&apos;s judgment, just as the existing rules for a self-contained question and a unique Short Title are.
-      <advantage>It is the smallest change and matches how step 3 already states its other authoring judgments. It avoids a test whose wording would suggest more precision than the judgment actually has.</advantage>
-      <drawback>It gives the author nothing to apply, and the Authoring rule verification question nothing to check. The historical cases show compound questions were authored when no rule applied, so a bare statement may not change what gets authored.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Interdependent axes">
     <question>When two choices in one gap constrain each other so that not every pairing is viable, does review-milestone-requirements author them as two one-axis questions or as one multi-axis question?</question>
     <recommendation option="Single multi-axis question">The goal already provides for a multi-axis question whose combinations are weighed and whose viable ones are described, so coupled choices belong in the one block that sees both; every option is then a coherent pairing and any answer path records one consistent decision, which the split forms cannot guarantee.</recommendation>
