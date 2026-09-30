@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Run Paired Alternatives Re-Run Check
-
-Run the one-off check over the fixed re-run and control cases: each case in a scratch clone outside this working copy at the parent of its answer commit (converted first where pre-split), the alternatives pass run back to back under the unchanged `alternatives-procedure.md` from the commit before the rewrite and under the new rules, both with `--model "opus"` at `--effort high`, and a separate blind judge agent deciding recovery of the missing direction and both control tests for each rule version's set. The change counts as verified when the new rules recover the missing direction in at least 5 more of the 20 re-run cases than the baseline, net of the paired cases they win minus those they lose, and fail no more control cases than the baseline; on a shortfall, revise the enumeration wording once and re-run the check, and record the aggregate shortfall if it persists. It is verified by the recovered-direction counts, the baseline counts, the margin, and the control outcomes recorded as aggregates only in this task's `**Verified:**` bullets, with every clone deleted, the source repositories only read, and no benchmark or private-project information in any committed artifact.
-
----
-
 ## State New Rules In Skill Reference And Claims
 
 Update `docs/skill-reference.md` to state the enumeration rules briefly in the `discuss-open-question`, `provide-alternatives-to-all-open-questions`, and alternatives-subagent entries and the one-axis rule in the `review-milestone-requirements` entry, and rewrite claim 4's Design in `docs/design-claims.md` to say the alternatives are distinct and cover the decision, with no count and its Metric line left as it is. Both pages otherwise still describe the retired count guideline. It is verified by reading those entries against the final runtime wording, finding no count guideline for alternatives left in either page, and confirming `docs/workflow.md` is unedited.
