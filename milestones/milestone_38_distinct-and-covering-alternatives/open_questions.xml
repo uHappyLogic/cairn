@@ -1,33 +1,4 @@
 <open-questions>
-  <open-question id="Degree variants representation">
-    <question>When several candidate options are one approach at different degrees or parameter values, how does the alternative set represent that approach?</question>
-    <recommendation option="One option per material degree">Treating degree as an axis needs no special case, every lifted or recommended option records a complete decision on every answer path, and merging values whose trade-off is the same is the same substance test that rules out near-duplicates everywhere else in the set.</recommendation>
-    <alternative id="One option per material degree">
-      The degree counts as an axis like any other. The set lists a separate alternative for each degree or value at which the key advantage or drawback genuinely changes. Values whose trade-off is the same are merged into one option, described by its range.
-      <advantage>Every alternative that is lifted or recommended records a concrete, usable decision. The trade-off between degrees is visible to the pick instead of being hidden inside one option.</advantage>
-      <drawback>Deciding whether a trade-off &quot;genuinely changes&quot; is the same judgment that let near-duplicates through before (13 of the historical sets held them). The set also grows by one option per threshold, and on a multi-axis question that growth multiplies across combinations.</drawback>
-    </alternative>
-    <alternative id="Single option, value left open">
-      The approach appears once in the set as a single alternative. Its what-it-is text names the approach and the range its degree or parameter can take, and leaves the value unset so that whoever answers supplies it.
-      <advantage>The set stays small and every pair of options still differs in approach, which is the distinctness the goal asks for. It also matches how answers already arrive: of the 106 overrides, 65 refined a listed option rather than leaving the set, and that is the path that supplies the value.</advantage>
-      <drawback>Some answer paths record the lifted what-it-is text as the decision word for word. `Alternative-answer:` does this, and a recommendation&apos;s rationale does it too unless it names a value. On those paths, accepting the option records an approach with no value, so `## Decisions` holds an incomplete decision that task derivation or completion must fill in without a recorded basis.</drawback>
-    </alternative>
-    <alternative id="Single option, representative value">
-      The approach appears once, fixed at one stated value the enumerator considers most defensible. The other values are mentioned only in its drawback, as ways it could be tuned.
-      <advantage>The set stays compact and each option still lifts as a complete decision, with no value missing on any answer path.</advantage>
-      <drawback>Choosing the value is a preference, and `alternatives-procedure.md` states that the enumeration half forms none. The other values are also never options, so the recommendation pass can never pick one: a better value can only arrive as a manual override. That is the kind of gap the milestone sets out to close.</drawback>
-    </alternative>
-    <alternative id="Single option, value as follow-up question">
-      The approach appears once with its value left open, and the procedure says the value is a separate decision. After the approach is chosen, `review-milestone-requirements` authors that value as its own one-axis question.
-      <advantage>This fits the one-axis authoring the goal sets for review. Each recorded decision is complete for the one axis it covers, and the value gets its own properly enumerated set instead of being decided implicitly.</advantage>
-      <drawback>It costs an extra review cycle and a further question for every such approach. It depends on the review pass noticing an approach recorded without its value. And the enumeration procedure would have to describe another skill&apos;s authoring behaviour, which it currently never does.</drawback>
-    </alternative>
-    <alternative id="No dedicated rule">
-      The procedure says nothing specific about degree variants. The general rule that every two alternatives differ in substance on at least one axis decides each case.
-      <advantage>No extra wording goes into the enumeration step, and no answer path, rendering, or tool behaviour changes.</advantage>
-      <drawback>A difference in degree can be read as a substantive difference on a parameter axis. The general rule then admits exactly the near-duplicate options it was meant to prevent, and different enumerators may split the same approach in different ways. The historical sets already show that problem: 13 of them held near-duplicate options.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="What-it-is length">
     <question>Once an option&apos;s what-it-is text must also state where the option stands on each axis, does that field of alternatives-procedure.md keep its one-sentence limit, get a different stated limit, or carry no limit?</question>
     <recommendation option="Content-scoped, no count">A bound on what the field holds, positions only with reasons kept in the advantage and drawback, fits every question shape without a number, keeps the lifted decision line free of rationale, and matches the goal&apos;s removal of count guidelines; one-axis authoring keeps most fields to a sentence anyway.</recommendation>

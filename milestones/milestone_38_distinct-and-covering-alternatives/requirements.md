@@ -52,6 +52,7 @@ No benchmark harness, eval directory, or judge exists in the repository. Neither
 
 - Step 2 of `alternatives-procedure.md` opens with a mandatory axes-first move: before any candidate is drafted, the enumerator names the axes the underlying decision turns on, then builds the options as positions on those axes (on a multi-axis question, as combinations weighed in reasoning). Distinctness and coverage are stated as the tests the resulting set must pass.
 - Step 2 carries its own explicit instruction, separate from the general coverage requirement, to weigh on every question the direction of not doing the thing the question is about. That direction is listed as an option when it is honestly viable and left out otherwise, with no dedicated place recording that it was considered.
+- A degree or parameter value counts as an axis like any other: the set lists a separate alternative for each degree or value at which the key advantage or drawback genuinely changes, and values whose trade-off is the same are merged into one option described by its range.
 
 ## Out of Scope
 
