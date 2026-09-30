@@ -4,6 +4,31 @@
   </open-question>
   <open-question id="Recovery margin value">
     <question>The one-off check counts the change as verified when the new rules recover the missing direction in clearly more of the re-run cases than the unchanged rules, with the margin fixed before the runs. What is that margin?</question>
+    <alternative id="Net three cases">
+      The margin is a fixed count. The new rules must recover the missing direction in at least 3 more of the 20 re-run cases than the unchanged baseline does, which is the net of the paired cases the new rules win minus those they lose. It is counted over whichever cases are actually re-run. Margins of 2 to 4 cases carry the same trade-off and fall under this option.
+      <advantage>A prose-only change measured by one run per rule version can realistically clear this bar. So a rewrite that genuinely helps is unlikely to be pushed into the single revision round, or into a recorded shortfall, just because the bar was set high.</advantage>
+      <drawback>With one baseline run and one new-rules run over only 20 cases, run-to-run variation in the pass can swing a few cases either way. A net gain of 2 to 4 is hard to tell apart from chance, so &quot;verified&quot; would carry little evidential weight. Its meaning as a share of cases also depends on how many cases survive the pre-split case handling.</drawback>
+    </alternative>
+    <alternative id="Net five cases">
+      The margin is a fixed count. The new rules must recover the missing direction in at least 5 more of the 20 re-run cases than the baseline, net of paired wins minus losses. That is a quarter of the cases, counted over whichever cases are actually re-run. Margins of 5 to 7 cases carry the same trade-off and fall under this option.
+      <advantage>This is the smallest net gain that a one-sided sign test over the paired cases would already find unlikely to be chance: 5 wins against 0 losses has a probability of about 0.03. So a pass is credible evidence, and the bar is still one a working rewrite can reach, given that the baseline sets missed these directions by construction.</advantage>
+      <drawback>A real but modest improvement, such as recovering 3 or 4 more directions, counts as a failure. It uses up the one revision round and can end in a recorded shortfall for a change that did help. The bar also tightens as a share of cases if the pre-split case handling removes cases.</drawback>
+    </alternative>
+    <alternative id="Net half the cases">
+      The margin is a fixed count. The new rules must recover the missing direction in at least 10 more of the 20 re-run cases than the baseline, net of paired wins minus losses. Margins of about 8 cases and up carry the same trade-off and fall under this option.
+      <advantage>A pass would show the rewrite recovers most of the directions the old sets missed. That matches the milestone&apos;s aim of mapping the whole decision space rather than doing slightly better than before, and it leaves no doubt that the effect is real.</advantage>
+      <drawback>The bar is stringent. A blind judge and imperfect rule-following can hold back even a large genuine gain, so a strong rewrite may still fail both the first run and the revised run and end as a recorded shortfall. It may also be unreachable if the pre-split case handling shrinks the case set well below 20.</drawback>
+    </alternative>
+    <alternative id="Sign test threshold">
+      The margin is not a fixed count but a significance test. Only the discordant cases count: those where exactly one rule version recovers the direction. The change counts as verified when an exact one-sided sign test over them favours the new rules at a significance level of 0.05, so the required net gain depends on how many cases split.
+      <advantage>The bar follows from a stated error rate rather than an arbitrary count. It adjusts itself to how many cases actually differ, and to the size of the case set after the pre-split case handling, so it needs no separate rule if the denominator changes.</advantage>
+      <drawback>It adds statistical machinery to a one-off check. The aggregate results then have to report the discordant counts and a p-value, and must stay free of case detail. The test also treats each case&apos;s single run as fixed, so run-to-run variation within a case goes unmodelled. With few discordant cases it demands 5 wins against 0 losses anyway, much like the fixed five-case count.</drawback>
+    </alternative>
+    <alternative id="Share of re-run cases">
+      The margin is a share, not a count. The new rules&apos; recovery rate must exceed the baseline&apos;s by at least 25 percentage points of the cases actually re-run. That is the moderate level, equal to 5 cases out of 20, and it is rounded up to whole cases on the actual denominator.
+      <advantage>If some historical cases are dropped or cannot be re-run, the bar means the same thing on whatever denominator remains. It also reads directly as an aggregate figure in the committed results, without exposing any case.</advantage>
+      <drawback>It needs a rounding rule, and on a small denominator one case moves the share by many points. So it is only more useful than a fixed count if the pre-split case handling actually removes cases, and with the full 20 it behaves exactly like the five-case count.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Check run model setting">
     <question>The new-rules run and the baseline run of the one-off check use the same model and effort setting. Which model and effort setting do they use?</question>
