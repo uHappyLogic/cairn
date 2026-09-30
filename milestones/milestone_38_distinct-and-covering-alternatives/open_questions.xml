@@ -1,1 +1,29 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Pre-split case handling">
+    <question>Some of the historical cases chosen for the one-off check come from milestones that predate `open_questions.xml`, where the question blocks sit inside `requirements.md` and the alternatives pass stops on the open-question tool&apos;s `Error:` line. How are those cases re-run?</question>
+  </open-question>
+  <open-question id="Recovery margin value">
+    <question>The one-off check counts the change as verified when the new rules recover the missing direction in clearly more of the re-run cases than the unchanged rules, with the margin fixed before the runs. What is that margin?</question>
+  </open-question>
+  <open-question id="Check run model setting">
+    <question>The new-rules run and the baseline run of the one-off check use the same model and effort setting. Which model and effort setting do they use?</question>
+  </open-question>
+  <open-question id="Control sample selection">
+    <question>The one-off check re-runs a small fixed sample of the refinement overrides as control cases. By what method are those control cases picked from the refinement overrides?</question>
+  </open-question>
+  <open-question id="Control sample size">
+    <question>The one-off check re-runs a small fixed sample of the refinement overrides as control cases. How many control cases does the sample hold?</question>
+  </open-question>
+  <open-question id="Control check judge">
+    <question>For each control case the one-off check tests that the re-run set still holds the refined option&apos;s direction and has no near-duplicate or filler options. Who makes those two judgments: the blind judge agent that decides the missed-direction cases, or someone else?</question>
+  </open-question>
+  <open-question id="Control failure effect">
+    <question>The one-off check&apos;s verdict is defined only by how many missing directions the new rules recover compared with the baseline. What effect does a failed control case (a lost direction, or a near-duplicate or filler option) have on whether the change counts as verified?</question>
+  </open-question>
+  <open-question id="Aggregate result home">
+    <question>Only aggregate results of the one-off check may be committed, and the new `CLAUDE.md` invariant carries no measurement figures. In which committed file are the check&apos;s aggregate results recorded?</question>
+  </open-question>
+  <open-question id="Fixture failure response">
+    <question>The one-axis authoring rule is verified by running `review-milestone-requirements` against a synthetic fixture with one independent pair and one coupled pair of axes. What does the milestone do when that run does not author the questions as expected?</question>
+  </open-question>
+</open-questions>
