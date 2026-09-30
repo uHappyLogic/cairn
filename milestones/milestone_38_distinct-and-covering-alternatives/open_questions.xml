@@ -1,1 +1,59 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Axis identification step">
+    <question>In the rewritten enumeration step of alternatives-procedure.md, is the enumerator told to first identify the axes of the decision and derive the options from them, or are distinctness and coverage stated only as properties the finished set must have?</question>
+  </open-question>
+  <open-question id="Drop-it direction rule">
+    <question>Does the enumeration step of alternatives-procedure.md carry its own explicit instruction to weigh the direction of not doing the thing the question is about, or is that direction left to follow from the general coverage requirement?</question>
+  </open-question>
+  <open-question id="Wording premise rule">
+    <question>Does the enumeration step of alternatives-procedure.md tell the enumerator to find what the question&apos;s wording takes for granted and weigh rejecting it, or is covering the underlying decision stated without such a step?</question>
+  </open-question>
+  <open-question id="Degree variants representation">
+    <question>When several candidate options are one approach at different degrees or parameter values, how does the alternative set represent that approach?</question>
+  </open-question>
+  <open-question id="What-it-is length">
+    <question>Once an option&apos;s what-it-is text must also state where the option stands on each axis, does that field of alternatives-procedure.md keep its one-sentence limit, get a different stated limit, or carry no limit?</question>
+  </open-question>
+  <open-question id="Defer direction">
+    <question>Is postponing the decision, leaving the question unanswered for a later milestone, a direction an alternative set may list, as distinct from the direction of not doing the thing the question is about?</question>
+  </open-question>
+  <open-question id="Sibling-owned axes">
+    <question>When an axis of the underlying decision is already the subject of a sibling open question, does an alternative set&apos;s coverage extend to that axis, or does the existing rule that an option answering a sibling is left to that sibling bound it?</question>
+  </open-question>
+  <open-question id="Compound question test">
+    <question>What test does review-milestone-requirements apply when authoring a question to decide that a gap holds more than one axis and must be authored as several questions?</question>
+  </open-question>
+  <open-question id="Interdependent axes">
+    <question>When two choices in one gap constrain each other so that not every pairing is viable, does review-milestone-requirements author them as two one-axis questions or as one multi-axis question?</question>
+  </open-question>
+  <open-question id="Authoring rule verification">
+    <question>How is the one-axis authoring rule of review-milestone-requirements verified, given that the milestone&apos;s one-off check re-runs only the alternatives pass?</question>
+  </open-question>
+  <open-question id="Check candidate scope">
+    <question>Which of the historical cases whose alternative set missed the direction the answer took does the one-off check re-run: every case rated a strong candidate, or a smaller fixed subset?</question>
+  </open-question>
+  <open-question id="Check control cases">
+    <question>Does the one-off check also re-run control cases, where the historical alternative set already contained the direction the answer took, to see that the new rules neither lose that direction nor pad the set?</question>
+  </open-question>
+  <open-question id="Check baseline run">
+    <question>Does the one-off check also run the unchanged enumeration rules on the same cases with the same model, so that a difference in the result can be attributed to the new wording and not to the model?</question>
+  </open-question>
+  <open-question id="Check run location">
+    <question>Where does the one-off check run the alternatives pass so that each case is grounded in its historical project state while the repositories the cases come from receive no commits or other changes?</question>
+  </open-question>
+  <open-question id="Check match judgment">
+    <question>Who decides whether a re-run alternative set contains the direction the historical answer took: the agent carrying out the check, or the user reviewing the sets?</question>
+  </open-question>
+  <open-question id="Check pass bar">
+    <question>What share of the re-run cases must contain the previously missing direction for the one-off check to count the change as verified?</question>
+  </open-question>
+  <open-question id="Check shortfall response">
+    <question>If the one-off check falls short of its bar, does the milestone revise the enumeration wording and re-run the check, or record the shortfall and finish?</question>
+  </open-question>
+  <open-question id="Documentation scope">
+    <question>Which documents outside core/ are updated to match the new enumeration and authoring rules, among docs/skill-reference.md, claim 4 of docs/design-claims.md with its count of two to four alternatives, and CLAUDE.md?</question>
+  </open-question>
+  <open-question id="Enumeration rationale record">
+    <question>Does CLAUDE.md gain an invariant entry explaining why alternative sets must be distinct and covering and why the count guideline is gone, or does the procedure&apos;s own wording carry that alone?</question>
+  </open-question>
+</open-questions>
