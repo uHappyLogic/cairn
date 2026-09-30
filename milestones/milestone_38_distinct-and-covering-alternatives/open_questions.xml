@@ -190,5 +190,30 @@
   </open-question>
   <open-question id="Fixture failure response">
     <question>The one-axis authoring rule is verified by running `review-milestone-requirements` against a synthetic fixture with one independent pair and one coupled pair of axes. What does the milestone do when that run does not author the questions as expected?</question>
+    <alternative id="Revise once then finish">
+      Rules for rounds and outcome: the milestone follows the same rule the one-off check already uses. There is one round of revision, applied to the step-3 authoring wording that failed. That is either the one-axis rule or the exception for coupled choices. The fixture then runs again. If it still authors wrongly, the milestone records the shortfall and finishes with the best wording it has. Changes allowed: the rule wording only, never the fixture. Runs per verdict: one run of `review-milestone-requirements`.
+      <advantage>It matches the recorded &quot;revise once, re-run, then record and finish&quot; decision for the one-off check, so both verification parts handle failure the same way. Effort is bounded, so the milestone cannot stall on a small synthetic test.</advantage>
+      <drawback>The milestone can ship an authoring rule, and a new `CLAUDE.md` invariant that describes it, which its own fixture showed does not work. A single run cannot separate a real rule failure from ordinary run-to-run variation. The failure could also come from a badly built fixture, and this option would still change the rule instead.</drawback>
+    </alternative>
+    <alternative id="Revise until it passes">
+      Rules for rounds and outcome: the fixture is a blocking gate. The step-3 wording is revised and the fixture re-run as many times as needed. The milestone does not finish until one run authors the independent pair as two questions and the coupled pair as a single multi-axis question. Changes allowed: the rule wording only. Runs per verdict: one run each time.
+      <advantage>Only a rule seen working on both the split and the exception is shipped. That keeps the new `CLAUDE.md` invariant and the `docs/skill-reference.md` entry honest about what the review skill does.</advantage>
+      <drawback>The effort has no upper limit. That breaks with the bounded single round the milestone already accepts for its main check. A wording tuned until one small fixture passes may be overfitted to that fixture. Because single runs vary, a pass can be luck, and an unlucky run can hold the whole milestone back.</drawback>
+    </alternative>
+    <alternative id="Record without revising">
+      Rules for rounds and outcome: zero revision rounds. The fixture is a diagnostic, not a gate. Its outcome is recorded, and the milestone finishes with the step-3 wording unchanged. What went wrong is written into the uncommitted `temp/` idea document on how `review-milestone-requirements` frames questions. That document already holds the deferred work on a detection test.
+      <advantage>It costs the least. It also fits the recorded decision to leave detecting a second axis to judgment and move the design of a detection test to a future milestone. A fixture failure is exactly the evidence that future milestone needs.</advantage>
+      <drawback>A failure that is known, and may be cheap to fix, ships unfixed. The main value of verifying the rule is also given up: the one-axis rule is the milestone&apos;s upstream brake on alternative sets growing, and its failure would get no response at all.</drawback>
+    </alternative>
+    <alternative id="Withdraw the failing rule">
+      Rules for rounds and outcome: at most one revision round. If the fixture still fails after that, the milestone removes the failing part from `review-milestone-requirements` step 3 instead of shipping it. That part is the one-axis rule, the exception for coupled choices, or both. Its mentions in the `CLAUDE.md` invariant and the `docs/skill-reference.md` entry are removed too. The enumeration rewrite still ships on its own.
+      <advantage>No committed runtime prose or invariant claims authoring behaviour the milestone&apos;s own test showed does not happen. So a later editor cannot rely on a brake that does not work.</advantage>
+      <drawback>The goal names the one-axis rule as the way set growth is prevented upstream. Removing it changes what the milestone delivers, which would need a change to the goal. It also leaves the new &quot;every viable combination&quot; enumeration with no upstream limit, so sets can grow.</drawback>
+    </alternative>
+    <alternative id="Fixture-first triage">
+      Rules for rounds and outcome: before any wording changes, the failed run is checked against the fixture itself. If the fixture&apos;s gap does not really have the independent-pair and coupled-pair structure intended, the fixture is corrected and run again. Only a failure against a fixture confirmed to be sound leads to one revision of the step-3 wording and one more run. After that, the milestone records any remaining shortfall and finishes. Changes allowed: the fixture first, then the rule. Runs per verdict: one run.
+      <advantage>It separates the two things that can fail: a hand-built throwaway fixture and the rule it tests. So the step-3 wording is not changed because of a flaw in the fixture.</advantage>
+      <drawback>Being allowed to edit the test after seeing it fail makes it easy to change the fixture until it passes. That weakens the test as evidence. It also adds a triage judgment that the milestone would have to make with no stated criterion for when a fixture counts as faulty.</drawback>
+    </alternative>
   </open-question>
 </open-questions>
