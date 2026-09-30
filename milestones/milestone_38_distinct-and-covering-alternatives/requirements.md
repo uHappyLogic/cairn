@@ -66,5 +66,9 @@ No benchmark harness, eval directory, or judge exists in the repository. Neither
 - Each case runs in a clone outside this working copy: the source repository is cloned into a scratch directory (for example under the system temp directory), the parent of the answer commit is checked out, and the alternatives pass runs there with the rebuilt `hosts/claude` plugin tree loaded explicitly. The clone is deleted once its set has been read, and the source repository is only ever read.
 - If the check falls short of its bar, the milestone revises the enumeration wording once and re-runs the check. If it still falls short after that single round, the milestone records the aggregate shortfall and finishes with the best wording it has.
 
+### Documentation
+
+- `docs/skill-reference.md` states the new rules briefly in the entries they govern: the enumeration rules in the `discuss-open-question`, `provide-alternatives-to-all-open-questions`, and alternatives-subagent entries, and the one-axis rule in the `review-milestone-requirements` entry. Claim 4's Design in `docs/design-claims.md` is rewritten to say the alternatives are distinct and cover the decision, with no count; its Metric line stays as it is. `docs/workflow.md` is not edited, and `CLAUDE.md` is not edited under this decision, its invariant entry being decided separately.
+
 ## Out of Scope
 
