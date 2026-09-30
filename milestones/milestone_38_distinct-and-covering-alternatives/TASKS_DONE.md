@@ -173,3 +173,18 @@ Write the uncommitted idea document under `temp/` for a committed benchmark harn
 - `git status --porcelain` shows nothing new to commit from it; the only change this task commits is this task-list move, which carries no benchmark or private-project information.
 
 ---
+
+## Write Question Framing Idea Document
+
+Write the uncommitted idea document under `temp/` on further improvements to how `review-milestone-requirements` frames questions: shared premises, splitting existing compound questions, and the four candidate tests for detecting a second axis (an independent-settlement test, surface-wording cues, an option-grid preview, and an independence test prompted by wording cues). The goal names it as the second idea document, and the one-axis decision carries those detection tests into it for a separate future milestone. It is verified by the file existing under `temp/` with every one of those topics covered and `git status` showing nothing new to commit from it.
+
+**Verified:**
+
+- The idea document exists as `temp/question-framing-idea.md`, and `git check-ignore` names the `temp/` rule of `.gitignore` for it.
+- It covers shared premises, both within one question's wording and one premise shared by several sibling questions, with candidate directions and the constraints any design must keep.
+- It covers splitting existing compound questions: flag only, split bare blocks, split any block, or a tool operation, with what each means for the tidy-vs-record invariant, dependents, interruption order, and the commit shape.
+- It covers the four candidate tests for detecting a second axis carried from the one-axis decision (an independent-settlement test, surface-wording cues, an option-grid preview, and an independence test prompted by wording cues), each with its strength and weakness, and how a future milestone could choose between them on a synthetic corpus.
+- It frames the material for a separate future milestone, with open decisions and a seed goal.
+- `git status --porcelain` shows nothing new to commit from it; the only change this task commits is this task-list move, which carries no benchmark or private-project information.
+
+---
