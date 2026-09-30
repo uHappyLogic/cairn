@@ -1,33 +1,4 @@
 <open-questions>
-  <open-question id="Check shortfall response">
-    <question>If the one-off check falls short of its bar, does the milestone revise the enumeration wording and re-run the check, or record the shortfall and finish?</question>
-    <recommendation option="One revision round">A single bounded round makes a real attempt to close a measured gap while guaranteeing the milestone ends, and it limits tuning against the same small case set, which an open-ended loop or a judged out-of-reach exclusion would not.</recommendation>
-    <alternative id="One revision round">
-      If the check falls short, the milestone revises the wording a fixed small number of times, typically once, and re-runs the check each time. If it still falls short after the last round, it records the aggregate shortfall and finishes with the best wording it has. On the three choices: revise on any shortfall, stop after a set number of rounds, and ship even if the bar is still missed.
-      <advantage>It makes a real attempt to close the gap while guaranteeing the milestone ends. That avoids both an open-ended tuning loop and giving up after the first try.</advantage>
-      <drawback>The number of rounds is arbitrary. The wording that ships may still be unverified, just with one more round of tuning on the same cases, so the overfitting risk stays, only smaller. Each round also costs another full alternatives pass over every case.</drawback>
-    </alternative>
-    <alternative id="Revise until bar met">
-      If the check falls short, the milestone revises the enumeration wording and re-runs the check as many times as it takes to reach the bar. On the three choices involved, this means: revise on any shortfall, stop only when the bar is met, and ship only a rewrite that passed.
-      <advantage>The goal says the change &quot;is verified by&quot; the re-run, and this is the only option where that is literally true when the milestone finishes. Whatever wording ships has met the bar.</advantage>
-      <drawback>The loop has no bound, so the milestone could stay open indefinitely. Each round tunes the wording against the same historical cases, which risks overfitting to about 20 known misses instead of improving enumeration in general. And if the bar can&apos;t be reached at all, for example because some answers depended on information that no grounded project state contains, the loop never ends. How much a re-run shows also depends on how the sibling baseline and control-case questions settle.</drawback>
-    </alternative>
-    <alternative id="Record and finish">
-      The check runs once, and a shortfall does not reopen the rewrite. The milestone records the aggregate result, meaning only the share met with no case detail, since benchmark data can&apos;t be committed. It ships the new wording as written and finishes, leaving further improvement to later work such as the benchmark-harness idea document. On the three choices: never revise because of the check, stop after one run, and ship regardless.
-      <advantage>It keeps the check one-off, as the goal describes it. The result is an honest measurement instead of a number tuned to the cases, and the milestone&apos;s scope and length stay predictable.</advantage>
-      <drawback>A rewrite that measurably missed its own bar ships anyway, so the bar becomes informational rather than a gate. A known weakness in the wording is left for a milestone that may never be defined.</drawback>
-    </alternative>
-    <alternative id="Withhold the rewrite">
-      If the check falls short, the new enumeration rules are not shipped. The milestone keeps or restores the current step 2 of alternatives-procedure.md, records the aggregate shortfall, and finishes. The review skill&apos;s authoring change and the two temp/ idea documents can still land. On the three choices: never revise, stop after one run, and ship nothing unless the bar is met.
-      <advantage>It treats the bar as a real gate. The workflow never runs enumeration rules that failed their own verification, and the current rules, whose behaviour the benchmark already characterises, stay in force.</advantage>
-      <drawback>It throws away a rewrite that may still be better than the current rules even though it missed the bar. And a shortfall on the missing-direction measure says nothing about whether the new rules are worse, so a partial gain is discarded along with the miss.</drawback>
-    </alternative>
-    <alternative id="Diagnose misses first">
-      If the check falls short, each case that still lacks the direction is first sorted by cause. Misses the wording could plausibly have prevented trigger a wording revision and a re-run. Misses the pass could not reach from its grounded project state, such as an answer that turned on information outside the repository, are recorded as out of reach and dropped from the shortfall. The milestone then finishes. On the three choices: revise only for misses caused by the wording, stop once none of those remain, and ship the result.
-      <advantage>It aims the revision effort only at failures the wording can actually fix. This keeps an unreachable case from forcing endless rewording or from counting against a rule that could never have caught it.</advantage>
-      <drawback>Classifying a miss as out of reach is a judgment call that can quietly lower the bar. How trustworthy that judgment is depends on how the sibling question about who judges a match settles. The per-case reasoning also has to stay out of every committed artifact, with only its aggregate recorded.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Documentation scope">
     <question>Which documents outside core/ are updated to match the new enumeration and authoring rules, among docs/skill-reference.md, claim 4 of docs/design-claims.md with its count of two to four alternatives, and CLAUDE.md?</question>
     <recommendation option="Describe rules in both docs">The milestone changes what two skills promise, and the skill reference and design claims are where that promise is stated, so correcting only the counts would leave both pages silent on the new behaviour; a brief statement per governed entry follows how earlier milestones aligned these pages, and the unmeasured metric is left alone.</recommendation>
