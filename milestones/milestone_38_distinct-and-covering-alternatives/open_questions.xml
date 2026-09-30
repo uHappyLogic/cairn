@@ -1,33 +1,4 @@
 <open-questions>
-  <open-question id="Control failure effect">
-    <question>The one-off check&apos;s verdict is defined only by how many missing directions the new rules recover compared with the baseline. What effect does a failed control case (a lost direction, or a near-duplicate or filler option) have on whether the change counts as verified?</question>
-    <recommendation option="No worse than baseline">It applies the recovery verdict&apos;s own paired logic to the controls, using baseline runs the check already makes and fixing no new number; a regression the rewrite causes gates the verdict, while judging noise and flaws the unchanged rules also show do not.</recommendation>
-    <alternative id="No worse than baseline">
-      Control failures gate the verdict relative to the paired baseline. The control tests are also judged on the unchanged-rules set for each control case, and the change counts as verified only if the new rules fail no more control cases than the baseline does, on both failure kinds together. Failing that comparison counts as falling short and starts the single revise-and-re-run round.
-      <advantage>It uses the same paired-comparison logic as the recovery verdict and the baseline runs that are already required. That separates real regressions caused by the rewrite from judging noise and from flaws the historical sets already had.</advantage>
-      <drawback>It doubles the control judgments. It also lets the new rules keep baseline-level near-duplicates and filler (13 historical sets already had near-duplicates), even though the milestone&apos;s new distinctness rule is meant to remove them.</drawback>
-    </alternative>
-    <alternative id="Hard veto">
-      Control failures gate the verdict with zero tolerance. The change counts as verified only if the recovery margin is met and every control case passes both of its tests: the refined option&apos;s direction is kept, and the set has no near-duplicate or filler option. This is an absolute bar on the new-rules sets alone, and any control failure counts as falling short, which starts the single revise-and-re-run round.
-      <advantage>It gives the strongest guard against the main risk of an axes-first rewrite with no count guideline, which is a set that finds new directions by drifting away from directions users actually took or by growing filler. It also needs no extra number fixed before the runs.</advantage>
-      <drawback>A single noisy judgment on one case can overturn a clear recovery gain and use up the only revision round. How fragile this is depends on how many control cases the sample holds and who judges them, both owned by sibling questions.</drawback>
-    </alternative>
-    <alternative id="Fixed tolerance">
-      Control failures gate the verdict above a tolerance that is fixed before the runs. That tolerance is a count or share of control cases allowed to fail, with both failure kinds counted together. The bar is absolute on the new-rules sets alone. Exceeding the tolerance counts as falling short and starts the single revise-and-re-run round, and failures within it are reported in the aggregate results.
-      <advantage>Controls still decide the outcome, but one borderline judgment cannot sink the whole check. This matches how the recovery margin is fixed in advance.</advantage>
-      <drawback>It adds a second number to choose before the runs, with nothing in the benchmark to set it by. On a small sample, any tolerance above zero is close to either a veto or no gate at all. What it means depends on the control sample size, which a sibling question owns.</drawback>
-    </alternative>
-    <alternative id="Lost direction only">
-      The verdict depends on the failure kind. A control case that loses the refined option&apos;s direction gates the verdict with zero tolerance and starts the single revise-and-re-run round. A near-duplicate or filler option is reported in the aggregate results and does not affect whether the change counts as verified.
-      <advantage>The hard gate covers the more serious failure, a pick that users actually made becoming impossible. The softer judgment of whether an option is filler is kept out of the pass/fail outcome.</advantage>
-      <drawback>Growth in the set, the risk that removing the count guideline most directly invites, could still pass as verified. The distinctness rule this milestone adds would then have no enforced check.</drawback>
-    </alternative>
-    <alternative id="Report only">
-      Control failures do not affect the verdict. The verdict stays defined only by the recovery margin over the baseline, and control results of both kinds are recorded next to it in the aggregate results as advisory findings, which never start the revise-and-re-run round.
-      <advantage>The verdict stays exactly as the recorded decision defines it, and nothing new has to be fixed before the runs. Noise from a small control sample cannot overturn a clear recovery result.</advantage>
-      <drawback>The change could count as verified while it loses directions users chose or pads sets with filler. That makes the control cases decoration rather than a check, and leaves any regression they reveal with no required response.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Aggregate result home">
     <question>Only aggregate results of the one-off check may be committed, and the new `CLAUDE.md` invariant carries no measurement figures. In which committed file are the check&apos;s aggregate results recorded?</question>
     <applied-principle>Description over retirement note</applied-principle>
@@ -94,7 +65,6 @@
   </open-question>
   <open-question id="Control sample size">
     <question>The one-off check re-runs a small fixed sample of the refinement overrides as control cases. How many control cases does the sample hold?</question>
-    <depends-on question="Control failure effect" option="No worse than baseline"/>
     <recommendation option="About ten cases">One failed control is about a tenth of the sample rather than a third, so the control result does not turn on a single unusual case, and the sample stays small beside the pool at roughly 16 to 20 added runs.</recommendation>
     <alternative id="About ten cases">
       A moderate sample of eight to ten refinement overrides, about half the size of the 20-case missed-direction set. Each case is run under both rule versions, which adds roughly 16–20 runs.
@@ -114,7 +84,6 @@
   </open-question>
   <open-question id="Control check judge">
     <question>For each control case the one-off check tests that the re-run set still holds the refined option&apos;s direction and has no near-duplicate or filler options. Who makes those two judgments: the blind judge agent that decides the missed-direction cases, or someone else?</question>
-    <depends-on question="Control failure effect" option="No worse than baseline"/>
     <recommendation option="Same blind judge">Every verdict comes from one judging setup under one blindness rule, and the user still receives only verdicts; the extra brief only swaps the refined option in for the missing direction, and having the same judge rate both rule versions&apos; sets for a case lets any shallowness in its filler calls fall on both sides alike.</recommendation>
     <alternative id="Same blind judge">
       The blind judge agent that decides the missed-direction cases also makes both control judgments. For each control case it receives an extra brief made of the historical answer, the listed option that answer refined, and the re-run set. It is not told which rule version produced the set.
