@@ -171,6 +171,26 @@
   </open-question>
   <open-question id="Check candidate scope">
     <question>Which of the historical cases whose alternative set missed the direction the answer took does the one-off check re-run: every case rated a strong candidate, or a smaller fixed subset?</question>
+    <alternative id="Every strong candidate">
+      Re-run all 20 historical cases already rated strong candidates for a re-run (16 where the answer took a direction no option represented, 4 where it took a combination on an axis the set never laid out), and add no others.
+      <advantage>It reuses the already-judged, fixed list, so no case is selected after the new wording exists. Twenty cases are also enough for a share-based pass bar to mean something.</advantage>
+      <drawback>It costs twenty grounded runs, and each one needs its own historical project state, however the run-location question settles. The list also holds no case where the answer rejected a premise every option shared, so any premise-related wording gets no evidence from it.</drawback>
+    </alternative>
+    <alternative id="Fixed strong-candidate subset">
+      Re-run a smaller subset of the 20 strong candidates, fixed before the enumeration wording is rewritten and drawn in proportion to their mix of coverage gaps and uncrossed-axis combinations.
+      <advantage>It is the cheapest option in runs, historical checkouts, and the user&apos;s time spent reviewing the re-run sets, and fixing it in advance still guards against picking cases the new wording happens to fix.</advantage>
+      <drawback>A handful of cases makes any share-based bar coarse, with each case swinging the result by a large step. Only a few combination cases can appear, and premise-shift cases are still absent.</drawback>
+    </alternative>
+    <alternative id="Every missed-direction case">
+      Re-run every historical case whose set missed the direction the answer took, whatever its rating: all 41 (20 coverage gaps, 12 uncrossed-axis combinations, 9 shared-premise rejections).
+      <advantage>It gives the broadest evidence and is the only option that tests all three missed-direction patterns in full, including the shared-premise pattern the strong-candidate list lacks.</advantage>
+      <drawback>It costs about twice the runs and grounding work. The lower-rated cases were judged weaker benchmark material, so they add verdicts that are noisier and harder to judge, which weighs more if a person rather than the agent does the judging.</drawback>
+    </alternative>
+    <alternative id="Stratified pattern sample">
+      Re-run a fixed subset chosen before the rewrite to span every missed-direction pattern: a few strong coverage-gap cases, a few strong combination cases, and a few shared-premise cases taken from outside the strong list.
+      <advantage>Each generic failure pattern the new rules target gets at least some evidence, for far less than re-running every missed case.</advantage>
+      <drawback>Each pattern gets only a few cases, so a per-pattern result is anecdotal. The shared-premise cases were never rated strong, so their verdicts rest on weaker material than the rest of the sample.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Check control cases">
     <question>Does the one-off check also re-run control cases, where the historical alternative set already contained the direction the answer took, to see that the new rules neither lose that direction nor pad the set?</question>
