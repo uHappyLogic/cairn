@@ -77,6 +77,7 @@ No benchmark harness, eval directory, or judge exists in the repository. Neither
 - If the fixture run does not author the questions as expected, the milestone revises the failing step-3 authoring wording once (the one-axis rule or the exception for coupled choices) and re-runs the fixture with one run of `review-milestone-requirements`. If it still authors wrongly, the milestone records the shortfall and finishes with the best wording it has. Only the rule wording changes, never the fixture.
 - The control sample holds eight to ten refinement overrides, each run under both rule versions, which adds roughly 16 to 20 runs to the check.
 - Both control judgments are made by the same blind judge agent that decides the missed-direction cases. For each control case it receives a separate brief made of the historical answer, the listed option that answer refined, and the re-run set, and is not told which rule version produced the set; it judges both rule versions' sets of a case, and its brief for the missed-direction cases is unchanged.
+- The control cases are picked by a stratified seeded draw: the refinement overrides are split into groups by features that bear on the control checks (source project, how many alternatives the historical set held, and whether its judged verdict flagged near-duplicates), and a random draw with a seed fixed before any run is made inside each group, so every group is represented. The grouping features are fixed before the draw.
 
 ### Documentation
 
