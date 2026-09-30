@@ -76,6 +76,7 @@ No benchmark harness, eval directory, or judge exists in the repository. Neither
 - The check's aggregate results (the recovered-direction counts, the baseline counts, the margin, and the control outcomes) are recorded in the `**Verified:**` bullets of the check's task entry in the milestone's `TASKS_DONE.md`. No new file is added, and `docs/` and `requirements.md` carry none of the figures.
 - If the fixture run does not author the questions as expected, the milestone revises the failing step-3 authoring wording once (the one-axis rule or the exception for coupled choices) and re-runs the fixture with one run of `review-milestone-requirements`. If it still authors wrongly, the milestone records the shortfall and finishes with the best wording it has. Only the rule wording changes, never the fixture.
 - The control sample holds eight to ten refinement overrides, each run under both rule versions, which adds roughly 16 to 20 runs to the check.
+- Both control judgments are made by the same blind judge agent that decides the missed-direction cases. For each control case it receives a separate brief made of the historical answer, the listed option that answer refined, and the re-run set, and is not told which rule version produced the set; it judges both rule versions' sets of a case, and its brief for the missed-direction cases is unchanged.
 
 ### Documentation
 

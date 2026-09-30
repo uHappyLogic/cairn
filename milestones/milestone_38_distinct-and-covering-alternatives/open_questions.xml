@@ -1,33 +1,4 @@
 <open-questions>
-  <open-question id="Control check judge">
-    <question>For each control case the one-off check tests that the re-run set still holds the refined option&apos;s direction and has no near-duplicate or filler options. Who makes those two judgments: the blind judge agent that decides the missed-direction cases, or someone else?</question>
-    <recommendation option="Same blind judge">Every verdict comes from one judging setup under one blindness rule, and the user still receives only verdicts; the extra brief only swaps the refined option in for the missing direction, and having the same judge rate both rule versions&apos; sets for a case lets any shallowness in its filler calls fall on both sides alike.</recommendation>
-    <alternative id="Same blind judge">
-      The blind judge agent that decides the missed-direction cases also makes both control judgments. For each control case it receives an extra brief made of the historical answer, the listed option that answer refined, and the re-run set. It is not told which rule version produced the set.
-      <advantage>Every verdict the check produces comes from one judge under one blindness rule. This includes the control verdicts on the baseline sets from the paired single baseline. The user still receives only verdicts, and the milestone builds and calibrates only one judging setup.</advantage>
-      <drawback>The recorded decision limits this judge&apos;s inputs to the historical answer, the recorded missing direction and the re-run set. Control cases have no missing direction, so that input contract has to be widened. Deciding whether an option is filler also takes project context the judge is deliberately not given, so its near-duplicate and filler verdicts may be shallow or inconsistent. How much that matters depends on how the sibling question on a control failure&apos;s effect settles.</drawback>
-    </alternative>
-    <alternative id="Separate control judge">
-      A second judge agent, with its own context and blind to rule version, makes both control judgments. It gets its own brief (the historical answer, the refined option and the re-run set), and the missed-direction judge&apos;s decided inputs stay as they are.
-      <advantage>The missed-direction judge is used exactly as decided, with no changes. Blindness still covers the controls. The control brief can be written for its own two questions: whether the direction is still held, and whether any option is a near-duplicate or filler.</advantage>
-      <drawback>The milestone has to write and run a second judging setup. The two judges may apply different standards, so the control and missed-direction verdicts can&apos;t be compared directly. The filler judgment still has no project grounding.</drawback>
-    </alternative>
-    <alternative id="User judges controls">
-      The user reads each control case&apos;s re-run set and makes both judgments by hand. Only the missed-direction cases go to the blind judge agent.
-      <advantage>Near-duplicate and filler are subjective calls. The person with the most context on the historical projects makes them, with no judge brief to design or calibrate. The user&apos;s own sense of a padded set is the standard the rewrite is meant to meet.</advantage>
-      <drawback>The user usually knows which rule version is being tested, and may also know which set came from which run, so the control verdicts are not blind. That breaks the pattern the missed-direction decision set. It also adds manual reading work that grows with the sample, so its cost depends on how the sibling question on control sample size settles.</drawback>
-    </alternative>
-    <alternative id="Split judge and user">
-      The two judgments go to different judges. The blind judge agent decides whether the refined option&apos;s direction is still held, which is the same kind of containment judgment it already makes for missed directions. The user decides whether any option is a near-duplicate or filler.
-      <advantage>Each judgment goes to the judge best suited to it. Direction containment stays blind and matches the missed-direction verdicts. The subjective filler call goes to the person who can tell padding from a real option.</advantage>
-      <drawback>It combines the costs of both routes: the judge&apos;s inputs still have to be widened for control cases, and the user still has non-blind reading work for every control set. Each control case&apos;s result also depends on two judges.</drawback>
-    </alternative>
-    <alternative id="Check runner judges">
-      The session running the one-off check, which clones each case, runs the pass and reads the sets, makes both control judgments inline as it reads each set. No separate judge is involved.
-      <advantage>This is the cheapest option. It needs no extra dispatch, no extra brief and no user effort, and the judgment is made at the moment the set is already in context.</advantage>
-      <drawback>That session wrote the rewrite and knows which rule version produced each set. Its verdicts are the least independent of all the options, which is the bias the blind-judge decision was made to avoid for the missed-direction cases.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Control sample selection">
     <question>The one-off check re-runs a small fixed sample of the refinement overrides as control cases. By what method are those control cases picked from the refinement overrides?</question>
     <recommendation option="Stratified seeded draw">The refinement overrides are concentrated in one source project and in three-option sets, so a plain draw would mostly repeat the common kind; the grouping features are already recorded per case in the benchmark material, so stratifying costs little, and the draw stays seeded and random inside each group.</recommendation>
