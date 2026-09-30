@@ -74,6 +74,7 @@ No benchmark harness, eval directory, or judge exists in the repository. Neither
 - The margin for "clearly more" is a fixed count: the new rules must recover the missing direction in at least 5 more of the 20 re-run cases than the baseline does, net of the paired cases the new rules win minus those they lose. No share or rounding rule is used.
 - Control failures gate the verdict relative to the paired baseline: the control tests are also judged on the unchanged-rules set of each control case, and the change counts as verified only if the recovery margin is met and the new rules fail no more control cases than the baseline does, both failure kinds counted together. Failing that comparison counts as falling short and starts the single revise-and-re-run round.
 - The check's aggregate results (the recovered-direction counts, the baseline counts, the margin, and the control outcomes) are recorded in the `**Verified:**` bullets of the check's task entry in the milestone's `TASKS_DONE.md`. No new file is added, and `docs/` and `requirements.md` carry none of the figures.
+- If the fixture run does not author the questions as expected, the milestone revises the failing step-3 authoring wording once (the one-axis rule or the exception for coupled choices) and re-runs the fixture with one run of `review-milestone-requirements`. If it still authors wrongly, the milestone records the shortfall and finishes with the best wording it has. Only the rule wording changes, never the fixture.
 
 ### Documentation
 
