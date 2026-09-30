@@ -1,6 +1,7 @@
 <open-questions>
   <open-question id="Axis identification step">
     <question>In the rewritten enumeration step of alternatives-procedure.md, is the enumerator told to first identify the axes of the decision and derive the options from them, or are distinctness and coverage stated only as properties the finished set must have?</question>
+    <recommendation option="Axes-first derivation">The goal already requires each option to state its position on each axis and every combination to be weighed, both of which presuppose named axes, and property-only wording is what the current &quot;complete now&quot; rule already is and what let directions and combinations go missing.</recommendation>
     <alternative id="Axes-first derivation">
       Step 2 of alternatives-procedure.md opens with a required move: name the axes the underlying decision turns on, then build the options as positions on those axes (on a multi-axis question, as combinations weighed in reasoning), and state distinctness and coverage as the tests the resulting set must pass. Axis identification comes before any candidate is drafted, and the step is mandatory.
       <advantage>The goal already has each option state where it stands on each axis and has every combination weighed on a multi-axis question, and both assume the axes were named first. A generation step targets the recorded failure mode directly: 12 overrides took a combination on an axis the set never laid out, and 20 took a direction no option represented. The fixed step is also something the one-off re-run can check.</advantage>
@@ -24,6 +25,7 @@
   </open-question>
   <open-question id="Drop-it direction rule">
     <question>Does the enumeration step of alternatives-procedure.md carry its own explicit instruction to weigh the direction of not doing the thing the question is about, or is that direction left to follow from the general coverage requirement?</question>
+    <recommendation option="Explicit drop-it check">Not doing the thing is the most frequently missed direction and the one the goal names, a general completeness rule already failed to reach it, and the honestly-viable condition keeps the instruction inside the existing ban on strawmen at the cost of one sentence.</recommendation>
     <alternative id="Explicit drop-it check">
       Step 2 of alternatives-procedure.md gets its own instruction, separate from the general coverage requirement, telling the enumerator to weigh the direction of not doing the thing the question is about on every question. The enumerator lists that direction as an option when it is honestly viable and leaves it out otherwise, with no dedicated place to record that it was considered.
       <advantage>It targets the gap the benchmark aggregate names as the most frequent missing direction. The goal calls out this direction by name. The procedure&apos;s current requirement that the set be &quot;complete now&quot; already implied coverage and still missed it in practice, so a separate instruction is the most likely to change what the enumerator produces.</advantage>
@@ -42,6 +44,13 @@
   </open-question>
   <open-question id="Wording premise rule">
     <question>Does the enumeration step of alternatives-procedure.md tell the enumerator to find what the question&apos;s wording takes for granted and weigh rejecting it, or is covering the underlying decision stated without such a step?</question>
+    <depends-on question="Axis identification step" option="Axes-first derivation"/>
+    <recommendation option="Premises as axes">One mechanism then covers both the axes the question names and the ones its wording hides, a premise-rejecting option states its stance like any other option, and rejecting a premise usually makes the remaining axes moot, so it adds one option rather than a cross-product.</recommendation>
+    <alternative id="Premises as axes">
+      Premise-finding is folded into the enumeration&apos;s axis work rather than stated as a rule of its own: each assumption the wording takes for granted is treated as one more axis of the decision, with accepting and rejecting it as its values, so rejecting a premise comes out of the same step that lays out the other axes.
+      <advantage>A single mechanism covers both the axes the question names and the ones its wording hides, so the procedure gains no separate premise rule. A premise-rejecting option then carries its stance on every other axis like any other option, and does not stand outside the set&apos;s structure.</advantage>
+      <drawback>It only works if the enumeration step contains an explicit axis step, so its viability depends on how the Axis identification step sibling settles. Treating every premise as an axis also multiplies the combinations the goal says must all be weighed, and on a multi-axis question that can make the set grow more than the problem requires.</drawback>
+    </alternative>
     <alternative id="Explicit premise step">
       The enumeration step of alternatives-procedure.md gets its own instruction: before listing options, name what the question&apos;s wording takes for granted (an assumed need, mechanism, or framing), then for each such premise weigh an option that rejects it, and list that option only where it is honestly viable. On the axes it touches, this option adds a dedicated process step, so a premise is examined on every question and not only when the enumerator happens to notice it.
       <advantage>It targets a failure the benchmark aggregate shows directly: 9 of 106 overriding answers rejected a premise that every listed option shared. A named step makes the enumerator look for exactly the assumption that a wording-bound set carries silently, rather than hoping the general coverage requirement brings it up.</advantage>
@@ -57,23 +66,19 @@
       <advantage>It aims precisely at the benchmark category, a premise that every option shared, while leaving the enumeration method free. Because the test only fires when all the options agree on an assumption, it adds nothing to sets that already vary on it.</advantage>
       <drawback>Running the test still requires the enumerator to see the shared assumption, which is the step that failed in the historical cases, so it may catch little more than the bare property does. A self-check the finished set must pass is also harder to verify in the one-off re-run than a visible step.</drawback>
     </alternative>
-    <alternative id="Premises as axes">
-      Premise-finding is folded into the enumeration&apos;s axis work rather than stated as a rule of its own: each assumption the wording takes for granted is treated as one more axis of the decision, with accepting and rejecting it as its values, so rejecting a premise comes out of the same step that lays out the other axes.
-      <advantage>A single mechanism covers both the axes the question names and the ones its wording hides, so the procedure gains no separate premise rule. A premise-rejecting option then carries its stance on every other axis like any other option, and does not stand outside the set&apos;s structure.</advantage>
-      <drawback>It only works if the enumeration step contains an explicit axis step, so its viability depends on how the Axis identification step sibling settles. Treating every premise as an axis also multiplies the combinations the goal says must all be weighed, and on a multi-axis question that can make the set grow more than the problem requires.</drawback>
-    </alternative>
   </open-question>
   <open-question id="Degree variants representation">
     <question>When several candidate options are one approach at different degrees or parameter values, how does the alternative set represent that approach?</question>
-    <alternative id="Single option, value left open">
-      The approach appears once in the set as a single alternative. Its what-it-is text names the approach and the range its degree or parameter can take, and leaves the value unset so that whoever answers supplies it.
-      <advantage>The set stays small and every pair of options still differs in approach, which is the distinctness the goal asks for. It also matches how answers already arrive: of the 106 overrides, 65 refined a listed option rather than leaving the set, and that is the path that supplies the value.</advantage>
-      <drawback>Some answer paths record the lifted what-it-is text as the decision word for word. `Alternative-answer:` does this, and a recommendation&apos;s rationale does it too unless it names a value. On those paths, accepting the option records an approach with no value, so `## Decisions` holds an incomplete decision that task derivation or completion must fill in without a recorded basis.</drawback>
-    </alternative>
+    <recommendation option="One option per material degree">Treating degree as an axis needs no special case, every lifted or recommended option records a complete decision on every answer path, and merging values whose trade-off is the same is the same substance test that rules out near-duplicates everywhere else in the set.</recommendation>
     <alternative id="One option per material degree">
       The degree counts as an axis like any other. The set lists a separate alternative for each degree or value at which the key advantage or drawback genuinely changes. Values whose trade-off is the same are merged into one option, described by its range.
       <advantage>Every alternative that is lifted or recommended records a concrete, usable decision. The trade-off between degrees is visible to the pick instead of being hidden inside one option.</advantage>
       <drawback>Deciding whether a trade-off &quot;genuinely changes&quot; is the same judgment that let near-duplicates through before (13 of the historical sets held them). The set also grows by one option per threshold, and on a multi-axis question that growth multiplies across combinations.</drawback>
+    </alternative>
+    <alternative id="Single option, value left open">
+      The approach appears once in the set as a single alternative. Its what-it-is text names the approach and the range its degree or parameter can take, and leaves the value unset so that whoever answers supplies it.
+      <advantage>The set stays small and every pair of options still differs in approach, which is the distinctness the goal asks for. It also matches how answers already arrive: of the 106 overrides, 65 refined a listed option rather than leaving the set, and that is the path that supplies the value.</advantage>
+      <drawback>Some answer paths record the lifted what-it-is text as the decision word for word. `Alternative-answer:` does this, and a recommendation&apos;s rationale does it too unless it names a value. On those paths, accepting the option records an approach with no value, so `## Decisions` holds an incomplete decision that task derivation or completion must fill in without a recorded basis.</drawback>
     </alternative>
     <alternative id="Single option, representative value">
       The approach appears once, fixed at one stated value the enumerator considers most defensible. The other values are mentioned only in its drawback, as ways it could be tuned.
@@ -93,6 +98,12 @@
   </open-question>
   <open-question id="What-it-is length">
     <question>Once an option&apos;s what-it-is text must also state where the option stands on each axis, does that field of alternatives-procedure.md keep its one-sentence limit, get a different stated limit, or carry no limit?</question>
+    <recommendation option="Content-scoped, no count">A bound on what the field holds, positions only with reasons kept in the advantage and drawback, fits every question shape without a number, keeps the lifted decision line free of rationale, and matches the goal&apos;s removal of count guidelines; one-axis authoring keeps most fields to a sentence anyway.</recommendation>
+    <alternative id="Content-scoped, no count">
+      The sentence count is dropped and replaced by a content bound. The what-it-is text holds only what the option is, meaning its position on each axis, and any reason for or against it belongs in the advantage and drawback fields. Its length then follows from how many positions there are to state.
+      <advantage>It ties the field to what it is for, not to a number, so it fits every question shape without an arbitrary figure. It also keeps the lifted what-it-is line, which becomes the recorded decision, free of rationale. That line stays a clean statement of what was chosen.</advantage>
+      <drawback>A qualitative bound is harder for the subagent to apply consistently than a sentence count, and an enumerator can still write long position prose. With no ceiling, a verbose option carries straight into `## Decisions` and commit bodies, because the tool sets no length limit and only folds the text to one line.</drawback>
+    </alternative>
     <alternative id="Keep one sentence">
       The what-it-is field in step 2 of alternatives-procedure.md keeps its &quot;one sentence&quot; limit. That one sentence now has to name the option&apos;s position on every axis of the decision, and the agent file&apos;s rendering step can keep calling the field &quot;the what-it-is sentence&quot; unchanged.
       <advantage>What gets recorded stays short. On the Alternative-answer: path, `lift --alternative` prints `&lt;id&gt; — &lt;what-it-is&gt;`, and that line is folded into `## Decisions` and used as the commit body. With one sentence, a recorded decision stays one crisp line. The limit also keeps rationale in the advantage and drawback fields, and it needs no wording change in core/agents/provide-alternatives-to-open-question.md, discuss-open-question, or capture-milestone-principle-updates.</advantage>
@@ -108,11 +119,6 @@
       <advantage>It is simple to state and to check, and it gives multi-axis options noticeably more room than one sentence. It also keeps a hard ceiling, so the lifted decision line in `## Decisions` and in capture&apos;s reconstruction can never grow past a known size.</advantage>
       <drawback>The number is arbitrary relative to the question&apos;s structure. It still squeezes a question with many interdependent axes, and on one-axis questions it invites padding up to the cap. The procedure otherwise bans padding, and the goal drops a count guideline for exactly this kind of reason.</drawback>
     </alternative>
-    <alternative id="Content-scoped, no count">
-      The sentence count is dropped and replaced by a content bound. The what-it-is text holds only what the option is, meaning its position on each axis, and any reason for or against it belongs in the advantage and drawback fields. Its length then follows from how many positions there are to state.
-      <advantage>It ties the field to what it is for, not to a number, so it fits every question shape without an arbitrary figure. It also keeps the lifted what-it-is line, which becomes the recorded decision, free of rationale. That line stays a clean statement of what was chosen.</advantage>
-      <drawback>A qualitative bound is harder for the subagent to apply consistently than a sentence count, and an enumerator can still write long position prose. With no ceiling, a verbose option carries straight into `## Decisions` and commit bodies, because the tool sets no length limit and only folds the text to one line.</drawback>
-    </alternative>
     <alternative id="No stated limit">
       The field states no length limit or scope bound at all. It only has to state where the option stands on each axis, and length is left to the procedure&apos;s existing ban on padding and to the enumerator&apos;s judgment.
       <advantage>This is the smallest change to the procedure&apos;s wording. Nothing about the field&apos;s form can ever conflict with the requirement to state every axis position, and the field is treated consistently with the goal&apos;s removal of the count guideline.</advantage>
@@ -121,15 +127,16 @@
   </open-question>
   <open-question id="Defer direction">
     <question>Is postponing the decision, leaving the question unanswered for a later milestone, a direction an alternative set may list, as distinct from the direction of not doing the thing the question is about?</question>
-    <alternative id="Distinct defer direction">
-      The enumeration step names postponement as its own direction, separate from not doing the thing. A set lists it only when grounding shows it is honestly viable, meaning the milestone&apos;s goal does not need the question settled now and a later milestone could settle it. It would be recorded as an `## Out of Scope` or later-milestone decision, because derive-tasks will not start while any question is open.
-      <advantage>It keeps apart two answers that land differently: dropping the thing is a final rejection, while postponing it leaves the thing possible later. Because each is a separate option, the recommendation pass and the answer sweep can pick and record a deferral without anyone having to override the set.</advantage>
-      <drawback>Nearly every question could in principle be postponed, so the enumerator needs a viability test to stop a defer option from being added to every set as filler. The option&apos;s what-it-is text also has to state a destination (Out of Scope, or a named later milestone), which the enumerator may have no grounds to choose.</drawback>
-    </alternative>
+    <recommendation option="Folded into drop-it">Within one milestone never and later land identically, the thing is not done here and a later milestone stays free to take it up, so two side-by-side options would differ on nothing this milestone&apos;s decisions record and would break the distinctness rule while inviting a filler defer option on every set.</recommendation>
     <alternative id="Folded into drop-it">
       Postponement is not a separate direction. It counts as one form of the &quot;not in this milestone&quot; direction, so a set lists at most one option for not doing the thing now, and the answer text says whether that means never or later.
       <advantage>Sets stay lean because two options that look almost the same to the pick never appear side by side. That fits the milestone&apos;s rule that every two alternatives must differ in substance. It also avoids a second viability judgment.</advantage>
       <drawback>It merges a final rejection with a postponement. The difference then appears only if the user writes a literal answer, and a recommendation or alternative lift records the &quot;not now&quot; option without saying which one was meant.</drawback>
+    </alternative>
+    <alternative id="Distinct defer direction">
+      The enumeration step names postponement as its own direction, separate from not doing the thing. A set lists it only when grounding shows it is honestly viable, meaning the milestone&apos;s goal does not need the question settled now and a later milestone could settle it. It would be recorded as an `## Out of Scope` or later-milestone decision, because derive-tasks will not start while any question is open.
+      <advantage>It keeps apart two answers that land differently: dropping the thing is a final rejection, while postponing it leaves the thing possible later. Because each is a separate option, the recommendation pass and the answer sweep can pick and record a deferral without anyone having to override the set.</advantage>
+      <drawback>Nearly every question could in principle be postponed, so the enumerator needs a viability test to stop a defer option from being added to every set as filler. The option&apos;s what-it-is text also has to state a destination (Out of Scope, or a named later milestone), which the enumerator may have no grounds to choose.</drawback>
     </alternative>
     <alternative id="Never listed">
       An alternative set covers only the substantive directions of the underlying decision and never lists postponement. Postponing is treated as something done to the question, not an answer to it: the user can always record it through a literal answer, and review-milestone-requirements can flag a question that lies outside the goal.
@@ -139,6 +146,13 @@
   </open-question>
   <open-question id="Sibling-owned axes">
     <question>When an axis of the underlying decision is already the subject of a sibling open question, does an alternative set&apos;s coverage extend to that axis, or does the existing rule that an option answering a sibling is left to that sibling bound it?</question>
+    <depends-on question="Interdependent axes" option="Single multi-axis question"/>
+    <recommendation option="Bound with named constraint">Each axis stays decided in exactly one block, which is what keeps the parallel alternatives pass and the scope-only sibling rule safe, while the required condition in the drawback gives the recommendation pass the cross-question constraint it turns into a dependency; choices coupled tightly enough to need laid-out combinations never reach two blocks.</recommendation>
+    <alternative id="Bound with named constraint">
+      Siblings still bound the set, so no option varies on a sibling-owned axis. But the enumeration step now explicitly requires each option to name any sibling-owned axis its viability depends on, stated as a condition in its drawback without naming the expected outcome. This turns today&apos;s optional &quot;say so in its drawback&quot; into a required statement.
+      <advantage>It shows interdependence across questions without duplicating any decision. The recommendation pass gets the constraint in the option text, where it can become a depends-on tag. The block format needs no set-level statement, which the tool would refuse anyway.</advantage>
+      <drawback>Unviable pairings are described one option at a time rather than laid out as combinations, so a combination spanning two questions is still never an option anyone can pick. It also adds a duty the enumerator must remember for every option, and the drawback field gets longer.</drawback>
+    </alternative>
     <alternative id="Siblings bound coverage">
       Keep the existing step-1 rule as the limit on coverage. The set covers only the axes of the underlying decision that no sibling question owns, so no option varies on a sibling-owned axis, and each option&apos;s what-it-is text states its position only on the axes this question owns.
       <advantage>Each axis is decided in exactly one block. This keeps the rule that siblings supply scope and are never assumed settled, which is what lets the alternatives pass annotate blocks in parallel. It also keeps sets small, so one-axis-per-question authoring actually limits growth.</advantage>
@@ -149,11 +163,6 @@
       <advantage>This is the most literal reading of the goal&apos;s &quot;cover the underlying decision&quot; and &quot;every combination weighed&quot; requirements. Each set becomes a complete map of the decision, so an answer taking a cross-question combination can always find it listed.</advantage>
       <drawback>The same axis gets decided in two blocks. Recording one question&apos;s answer can fix a stance on a sibling&apos;s axis and conflict with that sibling&apos;s later answer, which causes more strip-and-re-run cascades. Stating a position on a sibling axis also comes close to presuming how that sibling settles, which step 2 forbids. Sets grow in exactly the way one-axis authoring is meant to prevent.</drawback>
     </alternative>
-    <alternative id="Bound with named constraint">
-      Siblings still bound the set, so no option varies on a sibling-owned axis. But the enumeration step now explicitly requires each option to name any sibling-owned axis its viability depends on, stated as a condition in its drawback without naming the expected outcome. This turns today&apos;s optional &quot;say so in its drawback&quot; into a required statement.
-      <advantage>It shows interdependence across questions without duplicating any decision. The recommendation pass gets the constraint in the option text, where it can become a depends-on tag. The block format needs no set-level statement, which the tool would refuse anyway.</advantage>
-      <drawback>Unviable pairings are described one option at a time rather than laid out as combinations, so a combination spanning two questions is still never an option anyone can pick. It also adds a duty the enumerator must remember for every option, and the drawback field gets longer.</drawback>
-    </alternative>
     <alternative id="Extend only for interdependence">
       Siblings bound coverage by default. The one exception is a sibling-owned axis that constrains this question&apos;s axis so that not every pairing is viable: then the set lays out the viable combinations across both axes, and each option states its position on both.
       <advantage>It targets the missed-combination failure without duplicating independent sibling decisions. Fuller coverage applies only where a single-axis set would really mislead.</advantage>
@@ -162,6 +171,12 @@
   </open-question>
   <open-question id="Compound question test">
     <question>What test does review-milestone-requirements apply when authoring a question to decide that a gap holds more than one axis and must be authored as several questions?</question>
+    <recommendation option="Independence test with cues">The verdict rests on the decision&apos;s structure, the same notion of an axis the enumeration uses, so wording can neither force a false split nor excuse a hidden one, while the cheap cues make the judgment actually fire on the common bundled shapes a bare semantic rule lets slip past.</recommendation>
+    <alternative id="Independence test with cues">
+      The independent-settlement test is the rule, and a short list of surface cues (two interrogatives, &quot;and&quot; joining choices, one choice per listed item) is named only as prompts to apply that test. The deciding test is semantic, and wording signals only trigger the check.
+      <advantage>The cheap cues catch the common case reliably, and the verdict still rests on the decision&apos;s structure. A cue never forces a false split, and a question with no cue can still be split.</advantage>
+      <drawback>It is the longest of these prose additions to step 3, and two mechanisms have to be read together. A compound question with no cue in its wording still depends on judgment alone, so the gain over the plain independence test is only in the cases the cues catch.</drawback>
+    </alternative>
     <alternative id="Independent-settlement test">
       Review-milestone-requirements states one semantic test in step 3: a gap holds more than one axis when it contains two choices that could each be settled while the other stays open. Each such choice becomes its own question. The test judges the structure of the decision, not the question&apos;s wording, and it is applied by the author&apos;s judgment with no surface cues.
       <advantage>It names the same thing the rewritten alternatives procedure calls an axis, a choice that varies on its own. Authoring and enumeration then share one definition, and a question that passes the test is one the enumerator can cover without laying out combinations.</advantage>
@@ -177,11 +192,6 @@
       <advantage>It catches hidden axes that neither the wording nor an abstract independence check exposes. It uses the same axis-and-combination vocabulary as the new rule for enumerating over several axes, so a question that passes it is exactly one that will not make the alternative set grow combinatorially.</advantage>
       <drawback>It moves part of the enumeration work upstream into the review pass, which blurs the boundary between authoring a question and enumerating its alternatives. It also costs reasoning on every new gap, and the sketched options are thrown away, so the alternatives pass later does that work again.</drawback>
     </alternative>
-    <alternative id="Independence test with cues">
-      The independent-settlement test is the rule, and a short list of surface cues (two interrogatives, &quot;and&quot; joining choices, one choice per listed item) is named only as prompts to apply that test. The deciding test is semantic, and wording signals only trigger the check.
-      <advantage>The cheap cues catch the common case reliably, and the verdict still rests on the decision&apos;s structure. A cue never forces a false split, and a question with no cue can still be split.</advantage>
-      <drawback>It is the longest of these prose additions to step 3, and two mechanisms have to be read together. A compound question with no cue in its wording still depends on judgment alone, so the gain over the plain independence test is only in the cases the cues catch.</drawback>
-    </alternative>
     <alternative id="Rule without a named test">
       Step 3 gains the one-axis rule as a third requirement on the question text, &quot;each question asks one choice&quot;, and states no test for detecting a second axis. Detection is left to the author&apos;s judgment, just as the existing rules for a self-contained question and a unique Short Title are.
       <advantage>It is the smallest change and matches how step 3 already states its other authoring judgments. It avoids a test whose wording would suggest more precision than the judgment actually has.</advantage>
@@ -190,6 +200,7 @@
   </open-question>
   <open-question id="Interdependent axes">
     <question>When two choices in one gap constrain each other so that not every pairing is viable, does review-milestone-requirements author them as two one-axis questions or as one multi-axis question?</question>
+    <recommendation option="Single multi-axis question">The goal already provides for a multi-axis question whose combinations are weighed and whose viable ones are described, so coupled choices belong in the one block that sees both; every option is then a coherent pairing and any answer path records one consistent decision, which the split forms cannot guarantee.</recommendation>
     <alternative id="Single multi-axis question">
       review-milestone-requirements authors the coupled choices as one question, as a named exception to the one-axis rule. Both choices are asked at once, and the enumeration excludes the pairings that cannot work: it weighs every combination in reasoning and describes only the viable ones, as the milestone goal already requires for a multi-axis question.
       <advantage>The pairings that cannot work are visible and removed in the one place that sees both choices together. Every option in the set is a coherent combination, so any answer, whether a pick, a lifted alternative or a manual answer, records one consistent decision in a single fold. The benchmark&apos;s cases of an answer taking a combination the set never laid out are addressed directly.</advantage>
@@ -208,6 +219,12 @@
   </open-question>
   <open-question id="Authoring rule verification">
     <question>How is the one-axis authoring rule of review-milestone-requirements verified, given that the milestone&apos;s one-off check re-runs only the alternatives pass?</question>
+    <recommendation option="Synthetic compound fixture">It is the only cheap option that runs the real review skill against a gap whose correct split is known in advance, it uses no private data, and the fixture can hold one independent pair and one coupled pair so both the split and its exception are exercised before the milestone finishes.</recommendation>
+    <alternative id="Synthetic compound fixture">
+      Write a small throwaway milestone under temp/ whose requirements.md deliberately leaves a gap with two or more independent axes, run review-milestone-requirements against it in a scratch working copy, and check whether it authors one question per axis.
+      <advantage>Controlled and private-data-free: the correct split is known in advance, so pass or fail can be judged without interpretation. It can be run again cheaply whenever the step-3 wording changes.</advantage>
+      <drawback>A fixture designed to contain an obvious compound gap is easier than the tangled gaps that produced the real overrides. It shows the rule fires in a clean case, not that it catches the interdependent or subtle bundling seen in practice, and someone still has to write the fixture.</drawback>
+    </alternative>
     <alternative id="Inspection only">
       Treat the authoring rule as checked once its rewritten step-3 wording in review-milestone-requirements has been read back in the rebuilt host trees, so no run of the review pass is made and the one-off check stays limited to the alternatives pass, as the goal currently describes it.
       <advantage>Costs nothing beyond the build and --check gate, matches the goal&apos;s wording exactly (it names a re-run of the alternatives pass only), and cannot put any private benchmark information at risk.</advantage>
@@ -223,11 +240,6 @@
       <advantage>It exercises the rule end to end through the real skill on real historical gaps, so it is the only option that verifies authoring behaviour under the same conditions the one-off alternatives check uses.</advantage>
       <drawback>The review pass finds gaps freely, so the same gap may not come up again and a result is hard to match to its case. Each case needs a reconstructed pre-question state in a private repository, which means more run-location and no-commit handling (the concerns of the check-location sibling) and more exposure of private data than any other option.</drawback>
     </alternative>
-    <alternative id="Synthetic compound fixture">
-      Write a small throwaway milestone under temp/ whose requirements.md deliberately leaves a gap with two or more independent axes, run review-milestone-requirements against it in a scratch working copy, and check whether it authors one question per axis.
-      <advantage>Controlled and private-data-free: the correct split is known in advance, so pass or fail can be judged without interpretation. It can be run again cheaply whenever the step-3 wording changes.</advantage>
-      <drawback>A fixture designed to contain an obvious compound gap is easier than the tangled gaps that produced the real overrides. It shows the rule fires in a clean case, not that it catches the interdependent or subtle bundling seen in practice, and someone still has to write the fixture.</drawback>
-    </alternative>
     <alternative id="Observe next real review">
       Verify the rule in use: after it lands, inspect the questions the next real review-milestone-requirements pass authors, whether a later pass on this milestone or the first review of the next milestone, and record whether each new question holds one axis.
       <advantage>It measures real questions on real gaps with no reconstruction, scratch copy, or benchmark data, so it is the most realistic signal and adds no private-data risk.</advantage>
@@ -241,6 +253,7 @@
   </open-question>
   <open-question id="Check candidate scope">
     <question>Which of the historical cases whose alternative set missed the direction the answer took does the one-off check re-run: every case rated a strong candidate, or a smaller fixed subset?</question>
+    <recommendation option="Every strong candidate">The list was judged and fixed before any new wording existed, so no case is chosen after the fact, and twenty cases are the smallest set on which a comparison between two rule versions is more than anecdote; the unrated premise cases would add noisier verdicts than evidence.</recommendation>
     <alternative id="Every strong candidate">
       Re-run all 20 historical cases already rated strong candidates for a re-run (16 where the answer took a direction no option represented, 4 where it took a combination on an axis the set never laid out), and add no others.
       <advantage>It reuses the already-judged, fixed list, so no case is selected after the new wording exists. Twenty cases are also enough for a share-based pass bar to mean something.</advantage>
@@ -264,15 +277,16 @@
   </open-question>
   <open-question id="Check control cases">
     <question>Does the one-off check also re-run control cases, where the historical alternative set already contained the direction the answer took, to see that the new rules neither lose that direction nor pad the set?</question>
-    <alternative id="No control cases">
-      The one-off check re-runs only the cases whose historical set missed the answer&apos;s direction. Loss of a direction and padding are judged by reading the re-run candidate sets and the rewritten wording, and a proper regression side is left to the benchmark-harness idea document under temp/.
-      <advantage>This is the smallest and cheapest check. Every re-run goes to the failure the milestone exists to fix, and it adds no case selection or matching work beyond what the candidate cases already need.</advantage>
-      <drawback>It cannot show that the new rules keep a direction the old rules already found. It also cannot tell growth the rules call for from padding, because every re-run case is one where the historical set was known to be incomplete. So a regression on the most common kind of question, where the set was already right, would go unseen until later milestones.</drawback>
-    </alternative>
+    <recommendation option="Refinement override controls">Dropping the count guideline and adding a drop-it check make padding the change&apos;s main regression risk, which missed-direction cases cannot show; a small fixed sample of sets already complete on direction shows it directly and reuses verdicts the benchmark material already holds.</recommendation>
     <alternative id="Refinement override controls">
       The check also re-runs a small fixed sample of the refinement overrides. These are the manual answers (65 of the 106 overrides) that refined an option the historical set already listed. For each, it checks that the re-run set still holds that option&apos;s direction and has no near-duplicate or filler options.
       <advantage>These cases are closest to the candidates: the same answer path, judged by the same verdicts already in the benchmark material. They show directly whether a set that was already covering stays covering. And because refinement means the historical set was complete on direction, extra options there are a clear sign of padding.</advantage>
       <drawback>It adds re-runs and a second matching judgment. A refinement answer often changes the option&apos;s details, so judging whether the re-run holds &quot;the same direction&quot; is fuzzier than for a set-chosen answer. The sample also draws only from cases where the user overrode the set, so the far larger mass of accepted picks goes untested.</drawback>
+    </alternative>
+    <alternative id="No control cases">
+      The one-off check re-runs only the cases whose historical set missed the answer&apos;s direction. Loss of a direction and padding are judged by reading the re-run candidate sets and the rewritten wording, and a proper regression side is left to the benchmark-harness idea document under temp/.
+      <advantage>This is the smallest and cheapest check. Every re-run goes to the failure the milestone exists to fix, and it adds no case selection or matching work beyond what the candidate cases already need.</advantage>
+      <drawback>It cannot show that the new rules keep a direction the old rules already found. It also cannot tell growth the rules call for from padding, because every re-run case is one where the historical set was known to be incomplete. So a regression on the most common kind of question, where the set was already right, would go unseen until later milestones.</drawback>
     </alternative>
     <alternative id="Set-chosen answer controls">
       The check also re-runs a small fixed sample of questions answered by a listed option unchanged. These are Recommendation-answer or Alternative-answer commits. For each, it checks that the re-run set still holds the chosen option&apos;s direction and has not grown with padding.
@@ -287,15 +301,16 @@
   </open-question>
   <open-question id="Check baseline run">
     <question>Does the one-off check also run the unchanged enumeration rules on the same cases with the same model, so that a difference in the result can be attributed to the new wording and not to the model?</question>
-    <alternative id="No baseline run">
-      Run only the rewritten enumeration rules over the chosen cases, and judge each new set against the historical set already on record in the benchmark material, with no fresh run of the unchanged rules.
-      <advantage>Cheapest and simplest form of the check: it needs half the runs, and there is no need to make the pre-change procedure loadable next to the rebuilt `hosts/claude` tree that the maintainer&apos;s install points at.</advantage>
-      <drawback>The historical sets came from older models, efforts and procedure versions, often grounded in a different project state. A recovered direction could therefore be the model&apos;s doing rather than the new wording&apos;s, so the check cannot show that the rewrite caused an improvement. At most it can note this as a caveat.</drawback>
-    </alternative>
+    <recommendation option="Paired single baseline">One extra run per case is the cheapest design that separates the wording&apos;s effect from the model&apos;s and that can also show a case where the new rules lose a direction the old ones find, which the recovered-only baseline never can; repeated runs exceed a one-off check.</recommendation>
     <alternative id="Paired single baseline">
       Run the unchanged `alternatives-procedure.md`, taken from the commit before the rewrite, once on every re-run case with the same model and effort setting as the new-rules run. Compare each case&apos;s two sets side by side.
       <advantage>Separates the wording&apos;s effect from the model&apos;s for every case, and costs only one extra run per case. It also shows where the old rules already recover the missing direction with today&apos;s model, and where the new rules lose something the old ones found.</advantage>
       <drawback>Doubles the cost of the check and needs the pre-change procedure runnable in the same grounded setting. With a single sample per arm, one lucky or unlucky run can still create or hide a difference, so the attribution holds only for a clear margin. How the pairs are counted also depends on how the pass bar is expressed.</drawback>
+    </alternative>
+    <alternative id="No baseline run">
+      Run only the rewritten enumeration rules over the chosen cases, and judge each new set against the historical set already on record in the benchmark material, with no fresh run of the unchanged rules.
+      <advantage>Cheapest and simplest form of the check: it needs half the runs, and there is no need to make the pre-change procedure loadable next to the rebuilt `hosts/claude` tree that the maintainer&apos;s install points at.</advantage>
+      <drawback>The historical sets came from older models, efforts and procedure versions, often grounded in a different project state. A recovered direction could therefore be the model&apos;s doing rather than the new wording&apos;s, so the check cannot show that the rewrite caused an improvement. At most it can note this as a caveat.</drawback>
     </alternative>
     <alternative id="Repeated paired runs">
       Run both the unchanged and the rewritten rules several times per case with the same model and effort setting, and compare how often each arm&apos;s sets contain the previously missing direction.
@@ -310,6 +325,7 @@
   </open-question>
   <open-question id="Check run location">
     <question>Where does the one-off check run the alternatives pass so that each case is grounded in its historical project state while the repositories the cases come from receive no commits or other changes?</question>
+    <recommendation option="Clone outside tree">It is the only option that both leaves the source repositories untouched by construction and runs the pass exactly as shipped over a full historical tree, with no ancestor instructions from this repository leaking into the grounding; the explicitly loaded plugin tree also lets the unchanged rules run in the same setting.</recommendation>
     <alternative id="Clone outside tree">
       For each case, clone the source repository into a scratch directory outside this working copy (for example under the system temp directory), check out the parent of the answer commit, and run the alternatives pass there. The clone&apos;s rebuilt `hosts/claude` plugin is loaded explicitly, and the clone is deleted once its set has been read.
       <advantage>The source repository is only read. Its working tree, refs, and object store never change, and the pass&apos;s own `Alternatives-annotation:` commits land in the throwaway clone. The pass runs exactly as shipped, orchestrator included, grounded in a full historical tree with its history, and no ancestor directory adds cairn&apos;s own `CLAUDE.md` or `.claude/` settings to the grounding context.</advantage>
@@ -343,15 +359,17 @@
   </open-question>
   <open-question id="Check match judgment">
     <question>Who decides whether a re-run alternative set contains the direction the historical answer took: the agent carrying out the check, or the user reviewing the sets?</question>
-    <alternative id="Agent judges alone">
-      The agent running the check decides each match by comparing the re-run set against the missing direction already recorded for that case in the benchmark&apos;s judged verdicts, and hands the user only the tally and a short aggregate summary.
-      <advantage>It takes the least of the user&apos;s time and fits a headless or scripted run. It also reuses the same kind of judgment that produced the 20 strong-candidate ratings, so the check measures against the same yardstick that selected its cases.</advantage>
-      <drawback>The agent that wrote or ran the new rules is grading its own work, and &quot;contains the direction&quot; is a fuzzy semantic call. A lenient reading of near-misses could pass the change without anyone catching it, and no human ever sees the sets the verdict rests on.</drawback>
-    </alternative>
+    <depends-on question="Check baseline run" option="Paired single baseline"/>
+    <recommendation option="Independent blind judge">With sets from both rule versions to mix, a judge that does not know which version produced a set removes the self-grading bias at no cost in user time, and its verdicts stay comparable across the two arms, which is what the comparison needs.</recommendation>
     <alternative id="Independent blind judge">
       A separate judge agent decides each match. It gets its own context with only the historical answer, the recorded missing direction, and the re-run set, and it is not told which rule version produced the set. The user receives only its verdicts.
       <advantage>It removes the self-grading bias of the agent carrying out the check while still asking nothing of the user. Hiding which rules produced each set makes the verdicts comparable across runs.</advantage>
       <drawback>Setting up a separate, blinded judging step adds work to a one-off check. The judge is still a model making a fuzzy call with no human anchor. How much the blinding is worth depends on whether the check also produces sets from the unchanged rules to mix in.</drawback>
+    </alternative>
+    <alternative id="Agent judges alone">
+      The agent running the check decides each match by comparing the re-run set against the missing direction already recorded for that case in the benchmark&apos;s judged verdicts, and hands the user only the tally and a short aggregate summary.
+      <advantage>It takes the least of the user&apos;s time and fits a headless or scripted run. It also reuses the same kind of judgment that produced the 20 strong-candidate ratings, so the check measures against the same yardstick that selected its cases.</advantage>
+      <drawback>The agent that wrote or ran the new rules is grading its own work, and &quot;contains the direction&quot; is a fuzzy semantic call. A lenient reading of near-misses could pass the change without anyone catching it, and no human ever sees the sets the verdict rests on.</drawback>
     </alternative>
     <alternative id="User judges every set">
       The agent puts each case in front of the user: the historical question, the direction the answer took, and the re-run set. It gives no verdict of its own, and the user decides for every case whether the set contains that direction.
@@ -371,6 +389,13 @@
   </open-question>
   <open-question id="Check pass bar">
     <question>What share of the re-run cases must contain the previously missing direction for the one-off check to count the change as verified?</question>
+    <depends-on question="Check baseline run" option="Paired single baseline"/>
+    <recommendation option="Beats baseline">The historical sets came from older models, so an absolute share could be met by the model alone; only a margin over the unchanged rules on the same cases credits the result to the wording, with the margin for clearly more fixed before the runs.</recommendation>
+    <alternative id="Beats baseline">
+      Set no absolute share. The change counts as verified when the new rules recover the missing direction in clearly more of the same cases than the unchanged rules recover when run with the same model.
+      <advantage>A pass can be credited to the new wording and not to the model. Newer models may already recover some directions that the historical run missed, and an absolute share cannot separate that effect from the wording change.</advantage>
+      <drawback>It only means something if the check also runs the unchanged rules, which the sibling question on a baseline run decides. It doubles the number of runs. With a small number of cases it still needs a stated margin for &quot;clearly more&quot;, so the arbitrary cut-off is moved, not removed.</drawback>
+    </alternative>
     <alternative id="Majority bar">
       Set a fixed share of more than half: the change counts as verified when most of the re-run cases now contain the direction their historical set missed. The bar is stated as a share, so it applies unchanged whichever set of cases the check re-runs.
       <advantage>It is a simple bar that can be failed, and the new rules can reasonably reach it. Some historical misses turned on facts nobody had when the question was asked, so no enumeration rule could recover them. A majority bar leaves room for those cases and still requires the rules to fix the typical miss.</advantage>
@@ -380,11 +405,6 @@
       Set a fixed share well above half, around three quarters or more: the change counts as verified only when nearly every re-run case now contains the direction its historical set missed.
       <advantage>Passing it is strong evidence that the rewritten enumeration step does what the goal claims, which is to cover the underlying decision, including the direction of not doing the thing. A borderline improvement cannot be reported as success.</advantage>
       <drawback>Some misses may not be recoverable by any enumeration rule, so a failure can reflect the chosen cases rather than the wording. That makes a shortfall more likely, and what happens then depends on how the sibling question on shortfall response settles.</drawback>
-    </alternative>
-    <alternative id="Beats baseline">
-      Set no absolute share. The change counts as verified when the new rules recover the missing direction in clearly more of the same cases than the unchanged rules recover when run with the same model.
-      <advantage>A pass can be credited to the new wording and not to the model. Newer models may already recover some directions that the historical run missed, and an absolute share cannot separate that effect from the wording change.</advantage>
-      <drawback>It only means something if the check also runs the unchanged rules, which the sibling question on a baseline run decides. It doubles the number of runs. With a small number of cases it still needs a stated margin for &quot;clearly more&quot;, so the arbitrary cut-off is moved, not removed.</drawback>
     </alternative>
     <alternative id="Per-category bar">
       Apply a share bar separately to each kind of historical miss: a direction no option represented, a combination on an axis the set never laid out, and a premise every option shared. The change counts as verified only when each kind meets its bar.
@@ -399,15 +419,16 @@
   </open-question>
   <open-question id="Check shortfall response">
     <question>If the one-off check falls short of its bar, does the milestone revise the enumeration wording and re-run the check, or record the shortfall and finish?</question>
-    <alternative id="Revise until bar met">
-      If the check falls short, the milestone revises the enumeration wording and re-runs the check as many times as it takes to reach the bar. On the three choices involved, this means: revise on any shortfall, stop only when the bar is met, and ship only a rewrite that passed.
-      <advantage>The goal says the change &quot;is verified by&quot; the re-run, and this is the only option where that is literally true when the milestone finishes. Whatever wording ships has met the bar.</advantage>
-      <drawback>The loop has no bound, so the milestone could stay open indefinitely. Each round tunes the wording against the same historical cases, which risks overfitting to about 20 known misses instead of improving enumeration in general. And if the bar can&apos;t be reached at all, for example because some answers depended on information that no grounded project state contains, the loop never ends. How much a re-run shows also depends on how the sibling baseline and control-case questions settle.</drawback>
-    </alternative>
+    <recommendation option="One revision round">A single bounded round makes a real attempt to close a measured gap while guaranteeing the milestone ends, and it limits tuning against the same small case set, which an open-ended loop or a judged out-of-reach exclusion would not.</recommendation>
     <alternative id="One revision round">
       If the check falls short, the milestone revises the wording a fixed small number of times, typically once, and re-runs the check each time. If it still falls short after the last round, it records the aggregate shortfall and finishes with the best wording it has. On the three choices: revise on any shortfall, stop after a set number of rounds, and ship even if the bar is still missed.
       <advantage>It makes a real attempt to close the gap while guaranteeing the milestone ends. That avoids both an open-ended tuning loop and giving up after the first try.</advantage>
       <drawback>The number of rounds is arbitrary. The wording that ships may still be unverified, just with one more round of tuning on the same cases, so the overfitting risk stays, only smaller. Each round also costs another full alternatives pass over every case.</drawback>
+    </alternative>
+    <alternative id="Revise until bar met">
+      If the check falls short, the milestone revises the enumeration wording and re-runs the check as many times as it takes to reach the bar. On the three choices involved, this means: revise on any shortfall, stop only when the bar is met, and ship only a rewrite that passed.
+      <advantage>The goal says the change &quot;is verified by&quot; the re-run, and this is the only option where that is literally true when the milestone finishes. Whatever wording ships has met the bar.</advantage>
+      <drawback>The loop has no bound, so the milestone could stay open indefinitely. Each round tunes the wording against the same historical cases, which risks overfitting to about 20 known misses instead of improving enumeration in general. And if the bar can&apos;t be reached at all, for example because some answers depended on information that no grounded project state contains, the loop never ends. How much a re-run shows also depends on how the sibling baseline and control-case questions settle.</drawback>
     </alternative>
     <alternative id="Record and finish">
       The check runs once, and a shortfall does not reopen the rewrite. The milestone records the aggregate result, meaning only the share met with no case detail, since benchmark data can&apos;t be committed. It ships the new wording as written and finishes, leaving further improvement to later work such as the benchmark-harness idea document. On the three choices: never revise because of the check, stop after one run, and ship regardless.
@@ -427,6 +448,12 @@
   </open-question>
   <open-question id="Documentation scope">
     <question>Which documents outside core/ are updated to match the new enumeration and authoring rules, among docs/skill-reference.md, claim 4 of docs/design-claims.md with its count of two to four alternatives, and CLAUDE.md?</question>
+    <recommendation option="Describe rules in both docs">The milestone changes what two skills promise, and the skill reference and design claims are where that promise is stated, so correcting only the counts would leave both pages silent on the new behaviour; a brief statement per governed entry follows how earlier milestones aligned these pages, and the unmeasured metric is left alone.</recommendation>
+    <alternative id="Describe rules in both docs">
+      skill-reference.md states the new rules briefly in the entries they govern: the enumeration rules in discuss-open-question, provide-alternatives-to-all-open-questions and the alternatives subagent, and the one-axis rule in review-milestone-requirements. Claim 4&apos;s Design is rewritten to say the alternatives are distinct and cover the decision, with no count. Its Metric line stays as it is. docs/workflow.md and CLAUDE.md are not edited, and the CLAUDE.md invariant entry is left to its sibling question.
+      <advantage>Both reader-facing references tell the truth about the new behaviour. Someone reading skill-reference.md or the design claims sees what an alternative set now promises and why questions come one axis at a time.</advantage>
+      <drawback>The rules then appear in words in both core/shared/alternatives-procedure.md and several skill-reference.md entries. The build&apos;s --check does not cover docs/, so a later wording change in core/ can quietly leave the docs behind. Claim 4&apos;s metric also still measures a generic quality score rather than coverage.</drawback>
+    </alternative>
     <alternative id="No outside documents">
       Only files under core/ and the rebuilt hosts/ trees change. docs/skill-reference.md, docs/design-claims.md, docs/workflow.md and CLAUDE.md stay as they are, and any doc alignment waits for a later milestone. The CLAUDE.md invariant entry is left to the sibling question on the enumeration rationale record.
       <advantage>This is the smallest diff. The milestone&apos;s effort goes into the procedure wording and its one-off check, and no doc text is fixed before the check shows the new rules work.</advantage>
@@ -436,11 +463,6 @@
       Only the two sentences that the change makes false are edited. The &quot;2–4 honest alternatives&quot; phrase in the discuss-open-question entry of skill-reference.md and the &quot;2 to 4 real alternatives&quot; phrase in claim 4&apos;s Design line both get count-free wording. No other entry, claim or metric changes, and CLAUDE.md is untouched apart from what its sibling question decides.
       <advantage>No doc contradicts the runtime anymore, and the edit stays tiny. skill-reference.md stays a description of how skills work rather than a second copy of the enumeration rules, which avoids new drift.</advantage>
       <drawback>A reader of the docs never learns what now makes a set complete (distinct on an axis, covering the underlying decision, not doing it at all where viable). Nor do they learn that review-milestone-requirements now writes each question on a single axis. Claim 4 keeps a metric that does not measure the property the milestone introduces.</drawback>
-    </alternative>
-    <alternative id="Describe rules in both docs">
-      skill-reference.md states the new rules briefly in the entries they govern: the enumeration rules in discuss-open-question, provide-alternatives-to-all-open-questions and the alternatives subagent, and the one-axis rule in review-milestone-requirements. Claim 4&apos;s Design is rewritten to say the alternatives are distinct and cover the decision, with no count. Its Metric line stays as it is. docs/workflow.md and CLAUDE.md are not edited, and the CLAUDE.md invariant entry is left to its sibling question.
-      <advantage>Both reader-facing references tell the truth about the new behaviour. Someone reading skill-reference.md or the design claims sees what an alternative set now promises and why questions come one axis at a time.</advantage>
-      <drawback>The rules then appear in words in both core/shared/alternatives-procedure.md and several skill-reference.md entries. The build&apos;s --check does not cover docs/, so a later wording change in core/ can quietly leave the docs behind. Claim 4&apos;s metric also still measures a generic quality score rather than coverage.</drawback>
     </alternative>
     <alternative id="Also rewrite claim 4 metric">
       This does everything in the previous option and also replaces claim 4&apos;s Metric with one that measures the new property. Examples: the share of overriding answers that took a direction no listed option represented, and the number of sets holding near-duplicate options. It is worded generically, with no case data from the benchmark.
@@ -455,6 +477,8 @@
   </open-question>
   <open-question id="Enumeration rationale record">
     <question>Does CLAUDE.md gain an invariant entry explaining why alternative sets must be distinct and covering and why the count guideline is gone, or does the procedure&apos;s own wording carry that alone?</question>
+    <applied-principle>Description over retirement note</applied-principle>
+    <recommendation option="New invariant entry">A count guideline and a tidy shortlist are the natural reading a later editor would restore when a set grows large, runtime files may not carry that editor-facing reason, and the existing two-halves bullet is about file separation; the entry states the rule and its generic failure patterns without measurement figures.</recommendation>
     <alternative id="New invariant entry">
       Add a dedicated invariant bullet to CLAUDE.md. It explains why an alternative set must be distinct and covering: every two options differ in substance on an axis, and the set covers the underlying decision, including dropping the thing where that is viable. It also explains why the &quot;two to four&quot; count guideline was removed and must not be restored, why each option states its axis positions, and how the one-axis authoring rule in review-milestone-requirements stops the set from growing. The rationale uses only aggregate findings and generic patterns from the benchmark.
       <advantage>This follows the repository&apos;s rule that runtime files carry no editor-facing prose and that rationale belongs in CLAUDE.md. It also gives later editors an explicit &quot;do not fix back&quot; guard, so they won&apos;t reinstate a count cap or a tidy shortlist when a set grows large. That is exactly the kind of well-meant regression the other invariant entries exist to prevent.</advantage>
