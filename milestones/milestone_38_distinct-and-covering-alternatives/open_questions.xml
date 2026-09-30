@@ -397,6 +397,31 @@
   </open-question>
   <open-question id="Documentation scope">
     <question>Which documents outside core/ are updated to match the new enumeration and authoring rules, among docs/skill-reference.md, claim 4 of docs/design-claims.md with its count of two to four alternatives, and CLAUDE.md?</question>
+    <alternative id="No outside documents">
+      Only files under core/ and the rebuilt hosts/ trees change. docs/skill-reference.md, docs/design-claims.md, docs/workflow.md and CLAUDE.md stay as they are, and any doc alignment waits for a later milestone. The CLAUDE.md invariant entry is left to the sibling question on the enumeration rationale record.
+      <advantage>This is the smallest diff. The milestone&apos;s effort goes into the procedure wording and its one-off check, and no doc text is fixed before the check shows the new rules work.</advantage>
+      <drawback>Two statements become false as soon as the procedure drops its count. The discuss-open-question entry in skill-reference.md promises &quot;2–4 honest alternatives&quot;, and claim 4 of design-claims.md says the recommender &quot;gives 2 to 4 real alternatives&quot;. The docs would then contradict the runtime, which goes against the project&apos;s own one-source-of-truth claim (17).</drawback>
+    </alternative>
+    <alternative id="Correct stale counts only">
+      Only the two sentences that the change makes false are edited. The &quot;2–4 honest alternatives&quot; phrase in the discuss-open-question entry of skill-reference.md and the &quot;2 to 4 real alternatives&quot; phrase in claim 4&apos;s Design line both get count-free wording. No other entry, claim or metric changes, and CLAUDE.md is untouched apart from what its sibling question decides.
+      <advantage>No doc contradicts the runtime anymore, and the edit stays tiny. skill-reference.md stays a description of how skills work rather than a second copy of the enumeration rules, which avoids new drift.</advantage>
+      <drawback>A reader of the docs never learns what now makes a set complete (distinct on an axis, covering the underlying decision, not doing it at all where viable). Nor do they learn that review-milestone-requirements now writes each question on a single axis. Claim 4 keeps a metric that does not measure the property the milestone introduces.</drawback>
+    </alternative>
+    <alternative id="Describe rules in both docs">
+      skill-reference.md states the new rules briefly in the entries they govern: the enumeration rules in discuss-open-question, provide-alternatives-to-all-open-questions and the alternatives subagent, and the one-axis rule in review-milestone-requirements. Claim 4&apos;s Design is rewritten to say the alternatives are distinct and cover the decision, with no count. Its Metric line stays as it is. docs/workflow.md and CLAUDE.md are not edited, and the CLAUDE.md invariant entry is left to its sibling question.
+      <advantage>Both reader-facing references tell the truth about the new behaviour. Someone reading skill-reference.md or the design claims sees what an alternative set now promises and why questions come one axis at a time.</advantage>
+      <drawback>The rules then appear in words in both core/shared/alternatives-procedure.md and several skill-reference.md entries. The build&apos;s --check does not cover docs/, so a later wording change in core/ can quietly leave the docs behind. Claim 4&apos;s metric also still measures a generic quality score rather than coverage.</drawback>
+    </alternative>
+    <alternative id="Also rewrite claim 4 metric">
+      This does everything in the previous option and also replaces claim 4&apos;s Metric with one that measures the new property. Examples: the share of overriding answers that took a direction no listed option represented, and the number of sets holding near-duplicate options. It is worded generically, with no case data from the benchmark.
+      <advantage>Claim 4&apos;s design and metric then describe the same thing. The metric names exactly what the milestone&apos;s one-off check measures, and a future benchmark harness could adopt it.</advantage>
+      <drawback>It adds a metric that no suite runs, on a page that already admits nothing tests claim 4. A metric shaped by the private benchmark also risks carrying more than aggregate or generic information into a committed file, which the goal forbids.</drawback>
+    </alternative>
+    <alternative id="Sweep every describing doc">
+      This goes beyond the three documents the question names. Every file outside core/ that describes enumeration or question authoring is updated: skill-reference.md and claim 4 as in the options above, plus the paragraph in docs/workflow.md that explains the two annotating passes and the one-line skill entries in CLAUDE.md for review-milestone-requirements and the alternatives pass. The CLAUDE.md invariant entry is still left to its sibling question.
+      <advantage>It leaves no page describing the old behaviour. workflow.md&apos;s account of the enumerate-versus-pick split, and CLAUDE.md&apos;s summary of the review skill as sole author, would both mention the new distinct-and-covering and one-axis properties.</advantage>
+      <drawback>It is the largest doc diff, and it touches pages that state no count and so are not actually wrong today. The rules end up repeated in four places with no automated check to keep them in step with core/. It also partly overlaps the sibling question on the enumeration rationale record, which decides what CLAUDE.md says about these rules.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Enumeration rationale record">
     <question>Does CLAUDE.md gain an invariant entry explaining why alternative sets must be distinct and covering and why the count guideline is gone, or does the procedure&apos;s own wording carry that alone?</question>
