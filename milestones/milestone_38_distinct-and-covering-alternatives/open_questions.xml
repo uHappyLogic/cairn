@@ -208,6 +208,36 @@
   </open-question>
   <open-question id="Authoring rule verification">
     <question>How is the one-axis authoring rule of review-milestone-requirements verified, given that the milestone&apos;s one-off check re-runs only the alternatives pass?</question>
+    <alternative id="Inspection only">
+      Treat the authoring rule as checked once its rewritten step-3 wording in review-milestone-requirements has been read back in the rebuilt host trees, so no run of the review pass is made and the one-off check stays limited to the alternatives pass, as the goal currently describes it.
+      <advantage>Costs nothing beyond the build and --check gate, matches the goal&apos;s wording exactly (it names a re-run of the alternatives pass only), and cannot put any private benchmark information at risk.</advantage>
+      <drawback>Nothing shows that the review pass actually splits a multi-axis gap into one-axis questions, so half of the milestone&apos;s change finishes with no evidence behind it, even though the upstream split is how the goal keeps enumeration growth down.</drawback>
+    </alternative>
+    <alternative id="Paper test on history">
+      Take the rule&apos;s compound-question test and have it applied, by the checking agent or by the user, to the historical question texts in the benchmark material whose answers combined choices on an axis the set never laid out (12 cases in aggregate). The check is whether the test would have marked those questions for splitting, and the review skill itself is never run.
+      <advantage>Cheap and repeatable, and it tests the rule&apos;s own criterion against real cases where a bundled question went wrong. It reuses material that already sits outside the repository under temp/, and only an aggregate count would be committed.</advantage>
+      <drawback>It checks whether the criterion classifies questions correctly, not whether review-milestone-requirements applies it while authoring, and questions are judged after the fact. Its outcome also turns on how the sibling question about the compound-question test settles, because a vaguer test is harder to apply by hand.</drawback>
+    </alternative>
+    <alternative id="Historical review re-run">
+      Rebuild the requirements state that existed just before selected historical compound questions were authored, in a scratch copy grounded the same way as the alternatives re-run, then run review-milestone-requirements there with the new rule and check whether the matching gap now comes out as several one-axis questions.
+      <advantage>It exercises the rule end to end through the real skill on real historical gaps, so it is the only option that verifies authoring behaviour under the same conditions the one-off alternatives check uses.</advantage>
+      <drawback>The review pass finds gaps freely, so the same gap may not come up again and a result is hard to match to its case. Each case needs a reconstructed pre-question state in a private repository, which means more run-location and no-commit handling (the concerns of the check-location sibling) and more exposure of private data than any other option.</drawback>
+    </alternative>
+    <alternative id="Synthetic compound fixture">
+      Write a small throwaway milestone under temp/ whose requirements.md deliberately leaves a gap with two or more independent axes, run review-milestone-requirements against it in a scratch working copy, and check whether it authors one question per axis.
+      <advantage>Controlled and private-data-free: the correct split is known in advance, so pass or fail can be judged without interpretation. It can be run again cheaply whenever the step-3 wording changes.</advantage>
+      <drawback>A fixture designed to contain an obvious compound gap is easier than the tangled gaps that produced the real overrides. It shows the rule fires in a clean case, not that it catches the interdependent or subtle bundling seen in practice, and someone still has to write the fixture.</drawback>
+    </alternative>
+    <alternative id="Observe next real review">
+      Verify the rule in use: after it lands, inspect the questions the next real review-milestone-requirements pass authors, whether a later pass on this milestone or the first review of the next milestone, and record whether each new question holds one axis.
+      <advantage>It measures real questions on real gaps with no reconstruction, scratch copy, or benchmark data, so it is the most realistic signal and adds no private-data risk.</advantage>
+      <drawback>The evidence comes late and is small and not controlled. A later pass on this milestone only adds new gaps and may author very few questions, and the next milestone&apos;s review may come after this milestone has finished, so the milestone could be declared done before its authoring rule has been verified.</drawback>
+    </alternative>
+    <alternative id="Defer to harness idea">
+      Leave the authoring rule unverified in this milestone and write its measurement explicitly into the uncommitted benchmark-harness idea document under temp/, as a case family that a future committed harness would score next to enumeration quality.
+      <advantage>It is honest that a one-off check cannot measure authoring well. It puts the requirement where a repeatable measurement would be built anyway, and keeps this milestone&apos;s verification work focused on the enumeration change.</advantage>
+      <drawback>The rule ships with no evidence, and the idea document is uncommitted and has no owner or date. A regression in how questions are authored could therefore go unnoticed until someone builds the harness, which may never happen.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Check candidate scope">
     <question>Which of the historical cases whose alternative set missed the direction the answer took does the one-off check re-run: every case rated a strong candidate, or a smaller fixed subset?</question>
