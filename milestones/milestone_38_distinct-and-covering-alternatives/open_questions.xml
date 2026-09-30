@@ -1,28 +1,4 @@
 <open-questions>
-  <open-question id="Check control cases">
-    <question>Does the one-off check also re-run control cases, where the historical alternative set already contained the direction the answer took, to see that the new rules neither lose that direction nor pad the set?</question>
-    <recommendation option="Refinement override controls">Dropping the count guideline and adding a drop-it check make padding the change&apos;s main regression risk, which missed-direction cases cannot show; a small fixed sample of sets already complete on direction shows it directly and reuses verdicts the benchmark material already holds.</recommendation>
-    <alternative id="Refinement override controls">
-      The check also re-runs a small fixed sample of the refinement overrides. These are the manual answers (65 of the 106 overrides) that refined an option the historical set already listed. For each, it checks that the re-run set still holds that option&apos;s direction and has no near-duplicate or filler options.
-      <advantage>These cases are closest to the candidates: the same answer path, judged by the same verdicts already in the benchmark material. They show directly whether a set that was already covering stays covering. And because refinement means the historical set was complete on direction, extra options there are a clear sign of padding.</advantage>
-      <drawback>It adds re-runs and a second matching judgment. A refinement answer often changes the option&apos;s details, so judging whether the re-run holds &quot;the same direction&quot; is fuzzier than for a set-chosen answer. The sample also draws only from cases where the user overrode the set, so the far larger mass of accepted picks goes untested.</drawback>
-    </alternative>
-    <alternative id="No control cases">
-      The one-off check re-runs only the cases whose historical set missed the answer&apos;s direction. Loss of a direction and padding are judged by reading the re-run candidate sets and the rewritten wording, and a proper regression side is left to the benchmark-harness idea document under temp/.
-      <advantage>This is the smallest and cheapest check. Every re-run goes to the failure the milestone exists to fix, and it adds no case selection or matching work beyond what the candidate cases already need.</advantage>
-      <drawback>It cannot show that the new rules keep a direction the old rules already found. It also cannot tell growth the rules call for from padding, because every re-run case is one where the historical set was known to be incomplete. So a regression on the most common kind of question, where the set was already right, would go unseen until later milestones.</drawback>
-    </alternative>
-    <alternative id="Set-chosen answer controls">
-      The check also re-runs a small fixed sample of questions answered by a listed option unchanged. These are Recommendation-answer or Alternative-answer commits. For each, it checks that the re-run set still holds the chosen option&apos;s direction and has not grown with padding.
-      <advantage>These cases stand for how the pass is normally used: the great majority of recorded answers take an embedded option as it is. The direction to match is exactly one historical alternative, so the &quot;still contains it&quot; judgment is as clean as the check can get.</advantage>
-      <drawback>No judged verdicts exist yet for these commits, so selecting the sample is new work, done by hand. And an accepted recommendation shows only that the user found the set good enough, not that it was complete, which makes it a weaker baseline for telling growth the rules call for from padding.</drawback>
-    </alternative>
-    <alternative id="Mixed control sample">
-      The check re-runs control cases from both pools: some refinement overrides and some set-chosen answers. Each is checked for keeping the chosen direction and for not padding the set.
-      <advantage>This covers both kinds of regression risk, the overridden-but-covered set and the routine accepted set. So a &quot;no loss, no padding&quot; result says something about the pass as a whole, not about one slice of it.</advantage>
-      <drawback>It is the costliest control design: the most re-runs, two ways of selecting cases, and two kinds of matching judgment, all for a one-off check. It also increases the privacy-safe aggregate reporting the milestone must commit, and it duplicates much of what the planned benchmark harness would do systematically.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Check baseline run">
     <question>Does the one-off check also run the unchanged enumeration rules on the same cases with the same model, so that a difference in the result can be attributed to the new wording and not to the model?</question>
     <recommendation option="Paired single baseline">One extra run per case is the cheapest design that separates the wording&apos;s effect from the model&apos;s and that can also show a case where the new rules lose a direction the old ones find, which the recovered-only baseline never can; repeated runs exceed a one-off check.</recommendation>
