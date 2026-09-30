@@ -74,6 +74,7 @@ No benchmark harness, eval directory, or judge exists in the repository. Neither
 ### Documentation
 
 - `docs/skill-reference.md` states the new rules briefly in the entries they govern: the enumeration rules in the `discuss-open-question`, `provide-alternatives-to-all-open-questions`, and alternatives-subagent entries, and the one-axis rule in the `review-milestone-requirements` entry. Claim 4's Design in `docs/design-claims.md` is rewritten to say the alternatives are distinct and cover the decision, with no count; its Metric line stays as it is. `docs/workflow.md` is not edited, and `CLAUDE.md` is not edited under this decision, its invariant entry being decided separately.
+- `docs/ways-of-using-cairn.md` is updated to the setting the alternatives pass actually runs at: every `provide-alternatives-to-all-open-questions` line moves from `--effort xhigh` to `--effort high` on `opus`, and each prose sentence naming that line's effort changes with it.
 - `CLAUDE.md` gains a dedicated invariant bullet explaining why an alternative set must be distinct and covering (every two options differ in substance on an axis, and the set covers the underlying decision, including dropping the thing where viable), why the "two to four" count guideline was removed and must not be restored, why each option states its axis positions, and how the one-axis authoring rule in `review-milestone-requirements` stops the set from growing. It states the rule and its generic failure patterns without measurement figures.
 
 ## Out of Scope
