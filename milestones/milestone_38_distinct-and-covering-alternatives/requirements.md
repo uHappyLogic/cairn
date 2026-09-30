@@ -54,6 +54,7 @@ No benchmark harness, eval directory, or judge exists in the repository. Neither
 - Step 2 carries its own explicit instruction, separate from the general coverage requirement, to weigh on every question the direction of not doing the thing the question is about. That direction is listed as an option when it is honestly viable and left out otherwise, with no dedicated place recording that it was considered.
 - A degree or parameter value counts as an axis like any other: the set lists a separate alternative for each degree or value at which the key advantage or drawback genuinely changes, and values whose trade-off is the same are merged into one option described by its range.
 - The what-it-is field drops its one-sentence limit for a content bound with no count: it holds only what the option is, meaning its position on each axis, and any reason for or against it belongs in the advantage and drawback fields. Its length follows from how many positions there are to state.
+- Postponing the decision is not a separate direction: it counts as one form of the "not in this milestone" direction, so a set lists at most one option for not doing the thing now, and the answer text says whether that means never or later.
 
 ## Out of Scope
 
