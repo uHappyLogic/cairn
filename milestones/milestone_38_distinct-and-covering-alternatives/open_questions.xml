@@ -310,6 +310,36 @@
   </open-question>
   <open-question id="Check run location">
     <question>Where does the one-off check run the alternatives pass so that each case is grounded in its historical project state while the repositories the cases come from receive no commits or other changes?</question>
+    <alternative id="Clone outside tree">
+      For each case, clone the source repository into a scratch directory outside this working copy (for example under the system temp directory), check out the parent of the answer commit, and run the alternatives pass there. The clone&apos;s rebuilt `hosts/claude` plugin is loaded explicitly, and the clone is deleted once its set has been read.
+      <advantage>The source repository is only read. Its working tree, refs, and object store never change, and the pass&apos;s own `Alternatives-annotation:` commits land in the throwaway clone. The pass runs exactly as shipped, orchestrator included, grounded in a full historical tree with its history, and no ancestor directory adds cairn&apos;s own `CLAUDE.md` or `.claude/` settings to the grounding context.</advantage>
+      <drawback>Every case needs its own clone and checkout, spread over several source repositories, and the scratch location is picked by hand outside the gitignored `temp/`. Answer commits whose parent predates the XML split have no `open_questions.xml`, so the bare block has to be rebuilt inside each clone before the tool will run.</drawback>
+    </alternative>
+    <alternative id="Clone under temp">
+      Make the same per-case clone checked out at the answer commit&apos;s parent, but place it under this repository&apos;s gitignored `temp/` beside the benchmark material, and run the pass inside it.
+      <advantage>The source repositories are untouched, the pass commits only into its clone, and everything the check produces stays together with the extracted cases and verdicts in one ignored place. That place is already outside every committed artifact, as the privacy requirement demands.</advantage>
+      <drawback>A session started inside `temp/&lt;clone&gt;` sits below cairn&apos;s working copy, so cairn&apos;s `CLAUDE.md` and `.claude/` directory load as ancestor context. The historical project would be grounded with this repository&apos;s invariants mixed in, which can change what the enumerator treats as the project, and cairn&apos;s own cases would effectively be seen twice.</drawback>
+    </alternative>
+    <alternative id="Worktree off source">
+      Add a detached `git worktree` of each source repository at the answer commit&apos;s parent in a scratch directory, run the pass there, then remove the worktree and prune.
+      <advantage>It is the cheapest way to get a full historical checkout. No objects are copied and creation is near-instant, so re-running many cases, or a baseline beside them, stays fast.</advantage>
+      <drawback>A worktree shares the source repository&apos;s `.git`. Adding it writes administrative entries there, and the orchestrator&apos;s annotation commits become objects and reflog entries in the source&apos;s store until they are pruned or garbage-collected. That breaks the requirement that the source repositories receive no commits or other changes, and cleanup has to be trusted rather than being guaranteed by construction.</drawback>
+    </alternative>
+    <alternative id="Snapshot export">
+      Export only the parent commit&apos;s tree (for example with `git archive`) into a scratch directory outside this working copy, `git init` it with a single snapshot commit so the orchestrator can commit, and run the pass there.
+      <advantage>The source repository is only read, and the scratch copy carries no history, remote, or refs. It exposes the least private material and cannot pick up the eventual answer from later history. It is also lighter than a full clone when many cases share one large repository.</advantage>
+      <drawback>With no history, any grounding that would look at earlier commits or the milestone&apos;s own past finds nothing, so the re-run sees a thinner project than the original pass did. The per-case set-up (export, init, commit, rebuilding the bare block) is scripting the check must own.</drawback>
+    </alternative>
+    <alternative id="Read via git show">
+      Materialize no project copy. Place only the rebuilt milestone directory, holding the bare block and the parent&apos;s `requirements.md`, in a scratch directory. Dispatch the alternatives subagent directly, with no orchestrator and so no commit, and have it read every other historical file through read-only `git -C &lt;source&gt; show &lt;parent&gt;:&lt;path&gt;`.
+      <advantage>No clone, worktree, or checkout is made, and nothing commits anywhere. The source repositories are touched only by read-only git plumbing, and set-up per case is just the one milestone directory.</advantage>
+      <drawback>It changes the agent&apos;s grounding from &quot;read the working tree&quot; to an instructed git-show route, so the check tests a modified procedure rather than the shipped one. An agent that reads the live source tree by habit would see state from after the answer, possibly including the answer itself, which would contaminate the result.</drawback>
+    </alternative>
+    <alternative id="Ungrounded fixture">
+      Drop grounding in the historical project. Run the pass in one scratch fixture that holds only a milestone directory per case (the question block with its alternatives stripped, plus the parent&apos;s `requirements.md`), so the enumerator reasons from the question and milestone prose alone.
+      <advantage>It is the simplest and cheapest setup with the strongest isolation. One fixture serves every case, nothing from the source repositories is copied beyond two milestone files, and the orchestrator&apos;s commits land only in the fixture.</advantage>
+      <drawback>It measures enumeration without the project reading that the procedure&apos;s step 1 requires. Missing directions that the real project would have made obvious, such as a section whose facts are already owned elsewhere, may not come up, so a pass or a fail says little about how the shipped pass behaves.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Check match judgment">
     <question>Who decides whether a re-run alternative set contains the direction the historical answer took: the agent carrying out the check, or the user reviewing the sets?</question>
