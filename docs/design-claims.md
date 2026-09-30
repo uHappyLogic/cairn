@@ -36,10 +36,13 @@ the other tests yet.
 
 ### 4. Advice comes from the live project and shows its sources.
 
-- **Design:** The recommender reads the project, not its memory. It gives 2 to
-  4 real alternatives, each with one advantage and one drawback. It gives one
-  recommendation with a direct reason. It names each principle it applied and
-  each sibling recommendation it used.
+- **Design:** The recommender reads the project, not its memory. Its real
+  alternatives are distinct and cover the decision. Each two alternatives are
+  different in substance. Together they cover the full decision, not only the
+  words of the question. This includes the option not to do the thing, when
+  that option is possible. Each alternative has one advantage and one drawback.
+  It gives one recommendation with a direct reason. It names each principle it
+  applied and each sibling recommendation it used.
 - **Metric:** Judge score for alternative quality, and the count of
   recommendations without a clear option.
 

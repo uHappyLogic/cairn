@@ -113,3 +113,19 @@ Run the one-off check over the fixed re-run and control cases: each case in a sc
 - `uv run scripts/build_hosts.py --check` passes on the rebuilt `hosts/claude/` and `hosts/antigravity/` trees.
 
 ---
+
+## State New Rules In Skill Reference And Claims
+
+Update `docs/skill-reference.md` to state the enumeration rules briefly in the `discuss-open-question`, `provide-alternatives-to-all-open-questions`, and alternatives-subagent entries and the one-axis rule in the `review-milestone-requirements` entry, and rewrite claim 4's Design in `docs/design-claims.md` to say the alternatives are distinct and cover the decision, with no count and its Metric line left as it is. Both pages otherwise still describe the retired count guideline. It is verified by reading those entries against the final runtime wording, finding no count guideline for alternatives left in either page, and confirming `docs/workflow.md` is unedited.
+
+**Verified:**
+
+- The `discuss-open-question` entry of `docs/skill-reference.md` no longer says "2–4": a bare block's alternatives are enumerated through `alternatives-procedure.md`, stated briefly as axes named first, each option a position on them, the set distinct (every two options differ in substance on an axis) and covering (the underlying decision rather than the question's wording, not doing the thing included where honestly viable), with no count guideline.
+- The `provide-alternatives-to-all-open-questions` entry states the same rules briefly as the ones every subagent enumerates under, with the set's size following from its axes and their viable combinations, and says the orchestrator itself states and checks none of them, matching the orchestrator's SKILL.md.
+- The `provide-alternatives-to-open-question` (subagent) entry states the rules as `alternatives-procedure.md` step 2 now words them: axes first (approaches, degrees or values where the trade-off changes, premises the wording assumes, a none position on every axis), not doing the thing weighed on every question with postponing as one form of it, options as positions on every axis with every combination weighed and each viable one described, no sibling-owned axis varied and such a dependence named as a condition in the drawback, the distinct and covering tests, no count guideline, and a what-it-is text holding only the option's axis positions.
+- The `review-milestone-requirements` entry states the one-axis rule as step 3 words it: each question asks one choice, a gap holding two becomes two questions, choices that constrain each other so not every pairing is viable are one multi-axis question, and no detection test is prescribed.
+- Claim 4's Design in `docs/design-claims.md` says the alternatives are distinct and cover the decision (each two different in substance, covering the full decision and not only the question's words, including not doing the thing where possible), carries no count, and keeps its one-advantage-one-drawback, recommendation, and citation sentences; its Metric line is byte-for-byte unchanged.
+- A search of both pages for `2–4`, `2 to 4`, `two to four`, and `typically` finds no count guideline for alternatives, and neither page carries any figure or detail from the benchmark data.
+- `git diff --quiet docs/workflow.md` succeeds, so `docs/workflow.md` is unedited, and `CLAUDE.md` is untouched.
+
+---

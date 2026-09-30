@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## State New Rules In Skill Reference And Claims
-
-Update `docs/skill-reference.md` to state the enumeration rules briefly in the `discuss-open-question`, `provide-alternatives-to-all-open-questions`, and alternatives-subagent entries and the one-axis rule in the `review-milestone-requirements` entry, and rewrite claim 4's Design in `docs/design-claims.md` to say the alternatives are distinct and cover the decision, with no count and its Metric line left as it is. Both pages otherwise still describe the retired count guideline. It is verified by reading those entries against the final runtime wording, finding no count guideline for alternatives left in either page, and confirming `docs/workflow.md` is unedited.
-
----
-
 ## Lower Alternatives Pass Effort In Usage Chains
 
 In `docs/ways-of-using-cairn.md`, move every `provide-alternatives-to-all-open-questions` line from `--effort xhigh` to `--effort high` on `opus` and change each prose sentence naming that line's effort with it, so the page shows the setting the alternatives pass actually runs at. It is verified by no alternatives-pass line or sentence on the page naming `xhigh`, with every other chain line's settings unchanged.
