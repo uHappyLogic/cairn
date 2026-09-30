@@ -129,3 +129,16 @@ Update `docs/skill-reference.md` to state the enumeration rules briefly in the `
 - `git diff --quiet docs/workflow.md` succeeds, so `docs/workflow.md` is unedited, and `CLAUDE.md` is untouched.
 
 ---
+
+## Lower Alternatives Pass Effort In Usage Chains
+
+In `docs/ways-of-using-cairn.md`, move every `provide-alternatives-to-all-open-questions` line from `--effort xhigh` to `--effort high` on `opus` and change each prose sentence naming that line's effort with it, so the page shows the setting the alternatives pass actually runs at. It is verified by no alternatives-pass line or sentence on the page naming `xhigh`, with every other chain line's settings unchanged.
+
+**Verified:**
+
+- All three `provide-alternatives-to-all-open-questions` lines in `docs/ways-of-using-cairn.md` (Starting a milestone, mixed-agent review, stuck milestone) read `--model "opus" --effort high`.
+- The three prose sentences naming the alternatives line's effort (in the Starting a milestone, mixed-agent review, and stuck-milestone sections) now say `opus` at `--effort high`.
+- `grep -n xhigh docs/ways-of-using-cairn.md` finds only the `--effort` legend bullet and the three `complete-all-tasks` lines, so no alternatives-pass line or sentence names `xhigh`.
+- The diff against the previous page touches only those six lines; every other chain line's host, model, and effort is unchanged.
+
+---

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Lower Alternatives Pass Effort In Usage Chains
-
-In `docs/ways-of-using-cairn.md`, move every `provide-alternatives-to-all-open-questions` line from `--effort xhigh` to `--effort high` on `opus` and change each prose sentence naming that line's effort with it, so the page shows the setting the alternatives pass actually runs at. It is verified by no alternatives-pass line or sentence on the page naming `xhigh`, with every other chain line's settings unchanged.
-
----
-
 ## Add Distinct And Covering Invariant Bullet
 
 Add one dedicated bullet to the invariants section of `CLAUDE.md` explaining why an alternative set must be distinct and covering (every two options differ in substance on an axis, and the set covers the underlying decision, including dropping the thing where viable), why the "two to four" count guideline was removed and must not be restored, why each option states its axis positions, and how the one-axis authoring rule in `review-milestone-requirements` stops the set from growing. It records the rationale the runtime files leave out, stating the rule and its generic failure patterns without measurement figures. It is verified by reading the bullet against the final runtime wording and confirming it carries no figure and nothing from the benchmark data.
