@@ -1,1 +1,50 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Codex manifest location">
+    <question>Codex&apos;s plugin documentation describes a root plugin.json as the portable manifest and .codex-plugin/plugin.json as a compatibility fallback, while every plugin in Codex&apos;s own curated marketplace keeps its manifest at .codex-plugin/plugin.json and none keeps one at the plugin root. Where should the Codex host tree keep its plugin manifest?</question>
+  </open-question>
+  <open-question id="Codex install route">
+    <question>Claude Code users install cairn by adding the distribution repository as a marketplace, and Antigravity users by extracting it into a fixed workspace directory. Codex offers `codex plugin marketplace add &lt;owner/repo&gt;` followed by `codex plugin add &lt;plugin&gt;@&lt;marketplace&gt;`, and its curated marketplace declares itself in a .agents/plugins/marketplace.json file. By what route should a Codex user install cairn from the uHappyLogic/cairn-codex repository?</question>
+  </open-question>
+  <open-question id="Codex plugin-root literal">
+    <question>Every rendered skill, agent, and shared procedure reaches the plugin&apos;s Python tools and shared procedures through a per-host literal that replaces the {{PLUGIN_ROOT}} placeholder: an environment variable on Claude Code, a workspace-relative path on Antigravity. Codex&apos;s documentation names a PLUGIN_ROOT environment variable, but nothing yet shows that it is set for the shell commands a skill runs or inside a subagent. What literal should the Codex host definition use for the plugin root?</question>
+  </open-question>
+  <open-question id="Codex agent form and registration">
+    <question>Cairn&apos;s two dispatched agents are Markdown files with YAML frontmatter under the plugin&apos;s agents/ directory. Codex defines custom subagents as TOML files (name, description, developer_instructions) looked up in the project&apos;s .codex/agents/ or the user&apos;s ~/.codex/agents/, its documentation does not say a plugin can ship them, and no plugin in its curated marketplace ships one. On Codex, in what form should the plugin carry each agent&apos;s instructions, and by what step, if any, should they become subagents a cairn skill can spawn?</question>
+  </open-question>
+  <open-question id="Host-specific wording mechanism">
+    <question>The runtime layer under core/ is written once for every host, and the build applies only three text operations to it: plugin-root replacement, regex deletion, and frontmatter key stripping. Where a core/ sentence cannot read the same on Codex as on the other hosts, for example the two dispatch sites that name the Agent tool and a cairn:&lt;agent&gt; registry name, by what mechanism should the difference reach the Codex tree?</question>
+  </open-question>
+  <open-question id="Codex context file">
+    <question>Cairn&apos;s skills read the project&apos;s environment context from CLAUDE.md, the bootstrap skill writes the Milestone Workflow section into it, and finish-current-milestone updates it, while Codex&apos;s project instruction file is AGENTS.md. Which file should the Codex tree&apos;s skills read and write as the project&apos;s context file?</question>
+  </open-question>
+  <open-question id="Codex skill invocation form">
+    <question>Cairn&apos;s skills, READMEs, and docs name every skill in slash form (/skill-name, or /cairn:skill-name under the plugin namespace), while Codex&apos;s documentation gives $skillname or the /skills picker as the explicit invocation, and nothing yet shows how Codex names a plugin&apos;s skills. In what form should the Codex tree and the Codex installation instructions name cairn&apos;s skills?</question>
+  </open-question>
+  <open-question id="Codex headless coverage">
+    <question>docs/ways-of-using-cairn.md documents headless chains as `claude -p` or `agy -p` lines, explains each flag per host, and gives a one-line swap between those two binaries. Codex runs non-interactively as `codex exec` with different flag names and no effort flag. How much Codex coverage should that page gain?</question>
+  </open-question>
+  <open-question id="Supported Codex surfaces">
+    <question>Codex ships as a command-line tool, a desktop app, and an IDE extension, and this milestone&apos;s live verification runs on the command-line tool only. Which Codex surfaces should the README and the distribution repository say cairn supports?</question>
+  </open-question>
+  <open-question id="Codex sandbox requirements">
+    <question>Every file-changing cairn skill commits to git and runs python3 tools that live in the installed plugin directory, outside the project workspace, and Codex runs model-issued shell commands under a sandbox and approval policy (read-only, workspace-write, or full access). What sandbox and approval configuration should cairn&apos;s Codex instructions tell users to run under?</question>
+  </open-question>
+  <open-question id="Subagent thread cap">
+    <question>The alternatives pass dispatches one subagent per open question, all at once where the host allows parallel dispatch and one after another where it does not, with no cap. Codex runs subagents in parallel but limits how many subagent threads a session may hold open at once. How should the pass behave on a host that allows parallel dispatch only up to a limit?</question>
+  </open-question>
+  <open-question id="Existing-host preservation bar">
+    <question>The goal lets core/ and the build change where Codex requires it, provided the Claude Code and Antigravity trees keep their behaviour. By what bar is that judged: must those two rendered trees stay byte-identical, or may their text change, and if it may, what check shows their behaviour is kept?</question>
+  </open-question>
+  <open-question id="Unverified behaviour probes">
+    <question>Several Codex behaviours the design rests on are unverified on this machine: whether PLUGIN_ROOT is set for the commands a skill runs, whether a plugin-shipped agent can be spawned by name, how a plugin&apos;s skills are invoked, and whether a finished subagent accepts a follow-up message. The only Codex account available is free tier, so each live run spends a scarce allowance. At what point in the milestone should these behaviours be established by live Codex runs?</question>
+  </open-question>
+  <open-question id="Verification workspace">
+    <question>The live Codex verification installs the plugin, runs one inline skill, and dispatches each of the two agents once, and both dispatching skills change and commit milestone files in the project they run in. In what project should that verification run?</question>
+  </open-question>
+  <open-question id="Quota exhaustion fallback">
+    <question>The live Codex verification runs on a free-tier account whose usage limit may be reached before the plugin install, the inline skill, and both agent dispatches have all been exercised. What should the milestone do if the limit stops the verification partway?</question>
+  </open-question>
+  <open-question id="Traffic token extension">
+    <question>The traffic-badge workflow in each distribution repository pushes with the TRAFFIC_TOKEN secret, a fine-grained token scoped to exactly the three existing repositories and kept in no local copy, so only the maintainer can extend it to uHappyLogic/cairn-codex and set the secret there. How should the milestone treat that maintainer-only step?</question>
+  </open-question>
+</open-questions>
