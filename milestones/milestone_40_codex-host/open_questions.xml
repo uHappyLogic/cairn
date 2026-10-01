@@ -1,6 +1,26 @@
 <open-questions>
   <open-question id="Codex manifest location">
     <question>Codex&apos;s plugin documentation describes a root plugin.json as the portable manifest and .codex-plugin/plugin.json as a compatibility fallback, while every plugin in Codex&apos;s own curated marketplace keeps its manifest at .codex-plugin/plugin.json and none keeps one at the plugin root. Where should the Codex host tree keep its plugin manifest?</question>
+    <alternative id="Dot-directory manifest">
+      The Codex tree keeps its manifest only at `.codex-plugin/plugin.json`. It is a template at `scripts/hosts/codex/.codex-plugin/plugin.json`, rendered to the same relative path the way the Claude host renders `.claude-plugin/plugin.json`. The Codex tree has no `plugin.json` at its root.
+      <advantage>This is the one location that shipped plugins are known to use. All 62 plugins in the locally cached `openai-curated` marketplace keep their manifest there and none keeps one at the root. The installed 0.159.3 binary also names it in every manifest lookup, including the remote-bundle error &quot;missing .codex-plugin/plugin.json or valid Agent Plugin manifest&quot;. It follows the same dot-directory pattern as the Claude host definition and needs no build change.</advantage>
+      <drawback>Codex&apos;s plugin build page calls this location a compatibility fallback, not the portable form. If a later Codex release stops reading it, the tree has to move its manifest, and that would be a breaking change for anyone who already installed it.</drawback>
+    </alternative>
+    <alternative id="Root manifest">
+      The Codex tree keeps its manifest only at a root `plugin.json`. It is a template at `scripts/hosts/codex/plugin.json`, rendered to the tree root in the same way as the Antigravity host&apos;s root `plugin.json`. The tree has no `.codex-plugin/` directory.
+      <advantage>Codex&apos;s documentation names this as the portable manifest. The 0.159.3 binary lists the bare `plugin.json` ahead of the `.codex-plugin/`, `.claude-plugin/` and `.cursor-plugin/` candidates. So this choice follows the documented direction and does not lean on a path the docs call a fallback.</advantage>
+      <drawback>No plugin in Codex&apos;s own curated marketplace keeps its manifest here, so cairn would be using the least tested route. The binary checks a root manifest as a &quot;valid Agent Plugin manifest&quot;, and its required keys are not established on this machine. Until a `codex plugin add` against the built tree succeeds, nothing shows that Codex installs a plugin laid out this way.</drawback>
+    </alternative>
+    <alternative id="Both locations">
+      The Codex tree carries the same manifest at both `.codex-plugin/plugin.json` and a root `plugin.json`. They come from two templates in `scripts/hosts/codex/` with identical content. The build&apos;s `manifest-version` check already validates the version in both because it covers every rendered JSON template.
+      <advantage>The plugin installs whichever location a given Codex release reads first, whether that is the curated-marketplace convention or the documented portable form. A later Codex change in either direction then needs no migration.</advantage>
+      <drawback>Two hand-kept copies of one manifest have to change together. The build checks only that their `version` values match, so the name, description and `skills` key can drift apart without any error. Which copy Codex actually reads depends on lookup precedence the docs do not state, so one file is always dead text that readers and future editors may take for the live one.</drawback>
+    </alternative>
+    <alternative id="Decide after local install test">
+      The milestone does not pick a location yet. It first builds candidate Codex trees and installs each one locally with `codex plugin marketplace add` against a local path, then `codex plugin add`. That needs no model call. Whichever single location, or pair of locations, Codex accepts and resolves is then chosen.
+      <advantage>The choice rests on what the installed Codex does, not on documentation and marketplace convention that disagree. The test uses only CLI commands that need no model call, so it spends nothing from the free-tier allowance.</advantage>
+      <drawback>Planning work that depends on the manifest path waits until the Codex tree and a local marketplace file exist to test against. Whether this test can run that early depends on the axes that two sibling questions own: the install route (&quot;Codex install route&quot;) and when unverified behaviour is checked (&quot;Unverified behaviour probes&quot;). A passing local install also proves only what this one CLI version accepts, not what later releases will keep accepting.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Codex install route">
     <question>Claude Code users install cairn by adding the distribution repository as a marketplace, and Antigravity users by extracting it into a fixed workspace directory. Codex offers `codex plugin marketplace add &lt;owner/repo&gt;` followed by `codex plugin add &lt;plugin&gt;@&lt;marketplace&gt;`, and its curated marketplace declares itself in a .agents/plugins/marketplace.json file. By what route should a Codex user install cairn from the uHappyLogic/cairn-codex repository?</question>
