@@ -104,5 +104,9 @@ The plugin carries each agent's instructions as the Markdown file `core/` holds,
 
 Only the Codex tree names `AGENTS.md` in place of `CLAUDE.md`, everywhere it occurs. Its skills and `complete-procedure.md` read `AGENTS.md` for environment context, its bootstrap creates `AGENTS.md` or appends the Milestone Workflow section to it and points at Codex's `/init`, and its `finish-current-milestone` updates `AGENTS.md`; it never reads or writes `CLAUDE.md`. The Claude Code and Antigravity trees keep `CLAUDE.md` unchanged. The workflow section then reaches every Codex session and the skills read the file the host maintains; a mixed-host project can link the two files.
 
+### Codex headless coverage
+
+`docs/ways-of-using-cairn.md` extends its "Notation and flags" section so that Codex is a third binary. It names `codex exec "<prompt>"` as the Codex form of a line and gives each flag its Codex counterpart or says it has none: the permission bypass maps to `--dangerously-bypass-approvals-and-sandbox`, `--model` has a counterpart in `-m`, `--effort` has no flag, and `--add-dir` exists under the same name. The one-line swap rule is extended so a line moves to Codex by changing the binary, dropping `--model` and `--effort` to run at the account's defaults (as every agy line already does), and replacing the permission flag. No chain gets a Codex line, and the page names no Codex model id or effort level.
+
 ## Out of Scope
 
