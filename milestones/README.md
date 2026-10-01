@@ -13,9 +13,18 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_39_literal-shell-commands-without-variables/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 39 — Literal shell commands without variables
+
+- `core/shared/commit-procedure.md` now states, next to both its unchanged example commands, that every path is written out on the command line as its own argument and none is held in a shell variable, so a shell that does not split an unquoted variable no longer breaks the dirty-own-path check or the `git add`.
+- The `complete-task` agent's staging contract restates that literal-path rule word for word, since the agent reads no commit procedure and stages the largest path set in the workflow.
+- The five multi-call open-question tool sites (`review-milestone-requirements`, both annotating passes, the answer sweep, and `answer-procedure.md`) each gain one clause on their tool-contract sentence requiring the full command on every call, never through a variable, alias, or function of the runner's own.
+- The answer sweep's clause covers the per-question calls of the procedures it follows, so `answer-with-recommendation-procedure.md` stays unchanged, and the `provide-alternatives-to-open-question` agent carries the same clause because it reads only its own file.
+- `CLAUDE.md` gains one invariant bullet recording the shell-splitting failure, both rules and their sites, why the fix is prose rather than a commit tool, and the quoted capture snapshot as outside the rule.
+- No page under `docs/` changed, and the rebuilt `hosts/` trees pass `--check` with both pytest runs passing.
 
 ### Milestone 38 — Distinct and covering alternatives
 
@@ -422,3 +431,4 @@ Current milestone: `milestones/milestone_39_literal-shell-commands-without-varia
 | 36 | Non-interactive milestone activation | `milestones/milestone_36_non-interactive-milestone-activation/` |
 | 37 | Mechanical milestone definition | `milestones/milestone_37_mechanical-milestone-definition/` |
 | 38 | Distinct and covering alternatives | `milestones/milestone_38_distinct-and-covering-alternatives/` |
+| 39 | Literal shell commands without variables | `milestones/milestone_39_literal-shell-commands-without-variables/` |
