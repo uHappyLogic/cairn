@@ -96,5 +96,9 @@ The Codex tree renders `core/`'s slash-form skill references unchanged, and `cor
 
 The live verification runs in a new, minimal git repository created for the run in a temporary directory outside the cairn checkout. Before any model call it is seeded without a model, by running the milestone-definition tool and the open-question tool directly, so it holds one milestone with one bare open question and one small task. The verification's commits stay in that repository, which is deleted afterwards; the cairn repository keeps only the record the completion procedure writes into `TASKS_DONE.md`, and no seed or run script is kept.
 
+### Codex agent form and registration
+
+The plugin carries each agent's instructions as the Markdown file `core/` holds, in the Codex tree's `agents/` directory. Codex never registers anything: there is no TOML file, no registration step, and no format conversion in the build. On Codex the dispatch sites spawn Codex's default (generic) subagent and give it a prompt that tells it to read and follow the plugin's agent file, using the plugin-root path, followed by the task heading or Short Title as today. That instructions path is the one value the Codex dispatch prompt adds, because the subagent has no other way to learn it.
+
 ## Out of Scope
 
