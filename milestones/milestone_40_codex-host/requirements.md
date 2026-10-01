@@ -56,5 +56,9 @@ The Codex tree keeps its manifest only at `.codex-plugin/plugin.json`, a templat
 
 The `uHappyLogic/cairn-codex` distribution repository is a marketplace whose plugin sits in a subdirectory, the layout Codex's curated marketplace uses. The repository root holds `.agents/plugins/marketplace.json` (marketplace name `cairn`) with one `cairn` entry whose `source` is `{"source": "local", "path": "./plugins/cairn"}`. The Codex host definition's `[layout]` maps all four `core/` directories, and the manifest, under `plugins/cairn/`, so the plugin root is `plugins/cairn/` and the manifest lands at `plugins/cairn/.codex-plugin/plugin.json`; README, CONTRIBUTING, LICENSE and the traffic workflow stay at the repository root. Users install at user level with `codex plugin marketplace add uHappyLogic/cairn-codex`, then `codex plugin add cairn@cairn`, and no other install route is documented. This copies the only marketplace layout Codex has been seen to load, so the install rests on no unproven self-referencing source path, at the cost of one extra directory level.
 
+### Supported Codex surfaces
+
+The README and the distribution repository name the Codex command-line tool as the supported surface and say nothing about the desktop app or the IDE extension, neither claiming nor ruling them out. Every word of the support claim is then backed by the milestone's live verification and matches the CLI-shaped install commands.
+
 ## Out of Scope
 
