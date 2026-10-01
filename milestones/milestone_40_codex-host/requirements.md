@@ -68,5 +68,9 @@ Interactive sessions run under Codex's workspace-write sandbox with the on-reque
 
 The bar is strict identity. Measured against the trees as released at `Release: 1.7.6` (5305f43), the milestone leaves every file under `hosts/claude/` and `hosts/antigravity/` byte-identical: `git diff 5305f43 -- hosts/claude hosts/antigravity` is empty at the end of the milestone, apart from the version slots a later release commit writes. No other evidence is needed, because identical text cannot change behaviour. Any change to `core/` or the build must render to the same bytes for those two hosts, so every Codex difference reaches only the Codex tree.
 
+### Unverified behaviour probes
+
+The unverified Codex behaviours are settled as far as possible without a model call, before the decisions that depend on them: from the openai/codex source at the installed 0.159.3 version, and from Codex CLI subcommands that call no model (`codex plugin marketplace add` and `codex plugin add` on a fixture, `codex plugin list`, and `codex debug prompt-input`, which renders the model-visible prompt input and so shows how installed plugin skills and agents are presented). The findings go into the starting state. The goal's end-of-milestone verification run is the only live session; the runtime-only behaviours that non-model evidence cannot settle (whether a finished subagent accepts a follow-up message, how a model resolves a spawn by name) stay unconfirmed until that run, and the design avoids leaning on them.
+
 ## Out of Scope
 
