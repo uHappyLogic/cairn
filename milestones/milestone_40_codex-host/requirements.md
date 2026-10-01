@@ -72,5 +72,9 @@ The bar is strict identity. Measured against the trees as released at `Release: 
 
 The unverified Codex behaviours are settled as far as possible without a model call, before the decisions that depend on them: from the openai/codex source at the installed 0.159.3 version, and from Codex CLI subcommands that call no model (`codex plugin marketplace add` and `codex plugin add` on a fixture, `codex plugin list`, and `codex debug prompt-input`, which renders the model-visible prompt input and so shows how installed plugin skills and agents are presented). The findings go into the starting state. The goal's end-of-milestone verification run is the only live session; the runtime-only behaviours that non-model evidence cannot settle (whether a finished subagent accepts a follow-up message, how a model resolves a spawn by name) stay unconfirmed until that run, and the design avoids leaning on them.
 
+### Quota exhaustion fallback
+
+If the free-tier limit stops the live verification partway, the milestone stays open and nothing is finished or released while any of the four checks (the plugin install, the inline skill, and one dispatch of each agent) is still unrun. Evidence from the checks that already passed is kept as valid. When the limit resets, verification picks up at the first unrun check, and this repeats until all four have passed.
+
 ## Out of Scope
 

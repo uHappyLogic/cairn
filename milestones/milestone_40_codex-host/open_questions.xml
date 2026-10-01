@@ -1,48 +1,4 @@
 <open-questions>
-  <open-question id="Quota exhaustion fallback">
-    <question>The live Codex verification runs on a free-tier account whose usage limit may be reached before the plugin install, the inline skill, and both agent dispatches have all been exercised. What should the milestone do if the limit stops the verification partway?</question>
-    <recommendation option="Resume after reset, hard gate">It keeps the goal&apos;s full verification bar while spending the least quota, repeating only checks that have not passed, and it matches how a failed completion already leaves work resumable rather than redone.</recommendation>
-    <alternative id="Resume after reset, hard gate">
-      The milestone stays open and nothing is finished or released while any of the four checks is still unrun. The four checks are the plugin install, the inline skill, and one dispatch of each agent. Evidence from the checks that already passed is kept as valid. When the free-tier limit resets, verification picks up at the first unrun check, and this repeats until all four have passed.
-      <advantage>It keeps the goal&apos;s full verification bar and spends the least quota on the way. Only checks that need the model are ever repeated: the install goes through `codex plugin` command-line subcommands rather than a model turn, and the passed checks are not run again. It also matches how a failed completion task already behaves, leaving the work in a state that can be resumed rather than redone.</advantage>
-      <drawback>How long the milestone and the next release wait is decided by the account&apos;s reset schedule, not by the work. If the inline skill or an agent dispatch alone uses more than one window&apos;s allowance, the milestone can never finish on the free tier.</drawback>
-    </alternative>
-    <alternative id="Full re-run after reset, hard gate">
-      The milestone stays open and nothing is finished or released. Results from a stopped run are discarded. After the limit resets, the whole verification runs again from a fresh install as one unbroken run, and it counts only if all four checks pass inside that single run.
-      <advantage>The evidence comes from one build, one install, and one session. No pass is pieced together from runs that may have used different builds of the tree or different installed state.</advantage>
-      <drawback>Every attempt spends quota on checks that already passed. A run that does not fit one window will fail the same way every time, so the gate can lock itself on the free tier. How likely that is depends on how much of the scarce allowance earlier live runs have already used, and when those runs happen belongs to the &quot;Unverified behaviour probes&quot; question.</drawback>
-    </alternative>
-    <alternative id="Buy quota to finish now, hard gate">
-      The milestone stays open and nothing is finished or released. Instead of waiting for a reset, the unrun checks are finished right away on extra capacity: a paid Codex plan, another account, or API-key billing. The checks that already passed are kept.
-      <advantage>The full verification bar is met without waiting on the reset schedule, so the release-ready end state arrives as soon as the work is done.</advantage>
-      <drawback>The milestone takes on a cost and a dependency on another account, which the goal set out to avoid by sizing the run for a free-tier account. Only the maintainer can provide that capacity, so this step cannot run unattended.</drawback>
-    </alternative>
-    <alternative id="Time-boxed resume, then accept partial">
-      After the limit stops a run, verification resumes at the first unrun check, but only for a fixed number of resets. If checks are still unrun after that, the milestone finishes and is released anyway. The unrun checks are recorded in the milestone&apos;s records as unverified, and the Codex README and installation text mark the capabilities they cover as not yet live-verified. Their verification moves to later work.
-      <advantage>It makes a real attempt at the full bar but caps how long the release can wait. Every outcome ends in a defined state, either fully verified or partial with the gap stated.</advantage>
-      <drawback>It adds a time limit someone has to choose and keep track of. If the limit runs out, cairn ships a Codex host whose least-established behaviour, the agent dispatches that the limit is most likely to cut, may not work for the users who install it.</drawback>
-    </alternative>
-    <alternative id="Accept partial, disclose in docs">
-      When the limit stops a run, verification ends there. The milestone finishes and is released with the checks that passed recorded as verified. The unrun checks are recorded as unverified in the milestone&apos;s records, and the Codex README and installation text mark the capabilities they cover as not yet live-verified. Live verification of those checks is left to a later milestone.
-      <advantage>Quota never blocks a release, so the Claude Code and Antigravity releases never wait on a free-tier Codex reset. Users are told plainly which Codex behaviour is unproven.</advantage>
-      <drawback>The milestone gives up its own end state of a Codex host verified end to end. The checks most likely to be cut are the agent dispatches, which the whole design is least sure about, so the shipped host may be missing exactly the part that sets cairn&apos;s pipeline apart.</drawback>
-    </alternative>
-    <alternative id="Accept partial, record only">
-      When the limit stops a run, verification ends there. The milestone finishes and is released, and the unrun checks are recorded as unverified only in the milestone&apos;s own records (its completed-task entries and decisions). The Codex README and installation text claim the same support as the other hosts and are not changed to note the gap.
-      <advantage>The user-facing docs stay uniform across hosts, and no caveat text needs removing later once the gap is closed.</advantage>
-      <drawback>The published docs claim Codex behaviour that no one has run, and the only record of the gap sits in milestone files that a Codex user never reads.</drawback>
-    </alternative>
-    <alternative id="Finish but withhold Codex release">
-      When the limit stops a run, the milestone still finishes with its code and docs complete and the unrun checks recorded as unverified. The Codex tree is held back from distribution: `uHappyLogic/cairn-codex` is neither published to nor advertised until a later run completes the verification. The Claude Code and Antigravity trees are released as usual.
-      <advantage>No unverified Codex host reaches users, and the work on the other two hosts is not held up.</advantage>
-      <drawback>The release skill lists every directory under `scripts/hosts/` and stops on a missing distribution repository. Holding back one host therefore needs either a change to the release skill or an empty or stub `cairn-codex` repository. The milestone also ends short of the release-ready state its goal names, and the root README&apos;s Codex installation section has to stay hidden or point at nothing.</drawback>
-    </alternative>
-    <alternative id="No rule now, decide when hit">
-      The milestone records no fallback in advance. If the limit stops verification partway, the maintainer chooses what to do at that moment, based on how far the run got.
-      <advantage>No time is spent on a case that may never happen, and the eventual choice can use what the partial run actually showed.</advantage>
-      <drawback>Whatever runs the verification task, such as the `complete-task` agent or a headless chain, has no rule for this case, so it can only stop with a failure. The milestone&apos;s verification bar then stays unclear exactly when someone needs to know it.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Traffic token extension">
     <question>The traffic-badge workflow in each distribution repository pushes with the TRAFFIC_TOKEN secret, a fine-grained token scoped to exactly the three existing repositories and kept in no local copy, so only the maintainer can extend it to uHappyLogic/cairn-codex and set the secret there. How should the milestone treat that maintainer-only step?</question>
     <recommendation option="Release pre-flight gate, one regenerated token">The check sits where the missing-repository stop already is, just before a tree is published into a repository whose workflow needs the secret, names no host so it covers every later one, keeps the single-token convention with one expiry to watch, and puts no task in the list that the completion agent could only fail.</recommendation>
