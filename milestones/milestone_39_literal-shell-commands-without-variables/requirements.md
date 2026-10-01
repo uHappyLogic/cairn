@@ -39,6 +39,7 @@ The rationale homes are the bullets under `## Invariants to preserve when editin
 ### Literal-path rule
 
 - **Agent staging.** The literal-path rule extends to the `complete-task` agent's staging site, stated directly in the "Staging contract" section of `core/agents/complete-task.md`: its existing `git add` sentence ("naming each path explicitly") gains the same shell-neutral wording the commit procedure gets — each path appears literally on the command line, never through a shell variable. The commit procedure keeps its own statement of the rule, the two sentences are kept in matching wording, and the agent reads no extra file. The agent stages the largest path set in the workflow and a wrong staging there is silent; restating follows the pattern already used for the `git add -A` ban in both files.
+- **Commit procedure examples.** Both example commands in `core/shared/commit-procedure.md` stay exactly as written, `git status --porcelain -- <PATHS>` in step 1 and `git add <PATHS>` in step 2. The literal-path rule goes in prose next to each command: every path is written out on the command line as its own argument, and none is held in a shell variable. Step 1 also gains the "naming each path explicitly" wording step 2 already has. The commands keep the PATHS name the Inputs section and every caller use, and no numbered-placeholder or concrete-instance example is added.
 
 ## Out of Scope
 
