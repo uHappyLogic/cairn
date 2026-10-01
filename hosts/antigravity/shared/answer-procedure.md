@@ -8,8 +8,10 @@ supplies the inputs below and wraps the result; this file describes only the rec
 itself — locate, analyse, fold, remove, cascade.
 
 Every read and write of `open_questions.xml` here is a call to the plugin's open-question
-tool, `python3 .agents/plugins/cairn/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`, that
-file's sole writer: a read prints the bare value asked for, a write prints nothing on
+tool, `python3 .agents/plugins/cairn/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`,
+written out in full on every call, never through a variable, alias, or function of your own
+defined to stand for the command or any part of it; the tool is that file's sole writer: a
+read prints the bare value asked for, a write prints nothing on
 success, and any failure is one `Error: <reason>` line on stderr with a non-zero exit and the
 document left byte-for-byte unchanged. Never edit `open_questions.xml` yourself.
 

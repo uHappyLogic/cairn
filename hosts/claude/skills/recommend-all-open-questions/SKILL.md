@@ -17,7 +17,9 @@ only party in this pass that changes `<MILESTONE_DIR>/open_questions.xml`, and e
 you make of it is a tool call — `embed` to write, `lift` to read back the lines the commit
 records, `sort` to reorder once at the end — never a direct edit; reading the document whole
 with the file-reading tool is for reasoning only, and every list, locate, or lift of a block
-is the tool's. It commits once per run — one `Recommendation-annotation: <milestone_id>`
+is the tool's, each call written out in full as its fenced block shows it, never through a
+variable, alias, or function of your own defined to stand for the command or any part of it.
+It commits once per run — one `Recommendation-annotation: <milestone_id>`
 commit whose body is one lifted line per annotated question — then sorts the document once,
 the annotated blocks first in the order the answer sweep will walk them, and commits that
 reorder as its own `Question-ordering: <milestone_id>` commit, a fixed end-of-run step of every

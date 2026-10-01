@@ -13,7 +13,9 @@ returns the `<alternative>` elements as the block's XML sub-elements, and the or
 the only party in this pass that changes the question document,
 `<MILESTONE_DIR>/open_questions.xml` — every read and write it makes of that document is a
 call to the plugin's open-question tool, `list` to gather and `embed` to write,
-never a direct read or edit. Alternatives are enumerated per question against the siblings as
+never a direct read or edit, and each call is written out in full as its fenced block shows
+it, never through a variable, alias, or function of your own defined to stand for the command
+or any part of it. Alternatives are enumerated per question against the siblings as
 scope only, so the dispatches are independent: they run together where the host allows it, each
 return is judged and embedded as it lands, and each embedded return is committed the moment it
 is written — one `Alternatives-annotation: <Short Title>` commit per annotated question, none for

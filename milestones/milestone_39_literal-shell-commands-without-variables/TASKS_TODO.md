@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Full-Command Clause to Five Tool Sites
-
-Add one clause to the tool-contract sentence in the opening paragraph of each of the five multi-call sites (`review-milestone-requirements`, `provide-alternatives-to-all-open-questions`, `recommend-all-open-questions`, `answer-all-open-questions-with-recommendation`, and `core/shared/answer-procedure.md`), along the lines of "write the full command shown on every call; never define a variable, alias, or function of your own to stand for it or any part of it", sitting next to the command where the sentence already spells it out and referring to the full command as shown in each fenced block where it does not. The answer sweep's clause is worded to cover every tool call the run makes, including the per-question calls of the procedures it follows (the lift procedure's `lift`, and `answer-procedure.md`'s `locate`, `remove`, and cascade `remove`), while `core/shared/answer-with-recommendation-procedure.md`, every fenced call, and the commands themselves stay untouched and the prose names no host, no shell, and not the plugin-root segment. Verified by finding exactly one such clause in each of the five files, the tool contract still one sentence per site, `hosts/` rebuilt, and `uv run scripts/build_hosts.py --check` passing.
-
----
-
 ## Add Full-Command Clause to Alternatives Agent
 
 Attach the same full-command clause, in the wording the five tool sites now carry, to the step-1 tool-contract sentence of `core/agents/provide-alternatives-to-open-question.md` ("You reach `open_questions.xml` through exactly two calls …"), stated once with neither fenced call annotated and the commands untouched, because the dispatched agent reads only its own file and its two calls share the command prefix a runner would shorten into a variable. Verified by comparing the clause against the five sites for matching wording, rebuilding `hosts/`, and `uv run scripts/build_hosts.py --check` passing.

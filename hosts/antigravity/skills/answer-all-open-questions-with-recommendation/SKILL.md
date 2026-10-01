@@ -18,7 +18,11 @@ every answer yourself, in this conversation, one question at a time in the order
 you, each answer committed before the next question is touched. You record **every pick as
 given** and never judge it — a pick is never re-weighed, replaced, or skipped on its merits.
 Every gather, order, re-check, and change of `open_questions.xml` is a call to the plugin's
-open-question tool; the one whole read of the document with the file-reading tool (step 2) is
+open-question tool, and every tool call the run makes — this skill's own and the per-question
+calls of the procedures it follows, the lift procedure's `lift` and the answer procedure's
+`locate`, `remove`, and cascade `remove` — is written out in full as its fenced block shows it,
+never through a variable, alias, or function of your own defined to stand for the command or
+any part of it; the one whole read of the document with the file-reading tool (step 2) is
 for reasoning only. It requires **no** clean-working-tree precondition: every commit is
 path-scoped to the milestone's two files.
 

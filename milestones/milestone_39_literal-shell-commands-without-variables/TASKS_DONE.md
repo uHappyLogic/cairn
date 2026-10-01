@@ -27,3 +27,18 @@ Extend the existing `git add` sentence ("naming each path explicitly") in the "S
 - `uv run scripts/build_hosts.py` rebuilt `hosts/claude/agents/complete-task.md` and `hosts/antigravity/agents/complete-task.md`, and `uv run scripts/build_hosts.py --check` passed.
 
 ---
+
+## Add Full-Command Clause to Five Tool Sites
+
+Add one clause to the tool-contract sentence in the opening paragraph of each of the five multi-call sites (`review-milestone-requirements`, `provide-alternatives-to-all-open-questions`, `recommend-all-open-questions`, `answer-all-open-questions-with-recommendation`, and `core/shared/answer-procedure.md`), along the lines of "write the full command shown on every call; never define a variable, alias, or function of your own to stand for it or any part of it", sitting next to the command where the sentence already spells it out and referring to the full command as shown in each fenced block where it does not. The answer sweep's clause is worded to cover every tool call the run makes, including the per-question calls of the procedures it follows (the lift procedure's `lift`, and `answer-procedure.md`'s `locate`, `remove`, and cascade `remove`), while `core/shared/answer-with-recommendation-procedure.md`, every fenced call, and the commands themselves stay untouched and the prose names no host, no shell, and not the plugin-root segment. Verified by finding exactly one such clause in each of the five files, the tool contract still one sentence per site, `hosts/` rebuilt, and `uv run scripts/build_hosts.py --check` passing.
+
+**Verified:**
+
+- Each of the five files (`core/skills/review-milestone-requirements/SKILL.md`, `core/skills/provide-alternatives-to-all-open-questions/SKILL.md`, `core/skills/recommend-all-open-questions/SKILL.md`, `core/skills/answer-all-open-questions-with-recommendation/SKILL.md`, `core/shared/answer-procedure.md`) carries exactly one full-command clause ("written out in full … never through a variable, alias, or function of your own defined to stand for the command or any part of it"), found once per file by grep.
+- Each clause is added to the existing tool-contract sentence in the file's opening paragraph, which stays one sentence; no new sentence and no copy elsewhere in the file.
+- In `review-milestone-requirements` and `answer-procedure.md` the clause sits directly after the spelled-out command; in the two annotating passes and the answer sweep it refers to the call "as its fenced block shows it".
+- The answer sweep's clause covers every tool call the run makes, naming this skill's own calls and the per-question calls of the procedures it follows: the lift procedure's `lift` and the answer procedure's `locate`, `remove`, and cascade `remove`.
+- `core/shared/answer-with-recommendation-procedure.md` is unchanged, no fenced call and no command line is changed (the diff touches only opening-paragraph prose), and the added prose names no host, no shell, and not the plugin-root segment.
+- `uv run scripts/build_hosts.py` rebuilt the five files in both `hosts/claude/` and `hosts/antigravity/`, and `uv run scripts/build_hosts.py --check` passed.
+
+---

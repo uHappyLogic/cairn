@@ -15,7 +15,7 @@ review → (discuss) → answer → review → answer → … → converged → 
 
 Each pass does three jobs: **reconcile** the existing questions against what's now decided, **surface** the new gaps, and report whether the requirements have **converged**.
 
-Every write this skill makes to `open_questions.xml`, and every listing of its blocks, is a call to the plugin's open-question tool, `python3 .agents/plugins/cairn/tools/open_questions.py <subcommand> <MILESTONE_DIR> …` — that file's sole writer, which owns the document's escaping and layout: a mutator prints nothing on success, `list` prints bare ids one per line, and any failure is one `Error: <reason>` line on stderr with a non-zero exit and the document left unchanged. Reading the document whole to reason over it is the one thing done directly, with the file-reading tool. Never edit `open_questions.xml` yourself.
+Every write this skill makes to `open_questions.xml`, and every listing of its blocks, is a call to the plugin's open-question tool, `python3 .agents/plugins/cairn/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`, written out in full on every call, never through a variable, alias, or function of your own defined to stand for the command or any part of it — the tool is that file's sole writer and owns the document's escaping and layout: a mutator prints nothing on success, `list` prints bare ids one per line, and any failure is one `Error: <reason>` line on stderr with a non-zero exit and the document left unchanged. Reading the document whole to reason over it is the one thing done directly, with the file-reading tool. Never edit `open_questions.xml` yourself.
 
 ## review-milestone-requirements
 
