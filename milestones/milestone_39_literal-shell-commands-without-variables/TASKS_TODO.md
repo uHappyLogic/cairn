@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Restate Literal-Path Rule in Complete-Task Agent Staging
-
-Extend the existing `git add` sentence ("naming each path explicitly") in the "Staging contract" section of `core/agents/complete-task.md` with the same shell-neutral wording the commit procedure now carries — each path appears literally on the command line, never through a shell variable — because the dispatched agent reads no other file and stages the largest path set in the workflow. Verified by comparing the two sentences for matching wording, rebuilding `hosts/`, and `uv run scripts/build_hosts.py --check` passing.
-
----
-
 ## Add Full-Command Clause to Five Tool Sites
 
 Add one clause to the tool-contract sentence in the opening paragraph of each of the five multi-call sites (`review-milestone-requirements`, `provide-alternatives-to-all-open-questions`, `recommend-all-open-questions`, `answer-all-open-questions-with-recommendation`, and `core/shared/answer-procedure.md`), along the lines of "write the full command shown on every call; never define a variable, alias, or function of your own to stand for it or any part of it", sitting next to the command where the sentence already spells it out and referring to the full command as shown in each fenced block where it does not. The answer sweep's clause is worded to cover every tool call the run makes, including the per-question calls of the procedures it follows (the lift procedure's `lift`, and `answer-procedure.md`'s `locate`, `remove`, and cascade `remove`), while `core/shared/answer-with-recommendation-procedure.md`, every fenced call, and the commands themselves stay untouched and the prose names no host, no shell, and not the plugin-root segment. Verified by finding exactly one such clause in each of the five files, the tool contract still one sentence per site, `hosts/` rebuilt, and `uv run scripts/build_hosts.py --check` passing.

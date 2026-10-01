@@ -24,9 +24,10 @@ back from you:
 
 `git add` those recorded created/edited paths **plus** the two milestone task-list files
 `<MILESTONE_DIR>/TASKS_TODO.md` (the task left it) and `<MILESTONE_DIR>/TASKS_DONE.md` (the
-task joined it), naming each path explicitly. **Never `git add -A`** and never stage by any
-tree-wide selection: a dirty tree elsewhere must stay out of the orchestrator's commit.
-Stage only on the success path, and stage nothing else.
+task joined it), naming each path explicitly: every path is written out on the command line
+as its own argument, and none is held in a shell variable. **Never `git add -A`** and never
+stage by any tree-wide selection: a dirty tree elsewhere must stay out of the orchestrator's
+commit. Stage only on the success path, and stage nothing else.
 
 Staging is not committing: run no `git commit`. The orchestrator commits the index you leave.
 

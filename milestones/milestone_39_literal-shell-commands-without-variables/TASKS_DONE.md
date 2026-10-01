@@ -14,3 +14,16 @@ Add the shell-neutral literal-path rule to `core/shared/commit-procedure.md` as 
 - `uv run scripts/build_hosts.py` rebuilt `hosts/claude/shared/commit-procedure.md` and `hosts/antigravity/shared/commit-procedure.md`, and `uv run scripts/build_hosts.py --check` passed.
 
 ---
+
+## Restate Literal-Path Rule in Complete-Task Agent Staging
+
+Extend the existing `git add` sentence ("naming each path explicitly") in the "Staging contract" section of `core/agents/complete-task.md` with the same shell-neutral wording the commit procedure now carries — each path appears literally on the command line, never through a shell variable — because the dispatched agent reads no other file and stages the largest path set in the workflow. Verified by comparing the two sentences for matching wording, rebuilding `hosts/`, and `uv run scripts/build_hosts.py --check` passing.
+
+**Verified:**
+
+- The `git add` sentence in the "Staging contract" section of `core/agents/complete-task.md` now reads "naming each path explicitly: every path is written out on the command line as its own argument, and none is held in a shell variable", stated in that section directly.
+- That wording matches the step-2 sentence of `core/shared/commit-procedure.md` ("naming each path explicitly: every path is written out on the command line as its own argument, and none is held in a shell variable") word for word.
+- The rest of the staging contract (the `git add -A` ban, tree-wide selection ban, success-path-only staging) is unchanged, and the added prose names no host and no particular shell.
+- `uv run scripts/build_hosts.py` rebuilt `hosts/claude/agents/complete-task.md` and `hosts/antigravity/agents/complete-task.md`, and `uv run scripts/build_hosts.py --check` passed.
+
+---
