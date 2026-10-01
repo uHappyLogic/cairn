@@ -120,5 +120,9 @@ The live verification's plugin-install check adds the marketplace from a local p
 
 The Codex README template carries its badge strip from the start, in the shape the other two host templates share, so the first Codex release publishes it. The root README's adoption-table row for `uHappyLogic/cairn-codex` is not added in this milestone; it is added only after the seed run. That follow-up is carried by the release skill: the host-neutral instructions it prints when a distribution repository lacks the `TRAFFIC_TOKEN` secret gain steps that name no host, saying that after publishing the maintainer runs the repository's `traffic-badges` workflow once by `workflow_dispatch` and then adds the repository's row to the root README's adoption table. The row lands in its own commit, apart from the `Release:` commit. The landing page then never shows a broken badge, and the follow-up reaches the maintainer at the one release where it becomes possible.
 
+### Build operation test coverage
+
+No pytest tests are added for the slot operation. `scripts/build_hosts.py` instead gets one more named check in its validation gate, run on every build and on every CI `--check`: it fails when any host declares a slot name that appears nowhere in `core/`, or when the set of declared slot names differs between hosts. A slot used in `core/` but missing from a host is still left to the existing `unfilled-placeholder` check. The check is added to the script's docstring list of checks. The byte-identity bar already tests the substitution end to end, because every slot site must reproduce the released Claude Code and Antigravity bytes through the same code path that renders Codex, so the gate check closes the one hole left without a fixture skeleton or a file skipped at the 3.9 floor.
+
 ## Out of Scope
 
