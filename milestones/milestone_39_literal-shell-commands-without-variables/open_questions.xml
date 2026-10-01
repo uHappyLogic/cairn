@@ -1,1 +1,8 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Alternatives agent coverage">
+    <question>The dispatched provide-alternatives-to-open-question agent calls the open-question tool twice per run (one locate, one list --with-question) and is not among the five multi-call sites the goal names. Should core/agents/provide-alternatives-to-open-question.md also state the full-command rule (write the full command on every call, never through a variable, alias, or function of the runner&apos;s own), or is it left unchanged?</question>
+  </open-question>
+  <open-question id="Docs coverage">
+    <question>The goal names the runtime files, the CLAUDE.md invariants, and the rebuilt hosts/ trees as this milestone&apos;s deliverables and says nothing about docs/. Should any page under docs/ (for example the &quot;How skills commit&quot; section of docs/workflow.md or the entries of docs/skill-reference.md) describe the literal-path rule and the full-command rule, or do the docs stay unchanged?</question>
+  </open-question>
+</open-questions>
