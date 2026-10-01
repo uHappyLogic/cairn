@@ -136,5 +136,9 @@ The no-model probes run as a requirements-phase step outside the task list, befo
 
 The `uHappyLogic/cairn-codex` repository is not created in this milestone, and the task list has no task for it. At the first Codex release, the release skill's existing step-2f pre-flight finds the repository missing, stops, and prints the `gh repo create` and `gh repo edit` commands, which the maintainer runs then, at the same release where the `TRAFFIC_TOKEN` is extended. The goal's mention of the repository is met by the release path already handling it, not by the repository existing. An empty repository would give users nothing to install and the milestone nothing to verify against, and one stop at that release covers the repository and the token together.
 
+### Codex headless prompt form
+
+`docs/ways-of-using-cairn.md` gives `codex exec '$cairn:<skill>'` as the Codex form of a line: Codex's documented `$` sigil with the plugin namespace, the same `$cairn:<skill>` text the Codex README uses, in single quotes so the shell passes the `$` through as written. The swap rule gains one more step: moving a line to Codex also rewrites `"/cairn:<skill>"` to `'$cairn:<skill>'`. The placeholder rule for `<goal>` changes from "no double quote" to "no single quote" on Codex lines. Users then type one invocation form everywhere, and single quotes stop the shell's `$` expansion with no escape character to lose.
+
 ## Out of Scope
 
