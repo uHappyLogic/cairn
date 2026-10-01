@@ -44,6 +44,7 @@ The rationale homes are the bullets under `## Invariants to preserve when editin
 ### CLAUDE.md rationale
 
 - **Placement.** The rationale is recorded as one new standalone bullet under `## Invariants to preserve when editing skills`, covering both provoking sites together: the shell-splitting failure the milestone targets, the shell-neutral rule as it applies to `commit-procedure.md` (each path named literally in the dirty-own-path check and in `git add`, never through a shell variable) and to the multi-call open-question tool sites (the full fixed command on every call, never through a variable, alias, or function), and why the fix is a prose rule rather than a structural one such as a commit tool. The open-question-tool bullet and the committing bullet stay unchanged, with no pointer added to either.
+- **Snapshot variable.** The invariant stays scoped to the sites the rule is stated at rather than becoming a general ban on variables, and its `CLAUDE.md` rationale says so explicitly: it names the `capture-milestone-principle-updates` snapshot (`SNAPSHOT="$(mktemp)"`, used quoted) as outside the rule because it is one quoted value that word splitting never reaches, not a path list or a tool command. The capture skill's runtime prose stays unchanged. The snapshot's reliance on shell state surviving between calls is a different failure and is not addressed by this milestone.
 
 ## Out of Scope
 
