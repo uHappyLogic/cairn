@@ -39,8 +39,9 @@ question turns on. Prefer the live project over reasoning from memory. All of th
 read-only; enumerating alternatives changes nothing.
 
 You reach `open_questions.xml` through **exactly two** calls to the plugin's open-question tool,
-`python3 ${CLAUDE_PLUGIN_ROOT}/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`, and never
-open or search the file yourself:
+`python3 ${CLAUDE_PLUGIN_ROOT}/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`, written out
+in full on every call, never through a variable, alias, or function of your own defined to
+stand for the command or any part of it, and never open or search the file yourself:
 
 1. **Your block.** Run `locate` on your own Short Title, and on no other:
 

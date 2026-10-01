@@ -42,3 +42,17 @@ Add one clause to the tool-contract sentence in the opening paragraph of each of
 - `uv run scripts/build_hosts.py` rebuilt the five files in both `hosts/claude/` and `hosts/antigravity/`, and `uv run scripts/build_hosts.py --check` passed.
 
 ---
+
+## Add Full-Command Clause to Alternatives Agent
+
+Attach the same full-command clause, in the wording the five tool sites now carry, to the step-1 tool-contract sentence of `core/agents/provide-alternatives-to-open-question.md` ("You reach `open_questions.xml` through exactly two calls …"), stated once with neither fenced call annotated and the commands untouched, because the dispatched agent reads only its own file and its two calls share the command prefix a runner would shorten into a variable. Verified by comparing the clause against the five sites for matching wording, rebuilding `hosts/`, and `uv run scripts/build_hosts.py --check` passing.
+
+**Verified:**
+
+- The step-1 tool-contract sentence of `core/agents/provide-alternatives-to-open-question.md` ("You reach `open_questions.xml` through **exactly two** calls …") now carries, directly after the spelled-out command, the clause "written out in full on every call, never through a variable, alias, or function of your own defined to stand for the command or any part of it".
+- That clause matches the wording of the five tool sites word for word (checked against `review-milestone-requirements` and `core/shared/answer-procedure.md`, which also place it directly after the spelled-out command), and it appears exactly once in the file, found by grep.
+- The sentence stays one sentence ending in "and never open or search the file yourself:", neither fenced call (`locate`, `list --with-question`) gets anything beside it, and no command line is changed (the diff touches only that sentence).
+- The added prose names no host, no shell, and not the plugin-root segment.
+- `uv run scripts/build_hosts.py` rebuilt `hosts/claude/agents/provide-alternatives-to-open-question.md` and `hosts/antigravity/agents/provide-alternatives-to-open-question.md`, and `uv run scripts/build_hosts.py --check` passed.
+
+---
