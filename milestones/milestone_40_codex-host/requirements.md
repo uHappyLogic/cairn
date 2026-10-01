@@ -124,5 +124,9 @@ The Codex README template carries its badge strip from the start, in the shape t
 
 No pytest tests are added for the slot operation. `scripts/build_hosts.py` instead gets one more named check in its validation gate, run on every build and on every CI `--check`: it fails when any host declares a slot name that appears nowhere in `core/`, or when the set of declared slot names differs between hosts. A slot used in `core/` but missing from a host is still left to the existing `unfilled-placeholder` check. The check is added to the script's docstring list of checks. The byte-identity bar already tests the substitution end to end, because every slot site must reproduce the released Claude Code and Antigravity bytes through the same code path that renders Codex, so the gate check closes the one hole left without a fixture skeleton or a file skipped at the 3.9 floor.
 
+### Verification run mode
+
+The live checks are split by mode, and each still runs exactly once. The task runner does the no-model plugin install, then runs the dispatch of each agent as a headless `codex exec` run with `--dangerously-bypass-approvals-and-sandbox` in the temporary workspace, calling Codex by its full path. The maintainer runs the one inline skill by hand in an interactive session under the documented workspace-write sandbox with on-request approval, invoking it as `$cairn:<skill>` and approving its git steps. The runner records all four outcomes in `TASKS_DONE.md`. Each documented configuration thus gets a live check inside the same four runs: the interactive check carries the fewest approval prompts yet backs the README's invocation form and both sandbox claims, and the approval-heavy dispatches run unattended in the headless form the docs page documents.
+
 ## Out of Scope
 
