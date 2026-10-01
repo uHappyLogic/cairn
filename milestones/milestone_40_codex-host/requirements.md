@@ -76,5 +76,9 @@ The unverified Codex behaviours are settled as far as possible without a model c
 
 If the free-tier limit stops the live verification partway, the milestone stays open and nothing is finished or released while any of the four checks (the plugin install, the inline skill, and one dispatch of each agent) is still unrun. Evidence from the checks that already passed is kept as valid. When the limit resets, verification picks up at the first unrun check, and this repeats until all four have passed.
 
+### Traffic token extension
+
+The release skill gets a check in its step 2f host loop that names no host: for every distribution repository it checks that a `TRAFFIC_TOKEN` secret exists, using `gh secret list --repo uHappyLogic/cairn-<host>`. If the secret is missing, the skill stops and prints the maintainer's instructions without running anything, the same way it already handles a missing repository; those instructions say to extend the one token to the new repository, regenerate it, and re-set the secret in every repository. The step itself happens at the first Codex release, not inside the milestone, and the milestone's task list holds no task for it. The `CLAUDE.md` Development note changes from three repositories to four.
+
 ## Out of Scope
 
