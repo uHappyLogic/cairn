@@ -2,6 +2,15 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.7.6 — 2026-10-01
+
+### Literal shell commands without variables (milestone 39)
+
+- Commits no longer break in shells that do not split an unquoted variable (zsh by default): the commit procedure now requires every path to be written on the command line as its own argument, never held in a shell variable, for both the dirty-own-path check and the `git add`. The `complete-task` agent's staging step states the same rule.
+- Every skill, shared procedure, and agent that calls the open-question tool more than once must write the full command on every call, never through a variable, alias, or function of its own.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.7.5...1.7.6
+
 ## 1.7.5 — 2026-09-30
 
 ### Distinct and covering alternatives (milestone 38)
