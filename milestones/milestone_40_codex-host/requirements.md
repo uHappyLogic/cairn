@@ -60,5 +60,9 @@ The `uHappyLogic/cairn-codex` distribution repository is a marketplace whose plu
 
 The README and the distribution repository name the Codex command-line tool as the supported surface and say nothing about the desktop app or the IDE extension, neither claiming nor ruling them out. Every word of the support claim is then backed by the milestone's live verification and matches the CLI-shaped install commands.
 
+### Codex sandbox requirements
+
+Interactive sessions run under Codex's workspace-write sandbox with the on-request approval policy, and nothing in `config.toml` changes. The Codex instructions name that configuration, say that every git staging or commit step a skill takes will ask for approval because this sandbox keeps the project's `.git` directory read-only, and say that the plugin's `python3` tools need only read access to the installed plugin directory. Headless `codex exec` runs carry `--dangerously-bypass-approvals-and-sandbox`, the Codex counterpart of the `--dangerously-skip-permissions` flag the other hosts' headless lines already use. This keeps Codex's protections in interactive use, explains the one prompt a sandboxed user will always meet, and rests on no unverified reviewer or permissions profile.
+
 ## Out of Scope
 
