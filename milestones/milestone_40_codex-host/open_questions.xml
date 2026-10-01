@@ -1,1 +1,23 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Verification install source">
+    <question>The documented Codex install route is `codex plugin marketplace add uHappyLogic/cairn-codex`, but that repository receives content only when a release publishes the `hosts/codex/` tree, and the live verification runs before any release. From which source does the live verification&apos;s plugin-install check add the marketplace and install the plugin?</question>
+  </open-question>
+  <open-question id="Distribution repository creation">
+    <question>The goal lists the `uHappyLogic/cairn-codex` distribution repository as part of the release-ready surface, while the release skill&apos;s pre-flight already stops on a missing repository and prints the `gh repo create` and `gh repo edit` commands, and the traffic-token step is deferred to the first Codex release. Is the empty `uHappyLogic/cairn-codex` repository created inside this milestone, or left to the maintainer at the first Codex release?</question>
+  </open-question>
+  <open-question id="Codex badge timing">
+    <question>The Codex README template opens with that repository&apos;s two traffic badges and the root README&apos;s adoption table would gain a `cairn-codex` row, but the badge images are served from a `traffic-data` branch that cannot exist until the repository is published, the `TRAFFIC_TOKEN` is extended, and the workflow has run once, all of which happen at or after the first Codex release. When do the Codex traffic badges (the template&apos;s badge strip and the root adoption-table row) start being referenced?</question>
+  </open-question>
+  <open-question id="Codex headless prompt form">
+    <question>`docs/ways-of-using-cairn.md` will name `codex exec &quot;&lt;prompt&gt;&quot;` as the Codex form of a headless line, whose Claude Code and Antigravity form is `-p &quot;/cairn:&lt;skill&gt;&quot;`. Codex&apos;s documented explicit invocation is the `$` sigil, which a shell expands as a variable inside double quotes, and whether Codex accepts `/cairn:&lt;skill&gt;` is unconfirmed. What prompt text, in what quoting, does the page give for invoking a cairn skill through `codex exec`?</question>
+  </open-question>
+  <open-question id="Build operation test coverage">
+    <question>The build script gains a new operation (named wording slots in `core/` filled from a new per-host settings key), and no test under `tests/` covers `scripts/build_hosts.py` today; the only checks are the build&apos;s own validation gate, `--check`, and the byte-identity diff of the two existing host trees. Does this milestone add automated tests for the new slot operation, and if so, covering what?</question>
+  </open-question>
+  <open-question id="Verification run mode">
+    <question>The live Codex verification (plugin install, one inline skill, one dispatch of each agent) can be run headless through `codex exec` with the approval-and-sandbox bypass, or as an interactive session under the workspace-write sandbox that the Codex instructions describe to users, where every git staging and commit step asks for approval. In which mode is the live verification run, and is it carried out by the task runner or by the maintainer by hand?</question>
+  </open-question>
+  <open-question id="Contradicting probe findings">
+    <question>Several recorded decisions rest on Codex behaviour that is still unverified (that `${PLUGIN_ROOT}` reaches the commands a skill runs, that a generic subagent can be spawned and told to read a plugin file, that the marketplace layout installs), and the no-model probes and the live run that would confirm them happen after those decisions were recorded. When a probe or the live verification contradicts a recorded decision, how does the milestone proceed?</question>
+  </open-question>
+</open-questions>
