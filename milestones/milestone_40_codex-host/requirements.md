@@ -116,5 +116,9 @@ Only the Codex tree's alternatives-pass dispatch step names an explicit limit: k
 
 The live verification's plugin-install check adds the marketplace from a local path, the committed `hosts/codex/` directory in the cairn checkout, whose root holds `.agents/plugins/marketplace.json` and `plugins/cairn/`, and then runs `codex plugin add cairn@cairn`. The cairn repository gains no new file and nothing is pushed or published. The documented `uHappyLogic/cairn-codex` route is not run by the milestone, and no later check of it is added. This installs the exact bytes a release later publishes as the distribution repository's root, through a source form the installed CLI's help lists, with no network, no GitHub write, and no change to the release flow.
 
+### Codex badge timing
+
+The Codex README template carries its badge strip from the start, in the shape the other two host templates share, so the first Codex release publishes it. The root README's adoption-table row for `uHappyLogic/cairn-codex` is not added in this milestone; it is added only after the seed run. That follow-up is carried by the release skill: the host-neutral instructions it prints when a distribution repository lacks the `TRAFFIC_TOKEN` secret gain steps that name no host, saying that after publishing the maintainer runs the repository's `traffic-badges` workflow once by `workflow_dispatch` and then adds the repository's row to the root README's adoption table. The row lands in its own commit, apart from the `Release:` commit. The landing page then never shows a broken badge, and the follow-up reaches the maintainer at the one release where it becomes possible.
+
 ## Out of Scope
 
