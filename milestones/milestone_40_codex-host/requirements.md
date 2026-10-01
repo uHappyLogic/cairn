@@ -80,5 +80,9 @@ If the free-tier limit stops the live verification partway, the milestone stays 
 
 The release skill gets a check in its step 2f host loop that names no host: for every distribution repository it checks that a `TRAFFIC_TOKEN` secret exists, using `gh secret list --repo uHappyLogic/cairn-<host>`. If the secret is missing, the skill stops and prints the maintainer's instructions without running anything, the same way it already handles a missing repository; those instructions say to extend the one token to the new repository, regenerate it, and re-set the secret in every repository. The step itself happens at the first Codex release, not inside the milestone, and the milestone's task list holds no task for it. The `CLAUDE.md` Development note changes from three repositories to four.
 
+### Codex plugin-root literal
+
+The Codex host definition sets `plugin_root` to the documented runtime variable `${PLUGIN_ROOT}`, so every rendered tool call becomes `python3 ${PLUGIN_ROOT}/tools/<tool>.py` and every shared-procedure reference becomes `${PLUGIN_ROOT}/shared/<name>.md`. There is no fallback, and `core/` and the build stay unchanged for this point. It is Codex's documented contract and the form its own curated plugins use in shell commands, and it holds wherever the plugin is installed.
+
 ## Out of Scope
 
