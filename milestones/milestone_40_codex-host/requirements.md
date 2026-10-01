@@ -84,5 +84,9 @@ The release skill gets a check in its step 2f host loop that names no host: for 
 
 The Codex host definition sets `plugin_root` to the documented runtime variable `${PLUGIN_ROOT}`, so every rendered tool call becomes `python3 ${PLUGIN_ROOT}/tools/<tool>.py` and every shared-procedure reference becomes `${PLUGIN_ROOT}/shared/<name>.md`. There is no fallback, and `core/` and the build stay unchanged for this point. It is Codex's documented contract and the form its own curated plugins use in shell commands, and it holds wherever the plugin is installed.
 
+### Host-specific wording mechanism
+
+The build gains a new operation: `core/` carries named placeholder slots, in the style of `{{PLUGIN_ROOT}}`, at each sentence or phrase that differs between hosts, and a new settings key holds each host's value for every slot. All three host definitions declare every slot; the Claude Code and Antigravity values are today's exact wording, so their trees render byte-identically. The existing unfilled-placeholder check catches a slot a host fails to fill. This one mechanism carries every Codex wording difference, with no markers, hidden match rules, or duplicated skills.
+
 ## Out of Scope
 
