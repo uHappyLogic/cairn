@@ -28,8 +28,10 @@ optional, every one already resolved:
 ### 1. Dirty-own-path no-op guard
 
 Before staging anything, check whether any of the PATHS actually changed in the working
-tree (for example `git status --porcelain -- <PATHS>` — a status check scoped to the given
-paths, which is *not* content inspection to decide the path set; the set is already given).
+tree — for example `git status --porcelain -- <PATHS>`, naming each path explicitly: every
+path is written out on the command line as its own argument, and none is held in a shell
+variable. This is a status check scoped to the given paths, which is *not* content
+inspection to decide the path set; the set is already given.
 
 If none of the PATHS changed, this pass produced no real change: **stage nothing, commit
 nothing, report the no-op, and return cleanly.** Do not create an empty commit — there is
@@ -39,7 +41,9 @@ Only when at least one of the PATHS changed do you proceed to stage and commit.
 
 ### 2. Stage the own paths (path-scoped)
 
-Stage exactly the PATHS and nothing else — `git add <PATHS>`, naming each path explicitly.
+Stage exactly the PATHS and nothing else — `git add <PATHS>`, naming each path explicitly:
+every path is written out on the command line as its own argument, and none is held in a
+shell variable.
 
 **Never `git add -A`** and never stage by any tree-wide or content-driven selection. Staging
 is path-scoped by construction: the caller named the paths, so a dirty tree elsewhere cannot

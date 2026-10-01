@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## State Literal-Path Rule in Commit Procedure
-
-Add the shell-neutral literal-path rule to `core/shared/commit-procedure.md` as prose next to each of its two example commands, which stay exactly as written (`git status --porcelain -- <PATHS>` in step 1, `git add <PATHS>` in step 2): every path is written out on the command line as its own argument and none is held in a shell variable, and step 1 also gains the "naming each path explicitly" wording step 2 already has. This is the first of the two provoking sites where a shell that does not split an unquoted variable makes a run fail. Verified by reading both steps against the "Commit procedure examples" decision, rebuilding `hosts/` with `uv run scripts/build_hosts.py`, and `uv run scripts/build_hosts.py --check` passing.
-
----
-
 ## Restate Literal-Path Rule in Complete-Task Agent Staging
 
 Extend the existing `git add` sentence ("naming each path explicitly") in the "Staging contract" section of `core/agents/complete-task.md` with the same shell-neutral wording the commit procedure now carries — each path appears literally on the command line, never through a shell variable — because the dispatched agent reads no other file and stages the largest path set in the workflow. Verified by comparing the two sentences for matching wording, rebuilding `hosts/`, and `uv run scripts/build_hosts.py --check` passing.
