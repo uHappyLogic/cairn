@@ -128,5 +128,9 @@ No pytest tests are added for the slot operation. `scripts/build_hosts.py` inste
 
 The live checks are split by mode, and each still runs exactly once. The task runner does the no-model plugin install, then runs the dispatch of each agent as a headless `codex exec` run with `--dangerously-bypass-approvals-and-sandbox` in the temporary workspace, calling Codex by its full path. The maintainer runs the one inline skill by hand in an interactive session under the documented workspace-write sandbox with on-request approval, invoking it as `$cairn:<skill>` and approving its git steps. The runner records all four outcomes in `TASKS_DONE.md`. Each documented configuration thus gets a live check inside the same four runs: the interactive check carries the fewest approval prompts yet backs the README's invocation form and both sandbox claims, and the approval-heavy dispatches run unattended in the headless form the docs page documents.
 
+### Contradicting probe findings
+
+The no-model probes run as a requirements-phase step outside the task list, before `derive-tasks` runs. Any contradiction they find goes into the starting state and is corrected by revert-then-re-answer while the milestone is still in the question loop and no Codex implementation exists. Only the live verification can then contradict a decision after implementation; in that case the decision is reopened the same way, and the fix goes in as new tasks through `submit-task` while the milestone stays open. Most contradictions are thus corrected before any task is written against a false premise, and no completion runner ever makes a requirements decision.
+
 ## Out of Scope
 
