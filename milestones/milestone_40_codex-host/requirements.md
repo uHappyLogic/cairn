@@ -64,5 +64,9 @@ The README and the distribution repository name the Codex command-line tool as t
 
 Interactive sessions run under Codex's workspace-write sandbox with the on-request approval policy, and nothing in `config.toml` changes. The Codex instructions name that configuration, say that every git staging or commit step a skill takes will ask for approval because this sandbox keeps the project's `.git` directory read-only, and say that the plugin's `python3` tools need only read access to the installed plugin directory. Headless `codex exec` runs carry `--dangerously-bypass-approvals-and-sandbox`, the Codex counterpart of the `--dangerously-skip-permissions` flag the other hosts' headless lines already use. This keeps Codex's protections in interactive use, explains the one prompt a sandboxed user will always meet, and rests on no unverified reviewer or permissions profile.
 
+### Existing-host preservation bar
+
+The bar is strict identity. Measured against the trees as released at `Release: 1.7.6` (5305f43), the milestone leaves every file under `hosts/claude/` and `hosts/antigravity/` byte-identical: `git diff 5305f43 -- hosts/claude hosts/antigravity` is empty at the end of the milestone, apart from the version slots a later release commit writes. No other evidence is needed, because identical text cannot change behaviour. Any change to `core/` or the build must render to the same bytes for those two hosts, so every Codex difference reaches only the Codex tree.
+
 ## Out of Scope
 
