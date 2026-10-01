@@ -154,5 +154,40 @@
   </open-question>
   <open-question id="Snapshot variable status">
     <question>capture-milestone-principle-updates holds a temporary file path in a shell variable (SNAPSHOT=&quot;$(mktemp)&quot;) and uses it quoted, the one place runtime prose itself instructs a variable. Is the recorded invariant scoped so that this use stays allowed and untouched, or is the rule general enough that the snapshot idiom must be named as an exception or changed?</question>
+    <alternative id="Site-scoped, left silent">
+      The recorded invariant covers only the two sites the goal names: the paths in commit-procedure.md and the fixed open-question tool command at the multi-call sites. The capture-milestone-principle-updates snapshot idiom (SNAPSHOT=&quot;$(mktemp)&quot;, then &quot;$SNAPSHOT&quot; in the copy, restore, and cleanup commands) stays exactly as it is. Neither CLAUDE.md nor any runtime file mentions it.
+      <advantage>This is the smallest change and matches the goal&apos;s site list exactly. The snapshot is quoted and holds one value, so the word-splitting failure the milestone targets never reaches it, and no file outside the named sites is touched.</advantage>
+      <drawback>Because the scope is never stated, a later editor who reads the rationale as a general &quot;no variables&quot; rule may &quot;fix&quot; the snapshot, or point to it as precedent for adding variables elsewhere. The idiom also keeps a separate fragility. The snapshot is set in step 6 and used in step 7 only after one or more conversation rounds, so on a host whose shell tool does not keep variables between calls, &quot;$SNAPSHOT&quot; expands to an empty string there: the restore cp fails and the cleanup silently leaks the temporary file.</drawback>
+    </alternative>
+    <alternative id="Site-scoped, scope recorded">
+      The invariant covers only the two named sites, and its CLAUDE.md rationale says so explicitly. It names the capture snapshot as outside the rule because it is one quoted value, not a path list or a tool command. The capture skill&apos;s runtime prose stays unchanged.
+      <advantage>A later editor sees in the rationale&apos;s own wording why the snapshot stays, so it is neither &quot;fixed&quot; by mistake nor cited as a loophole. The runtime files and the goal&apos;s site list stay untouched.</advantage>
+      <drawback>The rationale gains a sentence about a file the milestone otherwise leaves alone. Recording the snapshot as acceptable also signs off on the idiom while it still carries the cross-call fragility: on a host whose shell does not keep variables between calls, &quot;$SNAPSHOT&quot; is empty when step 7 restores or cleans up. Where that sentence sits is decided by the invariant-placement question.</drawback>
+    </alternative>
+    <alternative id="Mechanism-scoped rule">
+      The rationale states the rule by the failure it prevents, not by site. A value the shell has to split into several words (a path set, a multi-word command) is never held in a variable and is written out literally on every call. A single value used quoted is outside the rule. The snapshot complies without being named, and the capture skill stays unchanged.
+      <advantage>The reason carries over to any future site and explains on its own terms why the snapshot is fine, with no list of sites or exceptions to maintain.</advantage>
+      <drawback>It is narrower than the goal&apos;s wording for the tool sites (&quot;never through a variable, alias, or function&quot;), which also bans aliases and functions that have nothing to do with splitting. So the rationale and the site prose would give different reasons, and the result depends on how the host-root wording question frames the ban next to the host-provided variable in the rendered command. It also says nothing about the snapshot&apos;s cross-call fragility.</drawback>
+    </alternative>
+    <alternative id="General rule, named exception">
+      The rationale states a general rule: runtime shell commands never hold a value in a variable the runner introduces itself. The capture snapshot is named in CLAUDE.md as the one deliberate exception, with the reason that it is a single quoted temporary path. Because runtime files carry no editor-facing prose, the capture skill&apos;s own text stays unchanged.
+      <advantage>The rule is broad enough to cover every site written in future, not only today&apos;s two, and the one deviation is listed where a later editor will look, so nothing is left implicit.</advantage>
+      <drawback>The stated rule is broader than the goal&apos;s two sites, and the exception keeps a known weakness: where the shell does not keep variables between calls, &quot;$SNAPSHOT&quot; is empty when it is read in step 7. An exception list also invites more entries over time.</drawback>
+    </alternative>
+    <alternative id="General rule, literal mktemp path">
+      A general rule bans variables the runner introduces in every runtime shell command, with no exception. To comply, the capture skill is changed: step 6 runs mktemp alone, reads the path it prints, and copies the baseline to that path written literally. The step 7 cleanup and restore commands then use the same literal path, so the skill instructs no variable at all.
+      <advantage>One rule with no exception. It also removes the reliance on a variable surviving across separate shell calls and the review rounds between steps 6 and 7, so restore and cleanup work whatever the host&apos;s shell does with state.</advantage>
+      <drawback>It goes beyond the goal&apos;s two named sites and rewrites a carefully worded restore step in a skill the goal does not mention. The runner must also carry an opaque generated path correctly over an unbounded number of conversation rounds, which swaps a shell-state risk for a transcription risk.</drawback>
+    </alternative>
+    <alternative id="General rule, fixed snapshot path">
+      A general rule bans variables the runner introduces in every runtime shell command, with no exception. The capture skill drops mktemp and snapshots to one fixed, literally written path outside the working tree, used as written in the copy, restore, and cleanup commands.
+      <advantage>Nothing generated has to be remembered or transcribed across the review rounds, so restore and cleanup are the same literal commands in every run and do not depend on shell state.</advantage>
+      <drawback>A fixed path collides between concurrent runs or two repositories, and a stale snapshot from an interrupted run could be restored over the store later. There is also no portable fixed location outside the repository that is not itself reached through a variable such as the temp-dir variable. On top of that it widens the milestone to a file the goal does not name.</drawback>
+    </alternative>
+    <alternative id="Site-scoped rule, snapshot fixed anyway">
+      The invariant stays scoped to the two named sites. Separately, as a robustness fix, the capture skill is changed to the literal mktemp path: run mktemp, read the printed path, and write it literally into the copy, restore, and cleanup commands. The rationale does not tie that change to the rule.
+      <advantage>It fixes the real cross-call weakness of the snapshot (an empty &quot;$SNAPSHOT&quot; at step 7 where shell state does not persist) without making the recorded rule broader than the failure the milestone targets.</advantage>
+      <drawback>It adds work outside the goal&apos;s stated scope with no rule to motivate it. A later reader sees a variable-free snapshot next to a site-scoped rule and may infer a general ban that was never recorded. As with the other literal-path option, the runner has to carry the generated path across conversation rounds.</drawback>
+    </alternative>
   </open-question>
 </open-questions>
