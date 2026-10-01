@@ -13,7 +13,7 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: none
+Current milestone: `milestones/milestone_39_literal-shell-commands-without-variables/`
 
 ## Milestone History
 
