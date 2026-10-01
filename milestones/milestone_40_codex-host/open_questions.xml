@@ -129,6 +129,41 @@
   </open-question>
   <open-question id="Codex skill invocation form">
     <question>Cairn&apos;s skills, READMEs, and docs name every skill in slash form (/skill-name, or /cairn:skill-name under the plugin namespace), while Codex&apos;s documentation gives $skillname or the /skills picker as the explicit invocation, and nothing yet shows how Codex names a plugin&apos;s skills. In what form should the Codex tree and the Codex installation instructions name cairn&apos;s skills?</question>
+    <alternative id="Slash form unchanged">
+      The Codex tree renders core/&apos;s existing slash references unchanged: the bare `/skill-name` form, 77 references across 21 core/ files. The Codex installation instructions also use slash form, `/init-milestone-base-workflow` or `/cairn:init-milestone-base-workflow` as on the other hosts. There is no Codex-specific invocation form and no change to core/ or the build.
+      <advantage>Nothing in core/ or the build changes, so the Claude Code and Antigravity trees stay byte-identical. One curated Codex plugin (vercel) already documents `/vercel:nextjs`-style slash commands for its skills on Codex.</advantage>
+      <drawback>It ignores Codex&apos;s documented explicit invocation (`$skillname` or the `/skills` picker). If Codex does not resolve `/skill-name` or `/cairn:skill-name` for plugin skills, every next-step hint the skills print, and the bootstrap line in the install section, names a command that does nothing. Whether it works depends on the live check owned by the unverified-behaviour-probes question.</drawback>
+    </alternative>
+    <alternative id="Slash tree, namespaced dollar README">
+      The Codex tree renders core/&apos;s slash references unchanged. Only the Codex README template, and the root README subsection that repeats it, use Codex&apos;s form with the plugin namespace: `$cairn:init-milestone-base-workflow`. The template can state that the slash names inside the skills refer to the same skills. core/ does not change.
+      <advantage>The user&apos;s one entry point, the install and bootstrap step, uses Codex&apos;s documented sigil with an unambiguous `cairn:` namespace. The `$plugin:skill` form also appears in the curated marketplace (`$codex-security:propose-security-hardening`). The other two trees stay untouched, and the change is limited to template files, which the build already renders per host.</advantage>
+      <drawback>What the README teaches and what the skills print disagree. Every in-skill hint such as &quot;run `/review-milestone-requirements` next&quot; is in a form the user must translate. It also rests on Codex resolving the `cairn:` namespace with the dollar sigil, which nothing on this machine has confirmed.</drawback>
+    </alternative>
+    <alternative id="Slash tree, bare dollar README">
+      The Codex tree renders core/&apos;s slash references unchanged. Only the Codex README template and the root README subsection use Codex&apos;s bare form with no plugin namespace: `$init-milestone-base-workflow`. core/ does not change.
+      <advantage>The entry point uses the exact `$skillname` shape Codex&apos;s skills page documents. It is also the dominant convention in the curated marketplace&apos;s own skill text (`$build-report`, `$visualize-data` and dozens more, all bare). The other two trees stay untouched, and only templates change.</advantage>
+      <drawback>The skills still print slash-form hints that the user must translate. A bare name can collide with an identically named skill from another installed plugin or a user&apos;s `.agents/skills`, and nothing yet shows how Codex resolves such a collision.</drawback>
+    </alternative>
+    <alternative id="Bare dollar form throughout">
+      The Codex tree names every skill as `$skill-name`, rewriting all 77 slash references in the rendered skills, agents and shared procedures. The Codex README and the root README subsection use the same bare `$skill-name` form. The Claude Code and Antigravity trees keep their slash form.
+      <advantage>On Codex, everything the user reads, in the install section and in every next-step hint a skill prints, is in the documented `$skillname` invocation the user can type as shown. This matches how most curated Codex plugins refer to their own skills.</advantage>
+      <drawback>The Codex tree&apos;s text must differ from the other trees at about 77 sites. That needs whatever host-specific wording mechanism the sibling question settles, which the three-operation build cannot express today except by regex deletion. Bare names also carry the same unresolved collision risk with other plugins&apos; skills.</drawback>
+    </alternative>
+    <alternative id="Namespaced dollar form throughout">
+      The Codex tree names every skill as `$cairn:skill-name`, rewriting all 77 slash references in the rendered core/ files. The Codex README and the root README subsection use the same `$cairn:skill-name` form. The Claude Code and Antigravity trees keep their slash form.
+      <advantage>Every name the user sees on Codex is both in Codex&apos;s sigil and unambiguous across installed plugins. It mirrors the namespaced `/cairn:skill-name` form the headless docs already use for Claude Code, and the curated marketplace&apos;s `$codex-security:` usage.</advantage>
+      <drawback>It carries the same about-77-site host-specific rewrite, which depends on the mechanism owned by the host-specific-wording question. Whether Codex accepts the `$plugin:skill` shape for a marketplace-installed plugin is unverified. If it does not, every reference in the tree is wrong at once.</drawback>
+    </alternative>
+    <alternative id="Host-neutral core, namespaced dollar README">
+      core/ stops naming skills in any invocation form. Every reference becomes a sigil-free skill name (for example &quot;the `review-milestone-requirements` skill&quot;), in all three trees. Each host&apos;s README template carries that host&apos;s invocation form, and on Codex that is `$cairn:skill-name`.
+      <advantage>It needs no host-specific wording mechanism. All three trees stay generated from one text, and later hosts with yet another sigil cost nothing. The one place the invocation form appears is a template the build already renders per host. The unambiguous namespaced form appears only where the user first types a command.</advantage>
+      <drawback>It changes the rendered text of the Claude Code and Antigravity trees at about 77 sites. Whether that is acceptable depends on the bar the existing-host-preservation question sets. Every host also loses copy-pasteable commands in the hints the skills print, and the Codex install section&apos;s namespaced form is still unverified.</drawback>
+    </alternative>
+    <alternative id="Host-neutral core, bare dollar README">
+      core/ stops naming skills in any invocation form, using sigil-free skill names in all three trees. Each host&apos;s README template carries that host&apos;s invocation form, and on Codex that is the bare `$skill-name`.
+      <advantage>It has the same single-text core with no host-specific wording mechanism. The Codex entry point uses the exact `$skillname` shape Codex documents and most curated plugins use.</advantage>
+      <drawback>It changes the Claude Code and Antigravity trees&apos; text, subject to the existing-host-preservation bar. Every host loses copy-pasteable hints. The bare install-section name carries the unresolved risk of colliding with another plugin&apos;s identically named skill.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Codex headless coverage">
     <question>docs/ways-of-using-cairn.md documents headless chains as `claude -p` or `agy -p` lines, explains each flag per host, and gives a one-line swap between those two binaries. Codex runs non-interactively as `codex exec` with different flag names and no effort flag. How much Codex coverage should that page gain?</question>
