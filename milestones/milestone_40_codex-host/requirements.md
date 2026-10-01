@@ -100,5 +100,9 @@ The live verification runs in a new, minimal git repository created for the run 
 
 The plugin carries each agent's instructions as the Markdown file `core/` holds, in the Codex tree's `agents/` directory. Codex never registers anything: there is no TOML file, no registration step, and no format conversion in the build. On Codex the dispatch sites spawn Codex's default (generic) subagent and give it a prompt that tells it to read and follow the plugin's agent file, using the plugin-root path, followed by the task heading or Short Title as today. That instructions path is the one value the Codex dispatch prompt adds, because the subagent has no other way to learn it.
 
+### Codex context file
+
+Only the Codex tree names `AGENTS.md` in place of `CLAUDE.md`, everywhere it occurs. Its skills and `complete-procedure.md` read `AGENTS.md` for environment context, its bootstrap creates `AGENTS.md` or appends the Milestone Workflow section to it and points at Codex's `/init`, and its `finish-current-milestone` updates `AGENTS.md`; it never reads or writes `CLAUDE.md`. The Claude Code and Antigravity trees keep `CLAUDE.md` unchanged. The workflow section then reaches every Codex session and the skills read the file the host maintains; a mixed-host project can link the two files.
+
 ## Out of Scope
 
