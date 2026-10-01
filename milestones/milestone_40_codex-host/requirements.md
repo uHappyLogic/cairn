@@ -108,5 +108,9 @@ Only the Codex tree names `AGENTS.md` in place of `CLAUDE.md`, everywhere it occ
 
 `docs/ways-of-using-cairn.md` extends its "Notation and flags" section so that Codex is a third binary. It names `codex exec "<prompt>"` as the Codex form of a line and gives each flag its Codex counterpart or says it has none: the permission bypass maps to `--dangerously-bypass-approvals-and-sandbox`, `--model` has a counterpart in `-m`, `--effort` has no flag, and `--add-dir` exists under the same name. The one-line swap rule is extended so a line moves to Codex by changing the binary, dropping `--model` and `--effort` to run at the account's defaults (as every agy line already does), and replacing the permission flag. No chain gets a Codex line, and the page names no Codex model id or effort level.
 
+### Subagent thread cap
+
+Only the Codex tree's alternatives-pass dispatch step names an explicit limit: keep at most the session's configured subagent thread cap in flight at once, as Codex's `agents.max_threads` setting or the default value the prose states. As each question's pipeline finishes (embedded and committed, or skipped after its one repair), its agent is closed and the next pending question is dispatched. Repair by continuation is unaffected, because closing waits for the repair window to end. The Claude Code and Antigravity trees keep the uncapped all-at-once wording unchanged.
+
 ## Out of Scope
 
