@@ -48,5 +48,9 @@ There is no `scripts/hosts/codex/` definition, no `hosts/codex/` tree, and no `u
 
 ## Decisions
 
+### Codex manifest location
+
+The Codex tree keeps its manifest only at `.codex-plugin/plugin.json`, a template at `scripts/hosts/codex/.codex-plugin/plugin.json` rendered to the same relative path the way the Claude Code host renders `.claude-plugin/plugin.json`. The tree has no `plugin.json` at its root. This is the only location shipped Codex plugins are seen to use and the one the installed binary names in every manifest lookup, it needs no build change, and if Codex ever retires the path the move is one template file.
+
 ## Out of Scope
 
