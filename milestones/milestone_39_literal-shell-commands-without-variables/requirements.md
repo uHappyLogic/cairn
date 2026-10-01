@@ -32,5 +32,9 @@ The rationale homes are the bullets under `## Invariants to preserve when editin
 
 ## Decisions
 
+### Tool-site rule
+
+- **Placement.** The full-command rule is stated once per file, as a clause added to the tool-contract sentence each of the five multi-call sites already carries in its opening paragraph; all five files are handled the same way and no fenced call gets anything beside it. In `review-milestone-requirements` and `answer-procedure.md` that sentence already spells out the full command, so the clause sits next to it; in the two annotating passes and the answer sweep, whose opening paragraph names the tool without showing the command, the clause refers to the full command as shown in each fenced block. A runner decides to set up a variable or function when it starts the run, which is when it reads the opening paragraph, and the tool's contract stays at one sentence per site with no copies to drift.
+
 ## Out of Scope
 
