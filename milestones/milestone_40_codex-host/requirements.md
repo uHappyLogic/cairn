@@ -92,5 +92,9 @@ The build gains a new operation: `core/` carries named placeholder slots, in the
 
 The Codex tree renders `core/`'s slash-form skill references unchanged, and `core/` does not change for this point. Only the Codex README template, and the root README subsection that repeats it, use Codex's form with the plugin namespace, `$cairn:init-milestone-base-workflow`; the template can state that the slash names inside the skills refer to the same skills. The command a user actually types thus gets Codex's documented sigil with an unambiguous namespace, and no tree-wide rewrite rides on an invocation shape that is not yet confirmed.
 
+### Verification workspace
+
+The live verification runs in a new, minimal git repository created for the run in a temporary directory outside the cairn checkout. Before any model call it is seeded without a model, by running the milestone-definition tool and the open-question tool directly, so it holds one milestone with one bare open question and one small task. The verification's commits stay in that repository, which is deleted afterwards; the cairn repository keeps only the record the completion procedure writes into `TASKS_DONE.md`, and no seed or run script is kept.
+
 ## Out of Scope
 
