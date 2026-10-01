@@ -25,6 +25,31 @@
   </open-question>
   <open-question id="Supported Codex surfaces">
     <question>Codex ships as a command-line tool, a desktop app, and an IDE extension, and this milestone&apos;s live verification runs on the command-line tool only. Which Codex surfaces should the README and the distribution repository say cairn supports?</question>
+    <alternative id="Name no surface">
+      The README and the distribution repository say cairn supports Codex as a host and name none of its surfaces. They make no claim about the command-line tool, the desktop app, or the IDE extension in either direction, and the installation steps are written as whatever commands the chosen install route uses.
+      <advantage>It matches how the Claude Code and Antigravity READMEs already describe their hosts: neither names a surface, even though Claude Code also ships more than one. The three host sections stay parallel, and nothing has to be revised when Codex adds, renames, or merges a surface.</advantage>
+      <drawback>It quietly suggests that every Codex surface works when only the command-line tool is verified live. A desktop-app or IDE-extension user whose plugin install, PLUGIN_ROOT resolution, or subagent dispatch behaves differently has nothing to warn them, and their bug reports arrive without the surface being named.</drawback>
+    </alternative>
+    <alternative id="CLI only, others unmentioned">
+      The README and the distribution repository name the Codex command-line tool as the supported surface. They say nothing about the desktop app or the IDE extension, neither claiming nor ruling them out.
+      <advantage>Every word of the support claim is backed by this milestone&apos;s live verification, and the claim stays short and in step with the CLI-shaped install commands (`codex plugin marketplace add`, `codex plugin add`).</advantage>
+      <drawback>Saying nothing about the other two surfaces leaves their users guessing whether silence means untested or unsupported. Naming a surface also breaks the surface-free wording the other two host sections use, so the Codex section reads differently from its siblings.</drawback>
+    </alternative>
+    <alternative id="CLI only, others excluded">
+      The README and the distribution repository name the Codex command-line tool as the only supported surface. They state outright that the desktop app and the IDE extension are not supported.
+      <advantage>It sets the clearest expectations and gives a firm answer to bug reports from surfaces nobody has verified. Desktop-app and IDE-extension failures are kept out of the project&apos;s support scope until someone exercises those surfaces.</advantage>
+      <drawback>It may turn away users for whom cairn would work as it stands, if those surfaces share the CLI&apos;s plugin installation and configuration, which nothing on this machine has confirmed either way. Lifting the exclusion later takes a deliberate README and distribution-repository change plus a release.</drawback>
+    </alternative>
+    <alternative id="CLI verified, others unverified">
+      The README and the distribution repository name the command-line tool as the supported, verified surface. They name the desktop app and the IDE extension as expected to work but not verified, so the claim has two tiers.
+      <advantage>It tells every Codex user exactly where things stand: one surface backed by a live run, two that are plausible but untested. Desktop and IDE users are invited to try it and report what they find, without the project promising anything it has not exercised.</advantage>
+      <drawback>&quot;Expected to work&quot; is still a soft claim with no evidence behind it, since nothing yet shows the desktop app or IDE extension install plugins or dispatch subagents the way the CLI does. It is also the wordiest option, and once copied verbatim into the root README it is the hardest to keep in step with a fourth host&apos;s wording.</drawback>
+    </alternative>
+    <alternative id="All three supported">
+      The README and the distribution repository say cairn supports all three Codex surfaces as equals: the command-line tool, the desktop app, and the IDE extension.
+      <advantage>It gives the widest reach and the simplest message for a Codex user on any surface. It fits the goal of making Codex a fully supported host without hedging the public claim.</advantage>
+      <drawback>Two of the three claimed surfaces go beyond this milestone&apos;s verification, which runs on the CLI only and on a free-tier allowance that leaves no room to exercise the others. If a surface differs in plugin install, PLUGIN_ROOT exposure, or subagent dispatch, the published claim is simply wrong.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Codex sandbox requirements">
     <question>Every file-changing cairn skill commits to git and runs python3 tools that live in the installed plugin directory, outside the project workspace, and Codex runs model-issued shell commands under a sandbox and approval policy (read-only, workspace-write, or full access). What sandbox and approval configuration should cairn&apos;s Codex instructions tell users to run under?</question>
