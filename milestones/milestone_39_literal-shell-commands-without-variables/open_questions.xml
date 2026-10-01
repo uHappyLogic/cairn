@@ -1,1 +1,23 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Tool-site rule placement">
+    <question>At each of the five multi-call open-question tool sites (review-milestone-requirements, the two annotating passes, the answer sweep, answer-procedure.md), where does the rule &quot;write the full fixed command on every call, never through a variable, alias, or function&quot; sit: once per file in the existing tool-contract sentence, repeated at every fenced call, or somewhere else in the file?</question>
+  </open-question>
+  <open-question id="Host root variable wording">
+    <question>The Claude host renders the {{PLUGIN_ROOT}} placeholder as the host-provided reference ${CLAUDE_PLUGIN_ROOT}, so the fixed open-question tool command as shipped there already contains one variable. How should the &quot;never through a variable&quot; rule be worded so that it bans variables the runner introduces itself without contradicting the command it sits beside, given that core/ files may name no host?</question>
+  </open-question>
+  <open-question id="Lift procedure coverage">
+    <question>The answer sweep&apos;s per-question lift call lives in core/shared/answer-with-recommendation-procedure.md, which the goal does not list among the multi-call tool sites although the sweep runs it once per question. Does that procedure get the full-command rule too, or is the rule stated only in the five files the goal names?</question>
+  </open-question>
+  <open-question id="Agent staging coverage">
+    <question>The complete-task agent (core/agents/complete-task.md) stages its own multi-path change set with git add outside the commit procedure, saying only &quot;naming each path explicitly&quot;. Does the literal-path rule extend to that staging site, or does it stay confined to core/shared/commit-procedure.md as the goal words it?</question>
+  </open-question>
+  <open-question id="Commit example placeholder form">
+    <question>commit-procedure.md shows its two path-taking commands with the whole path set as one token, git status --porcelain -- &lt;PATHS&gt; and git add &lt;PATHS&gt;. Do those example commands keep the single &lt;PATHS&gt; token with the literal-path rule added in prose beside them, or are the examples themselves rewritten to show several separately named paths?</question>
+  </open-question>
+  <open-question id="Invariant placement">
+    <question>Where in the CLAUDE.md invariants is the rationale for the literal-command rule recorded: as one new bullet covering both the commit procedure and the tool sites, or as additions to the two existing bullets (the open-question-tool bullet and the committing bullet)?</question>
+  </open-question>
+  <open-question id="Snapshot variable status">
+    <question>capture-milestone-principle-updates holds a temporary file path in a shell variable (SNAPSHOT=&quot;$(mktemp)&quot;) and uses it quoted, the one place runtime prose itself instructs a variable. Is the recorded invariant scoped so that this use stays allowed and untouched, or is the rule general enough that the snapshot idiom must be named as an exception or changed?</question>
+  </open-question>
+</open-questions>
