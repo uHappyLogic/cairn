@@ -88,5 +88,9 @@ The Codex host definition sets `plugin_root` to the documented runtime variable 
 
 The build gains a new operation: `core/` carries named placeholder slots, in the style of `{{PLUGIN_ROOT}}`, at each sentence or phrase that differs between hosts, and a new settings key holds each host's value for every slot. All three host definitions declare every slot; the Claude Code and Antigravity values are today's exact wording, so their trees render byte-identically. The existing unfilled-placeholder check catches a slot a host fails to fill. This one mechanism carries every Codex wording difference, with no markers, hidden match rules, or duplicated skills.
 
+### Codex skill invocation form
+
+The Codex tree renders `core/`'s slash-form skill references unchanged, and `core/` does not change for this point. Only the Codex README template, and the root README subsection that repeats it, use Codex's form with the plugin namespace, `$cairn:init-milestone-base-workflow`; the template can state that the slash names inside the skills refer to the same skills. The command a user actually types thus gets Codex's documented sigil with an unambiguous namespace, and no tree-wide rewrite rides on an invocation shape that is not yet confirmed.
+
 ## Out of Scope
 
