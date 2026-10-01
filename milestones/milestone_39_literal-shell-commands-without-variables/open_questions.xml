@@ -13,6 +13,31 @@
   </open-question>
   <open-question id="Commit example placeholder form">
     <question>commit-procedure.md shows its two path-taking commands with the whole path set as one token, git status --porcelain -- &lt;PATHS&gt; and git add &lt;PATHS&gt;. Do those example commands keep the single &lt;PATHS&gt; token with the literal-path rule added in prose beside them, or are the examples themselves rewritten to show several separately named paths?</question>
+    <alternative id="Keep PATHS token">
+      Both example commands stay exactly as written, `git status --porcelain -- &lt;PATHS&gt;` in step 1 and `git add &lt;PATHS&gt;` in step 2. The literal-path rule goes in prose next to each command: every path is written out on the command line as its own argument, and none is held in a shell variable. Step 1 also gets the &quot;naming each path explicitly&quot; wording that step 2 already has.
+      <advantage>It is the smallest edit. The commands keep the same uppercase name, PATHS, that the procedure&apos;s Inputs section and all 17 callers&apos; PATHS bullets use, so no caller-facing wording changes. The rule is stated in the step a runner is reading when it builds the command.</advantage>
+      <drawback>The command still shows the whole path set as one substitutable token. That is the shape that invites a runner to put the set into one variable and expand it unquoted, so the fix relies on prose overriding what the example shows, at the exact spot where the failure starts.</drawback>
+    </alternative>
+    <alternative id="Numbered path placeholders">
+      Both example commands are rewritten to show several separately named placeholders instead of one set token, for example `git status --porcelain -- &lt;PATH_1&gt; &lt;PATH_2&gt; …` and `git add &lt;PATH_1&gt; &lt;PATH_2&gt; …`. They are tied to the Inputs entry as the members of PATHS. The literal-path rule is also stated in prose beside them.
+      <advantage>The example itself shows one argument per path, so the command shape and the prose rule say the same thing. It stays generic and suggests no particular file set, which fits callers that pass one to four paths, including a whole milestone directory.</advantage>
+      <drawback>It adds a numbered-placeholder convention that no other runtime file uses, and its link to the PATHS input has to be explained. The ellipsis and the fixed count of two shown can also be misread as an exact number of arguments.</drawback>
+    </alternative>
+    <alternative id="Concrete instance paths">
+      Both example commands are rewritten to show a realistic set of literal paths in place of any set token. The natural instance is the most common caller pair: `git status --porcelain -- &lt;MILESTONE_DIR&gt;/open_questions.xml &lt;MILESTONE_DIR&gt;/requirements.md` and `git add &lt;MILESTONE_DIR&gt;/open_questions.xml &lt;MILESTONE_DIR&gt;/requirements.md`. Each is marked as an example, and the literal-path rule is stated in prose beside them.
+      <advantage>It shows exactly what a correct command looks like when it runs, using paths a runner will recognise from its own caller. This leaves the least room for an interpretation that substitutes a variable.</advantage>
+      <drawback>The procedure is shared by 17 skills with different path sets: some pass only `milestones/README.md`, a milestone directory, or the principle store. A concrete pair can be read as the paths to stage, or copied into a run that should stage something else, and it ties the shared core to one family of callers.</drawback>
+    </alternative>
+    <alternative id="Template plus worked instance">
+      The generic `&lt;PATHS&gt;` form stays in both commands. Next to it goes a worked example that writes out one concrete multi-path set, for instance the `open_questions.xml` and `requirements.md` pair under `&lt;MILESTONE_DIR&gt;`, as separate literal arguments. The literal-path rule is stated in prose beside them.
+      <advantage>It keeps the template&apos;s link to the PATHS input that every caller uses, and still shows the correct expanded command shape. The generic form and the example of what it expands to each cover the other&apos;s weakness.</advantage>
+      <drawback>It is the longest wording, with two forms of each command in a 52-line procedure. The `&lt;PATHS&gt;` token that invites single-variable substitution is still the primary form a runner sees.</drawback>
+    </alternative>
+    <alternative id="Drop inline command examples">
+      Both inline command examples are removed. Steps 1 and 2 describe the commands in prose only: a status check scoped to the given paths, and a `git add` with every path of PATHS written out on the command line as its own argument, never through a shell variable. No placeholder form appears in a command at all.
+      <advantage>No token is left in a command for a runner to copy into a variable, and step 2 already has prose for &quot;naming each path explicitly&quot;. The rule and the instruction become the same sentence, with no example that could contradict it.</advantage>
+      <drawback>It removes the concrete command shapes the procedure gives elsewhere and that runners rely on, while step 3 keeps its literal `git commit -m` examples, so the file becomes uneven. Runners have to build the status and staging commands themselves, which leaves room for variation that the examples used to prevent.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Invariant placement">
     <question>Where in the CLAUDE.md invariants is the rationale for the literal-command rule recorded: as one new bullet covering both the commit procedure and the tool sites, or as additions to the two existing bullets (the open-question-tool bullet and the committing bullet)?</question>
