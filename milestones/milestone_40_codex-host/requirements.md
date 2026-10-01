@@ -112,5 +112,9 @@ Only the Codex tree names `AGENTS.md` in place of `CLAUDE.md`, everywhere it occ
 
 Only the Codex tree's alternatives-pass dispatch step names an explicit limit: keep at most the session's configured subagent thread cap in flight at once, as Codex's `agents.max_threads` setting or the default value the prose states. As each question's pipeline finishes (embedded and committed, or skipped after its one repair), its agent is closed and the next pending question is dispatched. Repair by continuation is unaffected, because closing waits for the repair window to end. The Claude Code and Antigravity trees keep the uncapped all-at-once wording unchanged.
 
+### Verification install source
+
+The live verification's plugin-install check adds the marketplace from a local path, the committed `hosts/codex/` directory in the cairn checkout, whose root holds `.agents/plugins/marketplace.json` and `plugins/cairn/`, and then runs `codex plugin add cairn@cairn`. The cairn repository gains no new file and nothing is pushed or published. The documented `uHappyLogic/cairn-codex` route is not run by the milestone, and no later check of it is added. This installs the exact bytes a release later publishes as the distribution repository's root, through a source form the installed CLI's help lists, with no network, no GitHub write, and no change to the release flow.
+
 ## Out of Scope
 
