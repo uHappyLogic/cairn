@@ -132,5 +132,9 @@ The live checks are split by mode, and each still runs exactly once. The task ru
 
 The no-model probes run as a requirements-phase step outside the task list, before `derive-tasks` runs. Any contradiction they find goes into the starting state and is corrected by revert-then-re-answer while the milestone is still in the question loop and no Codex implementation exists. Only the live verification can then contradict a decision after implementation; in that case the decision is reopened the same way, and the fix goes in as new tasks through `submit-task` while the milestone stays open. Most contradictions are thus corrected before any task is written against a false premise, and no completion runner ever makes a requirements decision.
 
+### Distribution repository creation
+
+The `uHappyLogic/cairn-codex` repository is not created in this milestone, and the task list has no task for it. At the first Codex release, the release skill's existing step-2f pre-flight finds the repository missing, stops, and prints the `gh repo create` and `gh repo edit` commands, which the maintainer runs then, at the same release where the `TRAFFIC_TOKEN` is extended. The goal's mention of the repository is met by the release path already handling it, not by the repository existing. An empty repository would give users nothing to install and the milestone nothing to verify against, and one stop at that release covers the repository and the token together.
+
 ## Out of Scope
 
