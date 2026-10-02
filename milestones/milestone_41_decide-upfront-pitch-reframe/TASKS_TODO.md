@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Rewrite Why Cairn Around Handing Off Execution
-
-Rewrite the three paragraphs of the root README's `## Why Cairn?`: the first opens with the problem of handing off long-running execution (an agent left to run for a long time hits questions nobody decided and either guesses quietly and builds on the guess or stops and waits for a person, so you cannot walk away), the second presents milestones as the mechanism (each milestone first brings its open questions up, has them answered with recorded decisions, and only then derives tasks an agent can complete unattended), and the third keeps work-type neutrality as the supporting point through the environment read from `CLAUDE.md`. The section says once, in plain words, that bringing up all the important questions is the principle Cairn is built toward and that later milestones work toward it, and it adopts no category noun for Cairn ("framework" and "workflow" are not used as identity nouns). Verified when the section is three paragraphs carrying that content and `## How it works` and `## Self-dogfooding` are unchanged word for word.
-
----
-
 ## Lead Design Principles With Claims 1 And 14
 
 Change the root README's `## Design principles` block to three bullets in this order: claim 1 ("Cairn finds the open questions before the work starts.") and claim 14 ("Unattended batch runs are possible.") with new glosses, then claim 2 ("Each decision has a record in git.") with its current gloss, removing the claim 11 and claim 5 bullets so the block surfaces the two claims the new pitch rests on. Verified when each bullet's claim line is verbatim and links to its anchor in `docs/design-claims.md`, the closing link to all nineteen claims is unchanged, and `docs/design-claims.md` itself has no diff.

@@ -31,3 +31,19 @@ Rework the root `README.md` mermaid diagram so define, review, provide alternati
 
 ---
 
+## Rewrite Why Cairn Around Handing Off Execution
+
+Rewrite the three paragraphs of the root README's `## Why Cairn?`: the first opens with the problem of handing off long-running execution (an agent left to run for a long time hits questions nobody decided and either guesses quietly and builds on the guess or stops and waits for a person, so you cannot walk away), the second presents milestones as the mechanism (each milestone first brings its open questions up, has them answered with recorded decisions, and only then derives tasks an agent can complete unattended), and the third keeps work-type neutrality as the supporting point through the environment read from `CLAUDE.md`. The section says once, in plain words, that bringing up all the important questions is the principle Cairn is built toward and that later milestones work toward it, and it adopts no category noun for Cairn ("framework" and "workflow" are not used as identity nouns). Verified when the section is three paragraphs carrying that content and `## How it works` and `## Self-dogfooding` are unchanged word for word.
+
+**Verified:**
+
+- The root `README.md` section `## Why Cairn?` holds exactly three paragraphs (three non-blank lines between its heading and `## Design principles`).
+- The first paragraph opens with the problem of handing long-running execution to an agent: an agent left to run for a long time hits questions nobody decided, either guesses quietly and builds on the guess or stops and waits for a person, and so you cannot walk away.
+- The second paragraph presents milestones as the mechanism: each milestone first brings its open questions up, has them answered with recorded decisions, and only then derives tasks an agent can complete unattended.
+- The third paragraph carries work-type neutrality as the supporting point: skills read the project's environment from `CLAUDE.md`, so the same sequence fits any kind of work.
+- The section says exactly once, in plain words, that bringing up all the important questions is the principle Cairn is built toward and that later milestones work toward it (`grep` finds "principle Cairn is built toward" once, in the second paragraph, which also says the claim is not yet a measured result).
+- The section adopts no category noun for Cairn: a case-insensitive `grep` for "framework" or "workflow" over the section finds nothing, and every sentence about Cairn makes it the subject of what it does.
+- `git diff -- README.md` shows three changed lines, 106, 108, and 110, all inside `## Why Cairn?`; `## How it works`, `## Self-dogfooding`, and everything else in the file are unchanged word for word.
+
+---
+
