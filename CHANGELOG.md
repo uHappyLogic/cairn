@@ -2,6 +2,17 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.8.0 — 2026-10-02
+
+### Codex host (milestone 40)
+
+- Cairn now ships for Codex as a third host, alongside Claude Code and Antigravity. The new distribution is laid out as a Codex marketplace, with the plugin under `plugins/cairn/`, and its skills are invoked in the `$cairn:<skill>` form.
+- In the Codex distribution the skills read project context from `AGENTS.md` in place of `CLAUDE.md`, both dispatching skills run their agent as Codex's generic subagent told to read and follow the plugin's agent file, and the alternatives pass keeps no more subagents in flight than the configured thread cap.
+- The Codex README covers installation and the workspace-write sandbox guidance, and the root README, `CONTRIBUTING.md`, `SECURITY.md`, the issue form's host dropdown, and `docs/ways-of-using-cairn.md` now cover Codex, including headless runs.
+- The Claude Code and Antigravity distributions are unchanged from 1.7.6 apart from the version.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.7.6...1.8.0
+
 ## 1.7.6 — 2026-10-01
 
 ### Literal shell commands without variables (milestone 39)
