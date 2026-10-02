@@ -56,5 +56,9 @@ The pitch surfaces adopt no category noun for Cairn. Each pitch sentence makes C
 
 The bold line "Mark the path from idea to shipped." is replaced, in the same place, by a new tagline that keeps the cairn trail-marker image and points it at the decide-upfront identity: the path is marked before the walk, so the walk can be handed off. The one-liner stays below it as the plain statement, and the two are worded together so they do not say the same thing twice.
 
+### Claim strength disclosure
+
+The short surfaces state the claim as plain present-tense fact with no qualifier: the one-liner, tagline, host README templates, manifest descriptions, the `CLAUDE.md` opening, and the GitHub repository descriptions. The root README's `## Why Cairn?` section says once, in plain words, that bringing up all the important questions is the principle Cairn is built toward and that later milestones work toward it; it may also say that the claim is not yet measured.
+
 ## Out of Scope
 
