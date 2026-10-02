@@ -84,5 +84,9 @@ The runtime wording stays as it is. The template sentence "This project uses the
 
 The milestone adds topics to `uHappyLogic/cairn` and removes none: the Codex host topics (`codex`, `openai-codex`) plus topics that express the decide-upfront identity and handing execution to agents, for example `ai-agents`, `autonomous-agents`, `spec-driven-development`, and `requirements`. All fourteen existing topics are kept, including `milestones`, `project-management`, and `workflow`, which brings the list to GitHub's 20-topic cap.
 
+### Release and rollout timing
+
+The milestone does not cut a release. The manifest and host README changes are committed and rebuilt into `hosts/`, and reach users with the next ordinary `/release-plugin` run after the milestone finishes. The root README goes live when it is pushed. All four GitHub repository descriptions are set with `gh` inside the milestone, as soon as their wording is decided; the distribution descriptions may run ahead of their READMEs until that release.
+
 ## Out of Scope
 
