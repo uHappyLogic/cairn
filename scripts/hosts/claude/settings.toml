@@ -54,3 +54,32 @@ tools = "tools"
 # Claude Code reads its project instructions from CLAUDE.md, so the workflow reads and
 # writes its environment context there.
 CONTEXT_FILE = "CLAUDE.md"
+# COMPLETE_TASK_DISPATCH: the complete-all-tasks sentence telling the runner how to dispatch
+# the complete-task agent for one task, ending where the dispatch prompt's fenced block opens.
+# Claude Code resolves the agent by its namespaced registry name through the Agent tool.
+COMPLETE_TASK_DISPATCH = '''Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the `complete-task` agent under this plugin's namespace, `cairn:complete-task`, and a prompt containing only the task name, substituting `<TASK_NAME>` with the exact `##` heading text (without the `##` prefix):'''
+# COMPLETE_TASK_PROMPT_INSTRUCTIONS: text opening complete-all-tasks' dispatch prompt, before
+# the task-name line.
+# The registered agent already carries its instructions, so nothing precedes the task name.
+COMPLETE_TASK_PROMPT_INSTRUCTIONS = ""
+# ALTERNATIVES_DISPATCH: the provide-alternatives-to-all-open-questions paragraph telling the
+# runner how to dispatch the per-question provide-alternatives-to-open-question agent and
+# what its prompt carries, ending where the dispatch prompt's fenced block opens.
+# Claude Code resolves the agent by its namespaced registry name through the Agent tool.
+ALTERNATIVES_DISPATCH = '''Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the
+`provide-alternatives-to-open-question` agent (singular — the per-question subagent) under this
+plugin's namespace, `cairn:provide-alternatives-to-open-question` — one dispatch per surviving
+question. Pass it that question's **Short Title** and the `<MILESTONE_DIR>` resolved in step 0,
+and nothing else — the two values the orchestrator already holds:'''
+# ALTERNATIVES_PROMPT_INSTRUCTIONS: text opening the alternatives pass's dispatch prompt,
+# before its first line.
+# The registered agent already carries its instructions, so nothing precedes the prompt.
+ALTERNATIVES_PROMPT_INSTRUCTIONS = ""
+# ALTERNATIVES_AGENT: what the alternatives pass's re-dispatch repair spawns afresh.
+# Here that is the registered agent, named by its namespaced registry name.
+ALTERNATIVES_AGENT = '`cairn:provide-alternatives-to-open-question` agent'
+# AGENT_TOOL: the tool the alternatives pass's repair branches name, both as the source of
+# the agent id a follow-up message is addressed to and as the tool a fresh agent is
+# dispatched with.
+# Here that is the Agent tool.
+AGENT_TOOL = '`Agent` tool'

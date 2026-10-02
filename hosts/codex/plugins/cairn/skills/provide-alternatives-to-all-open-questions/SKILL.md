@@ -110,13 +110,17 @@ sibling will settle, so no dispatch reads what another wrote and their order cha
 Both arms write the same blocks and land the same commits; the sequential arm differs only in
 wall-clock time.
 
-Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the
-`provide-alternatives-to-open-question` agent (singular — the per-question subagent) under this
-plugin's namespace, `cairn:provide-alternatives-to-open-question` — one dispatch per surviving
-question. Pass it that question's **Short Title** and the `<MILESTONE_DIR>` resolved in step 0,
-and nothing else — the two values the orchestrator already holds:
+Use the `spawn_agent` tool to spawn one default (generic) subagent per surviving question,
+with no custom agent type, and have it act as the plugin's
+`provide-alternatives-to-open-question` agent (singular — the per-question subagent) by reading
+and following that agent's file, `${PLUGIN_ROOT}/agents/provide-alternatives-to-open-question.md`.
+Pass it that file's path, that question's **Short Title**, and the `<MILESTONE_DIR>` resolved in
+step 0, and nothing else — the path, which the subagent has no other way to learn, and the two
+values the orchestrator already holds:
 
 ```
+Read and follow the agent instructions in ${PLUGIN_ROOT}/agents/provide-alternatives-to-open-question.md.
+
 Enumerate the alternatives for this single open question.
 
 Short Title: <Short Title>
@@ -190,11 +194,11 @@ Repair by whichever of these two branches the host supports, in this order:
 
 - **Continue the same agent session.** Where the host can continue a finished agent session and
   you still hold that dispatch's handle — a follow-up message addressed to the agent id the
-  `Agent` tool returned — send the corrective message below to **that same agent**. Its context
+  `spawn_agent` tool returned — send the corrective message below to **that same agent**. Its context
   is intact, so it re-emits from the analysis it already did.
 - **Re-dispatch one fresh agent.** Where the host cannot continue a finished agent session, or
-  the handle is gone, dispatch **one** fresh `cairn:provide-alternatives-to-open-question` agent
-  for that question with the `Agent` tool, passing the **same prompt** as the original dispatch
+  the handle is gone, dispatch **one** fresh default (generic) subagent
+  for that question with the `spawn_agent` tool, passing the **same prompt** as the original dispatch
   with the corrective message below appended to it as a shape reminder. This second dispatch
   redoes the analysis, so it is the fallback branch, never the preferred one.
 

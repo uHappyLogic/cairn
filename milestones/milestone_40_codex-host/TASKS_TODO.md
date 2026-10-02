@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Slot Agent Dispatch Wording in Core
-
-Put the host-dependent dispatch wording of `complete-all-tasks` and `provide-alternatives-to-all-open-questions` (the "Use the `Agent` tool with `subagent_type` set to" sentences and the repair branch's reference to the agent id that tool returned) behind named slots whose Claude Code and Antigravity values are today's exact text. The Codex values spawn Codex's default (generic) subagent with a prompt that tells it to read and follow the plugin's agent file by its plugin-root path, followed by the task heading or the Short Title and milestone directory as today; that instructions path is the one value the Codex dispatch prompt adds. Verified by the rebuilt Codex tree's dispatch sites pointing at agent files that pass `dangling-plugin-root`, with `git diff 5305f43 -- hosts/claude hosts/antigravity` empty.
-
----
-
 ## Slot Alternatives Pass Thread Cap Wording
 
 Put the uncapped all-at-once wording of the dispatch step in `provide-alternatives-to-all-open-questions` behind a named slot that Claude Code and Antigravity fill with today's exact text. The Codex value names an explicit limit: keep at most the session's configured subagent thread cap in flight at once (Codex's `agents.max_threads` setting, or the default value the prose states, taken from Codex's documentation), and as each question's pipeline finishes (embedded and committed, or skipped after its one repair) close its agent and dispatch the next pending question, leaving repair by continuation unaffected. Verified by reading the rebuilt Codex skill's dispatch step and by `git diff 5305f43 -- hosts/claude hosts/antigravity` staying empty.

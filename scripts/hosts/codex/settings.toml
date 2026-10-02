@@ -55,3 +55,38 @@ tools = "plugins/cairn/tools"
 # Codex reads its project instructions from AGENTS.md (its /init writes that file), so the
 # workflow reads and writes its environment context there and never touches CLAUDE.md.
 CONTEXT_FILE = "AGENTS.md"
+# COMPLETE_TASK_DISPATCH: the complete-all-tasks sentence telling the runner how to dispatch
+# the complete-task agent for one task, ending where the dispatch prompt's fenced block opens.
+# Codex registers no plugin-shipped agent, so the runner spawns its default (generic)
+# subagent and points it at the plugin's agent file by its plugin-root path.
+COMPLETE_TASK_DISPATCH = '''Use the `spawn_agent` tool to spawn one default (generic) subagent, with no custom agent type, and a prompt that tells it to read and follow the plugin's `complete-task` agent file at `{{PLUGIN_ROOT}}/agents/complete-task.md` and otherwise contains only the task name, substituting `<TASK_NAME>` with the exact `##` heading text (without the `##` prefix):'''
+# COMPLETE_TASK_PROMPT_INSTRUCTIONS: text opening complete-all-tasks' dispatch prompt, before
+# the task-name line.
+# The generic subagent has no other way to learn its instructions, so the prompt opens with
+# the agent file's plugin-root path.
+COMPLETE_TASK_PROMPT_INSTRUCTIONS = "Read and follow the agent instructions in {{PLUGIN_ROOT}}/agents/complete-task.md.\n\n"
+# ALTERNATIVES_DISPATCH: the provide-alternatives-to-all-open-questions paragraph telling the
+# runner how to dispatch the per-question provide-alternatives-to-open-question agent and
+# what its prompt carries, ending where the dispatch prompt's fenced block opens.
+# Codex registers no plugin-shipped agent, so the runner spawns its default (generic)
+# subagent and points it at the plugin's agent file by its plugin-root path.
+ALTERNATIVES_DISPATCH = '''Use the `spawn_agent` tool to spawn one default (generic) subagent per surviving question,
+with no custom agent type, and have it act as the plugin's
+`provide-alternatives-to-open-question` agent (singular — the per-question subagent) by reading
+and following that agent's file, `{{PLUGIN_ROOT}}/agents/provide-alternatives-to-open-question.md`.
+Pass it that file's path, that question's **Short Title**, and the `<MILESTONE_DIR>` resolved in
+step 0, and nothing else — the path, which the subagent has no other way to learn, and the two
+values the orchestrator already holds:'''
+# ALTERNATIVES_PROMPT_INSTRUCTIONS: text opening the alternatives pass's dispatch prompt,
+# before its first line.
+# The generic subagent has no other way to learn its instructions, so the prompt opens with
+# the agent file's plugin-root path.
+ALTERNATIVES_PROMPT_INSTRUCTIONS = "Read and follow the agent instructions in {{PLUGIN_ROOT}}/agents/provide-alternatives-to-open-question.md.\n\n"
+# ALTERNATIVES_AGENT: what the alternatives pass's re-dispatch repair spawns afresh.
+# Here that is another default subagent, given the same prompt and so the same agent file.
+ALTERNATIVES_AGENT = 'default (generic) subagent'
+# AGENT_TOOL: the tool the alternatives pass's repair branches name, both as the source of
+# the agent id a follow-up message is addressed to and as the tool a fresh agent is
+# dispatched with.
+# Here that is the spawn_agent tool, which spawns Codex's subagents.
+AGENT_TOOL = '`spawn_agent` tool'

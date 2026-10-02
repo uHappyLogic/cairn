@@ -54,3 +54,32 @@ tools = "tools"
 # project's context, the bootstrap creates or extends, and finish-current-milestone updates.
 # This tree keeps the project instruction file it has always named, CLAUDE.md.
 CONTEXT_FILE = "CLAUDE.md"
+# COMPLETE_TASK_DISPATCH: the complete-all-tasks sentence telling the runner how to dispatch
+# the complete-task agent for one task, ending where the dispatch prompt's fenced block opens.
+# This tree keeps the dispatch wording it has always carried.
+COMPLETE_TASK_DISPATCH = '''Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the `complete-task` agent under this plugin's namespace, `cairn:complete-task`, and a prompt containing only the task name, substituting `<TASK_NAME>` with the exact `##` heading text (without the `##` prefix):'''
+# COMPLETE_TASK_PROMPT_INSTRUCTIONS: text opening complete-all-tasks' dispatch prompt, before
+# the task-name line.
+# This tree keeps the prompt it has always carried, so nothing precedes the task name.
+COMPLETE_TASK_PROMPT_INSTRUCTIONS = ""
+# ALTERNATIVES_DISPATCH: the provide-alternatives-to-all-open-questions paragraph telling the
+# runner how to dispatch the per-question provide-alternatives-to-open-question agent and
+# what its prompt carries, ending where the dispatch prompt's fenced block opens.
+# This tree keeps the dispatch wording it has always carried.
+ALTERNATIVES_DISPATCH = '''Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the
+`provide-alternatives-to-open-question` agent (singular — the per-question subagent) under this
+plugin's namespace, `cairn:provide-alternatives-to-open-question` — one dispatch per surviving
+question. Pass it that question's **Short Title** and the `<MILESTONE_DIR>` resolved in step 0,
+and nothing else — the two values the orchestrator already holds:'''
+# ALTERNATIVES_PROMPT_INSTRUCTIONS: text opening the alternatives pass's dispatch prompt,
+# before its first line.
+# This tree keeps the prompt it has always carried, so nothing precedes it.
+ALTERNATIVES_PROMPT_INSTRUCTIONS = ""
+# ALTERNATIVES_AGENT: what the alternatives pass's re-dispatch repair spawns afresh.
+# This tree keeps the wording it has always carried.
+ALTERNATIVES_AGENT = '`cairn:provide-alternatives-to-open-question` agent'
+# AGENT_TOOL: the tool the alternatives pass's repair branches name, both as the source of
+# the agent id a follow-up message is addressed to and as the tool a fresh agent is
+# dispatched with.
+# This tree keeps the wording it has always carried.
+AGENT_TOOL = '`Agent` tool'

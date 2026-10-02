@@ -110,14 +110,10 @@ sibling will settle, so no dispatch reads what another wrote and their order cha
 Both arms write the same blocks and land the same commits; the sequential arm differs only in
 wall-clock time.
 
-Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the
-`provide-alternatives-to-open-question` agent (singular — the per-question subagent) under this
-plugin's namespace, `cairn:provide-alternatives-to-open-question` — one dispatch per surviving
-question. Pass it that question's **Short Title** and the `<MILESTONE_DIR>` resolved in step 0,
-and nothing else — the two values the orchestrator already holds:
+{{ALTERNATIVES_DISPATCH}}
 
 ```
-Enumerate the alternatives for this single open question.
+{{ALTERNATIVES_PROMPT_INSTRUCTIONS}}Enumerate the alternatives for this single open question.
 
 Short Title: <Short Title>
 
@@ -190,11 +186,11 @@ Repair by whichever of these two branches the host supports, in this order:
 
 - **Continue the same agent session.** Where the host can continue a finished agent session and
   you still hold that dispatch's handle — a follow-up message addressed to the agent id the
-  `Agent` tool returned — send the corrective message below to **that same agent**. Its context
+  {{AGENT_TOOL}} returned — send the corrective message below to **that same agent**. Its context
   is intact, so it re-emits from the analysis it already did.
 - **Re-dispatch one fresh agent.** Where the host cannot continue a finished agent session, or
-  the handle is gone, dispatch **one** fresh `cairn:provide-alternatives-to-open-question` agent
-  for that question with the `Agent` tool, passing the **same prompt** as the original dispatch
+  the handle is gone, dispatch **one** fresh {{ALTERNATIVES_AGENT}}
+  for that question with the {{AGENT_TOOL}}, passing the **same prompt** as the original dispatch
   with the corrective message below appended to it as a shape reminder. This second dispatch
   redoes the analysis, so it is the fallback branch, never the preferred one.
 

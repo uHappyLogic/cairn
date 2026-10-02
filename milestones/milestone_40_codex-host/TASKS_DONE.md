@@ -63,3 +63,18 @@ Replace every mention of `CLAUDE.md` in `core/` with a named slot whose value is
 - `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` both pass (527 tests).
 
 ---
+
+## Slot Agent Dispatch Wording in Core
+
+Put the host-dependent dispatch wording of `complete-all-tasks` and `provide-alternatives-to-all-open-questions` (the "Use the `Agent` tool with `subagent_type` set to" sentences and the repair branch's reference to the agent id that tool returned) behind named slots whose Claude Code and Antigravity values are today's exact text. The Codex values spawn Codex's default (generic) subagent with a prompt that tells it to read and follow the plugin's agent file by its plugin-root path, followed by the task heading or the Short Title and milestone directory as today; that instructions path is the one value the Codex dispatch prompt adds. Verified by the rebuilt Codex tree's dispatch sites pointing at agent files that pass `dangling-plugin-root`, with `git diff 5305f43 -- hosts/claude hosts/antigravity` empty.
+
+**Verified:**
+
+- `core/skills/complete-all-tasks/SKILL.md` carries the dispatch sentence as `{{COMPLETE_TASK_DISPATCH}}` and opens its dispatch prompt with `{{COMPLETE_TASK_PROMPT_INSTRUCTIONS}}`; `core/skills/provide-alternatives-to-all-open-questions/SKILL.md` carries its dispatch paragraph as `{{ALTERNATIVES_DISPATCH}}`, opens its dispatch prompt with `{{ALTERNATIVES_PROMPT_INSTRUCTIONS}}`, and names the repair branches' tool as `{{AGENT_TOOL}}` (the agent id it returned, and the tool a fresh agent is dispatched with) and the re-dispatched agent as `{{ALTERNATIVES_AGENT}}`; `core/` names no `Agent` tool, `subagent_type`, or `cairn:` registry name any more.
+- `scripts/hosts/claude/settings.toml` and `scripts/hosts/antigravity/settings.toml` declare all six slots with today's exact text (the two prompt-instruction slots empty), and `scripts/hosts/codex/settings.toml` declares the Codex values, each slot under a comment explaining it.
+- The rebuilt Codex tree's `complete-all-tasks` spawns one default (generic) subagent with the `spawn_agent` tool and no custom agent type, with a prompt that opens `Read and follow the agent instructions in ${PLUGIN_ROOT}/agents/complete-task.md.` followed by the unchanged task-name line; its `provide-alternatives-to-all-open-questions` does the same with `${PLUGIN_ROOT}/agents/provide-alternatives-to-open-question.md` followed by the unchanged Short Title and milestone-directory prompt, states that the instructions path is the one value added to the two the orchestrator already holds, and its repair branches address the agent id the `spawn_agent` tool returned and re-dispatch a fresh default subagent with the same prompt; the Codex tree names no `Agent` tool, `subagent_type`, or `cairn:` registry name.
+- Every Codex dispatch-site path resolves to `plugins/cairn/agents/complete-task.md` or `plugins/cairn/agents/provide-alternatives-to-open-question.md`, both present, and `dangling-plugin-root` passes.
+- `uv run scripts/build_hosts.py` builds all three hosts and `uv run scripts/build_hosts.py --check` passes (including `slot-declaration` and `unfilled-placeholder`), and `git diff 5305f43 -- hosts/claude hosts/antigravity` is empty.
+- `uv run pytest` passes (527 tests).
+
+---
