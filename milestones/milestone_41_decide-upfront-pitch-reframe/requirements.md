@@ -60,5 +60,9 @@ The bold line "Mark the path from idea to shipped." is replaced, in the same pla
 
 The short surfaces state the claim as plain present-tense fact with no qualifier: the one-liner, tagline, host README templates, manifest descriptions, the `CLAUDE.md` opening, and the GitHub repository descriptions. The root README's `## Why Cairn?` section says once, in plain words, that bringing up all the important questions is the principle Cairn is built toward and that later milestones work toward it; it may also say that the claim is not yet measured.
 
+### First-screen diagram
+
+The diagram keeps all seven skill-named nodes, the left-to-right layout, and the dashed "until no open questions remain" return edge from answer to review. Define, review, provide alternatives, recommend, and answer sit inside a mermaid subgraph titled for deciding upfront; derive and complete sit inside a second subgraph titled for handing execution to agents. The answer-to-derive edge crosses between the two groups and is labelled as the handoff. The three colour classes (`init`, `req`, `auto`) become two, one per group.
+
 ## Out of Scope
 
