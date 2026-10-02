@@ -70,7 +70,7 @@ The bar is strict identity. Measured against the trees as released at `Release: 
 
 ### Unverified behaviour probes
 
-The unverified Codex behaviours are settled as far as possible without a model call, before the decisions that depend on them: from the openai/codex source at the installed 0.159.3 version, and from Codex CLI subcommands that call no model (`codex plugin marketplace add` and `codex plugin add` on a fixture, `codex plugin list`, and `codex debug prompt-input`, which renders the model-visible prompt input and so shows how installed plugin skills and agents are presented). The findings go into the starting state. The goal's end-of-milestone verification run is the only live session; the runtime-only behaviours that non-model evidence cannot settle (whether a finished subagent accepts a follow-up message, how a model resolves a spawn by name) stay unconfirmed until that run, and the design avoids leaning on them.
+No no-model probes run, from the openai/codex source or from Codex CLI subcommands, at any point before or during implementation, and no probe findings are written into the starting state. The implementation is built on the recorded decisions as assumed, and the end-of-milestone live verification is the first and only test of the unverified Codex behaviours.
 
 ### Quota exhaustion fallback
 

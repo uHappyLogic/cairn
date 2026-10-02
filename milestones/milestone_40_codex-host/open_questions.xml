@@ -1,7 +1,4 @@
 <open-questions>
-  <open-question id="Behaviour probe decision">
-    <question>The Goal now says the implementation is built on the recorded decisions as assumed, with no pre-implementation probing of the Codex behaviours they rest on, and that the live verification is where those assumptions are first tested. The recorded &quot;Unverified behaviour probes&quot; decision still requires the unverified Codex behaviours to be settled without a model call (from the openai/codex source and no-model CLI subcommands) before the decisions that depend on them, with the findings written into the starting state. What, if anything, remains of that decision under the revised Goal?</question>
-  </open-question>
   <open-question id="Contradiction handling path">
     <question>The recorded &quot;Contradicting probe findings&quot; decision has the no-model probes run as a requirements-phase step before derive-tasks, with contradictions corrected by revert-then-re-answer while still in the question loop, and only the live verification contradicting a decision after implementation, reopened the same way with the fix submitted as new tasks through submit-task. The revised Goal drops the pre-implementation probes and says any contradiction the live verification finds is fixed inside this milestone by follow-up tasks after the initial task batch. How does the milestone handle a contradicted decision now?</question>
   </open-question>
