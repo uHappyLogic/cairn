@@ -52,5 +52,9 @@ The one-liner is a declarative sentence with Cairn as its subject, naming no cat
 
 The pitch surfaces adopt no category noun for Cairn. Each pitch sentence makes Cairn the subject of what it does. "Plugin" stays only as a plain fact in installation and distribution text; "framework" and "workflow" are not used as identity nouns.
 
+### README tagline
+
+The bold line "Mark the path from idea to shipped." is replaced, in the same place, by a new tagline that keeps the cairn trail-marker image and points it at the decide-upfront identity: the path is marked before the walk, so the walk can be handed off. The one-liner stays below it as the plain statement, and the two are worded together so they do not say the same thing twice.
+
 ## Out of Scope
 
