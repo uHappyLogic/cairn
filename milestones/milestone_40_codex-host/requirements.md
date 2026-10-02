@@ -144,5 +144,9 @@ The `uHappyLogic/cairn-codex` repository is not created in this milestone, and t
 
 The Codex manifest template sits at `scripts/hosts/codex/plugins/cairn/.codex-plugin/plugin.json` and, like every other template, renders to that same relative path, so the manifest lands at `hosts/codex/plugins/cairn/.codex-plugin/plugin.json`. The build stays unchanged. The "Codex manifest location" decision is read as placing the manifest at `.codex-plugin/plugin.json` relative to the plugin root, and only its literal template path is corrected; the tree still has no `plugin.json` at its root or at the plugin root. The build already renders every template to its own relative path, so the manifest lands beside the skills with no build change, and the definition directory reads as a copy of the published repository, whose README and marketplace templates already sit at tree-root paths.
 
+### Verification inline skill
+
+The interactive verification check runs `$cairn:recommend-all-open-questions`. The maintainer runs it after the headless alternatives dispatch has embedded alternatives into the seed's one bare question; the skill picks one option inline, writes it through the open-question tool, and commits under `Recommendation-annotation:`. The seed stays as the "Verification workspace" decision describes it, and the question is left standing. The skill takes no argument, like the README's example invocation, so the `$cairn:` form is checked in the shape a user types; it runs several open-question tool subcommands under the sandbox and ends in an approved commit, which backs both sandbox claims; on a one-question seed it makes a single commit, because the sort leaves a one-block document as it is; and its input is the real output of the alternatives dispatch.
+
 ## Out of Scope
 
