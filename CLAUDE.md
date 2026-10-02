@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-A plugin (`cairn`) for Claude Code, Antigravity, and Codex that provides a milestone-driven development workflow. It ships as a set of skills, a few agents, shared procedures, and the stdlib-only Python tools under `tools/` (among them the open-question tool, the only writer of each milestone's open-question document once it is created) that move a project from a vague idea through discussion, planning, completion, and archival — one milestone at a time.
+A plugin (`cairn`) for Claude Code, Antigravity, and Codex that brings a milestone's important questions up to be decided before work starts, so execution can then be handed to agents. It ships as a set of skills, a few agents, shared procedures, and the stdlib-only Python tools under `tools/` (among them the open-question tool, the only writer of each milestone's open-question document once it is created) that move a project from a vague idea through discussion, planning, completion, and archival — one milestone at a time.
 
 ## Commands
 

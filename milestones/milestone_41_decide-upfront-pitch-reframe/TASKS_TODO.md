@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Restate CLAUDE.md Opening Identity Sentence
-
-Reword the first sentence of `## What this repo is` in `CLAUDE.md` so it still names `cairn` as a plugin for Claude Code, Antigravity, and Codex but, in place of "provides a milestone-driven development workflow", states in the editor's own words and plain present tense that it brings a milestone's important questions up to be decided before work starts, so execution can then be handed to agents. The README one-liner is not copied word for word, and milestones stay in the rest of the paragraph as the mechanism. Verified when that sentence is the only change: the `## Milestone Workflow` block at the end of `CLAUDE.md` and everything under `core/skills/init-milestone-base-workflow/` have no diff.
-
----
-
 ## Update Release Skill Distribution Description Pattern
 
 Change the `--description` argument of the `gh repo create` command in `.claude/skills/release-plugin/SKILL.md` to the new distribution pattern: the identity sentence "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently." first, then a shortened pointer giving the host name, the fact that the repository is published from `uHappyLogic/cairn`, and that issues go there, with only the host varying. This fixes the one wording the three live distribution descriptions are then set from, so the printed command and the live descriptions stay identical. Verified when the command carries that pattern with its `<host>` slot and the old "Distribution of the Cairn plugin for <host>, published verbatim by each release of uHappyLogic/cairn. Report issues there." string is gone from the file.
