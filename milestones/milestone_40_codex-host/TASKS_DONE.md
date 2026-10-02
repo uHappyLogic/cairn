@@ -151,3 +151,21 @@ Change only the sentences that list hosts or repositories: in `CONTRIBUTING.md` 
 - `uv run scripts/build_hosts.py --check` still passes.
 
 ---
+
+## Document Codex Headless Runs in Docs
+
+Extend the "Notation and flags" section of `docs/ways-of-using-cairn.md` so Codex is a third binary: `codex exec '$cairn:<skill>'` is the Codex form of a line, the permission bypass maps to `--dangerously-bypass-approvals-and-sandbox`, `--model` has a counterpart in `-m`, `--effort` has no flag, `--add-dir` exists under the same name, and the `<goal>` rule becomes "no single quote" on Codex lines. The one-line swap rule is extended so a line moves to Codex by changing the binary, dropping `--model` and `--effort`, replacing the permission flag, and rewriting `"/cairn:<skill>"` to `'$cairn:<skill>'`. Verified by reading the section against those points and confirming no chain gained a Codex line and the page names no Codex model id or effort level.
+
+**Verified:**
+
+- The "Notation and flags" section of `docs/ways-of-using-cairn.md` names `codex exec '$cairn:<skill>'` as the Codex form of a line, beside the `claude -p` and `agy -p` forms.
+- The permission-flag bullet maps `--dangerously-skip-permissions` to the Codex counterpart `--dangerously-bypass-approvals-and-sandbox`.
+- The `--model` bullet gives `-m` as its Codex counterpart.
+- The `--effort` bullet states Codex has no effort flag.
+- The `--add-dir` bullet states the flag exists on all three hosts under the same name.
+- The `<goal>` placeholder rule says no single quote on a Codex line (no double quote stays the rule elsewhere).
+- The swap rule moves a line to Codex by changing the binary to `codex exec`, dropping `--model` and `--effort`, replacing the permission flag with `--dangerously-bypass-approvals-and-sandbox`, and rewriting `"/cairn:<skill>"` to `'$cairn:<skill>'`.
+- No chain gained a Codex line (`grep -n '^codex' docs/ways-of-using-cairn.md` prints nothing).
+- The page names no Codex model id or effort level.
+
+---
