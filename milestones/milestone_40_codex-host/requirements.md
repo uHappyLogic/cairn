@@ -140,5 +140,9 @@ The `uHappyLogic/cairn-codex` repository is not created in this milestone, and t
 
 `docs/ways-of-using-cairn.md` gives `codex exec '$cairn:<skill>'` as the Codex form of a line: Codex's documented `$` sigil with the plugin namespace, the same `$cairn:<skill>` text the Codex README uses, in single quotes so the shell passes the `$` through as written. The swap rule gains one more step: moving a line to Codex also rewrites `"/cairn:<skill>"` to `'$cairn:<skill>'`. The placeholder rule for `<goal>` changes from "no double quote" to "no single quote" on Codex lines. Users then type one invocation form everywhere, and single quotes stop the shell's `$` expansion with no escape character to lose.
 
+### Manifest template path
+
+The Codex manifest template sits at `scripts/hosts/codex/plugins/cairn/.codex-plugin/plugin.json` and, like every other template, renders to that same relative path, so the manifest lands at `hosts/codex/plugins/cairn/.codex-plugin/plugin.json`. The build stays unchanged. The "Codex manifest location" decision is read as placing the manifest at `.codex-plugin/plugin.json` relative to the plugin root, and only its literal template path is corrected; the tree still has no `plugin.json` at its root or at the plugin root. The build already renders every template to its own relative path, so the manifest lands beside the skills with no build change, and the definition directory reads as a copy of the published repository, whose README and marketplace templates already sit at tree-root paths.
+
 ## Out of Scope
 
