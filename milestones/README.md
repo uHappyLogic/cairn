@@ -13,9 +13,18 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_40_codex-host/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 40 — Codex host
+
+- `scripts/hosts/codex/` renders `core/` into a committed `hosts/codex/` tree laid out as a Codex marketplace: `.agents/plugins/marketplace.json` at its root and the plugin under `plugins/cairn/`, with its manifest at `.codex-plugin/plugin.json` and every plugin-root reference rendered as `${PLUGIN_ROOT}`.
+- The build gains named wording slots (a required `[slots]` table, guarded by a new `slot-declaration` check) and a required `plugin_dir` key that `dangling-plugin-root` resolves against, while `hosts/claude/` and `hosts/antigravity/` stay byte-identical to release 1.7.6.
+- Slots carry every Codex wording difference: the Codex tree names `AGENTS.md` in place of `CLAUDE.md`, both dispatch sites spawn Codex's generic subagent with a prompt to read and follow the plugin's Markdown agent file, and the alternatives pass keeps at most the configured subagent thread cap in flight.
+- The Codex distribution templates (a README with the badge strip, the `$cairn:` invocation form and the workspace-write sandbox guidance, the CONTRIBUTING pointer, and the traffic workflow) are in place, and the root README, the issue-form host dropdown, `CONTRIBUTING.md`, `SECURITY.md`, and `docs/ways-of-using-cairn.md` cover Codex as a third host.
+- The release skill's pre-flight now stops when a distribution repository lacks the `TRAFFIC_TOKEN` secret and prints the token-extension, badge-seeding, and adoption-table steps; `uHappyLogic/cairn-codex` itself is left to be created at the first Codex release.
+- A live free-tier verification passed all four checks: a local-marketplace install, one headless dispatch of each agent, and an interactive `$cairn:recommend-all-open-questions` run under workspace-write with on-request approval.
 
 ### Milestone 39 — Literal shell commands without variables
 
@@ -432,3 +441,4 @@ Current milestone: `milestones/milestone_40_codex-host/`
 | 37 | Mechanical milestone definition | `milestones/milestone_37_mechanical-milestone-definition/` |
 | 38 | Distinct and covering alternatives | `milestones/milestone_38_distinct-and-covering-alternatives/` |
 | 39 | Literal shell commands without variables | `milestones/milestone_39_literal-shell-commands-without-variables/` |
+| 40 | Codex host | `milestones/milestone_40_codex-host/` |
