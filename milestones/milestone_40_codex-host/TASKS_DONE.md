@@ -200,3 +200,17 @@ In a new minimal git repository in a temporary directory outside the cairn check
 - Each check ran exactly once, the workspace is kept for the interactive check, and no seed or run script or run log was kept.
 
 ---
+
+## Confirm Maintainer Interactive Codex Check
+
+The fourth live check is the maintainer's: in an interactive Codex session in the kept verification workspace, under the workspace-write sandbox with on-request approval, they run `$cairn:recommend-all-open-questions` and approve its git steps. This task passes only when the workspace shows that run, such as the `Recommendation-annotation:` commit the skill leaves in the workspace's git history, and the completer must never run the skill itself; without that evidence the task fails and stays open until the maintainer has run the check. On a pass it records the fourth outcome in `TASKS_DONE.md` and deletes the workspace.
+
+**Verified:**
+
+- The verification workspace at `/var/folders/7h/9cm_f6b96jb7h9gr5mj20cy00000gn/T/cairn-codex-verify.Gbrl8R0Tr8` showed the maintainer's run: commit `df4b5b3 Recommendation-annotation: milestone_01_greeting-file`, directly above the runner's `46594c6`, adding one `<recommendation option="Hello">` element to the seed's `Greeting wording` question, with the lifted line `Hello — A concise, broadly suitable greeting best fits the goal of a simple greeting file.` as its body and no reorder commit, as the one-block sort predicts.
+- Check 4, interactive inline skill (pass): Codex's session log for that commit is an interactive `codex-tui` session in the workspace with approval policy `on-request` and sandbox `workspace-write`, whose user message was `$cairn:recommend-all-open-questions`; the skill loaded from the installed plugin, ran its open-question tool calls (`list`, `embed --recommendation`, `lift`, `sort`) with no approval prompt, its first `git add` failed on the read-only `.git` (`Unable to create '.git/index.lock': Operation not permitted`), and the escalated `git add` plus `git commit` ran after the maintainer approved it, backing both sandbox claims of the "Codex sandbox requirements" decision.
+- No result contradicted a recorded decision; the `$` skill picker found the skill only after `/clear` in an already-open session, while the typed `$cairn:<skill>` form itself worked as documented.
+- The completer ran no Codex skill: the evidence was read from the workspace's git history and Codex's session log only.
+- The workspace was deleted after the outcome was recorded; `ls` on its path reports no such file or directory.
+
+---
