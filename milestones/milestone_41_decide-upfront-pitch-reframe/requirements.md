@@ -68,5 +68,9 @@ The diagram keeps all seven skill-named nodes, the left-to-right layout, and the
 
 `## Why Cairn?` keeps its three-paragraph structure with new content in each paragraph. The first opens with the problem of handing off long-running execution: an agent left to run for a long time hits questions nobody decided, and it either guesses quietly and builds on the guess or stops and waits for a person, so you cannot walk away. The second presents milestones as the mechanism: each milestone first brings its open questions up, has them answered with recorded decisions, and only then derives tasks an agent can complete unattended. The third makes work-type neutrality the supporting point: the environment is read from `CLAUDE.md`, so it fits any kind of work.
 
+### Design principles block
+
+The README's `## Design principles` block stays at three bullets. Claims 1 ("Cairn finds the open questions before the work starts.") and 14 ("Unattended batch runs are possible.") lead with new glosses, followed by claim 2 ("Each decision has a record in git.") with its current gloss. Claims 11 and 5 are removed from the README and remain behind the unchanged closing link to all nineteen claims.
+
 ## Out of Scope
 
