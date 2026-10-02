@@ -80,5 +80,9 @@ The first sentence of `## What this repo is` stays a factual description for an 
 
 The runtime wording stays as it is. The template sentence "This project uses the milestone-driven workflow." in `core/skills/init-milestone-base-workflow/SKILL.md`, the matching `## Milestone Workflow` block at the end of this repository's `CLAUDE.md`, and the skill's intro sentence "Bootstraps the milestone-driven workflow inside a project." are all left untouched. The sentence names the mechanism an agent works under, not the product, so the reframe stays on the pitch surfaces the goal lists.
 
+### Root repository topics
+
+The milestone adds topics to `uHappyLogic/cairn` and removes none: the Codex host topics (`codex`, `openai-codex`) plus topics that express the decide-upfront identity and handing execution to agents, for example `ai-agents`, `autonomous-agents`, `spec-driven-development`, and `requirements`. All fourteen existing topics are kept, including `milestones`, `project-management`, and `workflow`, which brings the list to GitHub's 20-topic cap.
+
 ## Out of Scope
 

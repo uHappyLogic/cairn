@@ -1,34 +1,4 @@
 <open-questions>
-  <open-question id="Root repository topics">
-    <question>Does this milestone change the GitHub topics of uHappyLogic/cairn, which today include &quot;milestones&quot;, &quot;project-management&quot;, and &quot;workflow&quot; and none for Codex, and if so which topics are added or removed?</question>
-    <applied-principle>Check tier claims against the live environment</applied-principle>
-    <recommendation option="Add Codex and identity topics">Topics are the discovery surface beside the description, so they should reach the new identity and the third host, and every example topic is a populated GitHub topic today. Adding closes no existing discovery path, whereas dropping project-management or milestones removes one on a judgment call, and a list at the cap can be trimmed when a later topic needs the room.</recommendation>
-    <alternative id="Add Codex and identity topics">
-      The milestone adds the Codex host topics (codex, openai-codex) plus topics that express the decide-upfront identity and handing execution to agents, for example ai-agents, autonomous-agents, spec-driven-development and requirements. Every existing topic is kept, including milestones, project-management and workflow, which brings the list to GitHub&apos;s 20-topic cap.
-      <advantage>Search reaches the new identity and the Codex host while nothing is lost. Everyone who finds Cairn today through milestones, project-management or workflow still finds it, which fits the goal&apos;s framing of milestones as the mechanism that stays.</advantage>
-      <drawback>It fills the topic cap exactly, which leaves no room for a later host or identity topic without removing one first. It also keeps project-management, a label that presents Cairn as a project-management tool, beside a pitch that no longer does. When the topics are set depends on the rollout-timing question.</drawback>
-    </alternative>
-    <alternative id="Leave topics unchanged">
-      The milestone does not touch the topics of uHappyLogic/cairn. All fourteen stay as they are (agentic, ai, anthropic, claude-code, claude-code-plugin, developer-tools, llm, milestones, project-management, skills, software-development, workflow, agy, agy-cli). No Codex topic is added. Topics are recorded as outside the reframe, with no later milestone committed to revisiting them.
-      <advantage>It matches the goal&apos;s own list of surfaces, which names the four repository descriptions but not topics. Topics live in no tracked file and cannot be reviewed in a diff, so this keeps the milestone&apos;s hand-set GitHub state to the descriptions alone.</advantage>
-      <drawback>The repository sidebar keeps advertising milestones, project-management and workflow right beside a description that now pitches deciding upfront. Codex stays undiscoverable by topic even though it is a supported host with its own distribution repository, the same staleness the description question corrects.</drawback>
-    </alternative>
-    <alternative id="Add Codex topics only">
-      The milestone adds host-parity topics for the Codex host, for example codex and openai-codex, which brings the count to sixteen. Every existing topic stays, including milestones, project-management and workflow. No topic expressing the decide-upfront identity is added.
-      <advantage>It fixes the one plainly factual error in the topic list, a missing supported host, for the cost of two additions, and it makes no taxonomy claim that the reframe would later have to defend or revise.</advantage>
-      <drawback>The topics still describe only the old milestone-driven identity, so the reframe reaches the description but not the discovery surface that sits next to it. It also corrects a host-coverage fact under a milestone whose goal is identity, not parity. When the topics are set depends on the rollout-timing question.</drawback>
-    </alternative>
-    <alternative id="Add identity, drop project-management">
-      The milestone adds the Codex host topics (codex, openai-codex) and the decide-upfront identity topics (for example ai-agents, autonomous-agents, spec-driven-development, requirements). It removes only project-management, the topic that frames Cairn as a project-management product. milestones and workflow stay as names for the mechanism, and the list ends at nineteen topics.
-      <advantage>It aligns the topics with the goal&apos;s exact structure: the new identity is added, milestones are kept as the mechanism, and the one label that misnames what Cairn is goes away. It also leaves one slot below the cap.</advantage>
-      <drawback>Anyone browsing the project-management topic loses a discovery path, and which of the three old topics counts as the misleading one is a judgment call. If the product-noun question settles away from workflow, keeping that topic leaves a small mismatch. When the topics are set depends on the rollout-timing question.</drawback>
-    </alternative>
-    <alternative id="Replace milestone-identity topics">
-      The milestone adds the Codex host topics (codex, openai-codex) and the decide-upfront identity topics (for example ai-agents, autonomous-agents, spec-driven-development, requirements). It removes all three topics tied to the old identity: milestones, project-management and workflow. The list ends at seventeen topics, with every remaining topic describing the platform, the host, or the new identity.
-      <advantage>It gives the cleanest match between topics and pitch, with no sidebar label pointing back to the milestone-driven framing the milestone set out to replace, and it leaves three slots free below the cap.</advantage>
-      <drawback>It drops milestones even though the goal keeps milestones as the visible mechanism. It also cuts the discovery paths through which current users may have found the repository. If the product-noun question settles on workflow, removing the workflow topic would contradict the pitch&apos;s own noun. When the topics are set depends on the rollout-timing question.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Release and rollout timing">
     <question>The root README and the GitHub repository descriptions change as soon as they are pushed or set, while the manifests and host READMEs reach users only with the next release. Does this milestone include cutting that release, and are the GitHub descriptions set within the milestone or held until the release publishes?</question>
     <recommendation option="Defer release, set all descriptions now">A release here is a separate act after finish, and this milestone gives no reason to change that. Setting all four descriptions inside the milestone fixes the stale Codex-less root description at once and leaves no untracked step owed to a later release, at the cost of the distribution descriptions briefly running ahead of their READMEs until the next ordinary release.</recommendation>
