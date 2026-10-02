@@ -44,5 +44,9 @@ Edits under `scripts/hosts/` require `uv run scripts/build_hosts.py` and a commi
 
 ## Decisions
 
+### Identity one-liner
+
+The one-liner is a declarative sentence with Cairn as its subject, naming no category noun, that states only the decide-upfront identity and adds no tail: "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently." It is used verbatim under the title of the root README and of all three host README templates. Milestones and work-type neutrality leave the first line and are carried by the diagram and `## Why Cairn?`.
+
 ## Out of Scope
 
