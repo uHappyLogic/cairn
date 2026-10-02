@@ -169,3 +169,19 @@ Extend the "Notation and flags" section of `docs/ways-of-using-cairn.md` so Code
 - The page names no Codex model id or effort level.
 
 ---
+
+## Add Traffic Token Check to Release Skill
+
+Add a check that names no host to the step 2f host loop of `.claude/skills/release-plugin/SKILL.md`: for every distribution repository it runs `gh secret list --repo uHappyLogic/cairn-<host>` and, when the `TRAFFIC_TOKEN` secret is missing, stops and prints the maintainer's instructions without running anything, the same way a missing repository is handled. Those instructions say to extend the one token to the new repository, regenerate it, and re-set the secret in every repository, then after publishing to run the repository's `traffic-badges` workflow once by `workflow_dispatch` and add the repository's row to the root README's adoption table in its own commit, apart from the `Release:` commit; the `CLAUDE.md` Development note changes from three repositories to four. Verified by reading the step for the check, the printed instructions, and the absence of any host name.
+
+**Verified:**
+
+- Step 2f of `.claude/skills/release-plugin/SKILL.md` runs `gh secret list --repo uHappyLogic/cairn-<host>` for every host in the `ls -1 scripts/hosts/` loop whose repository exists, treats the secret as present only when an output line begins with `TRAFFIC_TOKEN`, and counts a missing repository as missing the token too.
+- A missing token stops the run after every host is checked, and the skill prints the instructions without running anything they name, the same way and in the same step as the missing-repository commands, which are printed first.
+- The printed instructions say to extend the one fine-grained token to the new repository, regenerate it, and re-set the `TRAFFIC_TOKEN` secret in every repository (the monorepo and one `gh secret set` line per host definition).
+- The printed instructions say that after publishing the maintainer runs the repository's `traffic-badges` workflow once by `workflow_dispatch` (`gh workflow run traffic-badges.yml --repo uHappyLogic/cairn-<host>`) and then adds its row to the root README's adoption table in its own commit, apart from the `Release:` commit.
+- No line added to the release skill names a host (`git diff` added lines contain none of `codex`, `claude`, `antigravity`, `agy`).
+- The `CLAUDE.md` Development note reads "a fine-grained PAT on exactly the four repositories".
+- `uv run scripts/build_hosts.py --check` passes.
+
+---

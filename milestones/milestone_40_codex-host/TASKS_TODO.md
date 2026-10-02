@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Traffic Token Check to Release Skill
-
-Add a check that names no host to the step 2f host loop of `.claude/skills/release-plugin/SKILL.md`: for every distribution repository it runs `gh secret list --repo uHappyLogic/cairn-<host>` and, when the `TRAFFIC_TOKEN` secret is missing, stops and prints the maintainer's instructions without running anything, the same way a missing repository is handled. Those instructions say to extend the one token to the new repository, regenerate it, and re-set the secret in every repository, then after publishing to run the repository's `traffic-badges` workflow once by `workflow_dispatch` and add the repository's row to the root README's adoption table in its own commit, apart from the `Release:` commit; the `CLAUDE.md` Development note changes from three repositories to four. Verified by reading the step for the check, the printed instructions, and the absence of any host name.
-
----
-
 ## Verify Codex Install and Agent Dispatches
 
 In a new minimal git repository in a temporary directory outside the cairn checkout, seeded without a model by running the milestone-definition tool and the open-question tool directly so it holds one milestone with one bare open question and one small task, run three live checks exactly once each: add the marketplace from the committed `hosts/codex/` directory and run `codex plugin add cairn@cairn`, then run one dispatch of each agent as a headless `codex exec` run with `--dangerously-bypass-approvals-and-sandbox`, calling Codex by its full path, the alternatives dispatch leaving alternatives embedded in the seed's question. The task passes only when all three pass: a free-tier quota stop leaves it open to resume at the first unrun check with earlier evidence kept as valid, and a result that contradicts a recorded decision is reported as a failure, never fixed or decided here. The three outcomes and the workspace's path are recorded in `TASKS_DONE.md`, the workspace is kept for the interactive check, and no seed or run script is kept.

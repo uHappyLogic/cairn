@@ -99,8 +99,8 @@ git describe --tags --abbrev=0 --exclude=<VERSION>
 ### 2. Pre-flight stops
 
 Run all six checks. Each one blocks a route by which the release would tag something other
-than a fresh build of committed `core/`, or publish into a place that does not exist, so any
-failure stops the run. None of them writes anything.
+than a fresh build of committed `core/`, or publish into a place that does not exist or
+cannot run its traffic workflow, so any failure stops the run. None of them writes anything.
 
 **a. The tracked working tree is clean.**
 
@@ -160,8 +160,8 @@ only version slots: once the committed trees match a fresh build at the old vers
 thing a rebuild at the new version can change is the version literal in each rendered manifest
 and README.
 
-**f. Every host's distribution repository exists.** List the host definitions — one
-directory per host, in definition order:
+**f. Every host's distribution repository exists and holds the traffic token.** List the
+host definitions — one directory per host, in definition order:
 
 ```bash
 ls -1 scripts/hosts/
@@ -175,10 +175,24 @@ settings file names it. For every `<host>`, check that the repository exists:
 gh repo view uHappyLogic/cairn-<host> --json nameWithOwner
 ```
 
-A zero exit means it exists; move to the next host. A non-zero exit (`Could not resolve to a
-Repository`) means it is missing. Once every host has been checked, if any is missing, stop
-and print — for each missing host, with `<host>` filled in — exactly these two commands, in
-this order, and **never run them**:
+A zero exit means it exists; then check that it holds the `TRAFFIC_TOKEN` secret its
+`traffic-badges` workflow pushes with:
+
+```bash
+gh secret list --repo uHappyLogic/cairn-<host>
+```
+
+The secret is present when a line of the output begins with the name `TRAFFIC_TOKEN`; any
+other output, or a non-zero exit, means it is missing. Move to the next host. A non-zero exit
+from `gh repo view` (`Could not resolve to a Repository`) means the repository is missing; a
+missing repository holds no secret, so count it as missing the token too, without listing
+its secrets. Once every host has been checked, if any repository or token is missing, stop
+and print the instructions below, and **never run anything they name**: first the repository
+commands for each missing repository, then the token instructions once, for every repository
+missing the token.
+
+For each missing repository, with `<host>` filled in, print exactly these two commands, in
+this order:
 
 ```bash
 gh repo create uHappyLogic/cairn-<host> --public \
@@ -195,6 +209,39 @@ carries is the license. The `edit` adds the topics and disables issues, wiki, an
 feedback routes to `uHappyLogic/cairn`. Provisioning a public repository is a deliberate,
 irreversible act that belongs to the maintainer: this skill publishes into what already
 exists and stops on anything else, so it prints the commands and exits with nothing changed.
+
+When any repository is missing the token, print these instructions once, with `<VERSION>`
+filled in. List every repository missing the token on the first line, and repeat the
+`uHappyLogic/cairn-<host>` mentions of steps 1 and 5 once for each of them; repeat the
+`uHappyLogic/cairn-<host>` line of step 3 once for every `<host>` in the definition list,
+since regenerating the token invalidates it in every repository, not only the new ones.
+
+```text
+TRAFFIC_TOKEN is missing in: uHappyLogic/cairn-<host>
+1. Extend the one fine-grained TRAFFIC_TOKEN to the new repository: edit the token at
+   https://github.com/settings/personal-access-tokens and add uHappyLogic/cairn-<host> to
+   its repository access, keeping every repository it already covers.
+2. Regenerate the token, which invalidates the old value everywhere it is set.
+3. Re-set the secret with the new value in every repository the token covers, the
+   monorepo and every distribution repository, pasting the value at each prompt and
+   keeping no local copy:
+     gh secret set TRAFFIC_TOKEN --repo uHappyLogic/cairn
+     gh secret set TRAFFIC_TOKEN --repo uHappyLogic/cairn-<host>
+4. Re-run /release-plugin <VERSION>.
+After this release has published, for each repository listed above:
+5. Run its traffic-badges workflow once:
+     gh workflow run traffic-badges.yml --repo uHappyLogic/cairn-<host>
+   and wait for that run to succeed, so its traffic-data branch holds both badges.
+6. Add the repository's row to the adoption table in the root README.md, in the shape of
+   the existing rows, and commit it in its own commit, apart from the Release: commit.
+```
+
+The token is one fine-grained personal access token shared by every repository that runs a
+`traffic-badges` workflow, so a repository new to it means extending that token rather than
+minting a second one. The badge row waits for the first workflow run because before it the
+`traffic-data` branch does not exist and the row would show a broken badge. Like the
+repository commands, these steps belong to the maintainer: the skill prints them and exits
+with nothing changed.
 
 ### 3. Validate the version argument
 
