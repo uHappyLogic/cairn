@@ -1,6 +1,6 @@
 {
   "name": "cairn",
-  "description": "Milestone-driven development workflow — discuss goals, define milestones, derive and complete tasks, and archive milestones",
+  "description": "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently.",
   "version": "1.8.0",
   "author": {
     "name": "Lukasz Kosiak"

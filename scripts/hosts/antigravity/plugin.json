@@ -1,6 +1,6 @@
 {
   "$schema": "https://antigravity.google/schemas/v1/plugin.json",
   "name": "{{NAME}}",
-  "description": "Milestone-driven development workflow — discuss goals, define milestones, derive and complete tasks, and archive milestones",
+  "description": "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently.",
   "version": "{{VERSION}}"
 }

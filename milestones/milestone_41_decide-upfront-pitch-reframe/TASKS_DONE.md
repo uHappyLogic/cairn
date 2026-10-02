@@ -77,3 +77,18 @@ Replace the line under `# Cairn for <Host>` in `scripts/hosts/claude/README.md`,
 
 ---
 
+## Unify Manifest Descriptions On The One-Liner
+
+Set all five description strings to the README one-liner word for word, "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently.": the three plugin manifests (`scripts/hosts/claude/.claude-plugin/plugin.json`, `scripts/hosts/antigravity/plugin.json`, `scripts/hosts/codex/plugins/cairn/.codex-plugin/plugin.json`) and the two Claude marketplace files (the hand-kept root `.claude-plugin/marketplace.json` and the template `scripts/hosts/claude/.claude-plugin/marketplace.json`). This ends the split into a long and a short string and drops the plugin manifests' step list; the `hosts/` trees are rebuilt with `uv run scripts/build_hosts.py` and no release is cut. Verified when `uv run scripts/build_hosts.py --check` exits zero and all five files and their rendered copies carry the one string.
+
+**Verified:**
+
+- The `description` value in each of the five source files (`scripts/hosts/claude/.claude-plugin/plugin.json`, `scripts/hosts/antigravity/plugin.json`, `scripts/hosts/codex/plugins/cairn/.codex-plugin/plugin.json`, the root `.claude-plugin/marketplace.json`, and `scripts/hosts/claude/.claude-plugin/marketplace.json`) reads exactly "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently.", the same string as the one-liner on line 29 of the root `README.md`.
+- `uv run scripts/build_hosts.py` rebuilt `hosts/antigravity/`, `hosts/claude/`, and `hosts/codex/`, and `uv run scripts/build_hosts.py --check` then exits zero.
+- The four rendered copies (`hosts/claude/.claude-plugin/plugin.json`, `hosts/claude/.claude-plugin/marketplace.json`, `hosts/antigravity/plugin.json`, `hosts/codex/plugins/cairn/.codex-plugin/plugin.json`) carry the same string as their `description`, so a `grep` for `"description"` over the JSON files under `.claude-plugin`, `scripts/hosts`, and `hosts` finds nine lines holding one value.
+- A case-insensitive `grep` for "milestone-driven development" finds no JSON file under `.claude-plugin`, `scripts/hosts`, or `hosts`: both the short string and the plugin manifests' step list are gone.
+- The root marketplace file and the four rendered manifests load as valid JSON, and the root marketplace file's `version` is still `1.8.0`: no release was cut.
+- `git diff --stat` shows nine changed files, the five sources and their four rendered copies, each with 1 insertion and 1 deletion.
+
+---
+

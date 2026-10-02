@@ -7,7 +7,7 @@
     {
       "name": "cairn",
       "source": ".",
-      "description": "Milestone-driven development for any stack.",
+      "description": "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently.",
       "version": "1.8.0"
     }
   ]

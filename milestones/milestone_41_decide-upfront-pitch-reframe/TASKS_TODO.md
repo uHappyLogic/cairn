@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Unify Manifest Descriptions On The One-Liner
-
-Set all five description strings to the README one-liner word for word, "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently.": the three plugin manifests (`scripts/hosts/claude/.claude-plugin/plugin.json`, `scripts/hosts/antigravity/plugin.json`, `scripts/hosts/codex/plugins/cairn/.codex-plugin/plugin.json`) and the two Claude marketplace files (the hand-kept root `.claude-plugin/marketplace.json` and the template `scripts/hosts/claude/.claude-plugin/marketplace.json`). This ends the split into a long and a short string and drops the plugin manifests' step list; the `hosts/` trees are rebuilt with `uv run scripts/build_hosts.py` and no release is cut. Verified when `uv run scripts/build_hosts.py --check` exits zero and all five files and their rendered copies carry the one string.
-
----
-
 ## Restate CLAUDE.md Opening Identity Sentence
 
 Reword the first sentence of `## What this repo is` in `CLAUDE.md` so it still names `cairn` as a plugin for Claude Code, Antigravity, and Codex but, in place of "provides a milestone-driven development workflow", states in the editor's own words and plain present tense that it brings a milestone's important questions up to be decided before work starts, so execution can then be handed to agents. The README one-liner is not copied word for word, and milestones stay in the rest of the paragraph as the mechanism. Verified when that sentence is the only change: the `## Milestone Workflow` block at the end of `CLAUDE.md` and everything under `core/skills/init-milestone-base-workflow/` have no diff.
