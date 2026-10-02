@@ -96,6 +96,10 @@ Neither `## How it works` nor `## Self-dogfooding` is edited in this milestone. 
 
 All five description strings become one string, the README one-liner copied word for word: the three plugin manifests (`scripts/hosts/claude/.claude-plugin/plugin.json`, `scripts/hosts/antigravity/plugin.json`, `scripts/hosts/codex/plugins/cairn/.codex-plugin/plugin.json`) and the two Claude marketplace files (the hand-kept root `.claude-plugin/marketplace.json` and the template `scripts/hosts/claude/.claude-plugin/marketplace.json`). The split into a long group and a short group ends, and the plugin manifests drop their step list.
 
+### Root repository description
+
+The GitHub description of `uHappyLogic/cairn` is the README one-liner word for word, followed by one clause that lists all three supported hosts, for example "… — for Claude Code, Google Antigravity, and Codex." The identity sentence stays exactly as in the README; only the host clause is added for this surface.
+
 ## Out of Scope
 
 - Rewording the root README's `## How it works` and `## Self-dogfooding` sections: left unchanged for good, not deferred to a later milestone.
