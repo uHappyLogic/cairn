@@ -88,6 +88,31 @@
   </open-question>
   <open-question id="First-screen diagram shape">
     <question>How does the root README&apos;s first-screen mermaid diagram change to express &quot;decide upfront, then hand off execution&quot;? Today it is one seven-node loop (define, review, provide alternatives, recommend, answer, derive, complete) that gives the question loop and execution equal weight.</question>
+    <alternative id="Two titled phase groups">
+      Keep all seven skill-named nodes and the dashed &quot;until no open questions remain&quot; return edge from answer to review. Put define, review, provide alternatives, recommend, and answer inside a mermaid subgraph titled for deciding upfront. Put derive and complete inside a second subgraph titled for handing execution to agents. The answer-to-derive edge crosses between the two groups and is labelled as the handoff. The three colour classes (init, req, auto) become two, one per group. The layout stays left to right.
+      <advantage>The handoff boundary becomes impossible to miss, and the group titles carry the identity&apos;s own words. The reader still sees the concrete command sequence that matches docs/workflow.md and the skill reference, so the first screen keeps working as a map of what to run.</advantage>
+      <drawback>It is still seven nodes plus two containers, so the diagram gets busier than today&apos;s single row. By node count the execution half is two small boxes, so &quot;long-running execution&quot; can read as the minor part of the story. Mermaid subgraphs in a left-to-right flowchart also tend to render unevenly on GitHub.</drawback>
+    </alternative>
+    <alternative id="Re-weight in place">
+      Keep today&apos;s single row of seven skill-named nodes, its left-to-right layout, and the dashed return edge. Make the change only through styling and labels. The three colour classes become two: one for the deciding nodes (define through answer) and one for the execution nodes (derive, complete). The answer-to-derive edge gets a label naming the handoff to agents, possibly drawn as a thicker edge. There are no subgraph containers and no new nodes.
+      <advantage>It is the smallest change that still marks the two halves and the handoff point. The diagram&apos;s footprint and its familiar shape stay the same, and nothing new can render badly.</advantage>
+      <drawback>The boundary is expressed only through colour and one edge label. A skimming reader can still read it as one equal-weight seven-step loop, which is the problem the question names, so the identity rests mostly on the one-liner above the diagram.</drawback>
+    </alternative>
+    <alternative id="Abstract phase diagram">
+      Replace the seven skill nodes with two or three phase-level nodes that name no skills. The first is a deciding node meaning &quot;decide every important question upfront&quot;, with a dashed self-loop meaning &quot;until none remain&quot;. Its edge, labelled as the handoff, leads to an execution node meaning &quot;agents run the long-running work unattended&quot;. An optional third node can show the hand-off moment itself. There are two colour classes. The skill sequence is left to docs/workflow.md, whose six per-phase diagrams already show it.
+      <advantage>It states the identity at a glance in the diagram&apos;s own structure. It gives the deciding half and the execution half equal, distinct weight, and puts the handoff, the thing the new pitch is about, at the visual centre.</advantage>
+      <drawback>The first screen no longer shows which commands exist or in what order, so a new reader has to go to docs/workflow.md or the skill reference to learn how to use Cairn. An abstract boxes-and-arrows picture also risks reading as marketing rather than as a description of real mechanics.</drawback>
+    </alternative>
+    <alternative id="Phase nodes captioned with skills">
+      Use two phase-level nodes, one for deciding upfront and one for handing execution to agents, joined by an edge labelled as the handoff. Each node&apos;s label also lists the skills it covers as a second line: define, review, alternatives, recommend, answer in the first, and derive, complete in the second. The deciding node keeps a dashed self-loop meaning &quot;until no open questions remain&quot;. There are two colour classes.
+      <advantage>The diagram reads at a glance as two equal halves with a handoff between them, while still naming the commands behind each half, so it keeps the identity&apos;s two-beat shape and the practical map in one compact picture.</advantage>
+      <drawback>Long multi-line node labels wrap and size poorly in GitHub&apos;s mermaid rendering. Folding the five deciding skills into one box hides the order inside the question loop and which steps that loop repeats, which today&apos;s diagram shows.</drawback>
+    </alternative>
+    <alternative id="Remove the diagram">
+      Drop the mermaid diagram from the root README&apos;s first screen, so the tagline line, if kept, and the one-liner carry the identity alone, followed directly by `## Installation`. No new diagram replaces it on the first screen. The skill sequence stays documented by the per-phase diagrams in docs/workflow.md.
+      <advantage>The first screen gets shorter and states the identity in one place, the sentence, with no visual that has to be kept faithful to both the pitch and the changing skill pipeline. That removes one surface that can drift.</advantage>
+      <drawback>It throws away the only visual on the landing page and the quickest way for a reader to see that Cairn is a concrete, staged process rather than a slogan. Putting the diagram back lower on the page, rather than dropping it, would mean editing &quot;## How it works&quot;, which depends on how the &quot;Lower README sections scope&quot; question settles.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Why Cairn argument">
     <question>What argument does the rewritten &quot;## Why Cairn?&quot; section of the root README make: which problem does it open with, and where in it do milestones (as the mechanism) and work-type neutrality (as a supporting point) appear?</question>
