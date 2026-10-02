@@ -1,6 +1,66 @@
 <open-questions>
   <open-question id="Identity one-liner wording">
     <question>What is the exact one-sentence statement of the new identity (Cairn brings all the important questions up to be decided upfront, so long-running execution can be handed to agents confidently) that replaces &quot;Milestone-driven development for your coding agent — any kind of work, one milestone at a time.&quot; under the title of the root README and the three host README templates?</question>
+    <alternative id="Statement, identity only">
+      The one-liner is a declarative sentence with Cairn as its subject, naming no category noun, that states only the decide-upfront identity and adds nothing after it. It is used verbatim under the title of the root README and of all three host README templates: &quot;Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently.&quot;
+      <advantage>It is almost exactly the goal&apos;s own identity sentence. Cairn is named as the actor that surfaces the questions, so the full-strength claim reads as unambiguous and makes a clean break from the milestone-driven line.</advantage>
+      <drawback>Every surface repeats &quot;Cairn&quot; directly under a heading that already says &quot;# Cairn&quot; or &quot;# Cairn for &lt;Host&gt;&quot;. Milestones (the mechanism) and work-type neutrality both drop off the first line, leaving them to the diagram and the &quot;Why Cairn?&quot; section. The verb-led form also leaves no place for a category noun, which matters if the Product noun question wants one in this line.</drawback>
+    </alternative>
+    <alternative id="Statement plus milestone tail">
+      The one-liner is a declarative sentence with Cairn as its subject, naming no category noun. It states the decide-upfront identity and ends with the mechanism phrase only, used verbatim on all four READMEs: &quot;Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently — one milestone at a time.&quot;
+      <advantage>The identity names its actor and also says how the upfront decisions are kept to a bounded size: one milestone at a time. This ties the sentence to the workflow the diagram shows, so milestones come across as the mechanism, which is how the goal places them.</advantage>
+      <drawback>&quot;Milestone&quot; stays in the sentence that is meant to retire the milestone-driven identity, so returning readers may still take Cairn for a milestone tool. Work-type neutrality disappears from the first screen, and the sentence repeats the name under the title.</drawback>
+    </alternative>
+    <alternative id="Statement plus neutrality tail">
+      The one-liner is a declarative sentence with Cairn as its subject, naming no category noun. It states the decide-upfront identity and ends with the work-type neutrality phrase only, used verbatim on all four READMEs: &quot;Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently — for any kind of work.&quot;
+      <advantage>Every word of milestone framing leaves the first line, yet the line keeps the point that sets Cairn apart from agent tools built only for code. The identity is still stated with Cairn as the explicit actor.</advantage>
+      <drawback>The mechanism is invisible until the reader reaches the diagram or the &quot;Why Cairn?&quot; section. &quot;For any kind of work&quot; placed next to &quot;long-running execution&quot; is vague about what it qualifies, and the name is repeated under the title.</drawback>
+    </alternative>
+    <alternative id="Statement plus both tails">
+      The one-liner is a declarative sentence with Cairn as its subject, naming no category noun. It states the decide-upfront identity and keeps the current one-liner&apos;s tail verbatim, used on all four READMEs: &quot;Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently — any kind of work, one milestone at a time.&quot;
+      <advantage>Both supporting points the goal names stay visible on the first line, and the familiar tail gives returning readers continuity, so the reframe reads as a sharper statement of the same product.</advantage>
+      <drawback>At about thirty words it is the longest option, and the identity clause competes with the tail for attention. It is also the option closest to the old milestone-driven line it is meant to replace. If the manifest strings reuse the one-liner verbatim, this length carries over to them as well.</drawback>
+    </alternative>
+    <alternative id="Fragment, identity only">
+      The one-liner is a noun-phrase fragment with no grammatical subject, the same shape as the current line. It states only the decide-upfront identity and is used verbatim on all four READMEs: &quot;All the important questions surfaced and decided upfront, so long-running execution can be handed to your agent with confidence.&quot;
+      <advantage>It keeps the established shape of a subjectless line under the title, so it does not repeat &quot;Cairn&quot; and needs no category noun. It is the shortest form that still carries the claim that the questions are surfaced.</advantage>
+      <drawback>The passive voice leaves the actors implicit: who surfaces the questions (Cairn) and who decides them (the user) are never named. A fragment also reads as less of a claim than a sentence does. Milestones and neutrality leave the first line, and if a new tagline restates the identity, this line duplicates it.</drawback>
+    </alternative>
+    <alternative id="Fragment plus milestone tail">
+      The one-liner is a subjectless noun-phrase fragment. It states the decide-upfront identity and ends with the mechanism phrase only, used verbatim on all four READMEs: &quot;All the important questions surfaced and decided upfront, so long-running execution can be handed to your agent with confidence — one milestone at a time.&quot;
+      <advantage>It keeps the current line&apos;s shape and its closing &quot;one milestone at a time&quot;, so the change reads as a reframe of a familiar line. Milestones are shown as the mechanism without being named as the identity.</advantage>
+      <drawback>In the passive voice, Cairn&apos;s role in surfacing the questions stays implicit. &quot;Milestone&quot; lingers in the line meant to retire that identity, and work-type neutrality leaves the first screen.</drawback>
+    </alternative>
+    <alternative id="Fragment plus neutrality tail">
+      The one-liner is a subjectless noun-phrase fragment. It states the decide-upfront identity and ends with the work-type neutrality phrase only, used verbatim on all four READMEs: &quot;All the important questions surfaced and decided upfront, so long-running execution can be handed to your agent with confidence — for any kind of work.&quot;
+      <advantage>It keeps the established shape of the line under the title and removes milestone wording from the first line entirely, while still claiming breadth beyond code.</advantage>
+      <drawback>The actors stay implicit in the passive voice, and the mechanism is absent from the first screen until the diagram. &quot;For any kind of work&quot; hangs loosely off a passive clause.</drawback>
+    </alternative>
+    <alternative id="Fragment plus both tails">
+      The one-liner is a subjectless noun-phrase fragment. It states the decide-upfront identity and keeps the current tail verbatim, used on all four READMEs: &quot;All the important questions surfaced and decided upfront, so long-running execution can be handed to your agent with confidence — any kind of work, one milestone at a time.&quot;
+      <advantage>Of all the options, it changes the current line least in shape: only the head is swapped and the shape and tail stay. Both supporting points stay visible, and returning readers keep their bearings.</advantage>
+      <drawback>It is long, and its passive head is the weakest part of a sentence that is meant to lead with the new identity. Keeping the old tail risks readers seeing the same milestone-driven pitch with a new opening.</drawback>
+    </alternative>
+    <alternative id="Imperative, identity only">
+      The one-liner is an imperative sentence addressed to the reader. It states only the two acts of the identity and is used verbatim on all four READMEs: &quot;Decide all the important questions upfront, then hand long-running execution to your agent with confidence.&quot;
+      <advantage>It is the shortest and most active option. It names the reader&apos;s two acts in order (decide, then hand off), which matches the workflow and needs neither the name nor a category noun.</advantage>
+      <drawback>It reads as advice any process could give. That Cairn is what surfaces the questions, the core of the identity, is left implicit, so the &quot;all the important questions&quot; claim no longer reads as something Cairn does. Milestones and neutrality leave the first line.</drawback>
+    </alternative>
+    <alternative id="Imperative plus milestone tail">
+      The one-liner is an imperative sentence addressed to the reader. It states the two acts of the identity and ends with the mechanism phrase only, used verbatim on all four READMEs: &quot;Decide all the important questions upfront, then hand long-running execution to your agent with confidence — one milestone at a time.&quot;
+      <advantage>It is active and short, and the closing phrase gives the advice a concrete, bounded rhythm. Milestones are shown as the cadence of the method rather than as its identity.</advantage>
+      <drawback>Cairn&apos;s surfacing role is still implicit, and &quot;milestone&quot; stays on the line meant to retire it. Work-type neutrality leaves the first screen.</drawback>
+    </alternative>
+    <alternative id="Imperative plus neutrality tail">
+      The one-liner is an imperative sentence addressed to the reader. It states the two acts of the identity and ends with the work-type neutrality phrase only, used verbatim on all four READMEs: &quot;Decide all the important questions upfront, then hand long-running execution to your agent with confidence — for any kind of work.&quot;
+      <advantage>It is active and short, carries no milestone wording at all, and tells readers outside software that the method applies to their work too.</advantage>
+      <drawback>Without the name or the mechanism, it is the option least specific to Cairn, and it reads closest to generic advice. Cairn&apos;s role in surfacing the questions stays implicit.</drawback>
+    </alternative>
+    <alternative id="Imperative plus both tails">
+      The one-liner is an imperative sentence addressed to the reader. It states the two acts of the identity and keeps the current tail verbatim, used on all four READMEs: &quot;Decide all the important questions upfront, then hand long-running execution to your agent with confidence — any kind of work, one milestone at a time.&quot;
+      <advantage>It pairs an active new head with the familiar tail. The reader gets the new identity as an instruction, and both supporting points the goal names are still on the first line.</advantage>
+      <drawback>It is long, and Cairn&apos;s surfacing role stays implicit. Keeping the old tail pulls the line back toward the milestone-driven identity it replaces.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Product noun">
     <question>Which noun do the pitch surfaces use for what Cairn is (for example &quot;framework&quot;, &quot;plugin&quot;, or &quot;workflow&quot;), given that the goal says &quot;framework&quot; while the manifests and CLAUDE.md say &quot;plugin&quot; and &quot;workflow&quot; today?</question>
