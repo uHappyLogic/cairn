@@ -47,3 +47,19 @@ Rewrite the three paragraphs of the root README's `## Why Cairn?`: the first ope
 
 ---
 
+## Lead Design Principles With Claims 1 And 14
+
+Change the root README's `## Design principles` block to three bullets in this order: claim 1 ("Cairn finds the open questions before the work starts.") and claim 14 ("Unattended batch runs are possible.") with new glosses, then claim 2 ("Each decision has a record in git.") with its current gloss, removing the claim 11 and claim 5 bullets so the block surfaces the two claims the new pitch rests on. Verified when each bullet's claim line is verbatim and links to its anchor in `docs/design-claims.md`, the closing link to all nineteen claims is unchanged, and `docs/design-claims.md` itself has no diff.
+
+**Verified:**
+
+- The root `README.md` section `## Design principles` holds exactly three bullets, in the order claim 1, claim 14, claim 2.
+- The first bullet's claim line reads "Cairn finds the open questions before the work starts." verbatim, matching the `### 1.` heading of `docs/design-claims.md`, and links to `docs/design-claims.md#1-cairn-finds-the-open-questions-before-the-work-starts`; its gloss is new.
+- The second bullet's claim line reads "Unattended batch runs are possible." verbatim, matching the `### 14.` heading, and links to `docs/design-claims.md#14-unattended-batch-runs-are-possible`; its gloss is new.
+- The third bullet is the claim 2 bullet, "Each decision has a record in git." linked to `docs/design-claims.md#2-each-decision-has-a-record-in-git`, with its gloss unchanged (the line does not appear in `git diff -- README.md`).
+- `grep -c` finds neither "The records are machine-readable" nor "Advice gets better with each milestone" in `README.md` (zero matches), so the claim 11 and claim 5 bullets are gone.
+- The closing line "All nineteen claims, each with its design and a metric to test it, are in [docs/design-claims.md](docs/design-claims.md)." is unchanged; `git diff -- README.md` shows 2 insertions and 2 deletions, all inside the bullet list.
+- `git diff --quiet -- docs/design-claims.md` exits zero: the claims page has no diff.
+
+---
+

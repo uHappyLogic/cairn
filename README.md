@@ -111,9 +111,9 @@ This holds for any kind of work. Skills read your project's environment — its 
 
 ## Design principles
 
-- **[The records are machine-readable.](docs/design-claims.md#11-the-records-are-machine-readable)** Open questions are one XML document per milestone, created empty with the milestone and written from then on only by the plugin's stdlib open-question tool, so every answer, cascade, and prune is a validated tool call that rewrites the document in one canonical form.
+- **[Cairn finds the open questions before the work starts.](docs/design-claims.md#1-cairn-finds-the-open-questions-before-the-work-starts)** The review skill reads the milestone's requirements and writes each gap as an open question, and task derivation does not start while one remains, so the questions reach you before an agent starts building.
+- **[Unattended batch runs are possible.](docs/design-claims.md#14-unattended-batch-runs-are-possible)** The batch skills recommend, answer, and complete every item in one run, strictly in sequence — you start them and read the git log afterwards.
 - **[Each decision has a record in git.](docs/design-claims.md#2-each-decision-has-a-record-in-git)** One answer is one path-scoped commit whose subject marks how it was made — manual, recommendation, or alternative — so the log is provenance and a revert reopens the question.
-- **[Advice gets better with each milestone.](docs/design-claims.md#5-advice-gets-better-with-each-milestone)** When you override a recommendation, the capture skill distills your reason into a project-wide principle store the recommender reads and cites on every later question.
 
 All nineteen claims, each with its design and a metric to test it, are in [docs/design-claims.md](docs/design-claims.md).
 

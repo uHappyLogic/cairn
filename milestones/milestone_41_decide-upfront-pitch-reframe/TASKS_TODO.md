@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Lead Design Principles With Claims 1 And 14
-
-Change the root README's `## Design principles` block to three bullets in this order: claim 1 ("Cairn finds the open questions before the work starts.") and claim 14 ("Unattended batch runs are possible.") with new glosses, then claim 2 ("Each decision has a record in git.") with its current gloss, removing the claim 11 and claim 5 bullets so the block surfaces the two claims the new pitch rests on. Verified when each bullet's claim line is verbatim and links to its anchor in `docs/design-claims.md`, the closing link to all nineteen claims is unchanged, and `docs/design-claims.md` itself has no diff.
-
----
-
 ## Carry One-Liner Into Host README Templates
 
 Replace the line under `# Cairn for <Host>` in `scripts/hosts/claude/README.md`, `scripts/hosts/antigravity/README.md`, and `scripts/hosts/codex/README.md` with the root README one-liner verbatim, "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently.", then run `uv run scripts/build_hosts.py` so the rebuilt `hosts/` trees ride with the templates. Verified when `uv run scripts/build_hosts.py --check` exits zero and each rendered `hosts/<host>/README.md` carries the one-liner under its title with no milestone-driven line left.
