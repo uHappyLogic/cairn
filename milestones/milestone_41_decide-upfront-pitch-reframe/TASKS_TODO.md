@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Regroup First-Screen Diagram Into Two Subgraphs
-
-Rework the root `README.md` mermaid diagram so define, review, provide alternatives, recommend, and answer sit inside a subgraph titled for deciding upfront and derive and complete sit inside a second subgraph titled for handing execution to agents, with the answer-to-derive edge crossing between them labelled as the handoff and the three colour classes (`init`, `req`, `auto`) reduced to two, one per group. All seven skill-named nodes, the left-to-right layout, and the dashed "until no open questions remain" return edge from answer to review are kept, so the picture shows the new identity instead of giving the question loop and execution equal weight. Verified when the block parses as valid mermaid and shows exactly that structure.
-
----
-
 ## Rewrite Why Cairn Around Handing Off Execution
 
 Rewrite the three paragraphs of the root README's `## Why Cairn?`: the first opens with the problem of handing off long-running execution (an agent left to run for a long time hits questions nobody decided and either guesses quietly and builds on the guess or stops and waits for a person, so you cannot walk away), the second presents milestones as the mechanism (each milestone first brings its open questions up, has them answered with recorded decisions, and only then derives tasks an agent can complete unattended), and the third keeps work-type neutrality as the supporting point through the environment read from `CLAUDE.md`. The section says once, in plain words, that bringing up all the important questions is the principle Cairn is built toward and that later milestones work toward it, and it adopts no category noun for Cairn ("framework" and "workflow" are not used as identity nouns). Verified when the section is three paragraphs carrying that content and `## How it works` and `## Self-dogfooding` are unchanged word for word.

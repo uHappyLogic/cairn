@@ -31,23 +31,29 @@ Cairn brings all the important questions up to be decided upfront, so you can ha
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'fontFamily':'ui-sans-serif, system-ui','lineColor':'#94a3b8','primaryBorderColor':'#475569'},'flowchart':{'wrappingWidth':9999,'curve':'basis'}}}%%
 flowchart LR
-    define["define"]
-    review["review"]
-    alternatives["provide alternatives"]
-    recommend["recommend"]
-    answer["answer"]
-    derive["derive"]
-    complete["complete"]
+    subgraph upfront["Decide upfront"]
+        define["define"]
+        review["review"]
+        alternatives["provide alternatives"]
+        recommend["recommend"]
+        answer["answer"]
+    end
+    subgraph agents["Hand execution to agents"]
+        derive["derive"]
+        complete["complete"]
+    end
 
-    define --> review --> alternatives --> recommend --> answer --> derive --> complete
+    define --> review --> alternatives --> recommend --> answer
     answer -.->|until no open questions remain| review
+    answer -->|handoff| derive
+    derive --> complete
 
-    classDef init fill:#eff6ff,stroke:#2563eb,color:#1e3a8a;
-    classDef req fill:#faf5ff,stroke:#9333ea,color:#581c87;
-    classDef auto fill:#ecfdf5,stroke:#059669,color:#064e3b;
-    class define init;
-    class review,alternatives,recommend,answer req;
-    class derive,complete auto;
+    classDef decide fill:#faf5ff,stroke:#9333ea,color:#581c87;
+    classDef execute fill:#ecfdf5,stroke:#059669,color:#064e3b;
+    class define,review,alternatives,recommend,answer decide;
+    class derive,complete execute;
+    style upfront fill:#ffffff,stroke:#9333ea,color:#581c87;
+    style agents fill:#ffffff,stroke:#059669,color:#064e3b;
 ```
 
 ## Installation
