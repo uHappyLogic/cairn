@@ -63,3 +63,17 @@ Change the root README's `## Design principles` block to three bullets in this o
 
 ---
 
+## Carry One-Liner Into Host README Templates
+
+Replace the line under `# Cairn for <Host>` in `scripts/hosts/claude/README.md`, `scripts/hosts/antigravity/README.md`, and `scripts/hosts/codex/README.md` with the root README one-liner verbatim, "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently.", then run `uv run scripts/build_hosts.py` so the rebuilt `hosts/` trees ride with the templates. Verified when `uv run scripts/build_hosts.py --check` exits zero and each rendered `hosts/<host>/README.md` carries the one-liner under its title with no milestone-driven line left.
+
+**Verified:**
+
+- In each of `scripts/hosts/claude/README.md`, `scripts/hosts/antigravity/README.md`, and `scripts/hosts/codex/README.md`, the line under the `# Cairn for <Host>` title (line 12) reads exactly "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently.", the same string as the one-liner on line 29 of the root `README.md`.
+- `uv run scripts/build_hosts.py` rebuilt `hosts/antigravity/`, `hosts/claude/`, and `hosts/codex/`, and `uv run scripts/build_hosts.py --check` then exits zero.
+- Each rendered `hosts/claude/README.md`, `hosts/antigravity/README.md`, and `hosts/codex/README.md` carries the one-liner on line 12, directly under its title on line 10, and `grep -c` finds it exactly once per file.
+- A case-insensitive `grep -c` for "milestone-driven" finds zero matches in all three templates and all three rendered READMEs.
+- `git diff --stat` shows six changed files, the three templates and their three rendered copies, each with 1 insertion and 1 deletion.
+
+---
+

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Carry One-Liner Into Host README Templates
-
-Replace the line under `# Cairn for <Host>` in `scripts/hosts/claude/README.md`, `scripts/hosts/antigravity/README.md`, and `scripts/hosts/codex/README.md` with the root README one-liner verbatim, "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently.", then run `uv run scripts/build_hosts.py` so the rebuilt `hosts/` trees ride with the templates. Verified when `uv run scripts/build_hosts.py --check` exits zero and each rendered `hosts/<host>/README.md` carries the one-liner under its title with no milestone-driven line left.
-
----
-
 ## Unify Manifest Descriptions On The One-Liner
 
 Set all five description strings to the README one-liner word for word, "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently.": the three plugin manifests (`scripts/hosts/claude/.claude-plugin/plugin.json`, `scripts/hosts/antigravity/plugin.json`, `scripts/hosts/codex/plugins/cairn/.codex-plugin/plugin.json`) and the two Claude marketplace files (the hand-kept root `.claude-plugin/marketplace.json` and the template `scripts/hosts/claude/.claude-plugin/marketplace.json`). This ends the split into a long and a short string and drops the plugin manifests' step list; the `hosts/` trees are rebuilt with `uv run scripts/build_hosts.py` and no release is cut. Verified when `uv run scripts/build_hosts.py --check` exits zero and all five files and their rendered copies carry the one string.

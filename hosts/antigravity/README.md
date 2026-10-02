@@ -9,7 +9,7 @@
 
 # Cairn for Antigravity
 
-Milestone-driven development for your coding agent — any kind of work, one milestone at a time.
+Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently.
 
 This repository is the Google Antigravity distribution of [Cairn](https://github.com/uHappyLogic/cairn). It carries the built Antigravity plugin tree exactly as a Cairn release published it: the `plugin.json` manifest beside the plugin's skills, agents, and shared procedures, laid out to be extracted into a workspace's `.agents/plugins/cairn/` directory.
 

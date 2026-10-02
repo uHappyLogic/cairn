@@ -9,7 +9,7 @@
 
 # Cairn for Claude Code
 
-Milestone-driven development for your coding agent — any kind of work, one milestone at a time.
+Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently.
 
 This repository is the Claude Code distribution of [Cairn](https://github.com/uHappyLogic/cairn). It carries the built Claude Code plugin tree exactly as a Cairn release published it: the `.claude-plugin/` marketplace and manifest beside the plugin's skills, agents, and shared procedures, which makes it the recommended source to add as a marketplace.
 
