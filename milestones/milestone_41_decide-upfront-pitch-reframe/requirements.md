@@ -88,6 +88,10 @@ The milestone adds topics to `uHappyLogic/cairn` and removes none: the Codex hos
 
 The milestone does not cut a release. The manifest and host README changes are committed and rebuilt into `hosts/`, and reach users with the next ordinary `/release-plugin` run after the milestone finishes. The root README goes live when it is pushed. All four GitHub repository descriptions are set with `gh` inside the milestone, as soon as their wording is decided; the distribution descriptions may run ahead of their READMEs until that release.
 
+### Pushing main to GitHub
+
+The milestone pushes main itself. The task that sets the four GitHub repository descriptions and the root repository topics with `gh` first pushes main to origin, carrying the already-committed root README rewrite, and then makes the `gh` edits in the same task, so the new README, descriptions, and topics go public together. The README task is ordered before that task, because a task's own changes are committed only after it finishes. The push is a plain fast-forward and is never forced.
+
 ### Lower README sections
 
 Neither `## How it works` nor `## Self-dogfooding` is edited in this milestone. `## How it works` keeps its four-file listing, its pointer paragraph, and its three docs links, and `## Self-dogfooding` keeps its paragraph word for word. Both are recorded under Out of Scope as left unchanged for good, not as work for a later milestone.
