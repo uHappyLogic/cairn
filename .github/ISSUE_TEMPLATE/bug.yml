@@ -7,17 +7,18 @@ body:
     id: host
     attributes:
       label: Host
-      description: The host you run cairn under, named by its definition directory under `scripts/hosts/` — `claude` is Claude Code (installed from `cairn-claude`), `antigravity` is Antigravity (installed from `cairn-antigravity`).
+      description: The host you run cairn under, named by its definition directory under `scripts/hosts/` — `claude` is Claude Code (installed from `cairn-claude`), `antigravity` is Antigravity (installed from `cairn-antigravity`), `codex` is Codex (installed from `cairn-codex`).
       options:
         - claude
         - antigravity
+        - codex
     validations:
       required: true
   - type: input
     id: cairn-version
     attributes:
       label: Cairn version
-      description: The release you have installed — the `version` field of the plugin manifest (`.claude-plugin/plugin.json` in the installed plugin on Claude Code, `.agents/plugins/cairn/plugin.json` on Antigravity), or the release tag you extracted.
+      description: The release you have installed — the `version` field of the plugin manifest (`.claude-plugin/plugin.json` in the installed plugin on Claude Code, `.agents/plugins/cairn/plugin.json` on Antigravity, `.codex-plugin/plugin.json` on Codex), or the release tag you extracted.
       placeholder: MAJOR.MINOR.PATCH
     validations:
       required: true

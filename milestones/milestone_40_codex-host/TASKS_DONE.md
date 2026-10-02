@@ -123,3 +123,15 @@ Add a `### Codex` subsection under `## Installation` in the root `README.md` tha
 - `uv run scripts/build_hosts.py --check` passes.
 
 ---
+
+## Add Codex to Issue Form Dropdown
+
+Add `codex` as a third option of the required host dropdown in `.github/ISSUE_TEMPLATE/bug.yml` and name Codex, installed from `cairn-codex` with its manifest at `.codex-plugin/plugin.json`, in the field descriptions that enumerate hosts, so a Codex bug can be reported against the right host. Verified by the file loading as YAML with three host options.
+
+**Verified:**
+
+- `.github/ISSUE_TEMPLATE/bug.yml` loads with `yaml.safe_load`, and its required `host` dropdown has exactly three options in order: `claude`, `antigravity`, `codex`.
+- The host dropdown's description names `codex` as Codex, installed from `cairn-codex`, beside the two existing hosts.
+- The Cairn version field's description names `.codex-plugin/plugin.json` as the manifest on Codex, beside the Claude Code and Antigravity paths.
+
+---

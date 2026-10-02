@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Codex to Issue Form Dropdown
-
-Add `codex` as a third option of the required host dropdown in `.github/ISSUE_TEMPLATE/bug.yml` and name Codex, installed from `cairn-codex` with its manifest at `.codex-plugin/plugin.json`, in the field descriptions that enumerate hosts, so a Codex bug can be reported against the right host. Verified by the file loading as YAML with three host options.
-
----
-
 ## Name Codex in Contributing and Security
 
 Change only the sentences that list hosts or repositories: in `CONTRIBUTING.md` (`## Development`) the supported-hosts sentence becomes a three-host sentence, the definition-directory list adds `scripts/hosts/codex/`, the committed-tree list adds `hosts/codex/`, and the distribution-repository sentence adds a `cairn-codex` link; in `SECURITY.md` "both distribution repositories" becomes all three, with a `cairn-codex` link beside the other two. Verified by reading both files and finding no sentence that still enumerates only two hosts or repositories.
