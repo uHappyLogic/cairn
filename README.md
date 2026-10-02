@@ -25,8 +25,8 @@
 
 # Cairn
 
-**Mark the path from idea to shipped.**
-Milestone-driven development for your coding agent — any kind of work, one milestone at a time.
+**Mark the path first, then hand off the walk.**
+Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently.
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'fontFamily':'ui-sans-serif, system-ui','lineColor':'#94a3b8','primaryBorderColor':'#475569'},'flowchart':{'wrappingWidth':9999,'curve':'basis'}}}%%
