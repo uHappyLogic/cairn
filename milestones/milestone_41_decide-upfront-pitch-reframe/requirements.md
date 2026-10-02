@@ -48,5 +48,9 @@ Edits under `scripts/hosts/` require `uv run scripts/build_hosts.py` and a commi
 
 The one-liner is a declarative sentence with Cairn as its subject, naming no category noun, that states only the decide-upfront identity and adds no tail: "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently." It is used verbatim under the title of the root README and of all three host README templates. Milestones and work-type neutrality leave the first line and are carried by the diagram and `## Why Cairn?`.
 
+### Product noun
+
+The pitch surfaces adopt no category noun for Cairn. Each pitch sentence makes Cairn the subject of what it does. "Plugin" stays only as a plain fact in installation and distribution text; "framework" and "workflow" are not used as identity nouns.
+
 ## Out of Scope
 
