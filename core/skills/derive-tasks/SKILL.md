@@ -30,7 +30,7 @@ Follow `{{PLUGIN_ROOT}}/shared/get-current-milestone.md` to resolve `<MILESTONE_
 
 ### 1. Read source documents
 
-Read `CLAUDE.md` at the workspace root for the project's domain context, working conventions, available tools, and how work is verified as done. If it lacks that context, suggest the user run `/init` first, then proceed.
+Read `{{CONTEXT_FILE}}` at the workspace root for the project's domain context, working conventions, available tools, and how work is verified as done. If it lacks that context, suggest the user run `/init` first, then proceed.
 
 Read `<MILESTONE_DIR>/requirements.md` in full, plus any files referenced in its **Relevant starting state** section, so you understand the exact starting point.
 
@@ -63,7 +63,7 @@ Break the milestone into discrete, independently-completable task briefs. A **br
 Apply these rules:
 
 - **Atomic scope** — each brief must be completable in a single `/complete-task` invocation, with no mid-task decisions. "Do X and Y" is two briefs when X and Y can be built and verified independently.
-- **One area per brief** — group by the natural boundary or area of the work, as defined by the project's organization in `CLAUDE.md`. Do not mix distinct areas unless they are inseparable.
+- **One area per brief** — group by the natural boundary or area of the work, as defined by the project's organization in `{{CONTEXT_FILE}}`. Do not mix distinct areas unless they are inseparable.
 - **No "nice to have" briefs** — only what the spec states. Do not pad the task list.
 
 ### 4. Prove coverage (requirement → task matrix)

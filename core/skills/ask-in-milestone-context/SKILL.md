@@ -42,7 +42,7 @@ Read in parallel, so the answer rests on the real state rather than memory:
 - `<MILESTONE_DIR>/open_questions.xml` — any remaining open questions, each an `<open-question>` block carrying whatever alternatives and recommendation the recommend sweep has embedded. Read it whole with the file-reading tool, exactly as you read `requirements.md`; that whole read is for reasoning only, and a locate, list, or lift of one block is a call to the plugin's open-question tool, `python3 {{PLUGIN_ROOT}}/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`, never a search of your own over the file.
 - `<MILESTONE_DIR>/TASKS_DONE.md` — completed tasks. Each entry's description and `**Verified:**` bar tell you *what the task was meant to achieve* — the intent behind the deliverable that now exists.
 - `<MILESTONE_DIR>/TASKS_TODO.md` — pending tasks, in priority order. Their ordering explains dependencies ("what's blocking what").
-- `CLAUDE.md` — the project's domain context, conventions, and real names for its systems and files, so your answer uses the project's vocabulary.
+- `{{CONTEXT_FILE}}` — the project's domain context, conventions, and real names for its systems and files, so your answer uses the project's vocabulary.
 
 Read only what the question needs — a "what's left?" question barely touches `requirements.md`; a "how did task X turn out?" question leans hard on `TASKS_DONE.md` and the live deliverables. Don't read everything reflexively.
 

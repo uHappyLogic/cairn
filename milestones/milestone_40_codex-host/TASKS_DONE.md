@@ -49,3 +49,17 @@ Add `scripts/hosts/codex/`: a `settings.toml` with `plugin_root` set to `${PLUGI
 - `uv run scripts/build_hosts.py` builds all three hosts, `uv run scripts/build_hosts.py --check` passes over `hosts/antigravity/`, `hosts/claude/`, and `hosts/codex/`, and `git diff 5305f43 -- hosts/claude hosts/antigravity` is empty.
 
 ---
+
+## Slot Context File Name in Core
+
+Replace every mention of `CLAUDE.md` in `core/` with a named slot whose value is `CLAUDE.md` for Claude Code and Antigravity and `AGENTS.md` for Codex, so the Codex tree's skills and `complete-procedure.md` read `AGENTS.md` for environment context, its bootstrap creates `AGENTS.md` or appends the Milestone Workflow section to it and points at `/init`, and its `finish-current-milestone` updates `AGENTS.md`. Verified by the rebuilt `hosts/codex/` tree naming `CLAUDE.md` nowhere and `git diff 5305f43 -- hosts/claude hosts/antigravity` staying empty.
+
+**Verified:**
+
+- Every one of the 35 `CLAUDE.md` mentions across the ten `core/` files (`shared/complete-procedure.md` and the skills `ask-in-milestone-context`, `define-milestone-goal`, `derive-tasks`, `discuss-milestone-goal`, `discuss-new-task`, `finish-current-milestone`, `goto-next-milestone`, `init-milestone-base-workflow`, `specify-milestone-starting-state`) is replaced by the named slot `{{CONTEXT_FILE}}`; `core/` names `CLAUDE.md` nowhere, and the two frontmatter descriptions carrying the slot still load with `yaml.safe_load`.
+- `scripts/hosts/claude/settings.toml` and `scripts/hosts/antigravity/settings.toml` declare `CONTEXT_FILE = "CLAUDE.md"` and `scripts/hosts/codex/settings.toml` declares `CONTEXT_FILE = "AGENTS.md"` in their `[slots]` tables, each under a comment explaining the slot.
+- The rebuilt `hosts/codex/` tree names `CLAUDE.md` nowhere (`grep -rn CLAUDE hosts/codex` finds nothing) and carries the 35 `AGENTS.md` mentions: its `complete-procedure.md`, `derive-tasks`, `specify-milestone-starting-state`, `discuss-milestone-goal`, `discuss-new-task`, and `ask-in-milestone-context` read `AGENTS.md` for environment context; its `init-milestone-base-workflow` creates `AGENTS.md` (headed `# AGENTS.md`) or appends the `## Milestone Workflow` section to it and names an `AGENTS.md` written by `/init`; its `finish-current-milestone` updates `AGENTS.md`.
+- `uv run scripts/build_hosts.py` builds all three hosts and `uv run scripts/build_hosts.py --check` passes (including `slot-declaration` and `unfilled-placeholder`), and `git diff 5305f43 -- hosts/claude hosts/antigravity` is empty.
+- `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` both pass (527 tests).
+
+---

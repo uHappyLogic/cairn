@@ -50,3 +50,7 @@ tools = "tools"
 # replaced, so a value may carry {{PLUGIN_ROOT}}. Every host declares the same slot names,
 # and every name declared must appear in core/.
 [slots]
+# CONTEXT_FILE: the project's environment-context file, which the skills read for the
+# project's context, the bootstrap creates or extends, and finish-current-milestone updates.
+# This tree keeps the project instruction file it has always named, CLAUDE.md.
+CONTEXT_FILE = "CLAUDE.md"

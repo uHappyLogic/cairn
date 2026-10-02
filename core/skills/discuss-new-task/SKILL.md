@@ -50,7 +50,7 @@ Read in parallel to ground the discussion in the real project state rather than 
 - `<MILESTONE_DIR>/requirements.md` — the goal, constraints, and decisions the issue must fit within.
 - `<MILESTONE_DIR>/TASKS_TODO.md` — pending tasks, to spot overlap and dependencies.
 - `<MILESTONE_DIR>/TASKS_DONE.md` — completed work, to catch issues already addressed.
-- `CLAUDE.md` — the project's conventions and context, so the discussion uses the project's real terms.
+- `{{CONTEXT_FILE}}` — the project's conventions and context, so the discussion uses the project's real terms.
 
 If relevant project files are named or implied by the issue, read them too. Concrete grounding makes for sharper questions.
 

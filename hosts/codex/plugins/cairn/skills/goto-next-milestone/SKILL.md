@@ -39,7 +39,7 @@ In `milestones/README.md`, overwrite the `Current milestone:` line with:
 Current milestone: `milestones/milestone_<number>_<slug>/`
 ```
 
-Leave the `## Current Milestone` heading, the `## Milestone History` section, and all other content unchanged; update `milestones/README.md` only — never write the pointer into `CLAUDE.md`.
+Leave the `## Current Milestone` heading, the `## Milestone History` section, and all other content unchanged; update `milestones/README.md` only — never write the pointer into `AGENTS.md`.
 
 ### 4. Commit the activation
 

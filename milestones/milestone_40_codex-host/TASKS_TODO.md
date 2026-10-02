@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Slot Context File Name in Core
-
-Replace every mention of `CLAUDE.md` in `core/` with a named slot whose value is `CLAUDE.md` for Claude Code and Antigravity and `AGENTS.md` for Codex, so the Codex tree's skills and `complete-procedure.md` read `AGENTS.md` for environment context, its bootstrap creates `AGENTS.md` or appends the Milestone Workflow section to it and points at `/init`, and its `finish-current-milestone` updates `AGENTS.md`. Verified by the rebuilt `hosts/codex/` tree naming `CLAUDE.md` nowhere and `git diff 5305f43 -- hosts/claude hosts/antigravity` staying empty.
-
----
-
 ## Slot Agent Dispatch Wording in Core
 
 Put the host-dependent dispatch wording of `complete-all-tasks` and `provide-alternatives-to-all-open-questions` (the "Use the `Agent` tool with `subagent_type` set to" sentences and the repair branch's reference to the agent id that tool returned) behind named slots whose Claude Code and Antigravity values are today's exact text. The Codex values spawn Codex's default (generic) subagent with a prompt that tells it to read and follow the plugin's agent file by its plugin-root path, followed by the task heading or the Short Title and milestone directory as today; that instructions path is the one value the Codex dispatch prompt adds. Verified by the rebuilt Codex tree's dispatch sites pointing at agent files that pass `dangling-plugin-root`, with `git diff 5305f43 -- hosts/claude hosts/antigravity` empty.

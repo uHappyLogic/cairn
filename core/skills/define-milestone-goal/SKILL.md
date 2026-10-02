@@ -5,7 +5,7 @@ description: Create a new milestone directory with its four starting files from 
 
 # define-milestone-goal
 
-Creates a new milestone directory under `milestones/` holding the four files every milestone starts with — `requirements.md`, `open_questions.xml`, `TASKS_TODO.md`, and `TASKS_DONE.md` — all created by the plugin's milestone-definition tool, which also works out the milestone's number and directory name. Your only work is choosing the milestone's title, handing the tool's output to the commit procedure, and reporting the result; the files are filled in by the skills that follow (`/specify-milestone-starting-state`, `/review-milestone-requirements`, etc.). Defining a milestone does not activate it: this skill never updates `CLAUDE.md` or `milestones/README.md`, which change only when the milestone becomes the *current* active one via `/goto-next-milestone`.
+Creates a new milestone directory under `milestones/` holding the four files every milestone starts with — `requirements.md`, `open_questions.xml`, `TASKS_TODO.md`, and `TASKS_DONE.md` — all created by the plugin's milestone-definition tool, which also works out the milestone's number and directory name. Your only work is choosing the milestone's title, handing the tool's output to the commit procedure, and reporting the result; the files are filled in by the skills that follow (`/specify-milestone-starting-state`, `/review-milestone-requirements`, etc.). Defining a milestone does not activate it: this skill never updates `{{CONTEXT_FILE}}` or `milestones/README.md`, which change only when the milestone becomes the *current* active one via `/goto-next-milestone`.
 
 ## Usage
 

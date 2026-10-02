@@ -50,3 +50,8 @@ tools = "plugins/cairn/tools"
 # replaced, so a value may carry {{PLUGIN_ROOT}}. Every host declares the same slot names,
 # and every name declared must appear in core/.
 [slots]
+# CONTEXT_FILE: the project's environment-context file, which the skills read for the
+# project's context, the bootstrap creates or extends, and finish-current-milestone updates.
+# Codex reads its project instructions from AGENTS.md (its /init writes that file), so the
+# workflow reads and writes its environment context there and never touches CLAUDE.md.
+CONTEXT_FILE = "AGENTS.md"
