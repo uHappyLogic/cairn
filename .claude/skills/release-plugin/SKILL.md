@@ -196,7 +196,7 @@ this order:
 
 ```bash
 gh repo create uHappyLogic/cairn-<host> --public \
-  --description "Distribution of the Cairn plugin for <host>, published verbatim by each release of uHappyLogic/cairn. Report issues there."
+  --description "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently. For <host>, published from uHappyLogic/cairn. Report issues there."
 gh repo edit uHappyLogic/cairn-<host> \
   --add-topic cairn --add-topic <host> --add-topic plugin \
   --enable-issues=false --enable-wiki=false --enable-projects=false

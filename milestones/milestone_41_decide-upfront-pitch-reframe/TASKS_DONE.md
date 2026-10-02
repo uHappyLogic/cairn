@@ -107,3 +107,18 @@ Reword the first sentence of `## What this repo is` in `CLAUDE.md` so it still n
 
 ---
 
+## Update Release Skill Distribution Description Pattern
+
+Change the `--description` argument of the `gh repo create` command in `.claude/skills/release-plugin/SKILL.md` to the new distribution pattern: the identity sentence "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently." first, then a shortened pointer giving the host name, the fact that the repository is published from `uHappyLogic/cairn`, and that issues go there, with only the host varying. This fixes the one wording the three live distribution descriptions are then set from, so the printed command and the live descriptions stay identical. Verified when the command carries that pattern with its `<host>` slot and the old "Distribution of the Cairn plugin for <host>, published verbatim by each release of uHappyLogic/cairn. Report issues there." string is gone from the file.
+
+**Verified:**
+
+- The `--description` argument of the `gh repo create` command in `.claude/skills/release-plugin/SKILL.md` (line 199) reads exactly "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently. For <host>, published from uHappyLogic/cairn. Report issues there."
+- The argument opens with the identity sentence word for word, the same string as the one-liner on line 29 of the root `README.md`.
+- The pointer after it gives the host through the `<host>` slot, states that the repository is published from `uHappyLogic/cairn`, and says issues go there; `<host>` is the only varying part.
+- `grep -c` finds neither "Distribution of the Cairn plugin" nor "published verbatim by each release" on a `--description` line of the file (zero matches for the old string).
+- `git diff --stat -- .claude/skills/release-plugin/SKILL.md` shows 1 insertion and 1 deletion, both on line 199; the `gh repo edit` command and the surrounding prose are unchanged.
+- With the longest host name filled in, the description is 204 characters, within GitHub's 350-character description limit.
+
+---
+
