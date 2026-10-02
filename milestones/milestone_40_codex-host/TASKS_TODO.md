@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Create Codex Host Definition and Tree
-
-Add `scripts/hosts/codex/`: a `settings.toml` with `plugin_root` set to `${PLUGIN_ROOT}`, `plugin_dir` set to `plugins/cairn`, and a `[layout]` mapping all four `core/` directories under `plugins/cairn/`; the manifest template at `scripts/hosts/codex/plugins/cairn/.codex-plugin/plugin.json`; and a `.agents/plugins/marketplace.json` template with marketplace name `cairn` and one `cairn` entry whose `source` is `{"source": "local", "path": "./plugins/cairn"}`. Commit the rebuilt `hosts/codex/` tree, which is the installable Codex plugin every later task builds on: its agents stay the Markdown files `core/` holds, with no TOML file and no format conversion, and there is no `plugin.json` at the tree root or the plugin root. Verified by a build and `--check` passing over all three hosts with `git diff 5305f43 -- hosts/claude hosts/antigravity` empty.
-
----
-
 ## Slot Context File Name in Core
 
 Replace every mention of `CLAUDE.md` in `core/` with a named slot whose value is `CLAUDE.md` for Claude Code and Antigravity and `AGENTS.md` for Codex, so the Codex tree's skills and `complete-procedure.md` read `AGENTS.md` for environment context, its bootstrap creates `AGENTS.md` or appends the Milestone Workflow section to it and points at `/init`, and its `finish-current-milestone` updates `AGENTS.md`. Verified by the rebuilt `hosts/codex/` tree naming `CLAUDE.md` nowhere and `git diff 5305f43 -- hosts/claude hosts/antigravity` staying empty.

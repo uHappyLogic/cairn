@@ -1,0 +1,20 @@
+{
+  "name": "cairn",
+  "interface": {
+    "displayName": "cairn"
+  },
+  "plugins": [
+    {
+      "name": "{{NAME}}",
+      "source": {
+        "source": "local",
+        "path": "./plugins/cairn"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

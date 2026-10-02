@@ -1,0 +1,9 @@
+{
+  "name": "{{NAME}}",
+  "description": "Milestone-driven development workflow — discuss goals, define milestones, derive and complete tasks, and archive milestones",
+  "version": "{{VERSION}}",
+  "author": {
+    "name": "Lukasz Kosiak"
+  },
+  "skills": "./skills/"
+}

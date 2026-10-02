@@ -32,3 +32,20 @@
 - `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` both pass (527 tests).
 
 ---
+
+## Create Codex Host Definition and Tree
+
+Add `scripts/hosts/codex/`: a `settings.toml` with `plugin_root` set to `${PLUGIN_ROOT}`, `plugin_dir` set to `plugins/cairn`, and a `[layout]` mapping all four `core/` directories under `plugins/cairn/`; the manifest template at `scripts/hosts/codex/plugins/cairn/.codex-plugin/plugin.json`; and a `.agents/plugins/marketplace.json` template with marketplace name `cairn` and one `cairn` entry whose `source` is `{"source": "local", "path": "./plugins/cairn"}`. Commit the rebuilt `hosts/codex/` tree, which is the installable Codex plugin every later task builds on: its agents stay the Markdown files `core/` holds, with no TOML file and no format conversion, and there is no `plugin.json` at the tree root or the plugin root. Verified by a build and `--check` passing over all three hosts with `git diff 5305f43 -- hosts/claude hosts/antigravity` empty.
+
+**Verified:**
+
+- `scripts/hosts/codex/settings.toml` carries the full key set of the other two definitions, with `plugin_name = "cairn"`, `plugin_root = "${PLUGIN_ROOT}"`, `plugin_dir = "plugins/cairn"`, an empty `[slots]` table, and a `[layout]` mapping `skills`, `agents`, `shared`, and `tools` to `plugins/cairn/<dir>`; the build accepts it as a valid definition.
+- The manifest template sits at `scripts/hosts/codex/plugins/cairn/.codex-plugin/plugin.json` (name `{{NAME}}`, version `{{VERSION}}`, the shared description, author, and `skills` pointing at `./skills/`) and renders to `hosts/codex/plugins/cairn/.codex-plugin/plugin.json`, which parses as JSON with version `1.7.6`.
+- The marketplace template sits at `scripts/hosts/codex/.agents/plugins/marketplace.json` with marketplace name `cairn` and exactly one plugin entry named `cairn` (from `{{NAME}}`) whose `source` is `{"source": "local", "path": "./plugins/cairn"}`, with the `policy` and `category` fields the curated marketplace's entries carry; it renders to `hosts/codex/.agents/plugins/marketplace.json` and parses as JSON.
+- `hosts/codex/` holds the rendered tree: `LICENSE` and `.agents/plugins/marketplace.json` at its root, and the 22 skills, 2 agents, 8 shared procedures, 2 tools, and `.codex-plugin/plugin.json` under `plugins/cairn/` (37 files).
+- The two agents under `hosts/codex/plugins/cairn/agents/` are the Markdown files `core/agents/` holds, differing only by `{{PLUGIN_ROOT}}` rendered as `${PLUGIN_ROOT}` and the stripped Claude-only `color` key; the tree holds no `.toml` file.
+- There is no `plugin.json` at `hosts/codex/plugin.json` or `hosts/codex/plugins/cairn/plugin.json`.
+- The Codex tree carries neither other host's plugin-root literal, and every `${PLUGIN_ROOT}/…` reference resolves under `plugins/cairn/` (`foreign-plugin-root` and `dangling-plugin-root` pass).
+- `uv run scripts/build_hosts.py` builds all three hosts, `uv run scripts/build_hosts.py --check` passes over `hosts/antigravity/`, `hosts/claude/`, and `hosts/codex/`, and `git diff 5305f43 -- hosts/claude hosts/antigravity` is empty.
+
+---
