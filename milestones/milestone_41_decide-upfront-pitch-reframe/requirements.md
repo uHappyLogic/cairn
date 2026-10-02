@@ -104,6 +104,10 @@ The GitHub description of `uHappyLogic/cairn` is the README one-liner word for w
 
 Each distribution repository's description starts with the new identity sentence and then adds a shortened pointer: the host name, the fact that the repository is published from `uHappyLogic/cairn`, and that issues go there. All three share one pattern with only the host varying. The `--description` argument of the `gh repo create` command in `.claude/skills/release-plugin/SKILL.md` is changed to the same pattern, so the printed command and the live descriptions stay identical.
 
+### Design claims page
+
+`docs/design-claims.md` does not change in this milestone. Its intro stays as it is, claims 1 and 14 keep their wording, numbers, and groups, and all nineteen claims and their anchors stay the same, so the page remains the unchanged evidence the pitch surfaces link to. A later change is left to whatever milestone next touches the claims.
+
 ## Out of Scope
 
 - Rewording the root README's `## How it works` and `## Self-dogfooding` sections: left unchanged for good, not deferred to a later milestone.
