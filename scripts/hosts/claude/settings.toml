@@ -15,6 +15,13 @@ plugin_name = "cairn"
 # Claude Code resolves this runtime variable to the installed plugin's root directory.
 plugin_root = "${CLAUDE_PLUGIN_ROOT}"
 
+# The path from this host tree's root to the directory plugin_root stands for at runtime,
+# empty when that directory is the tree root. The dangling-plugin-root check resolves every
+# plugin-root reference against it rather than the tree root, and every [layout] value must
+# lie inside it; [layout], renames, and template paths stay relative to the tree root.
+# Claude Code installs this whole tree as the plugin, so that directory is the tree root.
+plugin_dir = ""
+
 # Regular expressions whose every match is deleted from each rendered core/ text file.
 prose_drop_patterns = []
 

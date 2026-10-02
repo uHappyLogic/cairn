@@ -15,3 +15,20 @@
 - `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` both pass (527 tests).
 
 ---
+
+## Add Plugin Directory Key to Build
+
+`scripts/build_hosts.py` gains one more required settings key, `plugin_dir`: the path from the host tree's root to the directory that `plugin_root` stands for at runtime, declared as the empty string by the Claude Code and Antigravity definitions. The `dangling-plugin-root` check resolves each plugin-root reference against the tree's `plugin_dir` instead of the tree root, definition validation fails when any `[layout]` value falls outside `plugin_dir`, and the check's docstring line and the settings comment explain the key, so a Codex tree whose plugin sits under `plugins/cairn` is checked exactly as strictly as the other two. Verified by a passing build with `git diff 5305f43 -- hosts/claude hosts/antigravity` empty, and by a scratch definition showing a reference resolved under a non-empty `plugin_dir` and a layout value outside it refused.
+
+**Verified:**
+
+- `SETTINGS_SCHEMA` in `scripts/build_hosts.py` carries the new required string key `plugin_dir`; a definition missing it is refused (`is missing the key(s) plugin_dir`, exit 2), unknown keys are still refused, and a `plugin_dir` that is absolute or escapes the tree is refused.
+- `scripts/hosts/claude/settings.toml` and `scripts/hosts/antigravity/settings.toml` each declare `plugin_dir = ""` under a comment explaining the key (the path from the tree root to the directory `plugin_root` stands for, the check resolving against it, layout values having to lie inside it, other paths staying tree-root relative).
+- The `dangling-plugin-root` check resolves each plugin-root reference against the tree's `plugin_dir` instead of the tree root, otherwise unchanged; rendering code is untouched.
+- Definition validation refuses any `[layout]` value outside `plugin_dir` (`layout.<key> is ..., outside plugin_dir ...`, exit 2).
+- The module docstring names `plugin_dir` among the settings and explains it, and the `dangling-plugin-root` docstring line states that references resolve against `plugin_dir`.
+- `uv run scripts/build_hosts.py` and `uv run scripts/build_hosts.py --check` pass, and `git diff 5305f43 -- hosts/claude hosts/antigravity` is empty.
+- In a scratch copy of the repository, a scratch definition with `plugin_dir = "plugins/cairn"` and its layout under `plugins/cairn/` built cleanly with its plugin-root references resolved under `plugins/cairn/`; with `plugin_dir = "plugins"` the same references failed `dangling-plugin-root`; a layout value `tools = "tools"` outside `plugins/cairn` was refused; the scratch copy was then deleted.
+- `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` both pass (527 tests).
+
+---

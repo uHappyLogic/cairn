@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Plugin Directory Key to Build
-
-`scripts/build_hosts.py` gains one more required settings key, `plugin_dir`: the path from the host tree's root to the directory that `plugin_root` stands for at runtime, declared as the empty string by the Claude Code and Antigravity definitions. The `dangling-plugin-root` check resolves each plugin-root reference against the tree's `plugin_dir` instead of the tree root, definition validation fails when any `[layout]` value falls outside `plugin_dir`, and the check's docstring line and the settings comment explain the key, so a Codex tree whose plugin sits under `plugins/cairn` is checked exactly as strictly as the other two. Verified by a passing build with `git diff 5305f43 -- hosts/claude hosts/antigravity` empty, and by a scratch definition showing a reference resolved under a non-empty `plugin_dir` and a layout value outside it refused.
-
----
-
 ## Create Codex Host Definition and Tree
 
 Add `scripts/hosts/codex/`: a `settings.toml` with `plugin_root` set to `${PLUGIN_ROOT}`, `plugin_dir` set to `plugins/cairn`, and a `[layout]` mapping all four `core/` directories under `plugins/cairn/`; the manifest template at `scripts/hosts/codex/plugins/cairn/.codex-plugin/plugin.json`; and a `.agents/plugins/marketplace.json` template with marketplace name `cairn` and one `cairn` entry whose `source` is `{"source": "local", "path": "./plugins/cairn"}`. Commit the rebuilt `hosts/codex/` tree, which is the installable Codex plugin every later task builds on: its agents stay the Markdown files `core/` holds, with no TOML file and no format conversion, and there is no `plugin.json` at the tree root or the plugin root. Verified by a build and `--check` passing over all three hosts with `git diff 5305f43 -- hosts/claude hosts/antigravity` empty.

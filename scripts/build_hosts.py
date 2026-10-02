@@ -3,13 +3,20 @@
 Usage: uv run scripts/build_hosts.py [<host> ...] [--check]
 
 A host is declared by a definition directory scripts/hosts/<host>/ holding a settings.toml
-(plugin_name, the plugin_root literal, prose_drop_patterns, strip_frontmatter_keys, the
-[layout] of core/'s top-level directories, renames, exclude, and the [slots] table) beside
-that host's template files; every file in the directory other than settings.toml is a
+(plugin_name, the plugin_root literal, the plugin_dir that literal stands for,
+prose_drop_patterns, strip_frontmatter_keys, the [layout] of core/'s top-level directories,
+renames, exclude, and the [slots] table) beside that host's template files; every file in the directory other than settings.toml is a
 template rendered to the same relative path in the host tree with its {{VERSION}} slot
 filled from the root VERSION file and its {{NAME}} slot from plugin_name. The build
 discovers hosts by scanning that directory and applies the settings uniformly, so no
 host-specific code exists here and a definition is validated before any build runs.
+
+plugin_dir is the path from the host tree's root to the directory plugin_root stands for at
+runtime: the empty string when the installed plugin is the whole tree, or a subdirectory
+such as plugins/<name> when the tree is a marketplace holding the plugin below its root.
+[layout], renames, and template paths stay relative to the tree root, and a definition whose
+[layout] puts a core/ directory outside plugin_dir is refused, since the runtime literal
+could never reach it.
 
 Wording that differs between hosts rides on named slots: core/ carries a {{SLOT_NAME}}
 placeholder (upper-case letters, digits, and underscores, in the style of {{PLUGIN_ROOT}})
@@ -48,7 +55,9 @@ Checks (every selected host, every failure listed):
                             expression in a rendered workflow passes)
   foreign-plugin-root       no other host's plugin-root literal anywhere in the tree
   dangling-plugin-root      every occurrence of this host's own plugin-root literal that a
-                            /path follows names a file in this tree
+                            /path follows names a file in this tree, the path resolved
+                            against the definition's plugin_dir (the directory the literal
+                            stands for at runtime) rather than the tree root
   stripped-key-present      no frontmatter key the definition strips is still present
   manifest-json, manifest-version
                             every rendered JSON template parses, and every "version" value
@@ -115,6 +124,7 @@ FRONTMATTER_KEY_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_.-]*)[ \t]*:")
 SETTINGS_SCHEMA = {
     "plugin_name": str,
     "plugin_root": str,
+    "plugin_dir": str,
     "prose_drop_patterns": list,
     "strip_frontmatter_keys": list,
     "renames": list,
@@ -136,6 +146,7 @@ class HostDefinition:
         self.directory = directory
         self.plugin_name = settings["plugin_name"]
         self.plugin_root = settings["plugin_root"]
+        self.plugin_dir = normalize_plugin_dir(settings["plugin_dir"])
         self.prose_drop_patterns = [re.compile(p) for p in settings["prose_drop_patterns"]]
         self.strip_frontmatter_keys = list(settings["strip_frontmatter_keys"])
         self.renames = [(r["from"], r["to"]) for r in settings["renames"]]
@@ -200,6 +211,17 @@ def is_relative_path(value):
     return normalized != ".." and not normalized.startswith("../")
 
 
+def normalize_plugin_dir(value):
+    """A plugin_dir as one canonical relative path, the empty string for the tree root."""
+    return "" if value in ("", ".") else posixpath.normpath(value)
+
+
+def is_inside(path, base):
+    """Whether a tree-relative path lies at or below the tree-relative directory base."""
+    path = posixpath.normpath(path) if path not in ("", ".") else ""
+    return base == "" or path == base or path.startswith(base + "/")
+
+
 def load_definition(directory, core_dirs):
     """Read and validate one definition directory; every problem is a BuildError."""
     name = directory.name
@@ -260,6 +282,20 @@ def load_definition(directory, core_dirs):
     for key, value in layout.items():
         if not isinstance(value, str) or (value not in ("", ".") and not is_relative_path(value)):
             raise BuildError(f"{label}: layout.{key} must be a path relative to the host tree root")
+
+    plugin_dir = settings["plugin_dir"]
+    if plugin_dir not in ("", ".") and not is_relative_path(plugin_dir):
+        raise BuildError(
+            f"{label}: plugin_dir must be empty or a path relative to the host tree root that "
+            "stays inside it"
+        )
+    plugin_dir = normalize_plugin_dir(plugin_dir)
+    for key, value in layout.items():
+        if not is_inside(value, plugin_dir):
+            raise BuildError(
+                f"{label}: layout.{key} is {value!r}, outside plugin_dir {plugin_dir!r}, where "
+                "the plugin-root literal cannot reach it"
+            )
 
     for slot, value in settings["slots"].items():
         if not SLOT_NAME_RE.match(slot):
@@ -504,6 +540,9 @@ def check_host_tree(defn, tree, origins, definitions, version):
         if other.name != defn.name and other.plugin_root != defn.plugin_root
     ]
     own_reference = re.compile(re.escape(defn.plugin_root) + r"(?:/([A-Za-z0-9_./-]*))?")
+    # The directory the plugin-root literal stands for at runtime, where its references resolve.
+    plugin_base = tree / defn.plugin_dir if defn.plugin_dir else tree
+    plugin_base_label = f'plugin_dir "{defn.plugin_dir}" of this tree' if defn.plugin_dir else "this tree"
 
     for out_rel in sorted(origins):
         label = f"hosts/{defn.name}/{out_rel}"
@@ -530,10 +569,10 @@ def check_host_tree(defn, tree, origins, definitions, version):
                 ref = ref.rstrip(".")
                 if ref == "":
                     continue
-                target = tree / posixpath.normpath(ref)
+                target = plugin_base / posixpath.normpath(ref)
                 if not is_relative_path(ref) or not target.is_file():
                     failures.append(
-                        (label, "dangling-plugin-root", f'line {lineno}: "{defn.plugin_root}/{ref}" names no file in this tree')
+                        (label, "dangling-plugin-root", f'line {lineno}: "{defn.plugin_root}/{ref}" names no file in {plugin_base_label}')
                     )
 
         split = split_frontmatter(text)
