@@ -100,6 +100,10 @@ All five description strings become one string, the README one-liner copied word
 
 The GitHub description of `uHappyLogic/cairn` is the README one-liner word for word, followed by one clause that lists all three supported hosts, for example "… — for Claude Code, Google Antigravity, and Codex." The identity sentence stays exactly as in the README; only the host clause is added for this surface.
 
+### Distribution repository descriptions
+
+Each distribution repository's description starts with the new identity sentence and then adds a shortened pointer: the host name, the fact that the repository is published from `uHappyLogic/cairn`, and that issues go there. All three share one pattern with only the host varying. The `--description` argument of the `gh repo create` command in `.claude/skills/release-plugin/SKILL.md` is changed to the same pattern, so the printed command and the live descriptions stay identical.
+
 ## Out of Scope
 
 - Rewording the root README's `## How it works` and `## Self-dogfooding` sections: left unchanged for good, not deferred to a later milestone.
