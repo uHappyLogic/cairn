@@ -92,6 +92,10 @@ The milestone does not cut a release. The manifest and host README changes are c
 
 Neither `## How it works` nor `## Self-dogfooding` is edited in this milestone. `## How it works` keeps its four-file listing, its pointer paragraph, and its three docs links, and `## Self-dogfooding` keeps its paragraph word for word. Both are recorded under Out of Scope as left unchanged for good, not as work for a later milestone.
 
+### Manifest description strings
+
+All five description strings become one string, the README one-liner copied word for word: the three plugin manifests (`scripts/hosts/claude/.claude-plugin/plugin.json`, `scripts/hosts/antigravity/plugin.json`, `scripts/hosts/codex/plugins/cairn/.codex-plugin/plugin.json`) and the two Claude marketplace files (the hand-kept root `.claude-plugin/marketplace.json` and the template `scripts/hosts/claude/.claude-plugin/marketplace.json`). The split into a long group and a short group ends, and the plugin manifests drop their step list.
+
 ## Out of Scope
 
 - Rewording the root README's `## How it works` and `## Self-dogfooding` sections: left unchanged for good, not deferred to a later milestone.
