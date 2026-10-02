@@ -13,9 +13,18 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_41_decide-upfront-pitch-reframe/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 41 — Decide-upfront pitch reframe
+
+- The root README opens with the tagline "Mark the path first, then hand off the walk." and the one-liner "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently.", which the three host README templates carry verbatim.
+- The first-screen diagram keeps its seven skill-named nodes but groups them into a deciding-upfront subgraph and a handing-execution-to-agents subgraph, joined by an answer-to-derive edge labelled as the handoff, with two colour classes instead of three.
+- `## Why Cairn?` now argues from the problem of handing off long-running execution, presents milestones as the mechanism, keeps work-type neutrality as the supporting point, and says once that the claim is the principle Cairn is built toward.
+- `## Design principles` leads with claims 1 and 14 under new glosses followed by claim 2, with claims 11 and 5 left behind the link to all nineteen claims.
+- All five manifest and marketplace description strings are unified on the one-liner word for word, and `CLAUDE.md`'s opening sentence restates the identity in editor's words.
+- The release skill's `gh repo create` description follows the new distribution pattern, and after a fast-forward push of main the four GitHub repository descriptions were set to match, with six topics added to `uHappyLogic/cairn` to reach the 20-topic cap.
 
 ### Milestone 40 — Codex host
 
@@ -442,3 +451,4 @@ Current milestone: `milestones/milestone_41_decide-upfront-pitch-reframe/`
 | 38 | Distinct and covering alternatives | `milestones/milestone_38_distinct-and-covering-alternatives/` |
 | 39 | Literal shell commands without variables | `milestones/milestone_39_literal-shell-commands-without-variables/` |
 | 40 | Codex host | `milestones/milestone_40_codex-host/` |
+| 41 | Decide-upfront pitch reframe | `milestones/milestone_41_decide-upfront-pitch-reframe/` |
