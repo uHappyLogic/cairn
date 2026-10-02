@@ -72,5 +72,9 @@ The diagram keeps all seven skill-named nodes, the left-to-right layout, and the
 
 The README's `## Design principles` block stays at three bullets. Claims 1 ("Cairn finds the open questions before the work starts.") and 14 ("Unattended batch runs are possible.") lead with new glosses, followed by claim 2 ("Each decision has a record in git.") with its current gloss. Claims 11 and 5 are removed from the README and remain behind the unchanged closing link to all nineteen claims.
 
+### `CLAUDE.md` opening
+
+The first sentence of `## What this repo is` stays a factual description for an editor: it still names `cairn` as a plugin for Claude Code, Antigravity, and Codex. In place of "provides a milestone-driven development workflow" it states the new identity as what the plugin does, in the editor's own words rather than the pitch's: it brings a milestone's important questions up to be decided before work starts, so execution can then be handed to agents. Milestones stay in the rest of the paragraph as the mechanism, and the README one-liner is not copied word for word.
+
 ## Out of Scope
 
