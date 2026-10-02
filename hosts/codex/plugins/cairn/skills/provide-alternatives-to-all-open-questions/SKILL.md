@@ -101,13 +101,20 @@ regenerated is named in the same `strip` call.
 
 ### 3. Dispatch the read-only subagent per surviving question
 
-Dispatch one read-only subagent per question step 1b printed, **all of them together where the
-host can run several agent dispatches at once and one after another where it cannot** — with no
-cap beyond one dispatch per surviving question — and run the per-return pipeline below on each
-return **as it lands**, in either arm. No ranking or ordering precedes the dispatches: an
-alternative set is enumerated against the sibling questions as scope only, never against how a
-sibling will settle, so no dispatch reads what another wrote and their order changes nothing.
-Both arms write the same blocks and land the same commits; the sequential arm differs only in
+Dispatch one read-only subagent per question step 1b printed, keeping **at most the session's
+configured subagent thread cap in flight at once**: the value of the `agents.max_threads` setting
+in the session's configuration (also read under its newer name,
+`agents.max_concurrent_threads_per_session`), or 6, its default, when the setting is unset.
+Dispatch up to that many at once, and run the per-return pipeline below on each return **as it
+lands**. As each question's pipeline finishes — its return embedded and committed (sub-step
+**d**), or the question skipped, on an explicit failure or after its one repair — close that
+question's agent with the `close_agent` tool and dispatch the next pending question, until every
+question step 1b printed has been dispatched. An agent is closed only once its pipeline has
+finished, never while its repair could still need it, so repair by continuation (sub-step **c**)
+still reaches the same agent. No ranking or ordering precedes the dispatches: an alternative set
+is enumerated against the sibling questions as scope only, never against how a sibling will
+settle, so no dispatch reads what another wrote and their order changes nothing. However many run
+at once, the run writes the same blocks and lands the same commits; the cap changes only
 wall-clock time.
 
 Use the `spawn_agent` tool to spawn one default (generic) subagent per surviving question,

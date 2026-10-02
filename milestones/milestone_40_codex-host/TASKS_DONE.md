@@ -78,3 +78,17 @@ Put the host-dependent dispatch wording of `complete-all-tasks` and `provide-alt
 - `uv run pytest` passes (527 tests).
 
 ---
+
+## Slot Alternatives Pass Thread Cap Wording
+
+Put the uncapped all-at-once wording of the dispatch step in `provide-alternatives-to-all-open-questions` behind a named slot that Claude Code and Antigravity fill with today's exact text. The Codex value names an explicit limit: keep at most the session's configured subagent thread cap in flight at once (Codex's `agents.max_threads` setting, or the default value the prose states, taken from Codex's documentation), and as each question's pipeline finishes (embedded and committed, or skipped after its one repair) close its agent and dispatch the next pending question, leaving repair by continuation unaffected. Verified by reading the rebuilt Codex skill's dispatch step and by `git diff 5305f43 -- hosts/claude hosts/antigravity` staying empty.
+
+**Verified:**
+
+- `core/skills/provide-alternatives-to-all-open-questions/SKILL.md` carries step 3's opening paragraph (the uncapped all-at-once dispatch wording) as the single named slot `{{ALTERNATIVES_CONCURRENCY}}`.
+- `scripts/hosts/claude/settings.toml` and `scripts/hosts/antigravity/settings.toml` declare `ALTERNATIVES_CONCURRENCY` with today's exact paragraph, and `scripts/hosts/codex/settings.toml` declares the Codex value, each under a comment explaining the slot.
+- The rebuilt Codex skill's dispatch step (`hosts/codex/plugins/cairn/skills/provide-alternatives-to-all-open-questions/SKILL.md`, step 3) keeps at most the session's configured subagent thread cap in flight at once, naming the `agents.max_threads` setting (and its newer name `agents.max_concurrent_threads_per_session`) or 6, its default, when unset; as each question's pipeline finishes (embedded and committed, or skipped on an explicit failure or after its one repair) it closes that question's agent with the `close_agent` tool and dispatches the next pending question; it states that an agent is closed only once its pipeline has finished, so repair by continuation still reaches the same agent; it no longer says "no cap".
+- `uv run scripts/build_hosts.py` builds all three hosts and `uv run scripts/build_hosts.py --check` passes (including `slot-declaration` and `unfilled-placeholder`), and `git diff 5305f43 -- hosts/claude hosts/antigravity` is empty.
+- `uv run pytest` passes (527 tests).
+
+---

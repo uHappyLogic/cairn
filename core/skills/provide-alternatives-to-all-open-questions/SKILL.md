@@ -101,14 +101,7 @@ regenerated is named in the same `strip` call.
 
 ### 3. Dispatch the read-only subagent per surviving question
 
-Dispatch one read-only subagent per question step 1b printed, **all of them together where the
-host can run several agent dispatches at once and one after another where it cannot** — with no
-cap beyond one dispatch per surviving question — and run the per-return pipeline below on each
-return **as it lands**, in either arm. No ranking or ordering precedes the dispatches: an
-alternative set is enumerated against the sibling questions as scope only, never against how a
-sibling will settle, so no dispatch reads what another wrote and their order changes nothing.
-Both arms write the same blocks and land the same commits; the sequential arm differs only in
-wall-clock time.
+{{ALTERNATIVES_CONCURRENCY}}
 
 {{ALTERNATIVES_DISPATCH}}
 

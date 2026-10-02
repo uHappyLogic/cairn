@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Slot Alternatives Pass Thread Cap Wording
-
-Put the uncapped all-at-once wording of the dispatch step in `provide-alternatives-to-all-open-questions` behind a named slot that Claude Code and Antigravity fill with today's exact text. The Codex value names an explicit limit: keep at most the session's configured subagent thread cap in flight at once (Codex's `agents.max_threads` setting, or the default value the prose states, taken from Codex's documentation), and as each question's pipeline finishes (embedded and committed, or skipped after its one repair) close its agent and dispatch the next pending question, leaving repair by continuation unaffected. Verified by reading the rebuilt Codex skill's dispatch step and by `git diff 5305f43 -- hosts/claude hosts/antigravity` staying empty.
-
----
-
 ## Write Codex Distribution Repository Templates
 
 Add the root-level templates of `scripts/hosts/codex/`: the `CONTRIBUTING.md` pointer, the `.github/workflows/traffic-badges.yml` copy, and a `README.md` that opens with the badge strip the other two host templates share and names the Codex command-line tool as the supported surface, saying nothing about the desktop app or the IDE extension. The README gives the install commands `codex plugin marketplace add uHappyLogic/cairn-codex` then `codex plugin add cairn@cairn` as the only route, the `$cairn:init-milestone-base-workflow` invocation form with a note that the slash names inside the skills refer to the same skills, `AGENTS.md` as the context file, and the sandbox instructions: workspace-write with on-request approval and no `config.toml` change, every git staging or commit step asking for approval because that sandbox keeps `.git` read-only, and the `python3` tools needing only read access to the installed plugin directory. Verified by a rebuild that lands all three files at the root of `hosts/codex/` beside `LICENSE` and passes `--check`.
