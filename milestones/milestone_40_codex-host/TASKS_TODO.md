@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Codex Installation to Root README
-
-Add a `### Codex` subsection under `## Installation` in the root `README.md` that repeats the Codex README template's installation section word for word, including its `$cairn:init-milestone-base-workflow` form, so the landing page covers the third host. The adoption table gains no `uHappyLogic/cairn-codex` row in this milestone. Verified by comparing the subsection against `scripts/hosts/codex/README.md` and confirming the adoption table is unchanged.
-
----
-
 ## Add Codex to Issue Form Dropdown
 
 Add `codex` as a third option of the required host dropdown in `.github/ISSUE_TEMPLATE/bug.yml` and name Codex, installed from `cairn-codex` with its manifest at `.codex-plugin/plugin.json`, in the field descriptions that enumerate hosts, so a Codex bug can be reported against the right host. Verified by the file loading as YAML with three host options.

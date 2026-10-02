@@ -109,3 +109,17 @@ Add the root-level templates of `scripts/hosts/codex/`: the `CONTRIBUTING.md` po
 - `uv run scripts/build_hosts.py` lands `README.md`, `CONTRIBUTING.md`, and `.github/workflows/traffic-badges.yml` at the root of `hosts/codex/` beside `LICENSE` (version slot filled), `uv run scripts/build_hosts.py --check` passes, and `git diff 5305f43 -- hosts/claude hosts/antigravity` is empty.
 
 ---
+
+## Add Codex Installation to Root README
+
+Add a `### Codex` subsection under `## Installation` in the root `README.md` that repeats the Codex README template's installation section word for word, including its `$cairn:init-milestone-base-workflow` form, so the landing page covers the third host. The adoption table gains no `uHappyLogic/cairn-codex` row in this milestone. Verified by comparing the subsection against `scripts/hosts/codex/README.md` and confirming the adoption table is unchanged.
+
+**Verified:**
+
+- `README.md` has a `### Codex` subsection under `## Installation`, placed after `### Antigravity` and before `### Bootstrap your project`.
+- The subsection is byte-identical to the `### Codex` subsection of `scripts/hosts/codex/README.md` (heading through the sandbox paragraph), checked by a Python string comparison of the two slices.
+- The subsection carries the `$cairn:init-milestone-base-workflow` form.
+- `git diff README.md` removes no line and touches only the `## Installation` section, so the adoption table is unchanged and gains no `uHappyLogic/cairn-codex` row.
+- `uv run scripts/build_hosts.py --check` passes.
+
+---
