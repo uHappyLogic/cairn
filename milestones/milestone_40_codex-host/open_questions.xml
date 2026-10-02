@@ -1,7 +1,4 @@
 <open-questions>
-  <open-question id="Contradiction handling path">
-    <question>The recorded &quot;Contradicting probe findings&quot; decision has the no-model probes run as a requirements-phase step before derive-tasks, with contradictions corrected by revert-then-re-answer while still in the question loop, and only the live verification contradicting a decision after implementation, reopened the same way with the fix submitted as new tasks through submit-task. The revised Goal drops the pre-implementation probes and says any contradiction the live verification finds is fixed inside this milestone by follow-up tasks after the initial task batch. How does the milestone handle a contradicted decision now?</question>
-  </open-question>
   <open-question id="Manifest template path">
     <question>The &quot;Codex manifest location&quot; decision places the manifest template at scripts/hosts/codex/.codex-plugin/plugin.json rendered to the same relative path, while the &quot;Codex install route&quot; decision puts the plugin under plugins/cairn/ so the manifest lands at plugins/cairn/.codex-plugin/plugin.json, and templates render to their own relative path. Where does the Codex manifest template sit, and where in the committed hosts/codex/ tree does the manifest land?</question>
   </open-question>

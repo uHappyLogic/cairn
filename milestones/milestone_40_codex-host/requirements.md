@@ -130,7 +130,7 @@ The live checks are split by mode, and each still runs exactly once. The task ru
 
 ### Contradicting probe findings
 
-The no-model probes run as a requirements-phase step outside the task list, before `derive-tasks` runs. Any contradiction they find goes into the starting state and is corrected by revert-then-re-answer while the milestone is still in the question loop and no Codex implementation exists. Only the live verification can then contradict a decision after implementation; in that case the decision is reopened the same way, and the fix goes in as new tasks through `submit-task` while the milestone stays open. Most contradictions are thus corrected before any task is written against a false premise, and no completion runner ever makes a requirements decision.
+No pre-implementation probe step exists, so no contradiction is found before tasks are derived; the initial task batch is derived and completed on the decisions as assumed. When the live verification contradicts a recorded decision, the decision is reopened by revert-then-re-answer (or a superseding question from the next review pass) and answered through the normal answer workflow, the fix goes in as follow-up tasks through `submit-task` after the initial batch, and the milestone stays open until the verification passes. No completion runner ever makes a requirements decision.
 
 ### Distribution repository creation
 
