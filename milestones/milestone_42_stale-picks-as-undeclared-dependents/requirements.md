@@ -10,6 +10,46 @@ Out of scope: the answer sweep and `/answer-open-question-with-recommendation`, 
 
 ## Relevant starting state
 
+### The tool's `remove` and its dependent reconciliation
+
+`core/tools/open_questions.py` exposes `remove MILESTONE_DIR SHORT_TITLE [--option RECORDED_OPTION]`, which takes exactly one Short Title. `remove_question` deletes the block and finds its dependents only through `dependents_of`, that is, the blocks carrying a `<depends-on>` tag whose `question` names the removed id. With `--option`, a dependent whose every such tag carries that option loses just those tags; every other dependent, and every dependent when no option is given, goes through `strip_recommendation` (its `<recommendation>`, `<depends-on>`, and `<applied-principle>` children deleted, its `<alternative>` children kept). The strip is transitive over the dependents of each stripped block, and the whole reconciliation is one write. The call has no argument that names a further block to reconcile, and it prints nothing on success, although `remove_question` returns the stripped ids.
+
+### The tool's `strip --recommendation`
+
+`strip [--recommendation] MILESTONE_DIR SHORT_TITLE [SHORT_TITLE ...]` accepts several Short Titles and, with the flag, applies the same `strip_recommendation` primitive to each. It is not transitive: every other block is left untouched, including a `<depends-on>` tag that names a stripped block. `walk` ignores a tag naming an absent or recommendation-less block, and such a tag is reconciled only when the block it names is later answered. The recommendation pass documents this call as the escape hatch for forcing a fresh pick.
+
+### The shared answer core
+
+`core/shared/answer-procedure.md` records one answer in five steps: locate, analyse, fold, remove, cascade. Its `locate` call prints only the answered block, and no step reads the other blocks or their standing recommendations. The analyse step asks whether the answer makes another entry moot, forces its answer, or contradicts something already written; the only cascade that follows from it is step 5, a bare `remove` per mooted entry. Step 4 owns the `--option` decision: the caller's RECORDED OPTION verbatim, or for a literal answer one prose verdict on whether the answer plainly settles on one of the block's own alternatives, passing nothing on doubt. The core is followed by the two hand-answer skills, by `answer-with-recommendation-procedure.md`, and through that by the answer sweep.
+
+### The two hand-answer skills
+
+`core/skills/answer-open-question/SKILL.md` parses a literal answer, passes no RECORDED OPTION, follows the answer core, and commits `open_questions.xml` and `requirements.md` under `Manual-answer: <Short Title>`. `core/skills/answer-open-question-with-alternative/SKILL.md` lifts the named alternative with `lift --alternative`, passes its id as RECORDED OPTION, follows the same core, and commits the same two paths under `Alternative-answer: <Short Title>`. The alternative skill tells its runner never to read `open_questions.xml` itself, and the literal skill states that every read and write of it in the core is a tool call. Neither skill sees a standing recommendation on any block but the answered one. `discuss-open-question` offers `/answer-open-question` when the user lands on an answer, naming the matching alternative id when there is one, and advises running `/modify-milestone-goal` first when a deliberation also moves the goal.
+
+### `modify-milestone-goal`
+
+`core/skills/modify-milestone-goal/SKILL.md` edits the `## Goal` section only and commits `requirements.md` alone under `Goal-revision: <milestone_id>`. Its impact step already reads `open_questions.xml` whole, for reasoning only, and works out which open questions the new goal settles, opens, or makes irrelevant, but writes nothing from that analysis and prints none of it. `CLAUDE.md` records this as an invariant (act-only, never cascades, points at review), and `docs/skill-reference.md` describes the skill the same way.
+
+### How a pick is declared dependent, and what happens to a standing pick
+
+`core/shared/recommend-procedure.md` requires a pick that leans on a sibling settling on a particular alternative to disclose it, and `recommend-all-open-questions` renders each disclosure as `<depends-on question option/>`; `embed --recommendation` validates that every tag resolves to another block and one of its alternative ids. That tag is the only record of what a pick assumed. The recommendation pass gathers with `list --without-recommendation`, so a block carrying a pick is never re-picked on a later run, while a stripped block re-enters the next run. The answer sweep records every standing pick as given; a stripped block fails its `lift` and is skipped silently. `derive-tasks` has the precondition that no open question remains.
+
+### Other callers of the cascade
+
+`review-milestone-requirements` removes a pruned or duplicate block with a bare `remove`, which strips every tagged dependent transitively. `capture-milestone-principle-updates` reconstructs an answer from the answered block's removed diff lines only, so recommendation lines stripped from other blocks in an answer commit do not enter its record.
+
+### Invariants and documentation that describe the cascade
+
+`CLAUDE.md` holds the rationale under "One reconciliation engine, strip on doubt": `remove --option` is the only reconciliation, the option id is never derived by parsing the answer, the cascade never clears an `<alternative>`, there is no separate `reconcile` subcommand, and stripped dependents get no console advisory. `docs/skill-reference.md` describes the dependent reconciliation in its entries for both hand-answer skills, and `docs/design-claims.md` states it in claims 6 and 16. Runtime files state the tool's contract in at most one sentence per site and write every tool command out in full.
+
+### Tests and build
+
+`tests/test_remove.py` holds 48 tests of the removal cascade and `tests/test_strip.py` covers both strip forms, over the golden fixtures under `tests/fixtures/`. A tool change is run under both pytest invocations listed in `CLAUDE.md`, and any change under `core/` is followed by `uv run scripts/build_hosts.py`, with the rebuilt `hosts/` trees committed alongside it. The judgment a skill's prose asks for has no automated test in the repository.
+
+### Replay material
+
+The repository holds no replay or benchmark harness. `temp/` is git-ignored and currently holds notes only, among them an uncommitted analysis of answer-sweep runs across local projects that use the workflow; in aggregate it found the stale-pick pattern in eight runs, fourteen pick-versus-decision pairs, most of them in private repositories. An uncommitted idea note there describes the shape of an earlier one-off check: scratch clones fetched at the parent of a historical commit, with the skill under test run headless against a chosen plugin tree.
+
 ## Decisions
 
 ## Out of Scope
