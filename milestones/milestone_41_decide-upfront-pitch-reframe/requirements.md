@@ -64,5 +64,9 @@ The short surfaces state the claim as plain present-tense fact with no qualifier
 
 The diagram keeps all seven skill-named nodes, the left-to-right layout, and the dashed "until no open questions remain" return edge from answer to review. Define, review, provide alternatives, recommend, and answer sit inside a mermaid subgraph titled for deciding upfront; derive and complete sit inside a second subgraph titled for handing execution to agents. The answer-to-derive edge crosses between the two groups and is labelled as the handoff. The three colour classes (`init`, `req`, `auto`) become two, one per group.
 
+### Why Cairn argument
+
+`## Why Cairn?` keeps its three-paragraph structure with new content in each paragraph. The first opens with the problem of handing off long-running execution: an agent left to run for a long time hits questions nobody decided, and it either guesses quietly and builds on the guess or stops and waits for a person, so you cannot walk away. The second presents milestones as the mechanism: each milestone first brings its open questions up, has them answered with recorded decisions, and only then derives tasks an agent can complete unattended. The third makes work-type neutrality the supporting point: the environment is read from `CLAUDE.md`, so it fits any kind of work.
+
 ## Out of Scope
 
