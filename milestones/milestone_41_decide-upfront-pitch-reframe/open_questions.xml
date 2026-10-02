@@ -1,1 +1,8 @@
-<open-questions/>
+<open-questions>
+  <open-question id="README tagline wording">
+    <question>The recorded decisions fix the one-liner word for word but describe the new bold README tagline only by intent (it keeps the cairn trail-marker image and says the path is marked before the walk, so the walk can be handed off, without repeating the one-liner). What is the exact wording of the tagline that replaces &quot;Mark the path from idea to shipped.&quot;?</question>
+  </open-question>
+  <open-question id="Pushing main to GitHub">
+    <question>The decisions set all four GitHub repository descriptions and the root repository topics with gh inside the milestone, and say the root README goes live when it is pushed, but they do not say who pushes or when, and the local main branch is currently ahead of origin by unpushed commits. Does the milestone itself push main to GitHub so the new README appears together with the new descriptions and topics, or is the push left to the maintainer outside the milestone, with the descriptions and topics allowed to run ahead of the published README?</question>
+  </open-question>
+</open-questions>
