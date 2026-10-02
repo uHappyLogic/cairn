@@ -1,1 +1,50 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Identity one-liner wording">
+    <question>What is the exact one-sentence statement of the new identity (Cairn brings all the important questions up to be decided upfront, so long-running execution can be handed to agents confidently) that replaces &quot;Milestone-driven development for your coding agent — any kind of work, one milestone at a time.&quot; under the title of the root README and the three host README templates?</question>
+  </open-question>
+  <open-question id="Product noun">
+    <question>Which noun do the pitch surfaces use for what Cairn is (for example &quot;framework&quot;, &quot;plugin&quot;, or &quot;workflow&quot;), given that the goal says &quot;framework&quot; while the manifests and CLAUDE.md say &quot;plugin&quot; and &quot;workflow&quot; today?</question>
+  </open-question>
+  <open-question id="README tagline fate">
+    <question>What happens to the bold tagline line &quot;Mark the path from idea to shipped.&quot; that sits above the one-liner in the root README: is it kept as it is, replaced by a new tagline that expresses the decide-upfront identity, or removed so the one-liner stands alone?</question>
+  </open-question>
+  <open-question id="Claim strength disclosure">
+    <question>The goal states &quot;all the important questions&quot; at full strength as a guiding principle, while docs/design-claims.md records that no test yet measures it. Do the pitch surfaces state the claim as plain present-tense fact with no qualifier, or do they say somewhere that it is the principle Cairn is built toward?</question>
+  </open-question>
+  <open-question id="First-screen diagram shape">
+    <question>How does the root README&apos;s first-screen mermaid diagram change to express &quot;decide upfront, then hand off execution&quot;? Today it is one seven-node loop (define, review, provide alternatives, recommend, answer, derive, complete) that gives the question loop and execution equal weight.</question>
+  </open-question>
+  <open-question id="Why Cairn argument">
+    <question>What argument does the rewritten &quot;## Why Cairn?&quot; section of the root README make: which problem does it open with, and where in it do milestones (as the mechanism) and work-type neutrality (as a supporting point) appear?</question>
+  </open-question>
+  <open-question id="Design principles selection">
+    <question>The root README&apos;s &quot;## Design principles&quot; block surfaces design claims 11, 2, and 5, and omits claim 1 (&quot;Cairn finds the open questions before the work starts.&quot;) and claim 14 (&quot;Unattended batch runs are possible.&quot;), the two claims the new identity rests on. Does this milestone change which claims that block surfaces, and if so to which set?</question>
+  </open-question>
+  <open-question id="Lower README sections scope">
+    <question>Are the root README sections below the design principles (&quot;## How it works&quot; and &quot;## Self-dogfooding&quot;) reworded for the new identity in this milestone, or left as they are?</question>
+  </open-question>
+  <open-question id="Manifest description strings">
+    <question>The three plugin manifests share one long description and the two Claude marketplace files share a second, shorter one. After the reframe, do all five carry one string or do the two groups keep separate strings, and is each the README one-liner verbatim or a distinct sentence written for that surface?</question>
+  </open-question>
+  <open-question id="CLAUDE.md opening wording">
+    <question>How does the first sentence of CLAUDE.md&apos;s &quot;## What this repo is&quot; section change: does it carry the public pitch sentence, or stay a factual description for an editor of the repository that only stops calling Cairn a milestone-driven development workflow?</question>
+  </open-question>
+  <open-question id="Bootstrap workflow wording">
+    <question>The bootstrap skill&apos;s template writes &quot;This project uses the milestone-driven workflow.&quot; into every user project&apos;s context file, and this repository&apos;s CLAUDE.md carries that block. Is that runtime sentence part of the reframe, or does it stay unchanged because it names the mechanism rather than pitching the product?</question>
+  </open-question>
+  <open-question id="Root repository description">
+    <question>What does the GitHub description of uHappyLogic/cairn become: the README one-liner verbatim, or a variant that also names the supported hosts? It reads &quot;Milestone-driven development workflow for Claude Code and Google Antigravity.&quot; today, which omits Codex.</question>
+  </open-question>
+  <open-question id="Distribution repository descriptions">
+    <question>The three distribution repositories share the description &quot;Distribution of the Cairn plugin for &lt;host&gt;, published verbatim by each release of uHappyLogic/cairn. Report issues there.&quot;, which the release skill also prints in its repository-creation command. Do those descriptions take the new identity, or keep the distribution-pointer wording?</question>
+  </open-question>
+  <open-question id="Root repository topics">
+    <question>Does this milestone change the GitHub topics of uHappyLogic/cairn, which today include &quot;milestones&quot;, &quot;project-management&quot;, and &quot;workflow&quot; and none for Codex, and if so which topics are added or removed?</question>
+  </open-question>
+  <open-question id="Design claims page scope">
+    <question>Does docs/design-claims.md change in this milestone to reflect the new identity (for example its intro, or the standing of claims 1 and 14), or is it left untouched as the unchanged evidence the pitch links to?</question>
+  </open-question>
+  <open-question id="Release and rollout timing">
+    <question>The root README and the GitHub repository descriptions change as soon as they are pushed or set, while the manifests and host READMEs reach users only with the next release. Does this milestone include cutting that release, and are the GitHub descriptions set within the milestone or held until the release publishes?</question>
+  </open-question>
+</open-questions>
