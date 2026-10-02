@@ -92,3 +92,20 @@ Put the uncapped all-at-once wording of the dispatch step in `provide-alternativ
 - `uv run pytest` passes (527 tests).
 
 ---
+
+## Write Codex Distribution Repository Templates
+
+Add the root-level templates of `scripts/hosts/codex/`: the `CONTRIBUTING.md` pointer, the `.github/workflows/traffic-badges.yml` copy, and a `README.md` that opens with the badge strip the other two host templates share and names the Codex command-line tool as the supported surface, saying nothing about the desktop app or the IDE extension. The README gives the install commands `codex plugin marketplace add uHappyLogic/cairn-codex` then `codex plugin add cairn@cairn` as the only route, the `$cairn:init-milestone-base-workflow` invocation form with a note that the slash names inside the skills refer to the same skills, `AGENTS.md` as the context file, and the sandbox instructions: workspace-write with on-request approval and no `config.toml` change, every git staging or commit step asking for approval because that sandbox keeps `.git` read-only, and the `python3` tools needing only read access to the installed plugin directory. Verified by a rebuild that lands all three files at the root of `hosts/codex/` beside `LICENSE` and passes `--check`.
+
+**Verified:**
+
+- `scripts/hosts/codex/` holds the three root-level templates `README.md`, `CONTRIBUTING.md`, and `.github/workflows/traffic-badges.yml`; the workflow is the other hosts' copy with only its leading comment naming `uHappyLogic/cairn-codex`, and the CONTRIBUTING pointer is the other hosts' pointer naming the Codex distribution.
+- The README opens with the two-badge strip in the exact shape the Claude Code and Antigravity templates share, pointing at `uHappyLogic/cairn-codex`'s `traffic-data` branch.
+- The README names the Codex command-line tool as the supported surface and mentions neither the desktop app nor the IDE extension.
+- The README gives `codex plugin marketplace add uHappyLogic/cairn-codex` then `codex plugin add cairn@cairn` as the only install route.
+- The README uses the `$cairn:init-milestone-base-workflow` invocation form and notes that the slash names inside the skills refer to the same skills.
+- The README names `AGENTS.md` as the context file (the skills read it, the bootstrap writes there, Codex's `/init` documents the project in it).
+- The README's sandbox instructions name workspace-write with the on-request approval policy and no `config.toml` change, say every git staging or commit step asks for approval because that sandbox keeps `.git` read-only, and say the `python3` tools need only read access to the installed plugin directory.
+- `uv run scripts/build_hosts.py` lands `README.md`, `CONTRIBUTING.md`, and `.github/workflows/traffic-badges.yml` at the root of `hosts/codex/` beside `LICENSE` (version slot filled), `uv run scripts/build_hosts.py --check` passes, and `git diff 5305f43 -- hosts/claude hosts/antigravity` is empty.
+
+---
