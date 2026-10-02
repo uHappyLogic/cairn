@@ -1,1 +1,23 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Behaviour probe decision">
+    <question>The Goal now says the implementation is built on the recorded decisions as assumed, with no pre-implementation probing of the Codex behaviours they rest on, and that the live verification is where those assumptions are first tested. The recorded &quot;Unverified behaviour probes&quot; decision still requires the unverified Codex behaviours to be settled without a model call (from the openai/codex source and no-model CLI subcommands) before the decisions that depend on them, with the findings written into the starting state. What, if anything, remains of that decision under the revised Goal?</question>
+  </open-question>
+  <open-question id="Contradiction handling path">
+    <question>The recorded &quot;Contradicting probe findings&quot; decision has the no-model probes run as a requirements-phase step before derive-tasks, with contradictions corrected by revert-then-re-answer while still in the question loop, and only the live verification contradicting a decision after implementation, reopened the same way with the fix submitted as new tasks through submit-task. The revised Goal drops the pre-implementation probes and says any contradiction the live verification finds is fixed inside this milestone by follow-up tasks after the initial task batch. How does the milestone handle a contradicted decision now?</question>
+  </open-question>
+  <open-question id="Manifest template path">
+    <question>The &quot;Codex manifest location&quot; decision places the manifest template at scripts/hosts/codex/.codex-plugin/plugin.json rendered to the same relative path, while the &quot;Codex install route&quot; decision puts the plugin under plugins/cairn/ so the manifest lands at plugins/cairn/.codex-plugin/plugin.json, and templates render to their own relative path. Where does the Codex manifest template sit, and where in the committed hosts/codex/ tree does the manifest land?</question>
+  </open-question>
+  <open-question id="Plugin-root check offset">
+    <question>The &quot;Codex plugin-root literal&quot; decision says the build stays unchanged, but the build&apos;s dangling-plugin-root check resolves every plugin-root reference against the host tree&apos;s root, and the &quot;Codex install route&quot; decision puts the plugin under plugins/cairn/, so every ${PLUGIN_ROOT}/tools/ and ${PLUGIN_ROOT}/shared/ reference in the Codex tree would name no file and fail the gate. How does the build validate plugin-root references for a host whose plugin root is a subdirectory of its tree?</question>
+  </open-question>
+  <open-question id="Verification inline skill">
+    <question>The &quot;Verification run mode&quot; decision has the maintainer run &quot;the one inline skill&quot; by hand in an interactive Codex session, approving its git steps, but no decision names which skill; the README example, init-milestone-base-workflow, would do nothing useful in a verification workspace already seeded with a milestone. Which cairn skill does the interactive verification check run?</question>
+  </open-question>
+  <open-question id="Maintainer step in tasks">
+    <question>The live verification mixes runner-executed checks (the plugin install and two headless agent dispatches) with one check the maintainer must run by hand in an interactive session, and a headless complete-all-tasks run has no one to pause for. How is the maintainer&apos;s interactive check placed relative to the task list?</question>
+  </open-question>
+  <open-question id="Contributor and security docs">
+    <question>CONTRIBUTING.md (## Development) and SECURITY.md each say &quot;both&quot; hosts or repositories and name the two, but neither appears in the Goal&apos;s release-ready surface list nor in any decision. Do they gain Codex wording in this milestone?</question>
+  </open-question>
+</open-questions>
