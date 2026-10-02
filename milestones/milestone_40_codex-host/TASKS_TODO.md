@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Name Codex in Contributing and Security
-
-Change only the sentences that list hosts or repositories: in `CONTRIBUTING.md` (`## Development`) the supported-hosts sentence becomes a three-host sentence, the definition-directory list adds `scripts/hosts/codex/`, the committed-tree list adds `hosts/codex/`, and the distribution-repository sentence adds a `cairn-codex` link; in `SECURITY.md` "both distribution repositories" becomes all three, with a `cairn-codex` link beside the other two. Verified by reading both files and finding no sentence that still enumerates only two hosts or repositories.
-
----
-
 ## Document Codex Headless Runs in Docs
 
 Extend the "Notation and flags" section of `docs/ways-of-using-cairn.md` so Codex is a third binary: `codex exec '$cairn:<skill>'` is the Codex form of a line, the permission bypass maps to `--dangerously-bypass-approvals-and-sandbox`, `--model` has a counterpart in `-m`, `--effort` has no flag, `--add-dir` exists under the same name, and the `<goal>` rule becomes "no single quote" on Codex lines. The one-line swap rule is extended so a line moves to Codex by changing the binary, dropping `--model` and `--effort`, replacing the permission flag, and rewriting `"/cairn:<skill>"` to `'$cairn:<skill>'`. Verified by reading the section against those points and confirming no chain gained a Codex line and the page names no Codex model id or effort level.

@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Only the latest release of cairn receives security fixes. Every fix ships as a new release, published to both distribution repositories — [`cairn-claude`](https://github.com/uHappyLogic/cairn-claude) and [`cairn-antigravity`](https://github.com/uHappyLogic/cairn-antigravity) — so updating to the newest release is how a fix is received.
+Only the latest release of cairn receives security fixes. Every fix ships as a new release, published to all three distribution repositories — [`cairn-claude`](https://github.com/uHappyLogic/cairn-claude), [`cairn-antigravity`](https://github.com/uHappyLogic/cairn-antigravity), and [`cairn-codex`](https://github.com/uHappyLogic/cairn-codex) — so updating to the newest release is how a fix is received.
 
 | Version         | Supported |
 | --------------- | --------- |

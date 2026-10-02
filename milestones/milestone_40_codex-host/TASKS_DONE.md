@@ -135,3 +135,19 @@ Add `codex` as a third option of the required host dropdown in `.github/ISSUE_TE
 - The Cairn version field's description names `.codex-plugin/plugin.json` as the manifest on Codex, beside the Claude Code and Antigravity paths.
 
 ---
+
+## Name Codex in Contributing and Security
+
+Change only the sentences that list hosts or repositories: in `CONTRIBUTING.md` (`## Development`) the supported-hosts sentence becomes a three-host sentence, the definition-directory list adds `scripts/hosts/codex/`, the committed-tree list adds `hosts/codex/`, and the distribution-repository sentence adds a `cairn-codex` link; in `SECURITY.md` "both distribution repositories" becomes all three, with a `cairn-codex` link beside the other two. Verified by reading both files and finding no sentence that still enumerates only two hosts or repositories.
+
+**Verified:**
+
+- In `CONTRIBUTING.md` `## Development`, the supported-hosts sentence reads "This project supports Claude Code, Google Antigravity, and Codex from one source."
+- The definition-directory list reads `scripts/hosts/claude/`, `scripts/hosts/antigravity/`, and `scripts/hosts/codex/`.
+- The committed-tree list in the build validation paragraph reads `hosts/claude/`, `hosts/antigravity/`, and `hosts/codex/`.
+- The distribution-repository sentence links [`cairn-codex`](https://github.com/uHappyLogic/cairn-codex) beside `cairn-claude` and `cairn-antigravity`, with `cairn-claude` still named the recommended install source.
+- `SECURITY.md` says "all three distribution repositories" and links `cairn-codex` beside `cairn-claude` and `cairn-antigravity`.
+- Reading both files, no sentence still enumerates only two hosts or repositories (the remaining "both" and "two" refer to the two pytest runs), and no other sentence changed.
+- `uv run scripts/build_hosts.py --check` still passes.
+
+---
