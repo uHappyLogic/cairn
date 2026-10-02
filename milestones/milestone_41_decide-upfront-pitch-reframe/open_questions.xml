@@ -215,6 +215,46 @@
   </open-question>
   <open-question id="Manifest description strings">
     <question>The three plugin manifests share one long description and the two Claude marketplace files share a second, shorter one. After the reframe, do all five carry one string or do the two groups keep separate strings, and is each the README one-liner verbatim or a distinct sentence written for that surface?</question>
+    <alternative id="One-liner everywhere">
+      All five strings become one string, the README one-liner copied word for word: the three plugin manifests (scripts/hosts/claude/.claude-plugin/plugin.json, scripts/hosts/antigravity/plugin.json, scripts/hosts/codex/plugins/cairn/.codex-plugin/plugin.json) and the two Claude marketplace files (the hand-kept root .claude-plugin/marketplace.json and the template scripts/hosts/claude/.claude-plugin/marketplace.json). The split into a long group and a short group ends.
+      <advantage>Every surface that describes Cairn says exactly the same thing. The identity sentence is written once, and keeping it in sync is a matter of copying the same string to five places, which removes the current gap where the manifests describe a mechanism list and the marketplaces describe a different short claim.</advantage>
+      <drawback>The plugin manifests lose the mechanism tail that tells someone browsing installed plugins what the plugin does (&quot;discuss goals, define milestones, derive and complete tasks...&quot;). How well the one string fits a short marketplace listing depends on how long the one-liner turns out to be, which the Identity one-liner wording question owns.</drawback>
+    </alternative>
+    <alternative id="One-liner plus tail everywhere">
+      All five strings become one string: the README one-liner word for word, followed by a short tail naming the mechanism (milestones, the question loop, task derivation and completion). It replaces the current list of steps. The plugin manifests and both Claude marketplace files carry this same extended string.
+      <advantage>There is still one string to keep in sync, and it carries both the identity and what the plugin concretely does on every surface, so neither group loses information compared with today.</advantage>
+      <drawback>The marketplace entries, which today hold a deliberately short four-word claim, get the longest string of any option. A long string in a catalog listing reads worse and buries the identity sentence under the mechanism.</drawback>
+    </alternative>
+    <alternative id="One manifest sentence everywhere">
+      All five strings become one shared sentence written for manifests and catalogs. It states the decide-upfront identity but is not the README one-liner word for word. For example, it may drop the README&apos;s rhetorical phrasing or add the phrase that marks it as a plugin. The two groups merge into one string.
+      <advantage>One string to keep in sync, worded for where manifest descriptions actually show up (plugin lists, marketplace entries) rather than for a README&apos;s first screen, so it can be tighter or more literal than the pitch line.</advantage>
+      <drawback>Cairn then has two identity sentences to keep aligned (the README one-liner, plus the manifest sentence across five files), so the two can drift apart in later edits. Whether a separate sentence is needed at all depends on how the one-liner and the product noun are worded, which the Identity one-liner wording and Product noun questions own.</drawback>
+    </alternative>
+    <alternative id="Extended plugins, one-liner marketplaces">
+      The two groups keep separate strings. The three plugin manifests carry the README one-liner word for word, followed by a short tail naming the mechanism (replacing the current list of steps). The two Claude marketplace files carry the README one-liner word for word with nothing added.
+      <advantage>This keeps today&apos;s division of labour (a fuller description in the plugin manifest, a short one in the catalog) while both groups lead with the exact identity sentence, so the pitch is the same everywhere and only the level of detail differs.</advantage>
+      <drawback>There are two strings to keep aligned instead of one. The marketplace string is only as short as the one-liner, whose length the Identity one-liner wording question owns, so it may end up longer than the current four-word marketplace claim.</drawback>
+    </alternative>
+    <alternative id="One-liner plugins, short marketplace sentence">
+      The two groups keep separate strings. The three plugin manifests carry the README one-liner word for word, and the current list of steps is dropped. The two Claude marketplace files carry a separate, shorter sentence written for the catalog listing that states the same identity in fewer words, the way &quot;Milestone-driven development for any stack.&quot; does today.
+      <advantage>The catalog entry stays as short as it is today, which suits a marketplace listing, while the plugin manifest shows the full identity sentence exactly as the README states it.</advantage>
+      <drawback>The plugin manifests lose the mechanism tail. The shorter marketplace sentence is a second wording of the identity that can drift from the one-liner, and condensing a claim like &quot;all the important questions decided upfront&quot; into a few words risks weakening or distorting it.</drawback>
+    </alternative>
+    <alternative id="Extended plugins, short marketplace sentence">
+      The two groups keep separate strings, matching the shape they have today. The three plugin manifests carry the README one-liner word for word, followed by a short tail naming the mechanism. The two Claude marketplace files carry a separate, shorter sentence written for the catalog that states the same identity in fewer words.
+      <advantage>Each surface keeps the length and job it has today: a full description with mechanism in the plugin manifest, a brief claim in the catalog. Only the content changes to the new identity, so it is the smallest structural change.</advantage>
+      <drawback>The marketplace sentence is a second wording of the identity, written separately from the README, so there are two pitch sentences (one-liner and short claim) to keep consistent across later edits. The condensed claim may also say less than the one-liner.</drawback>
+    </alternative>
+    <alternative id="Own plugin sentence, one-liner marketplaces">
+      The two groups keep separate strings. The three plugin manifests carry a longer, separately written description of the decide-upfront identity and its mechanism that does not start from the README one-liner. The two Claude marketplace files carry the README one-liner word for word.
+      <advantage>The plugin manifest description can be written freely for someone who has already found the plugin and wants to know what it does, while the public catalog entry carries the exact pitch sentence.</advantage>
+      <drawback>The longer of the two strings is the one cut loose from the one-liner, so the most detailed description of Cairn is the one most likely to drift from the identity. Whether the one-liner is short enough to serve as a catalog entry depends on the Identity one-liner wording question.</drawback>
+    </alternative>
+    <alternative id="Two own sentences">
+      The two groups keep separate strings, and neither is the README one-liner word for word. The three plugin manifests carry a longer description of the identity and its mechanism written for the plugin surface. The two Claude marketplace files carry a shorter claim written for the catalog listing. Both are new wordings of the decide-upfront identity.
+      <advantage>Each surface gets wording fitted to its own reader and length, without depending on whatever phrasing works on the README&apos;s first screen.</advantage>
+      <drawback>The identity then lives in three separately written sentences (README one-liner, plugin description, marketplace claim). That is the most text to keep consistent, and the highest chance that one surface states the claim more strongly or more weakly than the others.</drawback>
+    </alternative>
   </open-question>
   <open-question id="CLAUDE.md opening wording">
     <question>How does the first sentence of CLAUDE.md&apos;s &quot;## What this repo is&quot; section change: does it carry the public pitch sentence, or stay a factual description for an editor of the repository that only stops calling Cairn a milestone-driven development workflow?</question>
