@@ -4,12 +4,20 @@ Usage: uv run scripts/build_hosts.py [<host> ...] [--check]
 
 A host is declared by a definition directory scripts/hosts/<host>/ holding a settings.toml
 (plugin_name, the plugin_root literal, prose_drop_patterns, strip_frontmatter_keys, the
-[layout] of core/'s top-level directories, renames, and exclude) beside that host's template
-files; every file in the directory other than settings.toml is a template rendered to the
-same relative path in the host tree with its {{VERSION}} slot filled from the root VERSION
-file and its {{NAME}} slot from plugin_name. The build discovers hosts by scanning that
-directory and applies the settings uniformly, so no host-specific code exists here and a
-definition is validated before any build runs.
+[layout] of core/'s top-level directories, renames, exclude, and the [slots] table) beside
+that host's template files; every file in the directory other than settings.toml is a
+template rendered to the same relative path in the host tree with its {{VERSION}} slot
+filled from the root VERSION file and its {{NAME}} slot from plugin_name. The build
+discovers hosts by scanning that directory and applies the settings uniformly, so no
+host-specific code exists here and a definition is validated before any build runs.
+
+Wording that differs between hosts rides on named slots: core/ carries a {{SLOT_NAME}}
+placeholder (upper-case letters, digits, and underscores, in the style of {{PLUGIN_ROOT}})
+wherever the wording differs, and each definition's [slots] table maps every slot name to
+that host's text. Each core/ text file has its slots filled in one pass before
+{{PLUGIN_ROOT}} is replaced, so a slot value may itself carry {{PLUGIN_ROOT}} but no other
+placeholder. Every definition declares the same slot names; a slot used in core/ that a host
+does not declare is left in place and fails the unfilled-placeholder check.
 
 With no host argument every discovered host is built; one or more host names build only
 those. Each selected host is rendered from core/ into a temporary directory and the whole
@@ -23,6 +31,9 @@ Checks (every selected host, every failure listed):
                             own word in any core/ file (an identifier that merely contains
                             it, such as CLAUDE.md or a Claude-Session: trailer, is not a
                             mention of the host)
+  slot-declaration          every slot name a definition's [slots] table declares appears
+                            as a {{SLOT_NAME}} placeholder somewhere in core/, and every
+                            definition declares the same set of slot names
   root-marketplace-version  every plugins[] entry of .claude-plugin/marketplace.json carries
                             exactly the VERSION literal
   frontmatter-missing, frontmatter-invalid, frontmatter-keys
@@ -32,8 +43,9 @@ Checks (every selected host, every failure listed):
   description-length        every such description is at or under 25 words
   unfilled-placeholder      no "{{" outside a "${{" expression anywhere in the tree (a "{{"
                             not immediately preceded by "$", so a bare {{VERSION}},
-                            {{NAME}}, or {{PLUGIN_ROOT}} slot fails while a GitHub
-                            Actions ${{ ... }} expression in a rendered workflow passes)
+                            {{NAME}}, or {{PLUGIN_ROOT}} slot, or a core/ slot the host
+                            does not declare, fails while a GitHub Actions ${{ ... }}
+                            expression in a rendered workflow passes)
   foreign-plugin-root       no other host's plugin-root literal anywhere in the tree
   dangling-plugin-root      every occurrence of this host's own plugin-root literal that a
                             /path follows names a file in this tree
@@ -78,6 +90,8 @@ PLUGIN_ROOT_SLOT = "{{PLUGIN_ROOT}}"
 VERSION_SLOT = "{{VERSION}}"
 NAME_SLOT = "{{NAME}}"
 PLACEHOLDER_OPEN = "{{"
+# Placeholder names a [slots] table may not declare, because the build already fills them.
+RESERVED_SLOT_NAMES = ("PLUGIN_ROOT", "VERSION", "NAME")
 DESCRIPTION_WORD_CAP = 25
 REQUIRED_FRONTMATTER_KEYS = ("name", "description")
 
@@ -87,6 +101,9 @@ VERSION_PATTERN = re.compile(r"^(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9]
 # {{NAME}}, and {{PLUGIN_ROOT}} slots trip it while a GitHub Actions `${{ ... }}` expression
 # in a rendered workflow does not.
 UNFILLED_PLACEHOLDER_RE = re.compile(r"(?<!\$)\{\{")
+# A slot name as a [slots] table declares it, and a slot placeholder as core/ carries it.
+SLOT_NAME_RE = re.compile(r"\A[A-Z][A-Z0-9_]*\Z")
+SLOT_PLACEHOLDER_RE = re.compile(r"\{\{([A-Z][A-Z0-9_]*)\}\}")
 # A frontmatter block is a leading `---` line, its content, and the next `---` line.
 FRONTMATTER_RE = re.compile(r"\A---\n(.*?)^---[ \t]*(?:\n|\Z)", re.S | re.M)
 # A top-level frontmatter key: the key at the start of a line, before its colon.
@@ -103,6 +120,7 @@ SETTINGS_SCHEMA = {
     "renames": list,
     "exclude": list,
     "layout": dict,
+    "slots": dict,
 }
 
 
@@ -123,6 +141,7 @@ class HostDefinition:
         self.renames = [(r["from"], r["to"]) for r in settings["renames"]]
         self.exclude = [e.strip("/") for e in settings["exclude"]]
         self.layout = dict(settings["layout"])
+        self.slots = dict(settings["slots"])
         self.templates = templates
 
 
@@ -242,6 +261,19 @@ def load_definition(directory, core_dirs):
         if not isinstance(value, str) or (value not in ("", ".") and not is_relative_path(value)):
             raise BuildError(f"{label}: layout.{key} must be a path relative to the host tree root")
 
+    for slot, value in settings["slots"].items():
+        if not SLOT_NAME_RE.match(slot):
+            raise BuildError(
+                f"{label}: slots.{slot} is not a slot name (upper-case letters, digits, and "
+                "underscores, starting with a letter)"
+            )
+        if slot in RESERVED_SLOT_NAMES:
+            raise BuildError(f"{label}: slots.{slot} is reserved: the build already fills {{{{{slot}}}}}")
+        if not isinstance(value, str):
+            raise BuildError(f"{label}: slots.{slot} must be a string")
+        if PLACEHOLDER_OPEN in value.replace(PLUGIN_ROOT_SLOT, ""):
+            raise BuildError(f"{label}: slots.{slot} may carry {PLUGIN_ROOT_SLOT} but no other placeholder")
+
     templates = [p for p in walk_files(directory) if p != SETTINGS_FILE]
     return HostDefinition(name, directory, settings, templates)
 
@@ -307,6 +339,13 @@ def strip_frontmatter_keys(text, keys):
     return "---\n" + stripped + "---\n" + body
 
 
+def fill_slots(text, slots):
+    """Replace every declared {{SLOT_NAME}} in one pass, leaving undeclared ones in place."""
+    if not slots:
+        return text
+    return SLOT_PLACEHOLDER_RE.sub(lambda m: slots.get(m.group(1), m.group(0)), text)
+
+
 def is_excluded(core_rel, exclude):
     return any(core_rel == e or core_rel.startswith(e + "/") for e in exclude)
 
@@ -340,6 +379,7 @@ def render_host(defn, version, dest):
         data = (CORE_DIR / core_rel).read_bytes()
         text = decode_text(data)
         if text is not None:
+            text = fill_slots(text, defn.slots)
             text = text.replace(PLUGIN_ROOT_SLOT, defn.plugin_root)
             for pattern in defn.prose_drop_patterns:
                 text = pattern.sub("", text)
@@ -393,6 +433,28 @@ def check_core_names_no_host(host_names):
             for name, pattern in patterns:
                 if pattern.search(line):
                     failures.append((f"core/{core_rel}", "host-name-in-core", f'line {lineno} names host "{name}"'))
+    return failures
+
+
+def check_slot_declarations(definitions):
+    """Every declared slot is used somewhere in core/, and every host declares the same set."""
+    used = set()
+    for core_rel in walk_files(CORE_DIR):
+        text = decode_text((CORE_DIR / core_rel).read_bytes())
+        if text is not None:
+            used.update(SLOT_PLACEHOLDER_RE.findall(text))
+    failures = []
+    declared = {defn.name: set(defn.slots) for defn in definitions}
+    every_slot = set().union(*declared.values())
+    for defn in definitions:
+        label = f"scripts/hosts/{defn.name}/{SETTINGS_FILE}"
+        for slot in sorted(declared[defn.name] - used):
+            failures.append((label, "slot-declaration", f'slots.{slot} appears nowhere in core/ as "{{{{{slot}}}}}"'))
+        for slot in sorted(every_slot - declared[defn.name]):
+            others = [other for other in declared if slot in declared[other]]
+            failures.append(
+                (label, "slot-declaration", f"declares no slots.{slot}, which the {', '.join(others)} definition(s) declare")
+            )
     return failures
 
 
@@ -583,6 +645,7 @@ def main(argv):
         selected = select_definitions(definitions, args.hosts)
 
         failures = check_core_names_no_host([d.name for d in definitions])
+        failures += check_slot_declarations(definitions)
         failures += check_root_marketplace(version)
 
         with tempfile.TemporaryDirectory(prefix="build_hosts-") as tmp:

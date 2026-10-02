@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Wording Slot Operation to Build
-
-`scripts/build_hosts.py` gains a slot operation: `core/` may carry named placeholder slots in the style of `{{PLUGIN_ROOT}}`, a new settings key holds each host's value for every slot, and one more named check (listed in the docstring's checks, with no pytest tests added) fails when any host declares a slot name that appears nowhere in `core/` or when the set of declared slot names differs between hosts, while a slot a host fails to fill is left to the existing `unfilled-placeholder` check. Both existing definitions declare the new key with no slots yet, so every Codex wording difference in this milestone has one mechanism to ride on. Verified by a passing build with `git diff 5305f43 -- hosts/claude hosts/antigravity` empty, and by a scratch slot that renders per host and trips each of the new check's two failure modes before being removed.
-
----
-
 ## Add Plugin Directory Key to Build
 
 `scripts/build_hosts.py` gains one more required settings key, `plugin_dir`: the path from the host tree's root to the directory that `plugin_root` stands for at runtime, declared as the empty string by the Claude Code and Antigravity definitions. The `dangling-plugin-root` check resolves each plugin-root reference against the tree's `plugin_dir` instead of the tree root, definition validation fails when any `[layout]` value falls outside `plugin_dir`, and the check's docstring line and the settings comment explain the key, so a Codex tree whose plugin sits under `plugins/cairn` is checked exactly as strictly as the other two. Verified by a passing build with `git diff 5305f43 -- hosts/claude hosts/antigravity` empty, and by a scratch definition showing a reference resolved under a non-empty `plugin_dir` and a layout value outside it refused.

@@ -37,3 +37,9 @@ skills = "skills"
 agents = "agents"
 shared = "shared"
 tools = "tools"
+
+# This host's text for every named slot, keyed by slot name: each {{SLOT_NAME}} placeholder
+# in a rendered core/ text file is replaced by its value here, before {{PLUGIN_ROOT}} is
+# replaced, so a value may carry {{PLUGIN_ROOT}}. Every host declares the same slot names,
+# and every name declared must appear in core/.
+[slots]
