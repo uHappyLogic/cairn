@@ -76,5 +76,9 @@ The README's `## Design principles` block stays at three bullets. Claims 1 ("Cai
 
 The first sentence of `## What this repo is` stays a factual description for an editor: it still names `cairn` as a plugin for Claude Code, Antigravity, and Codex. In place of "provides a milestone-driven development workflow" it states the new identity as what the plugin does, in the editor's own words rather than the pitch's: it brings a milestone's important questions up to be decided before work starts, so execution can then be handed to agents. Milestones stay in the rest of the paragraph as the mechanism, and the README one-liner is not copied word for word.
 
+### Bootstrap workflow wording
+
+The runtime wording stays as it is. The template sentence "This project uses the milestone-driven workflow." in `core/skills/init-milestone-base-workflow/SKILL.md`, the matching `## Milestone Workflow` block at the end of this repository's `CLAUDE.md`, and the skill's intro sentence "Bootstraps the milestone-driven workflow inside a project." are all left untouched. The sentence names the mechanism an agent works under, not the product, so the reframe stays on the pitch surfaces the goal lists.
+
 ## Out of Scope
 
