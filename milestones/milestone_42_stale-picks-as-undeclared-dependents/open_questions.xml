@@ -1,1 +1,38 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Standing picks view">
+    <question>By what means does a hand-answer runner see the standing recommendations on the other open questions, so that it can judge which of them its answer undermines, given that the answer core&apos;s `locate` prints only the answered block and `answer-open-question-with-alternative` tells its runner never to read `open_questions.xml` itself?</question>
+  </open-question>
+  <open-question id="Undermined-pick judgment home">
+    <question>In which runtime file does the step that names the standing picks an answer undermines live, given that the shared answer core `core/shared/answer-procedure.md` is also followed by the answer sweep and by `/answer-open-question-with-recommendation`, neither of which may perform that step?</question>
+  </open-question>
+  <open-question id="Undermined pick test">
+    <question>What is the test by which a hand-answer runner decides that its answer undermines another question&apos;s standing recommendation: is a pick undermined only when its recommended option can no longer be carried out as written, or also when the option still works but the recommendation&apos;s stated rationale rests on something the answer changed?</question>
+  </open-question>
+  <open-question id="Answer matching the standing pick">
+    <question>When a hand answer records the same option that the answered question&apos;s own standing recommendation names, does the runner still judge the other questions&apos; standing picks against that answer?</question>
+  </open-question>
+  <open-question id="Unknown named dependent">
+    <question>What does the open-question tool&apos;s `remove` do when a Short Title passed to it as an undermined dependent matches no block in the document, or names the block being removed, given that the answer core folds the decision into `requirements.md` before it calls `remove`?</question>
+  </open-question>
+  <open-question id="Named dependent without a pick">
+    <question>What does the open-question tool&apos;s `remove` do when a block passed to it as an undermined dependent exists but carries no `&lt;recommendation&gt;` element?</question>
+  </open-question>
+  <open-question id="Cleared picks report">
+    <question>After a hand answer has cleared the standing picks of other open questions, does the hand-answer skill tell the user which questions lost their pick, beside its one `Answer recorded.` status line?</question>
+  </open-question>
+  <open-question id="Goal revision pick clearing">
+    <question>Should `/modify-milestone-goal` clear the standing recommendations that a goal revision undermines, and if it does, are the picks that declared a dependency on a cleared pick through a `&lt;depends-on&gt;` tag cleared along with it?</question>
+  </open-question>
+  <open-question id="Replay case set">
+    <question>Which historical stale-pick cases does the replay cover: only the cases found in this repository&apos;s own milestone history, or also the cases found in other local projects that use the workflow?</question>
+  </open-question>
+  <open-question id="Replay ground truth">
+    <question>In a replayed case, by what record is each standing pick classed as stale or as unaffected, so that the count of stale picks cleared and the count of unaffected picks left standing can both be taken?</question>
+  </open-question>
+  <open-question id="Replay result bar">
+    <question>Is the replay&apos;s result a bar the milestone must meet before it can be finished, or a measurement that is reported whatever it shows?</question>
+  </open-question>
+  <open-question id="Replay result home">
+    <question>Where in the committed repository, if anywhere, is the replay&apos;s aggregate result recorded?</question>
+  </open-question>
+</open-questions>
