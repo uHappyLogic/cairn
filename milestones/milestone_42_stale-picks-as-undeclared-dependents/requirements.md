@@ -56,5 +56,9 @@ The repository holds no replay or benchmark harness. `temp/` is git-ignored and 
 
 The step that names the standing picks an answer undermines lives in a new shared procedure under `core/shared/` that both hand-answer skills follow in place of the answer core directly: it performs the judgment, then delegates to `core/shared/answer-procedure.md`, handing it the named Short Titles as a new optional input that the core's step 4 passes through to `remove`. `answer-with-recommendation-procedure.md` passes nothing for that input, so the core stays a pass-through recorder that gains one input and no branch, and the two answer paths are each a composing procedure over the same recording core.
 
+### Undermined pick test
+
+A standing pick is undermined when its recommended alternative, as that alternative's what-it-is text reads, can no longer be carried out alongside the recorded decision, or when the one-line rationale of its `<recommendation>` element states or plainly presupposes something the answer changed (a fact about the project, a constraint, a sibling's expected outcome), so that the stated reason no longer holds as written even though the option itself could still be carried out. The test reads the option text and the rationale text against the answer and what it directly entails; whether the rationale rests on the changed thing is judged in prose, and doubt strips. The runner does not re-form the recommender's judgment over the other blocks' sets.
+
 ## Out of Scope
 
