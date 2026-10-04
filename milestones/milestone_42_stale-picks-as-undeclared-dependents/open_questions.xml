@@ -115,6 +115,26 @@
   </open-question>
   <open-question id="Replay case set">
     <question>Which historical stale-pick cases does the replay cover: only the cases found in this repository&apos;s own milestone history, or also the cases found in other local projects that use the workflow?</question>
+    <alternative id="This repository, found case">
+      The replay covers only the stale-pick cases already found in this repository&apos;s own milestone history: the one window the sweep-contradiction analysis identified, in milestone 37, where the standing pick on &quot;Milestones root and cold start&quot; (annotated 12:05) was undermined by `Alternative-answer: Failure cleanup scope` (12:14) and recorded stale by the sweep at 12:19. The window is replayed as the hand answers it holds, in commit order, each from a scratch clone at that answer&apos;s parent commit. No other local project is read and no further window is added.
+      <advantage>Every input lives in this public repository, so the replay can be rerun from any clone by anyone, with the case set fixed by a commit list rather than by access to private repositories.</advantage>
+      <drawback>One window with one stale pair, so both counts rest on a single case; that window also holds two further manual answers and two goal revisions, and whether the goal revisions can be replayed at all hinges on the sibling decision on goal-revision pick clearing.</drawback>
+    </alternative>
+    <alternative id="This repository, all windows">
+      The replay covers every hand-answer window in this repository&apos;s own XML-era history, whether or not a stale pick was ever reported in it: each `Manual-answer:` or `Alternative-answer:` commit on an `open_questions.xml` that landed while another block carried a standing recommendation, selected by that rule rather than by the analysis&apos;s list, which is thirteen windows across milestones 27 to 41 at present. No other local project is read.
+      <advantage>Thirteen public windows, twelve of them with no reported stale pick, so the count of unaffected picks left standing (the side that &quot;doubt strips&quot; can get wrong) is measured on real hand answers without reading any private repository, and the set is reproducible by rule from a clone.</advantage>
+      <drawback>Only one of the thirteen windows carries a known stale pick, so the count of stale picks cleared still rests on one pair, and the twelve windows without a contradiction report can be scored only by whatever record the sibling decision on replay ground truth settles on.</drawback>
+    </alternative>
+    <alternative id="All local projects, found cases">
+      The replay covers the stale-pick cases already found in every local project that uses the workflow: the eight windows (fourteen pick-versus-decision pairs) the sweep-contradiction analysis identified, one in this repository and seven across three other local projects, with one of those windows alone holding six pairs from a single hand answer. Each is replayed from a scratch clone of its own repository at the parent of each hand answer, and no other windows are added.
+      <advantage>The whole known population of the pattern, fourteen labelled pairs rather than one, including the six-pair window that is the very case the milestone exists to prevent.</advantage>
+      <drawback>Three of the four repositories are private, so the replay runs only on a machine holding them and nothing of its per-case material can enter a committed artifact; half the pairs come from one window, so a single case weighs half the stale count; and windows whose staleness came from a goal revision hinge on the sibling decision on goal-revision pick clearing.</drawback>
+    </alternative>
+    <alternative id="All local projects, all windows">
+      The replay covers every hand-answer window, whether or not a stale pick was ever reported in it, in every local project that uses the workflow: each `Manual-answer:` or `Alternative-answer:` commit on an `open_questions.xml` that landed while another block carried a standing recommendation, selected by that rule rather than by the analysis&apos;s list, which is seventy-four windows at present, thirteen in this repository and sixty-one across four other local projects. Each is replayed from a scratch clone of its own repository at the parent of the hand answer.
+      <advantage>The largest sample on both sides: all fourteen known stale pairs plus some sixty windows where the answer bore on no standing pick, so the cost of &quot;doubt strips&quot; is measured where it would actually show.</advantage>
+      <drawback>Seventy-four headless runs of the skill under test per plugin version replayed, over four private repositories that must be present locally and whose material can never enter a committed artifact; the sixty-odd windows without a contradiction report can be scored only by whatever record the sibling decision on replay ground truth settles on.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Replay ground truth">
     <question>In a replayed case, by what record is each standing pick classed as stale or as unaffected, so that the count of stale picks cleared and the count of unaffected picks left standing can both be taken?</question>
