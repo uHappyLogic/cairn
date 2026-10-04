@@ -134,6 +134,56 @@
   </open-question>
   <open-question id="Cleared picks report">
     <question>After a hand answer has cleared the standing picks of other open questions, does the hand-answer skill tell the user which questions lost their pick, beside its one `Answer recorded.` status line?</question>
+    <alternative id="No cleared-picks report">
+      Both hand-answer skills keep their reporting step as it stands: the one fixed line `Answer recorded.` plus the existing advisory about new questions the answer may have raised, with nothing printed about any pick the write cleared, whether cleared by the runner&apos;s judgment, by a `&lt;depends-on&gt;` tag, or transitively. The answer commit&apos;s diff and the next run of the recommendation pass stay the only record, now and later; the tool&apos;s print contract and the CLAUDE.md invariant that stripped dependents get no console advisory are left untouched.
+      <advantage>Keeps the terse-reporting rule and the &quot;stripped dependents get no console advisory&quot; invariant whole, with no change to the tool&apos;s print contract, the skills&apos; reporting steps, their tests, or CLAUDE.md; the judgment-cleared picks are treated exactly as tag-cleared ones already are.</advantage>
+      <drawback>The judgment step is the one part of the cascade that reads the answer rather than a tag, and its result reaches the user only by opening the commit diff or when the next recommendation pass silently re-picks the stripped blocks, so a pick cleared on a misreading is caught late or never, and a user who disagrees with a strip has nothing at hand to disagree with.</drawback>
+    </alternative>
+    <alternative id="Identifier-free cleared line">
+      Beside `Answer recorded.`, the skill prints a second fixed identifier-free line (such as `Standing picks cleared.`; a count is one variant within this option) only when the runner passed at least one undermined dependent to `remove`. No Short Title is named, the tool&apos;s print contract is unchanged, the channel is the console, and picks cleared through tags alone trigger nothing.
+      <advantage>Tells the user at the moment it happens that the answer reached beyond its own block, in the identifier-free style every status line in the workflow already uses, at no tool or bookkeeping cost.</advantage>
+      <drawback>Says nothing the commit diff does not: the user still has to open the diff to learn which picks went, so the line adds output without removing the lookup, and it stays silent about tag-driven and transitive strips the runner never named.</drawback>
+    </alternative>
+    <alternative id="Named dependents listed">
+      Beside `Answer recorded.`, the skill lists the Short Title of each block it passed to `remove` as an undermined dependent, one per line in the shape the annotating passes use for still-skipped questions, with no reason attached. Coverage is the runner-named dependents only, so picks cleared through `&lt;depends-on&gt;` tags or transitively are not listed; the names come from the runner&apos;s own judgment step; the tool&apos;s print contract is unchanged; the channel is the console.
+      <advantage>Names exactly the judgment calls, the one part of the cascade no tag records, at zero tool cost, since the runner already holds those names when it builds the `remove` call.</advantage>
+      <drawback>The list is not &quot;which questions lost their pick&quot;: tag-cleared and transitively cleared blocks are omitted, and whether every listed name in fact lost a pick depends on what `remove` does with a named dependent that carries no pick or matches no block (sibling questions); the names must also be carried from wherever the judgment step lands to the skill&apos;s reporting step.</drawback>
+    </alternative>
+    <alternative id="Named dependents with reasons">
+      As &quot;Named dependents listed&quot;, but each line carries the Short Title and the one clause by which the runner judged that pick undermined. Coverage stays the runner-named dependents only, the tool&apos;s print contract is unchanged, and the channel is the console.
+      <advantage>The reason is the only information about the cascade that exists nowhere in git, and printing it is what lets the user catch a strip made on a misreading right away, and argue with it, before the next recommendation pass re-picks over the kept alternatives.</advantage>
+      <drawback>The longest free-text success-path output of any single-question skill, inviting the narration the reporting steps forbid, while still blind to tag-driven and transitive strips; the stated reason is only as good as the judgment that produced it.</drawback>
+    </alternative>
+    <alternative id="Tool-printed full list">
+      `remove` prints the id of every block it stripped, one per line in the order it stripped them (the ids `remove_question` already returns to its caller), and the skill relays that print beside `Answer recorded.` without reasons. Coverage is every pick the write cleared, judgment-named, tag-driven, and transitive alike; the channel is the console.
+      <advantage>Exact and complete by construction, including the transitive and tag-driven strips the runner never named and could not otherwise know, with no runner bookkeeping and no way for the list to disagree with what the document now holds.</advantage>
+      <drawback>Breaks the tool&apos;s &quot;a write prints nothing on success&quot; contract stated at every site, so the `remove` tests that assert empty stdout, the help text, the answer core&apos;s contract sentence, and CLAUDE.md all change, and every other `remove` caller (the review skill&apos;s prunes, the answer core&apos;s step-5 cascade, the out-of-scope sweep) now receives output it must be told to discard.</drawback>
+    </alternative>
+    <alternative id="Compared full list">
+      The skill runs `list --without-recommendation` before and after the `remove` and prints beside `Answer recorded.` each id present after and absent before, one per line without reasons. Coverage is every pick the write cleared; the tool and its print contract are unchanged; the channel is the console.
+      <advantage>Full coverage of tag-driven and transitive strips with no change to the tool, its tests, or the contract sentence any other caller relies on.</advantage>
+      <drawback>Two more tool calls per answer and a set difference the runner computes in prose, the kind of mechanical reconciliation the project has moved into the tool, with a wrong list possible wherever the runner slips; whether the before-view is already in hand depends on the means by which the runner sees the standing picks (sibling question).</drawback>
+    </alternative>
+    <alternative id="Tool-printed list with reasons">
+      As &quot;Tool-printed full list&quot;, with the skill attaching its one-clause reason to each printed id it passed itself as an undermined dependent and marking the rest as cleared through tags. Coverage is every cleared pick; the channel is the console.
+      <advantage>The complete picture in one place: every pick that went, which ones went on the runner&apos;s reading of the answer and why, and which went mechanically, so a user can check both the judgment and its reach at once.</advantage>
+      <drawback>Carries both costs at once, the tool&apos;s print-contract change with its test and documentation ripple and the longest output of any option, for a report whose mechanical half the commit diff already records.</drawback>
+    </alternative>
+    <alternative id="Compared list with reasons">
+      As &quot;Compared full list&quot;, with the skill attaching its one-clause reason to each listed id it passed itself as an undermined dependent and marking the rest as cleared through tags. The tool is unchanged; the channel is the console.
+      <advantage>The complete, explained picture without touching the tool or any other caller&apos;s contract.</advantage>
+      <drawback>Two extra tool calls, a prose set difference, and the longest output, all added to the skill&apos;s reporting step; whether the before-view is already in hand depends on the means by which the runner sees the standing picks (sibling question).</drawback>
+    </alternative>
+    <alternative id="Commit-body record only">
+      Nothing is printed beyond `Answer recorded.`; instead the skill appends to the answer commit&apos;s body one trailer-shaped line per runner-named dependent (such as `Cleared-pick: Short Title — reason`) after the rationale or the lifted line. Coverage is the runner-named dependents, since the diff already names the mechanically stripped blocks; the tool is unchanged; the channel is git alone.
+      <advantage>Puts the judgment&apos;s reasons where revert-then-re-answer and a later reader look, in history, and capture&apos;s rule of dropping the trailing run of `Key: value` lines keeps them out of the rationale it distills.</advantage>
+      <drawback>The user is not told at the time, which is the only moment a wrong strip is cheap to catch; the record leans on capture treating the new line as a trailer, and it alters the &quot;body is the lifted line verbatim&quot; contract of `Alternative-answer:` commits and the rationale-only body of `Manual-answer:` commits.</drawback>
+    </alternative>
+    <alternative id="Console list and body record">
+      The skill both prints the runner-named dependents with their reasons beside `Answer recorded.` (as in &quot;Named dependents with reasons&quot;) and records the same lines as trailer-shaped lines in the commit body (as in &quot;Commit-body record only&quot;). Coverage is the runner-named dependents; the tool is unchanged; the channel is console and git together.
+      <advantage>The user is told now and the reasons survive in history for a later revert or capture reading, each channel covering what the other cannot.</advantage>
+      <drawback>Two renderings of the same judgment to keep in step across both skills, the most output of the console options, and the capture-body and narration costs together.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Goal revision pick clearing">
     <question>Should `/modify-milestone-goal` clear the standing recommendations that a goal revision undermines, and if it does, are the picks that declared a dependency on a cleared pick through a `&lt;depends-on&gt;` tag cleared along with it?</question>
