@@ -72,5 +72,9 @@ A block named as an undermined dependent that exists but carries no `<recommenda
 
 Both hand-answer skills keep their reporting step as it stands: the one fixed line `Answer recorded.` plus the existing advisory about new questions the answer may have raised, with nothing printed about any pick the write cleared, whether cleared by the runner's judgment, by a `<depends-on>` tag, or transitively. The answer commit's diff and the next run of the recommendation pass stay the only record; no line is added to the commit body, and the tool's print contract and the invariant that stripped dependents get no console advisory are left untouched.
 
+### Replay result home
+
+The replay task's **Verified:** bullets in the milestone's `TASKS_DONE.md` carry the aggregate counts (stale picks cleared, unaffected picks left standing, and whatever bar or margin applies). No file outside the milestone directory carries a figure: `docs/` and `CLAUDE.md` describe the new behaviour without numbers, and the finish summary in `milestones/README.md` may restate the counts in one bullet.
+
 ## Out of Scope
 
