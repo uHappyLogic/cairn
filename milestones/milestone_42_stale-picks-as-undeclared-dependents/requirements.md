@@ -80,5 +80,9 @@ The replay task's **Verified:** bullets in the milestone's `TASKS_DONE.md` carry
 
 The hand-answer runner reads `<MILESTONE_DIR>/open_questions.xml` whole with the file-reading tool, for reasoning only, and judges the standing picks from that read, which shows every block with its `<alternative>`, `<applied-principle>`, `<depends-on>`, and `<recommendation>` children. The "never read or edit it yourself" sentence of `answer-open-question-with-alternative` and the "every read and write of it in the core is a tool call" statement of `answer-open-question` are reworded to the form the other inline skills carry: a whole read is for reasoning only, and every locate, list, lift, and write is a tool call. The tool is unchanged.
 
+### Answer matching the standing pick
+
+A match is no exemption. On every hand answer the runner performs the undermined-pick judgment over the other questions' standing picks against the recorded answer, whether or not the option it records is the one the answered block's own `<recommendation option>` names, through both the literal and the alternative skill, with no provenance condition. The answered block's own recommendation plays no part in deciding whether the judgment runs.
+
 ## Out of Scope
 
