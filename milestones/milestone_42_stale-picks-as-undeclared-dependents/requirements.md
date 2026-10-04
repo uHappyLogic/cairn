@@ -92,5 +92,9 @@ A match is no exemption. On every hand answer the runner performs the undermined
 
 The replay covers the stale-pick cases already found in every local project that uses the workflow: the eight windows (fourteen pick-versus-decision pairs) the sweep-contradiction analysis identified, in this repository and in other local projects. Each is replayed from a scratch clone of its own repository at the parent of each hand answer, and no other windows are added. The replay therefore runs only on a machine holding those repositories, and nothing of its per-case material enters a committed artifact.
 
+### Replay ground truth
+
+Each standing pick in a replayed case is classed by hand. The maintainer reads each case at the parent of its hand-answer commit (the decision that answer folded, beside every standing pick's option and recommendation text) and labels each pick stale or unaffected by the milestone's own definition of an undermined pick, writing the labels into the case manifest before any replay run and never changing them afterwards. No automated record supplies a label; the historical sweep advisory and later history serve at most to point at candidates. The manifest stays local, outside the tracked files.
+
 ## Out of Scope
 
