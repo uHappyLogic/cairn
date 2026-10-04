@@ -16,3 +16,21 @@ Assemble, under the git-ignored `temp/`, the case manifest for the replay: the e
 
 ---
 
+## Let Remove Reconcile Named Undermined Dependents
+
+Extend `remove` in `core/tools/open_questions.py` with an optional argument naming further Short Titles to reconcile as undermined dependents of the removed block: every title is resolved before anything changes (a title matching no block, and equally the answered block's own title, stops the call on one `Error:` line naming that title and, for an unknown one, the ids the document holds, with exit status 1 and the document byte-for-byte unchanged), and each named block then goes through the same per-block strip primitive as the `<depends-on>`-tagged dependents in the same one write, transitively and keeping its `<alternative>` children, except that a named block carrying no `<recommendation>` is left exactly as it stands and seeds no transitive strip. The hand-answer path needs this to clear picks no tag declares; the tool still prints nothing on success, and its docstring and `--help` state the new contract. Verified by new cases in `tests/test_remove.py` for each of those behaviours passing under both `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest`, with `hosts/` rebuilt and `uv run scripts/build_hosts.py --check` passing.
+
+**Verified:**
+
+- `remove` in `core/tools/open_questions.py` takes the optional `--undermined SHORT_TITLE...` (one or more Short Titles after the block's own, the flag repeatable, compared un-escaped and case-folded, a title named twice counted once), and a call without it behaves as before: the 48 earlier tests of `tests/test_remove.py` pass unchanged.
+- Every named title is resolved before anything changes: a title matching no block stops the call on the one line `Error: no <open-question> block has the id "<title>"; the document holds <ids>`, and the removed block's own title on the one line `Error: --undermined names "<title>", the block being removed, which cannot be reconciled as its own dependent`, each with exit status 1, empty stdout, no write reached, and the document byte-for-byte unchanged even when valid titles and tagged dependents accompany the bad one.
+- Each named block goes through `strip_recommendation`, the same primitive as the `<depends-on>`-tagged dependents, in the same single write (one `save_document` call covering the removal, the tagged dependents, and the named ones), keeping its `<alternative>` children; a named block is stripped even when its own tag agrees with `--option`, while an un-named agreeing dependent still loses only its tag.
+- The strip is transitive from a named block: blocks whose `<depends-on>` names a stripped named block are stripped in turn, alternatives kept, with no tag left naming a stripped block and unrelated blocks byte-identical.
+- A named block carrying no `<recommendation>` (alternatives only, or bare) is left exactly as it stands, the call still succeeds and makes its write, and a block whose `<depends-on>` names it keeps its pick and its tag; `remove_question` returns no id for it.
+- The tool prints nothing on success with `--undermined` (exit status 0, empty stdout and stderr).
+- The module docstring's `remove` entry and `remove --help` state the new contract (the flag, resolution before any change, the two refusals, the same strip in the same write, the no-recommendation exception), checked by a test.
+- 17 new cases in `tests/test_remove.py` cover those behaviours; `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` each pass all 544 tests.
+- `hosts/` was rebuilt with `uv run scripts/build_hosts.py` (the tool rendered into all three host trees) and `uv run scripts/build_hosts.py --check` passes.
+
+---
+

@@ -58,7 +58,7 @@ Subcommands:
       <depends-on question="…" option="…"/> must resolve one hop to another block of the
       document that carries <alternative> elements and to one of that block's <alternative>
       ids — so the alternative set the first shape embedded stays frozen under the second
-  remove MILESTONE_DIR SHORT_TITLE [--option RECORDED_OPTION]
+  remove MILESTONE_DIR SHORT_TITLE [--option RECORDED_OPTION] [--undermined SHORT_TITLE...]
       delete the named block and, before the one write, reconcile the blocks that depend on
       it: with --option (the option recorded as the answer, which must be one of the removed
       block's own <alternative> ids or the call is refused with the document unchanged) a
@@ -67,7 +67,15 @@ Subcommands:
       stripped as by strip --recommendation, keeping its <alternative> elements; without
       --option every such block is so stripped; either way the strip runs transitively over
       the blocks that depend on a stripped block, so no <depends-on> tag is left naming a
-      block removed or stripped by the call
+      block removed or stripped by the call. --undermined, written after the Short Title and
+      taking one or more Short Titles (the flag may be repeated), names further blocks to
+      reconcile as dependents of the removed block although no <depends-on> tag declares
+      them: every title is resolved before anything changes, and one matching no block, or
+      naming the removed block itself, refuses the call with the document unchanged; each
+      named block is then stripped in the same write as the tagged dependents and by the same
+      strip, whatever its own tags say and transitively in the same way, except that a named
+      block holding nothing the strip would delete (one carrying no <recommendation>) is left
+      exactly as it stands and no block depending on it is stripped on its account
   walk MILESTONE_DIR
       print the id of every block carrying a <recommendation>, one per line in the order the
       answer sweep dispatches them: those blocks are gathered in document order, each one's
@@ -606,7 +614,22 @@ def check_recorded_option(question, recorded_option):
         raise ToolError(f'--option "{recorded_option}" names none of the <alternative> ids of {context}, which are {held}')
 
 
-def remove_question(document, question, recorded_option=None):
+def find_undermined(document, question, short_titles):
+    """The blocks the Short Titles name as undermined dependents of the block about to be
+    removed, once each in the order first named. Every title is resolved before anything is
+    returned: one matching no block is find_question's ToolError, naming it and the ids the
+    document holds, and one naming the removed block itself is a ToolError naming it, since a
+    block is no dependent of its own removal."""
+    undermined = find_questions(document, short_titles)
+    if any(named is question for named in undermined):
+        given = next(short_title for short_title in short_titles if id_key(short_title) == id_key(question.id))
+        raise ToolError(
+            f'--undermined names "{given}", the block being removed, which cannot be reconciled as its own dependent'
+        )
+    return undermined
+
+
+def remove_question(document, question, recorded_option=None, undermined=()):
     """Delete the block from the document and reconcile every block that depends on it, all
     on the parsed tree so the caller writes once. With a recorded option — one of the removed
     block's own alternative ids, as check_recorded_option has confirmed — a dependent whose
@@ -615,21 +638,27 @@ def remove_question(document, question, recorded_option=None):
     other dependent is stripped as strip_recommendation strips — its <recommendation>,
     <depends-on>, and <applied-principle> children deleted, its <alternative> children kept
     for the recommendation pass to re-pick over; without one every dependent is so stripped.
-    The strip is transitive: a block whose <depends-on> names a block stripped here is
-    stripped in turn, until no tag names a block removed or stripped by this call. A tag
-    naming any other block is left as it is. Returns the ids of the blocks stripped, in the
-    order they were stripped."""
+    The undermined blocks — other blocks of the document, as find_undermined has resolved
+    them — are dependents no tag declares: each is stripped the same way after the tagged
+    ones, whatever its own tags naming the removed block say. The strip is transitive: a
+    block whose <depends-on> names a block stripped here is stripped in turn, until no tag
+    names a block removed or stripped by this call; a block the strip deletes nothing from
+    (an undermined block carrying no recommendation half) is left as it stands and seeds no
+    further strip. A tag naming any other block is left as it is. Returns the ids of the
+    blocks stripped, in the order they were stripped."""
     document.questions = [other for other in document.questions if other is not question]
     removed = id_key(question.id)
     recorded = None if recorded_option is None else id_key(recorded_option)
+    named = {id_key(block.id) for block in undermined}
 
     pending = []
     for dependent in dependents_of(document, question.id):
         tags = [dependency for dependency in dependent.depends_on if id_key(dependency.question) == removed]
-        if recorded is not None and all(id_key(tag.option) == recorded for tag in tags):
+        if recorded is not None and id_key(dependent.id) not in named and all(id_key(tag.option) == recorded for tag in tags):
             dependent.depends_on = [dependency for dependency in dependent.depends_on if id_key(dependency.question) != removed]
         else:
             pending.append(dependent)
+    pending.extend(undermined)
 
     stripped = []
     seen = set()
@@ -638,9 +667,9 @@ def remove_question(document, question, recorded_option=None):
         if id_key(block.id) in seen:
             continue
         seen.add(id_key(block.id))
-        strip_recommendation(block)
-        stripped.append(block.id)
-        pending.extend(dependents_of(document, block.id))
+        if strip_recommendation(block):
+            stripped.append(block.id)
+            pending.extend(dependents_of(document, block.id))
     return stripped
 
 
@@ -984,7 +1013,8 @@ def cmd_remove(args):
     question = find_question(document, args.short_title)
     if args.option is not None:
         check_recorded_option(question, args.option)
-    remove_question(document, question, args.option)
+    undermined = find_undermined(document, question, args.undermined or [])
+    remove_question(document, question, args.option, undermined)
     save_document(args.milestone_dir, document)
     return 0
 
@@ -1163,7 +1193,9 @@ def build_parser():
         "option loses only that tag and every other dependent is stripped as by strip "
         "--recommendation, keeping its <alternative> elements; without it every dependent is "
         "so stripped; both transitively over the dependents of a stripped block, so no "
-        "<depends-on> tag is left naming a removed or stripped block",
+        "<depends-on> tag is left naming a removed or stripped block; --undermined names further "
+        "blocks to strip the same way in that write as dependents no tag declares, each title "
+        "resolved before anything changes",
     )
     remove_parser.add_argument(
         "short_title",
@@ -1175,6 +1207,19 @@ def build_parser():
         metavar="RECORDED_OPTION",
         help="the option recorded as the block's answer, one of its own <alternative> ids "
         "(compared un-escaped and case-folded); any other value is refused with the document "
+        "unchanged",
+    )
+    remove_parser.add_argument(
+        "--undermined",
+        metavar="SHORT_TITLE",
+        nargs="+",
+        action="extend",
+        help="the id of a further block (compared un-escaped and case-folded) to reconcile as an "
+        "undermined dependent of the removed block, written after the block's own SHORT_TITLE; "
+        "one or more ids, and the flag may be repeated; each is stripped as by strip "
+        "--recommendation, transitively, keeping its <alternative> elements, except that a block "
+        "carrying no <recommendation> is left as it stands and seeds no further strip; an id "
+        "matching no block, or naming the removed block itself, is refused with the document "
         "unchanged",
     )
 

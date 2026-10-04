@@ -6,7 +6,11 @@ partial strip, without it every dependent takes it — its <recommendation>, <de
 --recommendation strips — both transitively over the dependents of a stripped block, so no
 removal leaves a <depends-on> tag naming a removed or stripped block and no removal costs a
 dependent its alternatives; an --option naming none of the removed block's own <alternative>
-ids is refused with the document unchanged."""
+ids is refused with the document unchanged. With --undermined the further blocks named are
+reconciled in that same write as dependents no tag declares: every title resolved before
+anything changes (an unknown one, or the removed block's own, refused with the document
+unchanged), each named block stripped by the same primitive and transitively, and a named
+block carrying no <recommendation> left exactly as it stands, seeding no strip."""
 
 from pathlib import Path
 
@@ -712,6 +716,282 @@ def test_main_removes_in_process_silently(capsys, milestone_dir):
     document = load(target)
     assert [question.id for question in document.questions] == [ROOT_FORM, BARE]
     assert by_id(document, ROOT_FORM).depends_on == []
+
+
+# --- named undermined dependents -------------------------------------------------------
+
+
+def test_remove_strips_a_named_undermined_block_no_tag_declares(run_tool, tmp_path):
+    target = write_document(tmp_path / "m", annotated("Target"), annotated("Undermined"), annotated("Bystander"))
+    before = document_of(target).decode("utf-8")
+    result = run_tool("remove", str(target), "Target", "--undermined", "Undermined")
+    assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
+    after = document_of(target).decode("utf-8")
+    assert not has_block(after, "Target")
+    assert block_lines(after, "Undermined") == stripped_lines(block_lines(before, "Undermined"))
+    assert by_id(load(target), "Undermined") == stripped("Undermined")
+    assert block_lines(after, "Bystander") == block_lines(before, "Bystander")
+
+
+def test_remove_strips_several_named_blocks_given_together_or_by_a_repeated_flag(run_tool, tmp_path):
+    for name, arguments in (
+        ("together", ("--undermined", "First", "Second")),
+        ("repeated", ("--undermined", "First", "--undermined", "Second")),
+        ("around the option", ("--undermined", "First", "--option", "A", "--undermined", "Second")),
+    ):
+        target = write_document(
+            tmp_path / name, annotated("Target"), annotated("First"), annotated("Bystander"), annotated("Second")
+        )
+        result = run_tool("remove", str(target), "Target", *arguments)
+        assert (result.returncode, result.stdout, result.stderr) == (0, b"", b""), name
+        assert load(target) == Document([stripped("First"), annotated("Bystander"), stripped("Second")]), name
+
+
+def test_remove_matches_a_named_undermined_title_case_folded_and_un_escaped(run_tool, tmp_path):
+    title = "Pick & \"choose\" <one>"
+    target = write_document(tmp_path / "m", annotated("Target"), annotated(title))
+    before = document_of(target)
+    escaped = run_tool("remove", str(target), "Target", "--undermined", open_questions.escape(title))
+    assert escaped.returncode == 1
+    assert document_of(target) == before
+    result = run_tool("remove", str(target), "Target", "--undermined", title.upper())
+    assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
+    assert load(target) == Document([stripped(title)])
+
+
+def test_remove_strips_a_block_named_twice_once(run_tool, tmp_path):
+    target = write_document(tmp_path / "m", annotated("Target"), annotated("Undermined"))
+    result = run_tool("remove", str(target), "Target", "--undermined", "Undermined", "UNDERMINED")
+    assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
+    assert load(target) == Document([stripped("Undermined")])
+    document = Document([annotated("Target"), annotated("Undermined")])
+    named = open_questions.find_undermined(document, by_id(document, "Target"), ["Undermined", "undermined"])
+    assert [block.id for block in named] == ["Undermined"]
+    assert open_questions.remove_question(document, by_id(document, "Target"), None, named) == ["Undermined"]
+
+
+def test_remove_reconciles_named_and_tagged_dependents_in_the_same_write(run_tool, tmp_path):
+    target = write_document(
+        tmp_path / "m",
+        annotated("Target"),
+        annotated("Agreeing", depends_on=[("Target", "A")]),
+        annotated("Differing", depends_on=[("Target", "B")]),
+        annotated("Undermined"),
+        annotated("Bystander"),
+    )
+    before = document_of(target).decode("utf-8")
+    result = run_tool("remove", str(target), "Target", "--option", "A", "--undermined", "Undermined")
+    assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
+    after = document_of(target).decode("utf-8")
+    document = load(target)
+    assert [question.id for question in document.questions] == ["Agreeing", "Differing", "Undermined", "Bystander"]
+    agreeing = by_id(document, "Agreeing")
+    assert agreeing.depends_on == [] and agreeing.recommendation is not None
+    assert by_id(document, "Differing") == stripped("Differing")
+    assert by_id(document, "Undermined") == stripped("Undermined")
+    assert block_lines(after, "Bystander") == block_lines(before, "Bystander")
+
+
+def test_remove_strips_a_named_block_even_when_its_tag_agrees_with_the_recorded_option(run_tool, tmp_path):
+    target = write_document(
+        tmp_path / "m",
+        annotated("Target"),
+        annotated("Agreeing", depends_on=[("Target", "A")]),
+        annotated("Downstream", depends_on=[("Agreeing", "A")]),
+    )
+    result = run_tool("remove", str(target), "Target", "--option", "A", "--undermined", "Agreeing")
+    assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
+    assert load(target) == Document([stripped("Agreeing"), stripped("Downstream")])
+
+
+def test_remove_strips_transitively_over_the_dependents_of_a_named_block(run_tool, tmp_path):
+    target = write_document(
+        tmp_path / "m",
+        annotated("Target"),
+        annotated("Undermined"),
+        annotated("Child", depends_on=[("Undermined", "A")]),
+        annotated("Grandchild", depends_on=[("Child", "B")]),
+        annotated("Unrelated"),
+    )
+    before = document_of(target).decode("utf-8")
+    result = run_tool("remove", str(target), "Target", "--undermined", "Undermined")
+    assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
+    document = load(target)
+    for block_id in ("Undermined", "Child", "Grandchild"):
+        assert by_id(document, block_id) == stripped(block_id), block_id
+        assert tags_naming(document, block_id) == []
+    assert block_lines(document_of(target).decode("utf-8"), "Unrelated") == block_lines(before, "Unrelated")
+
+
+def test_remove_keeps_the_alternatives_of_every_named_and_transitively_stripped_block(run_tool, tmp_path):
+    target = write_document(
+        tmp_path / "m",
+        annotated("Target"),
+        annotated("Undermined", alternatives=("A", "B", "C")),
+        annotated("Child", depends_on=[("Undermined", "C")]),
+    )
+    before = load(target)
+    result = run_tool("remove", str(target), "Target", "--undermined", "Undermined")
+    assert result.returncode == 0
+    after = load(target)
+    for block_id in ("Undermined", "Child"):
+        assert pick_stripped(by_id(after, block_id))
+        assert by_id(after, block_id).alternatives == by_id(before, block_id).alternatives
+
+
+def test_remove_leaves_a_named_block_without_a_recommendation_exactly_as_it_stands(run_tool, tmp_path):
+    target = write_document(
+        tmp_path / "m",
+        annotated("Target"),
+        stripped("Pickless"),
+        Question(id="Bare", question="What about Bare?"),
+        annotated("Tagged", depends_on=[("Target", "B")]),
+        annotated("Undermined"),
+    )
+    before = document_of(target).decode("utf-8")
+    result = run_tool("remove", str(target), "Target", "--undermined", "Pickless", "Bare", "Undermined")
+    assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
+    after = document_of(target).decode("utf-8")
+    assert not has_block(after, "Target")
+    assert block_lines(after, "Pickless") == block_lines(before, "Pickless")
+    assert block_lines(after, "Bare") == block_lines(before, "Bare")
+    document = load(target)
+    assert by_id(document, "Tagged") == stripped("Tagged")
+    assert by_id(document, "Undermined") == stripped("Undermined")
+
+
+def test_a_named_block_without_a_recommendation_seeds_no_transitive_strip(run_tool, tmp_path):
+    target = write_document(
+        tmp_path / "m",
+        annotated("Target"),
+        stripped("Pickless"),
+        annotated("Leaning", depends_on=[("Pickless", "A")]),
+    )
+    before = document_of(target).decode("utf-8")
+    result = run_tool("remove", str(target), "Target", "--undermined", "Pickless")
+    assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
+    after = document_of(target).decode("utf-8")
+    assert after == before.replace("\n".join(block_lines(before, "Target")) + "\n", "")
+    assert by_id(load(target), "Leaning").depends_on == [Dependency(question="Pickless", option="A")]
+    document = Document([annotated("Target"), stripped("Pickless"), annotated("Leaning", depends_on=[("Pickless", "A")])])
+    named = open_questions.find_undermined(document, by_id(document, "Target"), ["Pickless"])
+    assert open_questions.remove_question(document, by_id(document, "Target"), None, named) == []
+
+
+def test_remove_rejects_an_unknown_undermined_title_naming_it_and_the_ids_held(run_tool, tmp_path):
+    target = write_document(
+        tmp_path / "m",
+        annotated("Target"),
+        annotated("Dependent", depends_on=[("Target", "B")]),
+        annotated("Undermined"),
+    )
+    before = document_of(target)
+    result = run_tool("remove", str(target), "Target", "--option", "A", "--undermined", "Undermined", "Missing pick")
+    assert result.returncode == 1
+    assert result.stdout == b""
+    assert result.stderr.decode("utf-8") == (
+        'Error: no <open-question> block has the id "Missing pick"; the document holds '
+        '"Target", "Dependent", "Undermined"\n'
+    )
+    assert document_of(target) == before
+
+
+def test_remove_rejects_its_own_title_among_the_undermined_blocks(run_tool, tmp_path):
+    target = write_document(
+        tmp_path / "m",
+        annotated("Target"),
+        annotated("Dependent", depends_on=[("Target", "B")]),
+        annotated("Undermined"),
+    )
+    before = document_of(target)
+    result = run_tool("remove", str(target), "Target", "--undermined", "Undermined", "target")
+    assert result.returncode == 1
+    assert result.stdout == b""
+    assert result.stderr == (
+        b'Error: --undermined names "target", the block being removed, which cannot be reconciled as its own '
+        b"dependent\n"
+    )
+    assert document_of(target) == before
+
+
+def test_a_rejected_undermined_title_never_reaches_the_write(monkeypatch, tmp_path, capsys):
+    target = write_document(tmp_path / "m", annotated("Target"), annotated("Undermined"))
+    before = document_of(target)
+    writes = []
+    monkeypatch.setattr(open_questions, "save_document", lambda *arguments: writes.append(arguments))
+    assert open_questions.main(["remove", str(target), "Target", "--undermined", "Undermined", "Missing"]) == 1
+    assert open_questions.main(["remove", str(target), "Target", "--undermined", "Target"]) == 1
+    assert writes == []
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err.count("\n") == 2
+    assert document_of(target) == before
+
+
+def test_remove_with_undermined_blocks_writes_the_document_exactly_once(monkeypatch, tmp_path, capsys):
+    target = write_document(
+        tmp_path / "m",
+        annotated("Target"),
+        annotated("Tagged", depends_on=[("Target", "A")]),
+        annotated("Undermined"),
+        annotated("Child", depends_on=[("Undermined", "A")]),
+    )
+    writes = []
+    real_save = open_questions.save_document
+
+    def counting_save(milestone_dir, document):
+        writes.append(open_questions.render_document(document))
+        real_save(milestone_dir, document)
+
+    monkeypatch.setattr(open_questions, "save_document", counting_save)
+    assert open_questions.main(["remove", str(target), "Target", "--undermined", "Undermined"]) == 0
+    assert capsys.readouterr() == ("", "")
+    assert len(writes) == 1
+    assert writes[0].encode("utf-8") == document_of(target)
+    assert load(target) == Document([stripped("Tagged"), stripped("Undermined"), stripped("Child")])
+
+
+def test_remove_requires_a_title_after_the_undermined_flag(run_tool, tmp_path):
+    target = write_document(tmp_path / "m", annotated("Target"), annotated("Undermined"))
+    before = document_of(target)
+    result = run_tool("remove", str(target), "Target", "--undermined")
+    assert result.returncode == 2
+    assert result.stdout == b""
+    assert b"--undermined" in result.stderr
+    assert document_of(target) == before
+
+
+def test_remove_help_and_docstring_state_the_undermined_contract(run_tool):
+    result = run_tool("remove", "--help")
+    assert result.returncode == 0
+    text = " ".join(result.stdout.decode("utf-8").split())
+    assert "--undermined SHORT_TITLE" in text
+    assert "resolved before anything changes" in text
+    assert "carrying no <recommendation> is left as it stands" in text
+    docstring = " ".join(open_questions.__doc__.split())
+    assert "remove MILESTONE_DIR SHORT_TITLE [--option RECORDED_OPTION] [--undermined SHORT_TITLE...]" in docstring
+    assert "naming the removed block itself, refuses the call with the document unchanged" in docstring
+    assert "is left exactly as it stands" in docstring
+
+
+def test_remove_question_strips_the_named_blocks_after_the_tagged_ones_and_returns_them_in_order():
+    document = Document(
+        [
+            annotated("Root"),
+            annotated("Named"),
+            annotated("Tagged", depends_on=[("Root", "B")]),
+            annotated("Under named", depends_on=[("Named", "A")]),
+            annotated("Under tagged", depends_on=[("Tagged", "A")]),
+        ]
+    )
+    named = open_questions.find_undermined(document, by_id(document, "Root"), ["Named"])
+    assert open_questions.remove_question(document, by_id(document, "Root"), "A", named) == [
+        "Tagged",
+        "Named",
+        "Under tagged",
+        "Under named",
+    ]
+    assert all(pick_stripped(question) for question in document.questions)
 
 
 # --- the module-level primitives -------------------------------------------------------
