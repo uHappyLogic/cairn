@@ -66,3 +66,19 @@ Add a new shared procedure under `core/shared/` that composes over `answer-proce
 
 ---
 
+
+## Route Both Hand-Answer Skills Through Procedure
+
+Change `core/skills/answer-open-question/SKILL.md` and `core/skills/answer-open-question-with-alternative/SKILL.md` to follow the new shared hand-answer procedure in place of `answer-procedure.md` directly, the literal skill still passing no RECORDED OPTION and the alternative skill still passing its lifted id, so every hand answer runs the undermined-pick judgment. The alternative skill's "never read or edit it yourself" sentence and the literal skill's "every read and write of it in the core is a tool call" statement are reworded to the form the other inline skills carry (a whole read is for reasoning only, and every locate, list, lift, and write is a tool call), while each skill's reporting step and commit body stay as they stand, with nothing printed or recorded about any cleared pick. Verified by reading both skills against the "Undermined-pick judgment home", "Standing picks view", and "Cleared picks report" decisions, `hosts/` rebuilt, and `uv run scripts/build_hosts.py --check` passing.
+
+**Verified:**
+
+- Step 4 of `core/skills/answer-open-question/SKILL.md` follows `{{PLUGIN_ROOT}}/shared/hand-answer-procedure.md`, passing `MILESTONE_DIR`, `SHORT TITLE`, and `ANSWER` and no `RECORDED OPTION`; the file no longer names `answer-procedure.md`.
+- Step 3 of `core/skills/answer-open-question-with-alternative/SKILL.md` hands the same three inputs plus the lifted id as `RECORDED OPTION` to `{{PLUGIN_ROOT}}/shared/hand-answer-procedure.md`; the file no longer names `answer-procedure.md`.
+- Both skills describe the procedure as naming the standing picks the answer undermines and delegating the recording to the shared recording core, as the "Undermined-pick judgment home" decision requires, with no condition on the answered block's own recommendation.
+- The literal skill's "every read and write of it in the core is a tool call" statement and the alternative skill's "never read or edit it yourself" sentence are both replaced by the form the "Standing picks view" decision fixes: a whole read with the file-reading tool is for reasoning only, and every locate, list, lift, and write is a call to the open-question tool.
+- Each skill's commit BODY input and reporting step are unchanged in the diff: the one fixed line `Answer recorded.` plus the new-questions advisory, with nothing printed or recorded about any cleared pick, as the "Cleared picks report" decision requires.
+- `uv run scripts/build_hosts.py` rebuilt `hosts/`, changing both skills' rendered files under `hosts/claude/`, `hosts/antigravity/`, and `hosts/codex/plugins/cairn/`.
+- `uv run scripts/build_hosts.py --check` passed with exit status 0.
+
+---

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Route Both Hand-Answer Skills Through Procedure
-
-Change `core/skills/answer-open-question/SKILL.md` and `core/skills/answer-open-question-with-alternative/SKILL.md` to follow the new shared hand-answer procedure in place of `answer-procedure.md` directly, the literal skill still passing no RECORDED OPTION and the alternative skill still passing its lifted id, so every hand answer runs the undermined-pick judgment. The alternative skill's "never read or edit it yourself" sentence and the literal skill's "every read and write of it in the core is a tool call" statement are reworded to the form the other inline skills carry (a whole read is for reasoning only, and every locate, list, lift, and write is a tool call), while each skill's reporting step and commit body stay as they stand, with nothing printed or recorded about any cleared pick. Verified by reading both skills against the "Undermined-pick judgment home", "Standing picks view", and "Cleared picks report" decisions, `hosts/` rebuilt, and `uv run scripts/build_hosts.py --check` passing.
-
----
-
 ## Clear Undermined Picks On Goal Revision
 
 Extend `core/skills/modify-milestone-goal/SKILL.md` so that, in the same run as the goal edit, the skill names the standing picks its impact analysis judges the revision undermines (by the "Undermined pick test" decision's definition, read against the revised goal) from its existing whole read of `open_questions.xml`, and clears them with one `strip --recommendation` call over those Short Titles, keeping every `<alternative>`. The clearing is not transitive (a block whose `<depends-on>` names a cleared block keeps its pick and its tag), the tool is unchanged, and `open_questions.xml` joins `requirements.md` in the `Goal-revision:` commit, which closes the route by which a pick formed under the old goal reaches the answer sweep. Verified by reading the skill against the "Goal revision pick clearing" decision, its edit step and commit PATHS agreeing with it, `hosts/` rebuilt, and `uv run scripts/build_hosts.py --check` passing.

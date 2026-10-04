@@ -46,8 +46,9 @@ and the commit.
 
 ### 2. Lift the chosen alternative into the answer
 
-Every read and write of `<MILESTONE_DIR>/open_questions.xml` is a call to the plugin's
-open-question tool, that file's sole writer — never read or edit it yourself. Run
+A whole read of `<MILESTONE_DIR>/open_questions.xml` with the file-reading tool is for
+reasoning only, and every locate, list, lift, and write of it is a call to the plugin's
+open-question tool, that file's sole writer. Run
 
 ```
 python3 .agents/plugins/cairn/tools/open_questions.py lift <MILESTONE_DIR> "<Short Title>" --alternative "<Alternative Id>"
@@ -70,15 +71,17 @@ report why, quoting the tool's `Error:` line, which names the failed lookup:
 - the block has alternatives but none whose `id` matches `<Alternative Id>` — the line lists
   that block's alternative ids, so the user can retry.
 
-### 3. Record the answer via the shared recording core
+### 3. Record the answer via the shared hand-answer procedure
 
 Hand the **`<MILESTONE_DIR>`** from step 1 as its `MILESTONE_DIR` input, the resolved
 **`<Short Title>`**, the derived **ANSWER**, and the **RECORDED OPTION** from step 2 (the same
 value ANSWER opens with, passed separately so the core hands it to the tool as an exact id
-rather than parsing it out of ANSWER) to `.agents/plugins/cairn/shared/answer-procedure.md` and
-follow it unchanged **yourself, in this conversation**. That procedure owns the recording work — locate, analyse, fold the decision into `## Decisions` of
-`requirements.md` as clean prose, remove the block from `open_questions.xml`, and cascade to
-any mooted siblings.
+rather than parsing it out of ANSWER) to `.agents/plugins/cairn/shared/hand-answer-procedure.md` and
+follow it unchanged **yourself, in this conversation**. That procedure reads
+`open_questions.xml` whole, names the standing picks on the other open questions that the
+answer undermines, and delegates the recording work to the shared recording core, handing it
+those names — locate, analyse, fold the decision into `## Decisions` of `requirements.md` as
+clean prose, remove the block from `open_questions.xml`, and cascade to any mooted siblings.
 
 Do **not** spawn any subagent — there is no `answer-open-question-with-alternative` agent.
 

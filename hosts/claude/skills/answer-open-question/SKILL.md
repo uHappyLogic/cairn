@@ -48,9 +48,9 @@ Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILE
 
 ### 4. Record the answer
 
-Read and follow the shared answer-recording procedure at `${CLAUDE_PLUGIN_ROOT}/shared/answer-procedure.md`, carrying out every step **yourself, in this conversation**. Pass it the `<MILESTONE_DIR>` resolved in step 3, the **Short Title** parsed in step 1, and the **answer text** resolved in step 2 as its `MILESTONE_DIR`, `SHORT TITLE`, and `ANSWER` inputs, and pass **no `RECORDED OPTION`** — a literal answer lifts no option id, so the core forms its one judgment itself: whether the answer plainly settles on one of the answered block's own alternatives.
+Read and follow the shared hand-answer procedure at `${CLAUDE_PLUGIN_ROOT}/shared/hand-answer-procedure.md`, carrying out every step **yourself, in this conversation**. Pass it the `<MILESTONE_DIR>` resolved in step 3, the **Short Title** parsed in step 1, and the **answer text** resolved in step 2 as its `MILESTONE_DIR`, `SHORT TITLE`, and `ANSWER` inputs, and pass **no `RECORDED OPTION`** — a literal answer lifts no option id, so the recording core forms its one judgment itself: whether the answer plainly settles on one of the answered block's own alternatives.
 
-That procedure owns the locate / analyse / fold / remove / cascade recording, every read and write of `<MILESTONE_DIR>/open_questions.xml` in it a call to the plugin's open-question tool. If the Short Title matches no block, the core's `locate` call fails and it stops without changes — relay the tool's `Error:` line, which lists the ids the document holds, so the user can retry.
+That procedure names the standing picks on the other open questions that the answer undermines, then delegates the locate / analyse / fold / remove / cascade recording to the shared recording core, handing it those names. Its whole read of `<MILESTONE_DIR>/open_questions.xml` with the file-reading tool is for reasoning only, and every locate, list, lift, and write of that file is a call to the plugin's open-question tool. If the Short Title matches no block, the core's `locate` call fails and it stops without changes — relay the tool's `Error:` line, which lists the ids the document holds, so the user can retry.
 
 ### 5. Commit the manual answer
 
