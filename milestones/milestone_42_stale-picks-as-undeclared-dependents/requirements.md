@@ -64,5 +64,9 @@ A standing pick is undermined when its recommended alternative, as that alternat
 
 `remove` resolves every Short Title it is given as an undermined dependent before it changes anything. A title matching no block, and equally the answered block's own title named among its dependents, stops the call on one `Error:` line naming that title (and, for an unknown one, the ids the document holds), with exit status 1 and the document byte-for-byte unchanged: nothing is removed and no dependent is reconciled. The runner corrects the list and runs the same call again.
 
+### Named dependent without a pick
+
+A block named as an undermined dependent that exists but carries no `<recommendation>` element is accepted, and the call makes its one write. The named block goes through the same per-block strip primitive as every other dependent, which reports no change when the block holds nothing of the recommendation half, so the block is left exactly as it stands, alternatives included. Because nothing was deleted from it, it seeds no transitive strip: a block whose `<depends-on>` names it is left as it is. The removal of the answered block and the reconciliation of every other tagged or named dependent proceed in the same write, and the tool prints nothing.
+
 ## Out of Scope
 
