@@ -34,3 +34,18 @@ Extend `remove` in `core/tools/open_questions.py` with an optional argument nami
 
 ---
 
+## Pass Named Dependents Through Answer Core
+
+Give `core/shared/answer-procedure.md` one new optional input, the Short Titles of the standing picks its caller judged undermined, which step 4 passes through to the same `remove` call as given, with no branch and no judgment of its own; when the tool refuses a named title on its `Error:` line, the runner corrects the list and runs the same call again. `core/shared/answer-with-recommendation-procedure.md` passes nothing for that input, so the core stays a pass-through recorder and the answer sweep and `/answer-open-question-with-recommendation` record exactly as before. Verified by reading step 4 against the "Undermined-pick judgment home" and "Unknown named dependent" decisions, no diff in either of those two skills, `hosts/` rebuilt, and `uv run scripts/build_hosts.py --check` passing.
+
+**Verified:**
+
+- `core/shared/answer-procedure.md` `## Inputs` declares five inputs, the last two optional, the new one being UNDERMINED PICKS: the Short Titles of other open questions whose standing pick the caller judged the answer undermines, with the judgment stated as the caller's alone.
+- Step 4's single `remove` command carries `[--undermined "<UNDERMINED SHORT TITLE>" …]` (the flag the live tool's `remove --help` shows), passed exactly as given when the input is supplied and left off when it is not; the step's only owned decision is still `--option`, so the core gained one input and no branch or judgment, as the "Undermined-pick judgment home" decision requires.
+- Step 4 states that the tool refuses an `--undermined` title matching no block, or naming the answered block itself, with the document unchanged and the title named on its `Error:` line, and that the runner corrects the list and runs the same call again, as the "Unknown named dependent" decision requires.
+- `core/shared/answer-with-recommendation-procedure.md` is unedited and hands the core only MILESTONE_DIR, SHORT TITLE, ANSWER, and RECORDED OPTION, so it passes nothing for the new input; `git diff --stat -- core/skills core/shared/answer-with-recommendation-procedure.md` is empty, so neither the answer sweep nor `/answer-open-question-with-recommendation` has a diff.
+- `uv run scripts/build_hosts.py` rebuilt `hosts/`, with the changed procedure rendered into `hosts/claude/shared/`, `hosts/antigravity/shared/`, and `hosts/codex/plugins/cairn/shared/`.
+- `uv run scripts/build_hosts.py --check` passed.
+
+---
+

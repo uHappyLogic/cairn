@@ -17,7 +17,7 @@ document left byte-for-byte unchanged. Never edit `open_questions.xml` yourself.
 
 ## Inputs
 
-This procedure records one decision given four inputs the caller supplies, the last
+This procedure records one decision given five inputs the caller supplies, the last two
 optional:
 
 - **MILESTONE_DIR** — the already-resolved directory of the milestone the question belongs
@@ -34,6 +34,11 @@ optional:
   reconciled against it as an exact id; absent, step 4 forms the one judgment described
   there. The caller either passes it or passes nothing — this procedure never derives it by
   parsing ANSWER, whose form is the caller's own convention.
+- **UNDERMINED PICKS** *(optional)* — the Short Titles of other open questions whose
+  standing pick the caller judged the answer undermines. Supplied, step 4 passes them to
+  the tool's `remove` as `--undermined`, exactly as given; absent, step 4 passes no
+  `--undermined`. Which picks an answer undermines is the caller's judgment alone — this
+  procedure never names one itself and never adds to, trims, or re-judges the list.
 
 ## Procedure
 
@@ -84,17 +89,20 @@ always lands first.
 Run
 
 ```
-python3 ${CLAUDE_PLUGIN_ROOT}/tools/open_questions.py remove <MILESTONE_DIR> "<SHORT TITLE>" [--option "<OPTION>"]
+python3 ${CLAUDE_PLUGIN_ROOT}/tools/open_questions.py remove <MILESTONE_DIR> "<SHORT TITLE>" [--option "<OPTION>"] [--undermined "<UNDERMINED SHORT TITLE>" …]
 ```
 
-whether or not the block carries embedded children. In that one write the tool deletes the
+whether or not the block carries embedded children, with `--undermined` followed by every
+Short Title of UNDERMINED PICKS as given, each its own quoted argument, when the caller
+supplied that input and left off when it did not. In that one write the tool deletes the
 block and reconciles every block that depended on it — a dependent that assumed the
 `--option` given loses only that tag and keeps its analysis; every other dependent, and every
 dependent when no `--option` is given, loses its `<recommendation>`, `<depends-on>`, and
 `<applied-principle>` children while keeping its `<alternative>` children, and is the
 recommendation pass's (`/recommend-all-open-questions`) to re-pick over that kept set —
-leaving no `<depends-on>` tag naming the removed block. What this step owns is deciding
-`--option`:
+leaving no `<depends-on>` tag naming the removed block; a block named under `--undermined`
+is reconciled in that same write as a dependent no tag declares. What this step owns is
+deciding `--option`:
 
 - **RECORDED OPTION supplied** — pass it as `--option`, verbatim.
 - **RECORDED OPTION absent** (a literal answer) — form **one** verdict: does ANSWER plainly
@@ -108,7 +116,9 @@ leaving no `<depends-on>` tag naming the removed block. What this step owns is d
 
 The tool refuses an `--option` naming none of the block's alternatives and leaves the
 document unchanged; its `Error:` line lists the ids, so correct the value against them (or
-pass nothing) and run the call again.
+pass nothing) and run the call again. It likewise refuses an `--undermined` title that
+matches no block, or that names the answered block itself, with the document unchanged; its
+`Error:` line names that title, so correct the list and run the same call again.
 
 ### 5. Cascade to mooted entries
 
