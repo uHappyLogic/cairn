@@ -88,5 +88,9 @@ A match is no exemption. On every hand answer the runner performs the undermined
 
 `/modify-milestone-goal` clears the standing picks a goal revision undermines. In the same run as the goal edit, the skill names the standing picks its impact analysis judges the revision undermines, from its whole read of `open_questions.xml`, and clears them with one `strip --recommendation` call over those Short Titles, keeping every `<alternative>`. A block whose `<depends-on>` names a cleared block keeps its pick and its tag, exactly as the tool's `strip` leaves it today, so the clearing is not transitive and the tool is unchanged. `open_questions.xml` joins `requirements.md` in the `Goal-revision:` commit.
 
+### Replay case set
+
+The replay covers the stale-pick cases already found in every local project that uses the workflow: the eight windows (fourteen pick-versus-decision pairs) the sweep-contradiction analysis identified, in this repository and in other local projects. Each is replayed from a scratch clone of its own repository at the parent of each hand answer, and no other windows are added. The replay therefore runs only on a machine holding those repositories, and nothing of its per-case material enters a committed artifact.
+
 ## Out of Scope
 
