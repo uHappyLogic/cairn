@@ -52,5 +52,9 @@ The repository holds no replay or benchmark harness. `temp/` is git-ignored and 
 
 ## Decisions
 
+### Undermined-pick judgment home
+
+The step that names the standing picks an answer undermines lives in a new shared procedure under `core/shared/` that both hand-answer skills follow in place of the answer core directly: it performs the judgment, then delegates to `core/shared/answer-procedure.md`, handing it the named Short Titles as a new optional input that the core's step 4 passes through to `remove`. `answer-with-recommendation-procedure.md` passes nothing for that input, so the core stays a pass-through recorder that gains one input and no branch, and the two answer paths are each a composing procedure over the same recording core.
+
 ## Out of Scope
 
