@@ -96,5 +96,9 @@ The replay covers the stale-pick cases already found in every local project that
 
 Each standing pick in a replayed case is classed by hand. The maintainer reads each case at the parent of its hand-answer commit (the decision that answer folded, beside every standing pick's option and recommendation text) and labels each pick stale or unaffected by the milestone's own definition of an undermined pick, writing the labels into the case manifest before any replay run and never changing them afterwards. No automated record supplies a label; the historical sweep advisory and later history serve at most to point at candidates. The manifest stays local, outside the tracked files.
 
+### Replay result bar
+
+The replay is judged against a bar fixed before the runs on both counts: an absolute threshold on stale picks cleared and one on unaffected picks left standing, with no paired baseline run, since the unchanged hand-answer skills see only the answered block and so clear no undeclared pick and strip none. A shortfall on either count buys a fixed number of revision-and-re-run rounds of the judgment prose, the number set with the bar and possibly none; once they are spent the milestone finishes with the change in place and the shortfall recorded.
+
 ## Out of Scope
 
