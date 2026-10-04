@@ -286,6 +286,56 @@
   </open-question>
   <open-question id="Replay result bar">
     <question>Is the replay&apos;s result a bar the milestone must meet before it can be finished, or a measurement that is reported whatever it shows?</question>
+    <alternative id="Measurement only">
+      No bar. The replay&apos;s two counts, stale picks cleared and unaffected picks left standing, are reported as they come out, and neither conditions the milestone&apos;s finish or the change staying in: the milestone finishes when its tasks are done, which is all `finish-current-milestone` checks today, and no value for either count is fixed in advance as something to meet.
+      <advantage>The figures are honest by construction and cost nothing beyond the runs: no threshold has to be chosen beforehand on a small, judgment-based case set, no rework or withdrawal hangs on run-to-run variance, and the milestone always finishes with the change in place while the design claim gets its first measured figure.</advantage>
+      <drawback>Nothing fixed beforehand says what counts would have shown the change working or misfiring, so a weak result is interpreted after the fact and ships with no mandated response, and the replay&apos;s expense buys a number that binds nothing.</drawback>
+    </alternative>
+    <alternative id="Bounded bar on both counts">
+      A bar fixed before the runs on both counts: an absolute threshold on stale picks cleared and one on unaffected picks left standing, with no paired baseline run, since the unchanged hand-answer skills see only the answered block and so clear no undeclared pick and strip none. A shortfall on either count buys a fixed number of revision-and-re-run rounds of the judgment prose, the number set with the bar and possibly none; once they are spent the milestone finishes with the change in place and the shortfall recorded. This is the shape milestone 38 ran.
+      <advantage>The result is judged against a commitment made before it is seen, on both the benefit and the collateral, the milestone still always finishes, and the mechanics are already known from milestone 38&apos;s run.</advantage>
+      <drawback>The bar binds only the rework, not the outcome: a change that misses it ships anyway, as milestone 38&apos;s did after its revision round left the margin unmoved, each extra round is another full replay of headless runs, and two thresholds on few cases double the chance that one case&apos;s run-to-run variance trips a round; its coarseness hinges on how many cases the replay covers.</drawback>
+    </alternative>
+    <alternative id="Bounded standing floor">
+      A bar fixed before the runs on one count only: the unaffected picks left standing must stay at or above a fixed floor, while the stale picks cleared are measured and reported with no threshold. A shortfall on the floor buys a fixed number of revision-and-re-run rounds set with the bar; after them the milestone finishes with the change in place and the shortfall recorded.
+      <advantage>It binds exactly the harm the goal names, picks the answer does not bear on being stripped, so it guards against a blunt runner without demanding a benefit figure from a small case set, and the milestone always finishes.</advantage>
+      <drawback>It never asks whether the change catches anything, so a runner that strips nothing passes it, and the floor is only as crisp as the record that classes each pick, so its viability hinges on how a standing pick is classed as unaffected.</drawback>
+    </alternative>
+    <alternative id="Bounded clearing floor">
+      A bar fixed before the runs on one count only: the stale picks cleared must reach a fixed floor, while the unaffected picks left standing are measured and reported with no threshold. A shortfall on the floor buys a fixed number of revision-and-re-run rounds set with the bar; after them the milestone finishes with the change in place and the shortfall recorded.
+      <advantage>It binds the error the design&apos;s own asymmetry calls expensive, a stale pick left standing becoming a wrong recorded decision, and tolerates collateral strips, each costing one recommendation re-run, exactly as the goal&apos;s &quot;doubt strips&quot; already does.</advantage>
+      <drawback>An over-stripping runner passes it, so the bar cannot catch the bluntness the goal also rules out, and the count it binds is small on the known material (fourteen pairs across eight runs), so the floor is coarse; how coarse hinges on which cases the replay covers.</drawback>
+    </alternative>
+    <alternative id="Finish gate on both counts">
+      A bar fixed before the runs on both counts, and the milestone is not finished until both are met: the replay task stays in `TASKS_TODO.md` with its acceptance unmet, which is the only mechanism available since `finish-current-milestone` checks nothing but an empty task list, and the judgment prose is revised and re-run with no fixed limit on rounds.
+      <advantage>The milestone is done only when the change has demonstrably both caught the stale picks and left the unaffected ones standing, the strongest guarantee any option gives.</advantage>
+      <drawback>A judgment-based skill with run-to-run variance may never clear two thresholds at once on a small set, leaving the milestone open with no exit but lowering the bar after the fact or revising the goal, both of which undo the pre-registration; the risk hinges on how many cases the replay covers.</drawback>
+    </alternative>
+    <alternative id="Finish gate on standing floor">
+      A floor fixed before the runs on the unaffected picks left standing only, with the stale picks cleared measured and reported without threshold, and the milestone not finished until the floor is met: the replay task stays open and the judgment prose is revised and re-run with no fixed limit on rounds.
+      <advantage>The change ships only once it is shown to leave unrelated picks alone, with no benefit threshold to chase on a small case set.</advantage>
+      <drawback>The milestone waits on a count that one variance-driven collateral strip can flip, while a runner that strips nothing passes trivially, and whether a strip counts against the floor hinges on how a standing pick is classed as unaffected.</drawback>
+    </alternative>
+    <alternative id="Finish gate on clearing floor">
+      A floor fixed before the runs on the stale picks cleared only, with the unaffected picks left standing measured and reported without threshold, and the milestone not finished until the floor is met: the replay task stays open and the judgment prose is revised and re-run with no fixed limit on rounds.
+      <advantage>The change ships only once it is shown to catch stale picks, the error the design treats as the costly one, and nothing short of that closes the milestone.</advantage>
+      <drawback>The floor can be met by over-stripping, and chasing a catch count on a handful of known pairs by revising prose without bound invites tuning the wording to those cases; the exposure hinges on which cases the replay covers.</drawback>
+    </alternative>
+    <alternative id="Ship gate on both counts">
+      A bar fixed before the runs on both counts, with a fixed number of revision-and-re-run rounds set with the bar and possibly none; a shortfall that persists after them withdraws the change, its skill and tool edits reverted, and the milestone finishes recording the withdrawal and the figures.
+      <advantage>Nothing reaches the plugin&apos;s users unless the evidence supports it on both the benefit and the collateral, and the milestone still closes instead of hanging.</advantage>
+      <drawback>The milestone can finish with its first paragraph undone, on a verdict from a small judgment-based set where one case&apos;s run-to-run variance can decide whether the work is kept; how decisive one case is hinges on how many cases the replay covers.</drawback>
+    </alternative>
+    <alternative id="Ship gate on standing floor">
+      A floor fixed before the runs on the unaffected picks left standing only, with the stale picks cleared measured and reported without threshold, and a fixed number of revision rounds set with the floor; a shortfall that persists after them withdraws the change, its edits reverted, and the milestone finishes recording the withdrawal and the figures.
+      <advantage>A runner shown to strip unrelated picks never reaches users, while its benefit is still reported, and the milestone closes either way.</advantage>
+      <drawback>A runner that strips nothing passes and ships, and whether real work is thrown away turns on how a standing pick is classed as unaffected.</drawback>
+    </alternative>
+    <alternative id="Ship gate on clearing floor">
+      A floor fixed before the runs on the stale picks cleared only, with the unaffected picks left standing measured and reported without threshold, and a fixed number of revision rounds set with the floor; a shortfall that persists after them withdraws the change, its edits reverted, and the milestone finishes recording the withdrawal and the figures.
+      <advantage>Only a change shown to catch stale picks ships, and one that merely adds judgment without catching any is withdrawn rather than kept on faith, with the milestone closing either way.</advantage>
+      <drawback>An over-stripping runner ships, and real work is withdrawn on a coarse count taken from a handful of known pairs; the coarseness hinges on which cases the replay covers.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Replay result home">
     <question>Where in the committed repository, if anywhere, is the replay&apos;s aggregate result recorded?</question>
