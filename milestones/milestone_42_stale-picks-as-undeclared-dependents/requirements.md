@@ -68,5 +68,9 @@ A standing pick is undermined when its recommended alternative, as that alternat
 
 A block named as an undermined dependent that exists but carries no `<recommendation>` element is accepted, and the call makes its one write. The named block goes through the same per-block strip primitive as every other dependent, which reports no change when the block holds nothing of the recommendation half, so the block is left exactly as it stands, alternatives included. Because nothing was deleted from it, it seeds no transitive strip: a block whose `<depends-on>` names it is left as it is. The removal of the answered block and the reconciliation of every other tagged or named dependent proceed in the same write, and the tool prints nothing.
 
+### Cleared picks report
+
+Both hand-answer skills keep their reporting step as it stands: the one fixed line `Answer recorded.` plus the existing advisory about new questions the answer may have raised, with nothing printed about any pick the write cleared, whether cleared by the runner's judgment, by a `<depends-on>` tag, or transitively. The answer commit's diff and the next run of the recommendation pass stay the only record; no line is added to the commit body, and the tool's print contract and the invariant that stripped dependents get no console advisory are left untouched.
+
 ## Out of Scope
 
