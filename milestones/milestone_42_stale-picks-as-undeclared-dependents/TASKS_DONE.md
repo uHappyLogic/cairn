@@ -49,3 +49,20 @@ Give `core/shared/answer-procedure.md` one new optional input, the Short Titles 
 
 ---
 
+## Write Hand-Answer Procedure With Undermined-Pick Judgment
+
+Add a new shared procedure under `core/shared/` that composes over `answer-procedure.md` for a hand answer: the runner reads `<MILESTONE_DIR>/open_questions.xml` whole with the file-reading tool, for reasoning only, names every other question's standing pick the answer undermines (its recommended alternative, as that alternative's what-it-is text reads, can no longer be carried out alongside the recorded decision, or the one-line rationale of its `<recommendation>` states or plainly presupposes something the answer changed), and delegates to the core with those Short Titles as its new input. The judgment reads option and rationale text against the answer and what it directly entails without re-forming the recommender's judgment, strips on doubt, leaves standing the picks the answer does not bear on, and runs on every hand answer whether or not the recorded option is the one the answered block's own recommendation names. Verified by reading the file against the "Undermined pick test", "Standing picks view", and "Answer matching the standing pick" decisions, `hosts/` rebuilt with the procedure rendered into every host tree, and `uv run scripts/build_hosts.py --check` passing.
+
+**Verified:**
+
+- `core/shared/hand-answer-procedure.md` exists as a new shared procedure that composes over `answer-procedure.md`: it takes MILESTONE_DIR, SHORT TITLE, ANSWER, and the optional RECORDED OPTION, derives UNDERMINED PICKS itself, and its step 3 hands all of them to `{{PLUGIN_ROOT}}/shared/answer-procedure.md` followed unchanged, passing nothing for UNDERMINED PICKS when no pick was named; the input name matches the live core's `## Inputs`.
+- Step 1 has the runner read `<MILESTONE_DIR>/open_questions.xml` whole with the file-reading tool, names the four child elements that read shows, and states that the whole read is for reasoning only and that every locate, list, lift, and write is a tool call, as the "Standing picks view" decision requires; the procedure itself makes no tool call and no edit to that file.
+- Step 2 states both arms of the "Undermined pick test" decision: the recommended alternative, as its what-it-is text reads, can no longer be carried out alongside the recorded decision, or the one-line rationale of the `<recommendation>` states or plainly presupposes something the answer changed (a fact about the project, a constraint, a sibling's expected outcome) so the reason no longer holds as written though the option could still be carried out.
+- Step 2 reads the option text and the rationale text against ANSWER and what it directly entails, judges in prose, and forbids re-forming the recommender's judgment over the other blocks' sets; it strips on doubt and leaves standing the picks the answer does not bear on.
+- Step 1 states that the judgment runs on every hand answer whether or not the option being recorded is the one the answered block's own `<recommendation>` names, and that this element plays no part, as the "Answer matching the standing pick" decision requires; only blocks other than the answered one that carry a `<recommendation>` are judged.
+- The file carries no host name, no editor-facing prose, and no `## Rules` section, and reports nothing about the picks it named.
+- `uv run scripts/build_hosts.py` rebuilt `hosts/`, with the procedure rendered into `hosts/claude/shared/`, `hosts/antigravity/shared/`, and `hosts/codex/plugins/cairn/shared/`, each with the plugin-root placeholder filled and no `{{` left.
+- `uv run scripts/build_hosts.py --check` passed with exit status 0.
+
+---
+

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Write Hand-Answer Procedure With Undermined-Pick Judgment
-
-Add a new shared procedure under `core/shared/` that composes over `answer-procedure.md` for a hand answer: the runner reads `<MILESTONE_DIR>/open_questions.xml` whole with the file-reading tool, for reasoning only, names every other question's standing pick the answer undermines (its recommended alternative, as that alternative's what-it-is text reads, can no longer be carried out alongside the recorded decision, or the one-line rationale of its `<recommendation>` states or plainly presupposes something the answer changed), and delegates to the core with those Short Titles as its new input. The judgment reads option and rationale text against the answer and what it directly entails without re-forming the recommender's judgment, strips on doubt, leaves standing the picks the answer does not bear on, and runs on every hand answer whether or not the recorded option is the one the answered block's own recommendation names. Verified by reading the file against the "Undermined pick test", "Standing picks view", and "Answer matching the standing pick" decisions, `hosts/` rebuilt with the procedure rendered into every host tree, and `uv run scripts/build_hosts.py --check` passing.
-
----
-
 ## Route Both Hand-Answer Skills Through Procedure
 
 Change `core/skills/answer-open-question/SKILL.md` and `core/skills/answer-open-question-with-alternative/SKILL.md` to follow the new shared hand-answer procedure in place of `answer-procedure.md` directly, the literal skill still passing no RECORDED OPTION and the alternative skill still passing its lifted id, so every hand answer runs the undermined-pick judgment. The alternative skill's "never read or edit it yourself" sentence and the literal skill's "every read and write of it in the core is a tool call" statement are reworded to the form the other inline skills carry (a whole read is for reasoning only, and every locate, list, lift, and write is a tool call), while each skill's reporting step and commit body stay as they stand, with nothing printed or recorded about any cleared pick. Verified by reading both skills against the "Undermined-pick judgment home", "Standing picks view", and "Cleared picks report" decisions, `hosts/` rebuilt, and `uv run scripts/build_hosts.py --check` passing.
