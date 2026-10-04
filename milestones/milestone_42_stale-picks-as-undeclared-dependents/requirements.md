@@ -60,5 +60,9 @@ The step that names the standing picks an answer undermines lives in a new share
 
 A standing pick is undermined when its recommended alternative, as that alternative's what-it-is text reads, can no longer be carried out alongside the recorded decision, or when the one-line rationale of its `<recommendation>` element states or plainly presupposes something the answer changed (a fact about the project, a constraint, a sibling's expected outcome), so that the stated reason no longer holds as written even though the option itself could still be carried out. The test reads the option text and the rationale text against the answer and what it directly entails; whether the rationale rests on the changed thing is judged in prose, and doubt strips. The runner does not re-form the recommender's judgment over the other blocks' sets.
 
+### Unknown named dependent
+
+`remove` resolves every Short Title it is given as an undermined dependent before it changes anything. A title matching no block, and equally the answered block's own title named among its dependents, stops the call on one `Error:` line naming that title (and, for an unknown one, the ids the document holds), with exit status 1 and the document byte-for-byte unchanged: nothing is removed and no dependent is reconciled. The runner corrects the list and runs the same call again.
+
 ## Out of Scope
 
