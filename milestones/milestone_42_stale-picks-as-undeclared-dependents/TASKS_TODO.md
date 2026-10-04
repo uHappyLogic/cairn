@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Clear Undermined Picks On Goal Revision
-
-Extend `core/skills/modify-milestone-goal/SKILL.md` so that, in the same run as the goal edit, the skill names the standing picks its impact analysis judges the revision undermines (by the "Undermined pick test" decision's definition, read against the revised goal) from its existing whole read of `open_questions.xml`, and clears them with one `strip --recommendation` call over those Short Titles, keeping every `<alternative>`. The clearing is not transitive (a block whose `<depends-on>` names a cleared block keeps its pick and its tag), the tool is unchanged, and `open_questions.xml` joins `requirements.md` in the `Goal-revision:` commit, which closes the route by which a pick formed under the old goal reaches the answer sweep. Verified by reading the skill against the "Goal revision pick clearing" decision, its edit step and commit PATHS agreeing with it, `hosts/` rebuilt, and `uv run scripts/build_hosts.py --check` passing.
-
----
-
 ## Fix Hand Labels And Replay Result Bar
 
 With the maintainer, inline and before any replay run, complete the local case manifest: the maintainer reads each case and labels every standing pick stale or unaffected by the "Undermined pick test" decision's definition, then sets the bar on both counts (an absolute threshold on stale picks cleared and one on unaffected picks left standing) together with the fixed number of revision-and-re-run rounds a shortfall buys, possibly none. No label or value comes from the runner or from any automated record (the historical sweep advisory and later history serve at most to point at candidates), and once written the labels are never changed. Verified when every standing pick of every case carries a label, both thresholds and the round count are written in the manifest, and `git status` shows no change outside `temp/`.

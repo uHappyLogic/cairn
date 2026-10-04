@@ -82,3 +82,18 @@ Change `core/skills/answer-open-question/SKILL.md` and `core/skills/answer-open-
 - `uv run scripts/build_hosts.py --check` passed with exit status 0.
 
 ---
+
+## Clear Undermined Picks On Goal Revision
+
+Extend `core/skills/modify-milestone-goal/SKILL.md` so that, in the same run as the goal edit, the skill names the standing picks its impact analysis judges the revision undermines (by the "Undermined pick test" decision's definition, read against the revised goal) from its existing whole read of `open_questions.xml`, and clears them with one `strip --recommendation` call over those Short Titles, keeping every `<alternative>`. The clearing is not transitive (a block whose `<depends-on>` names a cleared block keeps its pick and its tag), the tool is unchanged, and `open_questions.xml` joins `requirements.md` in the `Goal-revision:` commit, which closes the route by which a pick formed under the old goal reaches the answer sweep. Verified by reading the skill against the "Goal revision pick clearing" decision, its edit step and commit PATHS agreeing with it, `hosts/` rebuilt, and `uv run scripts/build_hosts.py --check` passing.
+
+**Verified:**
+
+- `core/skills/modify-milestone-goal/SKILL.md` step 3 names the standing picks the revision undermines from its existing whole read of `open_questions.xml`, by the two tests of the "Undermined pick test" decision (option no longer carried out, stated reason no longer holds) read against the revised Goal, with doubt stripping and no re-forming of the recommender's judgment.
+- Its new step 5 clears the named picks with one `strip --recommendation` call over their Short Titles, written as the full fixed tool command, and states that every `<alternative>` is kept.
+- The clearing is stated as not transitive: a block whose `<depends-on>` names a cleared block keeps its pick and its tag, and is neither followed nor added to the call.
+- The edit step (step 4) no longer forbids touching `open_questions.xml`, and the commit step's PATHS name both `<MILESTONE_DIR>/requirements.md` and `<MILESTONE_DIR>/open_questions.xml` under the unchanged `Goal-revision: <milestone_id>` subject, agreeing with the "Goal revision pick clearing" decision.
+- The tool is unchanged: `git status` shows no change under `core/tools/` or `tests/`.
+- `hosts/` was rebuilt with `uv run scripts/build_hosts.py`, changing the `modify-milestone-goal` SKILL.md in all three host trees, and `uv run scripts/build_hosts.py --check` passed.
+
+---
