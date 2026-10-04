@@ -76,5 +76,9 @@ Both hand-answer skills keep their reporting step as it stands: the one fixed li
 
 The replay task's **Verified:** bullets in the milestone's `TASKS_DONE.md` carry the aggregate counts (stale picks cleared, unaffected picks left standing, and whatever bar or margin applies). No file outside the milestone directory carries a figure: `docs/` and `CLAUDE.md` describe the new behaviour without numbers, and the finish summary in `milestones/README.md` may restate the counts in one bullet.
 
+### Standing picks view
+
+The hand-answer runner reads `<MILESTONE_DIR>/open_questions.xml` whole with the file-reading tool, for reasoning only, and judges the standing picks from that read, which shows every block with its `<alternative>`, `<applied-principle>`, `<depends-on>`, and `<recommendation>` children. The "never read or edit it yourself" sentence of `answer-open-question-with-alternative` and the "every read and write of it in the core is a tool call" statement of `answer-open-question` are reworded to the form the other inline skills carry: a whole read is for reasoning only, and every locate, list, lift, and write is a tool call. The tool is unchanged.
+
 ## Out of Scope
 
