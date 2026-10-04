@@ -84,5 +84,9 @@ The hand-answer runner reads `<MILESTONE_DIR>/open_questions.xml` whole with the
 
 A match is no exemption. On every hand answer the runner performs the undermined-pick judgment over the other questions' standing picks against the recorded answer, whether or not the option it records is the one the answered block's own `<recommendation option>` names, through both the literal and the alternative skill, with no provenance condition. The answered block's own recommendation plays no part in deciding whether the judgment runs.
 
+### Goal revision pick clearing
+
+`/modify-milestone-goal` clears the standing picks a goal revision undermines. In the same run as the goal edit, the skill names the standing picks its impact analysis judges the revision undermines, from its whole read of `open_questions.xml`, and clears them with one `strip --recommendation` call over those Short Titles, keeping every `<alternative>`. A block whose `<depends-on>` names a cleared block keeps its pick and its tag, exactly as the tool's `strip` leaves it today, so the clearing is not transitive and the tool is unchanged. `open_questions.xml` joins `requirements.md` in the `Goal-revision:` commit.
+
 ## Out of Scope
 
