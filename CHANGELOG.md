@@ -2,6 +2,22 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.8.1 — 2026-10-05
+
+### Stale picks as undeclared dependents (milestone 42)
+
+- Answering a question by hand (`/answer-open-question` or `/answer-open-question-with-alternative`) now also clears the standing recommendations on other questions that the answer undermines, either because the recommended option can no longer be carried out or because its stated reason no longer holds. Each cleared question keeps its alternatives and needs only a fresh `/recommend-all-open-questions` run, so the answer sweep no longer records a pick that was formed without your answer. When in doubt, a pick is cleared.
+- The open-question tool's `remove` takes an optional `--undermined` list of question titles. It refuses an unknown title (or the answered question's own) before changing anything, and it clears the named picks in the same write as the dependents that `<depends-on>` already declares.
+- `/modify-milestone-goal` now clears the picks a goal revision undermines and commits `open_questions.xml` together with `requirements.md` under `Goal-revision:`. Only the named picks are cleared; their dependents are left as they are.
+- Recording a recommendation, whether through `/answer-open-question-with-recommendation` or the answer sweep, behaves as before.
+
+### Decide-upfront pitch reframe (milestone 41)
+
+- Cairn now introduces itself as bringing all the important questions up to be decided upfront, so long-running execution can be handed to an agent confidently, under the tagline "Mark the path first, then hand off the walk." Every README, manifest, and marketplace description carries the same one-liner.
+- The README's first-screen diagram groups the workflow into a deciding-upfront half and a handing-execution-to-agents half. `## Why Cairn?` and `## Design principles` are rewritten around that handoff.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.8.0...1.8.1
+
 ## 1.8.0 — 2026-10-02
 
 ### Codex host (milestone 40)
