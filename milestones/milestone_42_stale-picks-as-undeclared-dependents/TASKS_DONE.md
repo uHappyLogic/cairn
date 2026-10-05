@@ -113,3 +113,19 @@ Update the `docs/skill-reference.md` entries for `/answer-open-question`, `/answ
 - No changed passage carries a replay figure, as the "Replay result home" decision requires, and `uv run scripts/build_hosts.py --check` passes (no change under `core/`).
 
 ---
+
+## Update CLAUDE.md Invariants For Undermined Picks
+
+Revise the invariants in `CLAUDE.md` that this milestone changes, with their rationale: "One reconciliation engine, strip on doubt" gains the runner-named undermined dependents that ride the same `remove` write (judged in the composing hand-answer procedure so the core stays a pass-through recorder, no exemption when the answer matches the answered block's own pick, an unknown name refused but a pick-less one accepted, still no console advisory), and the `modify-milestone-goal` bullet and its line in the skill list record that a revision now clears the picks it undermines with one non-transitive `strip --recommendation` committed with the goal edit. Verified by reading the bullets against the Decisions and, as the milestone's closing check, by `uv run scripts/build_hosts.py --check`, `uv run pytest`, and `uv run --no-project --python 3.9 --with pytest pytest` all passing.
+
+**Verified:**
+
+- The "One reconciliation engine, strip on doubt" bullet of `CLAUDE.md` states that `remove` reconciles both `--option` and `--undermined` in its one write, the runner-named undermined dependents reconciled as dependents no `<depends-on>` tag declares, in the same write as the tagged ones, transitively and keeping their alternatives, with the rationale (a tag is the only record of what a pick assumed, so without the naming the sweep would record a pick formed without the answer).
+- That bullet places the judgment in `core/shared/hand-answer-procedure.md`, composing over the answer core, so the core stays a pass-through recorder with one input and no branch and `answer-with-recommendation-procedure.md` passes nothing, as the "Undermined-pick judgment home" decision requires; it names the two tests of the "Undermined pick test" decision without re-forming the recommender's judgment.
+- That bullet states that a match with the answered block's own pick is no exemption (the "Answer matching the standing pick" decision), that an unknown or self-naming title is refused with the document unchanged (the "Unknown named dependent" decision), that a named pick-less block is accepted, left as it stands, and seeds no transitive strip (the "Named dependent without a pick" decision), that doubt strips in both the `--option` verdict and the undermined-pick judgment, and that stripped, untagged, or named dependents still get no console advisory and no commit-body line (the "Cleared picks report" decision), each with its rationale.
+- The `modify-milestone-goal` invariant bullet no longer calls the skill act-only: it records that a revision names the picks it undermines by the same two tests, doubt stripping, and clears them with one `strip --recommendation` keeping every `<alternative>`, not transitive (a block whose `<depends-on>` names a cleared block keeps its pick and tag), with `open_questions.xml` committed beside `requirements.md` under `Goal-revision:`, with the rationale for the clearing and for its non-transitivity, as the "Goal revision pick clearing" decision requires; no "act-only" wording remains in `CLAUDE.md`.
+- The skill-list line for `modify-milestone-goal` records that it edits `## Goal` and clears the picks it undermines with one non-transitive strip committed with the goal edit.
+- No changed passage carries a replay figure, as the "Replay result home" decision requires.
+- `uv run scripts/build_hosts.py --check` passed, and `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` each passed all 544 tests.
+
+---
