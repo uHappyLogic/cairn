@@ -13,9 +13,18 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_42_stale-picks-as-undeclared-dependents/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 42 — Stale picks as undeclared dependents
+
+- The open-question tool's `remove` takes an optional `--undermined` list of Short Titles, resolved before any change (an unknown or self-naming title refused with the document unchanged), and strips each named pick in the same write as the `<depends-on>`-tagged dependents, transitively and keeping alternatives, leaving a named pick-less block as it stands.
+- The shared answer core gained one pass-through input for those titles, while `answer-with-recommendation-procedure.md` passes nothing, so the answer sweep and `/answer-open-question-with-recommendation` record exactly as before.
+- A new shared `hand-answer-procedure.md` reads `open_questions.xml` whole for reasoning only and names every other standing pick the answer undermines (its option can no longer be carried out, or its stated reason no longer holds), stripping on doubt and running on every hand answer, a match with the answered block's own pick included.
+- `/answer-open-question` and `/answer-open-question-with-alternative` both follow that procedure, with their reporting and commit bodies unchanged, so nothing is printed or recorded about cleared picks.
+- `/modify-milestone-goal` now clears the picks a goal revision undermines with one non-transitive `strip --recommendation`, committing `open_questions.xml` beside `requirements.md` under `Goal-revision:`.
+- `docs/skill-reference.md`, claims 6 and 16 of `docs/design-claims.md`, and the `CLAUDE.md` invariants describe the new behaviour, and a local, uncommitted replay manifest of 31 cases over the eight known stale-pick windows was assembled with every label left blank for the maintainer.
 
 ### Milestone 41 — Decide-upfront pitch reframe
 
@@ -452,3 +461,4 @@ Current milestone: `milestones/milestone_42_stale-picks-as-undeclared-dependents
 | 39 | Literal shell commands without variables | `milestones/milestone_39_literal-shell-commands-without-variables/` |
 | 40 | Codex host | `milestones/milestone_40_codex-host/` |
 | 41 | Decide-upfront pitch reframe | `milestones/milestone_41_decide-upfront-pitch-reframe/` |
+| 42 | Stale picks as undeclared dependents | `milestones/milestone_42_stale-picks-as-undeclared-dependents/` |
