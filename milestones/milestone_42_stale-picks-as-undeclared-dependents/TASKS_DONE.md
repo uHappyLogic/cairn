@@ -97,3 +97,19 @@ Extend `core/skills/modify-milestone-goal/SKILL.md` so that, in the same run as 
 - `hosts/` was rebuilt with `uv run scripts/build_hosts.py`, changing the `modify-milestone-goal` SKILL.md in all three host trees, and `uv run scripts/build_hosts.py --check` passed.
 
 ---
+
+## Describe Undermined-Pick Clearing In Docs
+
+Update the `docs/skill-reference.md` entries for `/answer-open-question`, `/answer-open-question-with-alternative`, and `/modify-milestone-goal`, and the design text of claims 6 and 16 in `docs/design-claims.md`, to describe the new behaviour: a hand answer names the standing picks it undermines and `remove` reconciles them with the tagged dependents in one write, strip on doubt covering that judgment, and a goal revision clears the picks it undermines with one non-transitive `strip --recommendation`, so the `/modify-milestone-goal` entry no longer says it edits the Goal and nothing else. Verified by reading each changed passage against the Decisions.
+
+**Verified:**
+
+- The `/answer-open-question` entry of `docs/skill-reference.md` states that the skill follows `core/shared/hand-answer-procedure.md` over the recording core, reads `open_questions.xml` whole for reasoning only, and names every other question's standing pick the answer undermines by the two tests of the "Undermined pick test" decision (option no longer carried out, stated reason no longer holds), without re-forming the recommender's judgment, on every hand answer whether or not it matches the answered block's own pick, leaving standing the picks the answer does not bear on.
+- That entry states that the named picks go to the same `remove` as `--undermined` and are reconciled with the `<depends-on>`-tagged dependents in one write, stripped with their alternatives kept and transitively, a named pick-less block left as it stands, an unknown or self-naming title refused with the document unchanged and the call re-run, strip on doubt covering both the `--option` verdict and the undermined-pick judgment, and nothing printed about cleared picks.
+- The `/answer-open-question-with-alternative` entry states the same: the shared hand-answer procedure with the chosen id as recorded option, the whole read for reasoning only, the two-test judgment on every answer (choosing the block's own pick no exemption), the named picks passed as `--undermined` and reconciled with the tagged dependents in one write, alternatives kept and transitively, strip on doubt covering the naming, and nothing printed about cleared picks.
+- The `/modify-milestone-goal` entry no longer says it edits the Goal and nothing else (no "Act-only" label remains): it states that the revision clears the standing picks it undermines, judged by the same two tests against the revised goal with doubt stripping, with one `strip --recommendation` call keeping every `<alternative>`, not transitive (a block whose `<depends-on>` names a cleared block keeps its pick and tag), as its only change to `open_questions.xml`, with `open_questions.xml` committed beside `requirements.md` under `Goal-revision: <milestone_id>`, as the "Goal revision pick clearing" decision requires.
+- Claim 6 of `docs/design-claims.md` now states, in its Simplified Technical English register, that a hand answer names each recommendation it makes out of date and the same cascade strips those in the same write, and that a goal change strips each recommendation it makes out of date, keeping the alternatives, without continuing to the dependents.
+- Claim 16 now states that when a hand answer or a goal change is possibly the cause of an out-of-date recommendation, the skill strips it and keeps the alternatives (strip on doubt).
+- No changed passage carries a replay figure, as the "Replay result home" decision requires, and `uv run scripts/build_hosts.py --check` passes (no change under `core/`).
+
+---

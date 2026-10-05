@@ -61,7 +61,11 @@ the other tests yet.
   The batch answer skill walks that graph from its origins. When an answer
   agrees with a dependent question, the cascade removes the dependency tag.
   When it does not agree, the cascade removes the children of the dependent
-  question.
+  question. A recommendation can also depend on an answer without a tag. A
+  hand answer names each recommendation that it makes out of date, and the
+  same cascade removes the children of those questions in the same write. A
+  goal change removes each recommendation that it makes out of date, and
+  keeps the alternatives. That removal does not continue to the dependents.
 - **Metric:** Golden-file result on a seeded graph, and the count of recorded
   decisions with an out-of-date reason.
 
@@ -156,10 +160,12 @@ the other tests yet.
 ### 16. When in doubt, cairn keeps the record and flags it.
 
 - **Design:** When the cascade is not sure, it strips the dependent question
-  and does not answer it. Review flags a possibly resolved question and does
-  not delete it. Bootstrap never overwrites a file. Capture writes the
-  principle store, but commits only after the user reads the diff. On
-  rejection, it restores the snapshot.
+  and does not answer it. When a hand answer or a goal change is possibly
+  the cause of an out-of-date recommendation, the skill strips that
+  recommendation and keeps the alternatives. Review flags a possibly
+  resolved question and does not delete it. Bootstrap never overwrites a
+  file. Capture writes the principle store, but commits only after the user
+  reads the diff. On rejection, it restores the snapshot.
 - **Metric:** Count of records lost without a user command (must be 0).
 
 ## Engineering
