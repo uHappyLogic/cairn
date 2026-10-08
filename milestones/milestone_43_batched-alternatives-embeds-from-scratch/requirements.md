@@ -66,5 +66,9 @@ Each agent writes its checked elements to a file in the run's scratch directory 
 
 Each batch call lists the run's scratch directory and pipes every file in it, regardless of which notifications arrived, so the batch is one fixed scan with no path copied into the command however many agents ran. In the same shell call, each file it pipes is moved, whether `embed --alternatives` accepted or refused it, to a processed subdirectory, so the next scan sees only files that arrived after this batch and no embedded or refused file is ever re-piped. A repaired return lands fresh at its Short Title's path and is picked up by the next scan. On the single-wait hosts the scan runs only after every agent has ended, so no half-written file is read. The orchestrator keeps no list of piped files in its context; the record lives on disk.
 
+### Repair rounds under batch
+
+The moment a batch call refuses some returns, the orchestrator sends every one of that call's repairs together in the same turn: a continuation message to each still-held agent session where the host can do that, or one fresh re-dispatch per question where it cannot. Each repaired return lands in the scratch directory at its Short Title's path, the refused file having been moved aside, and from there it gets no special handling: it is embedded by the same batching rule as any landed return. On a host with a blocking wait that means one more wait-and-batch over the repair set; on a host without one it means whichever wake-up the repaired return lands in, mixed with first returns that land at the same time, where the orchestrator knows which titles it sent repairs for because it sent them. The orchestrator tracks per question only whether that question has had its repair; a repaired return refused again goes straight to the per-question skip. Repairs start immediately after the refusal and are never held back as a second phase.
+
 ## Out of Scope
 
