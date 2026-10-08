@@ -74,5 +74,9 @@ The moment a batch call refuses some returns, the orchestrator sends every one o
 
 The orchestrator deletes nothing: no scratch file, no processed subdirectory, no run directory, at no point in the run. The run's `mktemp` directory under the system temp location and every return in it, embedded or refused, are left to the OS's own temp handling. No delete or recursive-remove command enters the runner's prose, so a headless chain meets no permission prompt and a refused return whose `Error:` line the advisory reports stays available for inspection.
 
+### Wait slot placement
+
+The waiting wording lives in the existing `ALTERNATIVES_CONCURRENCY` slot, which keeps its name and its place opening step 3 of the alternatives pass. Each host's value is rewritten as one paragraph stating how many dispatches run at once, whether the run waits once for every return or batches each time it wakes, and, in the Codex value, when each agent is closed and the next round dispatched; the "as it lands" clause goes. No new slot is declared, and `ALTERNATIVES_DISPATCH`, `ALTERNATIVES_PROMPT_INSTRUCTIONS`, `ALTERNATIVES_AGENT`, and `AGENT_TOOL` stay as they are. Each `settings.toml` comment for the slot is reworded to say it also governs how returns are collected.
+
 ## Out of Scope
 
