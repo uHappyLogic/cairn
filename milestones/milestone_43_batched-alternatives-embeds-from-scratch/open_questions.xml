@@ -46,6 +46,31 @@
   </open-question>
   <open-question id="Scratch file cleanup">
     <question>Are the scratch files and their directory deleted by the orchestrator, after each successful embed or at the end of the run, or left in place for the host&apos;s temp handling and for inspecting refused returns?</question>
+    <alternative id="Delete each file after its embed, keep refused files">
+      The orchestrator deletes each scratch file in the same shell call as the batch that embedded it, as soon as `embed --alternatives` accepts it. Files that were refused, or that belong to a question still skipped after its repair, stay where they are. At the end of the run the orchestrator removes the run&apos;s scratch directory only if it is empty, with a non-recursive remove that does nothing when files remain. Whatever is left is handed to the host&apos;s temp handling.
+      <advantage>Only the files that matter for diagnosis survive: each one is a return the tool refused or a question the end-of-run advisory already names as skipped. Deleting at embed time also means a later batch on a per-wake-up host never finds an already-embedded file in the directory to pipe again.</advantage>
+      <drawback>It adds a delete step to every batch and a conditional directory removal to the run&apos;s end, all in the prose of the one shell call the goal keeps small. The empty-only removal also leaves a directory behind on every run that skipped a question. It needs the orchestrator to know each file&apos;s path at embed time, which depends on the naming and scratch-directory-in-prompt siblings.</drawback>
+    </alternative>
+    <alternative id="Delete each file after its embed, remove the directory at run end">
+      The orchestrator deletes each scratch file in the same shell call as the batch that embedded it. At the end of the run it removes the whole scratch directory recursively, including any refused or skipped returns still inside it. Nothing from the run outlives it.
+      <advantage>The run leaves nothing behind wherever the directory lives, whatever the host&apos;s temp policy. Per-embed deletion still keeps a later batch from re-piping an embedded file.</advantage>
+      <drawback>The one return worth inspecting is destroyed: a refused or skipped return whose `Error:` line the advisory reports, which was the only evidence of why it failed. It adds deletion prose in two places. A recursive remove of a path the orchestrator built is a risky command to write into a runner, and it may raise a permission prompt in a headless chain where no one can answer it.</drawback>
+    </alternative>
+    <alternative id="Remove the whole directory at run end only">
+      The orchestrator leaves every scratch file in place while the run is going. After the last batch, and after the commits and any repairs, it removes the run&apos;s scratch directory recursively in one command, refused and skipped returns included. Nothing is deleted per embed.
+      <advantage>Cleanup is one command at one point in the run, separate from the per-batch embed-and-commit call. In the single-wait form, where there is only one batch, it costs exactly what per-embed deletion costs.</advantage>
+      <drawback>Refused returns are lost just as in the per-embed variant. On a per-wake-up host, embedded files stay in the directory between batches, so it only works if the batch-input-selection sibling avoids re-piping them some other way. A run that stops early on a tool failure skips the final removal and leaves everything behind anyway.</drawback>
+    </alternative>
+    <alternative id="At run end, delete embedded files and keep refused ones">
+      The orchestrator leaves every scratch file in place while the run is going. After the last batch it deletes the files whose questions embedded and keeps the refused or skipped returns. It removes the directory only if it is empty, otherwise leaving it to the host&apos;s temp handling.
+      <advantage>Like per-embed deletion, it keeps the failed returns for inspection, and it collects all cleanup into one end-of-run step instead of spreading it across batches.</advantage>
+      <drawback>To delete selectively at the end, the orchestrator has to carry the embedded/refused split through the whole run, which is extra state for an orchestrator meant to hold no work context. On a per-wake-up host, embedded files stay in the directory between batches, so it relies on the batch-input-selection sibling to avoid re-piping them. An early stop leaves everything behind.</drawback>
+    </alternative>
+    <alternative id="No deletion, leave it to host temp handling">
+      The orchestrator deletes nothing: no scratch file, no directory, at no point in the run. The run&apos;s scratch directory and every return in it, embedded or refused, are left to the host&apos;s own temp handling. That could be system temp cleanup or the expiry of the session scratchpad.
+      <advantage>It is the least runner prose and the fewest commands, with no remove command to word safely or to get a permission prompt in a headless chain. Every return, accepted or refused, can be inspected after the run, the same way the transcripts were mined for the token report.</advantage>
+      <drawback>Files pile up across runs at a rate that depends entirely on where the directory lives (the scratch-directory-location sibling), and nothing in the repository records Codex&apos;s or Antigravity&apos;s temp handling. Copies of milestone content sit outside the repository until something else clears them. On a per-wake-up host, embedded files stay in the directory, so it relies on the batch-input-selection sibling, and on a fresh directory per run, to avoid re-piping a file it already embedded.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Wait slot placement">
     <question>Does the waiting wording live in the existing ALTERNATIVES_CONCURRENCY slot, whose values already say how returns are handled as they land, or in a new slot of its own, with the concurrency slot left to say only how many dispatches run at once?</question>
