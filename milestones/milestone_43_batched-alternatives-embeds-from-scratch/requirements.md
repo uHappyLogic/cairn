@@ -102,5 +102,9 @@ Where the single wait is the dispatch call's own blocking form, repairs stay con
 
 On a host that dispatches in cap-sized rounds, each round's repair set gets its own wait-and-batch before the next round goes out. As soon as a round's batch call refuses some returns, the orchestrator closes that round's accepted and skipped agents with `close_agent`, sends every repair together in the same turn (a continuation to each held session, or one fresh re-dispatch per question), waits in one `wait_agent` call on the repair set alone, and runs one more batch over the repaired files. Only after that does it close the repaired agents and dispatch the next round at the full cap. A round with no refusals goes straight to the next round. Repairs never share a wait with first dispatches and never take a slot from the next round, so the Codex value needs no cap arithmetic and no last-round rule.
 
+### Batch call outcome output
+
+The batch shell call prints one line per file that `embed --alternatives` refused: that file's Short Title, taken from the file name, then a separator, then the `Error:` line the tool printed for it. A question that embedded prints nothing, and git's output for successful commits is silenced. A commit that fails is printed the same way, its title then git's error. If every file embedded and committed, the call prints nothing. Each printed line is what fills that question's repair message and, after a second refusal, its still-skipped advisory entry.
+
 ## Out of Scope
 
