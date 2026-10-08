@@ -131,11 +131,17 @@ the other tests yet.
 ### 13. Each unit of work runs with the smallest necessary context.
 
 - **Design:** One subagent does one task or one alternative set, and then
-  stops. The orchestrator holds no work context. It gets a bare DONE, a bare
-  FAILED, or the ready-to-embed elements only. The batch recommend and answer
-  skills dispatch no agent. They read the question set one time for each run,
-  not one time for each question. Task bodies are minimal. A shared procedure
-  loads only when a step needs it.
+  stops. The orchestrator holds no work context. It gets a bare DONE or a
+  bare FAILED only. An alternative set never comes back in the message: the
+  subagent writes it to one scratch file outside the repository. One fixed
+  shell call embeds and commits all the files that have landed, with one
+  commit for each question. That call runs one time for each run where the
+  host can wait for all subagents, and one time for each wake-up where it
+  cannot. The orchestrator reads no alternative set and keeps no list of
+  files. The batch recommend and answer skills dispatch no agent. They read
+  the question set one time for each run, not one time for each question.
+  Task bodies are minimal. A shared procedure loads only when a step needs
+  it.
 - **Metric:** Tokens per task, orchestrator context size as the task count
   increases, and total cost per milestone.
 
@@ -153,7 +159,11 @@ the other tests yet.
 
 - **Design:** A failed task leaves its partial work in the tree, and the next
   run continues from it. A bad subagent return gets one repair, then a skip,
-  never a run stop. The answer skill records the decision before it removes the
+  never a run stop. All the repairs from one batch go out together, at once.
+  When a subagent's file never lands, the run reports "no annotation landed"
+  for that question, and the next run tries it again. The alternatives pass
+  deletes no scratch file, so a refused return stays available for
+  inspection. The answer skill records the decision before it removes the
   question, so an interruption leaves a safe superset.
 - **Metric:** Result of a kill-and-resume test: work continued, not done again.
 
@@ -181,8 +191,12 @@ the other tests yet.
 ### 18. The same behaviour on each host.
 
 - **Design:** No core file names a host. A sentence that depends on a host
-  capability names the capability, and the runtime selects the branch. Each
-  host is a declarative definition, with no host-specific code.
+  capability names the capability, and the runtime selects the branch. For
+  example, one paragraph of the alternatives pass says how it collects the
+  subagents' files. Where the host can wait for all subagents in one call,
+  the pass waits one time and then embeds all the files. Where it cannot, the
+  pass embeds the files that have landed each time it wakes. Each host is a
+  declarative definition, with no host-specific code.
 - **Metric:** Same case scores on each host tree.
 
 ### 19. Each skill does one thing, on an explicit command.
