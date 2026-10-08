@@ -50,5 +50,9 @@ The Claude Code value of the waiting wording is one capability-conditional sente
 
 The orchestrator creates the run's scratch directory with `mktemp -d`, a fresh uniquely named directory under the system temp location honouring `$TMPDIR`. Every host tree uses the same wording, so the location adds no host slot. The directory belongs to one run only and no other run reuses it, so no stale return or concurrent run can collide. Codex's workspace-write sandbox keeps `$TMPDIR` and `/tmp` writable by default (its `exclude_tmpdir_env_var` and `exclude_slash_tmp` keys exist to remove them), so the temp location is writable there too; the session scratchpad is not used.
 
+### Codex wait form
+
+The Codex tree gets the single-wait form, applied one round at a time. The orchestrator dispatches up to the session's `agents.max_threads` cap, then waits in one call through Codex's own `wait_agent` tool (which takes a `timeout_ms` and returns once every requested agent's result is available) until every agent in that round has written its scratch file or ended in a failure. It embeds and commits the round's landed files in one shell call, closes the round's agents with `close_agent` once their pipelines finish, and dispatches the next cap-sized round until no question is left. The orchestrator wakes once per round rather than once per return; the idle tail of a round costs wall-clock only.
+
 ## Out of Scope
 
