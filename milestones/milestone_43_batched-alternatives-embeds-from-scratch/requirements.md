@@ -98,5 +98,9 @@ The agent writes its checked elements under a temporary name the batch scan does
 
 Where the single wait is the dispatch call's own blocking form, repairs stay continuation-first. Every continuation from one refused batch is sent without blocking in the same turn, and each later wake-up that brings repaired-return notifications triggers a batch over whatever has landed in the scratch directory, the same rule the no-blocking arm uses for all its returns. Any fresh re-dispatch fallback is sent the same way. A run with refusals on that host therefore wakes more than once; the single wake-up per run holds for a run with no refusal.
 
+### Repair set and next round
+
+On a host that dispatches in cap-sized rounds, each round's repair set gets its own wait-and-batch before the next round goes out. As soon as a round's batch call refuses some returns, the orchestrator closes that round's accepted and skipped agents with `close_agent`, sends every repair together in the same turn (a continuation to each held session, or one fresh re-dispatch per question), waits in one `wait_agent` call on the repair set alone, and runs one more batch over the repaired files. Only after that does it close the repaired agents and dispatch the next round at the full cap. A round with no refusals goes straight to the next round. Repairs never share a wait with first dispatches and never take a slot from the next round, so the Codex value needs no cap arithmetic and no last-round rule.
+
 ## Out of Scope
 
