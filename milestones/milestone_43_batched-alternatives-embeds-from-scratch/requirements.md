@@ -86,5 +86,9 @@ When a blocking wait ends with dispatched agents still unfinished, the orchestra
 
 The Antigravity tree carries exactly the Claude Code value of the waiting wording: the one capability-conditional sentence that names both forms by capability rather than one form. Where the runner can block in one call until every dispatched agent's return has landed or failed, it names the scratch directory, waits once, and batches the whole set; otherwise it batches every time it wakes with landed returns. The two trees stay byte-identical, and on Antigravity the runner decides at run time which form applies. Nothing is probed or recorded about how Antigravity delivers agent returns.
 
+### DONE without scratch file
+
+The orchestrator does not cross-check each agent's final message against the scan, and a question whose agent ended with `DONE` but whose file never landed gets no repair. After the run's last batch it runs one more `list --without-alternatives` call. Every id that call prints which was among the run's gathered ids, and is not already in the advisory as a FAILED or post-repair skip, goes into the still-skipped advisory with a fixed reason saying no annotation landed. The block stays bare for the next run of the pass to re-dispatch.
+
 ## Out of Scope
 
