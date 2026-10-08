@@ -58,5 +58,9 @@ The Codex tree gets the single-wait form, applied one round at a time. The orche
 
 The orchestrator creates one run scratch directory on every host, including a host where it batches per wake-up, and passes that directory as a required third value in the dispatch prompt beside the Short Title and `<MILESTONE_DIR>`. The dispatch prompt template in `core/skills/provide-alternatives-to-all-open-questions/SKILL.md` and the agent file `core/agents/provide-alternatives-to-open-question.md` stay host-neutral and unconditional: the agent writes its one file into the named directory, with no branch keyed on whether the value is present. No slot is added and no existing slot carries the directory line, so the waiting sentence stays the only part that differs by host.
 
+### Scratch file naming and return
+
+Each agent writes its checked elements to a file in the run's scratch directory whose name is the question's Short Title exactly as given plus a fixed extension (`<scratch dir>/<Short Title>.xml`), and the agent file states this rule. The orchestrator therefore knows every path at dispatch time without the agent reporting it, and the batch derives each embed's and commit's Short Title from the file name alone, with no table, no slug reasoning, and no returned path to copy. On success the agent's final message is the bare token `DONE`; on failure it stays `FAILED: <reason>`. A Short Title holding a path separator fails the agent's write and surfaces as a FAILED skip rather than a silent miss. This supersedes the goal's sentence that the agent ends its session with the file's path: the final message is the token, never the path.
+
 ## Out of Scope
 
