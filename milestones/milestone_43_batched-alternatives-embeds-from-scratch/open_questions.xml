@@ -1,1 +1,38 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Scratch directory in prompt">
+    <question>On a host without a blocking wait, where the orchestrator batches per wake-up, does the dispatch prompt still name a run scratch directory for the agent to write into, so the agent&apos;s contract and the prompt are the same on every host, or does the agent choose its own scratch path there and the prompt keep its two values?</question>
+  </open-question>
+  <open-question id="Scratch directory location">
+    <question>When the orchestrator creates the run&apos;s scratch directory, where outside the repository does it create it: a fresh temporary directory under the system temp location, the host&apos;s session scratchpad, or another place, given that temp-directory writability under the Codex sandbox is unrecorded?</question>
+  </open-question>
+  <open-question id="Scratch file naming and return">
+    <question>Is each agent&apos;s scratch file name derived from its Short Title by a fixed rule, so the orchestrator knows every path before any agent returns and the agent&apos;s final message can be a bare success token, or does the agent choose its own file name and report the path as its final message, so the orchestrator learns the paths only from the returns?</question>
+  </open-question>
+  <open-question id="Wait completion and failure test">
+    <question>In the single-wait form, what does the blocking wait test to decide that every dispatched agent has finished, and how does an agent that ends with FAILED and writes no elements become visible to that test: a failure marker it writes beside the other files, a bounded wait that gives up, or the host&apos;s own completion signal?</question>
+  </open-question>
+  <open-question id="Claude Code wait primitive">
+    <question>Which Claude Code primitive is the blocking wait: a foreground shell loop inside one tool call under its ten-minute cap, a background shell loop or Monitor that returns at once and notifies later, or something else, given that a foreground sleep ran when tested although the host states foreground sleep is blocked?</question>
+  </open-question>
+  <open-question id="Wait expiry handling">
+    <question>What does the orchestrator do when the blocking wait ends before every dispatched agent has finished: embed and commit what has landed and wait again, fall back to per-wake-up batching for the rest, or treat the unfinished agents as skipped?</question>
+  </open-question>
+  <open-question id="Codex wait form">
+    <question>Does the Codex tree get the single-wait form, waiting on each cap-sized round of agents through Codex&apos;s own agent tools, or the per-wake-up value, given its subagent thread cap and that the repository records no Codex waiting tool?</question>
+  </open-question>
+  <open-question id="Antigravity wait form">
+    <question>Does the Antigravity tree carry the same waiting sentence as Claude Code, keeping the two trees byte-identical on the assumption that it offers the same wait, or the per-wake-up value, given that the repository records nothing about how Antigravity delivers agent returns?</question>
+  </open-question>
+  <open-question id="Repair rounds under batch">
+    <question>When a batch call refuses some returns, does the orchestrator send every repair at once and wait for the repaired returns as one further batch, or repair and re-embed each refused return on its own as it comes back?</question>
+  </open-question>
+  <open-question id="Batch input selection">
+    <question>Which returns does one batch call pipe: only those the wake-up&apos;s notifications or the finished wait named, or every file present in the scratch directory, and in the latter case how does the orchestrator avoid re-piping a file it embedded in an earlier batch?</question>
+  </open-question>
+  <open-question id="Scratch file cleanup">
+    <question>Are the scratch files and their directory deleted by the orchestrator, after each successful embed or at the end of the run, or left in place for the host&apos;s temp handling and for inspecting refused returns?</question>
+  </open-question>
+  <open-question id="Wait slot placement">
+    <question>Does the waiting wording live in the existing ALTERNATIVES_CONCURRENCY slot, whose values already say how returns are handled as they land, or in a new slot of its own, with the concurrency slot left to say only how many dispatches run at once?</question>
+  </open-question>
+</open-questions>
