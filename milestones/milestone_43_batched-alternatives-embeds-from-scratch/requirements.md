@@ -46,5 +46,9 @@ On Claude Code, a foreground `Bash` call blocks up to 600000 ms and `sleep` ran 
 
 The Claude Code value of the waiting wording is one capability-conditional sentence rather than the name of one primitive. Where the agent tool offers a blocking dispatch form, the orchestrator sends every dispatch in one message in that form, so the message returns only when every agent has ended, and it then embeds and commits the whole set in one shell call. Where the agent tool offers no blocking form, the orchestrator batches every time it wakes with landed returns. In both arms every dispatch goes out in one message, so the fan-out stays concurrent. No foreground shell loop, background shell loop, or event monitor serves as the wait on Claude Code.
 
+### Scratch directory location
+
+The orchestrator creates the run's scratch directory with `mktemp -d`, a fresh uniquely named directory under the system temp location honouring `$TMPDIR`. Every host tree uses the same wording, so the location adds no host slot. The directory belongs to one run only and no other run reuses it, so no stale return or concurrent run can collide. Codex's workspace-write sandbox keeps `$TMPDIR` and `/tmp` writable by default (its `exclude_tmpdir_env_var` and `exclude_slash_tmp` keys exist to remove them), so the temp location is writable there too; the session scratchpad is not used.
+
 ## Out of Scope
 
