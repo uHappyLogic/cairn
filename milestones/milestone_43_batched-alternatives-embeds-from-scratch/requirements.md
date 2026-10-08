@@ -62,5 +62,9 @@ The orchestrator creates one run scratch directory on every host, including a ho
 
 Each agent writes its checked elements to a file in the run's scratch directory whose name is the question's Short Title exactly as given plus a fixed extension (`<scratch dir>/<Short Title>.xml`), and the agent file states this rule. The orchestrator therefore knows every path at dispatch time without the agent reporting it, and the batch derives each embed's and commit's Short Title from the file name alone, with no table, no slug reasoning, and no returned path to copy. On success the agent's final message is the bare token `DONE`; on failure it stays `FAILED: <reason>`. A Short Title holding a path separator fails the agent's write and surfaces as a FAILED skip rather than a silent miss. This supersedes the goal's sentence that the agent ends its session with the file's path: the final message is the token, never the path.
 
+### Batch input selection
+
+Each batch call lists the run's scratch directory and pipes every file in it, regardless of which notifications arrived, so the batch is one fixed scan with no path copied into the command however many agents ran. In the same shell call, each file it pipes is moved, whether `embed --alternatives` accepted or refused it, to a processed subdirectory, so the next scan sees only files that arrived after this batch and no embedded or refused file is ever re-piped. A repaired return lands fresh at its Short Title's path and is picked up by the next scan. On the single-wait hosts the scan runs only after every agent has ended, so no half-written file is read. The orchestrator keeps no list of piped files in its context; the record lives on disk.
+
 ## Out of Scope
 
