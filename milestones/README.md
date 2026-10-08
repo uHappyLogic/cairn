@@ -13,9 +13,18 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_43_batched-alternatives-embeds-from-scratch/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 43 — Batched alternatives embeds from scratch files
+
+- The `provide-alternatives-to-open-question` agent takes the run's scratch directory as a required third prompt value, writes its checked `<alternative>` elements to `<scratch dir>/<Short Title>.xml.part` and renames it with one `mv` to `<Short Title>.xml`, and ends with the bare token `DONE` or `FAILED: <reason>`, staying read-only toward the project with that one file as the exception.
+- `/provide-alternatives-to-all-open-questions` creates one `mktemp -d` scratch directory per run and embeds and commits landed returns in one fixed batch shell call that pipes each file unedited into `embed --alternatives`, keeps one `Alternatives-annotation: <Short Title>` commit per question, prints one line per refused file or failed commit, and moves every piped file into a `processed` subdirectory.
+- Every refusal from one batch gets its one repair in the same turn (continuation where the host can, one re-dispatch where it cannot), a second refusal or `FAILED:` is the per-question skip, a closing `list --without-alternatives` reports any question whose file never landed as `no annotation landed`, and the orchestrator deletes nothing.
+- The `ALTERNATIVES_CONCURRENCY` slot now also governs how returns are collected: Claude Code and Antigravity share one capability-conditional paragraph (one blocking wait and one batch where the agent tool offers a blocking form, a batch per wake-up otherwise), and Codex dispatches rounds capped at `agents.max_threads`, waits once per round with `wait_agent`, gives a round's repairs their own wait and batch, and closes agents with `close_agent`.
+- A blocking wait that ends with agents unfinished batches what has landed and waits again without limit, so an expiry never skips a question.
+- The open-question tool is unchanged, and the `CLAUDE.md` invariants, `docs/workflow.md`, `docs/skill-reference.md`, and `docs/design-claims.md` describe the batched pass and why it replaced the per-return pipeline.
 
 ### Milestone 42 — Stale picks as undeclared dependents
 
@@ -462,3 +471,4 @@ Current milestone: `milestones/milestone_43_batched-alternatives-embeds-from-scr
 | 40 | Codex host | `milestones/milestone_40_codex-host/` |
 | 41 | Decide-upfront pitch reframe | `milestones/milestone_41_decide-upfront-pitch-reframe/` |
 | 42 | Stale picks as undeclared dependents | `milestones/milestone_42_stale-picks-as-undeclared-dependents/` |
+| 43 | Batched alternatives embeds from scratch files | `milestones/milestone_43_batched-alternatives-embeds-from-scratch/` |
