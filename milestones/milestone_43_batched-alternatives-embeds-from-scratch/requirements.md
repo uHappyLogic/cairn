@@ -70,5 +70,9 @@ Each batch call lists the run's scratch directory and pipes every file in it, re
 
 The moment a batch call refuses some returns, the orchestrator sends every one of that call's repairs together in the same turn: a continuation message to each still-held agent session where the host can do that, or one fresh re-dispatch per question where it cannot. Each repaired return lands in the scratch directory at its Short Title's path, the refused file having been moved aside, and from there it gets no special handling: it is embedded by the same batching rule as any landed return. On a host with a blocking wait that means one more wait-and-batch over the repair set; on a host without one it means whichever wake-up the repaired return lands in, mixed with first returns that land at the same time, where the orchestrator knows which titles it sent repairs for because it sent them. The orchestrator tracks per question only whether that question has had its repair; a repaired return refused again goes straight to the per-question skip. Repairs start immediately after the refusal and are never held back as a second phase.
 
+### Scratch file cleanup
+
+The orchestrator deletes nothing: no scratch file, no processed subdirectory, no run directory, at no point in the run. The run's `mktemp` directory under the system temp location and every return in it, embedded or refused, are left to the OS's own temp handling. No delete or recursive-remove command enters the runner's prose, so a headless chain meets no permission prompt and a refused return whose `Error:` line the advisory reports stays available for inspection.
+
 ## Out of Scope
 
