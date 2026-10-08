@@ -78,5 +78,9 @@ The orchestrator deletes nothing: no scratch file, no processed subdirectory, no
 
 The waiting wording lives in the existing `ALTERNATIVES_CONCURRENCY` slot, which keeps its name and its place opening step 3 of the alternatives pass. Each host's value is rewritten as one paragraph stating how many dispatches run at once, whether the run waits once for every return or batches each time it wakes, and, in the Codex value, when each agent is closed and the next round dispatched; the "as it lands" clause goes. No new slot is declared, and `ALTERNATIVES_DISPATCH`, `ALTERNATIVES_PROMPT_INSTRUCTIONS`, `ALTERNATIVES_AGENT`, and `AGENT_TOOL` stay as they are. Each `settings.toml` comment for the slot is reworded to say it also governs how returns are collected.
 
+### Wait expiry handling
+
+When a blocking wait ends with dispatched agents still unfinished, the orchestrator pipes every file that has landed so far into one `embed --alternatives` batch and commits each question that embedded, in one shell call. It then issues the same blocking wait again for the agents still outstanding, and repeats until every dispatched agent has landed a file or ended in a failure. No limit is set on how many times it waits again, nothing is skipped because of an expiry, and the run keeps the single-wait form throughout.
+
 ## Out of Scope
 
