@@ -94,5 +94,9 @@ The orchestrator does not cross-check each agent's final message against the sca
 
 The agent writes its checked elements under a temporary name the batch scan does not select, then moves the file to `<scratch dir>/<Short Title>.xml` with one `mv` before ending with `DONE`. The temporary name is either a writing subdirectory inside the run's scratch directory or a suffix the scan's file pattern excludes; because it stays inside the run directory, both names are on one filesystem and the rename is atomic. The scan is unchanged: it pipes and moves every selected file, so no scan can pipe a partial return, whether cut mid-element or between elements. The rule lives in the host-neutral agent file and applies on every host, including the single-wait hosts.
 
+### Repair wait under blocking dispatch
+
+Where the single wait is the dispatch call's own blocking form, repairs stay continuation-first. Every continuation from one refused batch is sent without blocking in the same turn, and each later wake-up that brings repaired-return notifications triggers a batch over whatever has landed in the scratch directory, the same rule the no-blocking arm uses for all its returns. Any fresh re-dispatch fallback is sent the same way. A run with refusals on that host therefore wakes more than once; the single wake-up per run holds for a run with no refusal.
+
 ## Out of Scope
 
