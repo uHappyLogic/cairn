@@ -90,5 +90,9 @@ The Antigravity tree carries exactly the Claude Code value of the waiting wordin
 
 The orchestrator does not cross-check each agent's final message against the scan, and a question whose agent ended with `DONE` but whose file never landed gets no repair. After the run's last batch it runs one more `list --without-alternatives` call. Every id that call prints which was among the run's gathered ids, and is not already in the advisory as a FAILED or post-repair skip, goes into the still-skipped advisory with a fixed reason saying no annotation landed. The block stays bare for the next run of the pass to re-dispatch.
 
+### Half-written file on wake-up scan
+
+The agent writes its checked elements under a temporary name the batch scan does not select, then moves the file to `<scratch dir>/<Short Title>.xml` with one `mv` before ending with `DONE`. The temporary name is either a writing subdirectory inside the run's scratch directory or a suffix the scan's file pattern excludes; because it stays inside the run directory, both names are on one filesystem and the rename is atomic. The scan is unchanged: it pipes and moves every selected file, so no scan can pipe a partial return, whether cut mid-element or between elements. The rule lives in the host-neutral agent file and applies on every host, including the single-wait hosts.
+
 ## Out of Scope
 
