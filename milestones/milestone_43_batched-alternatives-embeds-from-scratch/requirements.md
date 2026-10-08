@@ -82,5 +82,9 @@ The waiting wording lives in the existing `ALTERNATIVES_CONCURRENCY` slot, which
 
 When a blocking wait ends with dispatched agents still unfinished, the orchestrator pipes every file that has landed so far into one `embed --alternatives` batch and commits each question that embedded, in one shell call. It then issues the same blocking wait again for the agents still outstanding, and repeats until every dispatched agent has landed a file or ended in a failure. No limit is set on how many times it waits again, nothing is skipped because of an expiry, and the run keeps the single-wait form throughout.
 
+### Antigravity wait form
+
+The Antigravity tree carries exactly the Claude Code value of the waiting wording: the one capability-conditional sentence that names both forms by capability rather than one form. Where the runner can block in one call until every dispatched agent's return has landed or failed, it names the scratch directory, waits once, and batches the whole set; otherwise it batches every time it wakes with landed returns. The two trees stay byte-identical, and on Antigravity the runner decides at run time which form applies. Nothing is probed or recorded about how Antigravity delivers agent returns.
+
 ## Out of Scope
 
