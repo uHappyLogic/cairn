@@ -69,8 +69,9 @@ COMPLETE_TASK_PROMPT_INSTRUCTIONS = ""
 ALTERNATIVES_DISPATCH = '''Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the
 `provide-alternatives-to-open-question` agent (singular — the per-question subagent) under this
 plugin's namespace, `cairn:provide-alternatives-to-open-question` — one dispatch per surviving
-question. Pass it that question's **Short Title** and the `<MILESTONE_DIR>` resolved in step 0,
-and nothing else — the two values the orchestrator already holds:'''
+question. Pass it that question's **Short Title**, the `<MILESTONE_DIR>` resolved in step 0, and
+the `<scratch dir>` created in sub-step **a**, and nothing else — the three values the
+orchestrator already holds:'''
 # ALTERNATIVES_PROMPT_INSTRUCTIONS: text opening the alternatives pass's dispatch prompt,
 # before its first line.
 # This tree keeps the prompt it has always carried, so nothing precedes it.
@@ -84,14 +85,20 @@ ALTERNATIVES_AGENT = '`cairn:provide-alternatives-to-open-question` agent'
 # This tree keeps the wording it has always carried.
 AGENT_TOOL = '`Agent` tool'
 # ALTERNATIVES_CONCURRENCY: the provide-alternatives-to-all-open-questions paragraph opening
-# step 3, saying how many per-question dispatches run at once and how the run proceeds through
-# them.
-# This tree keeps the uncapped all-at-once wording it has always carried.
-ALTERNATIVES_CONCURRENCY = '''Dispatch one read-only subagent per question step 1b printed, **all of them together where the
-host can run several agent dispatches at once and one after another where it cannot** — with no
-cap beyond one dispatch per surviving question — and run the per-return pipeline below on each
-return **as it lands**, in either arm. No ranking or ordering precedes the dispatches: an
+# step 3, saying how many per-question dispatches run at once and how the run collects their
+# returns: whether it waits once for every return or batches each time it wakes.
+# This tree carries the Claude Code value verbatim, naming both wait forms by capability, so the
+# runner decides at run time which applies and the two trees stay byte-identical.
+ALTERNATIVES_CONCURRENCY = '''Dispatch one read-only subagent per question step 1b printed, **all of them together in one
+message** — with no cap beyond one dispatch per surviving question — and collect their returns
+by what the agent tool offers. **Where it offers a blocking dispatch form**, send every dispatch
+in that form, so the message returns only once every agent has landed its file or ended in a
+failure, and then run the batch call (sub-step **d**) once, embedding and committing the whole
+set. **Where it offers no blocking form**, run the batch call every time you wake with landed
+returns, over whatever has landed by then. No foreground shell loop, background shell loop, or
+event monitor serves as the wait in either arm: the dispatch message itself, or the wake-ups the
+agents' endings bring, is the whole wait. No ranking or ordering precedes the dispatches: an
 alternative set is enumerated against the sibling questions as scope only, never against how a
 sibling will settle, so no dispatch reads what another wrote and their order changes nothing.
-Both arms write the same blocks and land the same commits; the sequential arm differs only in
-wall-clock time.'''
+Both arms write the same blocks and land the same commits; they differ only in how many times
+you wake.'''

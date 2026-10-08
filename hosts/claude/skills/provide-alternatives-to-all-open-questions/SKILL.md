@@ -104,14 +104,19 @@ regenerated is named in the same `strip` call.
 
 ### 3. Dispatch the subagents and embed their files in batches
 
-Dispatch one read-only subagent per question step 1b printed, **all of them together where the
-host can run several agent dispatches at once and one after another where it cannot** — with no
-cap beyond one dispatch per surviving question — and run the per-return pipeline below on each
-return **as it lands**, in either arm. No ranking or ordering precedes the dispatches: an
+Dispatch one read-only subagent per question step 1b printed, **all of them together in one
+message** — with no cap beyond one dispatch per surviving question — and collect their returns
+by what the agent tool offers. **Where it offers a blocking dispatch form**, send every dispatch
+in that form, so the message returns only once every agent has landed its file or ended in a
+failure, and then run the batch call (sub-step **d**) once, embedding and committing the whole
+set. **Where it offers no blocking form**, run the batch call every time you wake with landed
+returns, over whatever has landed by then. No foreground shell loop, background shell loop, or
+event monitor serves as the wait in either arm: the dispatch message itself, or the wake-ups the
+agents' endings bring, is the whole wait. No ranking or ordering precedes the dispatches: an
 alternative set is enumerated against the sibling questions as scope only, never against how a
 sibling will settle, so no dispatch reads what another wrote and their order changes nothing.
-Both arms write the same blocks and land the same commits; the sequential arm differs only in
-wall-clock time.
+Both arms write the same blocks and land the same commits; they differ only in how many times
+you wake.
 
 **a. Create the run's scratch directory.** Before the first dispatch, run
 
@@ -129,8 +134,9 @@ that path, written out in full.
 Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the
 `provide-alternatives-to-open-question` agent (singular — the per-question subagent) under this
 plugin's namespace, `cairn:provide-alternatives-to-open-question` — one dispatch per surviving
-question. Pass it that question's **Short Title** and the `<MILESTONE_DIR>` resolved in step 0,
-and nothing else — the two values the orchestrator already holds:
+question. Pass it that question's **Short Title**, the `<MILESTONE_DIR>` resolved in step 0, and
+the `<scratch dir>` created in sub-step **a**, and nothing else — the three values the
+orchestrator already holds:
 
 ```
 Enumerate the alternatives for this single open question.

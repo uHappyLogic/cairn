@@ -30,3 +30,19 @@ Rewrite `core/skills/provide-alternatives-to-all-open-questions/SKILL.md` so ste
 - `uv run scripts/build_hosts.py` rebuilt the three host trees, `uv run scripts/build_hosts.py --check` passed, and `uv run pytest` passed (544 tests).
 
 ---
+
+## Host Wait Wording in Concurrency Slot
+
+Rewrite the `ALTERNATIVES_CONCURRENCY` value in all three `scripts/hosts/<host>/settings.toml` files as one paragraph stating how many dispatches run at once and how returns are collected, dropping the "as it lands" clause: the Claude Code value is the capability-conditional sentence (where the agent tool offers a blocking dispatch form, every dispatch goes out in one message in that form and the whole set is embedded and committed in one shell call once the message returns; where it offers no blocking form, the run batches every time it wakes with landed returns; no foreground shell loop, background shell loop, or event monitor serves as the wait), the Antigravity value is exactly that Claude Code value so the two trees stay byte-identical, and the Codex value dispatches rounds of up to the `agents.max_threads` cap (default 6), waits in one `wait_agent` call per round until every agent in it has landed its file or failed, batches the round's files, gives a refused round's repair set its own wait-and-batch before the next round (closing the round's accepted and skipped agents with `close_agent` first and the repaired agents after), and dispatches the next round at the full cap. Reword each file's comment on that slot to say it also governs how returns are collected, correct the value-count wording in each `ALTERNATIVES_DISPATCH` value to the three values the prompt now carries without moving the directory line into it, leave every other slot unchanged, and verify by rebuilding `hosts/` and passing `uv run scripts/build_hosts.py --check`, with the rebuilt trees committed alongside.
+
+**Verified:**
+
+- `ALTERNATIVES_CONCURRENCY` in each of the three `scripts/hosts/<host>/settings.toml` files is one paragraph stating how many dispatches run at once and how returns are collected, and no host's value contains the "as it lands" clause.
+- The Claude Code value sends every dispatch together in one message and is capability-conditional: where the agent tool offers a blocking dispatch form, every dispatch goes in that form and the whole set is embedded and committed in one batch call once the message returns; where it offers none, the batch call runs every time the runner wakes with landed returns; no foreground shell loop, background shell loop, or event monitor serves as the wait.
+- The Antigravity value is exactly the Claude Code value (parsed `[slots]` values compare equal), and the rebuilt Claude Code and Antigravity `provide-alternatives-to-all-open-questions/SKILL.md` files differ only in the plugin-root path.
+- The Codex value dispatches rounds of up to the `agents.max_threads` cap (default 6), waits in one `wait_agent` call per round until every agent in it has landed its file or failed, batches the round's files, gives a refused round's repair set its own `wait_agent` wait and batch before the next round (closing the round's accepted and skipped agents with `close_agent` first and the repaired agents after), and dispatches the next round at the full cap.
+- Each file's comment on `ALTERNATIVES_CONCURRENCY` says the slot also governs how the run collects returns.
+- Each `ALTERNATIVES_DISPATCH` value names the Short Title, `<MILESTONE_DIR>`, and `<scratch dir>` as the three values the orchestrator holds (Codex beside the agent file path), with the `Scratch directory:` prompt line left in the core template; no other slot changed (`git diff -U0` touches only those two slots and their comments).
+- `uv run scripts/build_hosts.py` rebuilt the three host trees, `uv run scripts/build_hosts.py --check` passed, and `uv run pytest` passed (544 tests).
+
+---
