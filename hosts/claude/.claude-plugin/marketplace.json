@@ -8,7 +8,7 @@
       "name": "cairn",
       "source": ".",
       "description": "Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently.",
-      "version": "1.8.1"
+      "version": "1.8.2"
     }
   ]
 }

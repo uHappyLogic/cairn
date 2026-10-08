@@ -2,6 +2,17 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.8.2 — 2026-10-08
+
+### Batched alternatives embeds from scratch files (milestone 43)
+
+- `/provide-alternatives-to-all-open-questions` now has each subagent write its alternatives to a file in a per-run temporary directory and finish with just `DONE` or `FAILED: <reason>`. The orchestrator then embeds and commits the landed files in batches with one shell call, instead of handling each return as it arrives. A run needs far fewer orchestrator turns and much less context, and each question still gets its own `Alternatives-annotation:` commit.
+- A rejected return still gets one repair, and every repair from a batch is sent at once. A second rejection or a `FAILED:` skips that question. After the run, any question whose file never landed is reported as `no annotation landed` and left bare for the next run. A wait that ends with agents still working batches what has landed and waits again, so a timeout never skips a question.
+- On Claude Code and Antigravity, every subagent is dispatched in one message, and the run waits once where the agent tool can block. On Codex, rounds stay within the `agents.max_threads` cap, and each round is collected with one `wait_agent` call and closed with `close_agent`.
+- The run deletes nothing. Its scratch files, including any rejected return, stay in the system temp directory for inspection.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.8.1...1.8.2
+
 ## 1.8.1 — 2026-10-05
 
 ### Stale picks as undeclared dependents (milestone 42)
