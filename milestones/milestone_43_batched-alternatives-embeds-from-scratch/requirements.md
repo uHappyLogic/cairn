@@ -54,5 +54,9 @@ The orchestrator creates the run's scratch directory with `mktemp -d`, a fresh u
 
 The Codex tree gets the single-wait form, applied one round at a time. The orchestrator dispatches up to the session's `agents.max_threads` cap, then waits in one call through Codex's own `wait_agent` tool (which takes a `timeout_ms` and returns once every requested agent's result is available) until every agent in that round has written its scratch file or ended in a failure. It embeds and commits the round's landed files in one shell call, closes the round's agents with `close_agent` once their pipelines finish, and dispatches the next cap-sized round until no question is left. The orchestrator wakes once per round rather than once per return; the idle tail of a round costs wall-clock only.
 
+### Scratch directory in prompt
+
+The orchestrator creates one run scratch directory on every host, including a host where it batches per wake-up, and passes that directory as a required third value in the dispatch prompt beside the Short Title and `<MILESTONE_DIR>`. The dispatch prompt template in `core/skills/provide-alternatives-to-all-open-questions/SKILL.md` and the agent file `core/agents/provide-alternatives-to-open-question.md` stay host-neutral and unconditional: the agent writes its one file into the named directory, with no branch keyed on whether the value is present. No slot is added and no existing slot carries the directory line, so the waiting sentence stays the only part that differs by host.
+
 ## Out of Scope
 
