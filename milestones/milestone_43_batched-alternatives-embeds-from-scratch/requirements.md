@@ -42,5 +42,9 @@ On Claude Code, a foreground `Bash` call blocks up to 600000 ms and `sleep` ran 
 
 ## Decisions
 
+### Claude Code wait
+
+The Claude Code value of the waiting wording is one capability-conditional sentence rather than the name of one primitive. Where the agent tool offers a blocking dispatch form, the orchestrator sends every dispatch in one message in that form, so the message returns only when every agent has ended, and it then embeds and commits the whole set in one shell call. Where the agent tool offers no blocking form, the orchestrator batches every time it wakes with landed returns. In both arms every dispatch goes out in one message, so the fan-out stays concurrent. No foreground shell loop, background shell loop, or event monitor serves as the wait on Claude Code.
+
 ## Out of Scope
 
