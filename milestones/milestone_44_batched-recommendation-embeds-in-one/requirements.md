@@ -58,5 +58,7 @@ A local transcript measurement from October 2026 (kept outside the repository) c
 
 - A run with no block to write (every block already carried a recommendation, or every candidate was skipped for having no surviving option) runs the same fixed batched shell call as every other run, with its per-block embed-and-lift section repeated zero times: the annotation part writes and lifts nothing and its commit, conditioned on a non-empty body, does not fire, and the call goes on to sort and commit the reorder under `Question-ordering: <milestone_id>` exactly as a full run does. The skill shows one call, well-formed with no block section in it, and has no branch and no second form for the zero-pick case.
 
+- The runner learns which commits landed from the batched call's own print. Besides its failure lines, the call prints one fixed, identifier-free marker line each time one of its commits lands, one for the `Recommendation-annotation` commit and one for the `Question-ordering` commit, printing the second only when the dirty-own-path guard let the sort's commit through. Git's success output stays silenced. The runner reads the markers across every batch call of the run, re-send calls included, never tests the sort outcome itself, and picks the report line in the existing strict order; the report keeps its three lines.
+
 ## Out of Scope
 
