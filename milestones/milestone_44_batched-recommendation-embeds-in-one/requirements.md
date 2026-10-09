@@ -52,5 +52,7 @@ A local transcript measurement from October 2026 (kept outside the repository) c
 
 - When an embed inside the batched call refuses a block, the call pairs the refusal with its block itself: each embed's stderr is captured into one quoted value per block (`2>&1` inside a command substitution, set and used within the call), and when the embed exits non-zero the call prints one line for that block, its Short Title, a tab, then the tool's `Error:` line. Accepted blocks print nothing of their own. The open-question tool is unchanged, and the same pairing covers every refusal class, whether or not the `Error:` line names the block, so the shape matches the alternatives pass's batch call.
 
+- One batched shell call carries every picked block of the run, however many there are. The skill states no cap on blocks per call and no splitting rule; the only further calls a run makes are the corrected re-sends of refused blocks, each of the same shape and each committing and sorting.
+
 ## Out of Scope
 
