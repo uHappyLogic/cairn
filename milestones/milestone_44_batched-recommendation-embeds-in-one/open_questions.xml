@@ -108,6 +108,36 @@
   </open-question>
   <open-question id="Second refusal handling">
     <question>Is there a limit on how many corrected re-send calls a run makes for blocks the batched call refuses, and what happens to a block still refused when that limit is reached: another corrected call, or a skip reported in the end-of-run advisory?</question>
+    <alternative id="Unbounded correction">
+      No limit on corrected re-send calls: every block a batched call refuses is corrected against its Error: line and re-sent in one more call of the same shape, as many times as it takes, so a refused block is never skipped and the step-7 advisory gains no new entry; this keeps the current skill&apos;s rule that a refusal is a rendering slip to correct, never a skip.
+      <advantage>Every pick the run formed reaches the document in the same run, and the rule is the one recommend-all-open-questions already states (step 4: fix the elements and run the same call again), so the skill&apos;s prose, the advisory, and design claim 14&apos;s unattended-run promise change least.</advantage>
+      <drawback>Nothing bounds a runner that keeps misreading the same Error: line, and each extra call now commits and sorts again, so a stuck block can loop a headless run indefinitely and multiply Recommendation-annotation and Question-ordering commits; the measured 61-turn outlier shows the post-decision phase can already run long.</drawback>
+    </alternative>
+    <alternative id="No correction">
+      Zero corrected re-send calls: a block the first batched call refuses is not corrected in this run but skipped, its Short Title and the tool&apos;s Error: line reported in the end-of-run advisory with the remedy of re-running the pass, which picks it again because it still carries no recommendation.
+      <advantage>Every run is exactly one batched call with one annotation commit and at most one ordering commit, the simplest and cheapest shape, with no repair loop or per-block tracking in the prose at all.</advantage>
+      <drawback>A rendering slip the runner could fix in one turn costs the whole pick: the formed judgment is thrown away and a later run must re-ground and re-pick that block from scratch, and a headless define-to-recommend chain ends with a bare block the answer sweep cannot record.</drawback>
+    </alternative>
+    <alternative id="One correction then skip">
+      At most one corrected re-send call per run: every block the first batched call refuses is corrected and re-sent together in one more call of the same shape, and a block that call refuses again is skipped, reported in the end-of-run advisory with its Short Title and that second Error: line verbatim and the remedy of re-running the pass; the run&apos;s success line is chosen as usual from what it committed.
+      <advantage>It mirrors the alternatives pass&apos;s repair-once-then-skip rule and design claim 15 (one repair, then a skip, never a run stop), so the two annotating passes share one robustness contract and a run is bounded at two batched calls whatever happens.</advantage>
+      <drawback>A block with two independent slips, the second only surfaced once the first is fixed (the tool reports one Error: reason per refusal), is skipped though a further call would have landed it, and the step-7 advisory and its prose gain a second skip kind beside the stale-set skip, with a different remedy.</drawback>
+    </alternative>
+    <alternative id="Fixed retries then skip">
+      A small fixed limit above one (two or three corrected re-send calls per run, each carrying every block still refused): a block still refused when the limit is reached is skipped and reported in the end-of-run advisory with its Short Title, its last Error: line verbatim, and the remedy of re-running the pass.
+      <advantage>Covers the case of a fragment with more than one slip, which the tool reveals one Error: reason at a time, while still guaranteeing the run terminates.</advantage>
+      <drawback>The number is arbitrary and diverges from the alternatives pass&apos;s one-repair rule, and every extra call commits and sorts again, so a pathological run can land up to four annotation commits for one judgment; the CLAUDE.md and design-claims prose must state and justify a constant no other runner uses.</drawback>
+    </alternative>
+    <alternative id="Retry until no progress">
+      No fixed count; the limit is progress: the run keeps sending corrected re-send calls while each one is refused for a different reason than before, and a block the next call refuses with the same Error: line it was refused with last time is skipped and reported in the end-of-run advisory with its Short Title, that line verbatim, and the remedy of re-running the pass.
+      <advantage>Every fixable slip, including several surfaced one at a time, gets fixed in the run, and the only blocks dropped are the ones where a correction demonstrably did not move the tool&apos;s verdict, so no pick is lost to an arbitrary count.</advantage>
+      <drawback>Termination rests on the runner comparing Error: lines across calls, a per-block memory the orchestrating prose otherwise avoids holding, and a runner whose corrections keep producing new but different slips is still unbounded in principle; the rule is also the hardest of the set to state tersely in the skill.</drawback>
+    </alternative>
+    <alternative id="Bounded then stop run">
+      A bounded number of corrected re-send calls (one, or until a call makes no progress), after which a block still refused ends the run on a failure report instead of a skip: the run prints the Short Title with the tool&apos;s Error: line verbatim in place of a success line, with everything already embedded staying committed by the earlier batched calls.
+      <advantage>A persistent refusal, which signals a runner or tool defect rather than a judgment call, is surfaced loudly instead of reading as a successful run with an advisory a headless chain&apos;s operator may overlook.</advantage>
+      <drawback>It reverses design claim 15&apos;s &quot;never a run stop&quot; for an outcome that self-heals anyway (the block still lacks a recommendation, so the next run picks it), and turns a partly successful run into a reported failure although every other pick landed and committed.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Blocks per call">
     <question>Does one batched shell call carry every picked block of the run however many there are, or is there a cap on blocks per call above which the run splits the picked set across further calls of the same shape, each committing and sorting?</question>
