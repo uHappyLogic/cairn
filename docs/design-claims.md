@@ -140,7 +140,10 @@ the other tests yet.
   cannot. The orchestrator reads no alternative set and keeps no list of
   files. The batch recommend and answer skills dispatch no agent. They read
   the question set one time for each run, not one time for each question.
-  Task bodies are minimal. A shared procedure loads only when a step needs
+  The recommend skill writes all its picks in one fixed shell call. That
+  call embeds and lifts each block, makes one commit with the lifted lines
+  as its body, and sorts the document. Thus the runner uses no tool turn
+  for each block. Task bodies are minimal. A shared procedure loads only when a step needs
   it.
 - **Metric:** Tokens per task, orchestrator context size as the task count
   increases, and total cost per milestone.
@@ -149,7 +152,11 @@ the other tests yet.
 
 - **Design:** The batch skills recommend, answer, and complete all items in one
   run. They gather the items once and run strictly in sequence. The user starts
-  them and reads the git log after.
+  them and reads the git log after. The recommend skill writes, commits, and
+  sorts in one shell call. It makes one more call only to send again the
+  blocks that the tool refused. Thus a run has a maximum of two calls and
+  two annotation commits. For each commit that lands, the call prints one
+  fixed marker line, and the status line comes from these marker lines.
 - **Metric:** Milestones completed with 0 user turns after the start, and their
   scores on the other claims.
 
@@ -163,7 +170,12 @@ the other tests yet.
   When a subagent's file never lands, the run reports "no annotation landed"
   for that question, and the next run tries it again. The alternatives pass
   deletes no scratch file, so a refused return stays available for
-  inspection. The answer skill records the decision before it removes the
+  inspection. The tool refuses a bad recommendation for its block only, and
+  the call prints that block's Error line. The other blocks land and
+  commit. The recommend skill corrects all refused blocks and sends them
+  again together, one time only. When the tool refuses a block again, the
+  run skips it and reports its Error line and the remedy: run the pass
+  again. The answer skill records the decision before it removes the
   question, so an interruption leaves a safe superset.
 - **Metric:** Result of a kill-and-resume test: work continued, not done again.
 
