@@ -54,5 +54,7 @@ A local transcript measurement from October 2026 (kept outside the repository) c
 
 - One batched shell call carries every picked block of the run, however many there are. The skill states no cap on blocks per call and no splitting rule; the only further calls a run makes are the corrected re-sends of refused blocks, each of the same shape and each committing and sorting.
 
+- A run makes at most one corrected re-send call: every block the first batched call refuses is corrected and re-sent together in one more call of the same shape, and a block that call refuses again is skipped. The skipped block is reported in the end-of-run advisory with its Short Title and that second `Error:` line verbatim and the remedy of re-running the pass, which re-picks it because it still carries no recommendation. The run's success line is chosen as usual from what it committed, so a run is bounded at two batched calls and two annotation commits, mirroring the alternatives pass's repair-once-then-skip rule.
+
 ## Out of Scope
 
