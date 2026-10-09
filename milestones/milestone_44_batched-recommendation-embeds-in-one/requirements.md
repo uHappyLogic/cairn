@@ -56,5 +56,7 @@ A local transcript measurement from October 2026 (kept outside the repository) c
 
 - A run makes at most one corrected re-send call: every block the first batched call refuses is corrected and re-sent together in one more call of the same shape, and a block that call refuses again is skipped. The skipped block is reported in the end-of-run advisory with its Short Title and that second `Error:` line verbatim and the remedy of re-running the pass, which re-picks it because it still carries no recommendation. The run's success line is chosen as usual from what it committed, so a run is bounded at two batched calls and two annotation commits, mirroring the alternatives pass's repair-once-then-skip rule.
 
+- A run with no block to write (every block already carried a recommendation, or every candidate was skipped for having no surviving option) runs the same fixed batched shell call as every other run, with its per-block embed-and-lift section repeated zero times: the annotation part writes and lifts nothing and its commit, conditioned on a non-empty body, does not fire, and the call goes on to sort and commit the reorder under `Question-ordering: <milestone_id>` exactly as a full run does. The skill shows one call, well-formed with no block section in it, and has no branch and no second form for the zero-pick case.
+
 ## Out of Scope
 
