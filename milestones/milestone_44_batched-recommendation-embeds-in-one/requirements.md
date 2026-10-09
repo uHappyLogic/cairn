@@ -46,5 +46,9 @@ A local transcript measurement from October 2026 (kept outside the repository) c
 
 - The open-question tool, its tests, and its contract stay unchanged: no multi-block form of `embed --recommendation`, no lift-printing flag, and no new subcommand or output shape. The batched shell call runs one `embed --recommendation` process per picked block, each with its own quoted heredoc, followed by one separate `lift` per block whose embed succeeded. A refused block is refused by its own process with the document unchanged for that block, while the other blocks' processes still write.
 
+### The batched shell call
+
+- The lifted lines are carried to the annotation commit in one quoted shell variable, set empty at the top of the batched call and grown inside it. Each block's `lift` runs only inside the branch its `embed --recommendation` opens on exit 0, and its printed line is appended with an explicit newline join written in shell-neutral form, so a refused block never reaches `lift` and adds no line. The lift follows its own embed, block by block. After the dirty-own-path guard and the path-scoped `git add`, the call commits with `git commit -q -m "Recommendation-annotation: <milestone_id>" -m "$body"`, the commit procedure's own second `-m` form, and that annotation commit is conditioned on a non-empty body so a zero-block call never commits an empty-bodied annotation. The variable is one quoted text value set and used within the one call, never a tool command or a path list; the shell-literalness invariant's wording in `CLAUDE.md` is extended to cover a value that accumulates across the call.
+
 ## Out of Scope
 
