@@ -1,1 +1,23 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Multi-block embed tool form">
+    <question>Does the open-question tool gain a multi-block form of embed --recommendation that writes several blocks from one standard-input message and prints each accepted block&apos;s lifted line, or does the batched shell call keep the existing one-block embed process and a separate lift per block with the tool unchanged? If the tool changes, whether a refused block in the batch leaves the valid blocks written, and what the tool prints per accepted block, hinge on that choice.</question>
+  </open-question>
+  <open-question id="Commit body capture">
+    <question>Within the one batched shell call, in what form are the lifted lines of the blocks whose embed succeeded held between the lift calls and the git commit that records them as the Recommendation-annotation body, so that a refused block contributes no line and the rule against holding a tool command or a path list in a shell variable is respected?</question>
+  </open-question>
+  <open-question id="Refused block print pairing">
+    <question>When an embed inside the batched call refuses a block, does the call print the tool&apos;s Error: line paired with that block&apos;s Short Title, or the tool&apos;s stderr as it comes, given that some Error: lines (a fragment with no closing recommendation line, for example) name no block?</question>
+  </open-question>
+  <open-question id="Status line source">
+    <question>Once the batched shell call makes the Recommendation-annotation and Question-ordering commits itself, from what does the runner learn which of those commits landed, in order to choose between the two success lines and the no-op line of the report step?</question>
+  </open-question>
+  <open-question id="Second refusal handling">
+    <question>Is there a limit on how many corrected re-send calls a run makes for blocks the batched call refuses, and what happens to a block still refused when that limit is reached: another corrected call, or a skip reported in the end-of-run advisory?</question>
+  </open-question>
+  <open-question id="Blocks per call">
+    <question>Does one batched shell call carry every picked block of the run however many there are, or is there a cap on blocks per call above which the run splits the picked set across further calls of the same shape, each committing and sorting?</question>
+  </open-question>
+  <open-question id="Sort with nothing written">
+    <question>When a run has no block to write, because every block already carried a recommendation or every candidate was skipped for having no surviving option, how does it still reach the fixed end-of-run sort and its Question-ordering commit: by running the same batched shell call with no block in it, or by a sort step kept in a form of its own for that case?</question>
+  </open-question>
+</open-questions>
