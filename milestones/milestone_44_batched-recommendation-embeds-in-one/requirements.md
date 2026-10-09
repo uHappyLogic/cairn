@@ -42,5 +42,9 @@ A local transcript measurement from October 2026 (kept outside the repository) c
 
 ## Decisions
 
+### The open-question tool
+
+- The open-question tool, its tests, and its contract stay unchanged: no multi-block form of `embed --recommendation`, no lift-printing flag, and no new subcommand or output shape. The batched shell call runs one `embed --recommendation` process per picked block, each with its own quoted heredoc, followed by one separate `lift` per block whose embed succeeded. A refused block is refused by its own process with the document unchanged for that block, while the other blocks' processes still write.
+
 ## Out of Scope
 
