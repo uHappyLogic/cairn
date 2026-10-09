@@ -36,6 +36,26 @@
   </open-question>
   <open-question id="Blocks per call">
     <question>Does one batched shell call carry every picked block of the run however many there are, or is there a cap on blocks per call above which the run splits the picked set across further calls of the same shape, each committing and sorting?</question>
+    <alternative id="No cap">
+      One batched shell call carries every picked block of the run, however many there are; the skill states no cap and no splitting rule, so the only further calls a run makes are the corrected re-sends of refused blocks the goal already provides for, each of the same shape and each committing and sorting.
+      <advantage>Every run reaches the two-turn floor whatever its size and the first call&apos;s Recommendation-annotation commit records every block picked in that call; the measured runs topped out at 16 embeds, and a rendered recommendation fragment runs to roughly one to two kilobytes, so even that run&apos;s call is a few percent of the 1 MB argument limit on this machine and well inside one turn&apos;s output, which seven of twelve runs already spent issuing every embed at once.</advantage>
+      <drawback>The call&apos;s size grows without bound with the picked set, so an unusually large run (a review pass that surfaced dozens of questions) puts every block into one turn&apos;s output and one shell invocation, and a shell-level slip in that text, such as a quoting error or a heredoc terminator collision, costs the whole batch rather than part of it; whether a refusal inside it is cheap to recover depends on how the sibling questions on refusal pairing and second-refusal handling settle.</drawback>
+    </alternative>
+    <alternative id="Backstop cap">
+      The skill states a fixed per-call cap set above every observed run (for example around 25 to 30 blocks); a run whose picked set exceeds it splits the set into consecutive calls of the same shape, each embedding, lifting, committing under Recommendation-annotation, and sorting, while every run of the size seen so far stays in one call.
+      <advantage>It bounds the size and blast radius of a single call against the rare oversized run while leaving every run measured so far at one call and one annotation commit, so the saving the milestone targets is untouched in practice.</advantage>
+      <drawback>It adds a number and a splitting rule to the skill and the CLAUDE.md restatement that no measured limit justifies and that ordinary runs never exercise, so the split path stays effectively untested; when it does fire, the run makes several annotation commits and several sorts, and the report step must reconcile commits from several calls, which bears on how the sibling question on the status line source settles.</drawback>
+    </alternative>
+    <alternative id="Working cap">
+      The skill states a fixed per-call cap inside the range real runs reach (for example around 8 blocks); larger picked sets split into consecutive calls of the same shape, each embedding, lifting, committing under Recommendation-annotation, and sorting, so the larger runs already seen (up to 16 picks) make two or more calls.
+      <advantage>Each call stays small enough that a shell-level slip or a long run of refusals touches only a bounded slice of the set, and the split path is exercised often enough to stay correct.</advantage>
+      <drawback>The largest runs, which held most of the measured excess turns, give back part of the saving the milestone exists for: a 16-pick run spends at least two calls, makes at least two annotation commits splitting its body record, and sorts more than once; the number is a judgment with no measured failure behind it, and the report step must aggregate across calls, which bears on how the sibling question on the status line source settles.</drawback>
+    </alternative>
+    <alternative id="Runner-judged split">
+      The skill states no number: one call carries every picked block by default, and the runner may split the set into further calls of the same shape, each committing and sorting, when it judges a single call would be too large to write reliably in one turn.
+      <advantage>It adapts to the actual size of the rendered fragments and to the model running the pass, without committing the skill to a number that may be wrong for some host or model.</advantage>
+      <drawback>Splitting becomes prose discretion, so commit counts and turn counts vary between runs and models of the same set, including headless runs where no one sees why a run split, and the skill loses the property of one fixed call run exactly as shown; the report step must still handle several calls, which bears on how the sibling question on the status line source settles.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Sort with nothing written">
     <question>When a run has no block to write, because every block already carried a recommendation or every candidate was skipped for having no surviving option, how does it still reach the fixed end-of-run sort and its Question-ordering commit: by running the same batched shell call with no block in it, or by a sort step kept in a form of its own for that case?</question>
