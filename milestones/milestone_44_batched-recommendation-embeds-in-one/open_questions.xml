@@ -19,5 +19,30 @@
   </open-question>
   <open-question id="Sort with nothing written">
     <question>When a run has no block to write, because every block already carried a recommendation or every candidate was skipped for having no surviving option, how does it still reach the fixed end-of-run sort and its Question-ordering commit: by running the same batched shell call with no block in it, or by a sort step kept in a form of its own for that case?</question>
+    <alternative id="Empty batched call">
+      A zero-pick run runs the same fixed batched shell call as every other run, with its per-block embed-and-lift section repeated zero times: the annotation part writes and lifts nothing, its commit step finds nothing to commit, and the call goes on to sort and commit the reorder under Question-ordering exactly as a full run does. The skill shows one call and has no branch for the case.
+      <advantage>One mechanism for every run: the sort-and-commit lines exist once, the zero-pick run is just the degenerate batch, and every run that found questions reaches the sort through the same single call, so nothing can drift between two forms.</advantage>
+      <drawback>The shown call must stay well-formed with no block section in it, and its annotation commit then runs with nothing lifted: under the plain dirty-own-path guard an uncommitted change already in open_questions.xml (an earlier run interrupted after an embed) would be committed as Recommendation-annotation with an empty body, unless the call conditions that commit on at least one lifted line. How safe this is depends on the form the Commit body capture question settles for the lifted lines and on how the Status line source question reads which commits landed.</drawback>
+    </alternative>
+    <alternative id="Shared sort section alone">
+      The skill shows the batched call as two fixed sections, an annotation section (the embeds, the lifts, the Recommendation-annotation commit) followed by a sort section (sort, then the commit procedure&apos;s steps for Question-ordering). A run with picks runs both sections as one call. A zero-pick run runs the sort section alone as a shell call of its own. The sort text is written once and used by both.
+      <advantage>A zero-pick run never runs an annotation commit at all, so an empty-body Recommendation-annotation commit cannot happen, and the sort-and-commit text still exists once, so the two cases cannot drift apart.</advantage>
+      <drawback>The runner builds a call from two shown pieces instead of running one call exactly as shown, which departs from the milestone 43 single-fixed-call precedent and adds a branch the runner can get wrong: a full run that drops the sort section skips the sort silently.</drawback>
+    </alternative>
+    <alternative id="Separate sort-only call">
+      Beside the batched call, the skill shows a second complete fixed shell call for the zero-pick case: sort, then the commit procedure&apos;s three steps written literally for Question-ordering, with no embed, lift, or annotation commit. Each call is run exactly as shown, and the sort-and-commit lines appear in both.
+      <advantage>Each call is complete and run exactly as shown, as in the milestone 43 precedent, and the zero-pick script is short and holds no annotation machinery that would have to tolerate an empty block list.</advantage>
+      <drawback>The sort-and-commit lines are duplicated in the skill, and so in all three host trees and in the docs that restate the pass, so an edit to one copy can leave the other stale. The skill also grows by a second script that exists only for the rarer case.</drawback>
+    </alternative>
+    <alternative id="Keep today&apos;s sort step">
+      A zero-pick run keeps today&apos;s step 6 for that case: it runs sort as its own tool call and carries out the shared commit procedure for Question-ordering in the runner&apos;s own turns. Only runs with picks use the batched shell call, which sorts and commits itself. No sort-only shell script exists.
+      <advantage>It changes the least: the zero-pick path is today&apos;s tested wording, no new script is authored for it, and the extra turns it costs fall only on runs that wrote nothing, which are cheap already.</advantage>
+      <drawback>The same sort-and-commit is done by two mechanisms depending on the case, so the skill, CLAUDE.md, and docs must describe both. The runner holds whether the ordering commit landed on one path while the call reports it on the other, which the Status line source question then has to cover twice. Zero-pick runs also keep paying the per-step turns the milestone sets out to remove.</drawback>
+    </alternative>
+    <alternative id="No sort without a write">
+      A zero-pick run skips the sort and its Question-ordering commit entirely and goes straight to the report, printing the no-op line. Sorting happens only inside the batched call, which only runs when at least one block was picked. This reverses the current rule that the sort is a fixed end-of-run step on every run that found questions.
+      <advantage>The batched call only ever exists with blocks in it, so there is no empty-batch case, no second form, and no tool call at all after the gather on a run that has nothing to write.</advantage>
+      <drawback>A document whose order went stale without a write in this run stays unsorted until some later run writes a block. Stale orders come from a recommendation stripped by an answer cascade or a goal revision, or from an earlier run whose sort failed. Walk computes its own order, so the answer sweep is unaffected, but readers of the document meet blocks out of walk order, and a deliberate end-of-run guarantee of the current skill is given up.</drawback>
+    </alternative>
   </open-question>
 </open-questions>
