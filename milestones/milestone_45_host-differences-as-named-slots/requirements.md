@@ -106,5 +106,7 @@ Every Antigravity command-line fact on `docs/ways-of-using-cairn.md` is checked 
 
 The Antigravity hands-on check is recorded once, in the Antigravity host definition itself: a single dated block in the header comment of `scripts/hosts/antigravity/settings.toml` names the `agy` version the check was run against and lists what was observed of dispatch, waiting, continuing an agent, and the context file. That block is the one place a later re-check updates. The comment above each slot entry keeps describing only what the value stands for and why, in mechanism terms, with no version, matching the shape the Codex comments already have. No probe script is added under `scripts/`, and no tool version or observed-behaviour fact enters `CLAUDE.md`.
 
+The same record form applies to the Claude Code and Codex hands-on checks: each of the three host definitions carries one dated header block in its `settings.toml` naming the installed version checked and the points and values the run covered. Each host's block covers exactly the values its check sourced or confirmed (for Codex, the new repair values and any existing value the run contradicted; for Claude Code, the new slots and the existing values its check covers) and claims nothing about a value the check did not exercise, so the eight untouched Codex values carry no record. No lighter second form is introduced for any host.
+
 ## Out of Scope
 
