@@ -2,6 +2,17 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.8.3 — 2026-10-13
+
+### Batched recommendation embeds in one shell call (milestone 44)
+
+- `/recommend-all-open-questions` now writes every decided pick in one fixed shell call: each block's `embed --recommendation` and its `lift`, one `Recommendation-annotation:` commit carrying the lifted lines as its body, then the sort and its `Question-ordering:` commit. The four separately issued steps are gone, and the open-question tool is unchanged.
+- A refused block prints its Short Title paired with the tool's `Error:` line while the rest land. The refused blocks are corrected and re-sent together in at most one more call, and a block refused again is skipped and reported with the remedy of re-running the pass, so a run makes at most two annotation commits.
+- The call prints one marker line per commit that lands, and the run's status line is read from those markers. A run with nothing to write makes the same call with no block in it, so the sort still runs.
+- Measured on the first five runs after the change against the twenty-one runs before it on one consuming project: the post-decision work went from a median of 5 tool turns to exactly 1 in every run, its input tokens fell by about two thirds per run and per block, and it finished about 30% sooner. Most of the removed input was cached context, so the cost saving is smaller than the token count suggests: roughly a third of the post-decision phase and a sixth of a whole run, weighting cached input at a tenth and output at five times a fresh input token.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.8.2...1.8.3
+
 ## 1.8.2 — 2026-10-08
 
 ### Batched alternatives embeds from scratch files (milestone 43)
