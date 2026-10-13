@@ -48,5 +48,9 @@ The tool takes a `##` section to end at its `---` line when one comes first, and
 
 The task-list tool is `core/tools/task_list.py`: a singular, document-named noun after the `open_questions.py` precedent, taken from the "task list" wording the goal, the skill descriptions, and the docs already use for `TASKS_TODO.md` and `TASKS_DONE.md` together. Every runtime command reads `python3 {{PLUGIN_ROOT}}/tools/task_list.py <subcommand> <MILESTONE_DIR> …`, and the tests and the conftest runner take the matching `task_list` prefix.
 
+### Title uniqueness within TASKS_TODO.md
+
+The tool refuses, with one `Error:` line and both files unchanged, any insert or append (the briefs `derive-tasks` writes included) whose folded title equals a section `TASKS_TODO.md` already holds, because that file is the one where uniqueness is load-bearing: the move locates a section by its heading there. A move into `TASKS_DONE.md` is never checked against the entries it already holds, and no cross-file check is made at authoring time, so a finished task is never refused at the move and follow-up work may reuse a done title.
+
 ## Out of Scope
 
