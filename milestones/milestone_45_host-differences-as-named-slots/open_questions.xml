@@ -96,6 +96,46 @@
   </open-question>
   <open-question id="Floor-run exclusion of build test">
     <question>The Python 3.9 floor run collects the same tests/ directory as the pinned run but has neither PyYAML nor tomllib, both of which the build imports. How is the rendering test kept to the pinned interpreter: a skip inside the test, a collection rule in conftest.py, a location outside the floor run&apos;s test paths, or a change to the floor command itself?</question>
+    <alternative id="Skip on missing modules">
+      The rendering test lives under tests/ beside the tool tests and opens with pytest.importorskip for tomllib and yaml before it reaches the build code, so the floor run collects it and reports it skipped. The exclusion keys on the modules&apos; absence, not on the interpreter version; pyproject.toml, conftest.py, and both pytest commands stay unchanged.
+      <advantage>Self-contained in the one test file with no command, CI, CONTRIBUTING.md, or CLAUDE.md change, and it keys on the exact cause of the failure (the missing imports), so the skip reason printed by the floor run states why.</advantage>
+      <drawback>The skip also fires silently under the pinned run if PyYAML ever goes missing from the project environment (a broken lock or a run outside uv), so the only build test can stop running with a passing suite; the floor run&apos;s summary carries a permanent skipped entry.</drawback>
+    </alternative>
+    <alternative id="Skip below 3.11">
+      The rendering test lives under tests/ and opens with a module-level pytest.skip(allow_module_level=True) when sys.version_info is below (3, 11), placed before any import of the build, so the floor run collects it and reports it skipped. The exclusion keys on the interpreter version, matching pyproject.toml&apos;s requires-python; nothing outside the test file changes.
+      <advantage>Self-contained in the test file with no command or documentation change, and under the pinned interpreter it never skips, so a missing PyYAML there fails loudly instead of hiding the test.</advantage>
+      <drawback>The 3.11 threshold is a second copy of requires-python that must be kept in step by hand, the skip must stand above the import or collection errors on 3.9, and the floor run&apos;s summary carries a permanent skipped entry.</drawback>
+    </alternative>
+    <alternative id="Conftest collection rule">
+      The rendering test lives under tests/, and tests/conftest.py adds its file to collect_ignore (or answers pytest_ignore_collect for it) when the interpreter is below 3.11, so the floor run never collects or imports it and reports nothing for it. Both pytest commands, pyproject.toml, and the test file itself stay free of any version check.
+      <advantage>The test file stays clean and the floor run&apos;s output carries no skip noise; the one rule that keeps build tests off the floor sits in the suite&apos;s shared configuration, where a later build test can be added to it.</advantage>
+      <drawback>The exclusion is invisible from the test file and from the floor run&apos;s output, so a reader of either cannot tell the test is excluded, and the conftest.py that today documents itself as serving the two core/tools/ tools gains a concern about the build; a file name in collect_ignore silently stops matching if the test is renamed.</drawback>
+    </alternative>
+    <alternative id="Separate dir, floor names tests">
+      The rendering test lives in its own directory outside tests/ (for example a build-test directory beside it), which pyproject.toml&apos;s testpaths gains so the bare pinned `uv run pytest` collects both, while the floor command is changed to name tests/ explicitly (`uv run --no-project --python 3.9 --with pytest pytest tests`) in drift-gate.yml, CLAUDE.md&apos;s Commands, and CONTRIBUTING.md.
+      <advantage>The split is structural: the build test and the 3.9-portable tool tests never share a directory or conftest.py, and the floor command states on its face exactly what the floor run covers, with no skip logic anywhere.</advantage>
+      <drawback>The floor command is changed in three places and a floor run written without the explicit path (the old command) collects the build test and fails with an import error; a second test root departs from the one flat tests/ layout CLAUDE.md describes.</drawback>
+    </alternative>
+    <alternative id="Separate dir, pinned names it">
+      The rendering test lives in its own directory outside tests/, which pyproject.toml&apos;s testpaths does not include, so the floor run is untouched and the pinned command is extended to name both directories (`uv run pytest tests &lt;build-test dir&gt;`) in drift-gate.yml, CLAUDE.md&apos;s Commands, and CONTRIBUTING.md.
+      <advantage>The floor run&apos;s command and collection stay exactly as they are, so the 3.9 promise is checked by the same line it always was, and no skip or collection rule exists anywhere.</advantage>
+      <drawback>A bare `uv run pytest`, the habitual pinned command, silently omits the build test, so the test runs only where the extended command was written; the pinned command changes in three places.</drawback>
+    </alternative>
+    <alternative id="Floor command ignores the file">
+      The rendering test lives under tests/ with no version or import check, and the floor command gains `--ignore=tests/&lt;build test file&gt;` in drift-gate.yml, CLAUDE.md&apos;s Commands, and CONTRIBUTING.md; pyproject.toml, conftest.py, and the pinned command stay unchanged.
+      <advantage>The test file and suite configuration carry no exclusion logic, the pinned run needs no change, and the floor command names exactly what it leaves out.</advantage>
+      <drawback>The exclusion lives in a command copied into three places, each naming the test file by path, so a rename or a second build test needs all three edited, and anyone running the floor suite from memory without the flag hits an import error.</drawback>
+    </alternative>
+    <alternative id="Build via uv in both runs">
+      No exclusion: the rendering test stays under tests/ and runs under both interpreters, but reaches the build only by invoking it as a subprocess through `uv run scripts/build_hosts.py` (or `uv run python` on a driver), so the build code always executes under the project&apos;s pinned interpreter with PyYAML whichever interpreter runs the suite. Commands, pyproject.toml, and conftest.py stay unchanged.
+      <advantage>No skip, collection rule, or command change exists anywhere, and the floor run never carries an excluded or skipped entry, while the build itself still runs only under the pinned interpreter.</advantage>
+      <drawback>Viable only if the test reaches the build as a subprocess (the build-test-shape axis); the test depends on uv being on PATH inside pytest, runs the build twice per CI job, and reads against the goal&apos;s wording that the test itself runs under the pinned interpreter.</drawback>
+    </alternative>
+    <alternative id="Make build importable on 3.9">
+      No exclusion: the build&apos;s tomllib and yaml imports move inside the functions that load settings and frontmatter, so the module and its slot-filling step import under Python 3.9, and the rendering test, exercising only that step, runs unskipped in both the pinned and the floor run. Commands, pyproject.toml, and conftest.py stay unchanged.
+      <advantage>One suite, one command pair, and no exclusion mechanism of any kind; the slot-filling logic is also checked at the floor.</advantage>
+      <drawback>Viable only if the test reaches just the slot-filling step through an import (the build-test-shape axis); it reshapes the build&apos;s imports for a test and extends a 3.9 compatibility burden to build tooling that pyproject.toml deliberately pins to 3.11+, where a later 3.10+ construct in the build would break the floor run.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Repair passage slot granularity">
     <question>Four capability-conditional passages of the alternatives pass are to become slots: the opening paragraph&apos;s &quot;where the host allows it&quot;, the two repair branches of sub-step e, and the repair-wait sentence. How are they divided into slots (one slot per passage, one slot for the whole repair sub-step, or folded into the existing ALTERNATIVES_CONCURRENCY), and, since a slot value may carry no other placeholder, what becomes of the AGENT_TOOL and ALTERNATIVES_AGENT slots that are used only inside those branches? (The two choices constrain each other, so both are asked together.)</question>
