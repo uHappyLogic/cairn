@@ -56,5 +56,9 @@ The tool refuses, with one `Error:` line and both files unchanged, any insert or
 
 The initialize subcommand replaces whatever `TASKS_TODO.md` holds, with no flag, no refusal, and no output on success, carrying today's `derive-tasks` behaviour over unchanged: the skill calls it unconditionally, and the guard stays where it is today, in the skill's Preconditions line saying it replaces the file's contents. Every writer of `TASKS_TODO.md` commits its own write, so whatever initialize replaces is already in the previous commit and the `Task-derivation:` diff records exactly what was dropped, recoverable by revert.
 
+### Where the chained completion call is shown
+
+Step 5 of `complete-procedure.md` shows the task-list tool's move command alone, with the bar on a quoted heredoc, and says that the runner runs it in one shell call chained with the git step its own file shows; the procedure contains no git. The `complete-task` agent file and the `complete-task` skill each show their own complete fixed call in full: the same move command written verbatim, then `&&` and the runner's git step, the path-scoped `git add` for the agent and the commit procedure's three steps written into the call for the skill, as the batched passes write them into theirs.
+
 ## Out of Scope
 
