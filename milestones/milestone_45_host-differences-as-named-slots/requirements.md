@@ -92,5 +92,9 @@ The section is restructured in this milestone. Its `settings.toml` sentence and 
 
 Every Antigravity command-line fact on `docs/ways-of-using-cairn.md` is checked as part of the same hands-on `agy` check and corrected where it differs: the invocation form, `--dangerously-skip-permissions`, `--model` with `agy models`, `--add-dir` and its need on every `agy` line, and the move-a-line rule. The `--effort` value lists are replaced by a pointer to each host's own `--help`, so no effort values are listed on the page for any host.
 
+### Hands-on check record
+
+The Antigravity hands-on check is recorded once, in the Antigravity host definition itself: a single dated block in the header comment of `scripts/hosts/antigravity/settings.toml` names the `agy` version the check was run against and lists what was observed of dispatch, waiting, continuing an agent, and the context file. That block is the one place a later re-check updates. The comment above each slot entry keeps describing only what the value stands for and why, in mechanism terms, with no version, matching the shape the Codex comments already have. No probe script is added under `scripts/`, and no tool version or observed-behaviour fact enters `CLAUDE.md`.
+
 ## Out of Scope
 
