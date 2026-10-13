@@ -82,5 +82,9 @@ Slot values keep naming no host, their own included: a value reaches its host's 
 
 The section is restructured in this milestone. Its `settings.toml` sentence and check list are replaced by a short description of what a host definition is (settings plus templates, wording differences as named slots whose values sit inline or in files) and a pointer to the build script's docstring as the one complete reference for settings keys and checks; the test paragraph covers the pinned-only build rendering test. The section also states the new development rule for contributors: host differences reach `core/` as named slots rather than capability-conditional prose, and a rendered tree never names another host's mechanism.
 
+### Antigravity command-line facts in docs/ways-of-using-cairn.md
+
+Every Antigravity command-line fact on `docs/ways-of-using-cairn.md` is checked as part of the same hands-on `agy` check and corrected where it differs: the invocation form, `--dangerously-skip-permissions`, `--model` with `agy models`, `--add-dir` and its need on every `agy` line, and the move-a-line rule. The `--effort` value lists are replaced by a pointer to each host's own `--help`, so no effort values are listed on the page for any host.
+
 ## Out of Scope
 
