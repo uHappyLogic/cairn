@@ -44,5 +44,9 @@ The move subcommand reads the derived acceptance bar on standard input as opaque
 
 The tool takes a `##` section to end at its `---` line when one comes first, and otherwise at the next `##` heading or the end of the file. A call involving a section with no `---` succeeds and prints nothing, like any successful mutator; the tool neither refuses it nor reports it. Every section the tool writes or moves, including an entry appended to `TASKS_DONE.md`, carries its `---`, and when an insertion lands directly behind an unterminated section the tool writes the separator that boundary needs, so the inserted section never runs into the one before it.
 
+### The tool's file name
+
+The task-list tool is `core/tools/task_list.py`: a singular, document-named noun after the `open_questions.py` precedent, taken from the "task list" wording the goal, the skill descriptions, and the docs already use for `TASKS_TODO.md` and `TASKS_DONE.md` together. Every runtime command reads `python3 {{PLUGIN_ROOT}}/tools/task_list.py <subcommand> <MILESTONE_DIR> …`, and the tests and the conftest runner take the matching `task_list` prefix.
+
 ## Out of Scope
 
