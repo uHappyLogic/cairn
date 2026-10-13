@@ -13,9 +13,19 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_45_host-differences-as-named-slots/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 45 — Host differences as named slots
+
+- The host build accepts a file-backed slot value, bound in `[slots]` as `NAME = { file = "slots/NAME.md" }` and read with one trailing line ending removed, refusing a missing file, a path outside the definition's `slots/` subdirectory, or a malformed entry; every slot value of all three hosts now lives in its own file under `scripts/hosts/<host>/slots/`.
+- `tests/test_build_rendering.py` renders a synthetic `core/` through one synthetic definition in-process and covers the three file-backed refusals, skipping itself below Python 3.11 so it runs under the pinned interpreter only.
+- The alternatives pass's capability-conditional passages became the `ALTERNATIVES_PARALLELISM` and `ALTERNATIVES_REPAIR` slots, `AGENT_TOOL` and `ALTERNATIVES_AGENT` were retired, and each host's `ALTERNATIVES_CONCURRENCY` now describes one wait mechanism with no capability condition.
+- Hands-on checks against `claude` 2.1.296, codex-cli 0.159.3, and `agy` 1.3.4 sourced or confirmed the slot values, each recorded once as a dated header block in that host's `settings.toml`; the Codex run dropped the nonexistent `close_agent` step and made the repair continue through `followup_task`.
+- Every Antigravity slot value was rewritten from its check: agents dispatch natively through `invoke_subagent` by bare name, repairs continue through `send_message`, and `CONTEXT_FILE` is `AGENTS.md`, with the README naming it and no `/init`.
+- `docs/ways-of-using-cairn.md` corrects the Antigravity command-line facts (no `--add-dir` on the `agy` line, the `--model` form) and lists no effort values for any host, pointing to each host's `--help` instead.
+- The `CLAUDE.md` invariants, `docs/`, and the restructured `CONTRIBUTING.md` Development section state that host differences reach `core/` only as named slots, that a rendered tree never names another host's mechanism (a development rule, not a check), and that the Claude/Antigravity byte-identity is retired in favour of the rendering test.
 
 ### Milestone 44 — Batched recommendation embeds in one shell call
 
@@ -482,3 +492,4 @@ Current milestone: `milestones/milestone_45_host-differences-as-named-slots/`
 | 42 | Stale picks as undeclared dependents | `milestones/milestone_42_stale-picks-as-undeclared-dependents/` |
 | 43 | Batched alternatives embeds from scratch files | `milestones/milestone_43_batched-alternatives-embeds-from-scratch/` |
 | 44 | Batched recommendation embeds in one shell call | `milestones/milestone_44_batched-recommendation-embeds-in-one/` |
+| 45 | Host differences as named slots | `milestones/milestone_45_host-differences-as-named-slots/` |
