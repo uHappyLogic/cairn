@@ -6,8 +6,8 @@ ASD-STE100 Simplified Technical English, a controlled register whose short
 sentences and one-meaning-per-word vocabulary keep each claim unambiguous, so
 that it reads the same to a reader and to the author of a test. Each **Metric**
 line names the test that would check its claim. The repository's test suite
-runs only the test of claim 11, against the open-question tool; no suite runs
-the other tests yet.
+runs only the test of claim 11, against the open-question tool and the
+task-list tool; no suite runs the other tests yet.
 
 ## Decisions
 
@@ -74,8 +74,9 @@ the other tests yet.
 ### 7. Each requirement becomes a task, and each task has proof.
 
 - **Design:** Task derivation makes a coverage matrix before it writes the
-  tasks. Task completion derives an acceptance bar and records it in the done
-  list as `**Verified:**` bullets.
+  tasks. Task completion derives an acceptance bar and verifies the work
+  against it. Then the task-list tool moves the task to the done list. The
+  tool writes the bar, as `**Verified:**` bullets, below the task.
 - **Metric:** Recall of requirement IDs in the tasks and in the verified
   bullets.
 
@@ -111,9 +112,14 @@ the other tests yet.
   stdlib tool creates the document empty with the milestone. After that, the
   open-question tool is the only writer of the document. Each answer, cascade,
   prune, and embed is a tool call. The tool validates the input and writes the whole
-  document again in one canonical form.
+  document again in one canonical form. The two task files are the same. The
+  same stdlib tool creates them with the milestone. After that, the task-list
+  tool is the only writer of the two files. Each derivation, submission, and
+  move is a tool call. The tool writes the whole file again in one canonical
+  layout. A move changes both files, or neither.
 - **Metric:** Golden-file diff of the document after an answer, a cascade, or
-  a prune. The `tests/` suite runs this test on the open-question tool.
+  a prune, and of the task files after each task-list write. The `tests/`
+  suite runs this test on the open-question tool and on the task-list tool.
 
 ### 12. Repository hygiene is structural.
 

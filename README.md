@@ -123,8 +123,8 @@ Each milestone lives in `milestones/milestone_<N>_<slug>/` and contains four fil
 
 - `requirements.md` — goal, relevant starting state, decisions, and out of scope, as prose Markdown
 - `open_questions.xml` — the open questions, one `<open-question>` block each under a single `<open-questions>` root; created empty with the milestone and written only by the plugin's open-question tool, never by hand — the milestone's requirements have converged when no block remains
-- `TASKS_TODO.md` — pending tasks ordered by priority (highest first)
-- `TASKS_DONE.md` — completed tasks in the same section format, each entry augmented with the acceptance bar the completer derived and verified the work against, recorded as a `**Verified:**` bullet list (one bullet per criterion)
+- `TASKS_TODO.md` — pending tasks ordered by priority (highest first); created with the milestone and written only by the plugin's task-list tool, never by hand
+- `TASKS_DONE.md` — completed tasks in the same section format, each entry augmented with the acceptance bar the completer derived and verified the work against, recorded as a `**Verified:**` bullet list (one bullet per criterion); created with the milestone and written only by the plugin's task-list tool, which moves each finished task across and writes its bar
 
 `milestones/README.md` is the source of truth for which milestone is active. Skills read and write the current-milestone pointer there; it is never ambiguous which milestone is open.
 
