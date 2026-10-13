@@ -135,11 +135,13 @@ the other tests yet.
   bare FAILED only. An alternative set never comes back in the message: the
   subagent writes it to one scratch file outside the repository. One fixed
   shell call embeds and commits all the files that have landed, with one
-  commit for each question. That call runs one time for each run where the
-  host can wait for all subagents, and one time for each wake-up where it
-  cannot. The orchestrator reads no alternative set and keeps no list of
-  files. The batch recommend and answer skills dispatch no agent. They read
-  the question set one time for each run, not one time for each question.
+  commit for each question. Each host tree says how often that call runs.
+  On Claude Code and Antigravity, it runs each time the end of a subagent
+  wakes the orchestrator. On Codex, it runs one time for each round of
+  subagents, and one more time when that round has repairs. The
+  orchestrator reads no alternative set and keeps no list of files. The
+  batch recommend and answer skills dispatch no agent. They read the
+  question set one time for each run, not one time for each question.
   The recommend skill writes all its picks in one fixed shell call. That
   call embeds and lifts each block, makes one commit with the lifted lines
   as its body, and sorts the document. Thus the runner uses no tool turn
@@ -202,13 +204,21 @@ the other tests yet.
 
 ### 18. The same behaviour on each host.
 
-- **Design:** No core file names a host. A sentence that depends on a host
-  capability names the capability, and the runtime selects the branch. For
-  example, one paragraph of the alternatives pass says how it collects the
-  subagents' files. Where the host can wait for all subagents in one call,
-  the pass waits one time and then embeds all the files. Where it cannot, the
-  pass embeds the files that have landed each time it wakes. Each host is a
-  declarative definition, with no host-specific code.
+- **Design:** No core file names a host. A host difference reaches core only
+  as a named slot. Each host definition gives the slot's value, inline in its
+  settings or in a file under its `slots/` directory. No core sentence names
+  a capability and leaves the runtime to select a branch. Thus each host
+  tree describes only its own mechanism, and no tree names the mechanism of
+  another host. For example, the wait and the repair of the alternatives
+  pass are slots. On Claude Code, the subagents run in the background, and
+  the pass embeds the landed files each time the end of a subagent wakes it.
+  A repair continues the same agent with `SendMessage`. On Antigravity, one
+  `invoke_subagent` call starts all the subagents, and each final message
+  wakes the pass. A repair continues the same agent with `send_message`. On
+  Codex, the pass dispatches rounds up to the thread cap and waits for each
+  round with `wait_agent`. A repair continues the same agent with
+  `followup_task`. Each host is a declarative definition, with no
+  host-specific code.
 - **Metric:** Same case scores on each host tree.
 
 ### 19. Each skill does one thing, on an explicit command.
