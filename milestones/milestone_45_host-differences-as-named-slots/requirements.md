@@ -82,6 +82,10 @@ The context-file change applies only to projects bootstrapped after it. Existing
 
 Native agent loading on Antigravity is added only when the hands-on check shows that a file the build can already emit is enough: a manifest template beside `plugin.json`, or a relocation through the existing layout and renames. If `agy` needs frontmatter fields the build cannot add today, nothing is added for loading and the Antigravity slot values describe the generic-subagent fallback instead, a subagent told to read the plugin's agent file by its plugin-root path, as the Codex values do. The build's key schema and code gain nothing for agent loading either way.
 
+### Non-slot Antigravity corrections
+
+When the hands-on `agy` check contradicts an Antigravity fact held outside any slot value and outside `docs/ways-of-using-cairn.md`, the fact is corrected in this milestone if the correction is an edit to an existing settings value or template: the `plugin_root` string together with the README install path that must match it, the README's `/init` sentence, and the `plugin.json` template's fields, a new root-level manifest file rendered as a template included. A contradiction whose correction would need a new settings key, a template kind the build does not render today, or a change to build code is left as it stands and recorded under this milestone's Out of Scope, naming the fact and what `agy` showed.
+
 ### Other-host rule
 
 The development rule that a rendered tree never names another host's mechanism covers every file in the tree: the files rendered from `core/` and the host's own templates (README, CONTRIBUTING pointer, manifest, marketplace file, traffic workflow) alike. No file in a tree names another host's mechanism in any form, a contrastive mention of what this host does not use included; a link to the source repository is not a mechanism naming. The Codex README's "never to CLAUDE.md" clause and the Antigravity README's `/init`-into-`CLAUDE.md` instruction are reworded under this rule.
