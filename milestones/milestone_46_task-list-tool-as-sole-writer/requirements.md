@@ -88,5 +88,9 @@ Beyond refusing an empty title or body, the insert and append subcommands write 
 
 On every write (initialize, append, insert, move) the tool parses the whole task file into its heading line and its `##` sections (title, body prose, and for a done entry the `**Verified:**` bullets), applies the change to that model, and renders the entire file in one canonical layout: a blank line after the heading, after the body, after the label, after the last bullet, and after each `---`, with the file ending in `---` plus one newline. Every section the call did not touch is re-emitted in that layout too, so blank-line drift anywhere in the file is normalized silently on the first write, while the body prose itself is carried through as parsed text. The file is replaced through the same-directory temporary file, as `open_questions.py` does.
 
+### The insert subcommand's input shape
+
+The insert subcommand takes the task title as a positional command-line argument after `MILESTONE_DIR` and reads only the body prose on standard input as a quoted heredoc, the open-question tool's `add` form. The tool composes the `##` heading line, the body, and the trailing `---` itself, so a `##` line, a `---` line, or any heading text in the piped body is never treated as structure, and an empty title is refused on its own. The initialize subcommand keeps reading whole sections on standard input, so the tool has two input shapes: title argument plus body for the one-section insert, section form for `derive-tasks`' list. `submit-task` splits the section it authors from `task-format.md`'s template into the title argument, quoted for the shell, and the body heredoc.
+
 ## Out of Scope
 
