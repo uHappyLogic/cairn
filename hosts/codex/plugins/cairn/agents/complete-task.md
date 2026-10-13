@@ -16,17 +16,28 @@ verify → move TODO→DONE work. Read it first, then carry out every step again
 ## Staging contract (subagent only)
 
 The shared procedure has you record the exact set of paths you create or edit as you carry
-out the task; that recorded set is your task's real change set. Once the procedure has
-completed — the task verified and moved to `TASKS_DONE.md` — **stage that change set
-yourself**, so the orchestrator's per-task commit is path-scoped without needing anything
-back from you:
+out the task; that recorded set is your task's real change set. You **stage that change set
+yourself**, in the same shell call as the procedure's step 5 move, so the orchestrator's
+per-task commit is path-scoped without needing anything back from you. Run step 5 as this one
+fixed shell call, written out in full exactly as shown, with only `<MILESTONE_DIR>`,
+`<Task Title>`, the bar's bullets, and the recorded paths replaced:
 
-`git add` those recorded created/edited paths **plus** the two milestone task-list files
-`<MILESTONE_DIR>/TASKS_TODO.md` (the task left it) and `<MILESTONE_DIR>/TASKS_DONE.md` (the
-task joined it), naming each path explicitly: every path is written out on the command line
-as its own argument, and none is held in a shell variable. **Never `git add -A`** and never
-stage by any tree-wide selection: a dirty tree elsewhere must stay out of the orchestrator's
-commit. Stage only on the success path, and stage nothing else.
+```
+python3 ${PLUGIN_ROOT}/tools/task_list.py move <MILESTONE_DIR> "<Task Title>" <<'EOF' &&
+- <criterion 1, as verified>
+- <criterion 2, as verified>
+EOF
+git add <recorded path 1> <recorded path 2> <MILESTONE_DIR>/TASKS_TODO.md <MILESTONE_DIR>/TASKS_DONE.md
+```
+
+The move command and its heredoc are exactly the ones the procedure's step 5 shows. The
+`git add` names those recorded created/edited paths **plus** the two milestone task-list
+files `<MILESTONE_DIR>/TASKS_TODO.md` (the task left it) and `<MILESTONE_DIR>/TASKS_DONE.md`
+(the task joined it), naming each path explicitly: every path is written out on the command
+line as its own argument, and none is held in a shell variable. **Never `git add -A`** and
+never stage by any tree-wide selection: a dirty tree elsewhere must stay out of the
+orchestrator's commit. The `&&` stages only on the success path: a refused move prints its
+one `Error:` line, leaves both task files unchanged, and stages nothing. Stage nothing else.
 
 Staging is not committing: run no `git commit`. The orchestrator commits the index you leave.
 

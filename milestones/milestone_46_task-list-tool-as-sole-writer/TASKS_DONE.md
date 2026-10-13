@@ -72,3 +72,17 @@ Rewrite step 5 of `core/shared/complete-procedure.md` so the move-plus-augment i
 - `uv run scripts/build_hosts.py` rebuilt all three host trees, `uv run scripts/build_hosts.py --check` passes, and both pytest runs pass unchanged (684 passed pinned; 680 passed, 1 skipped at 3.9).
 
 ---
+
+## Chain Move And Git In Completion Runners
+
+Rewrite the staging contract of `core/agents/complete-task.md` and step 2 of `core/skills/complete-task/SKILL.md` so each shows its own complete fixed shell call in full, run exactly as shown: the same move command the procedure shows, written verbatim with the bar on its quoted heredoc, then `&&` and the runner's git step — for the agent the path-scoped `git add` of the recorded created/edited paths plus `<MILESTONE_DIR>/TASKS_TODO.md` and `<MILESTONE_DIR>/TASKS_DONE.md`, every path its own argument and none held in a shell variable, staging only on the success path and never committing; for the skill the commit procedure's three steps written into the call under `Task-completion: <task heading>` — so the completion tail becomes one turn, with the return protocol, the `FAILED` resumable-tree promise, both status lines, and `complete-all-tasks` unchanged. Verified by running each call verbatim against a sandbox milestone under zsh and bash (the agent's call leaving the index staged and uncommitted, the skill's call landing one commit, a refused move staging and committing nothing), and by the rebuild so `uv run scripts/build_hosts.py --check` passes with both pytest runs unchanged.
+
+**Verified:**
+
+- `core/agents/complete-task.md`'s staging contract shows one complete fixed shell call in full, run exactly as shown: the procedure's move command verbatim with the bar on its quoted heredoc, then `&&` and a path-scoped `git add` of the recorded created/edited paths plus `<MILESTONE_DIR>/TASKS_TODO.md` and `<MILESTONE_DIR>/TASKS_DONE.md`, every path its own argument and none held in a shell variable, staging only on the success path and never committing.
+- `core/skills/complete-task/SKILL.md` step 2 shows its own complete fixed shell call in full: the same move command verbatim, then `&&` and the commit procedure's three steps (dirty-own-path guard, path-scoped `git add`, subject-only commit under `Task-completion: <Task Title>`), each path written out literally.
+- The agent's return protocol and `FAILED` resumable-tree promise, both of the skill's status lines (`Task completed.` and the no-op line), and `core/skills/complete-all-tasks/SKILL.md` are unchanged.
+- Run verbatim against sandbox milestones under zsh and bash, the agent's call left the four paths staged and uncommitted, the skill's call landed exactly one `Task-completion: Do The Thing` commit of only its own paths (an unrelated dirty file left out), and a refused move (unknown title) printed one `Error:` line, staged nothing, and committed nothing for both calls in both shells.
+- `uv run scripts/build_hosts.py` rebuilt the three host trees, `uv run scripts/build_hosts.py --check` passes, and both pytest runs pass unchanged (684 passed pinned; 680 passed, 1 skipped at the 3.9 floor).
+
+---
