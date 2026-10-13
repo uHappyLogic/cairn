@@ -60,4 +60,16 @@
       <drawback>Any editor that appends the conventional final newline silently changes the rendered tree — an extra line break after a paragraph slot, or a broken sentence where a slot sits mid-line — and the drift gate does not catch it, because the rebuilt tree is what gets committed; the error surfaces only in review of the rendered diff, if at all.</drawback>
     </alternative>
   </open-question>
+  <open-question id="Existing Claude Code value scope">
+    <question>The Claude Code sourcing decision covers only the two new slots, and the Codex decision keeps the eight existing Codex values unless the run contradicts one. The existing Claude Code ALTERNATIVES_CONCURRENCY value still describes two wait mechanisms (a blocking dispatch form and a wake-up form) and names neither as this host&apos;s own. Are the eight existing Claude Code values, that two-armed paragraph in particular, rewritten to the single mechanism the hands-on claude check observes, or kept as written?</question>
+  </open-question>
+  <open-question id="Non-slot Antigravity correction scope">
+    <question>The hands-on agy check may contradict Antigravity facts held outside any slot value and outside docs/ways-of-using-cairn.md: the plugin_root literal .agents/plugins/cairn (the installed copy on this machine lives under ~/.gemini/config/plugins/cairn), the README template&apos;s install path and its /init instruction, and the plugin.json template. When the check contradicts one of these, is it corrected in this milestone, or recorded and left for a later one?</question>
+  </open-question>
+  <open-question id="Check record scope across hosts">
+    <question>The sourcing decisions now require hands-on checks against the installed claude and codex as well as against agy. Does whatever record form is chosen for the Antigravity check (the Hands-on check record question) apply in the same form to the Claude Code and Codex checks, or is only the Antigravity check recorded?</question>
+  </open-question>
+  <open-question id="Loader refusal test coverage">
+    <question>The definition loader gains refusals for a file-backed slot: a missing value file, a path outside the definition&apos;s slots/ subdirectory, and an entry that is neither a string nor a one-key file table. The build rendering test is decided as one full happy-path render. Do those refusals get their own pytest cases under the same interpreter-version skip, or is the happy-path render the only build test?</question>
+  </open-question>
 </open-questions>
