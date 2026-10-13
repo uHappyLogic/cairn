@@ -76,5 +76,9 @@ The tool matches every title it is given (the section to move and a before/after
 
 Inside its one shell call, `derive-tasks` runs no separate append. A single initialize process reads the whole ordered list on standard input, in the task file's own `##` heading / body / `---` form, validates every section, and replaces `TASKS_TODO.md` with the heading followed by the list in one atomic write, so the list lands whole and in dependency order or, if anything is refused, the file is left byte-for-byte as it was before the run and the `Task-derivation:` commit can never record a partial or reordered plan. Append keeps a one-section form only for `submit-task`'s use, if any.
 
+### An anchor naming no section
+
+The tool refuses a before or after anchor that names no section in `TASKS_TODO.md` with one `Error:` line and the file unchanged, keeping its full output contract, and `submit-task` drops its append fallback altogether: on that refusal it inserts nothing, commits nothing, and stops, quoting the tool's `Error:` line verbatim so the user can re-run with a correct anchor. Position encodes dependency order, so a task never lands anywhere but where the runner decided.
+
 ## Out of Scope
 
