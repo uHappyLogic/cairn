@@ -68,5 +68,9 @@ The move renders both new file contents in memory before touching either, replac
 
 The task-list tool is one self-contained file carrying its own copies of the stdin reader, `ToolError`, the one-`Error:`-line main with its describe/fail path, and the same-directory atomic writer, written for its own needs (keeping the target's mode, as `open_questions.py` does, since it rewrites existing files). `open_questions.py`, `define_milestone.py`, and the build stay untouched, so every rendered tool remains one runnable file copied byte-identical into each host and no run imports a sibling. The parity precedent is extended: a test asserts the new tool imports neither sibling, and its conformance to the shared output contract is pinned only behaviourally by its own subprocess tests, with no check that the copies match the siblings' text. A later milestone may still extract a module; this one does not.
 
+### How the tool matches a task title
+
+The tool matches every title it is given (the section to move and a before/after anchor alike) against the `##` headings only by exact equality after whitespace-folding and case-folding, the open-question tool's id comparison; anything else, a partial name or two sections sharing the folded title included, is refused with one `Error:` line and both files unchanged, and the tool prints nothing on success. The completion procedure keeps its case-insensitive partial match in prose: step 1 resolves the user's partial name against its own whole read of `TASKS_TODO.md` (listing the headings on no match, as today) and the runner passes the full heading it located to the move, as `complete-all-tasks` already does by passing the exact heading.
+
 ## Out of Scope
 
