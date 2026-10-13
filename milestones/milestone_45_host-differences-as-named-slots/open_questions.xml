@@ -33,101 +33,6 @@
       <drawback>The build needs a section parser and a delimiting rule, and a value can never contain a line that looks like a marker. That matters because slot values are Markdown prose that may carry headings. Where a section ends and how its trailing blank lines are treated becomes part of the format, which overlaps the trailing-newline question. A name can also be both a section and an inline key, so this option needs a rule from the duplicate-handling question.</drawback>
     </alternative>
   </open-question>
-  <open-question id="Duplicate slot value handling">
-    <question>When a host definition supplies the same slot both inline in its [slots] table and as a file-backed value, what does the build do: refuse the definition, or let one of the two forms take precedence, and which?</question>
-    <depends-on question="File-backed slot declaration form" option="Explicit file entry in slots table"/>
-    <recommendation option="Make duplicates unrepresentable">With the file bound through the slot&apos;s own [slots] key, a second source for one slot is a repeated TOML key the parser already refuses, so no rule, message, or test case is needed; every other option writes machinery for a state the chosen binding cannot express.</recommendation>
-    <alternative id="Make duplicates unrepresentable">
-      The build adds no duplicate rule of its own. The file-backed form is bound so that one slot can be supplied only once, for example by making the file reference that slot&apos;s own [slots] entry, and TOML&apos;s own refusal of a repeated key already catches any second entry.
-      <advantage>There is no new rule, message, or test case. Duplication is ruled out by the definition&apos;s structure rather than detected, so neither a refusal path nor a precedence rule has to be written or documented.</advantage>
-      <drawback>It is viable only if the binding form chosen by the File-backed slot declaration form sibling gives each slot a single key. Under a binding by naming convention in a directory, or under a separate table, a duplicate can still arise, and with no rule the outcome would come down to an undocumented dictionary-update order.</drawback>
-    </alternative>
-    <alternative id="Refuse any duplicate">
-      The build refuses a definition that supplies one slot both inline in [slots] and as a file-backed value, whatever the two values hold. The refusal is a BuildError raised while load_definition reads the definition, before anything renders, and it names the slot and both sources. No precedence rule exists.
-      <advantage>It matches the build&apos;s posture today, where every malformed definition (unknown key, non-string value, reserved name, stray placeholder) is refused at load. Every slot then has exactly one place its value comes from, so an editor never changes a value that the build silently ignores.</advantage>
-      <drawback>Moving a value from inline to a file has to happen in one edit, deleting the inline entry in the same change, because an intermediate state with both fails the build. It also adds a load-time rule and an error message that the new build test has to cover.</drawback>
-    </alternative>
-    <alternative id="Refuse only differing values">
-      The build accepts a slot supplied in both forms when the two values are identical after the build&apos;s normal reading of each, and uses that value. It refuses the definition, at load and naming the slot and both sources, only when the two values differ.
-      <advantage>A value can be copied into a file and the build checked before the inline entry is deleted, while two forms that disagree still cannot pass silently.</advantage>
-      <drawback>The redundant copy is allowed to stay. It turns into a build failure the first time someone edits only one of the two copies, so the second place to edit is never removed, only deferred. Whether &quot;identical&quot; holds also depends on how a file value&apos;s trailing newline is read, which the trailing-newline sibling question owns.</drawback>
-    </alternative>
-    <alternative id="Inline takes precedence">
-      The build accepts a slot supplied in both forms and uses the inline [slots] value, ignoring the file-backed one without a failure. The file acts as a default that an inline entry overrides.
-      <advantage>The definition never fails over this case, and settings.toml stays the one file that shows which value wins. A reader of the TOML sees the value that renders whenever an inline entry is there.</advantage>
-      <drawback>A file-backed value can sit in the definition directory and never render. An editor who edits that file sees no change and gets no error, and --check passes because the committed tree was also rendered from the inline value. That is a silent dead copy, in a build that otherwise refuses every malformed definition.</drawback>
-    </alternative>
-    <alternative id="File takes precedence">
-      The build accepts a slot supplied in both forms and uses the file-backed value, ignoring the inline [slots] entry without a failure. The inline entry acts as a default that a file overrides.
-      <advantage>The definition never fails over this case, and a value can be moved into a file and take effect at once, with the leftover inline entry deleted at leisure.</advantage>
-      <drawback>The inline value in settings.toml, together with the comment above it explaining that host&apos;s value, can be stale and never render. A reader of the TOML is misled about what the tree carries, and the build gives no signal that this is so.</drawback>
-    </alternative>
-  </open-question>
-  <open-question id="File value trailing newline">
-    <question>A text file conventionally ends with a newline while an inline TOML slot value does not. When a file-backed slot value is substituted into a core/ file, are its bytes used verbatim, or is trailing whitespace normalised, and by what rule?</question>
-    <depends-on question="Inline versus file assignment" option="Multi-line in files, by convention"/>
-    <recommendation option="Strip all trailing whitespace">A file&apos;s ending can never leak a blank line or a drift diff into a host tree however an editor leaves it, the rule matches how the inline paragraphs already close straight after their last word, and the only values that need trailing whitespace are the one-line prompt openers, which the assignment rule keeps inline anyway.</recommendation>
-    <alternative id="Strip all trailing whitespace">
-      The build removes every trailing whitespace character (all final newlines, spaces, and tabs) from a file-backed value before substituting it, keeping leading whitespace and interior bytes verbatim. A value that must end in whitespace cannot be file-backed and stays inline in settings.toml.
-      <advantage>The most forgiving rule: however an editor or a stray keystroke leaves the end of the file, the rendered tree is the same, so the file ending can never introduce a blank line or a drift diff into a host tree, and the rule matches how the inline multi-line values are written today (closing &apos;&apos;&apos; straight after the last word).</advantage>
-      <drawback>A slot whose value legitimately ends in whitespace — today&apos;s Codex prompt-opener values end in &quot;\n\n&quot; — can never move to a file, so the two forms are no longer equivalent and the rule constrains which slots may be file-backed, which is the Inline versus file assignment question&apos;s to settle; whether this matters depends on that outcome.</drawback>
-    </alternative>
-    <alternative id="Strip one final newline">
-      The build reads a file-backed value as UTF-8 text and removes exactly one trailing line ending (a final &quot;\n&quot;, or &quot;\r\n&quot;) if the file ends with one, keeping every other byte as written, earlier trailing newlines and spaces included; a file with no final newline is used as it stands. No check is added for the file&apos;s ending.
-      <advantage>Files can follow the ordinary text-file convention editors and tools enforce, while a value whose meaning needs trailing whitespace (such as the Codex prompt-opener values that today end in &quot;\n\n&quot; inline) can still be held in a file by writing one extra newline, so the file form can carry any value the inline form can and the rule is one sentence long.</advantage>
-      <drawback>The file&apos;s bytes and the substituted bytes differ by one invisible character, so a reader must know the rule to tell what a file with two final newlines yields, and a value meant to end in exactly one newline needs a file ending in two, which looks like a mistake and invites someone to &quot;fix&quot; it.</drawback>
-    </alternative>
-    <alternative id="Strip both ends">
-      The build removes leading and trailing whitespace (blank lines and spaces at both ends) from a file-backed value, keeping interior bytes verbatim, so a file may open or close with blank lines or a comment-free margin. A value that must begin or end in whitespace stays inline.
-      <advantage>Gives the file author the most freedom in layout — a blank first line, trailing blank lines, any final newline — with one symmetric rule that is easy to state and test.</advantage>
-      <drawback>Silently discards leading whitespace too, which no value needs stripped today and which an indented or newline-prefixed value would rely on, so it widens the set of values the file form cannot carry beyond the trailing-whitespace case for no gain the trailing-only rules lack; whether that set matters again depends on the Inline versus file assignment outcome.</drawback>
-    </alternative>
-    <alternative id="Verbatim, refuse final newline">
-      The build substitutes a file-backed value&apos;s bytes exactly as read, with no normalisation, and the definition loader refuses a value file whose last byte is a newline (failing the build with a message naming the file), so a value file must be saved without a final newline; a value that needs trailing whitespace other than a newline can still be file-backed.
-      <advantage>What the file holds is exactly what lands in the tree, with no hidden rule for a reader to learn, and a stray final newline is caught at build time rather than surfacing as an unexplained blank line in a rendered host tree.</advantage>
-      <drawback>Fights the near-universal convention that text files end in a newline: many editors, formatters, and git&apos;s &quot;No newline at end of file&quot; warning push the other way, so value files are awkward to edit and the refusal will fire routinely; and a value that must end in a newline (the Codex prompt openers) cannot be file-backed at all.</drawback>
-    </alternative>
-    <alternative id="Verbatim, unenforced">
-      The build substitutes a file-backed value&apos;s bytes exactly as read, with no normalisation and no check of the file&apos;s ending; keeping a value file free of an unwanted final newline is left to whoever edits it.
-      <advantage>The least build code and the simplest contract: the file is the value, every value the inline form can express (trailing &quot;\n\n&quot; included) can be expressed in a file, and nothing is ever altered behind the author&apos;s back.</advantage>
-      <drawback>Any editor that appends the conventional final newline silently changes the rendered tree — an extra line break after a paragraph slot, or a broken sentence where a slot sits mid-line — and the drift gate does not catch it, because the rebuilt tree is what gets committed; the error surfaces only in review of the rendered diff, if at all.</drawback>
-    </alternative>
-  </open-question>
-  <open-question id="Inline versus file assignment">
-    <question>Once both forms exist, which slot values are held in files and which stay inline in settings.toml: every value, only the multi-line paragraphs, or whichever each host definition chooses per slot?</question>
-    <depends-on question="File-backed slot declaration form" option="Explicit file entry in slots table"/>
-    <recommendation option="Multi-line in files, by convention">It moves exactly the paragraphs that make settings.toml hard to read into files where they read as prose, keeps short labels beside their comments, adds no check or boundary definition for a cosmetic split, and the explicit file entry in [slots] already shows a reader where every value lives, which removes the main cost of leaving the rule unenforced.</recommendation>
-    <alternative id="Multi-line in files, by convention">
-      Assignment rule: a value that spans more than one line (today the ALTERNATIVES_CONCURRENCY and ALTERNATIVES_DISPATCH paragraphs, and the new repair-branch and wait values) is held in a file; a single-line value (CONTEXT_FILE, AGENT_TOOL, ALTERNATIVES_AGENT, the one-sentence dispatch values, empty values) stays inline in settings.toml. The rule is the same in every host and is decided per value by its shape, so one slot may be a file in one host and inline in another. Enforcement: a documented development rule only; the build checks nothing about which form a value uses.
-      <advantage>It moves exactly the long paragraphs that make settings.toml hard to read and diff (thirteen- and twenty-line TOML literal strings) into files where they read as prose, while short labels stay next to their comment in the TOML, and the build gains no new check.</advantage>
-      <drawback>An unenforced rule drifts: a value that grows past one line can stay inline, or a short one land in a file, with nothing to notice, and &quot;multi-line&quot; is itself fuzzy for a single long line or a value like Codex&apos;s prompt instruction that is one sentence ending in two newlines; where that edge falls depends on the trailing-newline rule a sibling question owns.</drawback>
-    </alternative>
-    <alternative id="Every value in a file">
-      Assignment rule: every slot value of every host definition is held in a file, the one-word ones (CONTEXT_FILE = &quot;CLAUDE.md&quot;, the empty COMPLETE_TASK_PROMPT_INSTRUCTIONS and ALTERNATIVES_PROMPT_INSTRUCTIONS of Claude Code) included, so each settings.toml keeps no inline [slots] value. Enforcement: a documented convention only; the build still accepts the inline form the goal keeps beside the file one, and nothing refuses an inline value.
-      <advantage>One place to look for every host wording: an editor never has to decide or remember which form a slot uses, and a value&apos;s bytes are read exactly as the core/ file will carry them, with no TOML quoting or literal-string rules in between.</advantage>
-      <drawback>It turns eight values per host, several of them a single word or empty, into some two dozen tiny files, leaves the inline form the build still supports unused in practice, and separates each value from the explanatory comment that today sits above it in settings.toml; how much of that comment can stay beside the value depends on the binding form and location the file-backed declaration question settles, and the empty values depend on the trailing-newline rule settled there too.</drawback>
-    </alternative>
-    <alternative id="Multi-line in files, build-enforced">
-      Assignment rule: the same shape rule as the convention option — multi-line values in files, single-line values inline, decided per value in every host. Enforcement: the build refuses a definition that violates it, with a load-time error naming the slot and the form it should take (an inline value containing a newline, and a file-backed value that is a single line, are both refused).
-      <advantage>The split cannot drift: every definition stays in the one readable shape without relying on an editor remembering a rule, and the error message teaches the rule at the moment it is broken.</advantage>
-      <drawback>It adds a validation rule to scripts/build_hosts.py and a case the new rendering test must cover, and it must define &quot;single line&quot; exactly, which interacts with how a file value&apos;s trailing newline is treated (a sibling question&apos;s axis) and with values such as Codex&apos;s COMPLETE_TASK_PROMPT_INSTRUCTIONS that carry an embedded &quot;\n\n&quot; today; a value hovering at the boundary forces a file move or back on every edit that crosses it.</drawback>
-    </alternative>
-    <alternative id="Per-slot form, same in every host, by convention">
-      Assignment rule: the form is fixed per slot name rather than per value: a slot whose value is a paragraph in any host (ALTERNATIVES_CONCURRENCY, ALTERNATIVES_DISPATCH, the new repair and wait slots) is file-backed in every definition, even where one host&apos;s value is short or empty, and every other slot is inline in every definition. Enforcement: a documented convention only.
-      <advantage>The three definitions stay structurally parallel — the same slot is found the same way in each host, so comparing or adding a host is a matter of filling the same set of files and keys, which matches how slot-declaration already insists on the same name set everywhere.</advantage>
-      <drawback>A host whose value for a file-backed slot is one line or empty still gets a file for it, and nothing stops a definition from breaking the parallel, so the structure holds only as long as editors keep it.</drawback>
-    </alternative>
-    <alternative id="Per-slot form, same in every host, build-enforced">
-      Assignment rule: the same per-slot rule — each slot name has one form, file-backed or inline, used identically by every definition. Enforcement: the build checks it beside slot-declaration, refusing any slot that one definition supplies as a file and another inline, without fixing which form a given slot must take.
-      <advantage>It extends the existing cross-definition check in its own style (same names everywhere becomes same names and same forms everywhere), so the definitions cannot drift apart, while leaving the choice of form for each slot to whoever introduces it.</advantage>
-      <drawback>It adds a second cross-definition check and its test case, and moving one slot between forms becomes a coordinated edit across all three host definitions in one change; it also forces short or empty per-host values into files whenever any host needs a paragraph.</drawback>
-    </alternative>
-    <alternative id="Each definition chooses per slot">
-      Assignment rule: none — each host definition chooses, slot by slot, whether a value is inline or in a file, and different hosts may choose differently for the same slot. Enforcement: none; the build accepts either form for any slot, and the docs describe both forms without prescribing when to use which.
-      <advantage>It is the least machinery and the least rule text: the build only has to accept both forms, and an author places each value wherever it reads best for that host, with no boundary case to define.</advantage>
-      <drawback>Nothing tells a later editor where a given slot&apos;s value lives, so finding or comparing one wording across hosts means checking both places in each definition, and the definitions can diverge in shape for no reason anyone recorded.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Build test shape">
     <question>The milestone adds a lightweight pytest of the build&apos;s rendering. What does that test exercise, and how does it reach the build code: the slot-filling step alone through an import, a full render of a small synthetic core and definition into a temporary directory, or the real build run as a subprocess against the repository&apos;s own core/ and hosts/? (What is tested and how the code is reached constrain each other, so both are asked together.)</question>
     <recommendation option="Synthetic render via patched import">It is the lightest shape that still shows a file-backed value landing in a rendered file in the right substitution order, with a fixture of a few lines, no change to the 739-line build, and no fixture that must satisfy the whole check set; monkeypatch fails loudly when a patched constant is renamed, so the coupling to internals is visible rather than silent.</recommendation>
@@ -170,51 +75,6 @@
       Exercised: both layers. Focused in-process tests of the slot step (`fill_slots` and the loader&apos;s inline and file-backed reading on small inputs), plus one full render of a small synthetic `core/` and definition into tmp_path through `load_definition` and `render_host`. Both are reached by importing the build, with the module&apos;s path constants monkeypatched onto the fixture for the render. The build code is unchanged.
       <advantage>A broken slot step fails a narrow test that names it, while the single render still shows that values reach rendered files in the right substitution order. Each layer stays small.</advantage>
       <drawback>It is the largest test of the import-based shapes, which pulls against the goal&apos;s &quot;lightweight&quot;. It carries both the dependence on internal signatures and the dependence on patched module constants. The loader cases depend on the binding form the file-backed declaration question settles.</drawback>
-    </alternative>
-  </open-question>
-  <open-question id="Floor-run exclusion of build test">
-    <question>The Python 3.9 floor run collects the same tests/ directory as the pinned run but has neither PyYAML nor tomllib, both of which the build imports. How is the rendering test kept to the pinned interpreter: a skip inside the test, a collection rule in conftest.py, a location outside the floor run&apos;s test paths, or a change to the floor command itself?</question>
-    <depends-on question="Build test shape" option="Synthetic render via patched import"/>
-    <recommendation option="Skip below 3.11">An in-process render needs tomllib and yaml, which closes both no-exclusion options; a module-level version skip is self-contained in the test file, changes no command in its three copies, keeps conftest.py about the tools, and never skips under the pinned interpreter, so a missing PyYAML there fails loudly instead of silently hiding the only build test.</recommendation>
-    <alternative id="Skip below 3.11">
-      The rendering test lives under tests/ and opens with a module-level pytest.skip(allow_module_level=True) when sys.version_info is below (3, 11), placed before any import of the build, so the floor run collects it and reports it skipped. The exclusion keys on the interpreter version, matching pyproject.toml&apos;s requires-python; nothing outside the test file changes.
-      <advantage>Self-contained in the test file with no command or documentation change, and under the pinned interpreter it never skips, so a missing PyYAML there fails loudly instead of hiding the test.</advantage>
-      <drawback>The 3.11 threshold is a second copy of requires-python that must be kept in step by hand, the skip must stand above the import or collection errors on 3.9, and the floor run&apos;s summary carries a permanent skipped entry.</drawback>
-    </alternative>
-    <alternative id="Skip on missing modules">
-      The rendering test lives under tests/ beside the tool tests and opens with pytest.importorskip for tomllib and yaml before it reaches the build code, so the floor run collects it and reports it skipped. The exclusion keys on the modules&apos; absence, not on the interpreter version; pyproject.toml, conftest.py, and both pytest commands stay unchanged.
-      <advantage>Self-contained in the one test file with no command, CI, CONTRIBUTING.md, or CLAUDE.md change, and it keys on the exact cause of the failure (the missing imports), so the skip reason printed by the floor run states why.</advantage>
-      <drawback>The skip also fires silently under the pinned run if PyYAML ever goes missing from the project environment (a broken lock or a run outside uv), so the only build test can stop running with a passing suite; the floor run&apos;s summary carries a permanent skipped entry.</drawback>
-    </alternative>
-    <alternative id="Conftest collection rule">
-      The rendering test lives under tests/, and tests/conftest.py adds its file to collect_ignore (or answers pytest_ignore_collect for it) when the interpreter is below 3.11, so the floor run never collects or imports it and reports nothing for it. Both pytest commands, pyproject.toml, and the test file itself stay free of any version check.
-      <advantage>The test file stays clean and the floor run&apos;s output carries no skip noise; the one rule that keeps build tests off the floor sits in the suite&apos;s shared configuration, where a later build test can be added to it.</advantage>
-      <drawback>The exclusion is invisible from the test file and from the floor run&apos;s output, so a reader of either cannot tell the test is excluded, and the conftest.py that today documents itself as serving the two core/tools/ tools gains a concern about the build; a file name in collect_ignore silently stops matching if the test is renamed.</drawback>
-    </alternative>
-    <alternative id="Separate dir, floor names tests">
-      The rendering test lives in its own directory outside tests/ (for example a build-test directory beside it), which pyproject.toml&apos;s testpaths gains so the bare pinned `uv run pytest` collects both, while the floor command is changed to name tests/ explicitly (`uv run --no-project --python 3.9 --with pytest pytest tests`) in drift-gate.yml, CLAUDE.md&apos;s Commands, and CONTRIBUTING.md.
-      <advantage>The split is structural: the build test and the 3.9-portable tool tests never share a directory or conftest.py, and the floor command states on its face exactly what the floor run covers, with no skip logic anywhere.</advantage>
-      <drawback>The floor command is changed in three places and a floor run written without the explicit path (the old command) collects the build test and fails with an import error; a second test root departs from the one flat tests/ layout CLAUDE.md describes.</drawback>
-    </alternative>
-    <alternative id="Separate dir, pinned names it">
-      The rendering test lives in its own directory outside tests/, which pyproject.toml&apos;s testpaths does not include, so the floor run is untouched and the pinned command is extended to name both directories (`uv run pytest tests &lt;build-test dir&gt;`) in drift-gate.yml, CLAUDE.md&apos;s Commands, and CONTRIBUTING.md.
-      <advantage>The floor run&apos;s command and collection stay exactly as they are, so the 3.9 promise is checked by the same line it always was, and no skip or collection rule exists anywhere.</advantage>
-      <drawback>A bare `uv run pytest`, the habitual pinned command, silently omits the build test, so the test runs only where the extended command was written; the pinned command changes in three places.</drawback>
-    </alternative>
-    <alternative id="Floor command ignores the file">
-      The rendering test lives under tests/ with no version or import check, and the floor command gains `--ignore=tests/&lt;build test file&gt;` in drift-gate.yml, CLAUDE.md&apos;s Commands, and CONTRIBUTING.md; pyproject.toml, conftest.py, and the pinned command stay unchanged.
-      <advantage>The test file and suite configuration carry no exclusion logic, the pinned run needs no change, and the floor command names exactly what it leaves out.</advantage>
-      <drawback>The exclusion lives in a command copied into three places, each naming the test file by path, so a rename or a second build test needs all three edited, and anyone running the floor suite from memory without the flag hits an import error.</drawback>
-    </alternative>
-    <alternative id="Build via uv in both runs">
-      No exclusion: the rendering test stays under tests/ and runs under both interpreters, but reaches the build only by invoking it as a subprocess through `uv run scripts/build_hosts.py` (or `uv run python` on a driver), so the build code always executes under the project&apos;s pinned interpreter with PyYAML whichever interpreter runs the suite. Commands, pyproject.toml, and conftest.py stay unchanged.
-      <advantage>No skip, collection rule, or command change exists anywhere, and the floor run never carries an excluded or skipped entry, while the build itself still runs only under the pinned interpreter.</advantage>
-      <drawback>Viable only if the test reaches the build as a subprocess (the build-test-shape axis); the test depends on uv being on PATH inside pytest, runs the build twice per CI job, and reads against the goal&apos;s wording that the test itself runs under the pinned interpreter.</drawback>
-    </alternative>
-    <alternative id="Make build importable on 3.9">
-      No exclusion: the build&apos;s tomllib and yaml imports move inside the functions that load settings and frontmatter, so the module and its slot-filling step import under Python 3.9, and the rendering test, exercising only that step, runs unskipped in both the pinned and the floor run. Commands, pyproject.toml, and conftest.py stay unchanged.
-      <advantage>One suite, one command pair, and no exclusion mechanism of any kind; the slot-filling logic is also checked at the floor.</advantage>
-      <drawback>Viable only if the test reaches just the slot-filling step through an import (the build-test-shape axis); it reshapes the build&apos;s imports for a test and extends a 3.9 compatibility burden to build tooling that pyproject.toml deliberately pins to 3.11+, where a later 3.10+ construct in the build would break the floor run.</drawback>
     </alternative>
   </open-question>
   <open-question id="Repair passage slot granularity">
@@ -321,42 +181,6 @@
       <drawback>Widens the milestone beyond its goal, which names a hands-on check for Antigravity alone, and may force rewriting Codex values that nothing else in the milestone touches, with the largest run and the most churn in the committed Codex tree.</drawback>
     </alternative>
   </open-question>
-  <open-question id="Hands-on check record">
-    <question>The Antigravity slot values are to be rewritten from a hands-on check against the installed agy. Where is that check recorded so a later editor can tell what each value was written against: in the comment above each value in the host definition, in the milestone&apos;s decisions only, as a repeatable script kept in the repository, or nowhere beyond the values themselves?</question>
-    <applied-principle>Description over retirement note</applied-principle>
-    <depends-on question="File-backed slot declaration form" option="Explicit file entry in slots table"/>
-    <recommendation option="Per-value comment stamp">The record sits where an editor changing a value reads, extends the existing convention that each comment says why this host&apos;s value is what it is, tells an observed value from an inferred one at a glance, and serves the Claude Code and Codex checks in the same form; a tool version and behaviour facts belong beside the value they cover, not in the lasting invariants, where they would go stale unnoticed.</recommendation>
-    <alternative id="Per-value comment stamp">
-      Recorded in the Antigravity host definition, per value: the comment above each Antigravity slot value in scripts/hosts/antigravity/settings.toml names the agy version the value was checked against and the observed behaviour it rests on (what dispatch, waiting, continuing an agent, or the context file was seen to do). No separate file, script, or CLAUDE.md entry carries the check.
-      <advantage>The record sits at the exact place an editor changing a value reads, and it extends the existing convention that each slot comment says why this host&apos;s value is what it is, so a value written from observation and one written by inference are told apart at a glance.</advantage>
-      <drawback>The version is repeated across every Antigravity comment and nothing checks it, so a value edited later without a re-check keeps a stamp that now overclaims, and a newer agy leaves every stamp silently stale; where a value ends up held in a file rather than inline is a condition on whether a comment can sit above it at all (the inline-versus-file assignment and the file-backed binding form are sibling questions).</drawback>
-    </alternative>
-    <alternative id="One stamp in definition header">
-      Recorded in the Antigravity host definition, once: a single block in the header comment of scripts/hosts/antigravity/settings.toml names the agy version and date of the check and lists what was observed; the per-value comments state only what each value describes and why, in mechanism terms, with no version.
-      <advantage>A later re-check updates one block rather than every comment, and the definition still carries its own evidence where an editor of it looks first.</advantage>
-      <drawback>The stamp covers the whole definition, so a single value edited afterwards without a re-check still reads as checked; an editor must connect a value to the header list by hand rather than seeing its basis beside it.</drawback>
-    </alternative>
-    <alternative id="Milestone record only">
-      Recorded in this milestone&apos;s directory only: the check&apos;s agy version and each observation the values rest on are written out deliberately in the milestone&apos;s own record (its Decisions and the completing task&apos;s Verified entry in TASKS_DONE.md); the host definition&apos;s comments keep describing each value in mechanism terms with no version or reference to the check.
-      <advantage>Adds nothing to maintain: the record is a committed, dated snapshot that never claims to be current, and git blame on a value leads to the milestone commits that wrote it.</advantage>
-      <drawback>An editor reading settings.toml sees no sign that a value was observed or against which agy, and must know to dig through history to find it; the milestone files are not where host-definition editors look.</drawback>
-    </alternative>
-    <alternative id="CLAUDE.md invariant record">
-      Recorded in CLAUDE.md: the rewritten &quot;Host wording differences are named slots&quot; invariant states that the Antigravity values were written from a hands-on check, names the agy version, and summarises the observed mechanisms they rest on; the host definition&apos;s comments carry no version.
-      <advantage>CLAUDE.md is already the home of rationale and is read at the start of every session, and today&apos;s invariant already explains why the Antigravity value is what it is, so the replacement explanation lands where the old one stood.</advantage>
-      <drawback>Puts a volatile tool version and behaviour facts into the invariants file, which is meant to hold lasting design decisions, and separates the evidence from the values it covers so the two can drift apart unnoticed.</drawback>
-    </alternative>
-    <alternative id="Repeatable probe script">
-      Recorded as an executable probe kept in the repository (under scripts/): it runs the installed agy&apos;s version, help, and agent-listing commands and checks the strings the Antigravity values rely on, and each Antigravity slot comment points at it; the parts of the check it cannot automate are noted in the script beside the commands.
-      <advantage>A re-check after an agy update is one command rather than a manual investigation, and the evidence can be reproduced rather than taken on trust.</advantage>
-      <drawback>Only the static facts (version, flags, help strings, agent listing) are scriptable; dispatch, waiting, and continuing an agent need a live model session that is nondeterministic, billed, and logged in, so the script proves the least important part; it cannot run in CI where agy is absent, adds an untested script to scripts/, and goes stale as silently as a comment.</drawback>
-    </alternative>
-    <alternative id="No record beyond values">
-      Not recorded anywhere deliberately: the rewritten values stand on their own, their comments describe each mechanism and why the value is what it is with no version or reference to the check, and the only trace is whatever the routine completion entry and commit history happen to hold.
-      <advantage>Makes no claim that can go stale, matches how the Codex values are recorded today (their comments cite the mechanism and no version), and adds no artifact to keep in step with agy.</advantage>
-      <drawback>A later editor cannot tell what agy the values were written against or whether a value was observed rather than inferred, which is the very uncertainty that left the Antigravity values unchecked until this milestone.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Antigravity context file choice">
     <question>Antigravity&apos;s tree today names CLAUDE.md as the context file, while the agy binary names GEMINI.md and AGENTS.md as its rule files and never CLAUDE.md. If the hands-on check confirms that Antigravity reads more than one project instruction file, which one does the Antigravity tree name as its context file?</question>
     <applied-principle>Check tier claims against the live environment</applied-principle>
@@ -385,36 +209,6 @@
       No file name is fixed now. The Antigravity CONTEXT_FILE value is whichever root-level file the hands-on check shows agy&apos;s own /init (or its project-documenting step) writes, either GEMINI.md or AGENTS.md. The README template names that same file.
       <advantage>It keeps the project&apos;s own documentation step and the workflow&apos;s reads and writes on one file. This is the same reason the Codex value gives for AGENTS.md (&quot;its /init writes that file&quot;), so the slot comment can state a checked fact rather than a preference.</advantage>
       <drawback>The recorded decision is a rule, not a value, so the file name is settled only when the check runs. If agy has no /init or writes neither file, the rule does not resolve and the question reopens. Existing Antigravity projects whose workflow section sits in CLAUDE.md stop being read, which depends on what the context-file transition question decides.</drawback>
-    </alternative>
-  </open-question>
-  <open-question id="Antigravity context-file transition">
-    <question>If the Antigravity context file changes away from CLAUDE.md, is any transition provided for existing Antigravity projects whose CLAUDE.md already carries the workflow section, or does the change apply only to projects bootstrapped after it?</question>
-    <depends-on question="Antigravity context file choice" option="AGENTS.md"/>
-    <recommendation option="Forward only, no transition">It matches the project&apos;s standing no-migration posture, adds nothing to core/ or the definition, and keeps the Antigravity tree free of another host&apos;s file name; Antigravity never auto-loaded CLAUDE.md, the only installed Antigravity copy predates the tool, and a project missing the new file is pointed at /init by the skills that read it, so the loss is neither silent nor wide.</recommendation>
-    <alternative id="Forward only, no transition">
-      The change applies only to projects bootstrapped after it. Existing Antigravity projects get no explicit notice beyond the release&apos;s ordinary CHANGELOG entry, no runtime fallback, and no migration step. Their CLAUDE.md is left exactly as it stands, and every skill reads the new context file from the release that makes the change.
-      <advantage>It adds no code, prose, or new behaviour to core/ or the Antigravity definition. It matches the project&apos;s standing no-migration posture (the pre-split milestones and the question-order change both shipped with no migration step). The Antigravity install base is thin: the only Antigravity copy on this machine is a pre-tool port, and Antigravity&apos;s own rule loading never read CLAUDE.md, so the workflow section there was never auto-loaded.</advantage>
-      <drawback>An existing Antigravity project silently loses the environment context its CLAUDE.md holds. Skills such as derive-tasks, specify-milestone-starting-state, and the completion procedure then read a missing or bare file and only suggest /init. Re-running the bootstrap does not repair this, because it stops at &quot;Workflow already bootstrapped&quot; whenever milestones/ and the pointer exist. The option only applies if the Antigravity context file actually changes, which the context-file choice question decides.</drawback>
-    </alternative>
-    <alternative id="Documented manual transition">
-      No runtime change. The release that makes the change carries an explicit transition instruction in the CHANGELOG entry and in the Antigravity README template, which today tells users to run /init into CLAUDE.md. The instruction tells existing Antigravity users to move or copy their CLAUDE.md content, both the environment context and the ## Milestone Workflow section, into the new context file, or to link the new file to it.
-      <advantage>Existing users get a clear, one-time remedy at almost no cost: a few sentences in files the release already touches, with no change to any skill or to the bootstrap&apos;s run-once contract, and with the user rather than a skill deciding what to do with their own CLAUDE.md.</advantage>
-      <drawback>It only helps users who read the release notes or the README. A user who upgrades without reading them still gets the silent context loss of the forward-only option. Wording about another file also puts transition prose into the Antigravity tree&apos;s own templates, whose scope under the other-host naming rule is a sibling question.</drawback>
-    </alternative>
-    <alternative id="Bootstrap re-entry plus instruction">
-      init-milestone-base-workflow is changed for every host so that an already-bootstrapped project whose context file is missing or lacks the ## Milestone Workflow section is not stopped as &quot;already bootstrapped&quot;. Instead the skill runs its step 6 (create the file or append the section) and commits that alone. The release instruction tells existing Antigravity users to re-run the bootstrap and then /init to document their environment in the new file. CLAUDE.md is left untouched.
-      <advantage>It gives existing projects a supported, committed path to a correct new context file through a skill they already know, with the workflow section written by the same step that writes it for new projects. The bootstrap also becomes able to repair a context file deleted or renamed for any other reason.</advantage>
-      <drawback>It changes the bootstrap&apos;s &quot;already initialized&quot; stop condition and its no-op line for every host, to serve one host&apos;s transition. It restores only the workflow section, not the environment context, so the user still has to run /init or move content by hand. And it still depends on the user reading the instruction.</drawback>
-    </alternative>
-    <alternative id="Read-time CLAUDE.md fallback">
-      The skills that read the context file in the Antigravity tree read the new file and fall back to CLAUDE.md when the new file is absent. The fallback is permanent and has no removal date. It is expressed through the Antigravity slot values or an added slot, since CONTEXT_FILE today is a single file name used at about thirty sites, including the bootstrap&apos;s file heading. The bootstrap still creates or extends only the new file, and no instruction is needed for the fallback to work.
-      <advantage>Existing projects keep working with no action and no reading required: their environment context in CLAUDE.md keeps reaching every skill that reads it, while new projects get the new file from the start.</advantage>
-      <drawback>It puts a second file name and conditional wording into every context-file site of the Antigravity tree. That reintroduces the capability-conditional branching this milestone exists to remove, and it keeps a file name Antigravity itself never loads in its runtime prose. The CONTEXT_FILE slot&apos;s single-name shape would have to change or a new slot would be needed, which ties this option to how the slot granularity is settled.</drawback>
-    </alternative>
-    <alternative id="Automated content migration">
-      The Antigravity tree&apos;s bootstrap gains a one-time migration step. When the new context file is absent and CLAUDE.md carries the ## Milestone Workflow section, it copies or moves CLAUDE.md&apos;s content into the new file and commits the result under the bootstrap&apos;s subject. The &quot;already bootstrapped&quot; stop is relaxed to let this step run, and no instruction beyond pointing users at a re-run is given.
-      <advantage>It carries both the workflow section and the environment context across in one committed step, so no context is lost and the user does not have to edit files by hand.</advantage>
-      <drawback>It contradicts the bootstrap&apos;s own rule never to document the project&apos;s environment context in the context file itself. It may move content a user still wants under CLAUDE.md for another host. It adds host-specific migration behaviour that core/ has no slot shape for, and it reverses the project&apos;s consistent no-migration posture, all for a host with a thin install base. It still runs only if the user re-runs the bootstrap.</drawback>
     </alternative>
   </open-question>
   <open-question id="Antigravity agent loading gap">
@@ -562,6 +356,212 @@
       This milestone stops listing --effort values on docs/ways-of-using-cairn.md. The legend&apos;s --effort bullet says the flag exists on Claude Code and Antigravity, says Codex has no effort flag, and tells the reader to take the accepted values from each host&apos;s own --help, as the --model bullet already does for Antigravity with `agy models`. Every other Antigravity fact on the page stays as written and is not re-checked.
       <advantage>It removes the kind of error, not just this one instance: no copied value list is left to drift as agy or claude change their effort levels, so the page cannot be wrong on this point again. It is about as cheap as the one-line correction.</advantage>
       <drawback>The page no longer shows the values at a glance, so a reader has to run --help before choosing an effort level. The Claude Code list is removed too, even though it is currently correct. As with the one-line fix, the page&apos;s other Antigravity facts (invocation form, permissions flag, --add-dir need) stay unverified.</drawback>
+    </alternative>
+  </open-question>
+  <open-question id="Duplicate slot value handling">
+    <question>When a host definition supplies the same slot both inline in its [slots] table and as a file-backed value, what does the build do: refuse the definition, or let one of the two forms take precedence, and which?</question>
+    <depends-on question="File-backed slot declaration form" option="Explicit file entry in slots table"/>
+    <recommendation option="Make duplicates unrepresentable">With the file bound through the slot&apos;s own [slots] key, a second source for one slot is a repeated TOML key the parser already refuses, so no rule, message, or test case is needed; every other option writes machinery for a state the chosen binding cannot express.</recommendation>
+    <alternative id="Make duplicates unrepresentable">
+      The build adds no duplicate rule of its own. The file-backed form is bound so that one slot can be supplied only once, for example by making the file reference that slot&apos;s own [slots] entry, and TOML&apos;s own refusal of a repeated key already catches any second entry.
+      <advantage>There is no new rule, message, or test case. Duplication is ruled out by the definition&apos;s structure rather than detected, so neither a refusal path nor a precedence rule has to be written or documented.</advantage>
+      <drawback>It is viable only if the binding form chosen by the File-backed slot declaration form sibling gives each slot a single key. Under a binding by naming convention in a directory, or under a separate table, a duplicate can still arise, and with no rule the outcome would come down to an undocumented dictionary-update order.</drawback>
+    </alternative>
+    <alternative id="Refuse any duplicate">
+      The build refuses a definition that supplies one slot both inline in [slots] and as a file-backed value, whatever the two values hold. The refusal is a BuildError raised while load_definition reads the definition, before anything renders, and it names the slot and both sources. No precedence rule exists.
+      <advantage>It matches the build&apos;s posture today, where every malformed definition (unknown key, non-string value, reserved name, stray placeholder) is refused at load. Every slot then has exactly one place its value comes from, so an editor never changes a value that the build silently ignores.</advantage>
+      <drawback>Moving a value from inline to a file has to happen in one edit, deleting the inline entry in the same change, because an intermediate state with both fails the build. It also adds a load-time rule and an error message that the new build test has to cover.</drawback>
+    </alternative>
+    <alternative id="Refuse only differing values">
+      The build accepts a slot supplied in both forms when the two values are identical after the build&apos;s normal reading of each, and uses that value. It refuses the definition, at load and naming the slot and both sources, only when the two values differ.
+      <advantage>A value can be copied into a file and the build checked before the inline entry is deleted, while two forms that disagree still cannot pass silently.</advantage>
+      <drawback>The redundant copy is allowed to stay. It turns into a build failure the first time someone edits only one of the two copies, so the second place to edit is never removed, only deferred. Whether &quot;identical&quot; holds also depends on how a file value&apos;s trailing newline is read, which the trailing-newline sibling question owns.</drawback>
+    </alternative>
+    <alternative id="Inline takes precedence">
+      The build accepts a slot supplied in both forms and uses the inline [slots] value, ignoring the file-backed one without a failure. The file acts as a default that an inline entry overrides.
+      <advantage>The definition never fails over this case, and settings.toml stays the one file that shows which value wins. A reader of the TOML sees the value that renders whenever an inline entry is there.</advantage>
+      <drawback>A file-backed value can sit in the definition directory and never render. An editor who edits that file sees no change and gets no error, and --check passes because the committed tree was also rendered from the inline value. That is a silent dead copy, in a build that otherwise refuses every malformed definition.</drawback>
+    </alternative>
+    <alternative id="File takes precedence">
+      The build accepts a slot supplied in both forms and uses the file-backed value, ignoring the inline [slots] entry without a failure. The inline entry acts as a default that a file overrides.
+      <advantage>The definition never fails over this case, and a value can be moved into a file and take effect at once, with the leftover inline entry deleted at leisure.</advantage>
+      <drawback>The inline value in settings.toml, together with the comment above it explaining that host&apos;s value, can be stale and never render. A reader of the TOML is misled about what the tree carries, and the build gives no signal that this is so.</drawback>
+    </alternative>
+  </open-question>
+  <open-question id="Inline versus file assignment">
+    <question>Once both forms exist, which slot values are held in files and which stay inline in settings.toml: every value, only the multi-line paragraphs, or whichever each host definition chooses per slot?</question>
+    <depends-on question="File-backed slot declaration form" option="Explicit file entry in slots table"/>
+    <recommendation option="Multi-line in files, by convention">It moves exactly the paragraphs that make settings.toml hard to read into files where they read as prose, keeps short labels beside their comments, adds no check or boundary definition for a cosmetic split, and the explicit file entry in [slots] already shows a reader where every value lives, which removes the main cost of leaving the rule unenforced.</recommendation>
+    <alternative id="Multi-line in files, by convention">
+      Assignment rule: a value that spans more than one line (today the ALTERNATIVES_CONCURRENCY and ALTERNATIVES_DISPATCH paragraphs, and the new repair-branch and wait values) is held in a file; a single-line value (CONTEXT_FILE, AGENT_TOOL, ALTERNATIVES_AGENT, the one-sentence dispatch values, empty values) stays inline in settings.toml. The rule is the same in every host and is decided per value by its shape, so one slot may be a file in one host and inline in another. Enforcement: a documented development rule only; the build checks nothing about which form a value uses.
+      <advantage>It moves exactly the long paragraphs that make settings.toml hard to read and diff (thirteen- and twenty-line TOML literal strings) into files where they read as prose, while short labels stay next to their comment in the TOML, and the build gains no new check.</advantage>
+      <drawback>An unenforced rule drifts: a value that grows past one line can stay inline, or a short one land in a file, with nothing to notice, and &quot;multi-line&quot; is itself fuzzy for a single long line or a value like Codex&apos;s prompt instruction that is one sentence ending in two newlines; where that edge falls depends on the trailing-newline rule a sibling question owns.</drawback>
+    </alternative>
+    <alternative id="Every value in a file">
+      Assignment rule: every slot value of every host definition is held in a file, the one-word ones (CONTEXT_FILE = &quot;CLAUDE.md&quot;, the empty COMPLETE_TASK_PROMPT_INSTRUCTIONS and ALTERNATIVES_PROMPT_INSTRUCTIONS of Claude Code) included, so each settings.toml keeps no inline [slots] value. Enforcement: a documented convention only; the build still accepts the inline form the goal keeps beside the file one, and nothing refuses an inline value.
+      <advantage>One place to look for every host wording: an editor never has to decide or remember which form a slot uses, and a value&apos;s bytes are read exactly as the core/ file will carry them, with no TOML quoting or literal-string rules in between.</advantage>
+      <drawback>It turns eight values per host, several of them a single word or empty, into some two dozen tiny files, leaves the inline form the build still supports unused in practice, and separates each value from the explanatory comment that today sits above it in settings.toml; how much of that comment can stay beside the value depends on the binding form and location the file-backed declaration question settles, and the empty values depend on the trailing-newline rule settled there too.</drawback>
+    </alternative>
+    <alternative id="Multi-line in files, build-enforced">
+      Assignment rule: the same shape rule as the convention option — multi-line values in files, single-line values inline, decided per value in every host. Enforcement: the build refuses a definition that violates it, with a load-time error naming the slot and the form it should take (an inline value containing a newline, and a file-backed value that is a single line, are both refused).
+      <advantage>The split cannot drift: every definition stays in the one readable shape without relying on an editor remembering a rule, and the error message teaches the rule at the moment it is broken.</advantage>
+      <drawback>It adds a validation rule to scripts/build_hosts.py and a case the new rendering test must cover, and it must define &quot;single line&quot; exactly, which interacts with how a file value&apos;s trailing newline is treated (a sibling question&apos;s axis) and with values such as Codex&apos;s COMPLETE_TASK_PROMPT_INSTRUCTIONS that carry an embedded &quot;\n\n&quot; today; a value hovering at the boundary forces a file move or back on every edit that crosses it.</drawback>
+    </alternative>
+    <alternative id="Per-slot form, same in every host, by convention">
+      Assignment rule: the form is fixed per slot name rather than per value: a slot whose value is a paragraph in any host (ALTERNATIVES_CONCURRENCY, ALTERNATIVES_DISPATCH, the new repair and wait slots) is file-backed in every definition, even where one host&apos;s value is short or empty, and every other slot is inline in every definition. Enforcement: a documented convention only.
+      <advantage>The three definitions stay structurally parallel — the same slot is found the same way in each host, so comparing or adding a host is a matter of filling the same set of files and keys, which matches how slot-declaration already insists on the same name set everywhere.</advantage>
+      <drawback>A host whose value for a file-backed slot is one line or empty still gets a file for it, and nothing stops a definition from breaking the parallel, so the structure holds only as long as editors keep it.</drawback>
+    </alternative>
+    <alternative id="Per-slot form, same in every host, build-enforced">
+      Assignment rule: the same per-slot rule — each slot name has one form, file-backed or inline, used identically by every definition. Enforcement: the build checks it beside slot-declaration, refusing any slot that one definition supplies as a file and another inline, without fixing which form a given slot must take.
+      <advantage>It extends the existing cross-definition check in its own style (same names everywhere becomes same names and same forms everywhere), so the definitions cannot drift apart, while leaving the choice of form for each slot to whoever introduces it.</advantage>
+      <drawback>It adds a second cross-definition check and its test case, and moving one slot between forms becomes a coordinated edit across all three host definitions in one change; it also forces short or empty per-host values into files whenever any host needs a paragraph.</drawback>
+    </alternative>
+    <alternative id="Each definition chooses per slot">
+      Assignment rule: none — each host definition chooses, slot by slot, whether a value is inline or in a file, and different hosts may choose differently for the same slot. Enforcement: none; the build accepts either form for any slot, and the docs describe both forms without prescribing when to use which.
+      <advantage>It is the least machinery and the least rule text: the build only has to accept both forms, and an author places each value wherever it reads best for that host, with no boundary case to define.</advantage>
+      <drawback>Nothing tells a later editor where a given slot&apos;s value lives, so finding or comparing one wording across hosts means checking both places in each definition, and the definitions can diverge in shape for no reason anyone recorded.</drawback>
+    </alternative>
+  </open-question>
+  <open-question id="Floor-run exclusion of build test">
+    <question>The Python 3.9 floor run collects the same tests/ directory as the pinned run but has neither PyYAML nor tomllib, both of which the build imports. How is the rendering test kept to the pinned interpreter: a skip inside the test, a collection rule in conftest.py, a location outside the floor run&apos;s test paths, or a change to the floor command itself?</question>
+    <depends-on question="Build test shape" option="Synthetic render via patched import"/>
+    <recommendation option="Skip below 3.11">An in-process render needs tomllib and yaml, which closes both no-exclusion options; a module-level version skip is self-contained in the test file, changes no command in its three copies, keeps conftest.py about the tools, and never skips under the pinned interpreter, so a missing PyYAML there fails loudly instead of silently hiding the only build test.</recommendation>
+    <alternative id="Skip below 3.11">
+      The rendering test lives under tests/ and opens with a module-level pytest.skip(allow_module_level=True) when sys.version_info is below (3, 11), placed before any import of the build, so the floor run collects it and reports it skipped. The exclusion keys on the interpreter version, matching pyproject.toml&apos;s requires-python; nothing outside the test file changes.
+      <advantage>Self-contained in the test file with no command or documentation change, and under the pinned interpreter it never skips, so a missing PyYAML there fails loudly instead of hiding the test.</advantage>
+      <drawback>The 3.11 threshold is a second copy of requires-python that must be kept in step by hand, the skip must stand above the import or collection errors on 3.9, and the floor run&apos;s summary carries a permanent skipped entry.</drawback>
+    </alternative>
+    <alternative id="Skip on missing modules">
+      The rendering test lives under tests/ beside the tool tests and opens with pytest.importorskip for tomllib and yaml before it reaches the build code, so the floor run collects it and reports it skipped. The exclusion keys on the modules&apos; absence, not on the interpreter version; pyproject.toml, conftest.py, and both pytest commands stay unchanged.
+      <advantage>Self-contained in the one test file with no command, CI, CONTRIBUTING.md, or CLAUDE.md change, and it keys on the exact cause of the failure (the missing imports), so the skip reason printed by the floor run states why.</advantage>
+      <drawback>The skip also fires silently under the pinned run if PyYAML ever goes missing from the project environment (a broken lock or a run outside uv), so the only build test can stop running with a passing suite; the floor run&apos;s summary carries a permanent skipped entry.</drawback>
+    </alternative>
+    <alternative id="Conftest collection rule">
+      The rendering test lives under tests/, and tests/conftest.py adds its file to collect_ignore (or answers pytest_ignore_collect for it) when the interpreter is below 3.11, so the floor run never collects or imports it and reports nothing for it. Both pytest commands, pyproject.toml, and the test file itself stay free of any version check.
+      <advantage>The test file stays clean and the floor run&apos;s output carries no skip noise; the one rule that keeps build tests off the floor sits in the suite&apos;s shared configuration, where a later build test can be added to it.</advantage>
+      <drawback>The exclusion is invisible from the test file and from the floor run&apos;s output, so a reader of either cannot tell the test is excluded, and the conftest.py that today documents itself as serving the two core/tools/ tools gains a concern about the build; a file name in collect_ignore silently stops matching if the test is renamed.</drawback>
+    </alternative>
+    <alternative id="Separate dir, floor names tests">
+      The rendering test lives in its own directory outside tests/ (for example a build-test directory beside it), which pyproject.toml&apos;s testpaths gains so the bare pinned `uv run pytest` collects both, while the floor command is changed to name tests/ explicitly (`uv run --no-project --python 3.9 --with pytest pytest tests`) in drift-gate.yml, CLAUDE.md&apos;s Commands, and CONTRIBUTING.md.
+      <advantage>The split is structural: the build test and the 3.9-portable tool tests never share a directory or conftest.py, and the floor command states on its face exactly what the floor run covers, with no skip logic anywhere.</advantage>
+      <drawback>The floor command is changed in three places and a floor run written without the explicit path (the old command) collects the build test and fails with an import error; a second test root departs from the one flat tests/ layout CLAUDE.md describes.</drawback>
+    </alternative>
+    <alternative id="Separate dir, pinned names it">
+      The rendering test lives in its own directory outside tests/, which pyproject.toml&apos;s testpaths does not include, so the floor run is untouched and the pinned command is extended to name both directories (`uv run pytest tests &lt;build-test dir&gt;`) in drift-gate.yml, CLAUDE.md&apos;s Commands, and CONTRIBUTING.md.
+      <advantage>The floor run&apos;s command and collection stay exactly as they are, so the 3.9 promise is checked by the same line it always was, and no skip or collection rule exists anywhere.</advantage>
+      <drawback>A bare `uv run pytest`, the habitual pinned command, silently omits the build test, so the test runs only where the extended command was written; the pinned command changes in three places.</drawback>
+    </alternative>
+    <alternative id="Floor command ignores the file">
+      The rendering test lives under tests/ with no version or import check, and the floor command gains `--ignore=tests/&lt;build test file&gt;` in drift-gate.yml, CLAUDE.md&apos;s Commands, and CONTRIBUTING.md; pyproject.toml, conftest.py, and the pinned command stay unchanged.
+      <advantage>The test file and suite configuration carry no exclusion logic, the pinned run needs no change, and the floor command names exactly what it leaves out.</advantage>
+      <drawback>The exclusion lives in a command copied into three places, each naming the test file by path, so a rename or a second build test needs all three edited, and anyone running the floor suite from memory without the flag hits an import error.</drawback>
+    </alternative>
+    <alternative id="Build via uv in both runs">
+      No exclusion: the rendering test stays under tests/ and runs under both interpreters, but reaches the build only by invoking it as a subprocess through `uv run scripts/build_hosts.py` (or `uv run python` on a driver), so the build code always executes under the project&apos;s pinned interpreter with PyYAML whichever interpreter runs the suite. Commands, pyproject.toml, and conftest.py stay unchanged.
+      <advantage>No skip, collection rule, or command change exists anywhere, and the floor run never carries an excluded or skipped entry, while the build itself still runs only under the pinned interpreter.</advantage>
+      <drawback>Viable only if the test reaches the build as a subprocess (the build-test-shape axis); the test depends on uv being on PATH inside pytest, runs the build twice per CI job, and reads against the goal&apos;s wording that the test itself runs under the pinned interpreter.</drawback>
+    </alternative>
+    <alternative id="Make build importable on 3.9">
+      No exclusion: the build&apos;s tomllib and yaml imports move inside the functions that load settings and frontmatter, so the module and its slot-filling step import under Python 3.9, and the rendering test, exercising only that step, runs unskipped in both the pinned and the floor run. Commands, pyproject.toml, and conftest.py stay unchanged.
+      <advantage>One suite, one command pair, and no exclusion mechanism of any kind; the slot-filling logic is also checked at the floor.</advantage>
+      <drawback>Viable only if the test reaches just the slot-filling step through an import (the build-test-shape axis); it reshapes the build&apos;s imports for a test and extends a 3.9 compatibility burden to build tooling that pyproject.toml deliberately pins to 3.11+, where a later 3.10+ construct in the build would break the floor run.</drawback>
+    </alternative>
+  </open-question>
+  <open-question id="Hands-on check record">
+    <question>The Antigravity slot values are to be rewritten from a hands-on check against the installed agy. Where is that check recorded so a later editor can tell what each value was written against: in the comment above each value in the host definition, in the milestone&apos;s decisions only, as a repeatable script kept in the repository, or nowhere beyond the values themselves?</question>
+    <applied-principle>Description over retirement note</applied-principle>
+    <depends-on question="File-backed slot declaration form" option="Explicit file entry in slots table"/>
+    <recommendation option="Per-value comment stamp">The record sits where an editor changing a value reads, extends the existing convention that each comment says why this host&apos;s value is what it is, tells an observed value from an inferred one at a glance, and serves the Claude Code and Codex checks in the same form; a tool version and behaviour facts belong beside the value they cover, not in the lasting invariants, where they would go stale unnoticed.</recommendation>
+    <alternative id="Per-value comment stamp">
+      Recorded in the Antigravity host definition, per value: the comment above each Antigravity slot value in scripts/hosts/antigravity/settings.toml names the agy version the value was checked against and the observed behaviour it rests on (what dispatch, waiting, continuing an agent, or the context file was seen to do). No separate file, script, or CLAUDE.md entry carries the check.
+      <advantage>The record sits at the exact place an editor changing a value reads, and it extends the existing convention that each slot comment says why this host&apos;s value is what it is, so a value written from observation and one written by inference are told apart at a glance.</advantage>
+      <drawback>The version is repeated across every Antigravity comment and nothing checks it, so a value edited later without a re-check keeps a stamp that now overclaims, and a newer agy leaves every stamp silently stale; where a value ends up held in a file rather than inline is a condition on whether a comment can sit above it at all (the inline-versus-file assignment and the file-backed binding form are sibling questions).</drawback>
+    </alternative>
+    <alternative id="One stamp in definition header">
+      Recorded in the Antigravity host definition, once: a single block in the header comment of scripts/hosts/antigravity/settings.toml names the agy version and date of the check and lists what was observed; the per-value comments state only what each value describes and why, in mechanism terms, with no version.
+      <advantage>A later re-check updates one block rather than every comment, and the definition still carries its own evidence where an editor of it looks first.</advantage>
+      <drawback>The stamp covers the whole definition, so a single value edited afterwards without a re-check still reads as checked; an editor must connect a value to the header list by hand rather than seeing its basis beside it.</drawback>
+    </alternative>
+    <alternative id="Milestone record only">
+      Recorded in this milestone&apos;s directory only: the check&apos;s agy version and each observation the values rest on are written out deliberately in the milestone&apos;s own record (its Decisions and the completing task&apos;s Verified entry in TASKS_DONE.md); the host definition&apos;s comments keep describing each value in mechanism terms with no version or reference to the check.
+      <advantage>Adds nothing to maintain: the record is a committed, dated snapshot that never claims to be current, and git blame on a value leads to the milestone commits that wrote it.</advantage>
+      <drawback>An editor reading settings.toml sees no sign that a value was observed or against which agy, and must know to dig through history to find it; the milestone files are not where host-definition editors look.</drawback>
+    </alternative>
+    <alternative id="CLAUDE.md invariant record">
+      Recorded in CLAUDE.md: the rewritten &quot;Host wording differences are named slots&quot; invariant states that the Antigravity values were written from a hands-on check, names the agy version, and summarises the observed mechanisms they rest on; the host definition&apos;s comments carry no version.
+      <advantage>CLAUDE.md is already the home of rationale and is read at the start of every session, and today&apos;s invariant already explains why the Antigravity value is what it is, so the replacement explanation lands where the old one stood.</advantage>
+      <drawback>Puts a volatile tool version and behaviour facts into the invariants file, which is meant to hold lasting design decisions, and separates the evidence from the values it covers so the two can drift apart unnoticed.</drawback>
+    </alternative>
+    <alternative id="Repeatable probe script">
+      Recorded as an executable probe kept in the repository (under scripts/): it runs the installed agy&apos;s version, help, and agent-listing commands and checks the strings the Antigravity values rely on, and each Antigravity slot comment points at it; the parts of the check it cannot automate are noted in the script beside the commands.
+      <advantage>A re-check after an agy update is one command rather than a manual investigation, and the evidence can be reproduced rather than taken on trust.</advantage>
+      <drawback>Only the static facts (version, flags, help strings, agent listing) are scriptable; dispatch, waiting, and continuing an agent need a live model session that is nondeterministic, billed, and logged in, so the script proves the least important part; it cannot run in CI where agy is absent, adds an untested script to scripts/, and goes stale as silently as a comment.</drawback>
+    </alternative>
+    <alternative id="No record beyond values">
+      Not recorded anywhere deliberately: the rewritten values stand on their own, their comments describe each mechanism and why the value is what it is with no version or reference to the check, and the only trace is whatever the routine completion entry and commit history happen to hold.
+      <advantage>Makes no claim that can go stale, matches how the Codex values are recorded today (their comments cite the mechanism and no version), and adds no artifact to keep in step with agy.</advantage>
+      <drawback>A later editor cannot tell what agy the values were written against or whether a value was observed rather than inferred, which is the very uncertainty that left the Antigravity values unchecked until this milestone.</drawback>
+    </alternative>
+  </open-question>
+  <open-question id="Antigravity context-file transition">
+    <question>If the Antigravity context file changes away from CLAUDE.md, is any transition provided for existing Antigravity projects whose CLAUDE.md already carries the workflow section, or does the change apply only to projects bootstrapped after it?</question>
+    <depends-on question="Antigravity context file choice" option="AGENTS.md"/>
+    <recommendation option="Forward only, no transition">It matches the project&apos;s standing no-migration posture, adds nothing to core/ or the definition, and keeps the Antigravity tree free of another host&apos;s file name; Antigravity never auto-loaded CLAUDE.md, the only installed Antigravity copy predates the tool, and a project missing the new file is pointed at /init by the skills that read it, so the loss is neither silent nor wide.</recommendation>
+    <alternative id="Forward only, no transition">
+      The change applies only to projects bootstrapped after it. Existing Antigravity projects get no explicit notice beyond the release&apos;s ordinary CHANGELOG entry, no runtime fallback, and no migration step. Their CLAUDE.md is left exactly as it stands, and every skill reads the new context file from the release that makes the change.
+      <advantage>It adds no code, prose, or new behaviour to core/ or the Antigravity definition. It matches the project&apos;s standing no-migration posture (the pre-split milestones and the question-order change both shipped with no migration step). The Antigravity install base is thin: the only Antigravity copy on this machine is a pre-tool port, and Antigravity&apos;s own rule loading never read CLAUDE.md, so the workflow section there was never auto-loaded.</advantage>
+      <drawback>An existing Antigravity project silently loses the environment context its CLAUDE.md holds. Skills such as derive-tasks, specify-milestone-starting-state, and the completion procedure then read a missing or bare file and only suggest /init. Re-running the bootstrap does not repair this, because it stops at &quot;Workflow already bootstrapped&quot; whenever milestones/ and the pointer exist. The option only applies if the Antigravity context file actually changes, which the context-file choice question decides.</drawback>
+    </alternative>
+    <alternative id="Documented manual transition">
+      No runtime change. The release that makes the change carries an explicit transition instruction in the CHANGELOG entry and in the Antigravity README template, which today tells users to run /init into CLAUDE.md. The instruction tells existing Antigravity users to move or copy their CLAUDE.md content, both the environment context and the ## Milestone Workflow section, into the new context file, or to link the new file to it.
+      <advantage>Existing users get a clear, one-time remedy at almost no cost: a few sentences in files the release already touches, with no change to any skill or to the bootstrap&apos;s run-once contract, and with the user rather than a skill deciding what to do with their own CLAUDE.md.</advantage>
+      <drawback>It only helps users who read the release notes or the README. A user who upgrades without reading them still gets the silent context loss of the forward-only option. Wording about another file also puts transition prose into the Antigravity tree&apos;s own templates, whose scope under the other-host naming rule is a sibling question.</drawback>
+    </alternative>
+    <alternative id="Bootstrap re-entry plus instruction">
+      init-milestone-base-workflow is changed for every host so that an already-bootstrapped project whose context file is missing or lacks the ## Milestone Workflow section is not stopped as &quot;already bootstrapped&quot;. Instead the skill runs its step 6 (create the file or append the section) and commits that alone. The release instruction tells existing Antigravity users to re-run the bootstrap and then /init to document their environment in the new file. CLAUDE.md is left untouched.
+      <advantage>It gives existing projects a supported, committed path to a correct new context file through a skill they already know, with the workflow section written by the same step that writes it for new projects. The bootstrap also becomes able to repair a context file deleted or renamed for any other reason.</advantage>
+      <drawback>It changes the bootstrap&apos;s &quot;already initialized&quot; stop condition and its no-op line for every host, to serve one host&apos;s transition. It restores only the workflow section, not the environment context, so the user still has to run /init or move content by hand. And it still depends on the user reading the instruction.</drawback>
+    </alternative>
+    <alternative id="Read-time CLAUDE.md fallback">
+      The skills that read the context file in the Antigravity tree read the new file and fall back to CLAUDE.md when the new file is absent. The fallback is permanent and has no removal date. It is expressed through the Antigravity slot values or an added slot, since CONTEXT_FILE today is a single file name used at about thirty sites, including the bootstrap&apos;s file heading. The bootstrap still creates or extends only the new file, and no instruction is needed for the fallback to work.
+      <advantage>Existing projects keep working with no action and no reading required: their environment context in CLAUDE.md keeps reaching every skill that reads it, while new projects get the new file from the start.</advantage>
+      <drawback>It puts a second file name and conditional wording into every context-file site of the Antigravity tree. That reintroduces the capability-conditional branching this milestone exists to remove, and it keeps a file name Antigravity itself never loads in its runtime prose. The CONTEXT_FILE slot&apos;s single-name shape would have to change or a new slot would be needed, which ties this option to how the slot granularity is settled.</drawback>
+    </alternative>
+    <alternative id="Automated content migration">
+      The Antigravity tree&apos;s bootstrap gains a one-time migration step. When the new context file is absent and CLAUDE.md carries the ## Milestone Workflow section, it copies or moves CLAUDE.md&apos;s content into the new file and commits the result under the bootstrap&apos;s subject. The &quot;already bootstrapped&quot; stop is relaxed to let this step run, and no instruction beyond pointing users at a re-run is given.
+      <advantage>It carries both the workflow section and the environment context across in one committed step, so no context is lost and the user does not have to edit files by hand.</advantage>
+      <drawback>It contradicts the bootstrap&apos;s own rule never to document the project&apos;s environment context in the context file itself. It may move content a user still wants under CLAUDE.md for another host. It adds host-specific migration behaviour that core/ has no slot shape for, and it reverses the project&apos;s consistent no-migration posture, all for a host with a thin install base. It still runs only if the user re-runs the bootstrap.</drawback>
+    </alternative>
+  </open-question>
+  <open-question id="File value trailing newline">
+    <question>A text file conventionally ends with a newline while an inline TOML slot value does not. When a file-backed slot value is substituted into a core/ file, are its bytes used verbatim, or is trailing whitespace normalised, and by what rule?</question>
+    <depends-on question="Inline versus file assignment" option="Multi-line in files, by convention"/>
+    <recommendation option="Strip all trailing whitespace">A file&apos;s ending can never leak a blank line or a drift diff into a host tree however an editor leaves it, the rule matches how the inline paragraphs already close straight after their last word, and the only values that need trailing whitespace are the one-line prompt openers, which the assignment rule keeps inline anyway.</recommendation>
+    <alternative id="Strip all trailing whitespace">
+      The build removes every trailing whitespace character (all final newlines, spaces, and tabs) from a file-backed value before substituting it, keeping leading whitespace and interior bytes verbatim. A value that must end in whitespace cannot be file-backed and stays inline in settings.toml.
+      <advantage>The most forgiving rule: however an editor or a stray keystroke leaves the end of the file, the rendered tree is the same, so the file ending can never introduce a blank line or a drift diff into a host tree, and the rule matches how the inline multi-line values are written today (closing &apos;&apos;&apos; straight after the last word).</advantage>
+      <drawback>A slot whose value legitimately ends in whitespace — today&apos;s Codex prompt-opener values end in &quot;\n\n&quot; — can never move to a file, so the two forms are no longer equivalent and the rule constrains which slots may be file-backed, which is the Inline versus file assignment question&apos;s to settle; whether this matters depends on that outcome.</drawback>
+    </alternative>
+    <alternative id="Strip one final newline">
+      The build reads a file-backed value as UTF-8 text and removes exactly one trailing line ending (a final &quot;\n&quot;, or &quot;\r\n&quot;) if the file ends with one, keeping every other byte as written, earlier trailing newlines and spaces included; a file with no final newline is used as it stands. No check is added for the file&apos;s ending.
+      <advantage>Files can follow the ordinary text-file convention editors and tools enforce, while a value whose meaning needs trailing whitespace (such as the Codex prompt-opener values that today end in &quot;\n\n&quot; inline) can still be held in a file by writing one extra newline, so the file form can carry any value the inline form can and the rule is one sentence long.</advantage>
+      <drawback>The file&apos;s bytes and the substituted bytes differ by one invisible character, so a reader must know the rule to tell what a file with two final newlines yields, and a value meant to end in exactly one newline needs a file ending in two, which looks like a mistake and invites someone to &quot;fix&quot; it.</drawback>
+    </alternative>
+    <alternative id="Strip both ends">
+      The build removes leading and trailing whitespace (blank lines and spaces at both ends) from a file-backed value, keeping interior bytes verbatim, so a file may open or close with blank lines or a comment-free margin. A value that must begin or end in whitespace stays inline.
+      <advantage>Gives the file author the most freedom in layout — a blank first line, trailing blank lines, any final newline — with one symmetric rule that is easy to state and test.</advantage>
+      <drawback>Silently discards leading whitespace too, which no value needs stripped today and which an indented or newline-prefixed value would rely on, so it widens the set of values the file form cannot carry beyond the trailing-whitespace case for no gain the trailing-only rules lack; whether that set matters again depends on the Inline versus file assignment outcome.</drawback>
+    </alternative>
+    <alternative id="Verbatim, refuse final newline">
+      The build substitutes a file-backed value&apos;s bytes exactly as read, with no normalisation, and the definition loader refuses a value file whose last byte is a newline (failing the build with a message naming the file), so a value file must be saved without a final newline; a value that needs trailing whitespace other than a newline can still be file-backed.
+      <advantage>What the file holds is exactly what lands in the tree, with no hidden rule for a reader to learn, and a stray final newline is caught at build time rather than surfacing as an unexplained blank line in a rendered host tree.</advantage>
+      <drawback>Fights the near-universal convention that text files end in a newline: many editors, formatters, and git&apos;s &quot;No newline at end of file&quot; warning push the other way, so value files are awkward to edit and the refusal will fire routinely; and a value that must end in a newline (the Codex prompt openers) cannot be file-backed at all.</drawback>
+    </alternative>
+    <alternative id="Verbatim, unenforced">
+      The build substitutes a file-backed value&apos;s bytes exactly as read, with no normalisation and no check of the file&apos;s ending; keeping a value file free of an unwanted final newline is left to whoever edits it.
+      <advantage>The least build code and the simplest contract: the file is the value, every value the inline form can express (trailing &quot;\n\n&quot; included) can be expressed in a file, and nothing is ever altered behind the author&apos;s back.</advantage>
+      <drawback>Any editor that appends the conventional final newline silently changes the rendered tree — an extra line break after a paragraph slot, or a broken sentence where a slot sits mid-line — and the drift gate does not catch it, because the rebuilt tree is what gets committed; the error surfaces only in review of the rendered diff, if at all.</drawback>
     </alternative>
   </open-question>
 </open-questions>
