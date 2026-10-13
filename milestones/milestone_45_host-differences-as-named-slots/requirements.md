@@ -68,5 +68,9 @@ The Codex values for the repair branches and the repair wait are rewritten from 
 
 The Antigravity `CONTEXT_FILE` value becomes `AGENTS.md` at the workspace root, so the Antigravity and Codex trees name the same file. The Antigravity README template's `/init` sentence is rewritten to name it too. The value stays a plain root-level file name, so no `core/` sentence about the workspace root or the bootstrap's file heading changes.
 
+### Antigravity agent loading
+
+Native agent loading on Antigravity is added only when the hands-on check shows that a file the build can already emit is enough: a manifest template beside `plugin.json`, or a relocation through the existing layout and renames. If `agy` needs frontmatter fields the build cannot add today, nothing is added for loading and the Antigravity slot values describe the generic-subagent fallback instead, a subagent told to read the plugin's agent file by its plugin-root path, as the Codex values do. The build's key schema and code gain nothing for agent loading either way.
+
 ## Out of Scope
 
