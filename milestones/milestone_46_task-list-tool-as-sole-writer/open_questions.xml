@@ -1,6 +1,26 @@
 <open-questions>
   <open-question id="Task-list tool file name">
     <question>What is the file name of the new task-list tool under core/tools/, the name every runtime command, CLAUDE.md invariant, doc entry, and test fixture will carry (define_milestone.py and open_questions.py are the two existing precedents)?</question>
+    <alternative id="task_list.py">
+      Name the tool core/tools/task_list.py: a document-named noun in the open_questions.py style, singular, taken from the &quot;task list&quot; / &quot;task-list tool&quot; wording the milestone goal, the skill descriptions, and docs already use for TASKS_TODO.md and TASKS_DONE.md together. Every runtime command reads python3 {{PLUGIN_ROOT}}/tools/task_list.py &lt;subcommand&gt; &lt;MILESTONE_DIR&gt; …, and tests and the conftest runner take the matching task_list prefix.
+      <advantage>It matches the vocabulary already in place: &quot;task list&quot; and &quot;task-list&quot; are the most frequent terms in core/ and docs/ for these files, and the milestone itself calls the thing the task-list tool, so the name needs no explanation in CLAUDE.md, the docs, or a skill step, and subcommands like move, insert, and append read naturally after a noun, as they do after open_questions.py.</advantage>
+      <drawback>The singular names one list while the tool writes two files, and &quot;task list&quot; in prose often means TASKS_TODO.md alone (complete-all-tasks works &quot;the task list&quot;), so the name slightly understates that the move spans both files.</drawback>
+    </alternative>
+    <alternative id="task_lists.py">
+      Name the tool core/tools/task_lists.py: a document-named noun in the open_questions.py style, plural like open_questions.py, naming both task files the tool writes as the two task lists. Commands read python3 {{PLUGIN_ROOT}}/tools/task_lists.py &lt;subcommand&gt; &lt;MILESTONE_DIR&gt; …, with tests and the conftest runner under the task_lists prefix.
+      <advantage>It mirrors the closest precedent exactly (a plural noun naming the documents the tool is the sole writer of, the subcommands carrying the verbs) and states in the name that one tool owns both TASKS_TODO.md and TASKS_DONE.md, which is what the sole-writer invariant in CLAUDE.md will say.</advantage>
+      <drawback>&quot;Task lists&quot; is a rarer form in the existing prose than &quot;task list&quot;, and task_list.py versus task_lists.py is an easy one-letter slip in the many fixed commands written into runtime prose, where a typo fails at run time rather than in the build.</drawback>
+    </alternative>
+    <alternative id="tasks.py">
+      Name the tool core/tools/tasks.py: a document-named noun taken from the TASKS_ prefix the two files share, the shortest form. Commands read python3 {{PLUGIN_ROOT}}/tools/tasks.py &lt;subcommand&gt; &lt;MILESTONE_DIR&gt; …, with tests and the conftest runner under the tasks prefix.
+      <advantage>It ties the name directly to the file names it writes (TASKS_TODO.md, TASKS_DONE.md) and keeps every fixed command, including the long chained completion call shown in full in runtime prose, as short as possible.</advantage>
+      <drawback>The word &quot;tasks&quot; is everywhere in the runtime prose, docs, and test names, so searching for the tool&apos;s call sites or test files by its name is noisy, and a bare tasks.py on the pytest pythonpath is a generic module name that says less about what the file is than either existing tool&apos;s name does.</drawback>
+    </alternative>
+    <alternative id="write_tasks.py">
+      Name the tool core/tools/write_tasks.py: an act-named verb_noun in the define_milestone.py style, the verb naming the tool&apos;s role as the only writer of the task files (reads stay prose, per the goal). Commands read python3 {{PLUGIN_ROOT}}/tools/write_tasks.py &lt;subcommand&gt; &lt;MILESTONE_DIR&gt; …, with tests and the conftest runner under the write_tasks prefix.
+      <advantage>The name itself carries the milestone&apos;s central claim, that this tool writes and nothing else does, and signals at every call site that reads of TASKS_TODO.md and TASKS_DONE.md do not go through it.</advantage>
+      <drawback>define_milestone.py is a single-act tool with no subcommands, so this follows its form but not its shape: a verb name over verb subcommands reads doubled (write_tasks.py move, write_tasks.py insert), and a read subcommand added later, such as a heading listing, would contradict the name.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Task title matching rule">
     <question>When the task-list tool is given a task title (the section to move, or a before/after anchor), does it match it exactly after whitespace- and case-folding, refusing anything else so a partial task name is resolved by the runner&apos;s own read of TASKS_TODO.md before the call, or does it carry the completion procedure&apos;s case-insensitive partial match itself, which then needs a rule for two sections matching and a way to tell the runner which heading it took?</question>
