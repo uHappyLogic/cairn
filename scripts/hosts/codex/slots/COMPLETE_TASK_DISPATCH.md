@@ -1,0 +1,1 @@
+Use the `spawn_agent` tool to spawn one default (generic) subagent, with no custom agent type, and a prompt that tells it to read and follow the plugin's `complete-task` agent file at `{{PLUGIN_ROOT}}/agents/complete-task.md` and otherwise contains only the task name, substituting `<TASK_NAME>` with the exact `##` heading text (without the `##` prefix):

@@ -31,3 +31,17 @@ Add one test module under `tests/` that opens with a module-level `pytest.skip(a
 - `uv run --no-project --python 3.9 --with pytest pytest` reports the module skipped (544 passed, 1 skipped).
 
 ---
+
+## Move Every Slot Value Into Files
+
+Rewrite the `[slots]` table of all three `scripts/hosts/<host>/settings.toml` files so every slot, the one-word and empty values included (`CONTEXT_FILE`, and the empty `COMPLETE_TASK_PROMPT_INSTRUCTIONS` and `ALTERNATIVES_PROMPT_INSTRUCTIONS` of Claude Code and Antigravity among them), is bound as `NAME = { file = "slots/NAME.md" }` to a file under that definition's `slots/` subdirectory, keeping each slot declared once with its explanatory comment above its entry, and holding a value that must end in a newline (the Codex prompt-opener values that end in two) in a file ending in one more newline than the value carries. This is a storage move only: no value's text changes. Verified by rebuilding and confirming `git status` shows no change under `hosts/` and `uv run scripts/build_hosts.py --check` passes.
+
+**Verified:**
+
+- All three `scripts/hosts/<host>/settings.toml` files bind every one of their eight slots as `NAME = { file = "slots/NAME.md" }` (8 such entries per file, no inline `[slots]` value left), the one-word `CONTEXT_FILE` and the empty `COMPLETE_TASK_PROMPT_INSTRUCTIONS` and `ALTERNATIVES_PROMPT_INSTRUCTIONS` included.
+- Each definition's `slots/` subdirectory holds exactly the eight value files its entries name, each containing the former inline value plus one trailing newline (the empty values as a lone newline, the Codex prompt-opener values ending in three newlines for a value carrying two).
+- Each slot stays declared once in its `[slots]` table with its explanatory comment above its entry, in the original order; only the table's lead comment changed, to say the values sit in `slots/` files with one extra trailing newline.
+- No value's text changed: `uv run scripts/build_hosts.py` rebuilt all three trees and `git status` shows no change under `hosts/`.
+- `uv run scripts/build_hosts.py --check` passes, and `uv run pytest` still passes (548 tests).
+
+---

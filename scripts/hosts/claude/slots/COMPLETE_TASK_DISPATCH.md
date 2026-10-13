@@ -1,0 +1,1 @@
+Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the `complete-task` agent under this plugin's namespace, `cairn:complete-task`, and a prompt containing only the task name, substituting `<TASK_NAME>` with the exact `##` heading text (without the `##` prefix):

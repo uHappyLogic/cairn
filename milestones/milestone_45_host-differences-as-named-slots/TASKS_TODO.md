@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Move Every Slot Value Into Files
-
-Rewrite the `[slots]` table of all three `scripts/hosts/<host>/settings.toml` files so every slot, the one-word and empty values included (`CONTEXT_FILE`, and the empty `COMPLETE_TASK_PROMPT_INSTRUCTIONS` and `ALTERNATIVES_PROMPT_INSTRUCTIONS` of Claude Code and Antigravity among them), is bound as `NAME = { file = "slots/NAME.md" }` to a file under that definition's `slots/` subdirectory, keeping each slot declared once with its explanatory comment above its entry, and holding a value that must end in a newline (the Codex prompt-opener values that end in two) in a file ending in one more newline than the value carries. This is a storage move only: no value's text changes. Verified by rebuilding and confirming `git status` shows no change under `hosts/` and `uv run scripts/build_hosts.py --check` passes.
-
----
-
 ## Slot The Alternatives Pass Host Passages
 
 In `core/skills/provide-alternatives-to-all-open-questions/SKILL.md` replace the four capability-conditional passages the starting state names with two new slots: one for the opening paragraph's concurrency phrase ("they run together where the host allows it"), and one repair slot holding the sub-step e lead-in, the two repair branches, and the repair-wait sentence, reordering sub-step e so that slotted text is contiguous ahead of the fixed corrective message, its fill rule, and the one-repair cap, which stay in `core/`, while `ALTERNATIVES_CONCURRENCY` and sub-steps d and f stay as they are. Retire the `AGENT_TOOL` and `ALTERNATIVES_AGENT` slots from `core/` and every definition, writing their wording literally inside each host's repair value, and seed each host's two new values as `slots/` files with exactly the text its tree renders today, so no slot value carries a placeholder other than `{{PLUGIN_ROOT}}`. Verified by rebuilding and confirming every `hosts/` tree is byte-identical to before and `--check` passes.

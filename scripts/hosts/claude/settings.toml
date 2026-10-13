@@ -45,60 +45,45 @@ shared = "shared"
 tools = "tools"
 
 # This host's text for every named slot, keyed by slot name: each {{SLOT_NAME}} placeholder
-# in a rendered core/ text file is replaced by its value here, before {{PLUGIN_ROOT}} is
-# replaced, so a value may carry {{PLUGIN_ROOT}}. Every host declares the same slot names,
-# and every name declared must appear in core/.
+# in a rendered core/ text file is replaced by its value, before {{PLUGIN_ROOT}} is
+# replaced, so a value may carry {{PLUGIN_ROOT}}. Each entry names the file under this
+# definition's slots/ subdirectory holding its value; the build removes that file's one
+# trailing newline, so a value ending in newlines is held with one more. Every host declares
+# the same slot names, and every name declared must appear in core/.
 [slots]
 # CONTEXT_FILE: the project's environment-context file, which the skills read for the
 # project's context, the bootstrap creates or extends, and finish-current-milestone updates.
 # Claude Code reads its project instructions from CLAUDE.md, so the workflow reads and
 # writes its environment context there.
-CONTEXT_FILE = "CLAUDE.md"
+CONTEXT_FILE = { file = "slots/CONTEXT_FILE.md" }
 # COMPLETE_TASK_DISPATCH: the complete-all-tasks sentence telling the runner how to dispatch
 # the complete-task agent for one task, ending where the dispatch prompt's fenced block opens.
 # Claude Code resolves the agent by its namespaced registry name through the Agent tool.
-COMPLETE_TASK_DISPATCH = '''Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the `complete-task` agent under this plugin's namespace, `cairn:complete-task`, and a prompt containing only the task name, substituting `<TASK_NAME>` with the exact `##` heading text (without the `##` prefix):'''
+COMPLETE_TASK_DISPATCH = { file = "slots/COMPLETE_TASK_DISPATCH.md" }
 # COMPLETE_TASK_PROMPT_INSTRUCTIONS: text opening complete-all-tasks' dispatch prompt, before
 # the task-name line.
 # The registered agent already carries its instructions, so nothing precedes the task name.
-COMPLETE_TASK_PROMPT_INSTRUCTIONS = ""
+COMPLETE_TASK_PROMPT_INSTRUCTIONS = { file = "slots/COMPLETE_TASK_PROMPT_INSTRUCTIONS.md" }
 # ALTERNATIVES_DISPATCH: the provide-alternatives-to-all-open-questions paragraph telling the
 # runner how to dispatch the per-question provide-alternatives-to-open-question agent and
 # what its prompt carries, ending where the dispatch prompt's fenced block opens.
 # Claude Code resolves the agent by its namespaced registry name through the Agent tool.
-ALTERNATIVES_DISPATCH = '''Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the
-`provide-alternatives-to-open-question` agent (singular — the per-question subagent) under this
-plugin's namespace, `cairn:provide-alternatives-to-open-question` — one dispatch per surviving
-question. Pass it that question's **Short Title**, the `<MILESTONE_DIR>` resolved in step 0, and
-the `<scratch dir>` created in sub-step **a**, and nothing else — the three values the
-orchestrator already holds:'''
+ALTERNATIVES_DISPATCH = { file = "slots/ALTERNATIVES_DISPATCH.md" }
 # ALTERNATIVES_PROMPT_INSTRUCTIONS: text opening the alternatives pass's dispatch prompt,
 # before its first line.
 # The registered agent already carries its instructions, so nothing precedes the prompt.
-ALTERNATIVES_PROMPT_INSTRUCTIONS = ""
+ALTERNATIVES_PROMPT_INSTRUCTIONS = { file = "slots/ALTERNATIVES_PROMPT_INSTRUCTIONS.md" }
 # ALTERNATIVES_AGENT: what the alternatives pass's re-dispatch repair spawns afresh.
 # Here that is the registered agent, named by its namespaced registry name.
-ALTERNATIVES_AGENT = '`cairn:provide-alternatives-to-open-question` agent'
+ALTERNATIVES_AGENT = { file = "slots/ALTERNATIVES_AGENT.md" }
 # AGENT_TOOL: the tool the alternatives pass's repair branches name, both as the source of
 # the agent id a follow-up message is addressed to and as the tool a fresh agent is
 # dispatched with.
 # Here that is the Agent tool.
-AGENT_TOOL = '`Agent` tool'
+AGENT_TOOL = { file = "slots/AGENT_TOOL.md" }
 # ALTERNATIVES_CONCURRENCY: the provide-alternatives-to-all-open-questions paragraph opening
 # step 3, saying how many per-question dispatches run at once and how the run collects their
 # returns: whether it waits once for every return or batches each time it wakes.
 # Claude Code sends every dispatch together, so the wording names no cap, and it names the wait
 # by the agent tool's capability rather than by one primitive.
-ALTERNATIVES_CONCURRENCY = '''Dispatch one read-only subagent per question step 1b printed, **all of them together in one
-message** — with no cap beyond one dispatch per surviving question — and collect their returns
-by what the agent tool offers. **Where it offers a blocking dispatch form**, send every dispatch
-in that form, so the message returns only once every agent has landed its file or ended in a
-failure, and then run the batch call (sub-step **d**) once, embedding and committing the whole
-set. **Where it offers no blocking form**, run the batch call every time you wake with landed
-returns, over whatever has landed by then. No foreground shell loop, background shell loop, or
-event monitor serves as the wait in either arm: the dispatch message itself, or the wake-ups the
-agents' endings bring, is the whole wait. No ranking or ordering precedes the dispatches: an
-alternative set is enumerated against the sibling questions as scope only, never against how a
-sibling will settle, so no dispatch reads what another wrote and their order changes nothing.
-Both arms write the same blocks and land the same commits; they differ only in how many times
-you wake.'''
+ALTERNATIVES_CONCURRENCY = { file = "slots/ALTERNATIVES_CONCURRENCY.md" }
