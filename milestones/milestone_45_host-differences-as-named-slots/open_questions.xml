@@ -88,6 +88,36 @@
   </open-question>
   <open-question id="Hands-on check record">
     <question>The Antigravity slot values are to be rewritten from a hands-on check against the installed agy. Where is that check recorded so a later editor can tell what each value was written against: in the comment above each value in the host definition, in the milestone&apos;s decisions only, as a repeatable script kept in the repository, or nowhere beyond the values themselves?</question>
+    <alternative id="Per-value comment stamp">
+      Recorded in the Antigravity host definition, per value: the comment above each Antigravity slot value in scripts/hosts/antigravity/settings.toml names the agy version the value was checked against and the observed behaviour it rests on (what dispatch, waiting, continuing an agent, or the context file was seen to do). No separate file, script, or CLAUDE.md entry carries the check.
+      <advantage>The record sits at the exact place an editor changing a value reads, and it extends the existing convention that each slot comment says why this host&apos;s value is what it is, so a value written from observation and one written by inference are told apart at a glance.</advantage>
+      <drawback>The version is repeated across every Antigravity comment and nothing checks it, so a value edited later without a re-check keeps a stamp that now overclaims, and a newer agy leaves every stamp silently stale; where a value ends up held in a file rather than inline is a condition on whether a comment can sit above it at all (the inline-versus-file assignment and the file-backed binding form are sibling questions).</drawback>
+    </alternative>
+    <alternative id="One stamp in definition header">
+      Recorded in the Antigravity host definition, once: a single block in the header comment of scripts/hosts/antigravity/settings.toml names the agy version and date of the check and lists what was observed; the per-value comments state only what each value describes and why, in mechanism terms, with no version.
+      <advantage>A later re-check updates one block rather than every comment, and the definition still carries its own evidence where an editor of it looks first.</advantage>
+      <drawback>The stamp covers the whole definition, so a single value edited afterwards without a re-check still reads as checked; an editor must connect a value to the header list by hand rather than seeing its basis beside it.</drawback>
+    </alternative>
+    <alternative id="Milestone record only">
+      Recorded in this milestone&apos;s directory only: the check&apos;s agy version and each observation the values rest on are written out deliberately in the milestone&apos;s own record (its Decisions and the completing task&apos;s Verified entry in TASKS_DONE.md); the host definition&apos;s comments keep describing each value in mechanism terms with no version or reference to the check.
+      <advantage>Adds nothing to maintain: the record is a committed, dated snapshot that never claims to be current, and git blame on a value leads to the milestone commits that wrote it.</advantage>
+      <drawback>An editor reading settings.toml sees no sign that a value was observed or against which agy, and must know to dig through history to find it; the milestone files are not where host-definition editors look.</drawback>
+    </alternative>
+    <alternative id="CLAUDE.md invariant record">
+      Recorded in CLAUDE.md: the rewritten &quot;Host wording differences are named slots&quot; invariant states that the Antigravity values were written from a hands-on check, names the agy version, and summarises the observed mechanisms they rest on; the host definition&apos;s comments carry no version.
+      <advantage>CLAUDE.md is already the home of rationale and is read at the start of every session, and today&apos;s invariant already explains why the Antigravity value is what it is, so the replacement explanation lands where the old one stood.</advantage>
+      <drawback>Puts a volatile tool version and behaviour facts into the invariants file, which is meant to hold lasting design decisions, and separates the evidence from the values it covers so the two can drift apart unnoticed.</drawback>
+    </alternative>
+    <alternative id="Repeatable probe script">
+      Recorded as an executable probe kept in the repository (under scripts/): it runs the installed agy&apos;s version, help, and agent-listing commands and checks the strings the Antigravity values rely on, and each Antigravity slot comment points at it; the parts of the check it cannot automate are noted in the script beside the commands.
+      <advantage>A re-check after an agy update is one command rather than a manual investigation, and the evidence can be reproduced rather than taken on trust.</advantage>
+      <drawback>Only the static facts (version, flags, help strings, agent listing) are scriptable; dispatch, waiting, and continuing an agent need a live model session that is nondeterministic, billed, and logged in, so the script proves the least important part; it cannot run in CI where agy is absent, adds an untested script to scripts/, and goes stale as silently as a comment.</drawback>
+    </alternative>
+    <alternative id="No record beyond values">
+      Not recorded anywhere deliberately: the rewritten values stand on their own, their comments describe each mechanism and why the value is what it is with no version or reference to the check, and the only trace is whatever the routine completion entry and commit history happen to hold.
+      <advantage>Makes no claim that can go stale, matches how the Codex values are recorded today (their comments cite the mechanism and no version), and adds no artifact to keep in step with agy.</advantage>
+      <drawback>A later editor cannot tell what agy the values were written against or whether a value was observed rather than inferred, which is the very uncertainty that left the Antigravity values unchecked until this milestone.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Antigravity context file choice">
     <question>Antigravity&apos;s tree today names CLAUDE.md as the context file, while the agy binary names GEMINI.md and AGENTS.md as its rule files and never CLAUDE.md. If the hands-on check confirms that Antigravity reads more than one project instruction file, which one does the Antigravity tree name as its context file?</question>
