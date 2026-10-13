@@ -2,6 +2,18 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.8.4 — 2026-10-13
+
+### Host differences as named slots (milestone 45)
+
+- Every wording that differs between hosts now reaches `core/` only as a named slot, filled from each host definition's `[slots]` table. The alternatives pass's capability-conditional passages became the `ALTERNATIVES_PARALLELISM` and `ALTERNATIVES_REPAIR` slots, `AGENT_TOOL` and `ALTERNATIVES_AGENT` were retired, and each host's `ALTERNATIVES_CONCURRENCY` describes one wait mechanism with no run-time branch, so each rendered tree describes only its own host's mechanism.
+- The host build accepts file-backed slot values, bound as `NAME = { file = "slots/NAME.md" }` and refusing a missing file, a path outside the definition's `slots/` subdirectory, or a malformed entry. Every slot value of all three hosts now lives in its own file under `scripts/hosts/<host>/slots/`.
+- Every slot value was sourced or confirmed by a hands-on check against each host, recorded once as a dated block in that host's `settings.toml`. The Codex repair no longer calls a nonexistent `close_agent` step and continues through `followup_task`; Antigravity dispatches agents natively by bare name, continues repairs through `send_message`, and uses `AGENTS.md` as its context file with no `/init`.
+- `docs/ways-of-using-cairn.md` corrects the Antigravity command-line facts and no longer lists effort values for any host, pointing to each host's `--help` instead.
+- A new in-process rendering test, `tests/test_build_rendering.py`, replaces the retired Claude/Antigravity byte-identity check and runs under the pinned interpreter only. `CONTRIBUTING.md`'s Development section is restructured around the slot convention and the rule that a rendered tree never names another host's mechanism.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.8.3...1.8.4
+
 ## 1.8.3 — 2026-10-13
 
 ### Batched recommendation embeds in one shell call (milestone 44)
