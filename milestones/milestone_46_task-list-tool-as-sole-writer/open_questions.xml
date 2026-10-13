@@ -149,6 +149,46 @@
   </open-question>
   <open-question id="Task format validation scope">
     <question>Beyond refusing an empty title or body, does the task-list tool validate an authored section against task-format.md (title of 4 to 8 title-cased words, a 1 to 3 sentence body, no sub-heading or labeled section inside the body), or does it accept any body text as the section&apos;s prose and leave the format to the authoring skills?</question>
+    <alternative id="No Content Validation">
+      Beyond refusing an empty title or body, the insert and append subcommands write whatever title and body they are given verbatim, including a body line that reads as a `---` separator or a `## ` heading; the move copies its section as it stands. Every rule in task-format.md, structural or quantitative, stays with the authoring skills exactly as today, and the tool checks none of it.
+      <advantage>The smallest tool and the simplest contract: the tool is a pure writer with no format knowledge, task-format.md stays the single home of the format, and no authored brief is ever refused for its wording, so a headless derive or submit run never stops on a format judgment.</advantage>
+      <drawback>The tool can write a file its own parser then splits differently (a body holding a `---` line becomes two sections and the next move slices it wrongly), so the sole writer does not guarantee the shape it parses; and the format rules stay unenforced, as they are today.</drawback>
+    </alternative>
+    <alternative id="Parse Integrity Guard Only">
+      The insert and append subcommands refuse, with one Error: line and the files unchanged, only a title or body that would break the tool&apos;s own parse: a title holding a line break, and a body holding a line that the parser reads as a section boundary (a bare `---` line or a line opening with `## `). Everything else — heading lines at other levels, labeled sections, title length and case, sentence count — is accepted as prose and left to the authoring skills; the move copies its section as it stands.
+      <advantage>Guarantees that every section the tool writes is parsed back as exactly that section, which is the property a sole writer exists to secure, while keeping the tool free of any authoring rule, so task-format.md stays the only home of the format and no brief is refused for its wording.</advantage>
+      <drawback>The ban on sub-headings and labeled sections, the property task altitude protects most directly, stays prose-only, so a `**Steps:**` block or a `### Notes` heading inside a body is still written without complaint.</drawback>
+    </alternative>
+    <alternative id="Structural Format Checks">
+      The insert and append subcommands refuse the parse-breaking title or body of the integrity guard and, in addition, any body line that opens a sub-heading (a line opening with `#` at any level) or a labeled section (a line that is a bold label ending in a colon, such as `**Steps:**`, `**Notes:**`, or `**Verified:**`). Title length, title case, and sentence count are not checked and stay with the authoring skills; the move copies its section as it stands.
+      <advantage>Enforces mechanically, with deterministic line-level tests that need no heuristic, the one rule whose breach changes a task&apos;s altitude (no steps, notes, success, or Verified section in an authored brief), and keeps a `**Verified:**` label out of TASKS_TODO.md where it would confuse the completion bar.</advantage>
+      <drawback>Puts a second statement of part of the format in the tool, so a later change to task-format.md&apos;s structural rule must be mirrored in code and tests; and a body that legitimately quotes a bold-labelled phrase on its own line is refused.</drawback>
+    </alternative>
+    <alternative id="Structural Plus Title Length">
+      The insert and append subcommands refuse everything the structural checks refuse and, in addition, a title whose whitespace-split word count falls outside 4 to 8. Title case and the 1 to 3 sentence count are not checked, because neither has an unambiguous mechanical test, and stay with the authoring skills; the move copies its section as it stands.
+      <advantage>Enforces every rule of task-format.md that has a deterministic test and no other, so the tool never refuses on a heuristic misjudgment, while a title too short to be unique or too long to be a handle is stopped at write time.</advantage>
+      <drawback>The numeric title bound now lives in task-format.md and in the tool and must be kept in step by hand; and the body length, the rule most often stretched in practice, stays unenforced.</drawback>
+    </alternative>
+    <alternative id="Full Format Refusal">
+      The insert and append subcommands refuse every rule of task-format.md they can test: the parse-breaking and structural lines above, a title outside 4 to 8 words, a title that is not title-cased by a fixed rule the tool defines (for example every word opening with a capital or a non-letter), and a body whose counted sentences fall outside 1 to 3 by a fixed counting rule the tool defines (for example sentence-ending punctuation followed by whitespace or the end of the body, outside code spans). There is no override; the move copies its section as it stands.
+      <advantage>The tool becomes the complete enforcement point of the task format, so no runner, headless or not, can write a brief that drifts from the template, and the format rules gain the tests the authoring prose never had.</advantage>
+      <drawback>The sentence count and title-case tests are heuristics (abbreviations such as `e.g.`, file names, decimals, and minor words in titles all misfire), so legitimate briefs are refused and a headless derive or submit run stops on a false positive; one milestone-41 brief already holds four sentences by a naive count, and the format&apos;s numbers gain a second home in the tool.</drawback>
+    </alternative>
+    <alternative id="Full Refusal With Override">
+      The insert and append subcommands run the full set of checks of the full format refusal by default, but accept a flag (for example `--allow-format`) under which the length, case, and sentence-count checks are skipped while the parse-breaking and structural checks still apply; the authoring skills pass the flag only after re-reading a refused brief and judging the breach deliberate. The move copies its section as it stands.
+      <advantage>Keeps the full format enforced by default while giving a runner a deliberate way past a heuristic false positive, so a legitimate four-sentence brief is written rather than mangled to satisfy a counter.</advantage>
+      <drawback>Adds a flag and a refusal-then-retry turn to the authoring skills&apos; prose, and a flag a runner may pass reflexively erodes the check it exists to soften; the format&apos;s numbers still gain a second home in the tool.</drawback>
+    </alternative>
+    <alternative id="Advisory Read-Only Check">
+      The insert and append subcommands enforce only the parse-integrity guard and otherwise write the section as given; the tool gains a separate read-only subcommand (for example `check`) that reports, one line per finding in the read contract&apos;s bare-value style, every section of a task file breaching a structural, title-length, title-case, or sentence-count rule of task-format.md, which an authoring skill may run after writing and a reviewer may run at any time. Nothing is refused for format.
+      <advantage>Gives the format a mechanical check, heuristics included, without ever blocking a write on a false positive, and keeps every mutator&apos;s &quot;prints nothing on success&quot; contract intact.</advantage>
+      <drawback>A check nobody is required to act on can be skipped or ignored, so the format is no more enforced than today unless the authoring prose adds a step to run it and react, which costs a tool call and turn per run; and it adds a subcommand and a second home for the format&apos;s numbers.</drawback>
+    </alternative>
+    <alternative id="Inline Warning On Write">
+      The insert and append subcommands enforce only the parse-integrity guard as a refusal, and for every structural, title-length, title-case, or sentence-count breach of task-format.md still write the section but print one warning line per breach on stderr and exit 0. Nothing is refused for format; the move copies its section as it stands.
+      <advantage>The runner sees each format breach in the very call that wrote the section, with no extra subcommand or turn, and no heuristic misfire ever blocks a write.</advantage>
+      <drawback>Breaks the shared tool contract that a mutator prints nothing on success, so callers and tests can no longer read any stderr output as failure, and a warning arriving after the write leaves the runner either to ignore it or to spend a further call correcting a section already on disk.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Initialize guard on existing tasks">
     <question>When derive-tasks initializes TASKS_TODO.md through the tool and the file already holds ## sections, does the tool refuse unless an explicit flag confirms the replacement, or replace the contents silently as the skill does today?</question>
