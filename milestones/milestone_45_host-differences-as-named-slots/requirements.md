@@ -76,5 +76,7 @@ Native agent loading on Antigravity is added only when the hands-on check shows 
 
 The development rule that a rendered tree never names another host's mechanism covers every file in the tree: the files rendered from `core/` and the host's own templates (README, CONTRIBUTING pointer, manifest, marketplace file, traffic workflow) alike. No file in a tree names another host's mechanism in any form, a contrastive mention of what this host does not use included; a link to the source repository is not a mechanism naming. The Codex README's "never to CLAUDE.md" clause and the Antigravity README's `/init`-into-`CLAUDE.md` instruction are reworded under this rule.
 
+Slot values keep naming no host, their own included: a value reaches its host's mechanism through that host's identifiers (tool names such as `spawn_agent` or `Agent`, config keys such as `agents.max_threads`, file names, command names) and otherwise describes it in host-neutral words such as "this host". The rewritten "name no host" invariant in `CLAUDE.md` states that it covers every rendered runtime file, slot values included. Nothing in the build enforces it in values: `host-name-in-core` keeps scanning `core/` only.
+
 ## Out of Scope
 
