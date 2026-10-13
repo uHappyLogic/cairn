@@ -60,5 +60,9 @@ The initialize subcommand replaces whatever `TASKS_TODO.md` holds, with no flag,
 
 Step 5 of `complete-procedure.md` shows the task-list tool's move command alone, with the bar on a quoted heredoc, and says that the runner runs it in one shell call chained with the git step its own file shows; the procedure contains no git. The `complete-task` agent file and the `complete-task` skill each show their own complete fixed call in full: the same move command written verbatim, then `&&` and the runner's git step, the path-scoped `git add` for the agent and the commit procedure's three steps written into the call for the skill, as the batched passes write them into theirs.
 
+### The move's failure state
+
+The move renders both new file contents in memory before touching either, replaces `TASKS_DONE.md` first and `TASKS_TODO.md` second through the same-directory temporary-file writer, and if the second replace fails it writes `TASKS_DONE.md`'s original bytes back through the same writer, so the call ends with one `Error:` line, exit 1, and both files byte-for-byte as they were, keeping the shared contract that every failure leaves the files unchanged. Only if that restore also fails does the superset (entry in `TASKS_DONE.md`, section still in `TASKS_TODO.md`) remain, and the `Error:` line then says so. A re-run after a clean failure is an ordinary move, and the rollback is exercised in the tests by a monkeypatched replace.
+
 ## Out of Scope
 
