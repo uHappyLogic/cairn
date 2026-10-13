@@ -68,6 +68,8 @@ Two new slots replace the four capability-conditional passages of `provide-alter
 
 The Claude Code values of the new slots are lifted from the arm of today's capability-conditional wording that applies to Claude Code, kept as written except where a check contradicts it. The evidence is a hands-on check against the locally installed `claude` covering the same four points the goal names for Antigravity (dispatch, waiting, continuing a finished agent, the context file), with the documentation consulted alongside.
 
+The same hands-on `claude` check also covers the eight existing Claude Code values. `ALTERNATIVES_CONCURRENCY` is rewritten to the single wait mechanism the check observes, with no capability condition: where the installed agent tool offers both a blocking dispatch form and a background form, one is prescribed as this host's own and the other arm, the "Both arms" closing sentence, and the capability wording of its comment are dropped; which form survives is the check's finding. The other seven existing values are kept as written unless the check contradicts one, by the same rule the Codex values follow. The `CLAUDE.md` invariant describing the value as one capability-conditional paragraph is rewritten to match.
+
 The Codex values for the repair branches and the repair wait are rewritten from Codex's documentation plus a hands-on run of the locally installed `codex` that exercises exactly what those values describe: sending a follow-up to a finished subagent, re-spawning a fresh generic subagent, and waiting with `wait_agent` on a repair set alone. The eight existing Codex values are not re-checked and stay as they are unless the run contradicts one the new values depend on.
 
 ### Antigravity context file
