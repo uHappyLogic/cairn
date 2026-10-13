@@ -1,33 +1,4 @@
 <open-questions>
-  <open-question id="Duplicate slot value handling">
-    <question>When a host definition supplies the same slot both inline in its [slots] table and as a file-backed value, what does the build do: refuse the definition, or let one of the two forms take precedence, and which?</question>
-    <recommendation option="Make duplicates unrepresentable">With the file bound through the slot&apos;s own [slots] key, a second source for one slot is a repeated TOML key the parser already refuses, so no rule, message, or test case is needed; every other option writes machinery for a state the chosen binding cannot express.</recommendation>
-    <alternative id="Make duplicates unrepresentable">
-      The build adds no duplicate rule of its own. The file-backed form is bound so that one slot can be supplied only once, for example by making the file reference that slot&apos;s own [slots] entry, and TOML&apos;s own refusal of a repeated key already catches any second entry.
-      <advantage>There is no new rule, message, or test case. Duplication is ruled out by the definition&apos;s structure rather than detected, so neither a refusal path nor a precedence rule has to be written or documented.</advantage>
-      <drawback>It is viable only if the binding form chosen by the File-backed slot declaration form sibling gives each slot a single key. Under a binding by naming convention in a directory, or under a separate table, a duplicate can still arise, and with no rule the outcome would come down to an undocumented dictionary-update order.</drawback>
-    </alternative>
-    <alternative id="Refuse any duplicate">
-      The build refuses a definition that supplies one slot both inline in [slots] and as a file-backed value, whatever the two values hold. The refusal is a BuildError raised while load_definition reads the definition, before anything renders, and it names the slot and both sources. No precedence rule exists.
-      <advantage>It matches the build&apos;s posture today, where every malformed definition (unknown key, non-string value, reserved name, stray placeholder) is refused at load. Every slot then has exactly one place its value comes from, so an editor never changes a value that the build silently ignores.</advantage>
-      <drawback>Moving a value from inline to a file has to happen in one edit, deleting the inline entry in the same change, because an intermediate state with both fails the build. It also adds a load-time rule and an error message that the new build test has to cover.</drawback>
-    </alternative>
-    <alternative id="Refuse only differing values">
-      The build accepts a slot supplied in both forms when the two values are identical after the build&apos;s normal reading of each, and uses that value. It refuses the definition, at load and naming the slot and both sources, only when the two values differ.
-      <advantage>A value can be copied into a file and the build checked before the inline entry is deleted, while two forms that disagree still cannot pass silently.</advantage>
-      <drawback>The redundant copy is allowed to stay. It turns into a build failure the first time someone edits only one of the two copies, so the second place to edit is never removed, only deferred. Whether &quot;identical&quot; holds also depends on how a file value&apos;s trailing newline is read, which the trailing-newline sibling question owns.</drawback>
-    </alternative>
-    <alternative id="Inline takes precedence">
-      The build accepts a slot supplied in both forms and uses the inline [slots] value, ignoring the file-backed one without a failure. The file acts as a default that an inline entry overrides.
-      <advantage>The definition never fails over this case, and settings.toml stays the one file that shows which value wins. A reader of the TOML sees the value that renders whenever an inline entry is there.</advantage>
-      <drawback>A file-backed value can sit in the definition directory and never render. An editor who edits that file sees no change and gets no error, and --check passes because the committed tree was also rendered from the inline value. That is a silent dead copy, in a build that otherwise refuses every malformed definition.</drawback>
-    </alternative>
-    <alternative id="File takes precedence">
-      The build accepts a slot supplied in both forms and uses the file-backed value, ignoring the inline [slots] entry without a failure. The inline entry acts as a default that a file overrides.
-      <advantage>The definition never fails over this case, and a value can be moved into a file and take effect at once, with the leftover inline entry deleted at leisure.</advantage>
-      <drawback>The inline value in settings.toml, together with the comment above it explaining that host&apos;s value, can be stale and never render. A reader of the TOML is misled about what the tree carries, and the build gives no signal that this is so.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Floor-run exclusion of build test">
     <question>The Python 3.9 floor run collects the same tests/ directory as the pinned run but has neither PyYAML nor tomllib, both of which the build imports. How is the rendering test kept to the pinned interpreter: a skip inside the test, a collection rule in conftest.py, a location outside the floor run&apos;s test paths, or a change to the floor command itself?</question>
     <recommendation option="Skip below 3.11">An in-process render needs tomllib and yaml, which closes both no-exclusion options; a module-level version skip is self-contained in the test file, changes no command in its three copies, keeps conftest.py about the tools, and never skips under the pinned interpreter, so a missing PyYAML there fails loudly instead of silently hiding the only build test.</recommendation>
