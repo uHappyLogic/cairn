@@ -40,5 +40,9 @@ The `complete-task` agent stages after the procedure completes — `git add` of 
 
 The move subcommand reads the derived acceptance bar on standard input as opaque Markdown. It writes the `**Verified:**` label, then the piped text verbatim with only its leading and trailing blank lines trimmed, then the `---` separator. It refuses an empty bar and checks nothing else: it neither splits the bar into criteria nor checks or adds bullets, so the bullet form of the bar stays the completion procedure's to write.
 
+### Section boundaries in the task files
+
+The tool takes a `##` section to end at its `---` line when one comes first, and otherwise at the next `##` heading or the end of the file. A call involving a section with no `---` succeeds and prints nothing, like any successful mutator; the tool neither refuses it nor reports it. Every section the tool writes or moves, including an entry appended to `TASKS_DONE.md`, carries its `---`, and when an insertion lands directly behind an unterminated section the tool writes the separator that boundary needs, so the inserted section never runs into the one before it.
+
 ## Out of Scope
 
