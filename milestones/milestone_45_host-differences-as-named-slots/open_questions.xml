@@ -333,6 +333,31 @@
   </open-question>
   <open-question id="Own-host naming in values">
     <question>Today no slot value names a host, in keeping with the rule that runtime files name no host. Once a slot value describes one host&apos;s own mechanism, may it name that host (for example its tool by the host&apos;s name), or must it still describe the mechanism without naming the host?</question>
+    <alternative id="No host name, unenforced">
+      Slot values keep naming no host, their own included: a value reaches its host&apos;s mechanism through that host&apos;s identifiers (tool names such as `spawn_agent` or `Agent`, config keys such as `agents.max_threads`, file names, command names) and otherwise describes it in host-neutral words such as &quot;this host&quot;. The rewritten &quot;name no host&quot; invariant in CLAUDE.md states that it covers every rendered runtime file, slot values included. Nothing in the build enforces it in values: `host-name-in-core` keeps scanning `core/` only.
+      <advantage>One rule for every rendered file at no build cost, keeping today&apos;s property that no runtime text in any tree names a host (none does now). The identifiers already give a runner all the specificity it needs, since a tree only ever runs on its own host.</advantage>
+      <drawback>Where the host&apos;s name is the clearest referent, for example a mechanism with no identifier of its own, a value needs a paraphrase like &quot;this host&apos;s ...&quot;. The rule depends on editor discipline because values grow by hand, and the Antigravity rewrite from the hands-on check adds several new ones.</drawback>
+    </alternative>
+    <alternative id="No host name, checked">
+      Slot values keep naming no host, their own included, as in the unenforced form: identifiers carry the host&apos;s mechanism and the prose stays host-neutral. In addition, the build&apos;s host-name check is extended beyond `core/` to scan every definition&apos;s slot values (inline and, once the form exists, file-backed). It refuses the build when any definition directory name stands as its own word in a value.
+      <advantage>The no-host-name property becomes a mechanical guarantee rather than a convention. The check reuses the existing word-boundary pattern, which already passes identifiers that merely contain a host name, such as `CLAUDE.md`.</advantage>
+      <drawback>The check matches other hosts&apos; names as well as the value&apos;s own host, so it partly mechanizes the &quot;never name another host&quot; rule that the goal calls a development rule, not a check, and it still sees only names, never mechanisms. It adds build code that the new rendering test would need to cover, and how it reaches file-backed values depends on the binding form that sibling question settles.</drawback>
+    </alternative>
+    <alternative id="Own host as last resort">
+      A slot value names its own host only where the host has no identifier that names the mechanism, so a host-neutral phrase would be vague or misleading. Where an identifier exists, the value uses it and stays host-neutral. It never names another host. The rewritten invariants state the narrow allowance beside the new other-host development rule. `core/` still names no host, `host-name-in-core` is unchanged, and the allowance is unenforced.
+      <advantage>Values read clearly in exactly the places where a paraphrase would hurt, and the rendered trees still carry almost no host names, so most of today&apos;s property survives.</advantage>
+      <drawback>&quot;No identifier exists&quot; is a judgment call that editors will apply unevenly, so the rule is harder to follow and review than either a flat ban or a flat permission. Nothing catches a value that names its host where an identifier was available.</drawback>
+    </alternative>
+    <alternative id="Own host freely named">
+      A slot value may name its own host wherever that reads best (for example &quot;Codex&apos;s `spawn_agent` tool&quot; or &quot;Antigravity&apos;s `invoke_subagent`&quot;) and never names another host. The &quot;name no host&quot; invariant narrows to `core/` and the shared tool sources, which must still render byte-identical into every host. The own-host permission is written beside the new other-host development rule. `host-name-in-core` stays scoped to `core/`, and nothing enforces anything about values.
+      <advantage>Each value is plainly about one host and reads naturally. This fits the milestone&apos;s move to every tree describing only its own mechanism, and naming the host costs nothing because a tree runs only on that host.</advantage>
+      <drawback>Rendered runtime files would name a host for the first time, ending a property every tree holds today. When a value is copied from one definition into another, which is how Antigravity&apos;s values came about, a leftover host name goes uncaught because the goal keeps the other-host rule out of the checks.</drawback>
+    </alternative>
+    <alternative id="Leave unruled">
+      The rewrite of the CLAUDE.md invariants and docs/ says nothing about host names in slot values. The &quot;name the capability, never the host&quot; sentence goes with the capability-conditional framing it belonged to, without a replacement covering values. Each value&apos;s author decides case by case, now and later, and nothing is checked.
+      <advantage>It adds no new rule to the invariants and leaves the most freedom to the authors writing the rewritten Antigravity and Codex values from what the hands-on checks turn up.</advantage>
+      <drawback>The question this block raises stays open in practice. Values written in the same milestone may come out inconsistent, and a later editor has no recorded intent to work from, so the old &quot;name no host&quot; reading and the new per-host reading coexist without either winning.</drawback>
+    </alternative>
   </open-question>
   <open-question id="CONTRIBUTING build description scope">
     <question>CONTRIBUTING.md&apos;s Development section describes settings.toml without its [slots] table or plugin_dir and would say nothing of file-backed values or the new rule. Is that section rewritten in this milestone alongside CLAUDE.md and docs/, or left out of scope?</question>
