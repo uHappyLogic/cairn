@@ -7,6 +7,24 @@
 # its {{VERSION}} slot filled from the root VERSION file and its {{NAME}} slot from
 # plugin_name below. Every host shares this exact key set: a key with nothing to declare
 # is left empty, never omitted.
+#
+# Hands-on check, 2026-10-13, against the installed `claude` 2.1.296 in headless (-p) runs,
+# with the subagent documentation alongside. It sourced ALTERNATIVES_CONCURRENCY,
+# ALTERNATIVES_PARALLELISM, and ALTERNATIVES_REPAIR, and confirmed CONTEXT_FILE,
+# COMPLETE_TASK_DISPATCH, COMPLETE_TASK_PROMPT_INSTRUCTIONS, ALTERNATIVES_DISPATCH, and
+# ALTERNATIVES_PROMPT_INSTRUCTIONS as written.
+# - Dispatch: the Agent tool takes subagent_type; the plugin's agents are registered under
+#   their cairn:-namespaced names with their instructions; several dispatches sent in one
+#   message run concurrently, and each call's result carries the agent id.
+# - Waiting: a dispatch runs in the background by default, its call returning at once and the
+#   agent's ending waking the session with its final message. A foreground (blocking) form,
+#   run_in_background set to false, exists only with fork mode off, which the documentation
+#   gives as the headless default and not the interactive one, where the foreground cannot be
+#   requested; so the background form is the one wait every session has.
+# - Continuing a finished agent: SendMessage addressed to the agent id resumes the finished
+#   agent with its context intact; it never blocks, returning at once, and the resumed agent's
+#   ending wakes the session again.
+# - Context file: the session loads the workspace root CLAUDE.md as project instructions.
 
 # The plugin name that fills every {{NAME}} slot in the templates beside this file.
 plugin_name = "cairn"
@@ -75,21 +93,22 @@ ALTERNATIVES_DISPATCH = { file = "slots/ALTERNATIVES_DISPATCH.md" }
 ALTERNATIVES_PROMPT_INSTRUCTIONS = { file = "slots/ALTERNATIVES_PROMPT_INSTRUCTIONS.md" }
 # ALTERNATIVES_PARALLELISM: the phrase in provide-alternatives-to-all-open-questions' opening
 # paragraph saying whether the independent per-question dispatches run at the same time.
-# Claude Code sends every dispatch together; the phrase states that by the host's capability,
-# as the paragraph opening step 3 does.
+# Claude Code runs every dispatch concurrently, so the phrase states that they run together.
 ALTERNATIVES_PARALLELISM = { file = "slots/ALTERNATIVES_PARALLELISM.md" }
 # ALTERNATIVES_REPAIR: the opening of the alternatives pass's repair sub-step, ahead of its
 # fixed corrective message: when the repairs of one batch call's refused files are sent, the
 # repair branches this host has (a follow-up to the finished agent, a fresh dispatch, or both),
 # and how the run waits on the repaired returns.
-# A follow-up message reaches a finished agent by the id the Agent tool returned, and a
-# fresh dispatch names the registered agent by its namespaced registry name through the
-# Agent tool; the repair wait is worded by the agent tool's capability, as the paragraph
-# opening step 3 is.
+# A follow-up message sent with SendMessage reaches a finished agent by the id the Agent tool
+# returned, so continuation comes first and a fresh dispatch, naming the registered agent by
+# its namespaced registry name through the Agent tool, is used only once that id is gone.
+# Neither blocks, so repaired returns are batched on the wake-ups their endings bring, as the
+# first returns are.
 ALTERNATIVES_REPAIR = { file = "slots/ALTERNATIVES_REPAIR.md" }
 # ALTERNATIVES_CONCURRENCY: the provide-alternatives-to-all-open-questions paragraph opening
 # step 3, saying how many per-question dispatches run at once and how the run collects their
 # returns: whether it waits once for every return or batches each time it wakes.
-# Claude Code sends every dispatch together, so the wording names no cap, and it names the wait
-# by the agent tool's capability rather than by one primitive.
+# Claude Code sends every dispatch together, so the wording names no cap. Every dispatch runs
+# in the background and each agent's ending wakes the session, so the run batches each time it
+# wakes rather than waiting once.
 ALTERNATIVES_CONCURRENCY = { file = "slots/ALTERNATIVES_CONCURRENCY.md" }

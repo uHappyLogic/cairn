@@ -18,7 +18,7 @@ only party in this pass that changes the question document, `<MILESTONE_DIR>/ope
 written out in full as its fenced block shows it, never through a variable, alias, or function
 of your own defined to stand for the command or any part of it. Alternatives are enumerated per
 question against the siblings as scope only, so the dispatches are independent: they run
-together where the host allows it, and the files they land are embedded and committed in
+together, and the files they land are embedded and committed in
 batches, one fixed shell call per batch — one `Alternatives-annotation: <Short Title>` commit
 per annotated question, none for a skipped one. It is **argument-free**, records **no
 decisions**, triggers **no cascades**, and writes no `<recommendation>` — it only supplies the
@@ -105,18 +105,14 @@ regenerated is named in the same `strip` call.
 ### 3. Dispatch the subagents and embed their files in batches
 
 Dispatch one read-only subagent per question step 1b printed, **all of them together in one
-message** — with no cap beyond one dispatch per surviving question — and collect their returns
-by what the agent tool offers. **Where it offers a blocking dispatch form**, send every dispatch
-in that form, so the message returns only once every agent has landed its file or ended in a
-failure, and then run the batch call (sub-step **d**) once, embedding and committing the whole
-set. **Where it offers no blocking form**, run the batch call every time you wake with landed
-returns, over whatever has landed by then. No foreground shell loop, background shell loop, or
-event monitor serves as the wait in either arm: the dispatch message itself, or the wake-ups the
-agents' endings bring, is the whole wait. No ranking or ordering precedes the dispatches: an
-alternative set is enumerated against the sibling questions as scope only, never against how a
-sibling will settle, so no dispatch reads what another wrote and their order changes nothing.
-Both arms write the same blocks and land the same commits; they differ only in how many times
-you wake.
+message** — with no cap beyond one dispatch per surviving question — and run every dispatch in
+the background, never in the foreground: each `Agent` call returns at once, and each agent's
+ending wakes you with its final message. Run the batch call (sub-step **d**) every time you wake
+with landed returns, over whatever has landed by then. No foreground shell loop, background
+shell loop, or event monitor serves as the wait: the wake-ups the agents' endings bring are the
+whole wait. No ranking or ordering precedes the dispatches: an alternative set is enumerated
+against the sibling questions as scope only, never against how a sibling will settle, so no
+dispatch reads what another wrote and their order changes nothing.
 
 **a. Create the run's scratch directory.** Before the first dispatch, run
 
@@ -224,24 +220,23 @@ the tool's `Error:` line or git's first line. An annotated question gets no line
 **e. Repair every refused file once, all together.** The moment a batch call prints refused
 files, send every one of that call's repairs together in the same turn — immediately, never
 held back as a second phase once the first returns have all landed. Repair each question by
-whichever of these two branches the host supports, in this order:
+the first of these two branches that applies:
 
-- **Continue the same agent session.** Where the host can continue a finished agent session and
-  you still hold that dispatch's handle — a follow-up message addressed to the agent id the
-  `Agent` tool returned — send the corrective message below to **that same agent**. Its context
-  is intact, so it rewrites its file from the analysis it already did.
-- **Re-dispatch one fresh agent.** Where the host cannot continue a finished agent session, or
-  the handle is gone, dispatch **one** fresh `cairn:provide-alternatives-to-open-question` agent
-  for that question with the `Agent` tool, passing the **same prompt** as the original dispatch
-  with the corrective message below appended to it as a shape reminder. This second dispatch
-  redoes the analysis, so it is the fallback branch, never the preferred one.
+- **Continue the same agent session.** While you still hold that dispatch's handle — a
+  follow-up message with the `SendMessage` tool addressed to the agent id the `Agent` tool
+  returned — send the corrective message below to **that same agent**. Its context is intact,
+  so it rewrites its file from the analysis it already did.
+- **Re-dispatch one fresh agent.** Where the handle is gone, dispatch **one** fresh
+  `cairn:provide-alternatives-to-open-question` agent for that question with the `Agent` tool,
+  in the background like the first dispatches, passing the **same prompt** as the original
+  dispatch with the corrective message below appended to it as a shape reminder. This second
+  dispatch redoes the analysis, so it is the fallback branch, never the preferred one.
 
-Where the single wait is the dispatch call's own blocking form, send every repair **without
-blocking**, so each later wake-up that brings repaired returns runs a batch call over whatever
-has landed by then; otherwise wait on the repair set as the paragraph opening this step
-describes. Either way a repaired file lands at its Short Title's path — the refused one already
-moved aside — and gets no special handling: the next batch call embeds and commits it like any
-other, and the repaired agent's final message gets the same last-line verdict (sub-step **c**).
+Send every repair **without blocking** — a follow-up returns at once, as a background dispatch
+does — so each later wake-up that brings repaired returns runs a batch call over whatever has
+landed by then. A repaired file lands at its Short Title's path — the refused one already moved
+aside — and gets no special handling: the next batch call embeds and commits it like any other,
+and the repaired agent's final message gets the same last-line verdict (sub-step **c**).
 
 Every repair sends this fixed one-paragraph corrective message, whose single slot is
 `<Error line>`:

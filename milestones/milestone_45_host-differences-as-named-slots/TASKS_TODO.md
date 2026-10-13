@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Claude Code Hands-On Check And Values
-
-Run a hands-on check against the locally installed `claude`, with its documentation alongside, covering dispatch, waiting, continuing a finished agent, and the context file, and from it write the Claude Code values of the two new slots by lifting the arm of the former capability-conditional wording that applies to Claude Code, kept as written except where the check contradicts it; rewrite `ALTERNATIVES_CONCURRENCY` to the single wait mechanism the check observes with no capability condition, dropping the other arm, the "Both arms" closing sentence, and the capability wording of its comment; and keep the other seven existing values unless the check contradicts one. Record the check once as a single dated block in the header comment of `scripts/hosts/claude/settings.toml` naming the installed version and exactly the slots and points the check sourced or confirmed, keep every per-slot comment describing only what the value stands for and why in mechanism terms with no version, and keep every value free of any host name including its own. Verified by rebuilding with `--check` passing and reading the rendered `hosts/claude` alternatives pass as describing one wait mechanism and only the repair branches this host has.
-
----
-
 ## Codex Repair Values From Hands-On Run
 
 Rewrite the Codex values of the two new slots from Codex's documentation plus a hands-on run of the locally installed `codex` that exercises exactly what they describe (sending a follow-up to a finished subagent, re-spawning a fresh generic subagent, and waiting with `wait_agent` on a repair set alone), leaving the eight existing Codex values as they stand unless the run contradicts one the new values depend on, and record the run as a single dated block in the header comment of `scripts/hosts/codex/settings.toml` naming the installed version and exactly the new repair values and any contradicted existing value, claiming nothing about an untouched value. Under the other-host rule, reword the Codex README template's "never to `CLAUDE.md`" clause so no file in the Codex tree names another host's mechanism, contrastive mentions included. Verified by rebuilding with `--check` passing and a search of `hosts/codex` finding no other host's tool, file, or command named.
