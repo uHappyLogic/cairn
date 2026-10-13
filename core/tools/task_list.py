@@ -23,6 +23,18 @@ Subcommands:
       the named section. The tool composes the heading, the body, and the "---" itself, so
       a body line reading as a "---" separator or a "## " heading is written verbatim as
       body text by this call
+  move MILESTONE_DIR TASK_TITLE
+      move the TASKS_TODO.md section whose heading is TASK_TITLE to the end of
+      TASKS_DONE.md, reading the acceptance bar it was verified against from standard
+      input as opaque Markdown: the entry is the section's heading and body, the
+      "**Verified:**" line, the bar verbatim with only its leading and trailing blank lines
+      trimmed, and the "---". An empty bar is refused; the bar is neither split into
+      criteria nor checked for bullets, and the title is never checked against the entries
+      TASKS_DONE.md already holds. Both new contents are rendered before either file is
+      touched; TASKS_DONE.md is replaced first and TASKS_TODO.md second, and when the second
+      replace fails TASKS_DONE.md's original bytes are written back, so the call fails with
+      both files as they were. Only when that restore fails too does the entry stand in both
+      files, and the Error line then says so
 
 A TASK_TITLE is matched against the "## " headings only by exact equality after
 whitespace-folding and case-folding; a partial title, a title two sections share, or one
@@ -31,7 +43,7 @@ whose folded form equals one TASKS_TODO.md already holds (for initialize, one th
 itself repeats). No other rule of the task format is checked: titles and bodies are written
 as given.
 
-A free-text body (the list of initialize, the section body of insert) travels on standard
+A free-text body (the list of initialize, the section body of insert, the bar of move) travels on standard
 input, never as an argument: the tool reads sys.stdin.buffer to end of file exactly once
 per call and decodes it as UTF-8 itself, and it refuses a terminal stdin so a call that
 forgot to pipe its body (a quoted heredoc, a redirected file) fails instead of blocking.
@@ -61,7 +73,9 @@ heading's blank line when it holds no section).
 Output and error contract:
   - a mutator prints nothing on success
   - every failure is exactly one line "Error: <reason>" on stderr with exit status 1, and
-    a non-zero exit leaves both task files byte-for-byte unchanged; a malformed invocation
+    a non-zero exit leaves both task files byte-for-byte unchanged (move restores
+    TASKS_DONE.md itself when its second replace fails, and says so in the one line when
+    that restore fails too); a malformed invocation
     gets argparse's own usage message and exit status 2; no traceback ever reaches the
     caller
   - each file is replaced through a temporary file in its own directory renamed over it,
@@ -227,7 +241,11 @@ def read_file_bytes(path):
 
 def load_task_file(path, heading, with_bar):
     """The parsed task file at path, its preamble discarded."""
-    data = read_file_bytes(path)
+    return decode_task_file(path, read_file_bytes(path), heading, with_bar)
+
+
+def decode_task_file(path, data, heading, with_bar):
+    """The parsed task file whose bytes, read from path, are data, its preamble discarded."""
     try:
         text = data.decode("utf-8")
     except UnicodeDecodeError:
@@ -369,6 +387,35 @@ def cmd_insert(args):
     return 0
 
 
+def cmd_move(args):
+    todo = todo_path(args.milestone_dir)
+    done = done_path(args.milestone_dir)
+    todo_file = load_todo(args.milestone_dir)
+    done_bytes = read_file_bytes(done)
+    done_file = decode_task_file(done, done_bytes, DONE_HEADING, with_bar=True)
+    position = find_section(todo_file, todo, args.task_title)
+    bar = trimmed(lines_of(read_body("the acceptance bar")))
+    if not bar:
+        raise ToolError("the acceptance bar on standard input is empty")
+    section = todo_file.sections.pop(position)
+    done_file.sections.append(Section(section.title, section.body, bar))
+    new_done = render_file(done_file).encode("utf-8")
+    new_todo = render_file(todo_file).encode("utf-8")
+    write_bytes(done, new_done)
+    try:
+        write_bytes(todo, new_todo)
+    except Exception as error:
+        try:
+            write_bytes(done, done_bytes)
+        except Exception as restore_error:
+            raise ToolError(
+                f"replacing {todo} failed ({describe(error)}) and restoring {done} failed too "
+                f"({describe(restore_error)}); the section \"{section.title}\" now stands in both files"
+            )
+        raise
+    return 0
+
+
 # --- command line ---------------------------------------------------------------------
 
 
@@ -424,6 +471,18 @@ def build_parser():
         "--after",
         metavar="TASK_TITLE",
         help="put the section behind the section with this title, compared whitespace-folded and case-folded",
+    )
+
+    move_parser = add_subcommand(
+        "move",
+        cmd_move,
+        "move the TASKS_TODO.md section with the given title to the end of TASKS_DONE.md, "
+        "followed by the \"**Verified:**\" line and the acceptance bar read from standard input",
+    )
+    move_parser.add_argument(
+        "task_title",
+        metavar="TASK_TITLE",
+        help="the title of the section to move, compared whitespace-folded and case-folded against the TASKS_TODO.md titles",
     )
     return parser
 

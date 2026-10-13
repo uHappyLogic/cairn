@@ -16,3 +16,22 @@ Add `core/tools/task_list.py`, a self-contained stdlib-only Python 3.9+ tool (it
 - `uv run scripts/build_hosts.py` rebuilt the three host trees and `uv run scripts/build_hosts.py --check` passed, with `hosts/claude/tools/task_list.py`, `hosts/antigravity/tools/task_list.py`, and `hosts/codex/plugins/cairn/tools/task_list.py` byte-identical to `core/tools/task_list.py`
 
 ---
+
+## Add Move Subcommand With Rollback
+
+Add `move <MILESTONE_DIR> "<Task Title>"` to `core/tools/task_list.py`: it locates the section in `TASKS_TODO.md` by exact folded-title match (a partial name or two sections sharing the folded title refused), reads the derived acceptance bar on standard input as opaque Markdown, refusing an empty bar and neither splitting it into criteria nor checking or adding bullets, and appends the section to `TASKS_DONE.md` with the `**Verified:**` label, the bar verbatim with only its leading and trailing blank lines trimmed, and the `---`, never checking the moved title against the entries `TASKS_DONE.md` already holds and re-rendering both files in the canonical layout; it renders both new contents in memory before touching either, replaces `TASKS_DONE.md` first and `TASKS_TODO.md` second through the same-directory writer, and on a failed second replace writes `TASKS_DONE.md`'s original bytes back through the same writer so the call ends with one `Error:` line, exit 1, and both files byte-for-byte as they were, the `Error:` line saying so only when that restore also fails and the superset remains. Verified by hand against a sandbox milestone (the entry landing in the canonical layout, a section without its `---` moving silently, a re-run after a clean failure being an ordinary move, every refusal leaving both files unchanged), by both pytest runs passing, and by the rebuild so `uv run scripts/build_hosts.py --check` passes.
+
+**Verified:**
+
+- `core/tools/task_list.py` gains `move MILESTONE_DIR TASK_TITLE` (listed by `--help` beside `initialize` and `insert`, documented in the module docstring), still importing only the standard library and neither sibling tool, carrying no `{{`, and touching no git
+- The section is located in `TASKS_TODO.md` by exact whitespace-folded, case-folded title match: `"first task"` moved `First Task`, while a partial name (`Third` for `Third Task`), a title two sections share (`Twin`/`twin`), and a title no section carries each refused with one `Error:` line, exit 1, and both files byte-for-byte unchanged
+- The bar is read on standard input as opaque Markdown: a bullet bar and a prose bar were both written verbatim after the `**Verified:**` line with only leading and trailing blank lines trimmed, `---` lines inside the bar were kept as bar text through a later re-parse, and an all-blank bar, an empty stdin, and a non-UTF-8 bar each refused with both files unchanged
+- The entry is appended to `TASKS_DONE.md` in the canonical layout (heading, body, `**Verified:**`, bar, `---`, blank lines between) with both files re-rendered whole, and a title already held by a `TASKS_DONE.md` entry (`  old   TASK ` against `Old Task`) moved without any check against the done entries
+- A section without its `---` (`Second Task` running straight into the next heading) moved silently with exit 0, gaining its `---` in `TASKS_DONE.md`
+- A missing `TASKS_TODO.md` or `TASKS_DONE.md` refused with one `Error:` line and nothing written; a missing title argument got argparse's exit 2; every successful move printed nothing; a floor-interpreter (`--python 3.9`) move ran cleanly
+- Both contents are rendered in memory before either write, `TASKS_DONE.md` is replaced first and `TASKS_TODO.md` second through the same-directory writer: with the second `os.replace` monkeypatched to fail in-process, the call ended with one `Error:` line, exit 1, both files byte-for-byte as before and no temporary file left; with the restore failing too, the `Error:` line named both failures and that the section now stands in both files
+- A re-run after a clean failure was an ordinary move, leaving the section only in `TASKS_DONE.md`
+- `uv run pytest` passed (548) and `uv run --no-project --python 3.9 --with pytest pytest` passed (544, 1 skipped)
+- `uv run scripts/build_hosts.py` rebuilt the three host trees and `uv run scripts/build_hosts.py --check` passed, with each host's `task_list.py` byte-identical to `core/tools/task_list.py`
+
+---
