@@ -72,5 +72,9 @@ The task-list tool is one self-contained file carrying its own copies of the std
 
 The tool matches every title it is given (the section to move and a before/after anchor alike) against the `##` headings only by exact equality after whitespace-folding and case-folding, the open-question tool's id comparison; anything else, a partial name or two sections sharing the folded title included, is refused with one `Error:` line and both files unchanged, and the tool prints nothing on success. The completion procedure keeps its case-insensitive partial match in prose: step 1 resolves the user's partial name against its own whole read of `TASKS_TODO.md` (listing the headings on no match, as today) and the runner passes the full heading it located to the move, as `complete-all-tasks` already does by passing the exact heading.
 
+### How derive-tasks writes its briefs
+
+Inside its one shell call, `derive-tasks` runs no separate append. A single initialize process reads the whole ordered list on standard input, in the task file's own `##` heading / body / `---` form, validates every section, and replaces `TASKS_TODO.md` with the heading followed by the list in one atomic write, so the list lands whole and in dependency order or, if anything is refused, the file is left byte-for-byte as it was before the run and the `Task-derivation:` commit can never record a partial or reordered plan. Append keeps a one-section form only for `submit-task`'s use, if any.
+
 ## Out of Scope
 
