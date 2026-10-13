@@ -50,5 +50,9 @@ Every slot value of every host definition is held in a file, the one-word and em
 
 A file-backed value is bound inside the existing `[slots]` table: the slot's entry is written as an inline table, `NAME = { file = "slots/NAME.md" }`, beside the plain string entries, with the path relative to the definition directory and kept under its `slots/` subdirectory, which template discovery skips. The loader accepts either a string or a one-key `{ file }` table for each slot, and refuses a missing file or a path outside `slots/`. Every slot stays declared once in the one table with its comment above its entry.
 
+### Build rendering test
+
+The rendering test is one full render of a small synthetic `core/` and one synthetic host definition (a `settings.toml` with inline and file-backed slots, plus whatever templates it needs) into a `tmp_path` directory, with the rendered files asserted, including a file-backed value landing in rendered output in the right substitution order. It reaches the build by importing it in-process and monkeypatching its module-level path constants (`CORE_DIR`, `LICENSE_FILE`, and `DEFINITIONS_DIR` where discovery is used) onto the fixture, then calling `load_definition` and `render_host`. The build code is unchanged for the test's sake; the test does not exercise `main`'s orchestration or the check set.
+
 ## Out of Scope
 
