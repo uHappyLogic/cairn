@@ -27,6 +27,41 @@
   </open-question>
   <open-question id="Verified bar stdin format">
     <question>In what form does the move subcommand read the derived acceptance bar on standard input: one criterion per non-empty line, criteria separated by blank lines so a criterion wrapped over several lines folds to one bullet, or already-rendered &quot;- &quot; bullets the tool checks and copies under the **Verified:** label?</question>
+    <alternative id="Bare lines, strict">
+      Framing: the runner pipes the bare criteria with no bullet marker, one criterion per non-empty line; blank lines are ignored. Rendering: the tool writes the **Verified:** label and prefixes each line with &quot;- &quot;. Strictness: a line that already starts with &quot;- &quot; is refused with an Error: line and both files unchanged, so a double bullet never lands, and a stdin holding no criterion is refused.
+      <advantage>The simplest contract to state and test: one line is one criterion, the bullet syntax lives only in the tool, and every Verified block in milestones 28 to 45 is already exactly one single-line bullet per criterion, so it reproduces the recorded shape with no folding rule.</advantage>
+      <drawback>Runners have always been shown the bar as &quot;- &quot; bullets in step 5&apos;s template and about 150 agents wrote it that way, so the first call after the change is likely to be refused until the prose retrains them; a criterion a runner wraps over two lines silently becomes two bullets, a split the tool cannot detect.</drawback>
+    </alternative>
+    <alternative id="Bare lines, bullet tolerated">
+      Framing: one criterion per non-empty line, as in the strict form. Rendering: the tool writes the **Verified:** label and one &quot;- &quot; bullet per line. Strictness: lenient on the marker — a single leading &quot;- &quot; on a line is stripped before the tool adds its own, so bare lines and already-bulleted lines render identically; only an empty bar is refused.
+      <advantage>Accepts both what the new prose will ask for and what runners habitually write, so the move never fails on the marker and the rendered bullets are uniform either way, while the tool still owns the label and the bullet syntax.</advantage>
+      <drawback>The contract has two accepted spellings, so the prose and the tests must cover both, and a criterion whose own text begins with &quot;- &quot; loses that prefix; a wrapped criterion still splits silently into two bullets.</drawback>
+    </alternative>
+    <alternative id="Blank-line paragraphs folded">
+      Framing: criteria are separated by blank lines, so each paragraph is one criterion and a criterion wrapped over several lines is folded, its lines joined with single spaces, into one bullet. Rendering: the tool writes the **Verified:** label and one &quot;- &quot; bullet per paragraph, stripping a single leading &quot;- &quot; from a paragraph if present.
+      <advantage>A long criterion (several in milestone 45 run well past a hundred words) can be wrapped freely in the heredoc and still lands as exactly one bullet, so line length never changes how many criteria are recorded.</advantage>
+      <drawback>Every criterion needs a blank line after it, an unusual framing runners will not write by habit: a forgotten blank line silently merges two criteria into one bullet, a corruption no check can catch, which is worse than the split the line-based forms risk.</drawback>
+    </alternative>
+    <alternative id="Rendered bullets, strict">
+      Framing: the runner pipes the bar already rendered as &quot;- &quot; bullets, one per line, exactly as step 5&apos;s template shows it today. Rendering: the tool checks and copies the bullets under the **Verified:** label it writes itself, normalizing only the surrounding blank lines. Strictness: every non-empty line must start with &quot;- &quot;, otherwise the call is refused with an Error: line and both files unchanged; an empty bar is refused.
+      <advantage>Matches what runners already write and what the recorded entries show, so the stdin a runner composes is literally the block the entry will hold; the check still catches stray prose, a pasted label, or an unbulleted line before anything is written.</advantage>
+      <drawback>The bullet syntax stays in runtime prose, so the rendering only partly leaves it for the tool, and a criterion wrapped onto a continuation line is refused, costing the runner a corrected re-call.</drawback>
+    </alternative>
+    <alternative id="Rendered bullets, continuations folded">
+      Framing: &quot;- &quot; bullets as in the strict rendered form, but a non-empty line that does not start with &quot;- &quot; is read as a continuation of the bullet above it and folded into that bullet with a single space; a continuation line before the first bullet is refused. Rendering: the tool writes the **Verified:** label and one normalized single-line bullet per criterion.
+      <advantage>Accepts the habitual bullet form and tolerates wrapping, since a bullet marker, not a line break, starts a criterion, so a wrapped criterion lands as one bullet without the blank-line discipline the paragraph form needs.</advantage>
+      <drawback>The most lenient parser to specify and test, and a criterion whose author forgot its &quot;- &quot; is silently merged into the previous one; the bullet syntax still lives in runtime prose.</drawback>
+    </alternative>
+    <alternative id="Verbatim block under label">
+      Framing: stdin is opaque Markdown. Rendering: the tool writes the **Verified:** label, then the piped text verbatim with only its leading and trailing blank lines trimmed, then the separator. Strictness: none beyond refusing an empty bar — the tool neither splits criteria nor checks bullets.
+      <advantage>Nothing the runner writes is ever refused or reshaped, so nested bullets, multi-line criteria, or code spans survive exactly, and the tool&apos;s parsing is the smallest of any option.</advantage>
+      <drawback>The one-bullet-per-criterion shape stays a prose convention the tool does not hold, so a malformed bar (prose paragraphs, a duplicated label) lands silently, and the goal&apos;s aim of moving the Verified rendering out of runtime prose is only half met.</drawback>
+    </alternative>
+    <alternative id="JSON array of criteria">
+      Framing: stdin is a JSON array of strings, one string per criterion, parsed with the standard library. Rendering: the tool writes the **Verified:** label and one &quot;- &quot; bullet per string, folding any internal newline to a space. Strictness: anything that is not a non-empty array of non-empty strings is refused with an Error: line and both files unchanged.
+      <advantage>Completely unambiguous: criterion boundaries never depend on line breaks, blank lines, or markers, so neither a split nor a merge can happen silently.</advantage>
+      <drawback>The runner must JSON-escape every double quote and backslash in criteria that routinely quote phrases and commands, an escaping burden runtime prose would have to teach and runners would get wrong, and it breaks the tools&apos; convention of free text piped as a plain quoted heredoc.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Whole-file rewrite or splice">
     <question>Does the task-list tool parse a whole task file and re-render it in one canonical layout on every write, normalizing the blank-line convention of every section it did not touch, or does it splice only the bytes of the section it adds or removes and leave every other byte of the file as it stands?</question>
