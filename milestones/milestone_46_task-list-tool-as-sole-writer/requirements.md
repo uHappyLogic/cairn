@@ -52,5 +52,9 @@ The task-list tool is `core/tools/task_list.py`: a singular, document-named noun
 
 The tool refuses, with one `Error:` line and both files unchanged, any insert or append (the briefs `derive-tasks` writes included) whose folded title equals a section `TASKS_TODO.md` already holds, because that file is the one where uniqueness is load-bearing: the move locates a section by its heading there. A move into `TASKS_DONE.md` is never checked against the entries it already holds, and no cross-file check is made at authoring time, so a finished task is never refused at the move and follow-up work may reuse a done title.
 
+### Initializing over existing tasks
+
+The initialize subcommand replaces whatever `TASKS_TODO.md` holds, with no flag, no refusal, and no output on success, carrying today's `derive-tasks` behaviour over unchanged: the skill calls it unconditionally, and the guard stays where it is today, in the skill's Preconditions line saying it replaces the file's contents. Every writer of `TASKS_TODO.md` commits its own write, so whatever initialize replaces is already in the previous commit and the `Task-derivation:` diff records exactly what was dropped, recoverable by revert.
+
 ## Out of Scope
 
