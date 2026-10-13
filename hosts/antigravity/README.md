@@ -38,7 +38,7 @@ Then, in your project root, create the milestones scaffold once:
 /init-milestone-base-workflow
 ```
 
-Run `/init` to document your project — its domain context, working conventions, available tools, and how work is verified as done — in `CLAUDE.md`, so the skills can read that environment context.
+Document your project — its domain context, working conventions, available tools, and how work is verified as done — in `AGENTS.md` at your project root, which Antigravity loads as workspace rules, so the skills can read that environment context.
 
 ## Source
 

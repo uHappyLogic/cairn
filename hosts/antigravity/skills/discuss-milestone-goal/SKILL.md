@@ -24,7 +24,7 @@ Facilitates a structured conversation to sharpen a vague or incomplete milestone
 
 ### 1. Read project context
 
-Read `CLAUDE.md` to understand the current milestone, the project's domain context, and project overview. Read `milestones/README.md` to understand what has already been built in past milestones. This grounds all questions in the real project state.
+Read `AGENTS.md` to understand the current milestone, the project's domain context, and project overview. Read `milestones/README.md` to understand what has already been built in past milestones. This grounds all questions in the real project state.
 
 ### 2. Analyze the goal
 

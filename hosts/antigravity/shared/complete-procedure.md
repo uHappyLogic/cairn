@@ -30,7 +30,7 @@ prose feeding the bar you derive; no part of a task body gets privileged parsing
 
 ## Project context
 
-The project being worked on documents its environment in the workspace root `CLAUDE.md`
+The project being worked on documents its environment in the workspace root `AGENTS.md`
 (and `README.md`): the project's domain context, working conventions, available tools, and
 how work is verified as done. This procedure reads that file; it never assumes a particular
 kind of work.
@@ -53,7 +53,7 @@ verified — and every sentence of it is input to the acceptance bar you derive 
 
 ### 2. Load the work environment and derive the acceptance bar
 
-Read the workspace root `CLAUDE.md` and hold in context:
+Read the workspace root `AGENTS.md` and hold in context:
 
 - The project's domain context — what the project is and the material it works with.
 - Working conventions — the practices to follow while doing and finishing the work.
@@ -93,7 +93,7 @@ Derive the flow yourself from the task's description and the acceptance bar you 
 step 2, then translate it into concrete edits: the exact files and where within them the
 work lands, the precise wording, the structure. Ground every decision in the live material
 you are changing (read the real artifacts you are touching) and in the conventions from
-`CLAUDE.md`, not in assumptions.
+`AGENTS.md`, not in assumptions.
 
 Resolve anything a sibling task was to provide the same way — by reading that task's live
 deliverable in the project and building against what is really there. Since tasks run in
@@ -106,7 +106,7 @@ target; whatever satisfies it faithfully is correct. Do not pause to widen scope
 requirements the task did not ask for.
 
 **After creating or modifying any file**, follow the finishing conventions documented in
-`CLAUDE.md`. At minimum, apply the project's way of verifying the change and fix any
+`AGENTS.md`. At minimum, apply the project's way of verifying the change and fix any
 problems before continuing.
 
 **Record the paths you touch.** As you create or edit each file while carrying out the
@@ -117,12 +117,12 @@ change set.
 **Tool patterns:**
 - Read or edit a file: `Read` then `Edit`.
 - Run a shell command: `Bash`.
-- MCP-based operations: use the MCP tool documented in `CLAUDE.md` that matches the goal.
+- MCP-based operations: use the MCP tool documented in `AGENTS.md` that matches the goal.
 
 ### 4. Verify against the derived acceptance bar
 
 Take the acceptance bar you derived in step 2 and verify the deliverable against it,
-criterion by criterion, however the project's conventions define done. If `CLAUDE.md`
+criterion by criterion, however the project's conventions define done. If `AGENTS.md`
 documents a done-verification convention (a check, review, or command that confirms work is
 complete), apply it. When it defines no such convention, fall back to direct inspection of
 the deliverable against the derived bar, checking it criterion-by-criterion using whatever
@@ -134,7 +134,7 @@ For each criterion:
 - Deliverable-content criteria: check the artifact's contents with `Read`.
 - Command-output criteria: run the specified command via `Bash` and check the output.
 - Structural criteria: use `find` or `Bash` to confirm the expected artifacts exist where expected.
-- MCP-based criteria: use the relevant MCP tool documented in `CLAUDE.md`.
+- MCP-based criteria: use the relevant MCP tool documented in `AGENTS.md`.
 
 Do not proceed to step 5 until every criterion passes.
 

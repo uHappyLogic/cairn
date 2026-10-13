@@ -35,7 +35,7 @@ Re-read `<MILESTONE_DIR>/TASKS_TODO.md` to get the current top task — the firs
 
 #### 2b. Spawn a subagent to complete the task
 
-Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the `complete-task` agent under this plugin's namespace, `cairn:complete-task`, and a prompt containing only the task name, substituting `<TASK_NAME>` with the exact `##` heading text (without the `##` prefix):
+Use the `invoke_subagent` tool with one entry in its `Subagents` array whose `TypeName` is the name this plugin registers the `complete-task` agent under, `complete-task`, whose `Role` is `Task completer`, and whose `Prompt` contains only the task name, substituting `<TASK_NAME>` with the exact `##` heading text (without the `##` prefix). The call returns at once, and the agent's final message reaches you as a message from it once it ends; that message is its return:
 
 ```
 Complete the task named: "<TASK_NAME>"

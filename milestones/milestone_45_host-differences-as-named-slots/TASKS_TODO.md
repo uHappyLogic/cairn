@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Antigravity Hands-On Check And Definition
-
-Run a hands-on check against the locally installed `agy` covering dispatch, waiting, continuing an agent, and the context file, and rewrite every Antigravity slot value from what it shows, naming no host: `CONTEXT_FILE` becomes `AGENTS.md` at the workspace root (the README template's `/init` sentence rewritten to name it, with no migration, fallback, or notice beyond the release's ordinary changelog), `ALTERNATIVES_CONCURRENCY` and the two new slots describe this host's own single mechanisms, and native agent loading is added only if a file the build can already emit suffices (a manifest template beside `plugin.json` or a relocation through the existing layout and renames), otherwise the values describe the generic-subagent fallback that reads the plugin's agent file by its plugin-root path, with the build's key schema and code gaining nothing. Correct every non-slot Antigravity fact the check contradicts when the correction is an edit to an existing settings value or template (`plugin_root` with the README install path that must match it, the `/init` sentence, the `plugin.json` fields, a new root-level manifest rendered as a template included), record any contradiction needing a new settings key, an unrendered template kind, or build code under this milestone's Out of Scope naming the fact and what `agy` showed, and record the check once as a single dated block in the header comment of `scripts/hosts/antigravity/settings.toml` naming the `agy` version and what was observed of the four points, with per-slot comments kept mechanism-only. Verified by rebuilding with `--check` passing and a search of `hosts/antigravity` finding no other host's tool, file, or command named.
-
----
-
 ## Antigravity Command-Line Facts In Docs
 
 Check every Antigravity command-line fact on `docs/ways-of-using-cairn.md` against the locally installed `agy` (the invocation form, `--dangerously-skip-permissions`, `--model` with `agy models`, `--add-dir` and its need on every `agy` line, and the move-a-line rule) and correct each one that differs, and replace the `--effort` value lists with a pointer to each host's own `--help` so the page lists no effort values for any host. Verified by reading the corrected legend and chains back against `agy --help` and `agy models` output.
