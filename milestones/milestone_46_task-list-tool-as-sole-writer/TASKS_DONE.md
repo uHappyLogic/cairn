@@ -101,3 +101,18 @@ Rewrite steps 5 through 7 of `core/skills/submit-task/SKILL.md` so the insert is
 - `uv run scripts/build_hosts.py` rebuilt the three host trees and `uv run scripts/build_hosts.py --check` passes.
 
 ---
+
+## Initialize Call With Whole List In Derive-Tasks
+
+Rewrite steps 6 through 9 of `core/skills/derive-tasks/SKILL.md` so the write and the commit are one fixed shell call shown in full and run exactly as shown: a single `python3 {{PLUGIN_ROOT}}/tools/task_list.py initialize <MILESTONE_DIR>` process reading the whole ordered brief list on a quoted heredoc in the task file's own `##` heading / body / `---` form, replacing `TASKS_TODO.md` with the heading and the list in dependency order or, on any refusal, leaving it byte-for-byte unchanged with the run stopping on the `Error:` line quoted verbatim, then the commit procedure's three steps under `Task-derivation: <milestone_id>`, so no separate initialize, per-brief append, or `Read`/`Edit` write remains and the `Task-derivation:` commit can never record a partial or reordered plan; the Preconditions line keeps its replaces-its-contents guard, and the coverage check and the two status lines stay. Verified by running the call verbatim against a sandbox milestone under zsh and bash (the list landing whole and committed; a duplicate folded title refusing the whole list and leaving the file and history unchanged), and by the rebuild so `uv run scripts/build_hosts.py --check` passes.
+
+**Verified:**
+
+- Steps 6 through 9 of `core/skills/derive-tasks/SKILL.md` are replaced by step 6 (present the plan, skipping the call when no brief was derived), step 7 (one fixed shell call shown in full, run exactly as shown), and step 8 (coverage check and report); no separate initialize, per-brief append, or `Read`/`Edit` write remains, and the call is the only way the briefs reach the file.
+- The call is a single `python3 {{PLUGIN_ROOT}}/tools/task_list.py initialize <MILESTONE_DIR>` process reading the whole ordered list on a quoted heredoc in the task file's `##` heading / body / `---` form, in dependency order, chained by `&&` to the commit procedure's dirty-own-path guard, path-scoped `git add`, and subject-only commit under `Task-derivation: <milestone_id>`, the path written literally in both places and never held in a shell variable.
+- On the tool's refusal the skill commits nothing and stops quoting the `Error:` line verbatim, with `TASKS_TODO.md` left byte-for-byte unchanged.
+- The Preconditions line keeps its "this skill replaces its contents" guard, step 8 keeps the coverage re-read and its untraced-requirement advisory, and both status lines stay (`Tasks derived.` and the distinct nothing-changed line).
+- Run verbatim against a sandbox milestone under `/bin/zsh` and `/bin/bash`, the call replaced a stale list with the two sections whole and in order and landed one `Task-derivation: milestone_01_demo` commit of only `TASKS_TODO.md` (an unrelated untracked file left out), a re-run with the same list committed nothing, and a list with two titles folding to the same title printed the tool's `Error:` line, exited 1, and left the file and history unchanged.
+- `uv run scripts/build_hosts.py` rebuilt the three host trees, `uv run scripts/build_hosts.py --check` passes, and the pinned pytest run passes unchanged (684 passed).
+
+---

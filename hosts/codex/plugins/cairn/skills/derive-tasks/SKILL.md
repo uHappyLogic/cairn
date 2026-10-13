@@ -7,7 +7,7 @@ description: Convert the current milestone's requirements.md into a complete, de
 
 Reads the current milestone requirements and derives a complete, dependency-ordered list of tasks into `TASKS_TODO.md`, ready for AI-driven completion via `/complete-task`.
 
-Your job here is **decomposition and coverage**. You split the milestone into high-level task briefs, prove that those briefs cover every requirement, order them by dependency, and write them into `TASKS_TODO.md` yourself — you are the single writer on the derivation path, and nothing here is delegated. Keep every task section at brief altitude: a task states *what* is to be achieved, and the completer derives the flow and the formal acceptance bar itself from the description plus `requirements.md`, against the live project.
+Your job here is **decomposition and coverage**. You split the milestone into high-level task briefs, prove that those briefs cover every requirement, order them by dependency, and write them into `TASKS_TODO.md` yourself, as one whole list through the plugin's task-list tool — nothing here is delegated. Keep every task section at brief altitude: a task states *what* is to be achieved, and the completer derives the flow and the formal acceptance bar itself from the description plus `requirements.md`, against the live project.
 
 ## Usage
 
@@ -86,35 +86,47 @@ Do not proceed until the matrix has no unexplained gaps.
 
 Order briefs so each one's prerequisites come first: a brief that produces something other briefs build on or refer to must precede any brief that depends on it. The top of `TASKS_TODO.md` is the highest priority / done first.
 
-### 6. Present the plan, then initialize the file
+### 6. Present the plan
 
 Show the user the ordered brief list and the coverage matrix (or a short summary of it, flagging anything already-satisfied or any residual gap). This is the cheap moment to correct ordering or scope — before writing N tasks. Then proceed (the user can interrupt to adjust).
 
-Initialize `<MILESTONE_DIR>/TASKS_TODO.md` to a clean header:
+If the run derived no brief at all — every requirement is already satisfied — skip step 7: write nothing, commit nothing, and go to step 8.
 
-```markdown
-# TASKS TODO
+### 7. Write and commit the task list in one shell call
+
+Write every brief as one task section, using the template and the authoring guidelines from `${PLUGIN_ROOT}/shared/task-format.md` exactly: its `##` title heading, its description, and its trailing `---`. The brief you decomposed in step 3 *is* the task body; writing it down is a transcription into that format, not a second authoring pass that adds detail.
+
+Then run this one fixed shell call, written out in full exactly as shown, with only `<MILESTONE_DIR>`, `<milestone_id>` (the last path component of `<MILESTONE_DIR>`), and the sections replaced — every brief's section in the heredoc, **in dependency order**, so the finished file reads top-to-bottom in that order:
+
+```
+python3 ${PLUGIN_ROOT}/tools/task_list.py initialize <MILESTONE_DIR> <<'EOF' &&
+## <Task Title 1>
+
+<1–3 sentence description>
+
+---
+
+## <Task Title 2>
+
+<1–3 sentence description>
+
+---
+EOF
+if [ -n "$(git status --porcelain -- <MILESTONE_DIR>/TASKS_TODO.md)" ]; then
+  git add <MILESTONE_DIR>/TASKS_TODO.md && git commit -q -m "Task-derivation: <milestone_id>" && echo 'derivation commit landed'
+fi
 ```
 
-### 7. Write the briefs into the task list, in order
+The tool replaces `<MILESTONE_DIR>/TASKS_TODO.md` with its heading followed by the whole list in the order given, or, refusing anything in it, prints one `Error:` line and leaves the file byte-for-byte unchanged. After the `&&` the call carries out the three steps of the shared commit procedure at `${PLUGIN_ROOT}/shared/commit-procedure.md` itself — its dirty-own-path guard, the path-scoped `git add`, and the subject-only commit under `Task-derivation: <milestone_id>` — over this skill's own change set, `<MILESTONE_DIR>/TASKS_TODO.md`, written out on the command line in both places and never held in a shell variable. Git's success output is silenced. Never write the briefs into the file any other way, one at a time or by editing it.
 
-Write each brief into `<MILESTONE_DIR>/TASKS_TODO.md` as one task section, **in dependency order**, appending each after the last so the finished file reads top-to-bottom in that order.
+What the call prints is the whole outcome: `derivation commit landed` when the commit landed; nothing when the guard found the file unchanged (the list matched what it already held); otherwise the tool's one `Error:` line, with `TASKS_TODO.md` unchanged and nothing committed, or git's message for a commit it refused.
 
-Use the template and the authoring guidelines from `${PLUGIN_ROOT}/shared/task-format.md` exactly. The brief you decomposed in step 3 *is* the task body; writing it down is a transcription into that format, not a second authoring pass that adds detail.
+On the tool's `Error:` line — two briefs whose titles fold to the same title, or a section with an empty title or body — commit nothing and stop: report the failure quoting the `Error:` line verbatim, and print neither status line of step 8.
 
 ### 8. Verify coverage and report
 
 Re-read the finished `<MILESTONE_DIR>/TASKS_TODO.md` and confirm every brief from the matrix produced a task section.
 
-On the success path, print exactly one fixed terse status line for the whole run — `Tasks derived.` — with no list of the ordered task titles and no next-step pointer. **Alongside** that terse line, keep the one git-absent advisory this step owns: explicitly flag any requirement you could not trace to a task (flag as a gap — never silently omit).
+On the success path — the call printed `derivation commit landed` — print exactly one fixed terse status line for the whole run — `Tasks derived.` — with no list of the ordered task titles and no next-step pointer. **Alongside** that terse line, keep the one git-absent advisory this step owns: explicitly flag any requirement you could not trace to a task (flag as a gap — never silently omit).
 
-If the run derived nothing — `TASKS_TODO.md` gained no task section, so step 9's dirty-own-path no-op guard will fire and nothing is committed — do not print the terse success line; instead print a distinct one-line message stating that nothing changed and why (no tasks were derived).
-
-### 9. Commit the derived task list
-
-You commit **once at the end of the run** — here, after every brief has been written (step 7) and coverage is verified (step 8), never after each individual task section. Read and follow the shared commit procedure at `${PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
-
-- **PATHS** — this run's own change set: `<MILESTONE_DIR>/TASKS_TODO.md` (the file this skill initialized in step 6 and wrote into in step 7).
-- **SUBJECT** — `Task-derivation: <milestone_id>`.
-
-The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard (a run that derived nothing into `TASKS_TODO.md` stages and commits nothing), and the commit.
+If the run derived nothing — step 6 skipped the call because no brief was derived, or step 7's dirty-own-path guard found `TASKS_TODO.md` unchanged, so nothing is committed — do not print the terse success line; instead print a distinct one-line message stating that nothing changed and why (no tasks were derived, or the derived list matched the file already).
