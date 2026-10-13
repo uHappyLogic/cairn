@@ -65,4 +65,13 @@
       <drawback>It is a third behaviour with its own rules to specify and test (which whitespace counts as part of a seam, what happens at the file heading and at end of file), more logic than either a render or a raw splice, and it still leaves the file internally inconsistent wherever drift sits away from a junction, so the file never converges on the convention by itself.</drawback>
     </alternative>
   </open-question>
+  <open-question id="Insert position syntax">
+    <question>How does submit-task tell the task-list tool where its one authored section goes: through a single insert subcommand whose position is an optional flag naming the anchor heading (before or after it, defaulting to the end of the file when no flag is given), or through separate subcommands for the append position and the anchored positions?</question>
+  </open-question>
+  <open-question id="Insert input shape">
+    <question>When the task-list tool writes one authored section for submit-task, does it take the task title as a command-line argument and only the body prose on standard input (the open-question tool&apos;s add form), or does it read the whole section on standard input in the task file&apos;s own ## heading, body, and --- form, the same shape the initialize subcommand reads for derive-tasks?</question>
+  </open-question>
+  <open-question id="Heading line requirement">
+    <question>Does the task-list tool require the fixed first-line heading of each task file it writes to (# TASKS TODO or # TASKS DONE), refusing with one Error: line a file whose first line is anything else, or does it treat whatever stands before the first ## section as opaque content that it carries through unchanged and never checks?</question>
+  </open-question>
 </open-questions>
