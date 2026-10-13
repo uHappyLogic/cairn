@@ -80,5 +80,9 @@ Inside its one shell call, `derive-tasks` runs no separate append. A single init
 
 The tool refuses a before or after anchor that names no section in `TASKS_TODO.md` with one `Error:` line and the file unchanged, keeping its full output contract, and `submit-task` drops its append fallback altogether: on that refusal it inserts nothing, commits nothing, and stops, quoting the tool's `Error:` line verbatim so the user can re-run with a correct anchor. Position encodes dependency order, so a task never lands anywhere but where the runner decided.
 
+### Task format validation scope
+
+Beyond refusing an empty title or body, the insert and append subcommands write whatever title and body they are given verbatim, a body line that reads as a `---` separator or a `## ` heading included, and the move copies its section as it stands. The tool checks no rule of `task-format.md`, structural or quantitative: title length and case, sentence count, and the ban on sub-headings and labeled sections all stay with the authoring skills exactly as today, so `task-format.md` remains the format's only home and no authored brief is ever refused for its wording.
+
 ## Out of Scope
 
