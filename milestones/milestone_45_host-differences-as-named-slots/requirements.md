@@ -52,6 +52,8 @@ A file-backed value is bound inside the existing `[slots]` table: the slot's ent
 
 The build adds no duplicate rule of its own: because the file is bound through the slot's own `[slots]` key, a second source for one slot is a repeated TOML key, which the parser already refuses, so no precedence rule, refusal path, message, or test case is written for a duplicate.
 
+A file-backed value is read as UTF-8 text with exactly one trailing line ending (a final `\n` or `\r\n`) removed when the file ends with one; every other byte, earlier trailing newlines and spaces included, is substituted as written, and a file with no final newline is used as it stands. No check is made of the file's ending. A value that must end in a newline, such as the Codex prompt-opener values that end in two, is held in a file ending in one more newline than the value carries.
+
 ### Build rendering test
 
 The rendering test is one full render of a small synthetic `core/` and one synthetic host definition (a `settings.toml` with inline and file-backed slots, plus whatever templates it needs) into a `tmp_path` directory, with the rendered files asserted, including a file-backed value landing in rendered output in the right substitution order. It reaches the build by importing it in-process and monkeypatching its module-level path constants (`CORE_DIR`, `LICENSE_FILE`, and `DEFINITIONS_DIR` where discovery is used) onto the fixture, then calling `load_definition` and `render_host`. The build code is unchanged for the test's sake; the test does not exercise `main`'s orchestration or the check set.
