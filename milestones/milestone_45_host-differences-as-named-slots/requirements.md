@@ -58,5 +58,9 @@ The rendering test is one full render of a small synthetic `core/` and one synth
 
 Two new slots replace the four capability-conditional passages of `provide-alternatives-to-all-open-questions`. The opening paragraph's concurrency phrase gets its own slot. One repair slot holds the sub-step e lead-in, the repair branches as each host actually has them, and the repair-wait sentence; sub-step e is reordered in `core/` so that slotted text is contiguous ahead of the fixed corrective message, its fill rule, and the one-repair cap, which stay in `core/`. `ALTERNATIVES_CONCURRENCY` stays as it is. The `AGENT_TOOL` and `ALTERNATIVES_AGENT` slots are retired, their wording written literally inside each host's repair value, so the rule that a slot value carries no placeholder other than `{{PLUGIN_ROOT}}` stands.
 
+### Per-host slot value sourcing
+
+The Claude Code values of the new slots are lifted from the arm of today's capability-conditional wording that applies to Claude Code, kept as written except where a check contradicts it. The evidence is a hands-on check against the locally installed `claude` covering the same four points the goal names for Antigravity (dispatch, waiting, continuing a finished agent, the context file), with the documentation consulted alongside.
+
 ## Out of Scope
 

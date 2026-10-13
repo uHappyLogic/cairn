@@ -1,34 +1,4 @@
 <open-questions>
-  <open-question id="Claude Code slot value sourcing">
-    <question>The new per-host slots need Claude Code values that describe only that host&apos;s own mechanism, yet the goal names a hands-on check for Antigravity alone. Where do the Claude Code values come from: lifted from the arm of today&apos;s capability-conditional prose that applies to it, rewritten from a hands-on check of Claude Code as well, or taken from its documentation alone?</question>
-    <applied-principle>Check tier claims against the live environment</applied-principle>
-    <recommendation option="Lift, verified hands-on">Which arm applies is a claim about the installed harness, and the installed Agent tool describes background dispatch with completion notifications and SendMessage for continuing a finished agent, so the wait and repair arm must be observed rather than asserted; keeping the proven wording wherever the check confirms it keeps the diff of the tree other projects load live close to a pure deletion.</recommendation>
-    <alternative id="Lift, verified hands-on">
-      Text source: the applying arm of today&apos;s wording, kept as written except where a check contradicts it. Evidence: a hands-on check against the locally installed claude (2.1.296) covering the same four points the goal names for Antigravity (dispatch, waiting, continuing a finished agent, the context file), with the documentation consulted alongside.
-      <advantage>Puts Claude Code on the same evidentiary footing as Antigravity, settling by observation which wait and repair arm Claude Code actually runs, while still keeping the proven wording wherever the check confirms it.</advantage>
-      <drawback>Adds a second hands-on check the goal does not name, with its setup cost (a plugin-loaded session that dispatches, waits on, and continues an agent), and how that check is recorded is a question the sibling on the hands-on check record settles only for Antigravity.</drawback>
-    </alternative>
-    <alternative id="Lift the applying arm">
-      Text source: the existing capability-conditional wording, cut down to the arm judged to apply to Claude Code (in ALTERNATIVES_CONCURRENCY, the blocking-dispatch arm; in sub-step e, the continue-the-session branch with the re-dispatch kept only for a lost handle; in the repair-wait sentence, the send-without-blocking arm). Evidence: none new; the arm is chosen from what the repository already records about Claude Code (its settings.toml comments and docs/skill-reference.md naming SendMessage to the agent id the dispatch returned). No hands-on check and no documentation pass for Claude Code.
-      <advantage>Cheapest and lowest-churn: the Claude Code tree keeps sentences it already runs and has been measured under across milestones 43 and 44, so its diff is a pure deletion of the non-applying arms and the risk of regressing the host other projects load live is smallest.</advantage>
-      <drawback>Which arm applies is asserted, not observed: the installed Claude Code (2.1.296) runs Agent dispatches in the background by default with a blocking form as an option, and SendMessage is a deferred tool, so the &quot;applying&quot; arm is itself a choice the lifted text inherits unchecked, while the Antigravity values beside it are written from a check, leaving the two hosts on different standards of evidence.</drawback>
-    </alternative>
-    <alternative id="Lift, verified against docs">
-      Text source: the applying arm of today&apos;s wording, kept as written except where Claude Code&apos;s published documentation contradicts it. Evidence: Claude Code&apos;s documentation of the Agent tool (its blocking and background forms), of continuing a finished subagent by SendMessage, and of CLAUDE.md as the project instruction file; no hands-on run.
-      <advantage>Grounds the arm choice in a stated source at small cost, while keeping the Claude Code tree&apos;s proven wording wherever the documentation agrees, so the diff stays nearly a pure deletion.</advantage>
-      <drawback>Documentation can trail the shipped harness (the background-by-default dispatch and deferred tool loading are recent behaviours), so a documented capability may differ from what the installed version actually does, and nothing observed backs the values the way the Antigravity ones are backed.</drawback>
-    </alternative>
-    <alternative id="Rewrite from docs alone">
-      Text source: new values written afresh for each new slot, describing Claude Code&apos;s own mechanism in the terms its documentation uses (the Agent tool&apos;s blocking or background dispatch, SendMessage to the returned agent id, the re-dispatch fallback) rather than in the capability phrasing of today&apos;s arms. Evidence: Claude Code&apos;s published documentation alone, the way the existing Codex values were derived; no hands-on run.
-      <advantage>Lets each value name the actual primitive rather than a generic capability, matching the precision the rewritten Antigravity values will have, without the cost of running a check against Claude Code.</advantage>
-      <drawback>Rewrites wording that already works in the most-used tree on documentation evidence only, so it takes on the churn of a rewrite without the observation that would justify it, and inherits any gap between the docs and the installed harness.</drawback>
-    </alternative>
-    <alternative id="Rewrite from hands-on check">
-      Text source: new values written afresh for each new slot from what was observed, describing Claude Code&apos;s own mechanism in the terms the check exposes. Evidence: a hands-on check against the locally installed claude (2.1.296) covering dispatch, waiting, continuing a finished agent, and the context file, run by the same protocol as the Antigravity check, with the documentation consulted alongside.
-      <advantage>Gives every host&apos;s values one consistent provenance and voice: both checked hosts are written from observation by the same protocol, so no Claude Code sentence survives only because it predates the check.</advantage>
-      <drawback>The largest cost and the largest diff: it widens the milestone beyond the one check the goal names and rewrites the Claude Code tree&apos;s working wording wholesale, raising the chance of regressing the host other projects load live for a gain mostly in consistency.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Codex slot value sourcing">
     <question>The new per-host slots need Codex values for the repair branches and repair wait, which today&apos;s Codex definition does not cover. Where do those values come from: derived from Codex&apos;s documentation as the existing Codex values were, or rewritten from a hands-on check against the locally installed codex as well?</question>
     <applied-principle>Check tier claims against the live environment</applied-principle>
