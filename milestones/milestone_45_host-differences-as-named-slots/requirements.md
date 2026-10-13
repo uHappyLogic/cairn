@@ -64,5 +64,9 @@ The Claude Code values of the new slots are lifted from the arm of today's capab
 
 The Codex values for the repair branches and the repair wait are rewritten from Codex's documentation plus a hands-on run of the locally installed `codex` that exercises exactly what those values describe: sending a follow-up to a finished subagent, re-spawning a fresh generic subagent, and waiting with `wait_agent` on a repair set alone. The eight existing Codex values are not re-checked and stay as they are unless the run contradicts one the new values depend on.
 
+### Antigravity context file
+
+The Antigravity `CONTEXT_FILE` value becomes `AGENTS.md` at the workspace root, so the Antigravity and Codex trees name the same file. The Antigravity README template's `/init` sentence is rewritten to name it too. The value stays a plain root-level file name, so no `core/` sentence about the workspace root or the bootstrap's file heading changes.
+
 ## Out of Scope
 
