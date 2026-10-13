@@ -1,1 +1,53 @@
-<open-questions/>
+<open-questions>
+  <open-question id="File-backed slot declaration form">
+    <question>The build is to accept slot values held in files beside the inline [slots] table of a host&apos;s settings.toml. How does a definition bind a file to a slot name, and where do the files live: discovered by a fixed naming convention under a fixed directory of the definition, named explicitly per slot in the TOML, or another binding, and at which path? (The binding form and the location constrain each other, so both are asked together.)</question>
+  </open-question>
+  <open-question id="Duplicate slot value handling">
+    <question>When a host definition supplies the same slot both inline in its [slots] table and as a file-backed value, what does the build do: refuse the definition, or let one of the two forms take precedence, and which?</question>
+  </open-question>
+  <open-question id="File value trailing newline">
+    <question>A text file conventionally ends with a newline while an inline TOML slot value does not. When a file-backed slot value is substituted into a core/ file, are its bytes used verbatim, or is trailing whitespace normalised, and by what rule?</question>
+  </open-question>
+  <open-question id="Inline versus file assignment">
+    <question>Once both forms exist, which slot values are held in files and which stay inline in settings.toml: every value, only the multi-line paragraphs, or whichever each host definition chooses per slot?</question>
+  </open-question>
+  <open-question id="Build test shape">
+    <question>The milestone adds a lightweight pytest of the build&apos;s rendering. What does that test exercise, and how does it reach the build code: the slot-filling step alone through an import, a full render of a small synthetic core and definition into a temporary directory, or the real build run as a subprocess against the repository&apos;s own core/ and hosts/? (What is tested and how the code is reached constrain each other, so both are asked together.)</question>
+  </open-question>
+  <open-question id="Floor-run exclusion of build test">
+    <question>The Python 3.9 floor run collects the same tests/ directory as the pinned run but has neither PyYAML nor tomllib, both of which the build imports. How is the rendering test kept to the pinned interpreter: a skip inside the test, a collection rule in conftest.py, a location outside the floor run&apos;s test paths, or a change to the floor command itself?</question>
+  </open-question>
+  <open-question id="Repair passage slot granularity">
+    <question>Four capability-conditional passages of the alternatives pass are to become slots: the opening paragraph&apos;s &quot;where the host allows it&quot;, the two repair branches of sub-step e, and the repair-wait sentence. How are they divided into slots (one slot per passage, one slot for the whole repair sub-step, or folded into the existing ALTERNATIVES_CONCURRENCY), and, since a slot value may carry no other placeholder, what becomes of the AGENT_TOOL and ALTERNATIVES_AGENT slots that are used only inside those branches? (The two choices constrain each other, so both are asked together.)</question>
+  </open-question>
+  <open-question id="Claude Code slot value sourcing">
+    <question>The new per-host slots need Claude Code values that describe only that host&apos;s own mechanism, yet the goal names a hands-on check for Antigravity alone. Where do the Claude Code values come from: lifted from the arm of today&apos;s capability-conditional prose that applies to it, rewritten from a hands-on check of Claude Code as well, or taken from its documentation alone?</question>
+  </open-question>
+  <open-question id="Codex slot value sourcing">
+    <question>The new per-host slots need Codex values for the repair branches and repair wait, which today&apos;s Codex definition does not cover. Where do those values come from: derived from Codex&apos;s documentation as the existing Codex values were, or rewritten from a hands-on check against the locally installed codex as well?</question>
+  </open-question>
+  <open-question id="Hands-on check record">
+    <question>The Antigravity slot values are to be rewritten from a hands-on check against the installed agy. Where is that check recorded so a later editor can tell what each value was written against: in the comment above each value in the host definition, in the milestone&apos;s decisions only, as a repeatable script kept in the repository, or nowhere beyond the values themselves?</question>
+  </open-question>
+  <open-question id="Antigravity context file choice">
+    <question>Antigravity&apos;s tree today names CLAUDE.md as the context file, while the agy binary names GEMINI.md and AGENTS.md as its rule files and never CLAUDE.md. If the hands-on check confirms that Antigravity reads more than one project instruction file, which one does the Antigravity tree name as its context file?</question>
+  </open-question>
+  <open-question id="Antigravity context-file transition">
+    <question>If the Antigravity context file changes away from CLAUDE.md, is any transition provided for existing Antigravity projects whose CLAUDE.md already carries the workflow section, or does the change apply only to projects bootstrapped after it?</question>
+  </open-question>
+  <open-question id="Antigravity agent loading gap">
+    <question>If the hands-on check shows that Antigravity loads a plugin&apos;s agents only through a manifest or frontmatter fields the agent files do not carry today, does this milestone add what Antigravity needs to its host definition, or do the Antigravity slot values describe a generic-subagent fallback as the Codex ones do?</question>
+  </open-question>
+  <open-question id="Other-host rule scope">
+    <question>The new development rule says a rendered tree must never name another host&apos;s mechanism. Does it cover only the files rendered from core/, or also the host&apos;s own templates (README, CONTRIBUTING pointer, manifest) in the same tree?</question>
+  </open-question>
+  <open-question id="Own-host naming in values">
+    <question>Today no slot value names a host, in keeping with the rule that runtime files name no host. Once a slot value describes one host&apos;s own mechanism, may it name that host (for example its tool by the host&apos;s name), or must it still describe the mechanism without naming the host?</question>
+  </open-question>
+  <open-question id="CONTRIBUTING build description scope">
+    <question>CONTRIBUTING.md&apos;s Development section describes settings.toml without its [slots] table or plugin_dir and would say nothing of file-backed values or the new rule. Is that section rewritten in this milestone alongside CLAUDE.md and docs/, or left out of scope?</question>
+  </open-question>
+  <open-question id="Antigravity flag facts in docs">
+    <question>docs/ways-of-using-cairn.md lists three --effort values for Antigravity while the installed agy --help lists five. Does this milestone correct that page&apos;s Antigravity command-line facts from the same hands-on check, or is that left out of scope?</question>
+  </open-question>
+</open-questions>
