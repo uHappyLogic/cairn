@@ -2,7 +2,7 @@
 
 This is the single source of truth for the **brief-level** format of one task section in a
 milestone's `TASKS_TODO.md`. The `derive-tasks` and `submit-task` skills author sections in
-this format, and `shared/complete-procedure.md` parses them.
+this format, and the plugin's task-list tool parses them on every write.
 
 A task states *what* is to be achieved, not how to achieve it: the completer derives the
 flow and the acceptance bar itself against the live project, so anything re-derivable there
@@ -29,14 +29,15 @@ Nothing else belongs in a task section: there is no steps section, no `Provides`
 `Notes` section, no `Success` section, and no other structured done-ness heading under any
 name.
 
-The trailing `---` separator after every task section is mandatory —
-`shared/complete-procedure.md` parses sections by it.
+The trailing `---` separator after every task section is mandatory — the task-list tool
+parses sections by it.
 
 ## Authoring guidelines
 
 - **Title**: 4–8 words, title-cased, and unique within the file. If it would collide with an
-  existing title, distinguish it. Uniqueness is load-bearing: the completion procedure
-  locates a task by case-insensitive partial heading match.
+  existing title, distinguish it. Uniqueness is load-bearing: the task-list tool locates a
+  task by exact heading match after whitespace-folding and case-folding, and refuses a title
+  two sections share.
 - **Atomic scope**: the task must be completable in a single completion pass, with no
   decisions left to make mid-task. If a brief secretly contains two independently-buildable
   pieces, author the one that matches its primary intent and surface the leftover to the

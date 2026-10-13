@@ -56,3 +56,19 @@ Add the task-list tool's tests to `tests/`, driven end-to-end as subprocesses th
 - `uv run pytest` passed (684) and `uv run --no-project --python 3.9 --with pytest pytest` passed (680, 1 skipped: only `test_build_rendering.py`), with the 136 new tests collected in both runs
 
 ---
+
+## Show Move Command In Completion Procedure
+
+Rewrite step 5 of `core/shared/complete-procedure.md` so the move-plus-augment is the task-list tool's one command shown alone — `python3 {{PLUGIN_ROOT}}/tools/task_list.py move <MILESTONE_DIR> "<Task Title>"` with the derived bar on a quoted heredoc as the `- ` bullets the procedure writes, one per criterion in verification order, the tool writing the label and the `---` — stated in one sentence to run in one shell call chained with the git step the runner's own file shows, the procedure containing no git and no `Read`/`Edit` move, while step 1 keeps its case-insensitive partial match against its own whole read of `TASKS_TODO.md` (listing the headings on no match) and the runner passes the full heading it located to the move; update `core/shared/task-format.md`'s sentences on who parses sections by the separator and why title uniqueness is load-bearing to name the tool's exact folded match. Verified by reading both files against the `## Decisions` (one tool-contract sentence, no git, no restated escaping or parsing mechanics), by `grep` finding no `Read`/`Edit` move step left in the procedure, and by the rebuild so `uv run scripts/build_hosts.py --check` passes with both pytest runs unchanged.
+
+**Verified:**
+
+- Step 5 of `core/shared/complete-procedure.md` shows the move alone as `python3 {{PLUGIN_ROOT}}/tools/task_list.py move <MILESTONE_DIR> "<Task Title>"` with the bar on a quoted `<<'EOF'` heredoc as `- ` bullets, one per criterion in verification order, and states that the tool writes the `**Verified:**` label and the `---`.
+- Step 5 says in one sentence to run the command in one shell call chained with the git step the runner's own file shows, carries one tool-contract sentence (nothing printed on success, one `Error:` line with both task files unchanged on failure), and restates no escaping or parsing mechanics.
+- `grep` finds no git command and no `Read`/`Edit` move step in the procedure (the only `Read`/`Edit` mentions are step 3's and step 4's work and verification tool patterns).
+- Step 1 keeps its case-insensitive partial match against its own whole read of `TASKS_TODO.md`, lists the available headings on no match, and holds the full located heading as the `<Task Title>` step 5 passes to the move.
+- `core/shared/task-format.md` names the task-list tool as the parser of sections by their `---` and grounds title uniqueness in the tool's exact heading match after whitespace-folding and case-folding.
+- The shown move command, run verbatim against a sandbox milestone, moves the section with the `**Verified:**` label, the bullets, and the `---`, exiting 0 and printing nothing.
+- `uv run scripts/build_hosts.py` rebuilt all three host trees, `uv run scripts/build_hosts.py --check` passes, and both pytest runs pass unchanged (684 passed pinned; 680 passed, 1 skipped at 3.9).
+
+---

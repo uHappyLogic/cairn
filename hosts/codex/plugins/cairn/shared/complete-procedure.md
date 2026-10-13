@@ -47,9 +47,10 @@ without changing anything** and report that no matching task was found, listing 
 available `##` headings so the caller can retry. Do not carry out anything that is not a
 task in `TASKS_TODO.md`.
 
-Read the located section in full, from its `##` heading to its trailing `---`. Its
-description is the statement of intent — what is to be achieved, why, and how it would be
-verified — and every sentence of it is input to the acceptance bar you derive next.
+Read the located section in full, from its `##` heading to its trailing `---`, and hold its
+full heading text: it is the `<Task Title>` step 5 passes to the move. Its description is the
+statement of intent — what is to be achieved, why, and how it would be verified — and every
+sentence of it is input to the acceptance bar you derive next.
 
 ### 2. Load the work environment and derive the acceptance bar
 
@@ -141,29 +142,24 @@ Do not proceed to step 5 until every criterion passes.
 ### 5. Move the task TODO → DONE, augmented with the bar
 
 The move is a **move-plus-augment**: the finished entry records both the brief and the bar
-the work was actually verified against.
+the work was actually verified against. It is made by the plugin's task-list tool, the sole
+writer of both task files, which cuts the located section from `TASKS_TODO.md` and appends
+it to `TASKS_DONE.md` with the bar under a `**Verified:**` label it writes itself, closing the
+entry with the `---` separator:
 
-1. `Read` `<MILESTONE_DIR>/TASKS_TODO.md`.
-2. `Edit` it to remove the completed `##` section and its trailing `---` separator. The
-   section starts at the `##` heading line and ends at (and includes) the next `---` line.
-3. `Read` `<MILESTONE_DIR>/TASKS_DONE.md`.
-4. `Edit` it to append the completed section, preserving existing content: append the `##`
-   heading and the task body, then — inside that same section, under the description and
-   above the closing `---` — the derived acceptance bar as a `**Verified:**`-labeled bullet
-   list, one bullet per criterion, in the order you verified them:
+```
+python3 ${PLUGIN_ROOT}/tools/task_list.py move <MILESTONE_DIR> "<Task Title>" <<'EOF'
+- <criterion 1, as verified>
+- <criterion 2, as verified>
+EOF
+```
 
-   ```markdown
-   ## <heading>
+`<Task Title>` is the full heading step 1 located, and the quoted heredoc carries the
+derived acceptance bar as one `- ` bullet per criterion, in the order you verified them,
+written as they stood when they passed in step 4 — the same bar, neither re-derived nor
+summarized into prose.
 
-   <body>
+The tool prints nothing on success, and any failure is one `Error: <reason>` line on stderr
+with a non-zero exit and both task files left byte-for-byte unchanged.
 
-   **Verified:**
-
-   - <criterion 1, as verified>
-   - <criterion 2, as verified>
-
-   ---
-   ```
-
-   Write the criteria as they stood when they passed in step 4 — the same bar, neither
-   re-derived nor summarized into prose.
+Run this command in one shell call chained with the git step your runner's own file shows.
