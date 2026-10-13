@@ -13,9 +13,18 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_44_batched-recommendation-embeds-in-one/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 44 — Batched recommendation embeds in one shell call
+
+- `/recommend-all-open-questions` writes its decided picks in one fixed shell call, shown in full in the skill and run exactly as shown, that runs each picked block's own `embed --recommendation` process on a quoted heredoc, lifts each accepted block inside that embed's exit-0 branch into one quoted body variable, commits `open_questions.xml` once under `Recommendation-annotation: <milestone_id>` with the lifted lines as body, then sorts and commits the reorder under `Question-ordering: <milestone_id>` behind the dirty-own-path guard.
+- The call carries every picked block with no cap or splitting rule, a refused block prints its Short Title paired with the tool's `Error:` line while the rest land, the annotation commit is conditioned on a non-empty body so a run with nothing to write runs the same call with no block section and still sorts, and git's success output is silenced.
+- Refused blocks are corrected and re-sent together in at most one more call of the same shape, a block refused again is skipped into the end-of-run advisory with that second `Error:` line verbatim and the remedy of re-running the pass, so a run is bounded at two batched calls and two annotation commits.
+- The call prints one fixed identifier-free marker line per landed commit (`annotation commit landed`, `ordering commit landed`), and the report step reads its status line from those markers across every call of the run, never from a test of the sort outcome.
+- The open-question tool, its tests, and its contract are unchanged: one `embed` process per block keeps the per-block refusal and the "a mutator prints nothing on success" rule.
+- The `CLAUDE.md` invariants (two annotating passes, skill-layer committing, shell literalness extended to a value that accumulates across the call, terse reporting), `docs/skill-reference.md`, `docs/workflow.md`, and claims 13 to 15 of `docs/design-claims.md` describe the batched form and the measurement that motivated it.
 
 ### Milestone 43 — Batched alternatives embeds from scratch files
 
@@ -472,3 +481,4 @@ Current milestone: `milestones/milestone_44_batched-recommendation-embeds-in-one
 | 41 | Decide-upfront pitch reframe | `milestones/milestone_41_decide-upfront-pitch-reframe/` |
 | 42 | Stale picks as undeclared dependents | `milestones/milestone_42_stale-picks-as-undeclared-dependents/` |
 | 43 | Batched alternatives embeds from scratch files | `milestones/milestone_43_batched-alternatives-embeds-from-scratch/` |
+| 44 | Batched recommendation embeds in one shell call | `milestones/milestone_44_batched-recommendation-embeds-in-one/` |
