@@ -5,11 +5,13 @@ Usage: uv run scripts/build_hosts.py [<host> ...] [--check]
 A host is declared by a definition directory scripts/hosts/<host>/ holding a settings.toml
 (plugin_name, the plugin_root literal, the plugin_dir that literal stands for,
 prose_drop_patterns, strip_frontmatter_keys, the [layout] of core/'s top-level directories,
-renames, exclude, and the [slots] table) beside that host's template files; every file in the directory other than settings.toml is a
-template rendered to the same relative path in the host tree with its {{VERSION}} slot
-filled from the root VERSION file and its {{NAME}} slot from plugin_name. The build
-discovers hosts by scanning that directory and applies the settings uniformly, so no
-host-specific code exists here and a definition is validated before any build runs.
+renames, exclude, and the [slots] table) beside that host's template files and an optional
+slots/ subdirectory of slot value files; every file in the directory other than
+settings.toml and the files under slots/ is a template rendered to the same relative path
+in the host tree with its {{VERSION}} slot filled from the root VERSION file and its
+{{NAME}} slot from plugin_name. The build discovers hosts by scanning that directory and
+applies the settings uniformly, so no host-specific code exists here and a definition is
+validated before any build runs.
 
 plugin_dir is the path from the host tree's root to the directory plugin_root stands for at
 runtime: the empty string when the installed plugin is the whole tree, or a subdirectory
@@ -25,6 +27,15 @@ that host's text. Each core/ text file has its slots filled in one pass before
 {{PLUGIN_ROOT}} is replaced, so a slot value may itself carry {{PLUGIN_ROOT}} but no other
 placeholder. Every definition declares the same slot names; a slot used in core/ that a host
 does not declare is left in place and fails the unfilled-placeholder check.
+
+A [slots] entry takes one of two forms. Inline, the value is a TOML string:
+NAME = "text". File-backed, the entry is a one-key inline table naming a value file:
+NAME = { file = "slots/NAME.md" }, the path relative to the definition directory and kept
+under its slots/ subdirectory. A value file is read as UTF-8 with exactly one trailing line
+ending (a final LF or CRLF) removed when present; every other byte, earlier trailing
+newlines and spaces included, is substituted as written, so a value that must end in a
+newline is held in a file ending in one more. The definition is refused when a file-backed
+entry names a missing file or a path outside slots/, and when an entry is neither form.
 
 With no host argument every discovered host is built; one or more host names build only
 those. Each selected host is rendered from core/ into a temporary directory and the whole
@@ -95,6 +106,8 @@ LICENSE_FILE = REPO_ROOT / "LICENSE"
 ROOT_MARKETPLACE = REPO_ROOT / ".claude-plugin" / "marketplace.json"
 
 SETTINGS_FILE = "settings.toml"
+# The definition subdirectory holding file-backed slot values; template discovery skips it.
+SLOTS_DIR = "slots"
 PLUGIN_ROOT_SLOT = "{{PLUGIN_ROOT}}"
 VERSION_SLOT = "{{VERSION}}"
 NAME_SLOT = "{{NAME}}"
@@ -141,7 +154,7 @@ class BuildError(Exception):
 class HostDefinition:
     """One scripts/hosts/<host>/ definition, validated and ready to render."""
 
-    def __init__(self, name, directory, settings, templates):
+    def __init__(self, name, directory, settings, slots, templates):
         self.name = name
         self.directory = directory
         self.plugin_name = settings["plugin_name"]
@@ -152,7 +165,7 @@ class HostDefinition:
         self.renames = [(r["from"], r["to"]) for r in settings["renames"]]
         self.exclude = [e.strip("/") for e in settings["exclude"]]
         self.layout = dict(settings["layout"])
-        self.slots = dict(settings["slots"])
+        self.slots = dict(slots)
         self.templates = templates
 
 
@@ -297,7 +310,8 @@ def load_definition(directory, core_dirs):
                 "the plugin-root literal cannot reach it"
             )
 
-    for slot, value in settings["slots"].items():
+    slots = {}
+    for slot, entry in settings["slots"].items():
         if not SLOT_NAME_RE.match(slot):
             raise BuildError(
                 f"{label}: slots.{slot} is not a slot name (upper-case letters, digits, and "
@@ -305,13 +319,43 @@ def load_definition(directory, core_dirs):
             )
         if slot in RESERVED_SLOT_NAMES:
             raise BuildError(f"{label}: slots.{slot} is reserved: the build already fills {{{{{slot}}}}}")
-        if not isinstance(value, str):
-            raise BuildError(f"{label}: slots.{slot} must be a string")
+        value = read_slot_value(directory, label, slot, entry)
         if PLACEHOLDER_OPEN in value.replace(PLUGIN_ROOT_SLOT, ""):
             raise BuildError(f"{label}: slots.{slot} may carry {PLUGIN_ROOT_SLOT} but no other placeholder")
+        slots[slot] = value
 
-    templates = [p for p in walk_files(directory) if p != SETTINGS_FILE]
-    return HostDefinition(name, directory, settings, templates)
+    templates = [
+        p for p in walk_files(directory) if p != SETTINGS_FILE and not p.startswith(SLOTS_DIR + "/")
+    ]
+    return HostDefinition(name, directory, settings, slots, templates)
+
+
+def read_slot_value(directory, label, slot, entry):
+    """One [slots] entry's text: the string itself, or the contents of its slots/ value file."""
+    if isinstance(entry, str):
+        return entry
+    if not (isinstance(entry, dict) and set(entry) == {"file"} and isinstance(entry["file"], str)):
+        raise BuildError(
+            f"{label}: slots.{slot} must be a string or a one-key table "
+            f'{{ file = "{SLOTS_DIR}/<name>" }} naming its value file'
+        )
+    path = entry["file"]
+    normalized = posixpath.normpath(path) if is_relative_path(path) else None
+    if normalized is None or not normalized.startswith(SLOTS_DIR + "/"):
+        raise BuildError(
+            f"{label}: slots.{slot} names the value file {path!r}, outside the definition's "
+            f"{SLOTS_DIR}/ subdirectory"
+        )
+    value_file = directory / normalized
+    if not value_file.is_file():
+        raise BuildError(f"{label}: slots.{slot} names the value file {path!r}, which does not exist")
+    text = decode_text(value_file.read_bytes())
+    if text is None:
+        raise BuildError(f"{label}: slots.{slot} names the value file {path!r}, which is not UTF-8 text")
+    for ending in ("\r\n", "\n"):
+        if text.endswith(ending):
+            return text[: -len(ending)]
+    return text
 
 
 def discover_definitions(core_dirs):

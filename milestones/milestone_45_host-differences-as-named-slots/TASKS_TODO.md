@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## File-Backed Slot Values In Build
-
-Extend `scripts/build_hosts.py` so each `[slots]` entry may be either a plain string or a one-key inline table `NAME = { file = "slots/NAME.md" }` whose path is relative to the definition directory and must stay under its `slots/` subdirectory, which template discovery skips; the file is read as UTF-8 with exactly one trailing `\n` or `\r\n` removed when present and every other byte substituted as written, and the loader refuses a missing file, a path outside `slots/`, and an entry that is neither form with a `BuildError` naming the slot and the refusal. No duplicate-source rule, precedence, or message is added (a second source is a repeated TOML key the parser already refuses), the inline form stays accepted, and the module docstring documents the file-backed form and `slots/` so it remains the one complete reference for settings keys and checks. Verified by `uv run scripts/build_hosts.py --check` passing against the unchanged definitions and by the committed `hosts/` trees not changing.
-
----
-
 ## Build Rendering Test Under Pinned Interpreter
 
 Add one test module under `tests/` that opens with a module-level `pytest.skip(allow_module_level=True)` when `sys.version_info` is below `(3, 11)`, placed before any import of the build, then renders a small synthetic `core/` and one synthetic host definition (a `settings.toml` with inline and file-backed slots plus whatever templates it needs) into `tmp_path` by importing the build in-process, monkeypatching its module-level `CORE_DIR`, `LICENSE_FILE`, and `DEFINITIONS_DIR` onto the fixture, and calling `load_definition` and `render_host`, asserting the rendered files including a file-backed value landing in the right substitution order. The same module carries one case each for the three new loader refusals (a missing value file, a `..` escape outside `slots/`, and an integer entry), each writing a minimal definition into `tmp_path`, calling `load_definition` directly, and asserting a `BuildError` whose message names the slot and the refusal; the build code, `conftest.py`, `pyproject.toml`, and both pytest commands stay unchanged, and `main` and the check set are not exercised. Verified by `uv run pytest` passing with the module collected and `uv run --no-project --python 3.9 --with pytest pytest` reporting it skipped.
