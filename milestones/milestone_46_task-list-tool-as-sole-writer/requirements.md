@@ -36,5 +36,9 @@ The `complete-task` agent stages after the procedure completes — `git add` of 
 
 ## Decisions
 
+### The acceptance bar the move reads
+
+The move subcommand reads the derived acceptance bar on standard input as opaque Markdown. It writes the `**Verified:**` label, then the piped text verbatim with only its leading and trailing blank lines trimmed, then the `---` separator. It refuses an empty bar and checks nothing else: it neither splits the bar into criteria nor checks or adds bullets, so the bullet form of the bar stays the completion procedure's to write.
+
 ## Out of Scope
 
