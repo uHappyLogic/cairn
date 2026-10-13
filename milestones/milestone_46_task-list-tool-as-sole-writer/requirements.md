@@ -100,5 +100,9 @@ The insert subcommand carries every position `submit-task` can choose, and every
 
 The tool never checks the preamble of a task file and never refuses over it. On every write to a task file (initialize, insert, move) it discards whatever stands before the first `##` section and renders the fixed heading for that file (`# TASKS TODO` or `# TASKS DONE`) followed by one blank line in its place, as part of the whole-file render, so every file the tool has touched starts with the canonical preamble and a missing, altered, or damaged heading is corrected silently on the next write. Text a person put above the first section is dropped by that render without any output; since every writer commits its own write, the drop is recorded in that commit's diff and recoverable by revert.
 
+### Structural lines on re-parse
+
+When a write re-parses a task file whole, a `---` line is a separator only when the next non-blank line is a column-0 `## ` heading or the end of the file; every other `---` line is body text of its section, so a body `---` an earlier insert or move wrote verbatim stays inside its section through every later re-parse and canonical render, nothing is ever stranded between sections, and no write refuses for this reason. Every column-0 `## ` line is a heading, with no code-fence exemption, so a section without a qualifying `---` ends at the next heading as the section-boundary decision states, and a body `## ` line opens a new section on the next re-parse; the insert subcommand's guarantee that piped body lines are never structure holds for the insert call itself. The rule covers bodies and `**Verified:**` bars alike, needs one bounded lookahead and no parser state, and the reading of a section's `---` line as the one standing directly before the next heading or the end of the file is pinned in the tests and `CLAUDE.md`.
+
 ## Out of Scope
 
