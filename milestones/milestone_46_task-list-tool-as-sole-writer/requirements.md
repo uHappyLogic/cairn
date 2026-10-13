@@ -96,5 +96,9 @@ The insert subcommand takes the task title as a positional command-line argument
 
 The insert subcommand carries every position `submit-task` can choose, and every call states it: exactly one of `--end`, `--before <Task Title>`, or `--after <Task Title>`, held in a required mutually exclusive group, so a call with no position flag is a malformed invocation refused with argparse's exit 2 rather than a section landing silently at the end. There is no default position and no separate append subcommand: the end position is `insert --end`, and the one-section append the decisions above mention is that form. `submit-task` maps the choice its step 3 makes (`append`, `before: <Task Title>`, `after: <Task Title>`) onto those three flags in its one fixed command.
 
+### The preamble above the first section
+
+The tool never checks the preamble of a task file and never refuses over it. On every write to a task file (initialize, insert, move) it discards whatever stands before the first `##` section and renders the fixed heading for that file (`# TASKS TODO` or `# TASKS DONE`) followed by one blank line in its place, as part of the whole-file render, so every file the tool has touched starts with the canonical preamble and a missing, altered, or damaged heading is corrected silently on the next write. Text a person put above the first section is dropped by that render without any output; since every writer commits its own write, the drop is recorded in that commit's diff and recoverable by revert.
+
 ## Out of Scope
 
