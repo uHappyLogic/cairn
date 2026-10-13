@@ -86,3 +86,18 @@ Rewrite the staging contract of `core/agents/complete-task.md` and step 2 of `co
 - `uv run scripts/build_hosts.py` rebuilt the three host trees, `uv run scripts/build_hosts.py --check` passes, and both pytest runs pass unchanged (684 passed pinned; 680 passed, 1 skipped at the 3.9 floor).
 
 ---
+
+## Insert Call With Position Flags In Submit-Task
+
+Rewrite steps 5 through 7 of `core/skills/submit-task/SKILL.md` so the insert is one fixed shell call shown in full and run exactly as shown: `python3 {{PLUGIN_ROOT}}/tools/task_list.py insert <MILESTONE_DIR> "<Task Title>"` with the authored section split from `task-format.md`'s template into the shell-quoted title argument and the body on a quoted heredoc, step 3's `append`, `before: <Task Title>`, or `after: <Task Title>` mapped onto exactly one of `--end`, `--before "<Task Title>"`, or `--after "<Task Title>"`, chained with the commit procedure's three steps under `Task-submission: <task title>`; the append fallback is dropped — on the tool's refusal (an anchor naming no section or a folded title already held) the skill inserts nothing, commits nothing, and stops quoting the `Error:` line verbatim — and the never-reorder sentence and step 7's fallback advisory go, the tool owning both. Verified by running the call verbatim against a sandbox milestone under zsh and bash for each of the three positions and for a refused anchor (nothing inserted, nothing committed, the `Error:` line printed), and by the rebuild so `uv run scripts/build_hosts.py --check` passes.
+
+**Verified:**
+
+- Steps 5 through 7 of `core/skills/submit-task/SKILL.md` are replaced by one step 5 showing one fixed shell call in full, run exactly as shown: `python3 {{PLUGIN_ROOT}}/tools/task_list.py insert <MILESTONE_DIR> "<New Task Title>" <position flag>` with the body on a quoted heredoc, chained by `&&` to the commit procedure's guard, path-scoped `git add`, and subject-only commit under `Task-submission: <New Task Title>`, the path written literally.
+- The authored section is split along `task-format.md`'s template into the double-quoted, backslash-escaped title argument and the body heredoc, the tool writing the `##` line and the `---` itself.
+- Step 3's `append`, `before: <Task Title>`, and `after: <Task Title>` map onto exactly one of `--end`, `--before "<Task Title>"`, or `--after "<Task Title>"`.
+- The append fallback, the never-reorder sentence, and the fallback advisory are gone (no `fallback` or `reorder` left in the file); on the tool's `Error:` line (an anchor naming no section or a folded title already held) the skill inserts nothing, commits nothing, and stops quoting the line verbatim; the old commit and confirm steps are folded into steps 5 and 6.
+- The call, run verbatim against a sandbox milestone under `/bin/zsh` and `/bin/bash`, landed `--end`, `--before "Beta Task"`, and `--after "Alpha Task"` each at its position with one `Task-submission:` commit and `submission commit landed`, and a refused `--after "Gamma Task"` printed the tool's `Error:` line, exited 1, inserted nothing, and committed nothing.
+- `uv run scripts/build_hosts.py` rebuilt the three host trees and `uv run scripts/build_hosts.py --check` passes.
+
+---

@@ -62,45 +62,60 @@ adds detail.
 (You already read `requirements.md` and `TASKS_TODO.md` in step 1, so reuse them rather
 than re-reading.)
 
-### 5. Insert the section at the chosen position
+### 5. Insert and commit the section in one shell call
 
-Insert the authored section into `<MILESTONE_DIR>/TASKS_TODO.md` at the position you decided
-in step 3:
+Split the section you authored in step 4 along `task-format.md`'s template: the text of its
+`##` heading is the title, and the description between the heading and the `---` is the
+body. The tool writes the `##` line and the `---` itself, so neither goes into the call. Map
+the position step 3 decided onto exactly one flag:
 
-- **`append`** — add the section at the end of the file.
-- **`before: <Task Title>`** — insert it immediately before that section's `##` heading line.
-- **`after: <Task Title>`** — insert it immediately after that section's trailing `---` separator.
+- **`append`** — `--end`.
+- **`before: <Task Title>`** — `--before "<Task Title>"`.
+- **`after: <Task Title>`** — `--after "<Task Title>"`.
 
-If a `before:`/`after:` anchor title matches no existing section, append the task at the end
-instead and say so — never guess at a different anchor. That fallback is a one-line advisory
-printed alongside step 7's status line.
+Then run this one fixed shell call, written out in full exactly as shown, with only
+`<MILESTONE_DIR>`, `<New Task Title>`, `<position flag>`, and the body replaced:
 
-Never modify or reorder the existing sections; the insert only adds. Always end the inserted
-section with its trailing `---` separator.
+```
+python3 ${PLUGIN_ROOT}/tools/task_list.py insert <MILESTONE_DIR> "<New Task Title>" <position flag> <<'EOF' &&
+<the 1–3 sentence description>
+EOF
+if [ -n "$(git status --porcelain -- <MILESTONE_DIR>/TASKS_TODO.md)" ]; then
+  git add <MILESTONE_DIR>/TASKS_TODO.md && git commit -q -m "Task-submission: <New Task Title>" && echo 'submission commit landed'
+fi
+```
 
-### 6. Commit the inserted task
+Every title in the call (the new title in both places, and any anchor) is written inside
+double quotes, with any `"`, `$`, `` ` ``, or `\` it holds escaped by a backslash. After the
+`&&` the call carries out the three steps of the shared commit procedure at
+`${PLUGIN_ROOT}/shared/commit-procedure.md` itself — its dirty-own-path guard, the
+path-scoped `git add`, and the subject-only commit under `Task-submission: <New Task Title>`
+— over this skill's own change set, `<MILESTONE_DIR>/TASKS_TODO.md`, written out on the
+command line in both places and never held in a shell variable. Git's success output is
+silenced.
 
-Read and follow the shared commit procedure at `${PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
+What the call prints is the whole outcome: `submission commit landed` when the commit landed;
+nothing when the guard found the file unchanged; otherwise the tool's one `Error:` line, with
+`TASKS_TODO.md` unchanged and nothing committed, or git's message for a commit it refused.
 
-- **PATHS** — this skill's own change set: `<MILESTONE_DIR>/TASKS_TODO.md` (the file it just inserted the task into).
-- **SUBJECT** — `Task-submission: <task title>`.
+On the tool's `Error:` line — an anchor naming no section, or a title `TASKS_TODO.md` already
+holds — insert nothing, commit nothing, and stop: never re-run the call with another position
+or insert the task any other way. Report the failure quoting the `Error:` line verbatim, so
+the user can re-run with a correct anchor or a distinct title.
 
-The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
+### 6. Confirm
 
-### 7. Confirm
-
-On the success path — the task was authored, inserted, and committed — print exactly one
-fixed terse status line and nothing else:
+On the success path — the task was authored, inserted, and committed, the call printing
+`submission commit landed` — print exactly one fixed terse status line and nothing else:
 
 `Task submitted.`
 
 Carry no task title, insert position, or commit subject, and print no next-step or follow-up
 pointer.
 
-If step 6's dirty-own-path guard fired because the insert authored nothing — no file
-changed, so nothing was committed — print instead a distinct one-line no-op message stating
-that nothing was submitted and briefly why (e.g. `No task submitted — nothing was authored.`),
-not the terse success line.
+If step 5's dirty-own-path guard found `TASKS_TODO.md` unchanged — nothing was committed —
+print instead a distinct one-line no-op message stating that nothing was submitted and
+briefly why (e.g. `No task submitted — nothing was authored.`), not the terse success line.
 
 If you could not author a concrete task — typically because the issue was too vague — say so
 and suggest `/discuss-new-task` to sharpen it first.
