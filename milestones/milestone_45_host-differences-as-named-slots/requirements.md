@@ -48,5 +48,7 @@ The build has no file-backed slot values. No pytest exercises the build's render
 
 Every slot value of every host definition is held in a file, the one-word and empty values included (`CONTEXT_FILE`, and the empty `COMPLETE_TASK_PROMPT_INSTRUCTIONS` and `ALTERNATIVES_PROMPT_INSTRUCTIONS` of Claude Code among them), so no `settings.toml` keeps an inline `[slots]` value. The rule is a documented convention only: the build keeps accepting the inline form beside the file-backed one, and nothing refuses an inline value.
 
+A file-backed value is bound inside the existing `[slots]` table: the slot's entry is written as an inline table, `NAME = { file = "slots/NAME.md" }`, beside the plain string entries, with the path relative to the definition directory and kept under its `slots/` subdirectory, which template discovery skips. The loader accepts either a string or a one-key `{ file }` table for each slot, and refuses a missing file or a path outside `slots/`. Every slot stays declared once in the one table with its comment above its entry.
+
 ## Out of Scope
 
