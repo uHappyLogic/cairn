@@ -1,1 +1,41 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Task-list tool file name">
+    <question>What is the file name of the new task-list tool under core/tools/, the name every runtime command, CLAUDE.md invariant, doc entry, and test fixture will carry (define_milestone.py and open_questions.py are the two existing precedents)?</question>
+  </open-question>
+  <open-question id="Task title matching rule">
+    <question>When the task-list tool is given a task title (the section to move, or a before/after anchor), does it match it exactly after whitespace- and case-folding, refusing anything else so a partial task name is resolved by the runner&apos;s own read of TASKS_TODO.md before the call, or does it carry the completion procedure&apos;s case-insensitive partial match itself, which then needs a rule for two sections matching and a way to tell the runner which heading it took?</question>
+  </open-question>
+  <open-question id="Verified bar stdin format">
+    <question>In what form does the move subcommand read the derived acceptance bar on standard input: one criterion per non-empty line, criteria separated by blank lines so a criterion wrapped over several lines folds to one bullet, or already-rendered &quot;- &quot; bullets the tool checks and copies under the **Verified:** label?</question>
+  </open-question>
+  <open-question id="Whole-file rewrite or splice">
+    <question>Does the task-list tool parse a whole task file and re-render it in one canonical layout on every write, normalizing the blank-line convention of every section it did not touch, or does it splice only the bytes of the section it adds or removes and leave every other byte of the file as it stands?</question>
+  </open-question>
+  <open-question id="Unterminated section handling">
+    <question>When a task file holds a ## section with no trailing --- separator before the next ## heading or the end of the file, does the tool refuse the call with an Error: line and the files unchanged, or treat the next heading or the end of file as that section&apos;s end?</question>
+  </open-question>
+  <open-question id="Task title uniqueness enforcement">
+    <question>Does the task-list tool refuse a write that would leave two sections with the same folded title in one task file (an insert or append of a title TASKS_TODO.md already holds, or a move into a TASKS_DONE.md already holding an entry of that title), or does it write what it is given and leave title uniqueness to the authoring prose as today?</question>
+  </open-question>
+  <open-question id="Task format validation scope">
+    <question>Beyond refusing an empty title or body, does the task-list tool validate an authored section against task-format.md (title of 4 to 8 title-cased words, a 1 to 3 sentence body, no sub-heading or labeled section inside the body), or does it accept any body text as the section&apos;s prose and leave the format to the authoring skills?</question>
+  </open-question>
+  <open-question id="Initialize guard on existing tasks">
+    <question>When derive-tasks initializes TASKS_TODO.md through the tool and the file already holds ## sections, does the tool refuse unless an explicit flag confirms the replacement, or replace the contents silently as the skill does today?</question>
+  </open-question>
+  <open-question id="Derive append granularity">
+    <question>Inside its one shell call, does derive-tasks write its ordered briefs as one tool process per brief (each brief its own quoted heredoc, refused alone while the rest land), or as one tool process that takes the whole ordered list on standard input and writes it or refuses it as a whole?</question>
+  </open-question>
+  <open-question id="Chained call home">
+    <question>Which file shows the completion tail&apos;s one fixed shell call in full (the move subcommand chained with the runner&apos;s own git step), given that the shared completion procedure stays commit-free and the git step differs between the complete-task agent (its path-scoped git add) and the inline skill (the commit procedure&apos;s three steps): the procedure&apos;s step 5 with the git step as a per-runner placeholder, or each wrapper with the procedure reduced to the tool command alone?</question>
+  </open-question>
+  <open-question id="Unknown anchor behaviour">
+    <question>When a before or after anchor title names no section in TASKS_TODO.md, does the tool refuse the call with an Error: line so submit-task re-calls with append and prints its one-line advisory itself, or does the tool append the section in that call and print the fallback advisory in the runner&apos;s place, breaking the rule that a mutator prints nothing on success?</question>
+  </open-question>
+  <open-question id="Move failure state">
+    <question>When the move has replaced one of the two task files and the replacement of the other then fails, which state does the tool leave: both files unchanged, by rendering both before replacing either and restoring the first on a failed second replace, or the harmless superset with the entry appended to TASKS_DONE.md and the section still standing in TASKS_TODO.md, in the order the answer core&apos;s fold-before-remove uses?</question>
+  </open-question>
+  <open-question id="Shared tool helpers">
+    <question>Does the new tool repeat the stdin reader, ToolError, the one-Error-line main, and the atomic same-directory writer as its own standalone single file, as define_milestone.py does with a parity test that it imports neither sibling, or do the three tools now share one helper module under core/tools/ that the build copies beside them?</question>
+  </open-question>
+</open-questions>
