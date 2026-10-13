@@ -152,6 +152,41 @@
   </open-question>
   <open-question id="Initialize guard on existing tasks">
     <question>When derive-tasks initializes TASKS_TODO.md through the tool and the file already holds ## sections, does the tool refuse unless an explicit flag confirms the replacement, or replace the contents silently as the skill does today?</question>
+    <alternative id="Silent replace">
+      The tool&apos;s initialize subcommand carries today&apos;s behaviour over unchanged: it rewrites TASKS_TODO.md to its `# TASKS TODO` heading whatever the file holds, with no flag, no refusal, and no output on success. derive-tasks calls it unconditionally in step 6, and the guard stays where it is today, as the Preconditions line saying the skill replaces the file&apos;s contents.
+      <advantage>It is the smallest tool surface and the smallest change: derive-tasks keeps its no-argument usage and runs without a stop in a headless chain, and anything it replaces is already committed (the previous Task-derivation or Task-submission commit), so the Task-derivation commit&apos;s diff records exactly which sections were dropped and a revert recovers them.</advantage>
+      <drawback>Unfinished tasks are discarded without a word: a section added by submit-task or left over from an interrupted completion run disappears on a re-derive, and the only trace is a commit diff nobody is prompted to read; an uncommitted edit to the file would be lost outright.</drawback>
+    </alternative>
+    <alternative id="Flag required, derive always passes it">
+      initialize refuses with one Error: line and the file unchanged when TASKS_TODO.md already holds a ## section, unless an explicit flag (such as --replace) confirms the replacement. derive-tasks always passes the flag, so its observable behaviour is still an unconditional replace; the refusal guards only other or mistaken callers of the subcommand.
+      <advantage>The tool&apos;s contract makes destroying sections an explicit, tested act rather than a side effect, which protects against a future runner or a hand-typed call wiping the list, while derive-tasks keeps its no-argument usage and never stops in a headless chain.</advantage>
+      <drawback>On the one path that actually initializes the file the guard never fires, so the flag is ceremony there: a user re-running derive-tasks loses unfinished sections exactly as with a silent replace, and the tool gains a flag and its tests for no change in what the skill does.</drawback>
+    </alternative>
+    <alternative id="Flag required, derive stops unless told">
+      initialize refuses with one Error: line and the file unchanged when TASKS_TODO.md already holds a ## section, unless an explicit flag confirms the replacement. derive-tasks calls it without the flag by default, and on the refusal stops before writing anything, printing the Error: line and the remedy; it passes the flag only when the user invoked it with an explicit replace argument, so its usage gains one optional argument.
+      <advantage>Existing tasks are never lost by accident, the guard lives in the tested tool rather than in prose a runner may skip, and replacing a list stays possible as a deliberate, one-word act that leaves a record in the invocation.</advantage>
+      <drawback>derive-tasks stops a headless chain whenever the list is non-empty, including the common case of re-deriving after a requirements change, and the skill&apos;s usage, its doc entry in docs/skill-reference.md, and its Preconditions line all change; the stop costs a full re-run of the decomposition, since the refusal comes only at step 6, after the plan has been presented.</drawback>
+    </alternative>
+    <alternative id="Refuse with no override">
+      initialize accepts only a TASKS_TODO.md holding no ## section and refuses otherwise with one Error: line and the file unchanged, with no flag to override it. derive-tasks stops on that refusal and prints it; the only ways to an empty list are completing the remaining tasks or reverting the commits that added them (the Task-derivation or Task-submission commit), in line with the workflow&apos;s revert-then-redo correction.
+      <advantage>The simplest guarded contract: initialize can never destroy a task section, no flag or argument is added anywhere, and the remedy reuses git history the workflow already treats as the correction mechanism.</advantage>
+      <drawback>A legitimate re-derive after a requirements change needs a revert the user must find and run by hand, and a list mixing derived and submitted or partially completed tasks may need several reverts or cannot be cleared cleanly at all; since the tool is meant to be the only writer of the file, there is no sanctioned in-place way to clear it.</drawback>
+    </alternative>
+    <alternative id="Prose guard in derive-tasks">
+      The tool&apos;s initialize replaces unconditionally and carries no flag; the guard moves into derive-tasks, which already reads its context whole: before initializing it checks whether TASKS_TODO.md holds any ## section and, if it does, stops before writing, listing the existing headings and telling the user to clear or complete them before re-running.
+      <advantage>Keeps the tool&apos;s contract minimal and flag-free while still stopping an accidental wipe, and the check can run early (in step 0 or 1, before the decomposition is spent) rather than at the write, so a stopped run costs almost nothing.</advantage>
+      <drawback>The guard is runtime prose rather than tested code, so a runner can skip it, and it shares the no-override stop&apos;s problem that there is no sanctioned way to clear a non-empty list once the tool is the only writer; it also stops a headless chain on any non-empty list.</drawback>
+    </alternative>
+    <alternative id="Replace with discarded-titles advisory">
+      The tool&apos;s initialize replaces unconditionally and prints nothing, as a mutator does; derive-tasks reads TASKS_TODO.md before the call and, when it held ## sections, names each discarded title in one git-absent advisory alongside its Tasks derived. status line, without stopping.
+      <advantage>The run never stops, so headless chains and re-derives after a requirements change work as today, yet the user is told exactly which unfinished tasks were dropped and can recover any of them from the previous commit.</advantage>
+      <drawback>The loss still happens before anyone sees it, so a submitted or half-finished task must be restored by hand from history, and the skill gains an advisory that the terse-reporting rule admits only for decision-critical, git-absent facts, which this one arguably is not since the commit diff records it.</drawback>
+    </alternative>
+    <alternative id="No initialize, append onto existing">
+      The premise that derive-tasks replaces the file is rejected: the tool has no initialize subcommand, define_milestone.py&apos;s heading-only file is the only initialization, and derive-tasks appends its ordered briefs after whatever sections TASKS_TODO.md already holds, never removing one.
+      <advantage>No task is ever lost and no guard, flag, or stop is needed; tasks added through submit-task before a derive are kept, and the tool loses a subcommand and its tests.</advantage>
+      <drawback>A re-derive appends a second copy of the plan, so its usefulness hinges on how the tool treats a title the file already holds (the axis the title-uniqueness question owns), and existing sections end up ahead of the new briefs regardless of dependency order; a genuinely stale list can only be cleared by revert.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Derive append granularity">
     <question>Inside its one shell call, does derive-tasks write its ordered briefs as one tool process per brief (each brief its own quoted heredoc, refused alone while the rest land), or as one tool process that takes the whole ordered list on standard input and writes it or refuses it as a whole?</question>
