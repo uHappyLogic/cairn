@@ -44,5 +44,9 @@ The build has no file-backed slot values. No pytest exercises the build's render
 
 ## Decisions
 
+### Slot value storage
+
+Every slot value of every host definition is held in a file, the one-word and empty values included (`CONTEXT_FILE`, and the empty `COMPLETE_TASK_PROMPT_INSTRUCTIONS` and `ALTERNATIVES_PROMPT_INSTRUCTIONS` of Claude Code among them), so no `settings.toml` keeps an inline `[slots]` value. The rule is a documented convention only: the build keeps accepting the inline form beside the file-backed one, and nothing refuses an inline value.
+
 ## Out of Scope
 
