@@ -45,3 +45,17 @@ Rewrite the `[slots]` table of all three `scripts/hosts/<host>/settings.toml` fi
 - `uv run scripts/build_hosts.py --check` passes, and `uv run pytest` still passes (548 tests).
 
 ---
+
+## Slot The Alternatives Pass Host Passages
+
+In `core/skills/provide-alternatives-to-all-open-questions/SKILL.md` replace the four capability-conditional passages the starting state names with two new slots: one for the opening paragraph's concurrency phrase ("they run together where the host allows it"), and one repair slot holding the sub-step e lead-in, the two repair branches, and the repair-wait sentence, reordering sub-step e so that slotted text is contiguous ahead of the fixed corrective message, its fill rule, and the one-repair cap, which stay in `core/`, while `ALTERNATIVES_CONCURRENCY` and sub-steps d and f stay as they are. Retire the `AGENT_TOOL` and `ALTERNATIVES_AGENT` slots from `core/` and every definition, writing their wording literally inside each host's repair value, and seed each host's two new values as `slots/` files with exactly the text its tree renders today, so no slot value carries a placeholder other than `{{PLUGIN_ROOT}}`. Verified by rebuilding and confirming every `hosts/` tree is byte-identical to before and `--check` passes.
+
+**Verified:**
+
+- `core/skills/provide-alternatives-to-all-open-questions/SKILL.md` replaces the opening paragraph's "they run together where the host allows it" with `{{ALTERNATIVES_PARALLELISM}}` and opens sub-step e with `{{ALTERNATIVES_REPAIR}}` (the lead-in, both repair branches, and the repair-wait paragraph, contiguous), followed in `core/` by the fixed corrective message (its introducing sentence reworded from "Both branches send" to "Every repair sends", so `core/` presumes no branch count), its fill rule, and the one-repair cap; `{{ALTERNATIVES_CONCURRENCY}}` and sub-steps d and f are unchanged.
+- `AGENT_TOOL` and `ALTERNATIVES_AGENT` appear nowhere under `core/` or `scripts/`: their entries and `slots/` files are removed from all three definitions, and their wording (`` `Agent` tool `` with the `cairn:` registry name for Claude Code and Antigravity, `` `spawn_agent` tool `` with the default (generic) subagent for Codex) is written literally inside each host's `slots/ALTERNATIVES_REPAIR.md`.
+- Each definition binds `ALTERNATIVES_PARALLELISM` and `ALTERNATIVES_REPAIR` as `{ file = "slots/NAME.md" }` with a comment above each entry, and each value file holds exactly the text its tree rendered before plus one trailing newline; no slot value file carries a `{{` placeholder other than `{{PLUGIN_ROOT}}`.
+- `uv run scripts/build_hosts.py` rebuilt all three trees: the only changed files are the three rendered alternatives-pass SKILL.md files, and in each the change is exactly the mandated sub-step e reorder (the repair-wait paragraph moved ahead of the corrective message) plus the "Every repair sends" rewording; undoing those two reproduces the previous file byte for byte, and every other `hosts/` file is byte-identical to before (the reorder the decision requires makes full byte identity of that one file impossible).
+- `uv run scripts/build_hosts.py --check` passes, and `uv run pytest` still passes (548 tests).
+
+---

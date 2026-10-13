@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Slot The Alternatives Pass Host Passages
-
-In `core/skills/provide-alternatives-to-all-open-questions/SKILL.md` replace the four capability-conditional passages the starting state names with two new slots: one for the opening paragraph's concurrency phrase ("they run together where the host allows it"), and one repair slot holding the sub-step e lead-in, the two repair branches, and the repair-wait sentence, reordering sub-step e so that slotted text is contiguous ahead of the fixed corrective message, its fill rule, and the one-repair cap, which stay in `core/`, while `ALTERNATIVES_CONCURRENCY` and sub-steps d and f stay as they are. Retire the `AGENT_TOOL` and `ALTERNATIVES_AGENT` slots from `core/` and every definition, writing their wording literally inside each host's repair value, and seed each host's two new values as `slots/` files with exactly the text its tree renders today, so no slot value carries a placeholder other than `{{PLUGIN_ROOT}}`. Verified by rebuilding and confirming every `hosts/` tree is byte-identical to before and `--check` passes.
-
----
-
 ## Claude Code Hands-On Check And Values
 
 Run a hands-on check against the locally installed `claude`, with its documentation alongside, covering dispatch, waiting, continuing a finished agent, and the context file, and from it write the Claude Code values of the two new slots by lifting the arm of the former capability-conditional wording that applies to Claude Code, kept as written except where the check contradicts it; rewrite `ALTERNATIVES_CONCURRENCY` to the single wait mechanism the check observes with no capability condition, dropping the other arm, the "Both arms" closing sentence, and the capability wording of its comment; and keep the other seven existing values unless the check contradicts one. Record the check once as a single dated block in the header comment of `scripts/hosts/claude/settings.toml` naming the installed version and exactly the slots and points the check sourced or confirmed, keep every per-slot comment describing only what the value stands for and why in mechanism terms with no version, and keep every value free of any host name including its own. Verified by rebuilding with `--check` passing and reading the rendered `hosts/claude` alternatives pass as describing one wait mechanism and only the repair branches this host has.

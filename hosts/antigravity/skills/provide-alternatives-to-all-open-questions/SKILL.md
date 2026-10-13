@@ -236,7 +236,14 @@ whichever of these two branches the host supports, in this order:
   with the corrective message below appended to it as a shape reminder. This second dispatch
   redoes the analysis, so it is the fallback branch, never the preferred one.
 
-Both branches send this fixed one-paragraph corrective message, whose single slot is
+Where the single wait is the dispatch call's own blocking form, send every repair **without
+blocking**, so each later wake-up that brings repaired returns runs a batch call over whatever
+has landed by then; otherwise wait on the repair set as the paragraph opening this step
+describes. Either way a repaired file lands at its Short Title's path — the refused one already
+moved aside — and gets no special handling: the next batch call embeds and commits it like any
+other, and the repaired agent's final message gets the same last-line verdict (sub-step **c**).
+
+Every repair sends this fixed one-paragraph corrective message, whose single slot is
 `<Error line>`:
 
 ```
@@ -255,13 +262,6 @@ Fill `<Error line>` with the refused file's `Error:` line from the batch call's 
 verbatim — the same line the skip advisory would carry — so the one attempt is aimed rather
 than blind. Never quote the offending file back to the agent; the tool's line names what
 failed.
-
-Where the single wait is the dispatch call's own blocking form, send every repair **without
-blocking**, so each later wake-up that brings repaired returns runs a batch call over whatever
-has landed by then; otherwise wait on the repair set as the paragraph opening this step
-describes. Either way a repaired file lands at its Short Title's path — the refused one already
-moved aside — and gets no special handling: the next batch call embeds and commits it like any
-other, and the repaired agent's final message gets the same last-line verdict (sub-step **c**).
 
 Spend at most **one** repair per question: the only thing you track per question is whether it
 has had its repair. A repaired question whose agent ends `FAILED:`, or whose file is refused

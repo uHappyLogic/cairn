@@ -73,14 +73,20 @@ ALTERNATIVES_DISPATCH = { file = "slots/ALTERNATIVES_DISPATCH.md" }
 # before its first line.
 # The registered agent already carries its instructions, so nothing precedes the prompt.
 ALTERNATIVES_PROMPT_INSTRUCTIONS = { file = "slots/ALTERNATIVES_PROMPT_INSTRUCTIONS.md" }
-# ALTERNATIVES_AGENT: what the alternatives pass's re-dispatch repair spawns afresh.
-# Here that is the registered agent, named by its namespaced registry name.
-ALTERNATIVES_AGENT = { file = "slots/ALTERNATIVES_AGENT.md" }
-# AGENT_TOOL: the tool the alternatives pass's repair branches name, both as the source of
-# the agent id a follow-up message is addressed to and as the tool a fresh agent is
-# dispatched with.
-# Here that is the Agent tool.
-AGENT_TOOL = { file = "slots/AGENT_TOOL.md" }
+# ALTERNATIVES_PARALLELISM: the phrase in provide-alternatives-to-all-open-questions' opening
+# paragraph saying whether the independent per-question dispatches run at the same time.
+# Claude Code sends every dispatch together; the phrase states that by the host's capability,
+# as the paragraph opening step 3 does.
+ALTERNATIVES_PARALLELISM = { file = "slots/ALTERNATIVES_PARALLELISM.md" }
+# ALTERNATIVES_REPAIR: the opening of the alternatives pass's repair sub-step, ahead of its
+# fixed corrective message: when the repairs of one batch call's refused files are sent, the
+# repair branches this host has (a follow-up to the finished agent, a fresh dispatch, or both),
+# and how the run waits on the repaired returns.
+# A follow-up message reaches a finished agent by the id the Agent tool returned, and a
+# fresh dispatch names the registered agent by its namespaced registry name through the
+# Agent tool; the repair wait is worded by the agent tool's capability, as the paragraph
+# opening step 3 is.
+ALTERNATIVES_REPAIR = { file = "slots/ALTERNATIVES_REPAIR.md" }
 # ALTERNATIVES_CONCURRENCY: the provide-alternatives-to-all-open-questions paragraph opening
 # step 3, saying how many per-question dispatches run at once and how the run collects their
 # returns: whether it waits once for every return or batches each time it wakes.
