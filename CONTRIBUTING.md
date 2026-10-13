@@ -19,7 +19,12 @@ The handoff, one step per act:
 
 This project supports Claude Code, Google Antigravity, and Codex from one source. The runtime layer — skills, agents, shared procedures, and the stdlib-only Python tools under `core/tools/` — is authored **once, host-neutrally, under `core/`**: files there refer to each other through the placeholder `{{PLUGIN_ROOT}}` rather than any host's own syntax, and nothing under `core/` names a host.
 
-Each supported host is a **declarative definition directory** under `scripts/hosts/<host>/` — `scripts/hosts/claude/`, `scripts/hosts/antigravity/`, and `scripts/hosts/codex/` today. It holds a `settings.toml` (the literal that replaces `{{PLUGIN_ROOT}}`, frontmatter keys to strip, renames, excluded paths, and the layout of the host tree) beside that host's manifest and `README.md` templates, whose version slot is filled from the root `VERSION` file. Adding a host means adding a definition directory, not code.
+Each supported host is a **declarative definition directory** under `scripts/hosts/<host>/` — `scripts/hosts/claude/`, `scripts/hosts/antigravity/`, and `scripts/hosts/codex/` today. It holds a `settings.toml`, which says how `core/` is rendered into that host's tree, beside that host's template files (its manifest, plus a marketplace file where the tree is a marketplace, its `README.md`, `CONTRIBUTING.md` pointer, and traffic workflow), each rendered to the same path in the tree with its version filled from the root `VERSION` file and its plugin name from the settings. Wherever wording differs between hosts, `core/` carries a **named slot**, a `{{SLOT_NAME}}` placeholder, and every definition's `[slots]` table gives that host's text for it: the convention is one value file per slot under the definition's `slots/` subdirectory (`NAME = { file = "slots/NAME.md" }`), and the inline form (`NAME = "text"`) is still accepted. Every definition declares the same slot names. Adding a host means adding a definition directory, not code. The module docstring at the top of `scripts/build_hosts.py` (which `--help` does not print) is the one complete reference for the settings keys, the slot forms and how a value file is read, and the checks — this guide does not repeat them.
+
+Two development rules keep each host's tree about that host alone:
+
+- **Host differences reach `core/` as named slots, not as capability-conditional prose.** A sentence that holds for one host and not another becomes a slot whose value each host fills with its own mechanism; `core/` never describes a capability in prose and leaves the runner to choose a branch at run time.
+- **A rendered tree never names another host's mechanism.** This covers every file in the tree — the files rendered from `core/` with their slot values, and the host's own templates — a contrastive mention of what this host does not use included; a link to the source repository is not such a mention. Slot values name no host, their own included: they reach the mechanism through that host's own identifiers (tool names, config keys, file and command names) and otherwise say "this host". This is a rule, not a check: the build's `host-name-in-core` check scans `core/` only, so a slot value or template that breaks it passes the build and must be caught in review.
 
 One generic build script renders every host tree from `core/`:
 
@@ -29,7 +34,7 @@ uv run scripts/build_hosts.py claude      # build only the named host(s)
 uv run scripts/build_hosts.py --check     # drift gate: render, validate, compare with the committed trees, write nothing
 ```
 
-Before writing anything it validates each render in full — frontmatter present and loadable with `name` and `description`, every description at or under 25 words, no unreplaced placeholder, no other host's plugin-root literal, every plugin-root reference resolving to a file in the tree, no stripped frontmatter key still present, and every manifest version equal to `VERSION` — and swaps the results into the committed `hosts/claude/`, `hosts/antigravity/`, and `hosts/codex/` trees only when every selected host passes; otherwise it exits non-zero listing every failing file and check. Those trees are generated output, never hand-edited: rebuild after changing `core/` or a host definition and commit the rebuilt trees with that change. `--check` compares a fresh render byte-for-byte against the committed trees and is the first thing a release runs.
+Before writing anything it runs every selected host's render through its full check set (listed in the docstring) and swaps the results into the committed `hosts/claude/`, `hosts/antigravity/`, and `hosts/codex/` trees only when every selected host passes; otherwise it exits non-zero listing every failing file and check. Those trees are generated output, never hand-edited: rebuild after changing `core/` or a host definition and commit the rebuilt trees with that change. `--check` compares a fresh render byte-for-byte against the committed trees and is the first thing a release runs.
 
 The Python tools under `core/tools/` share a pytest suite under the repository-root `tests/` (golden fixtures included), run two ways — once under the pinned interpreter with the locked `dev`-group pytest, and once under the Python 3.9 floor the plugin promises its users:
 
@@ -38,7 +43,11 @@ uv run pytest                                              # pinned run: the .py
 uv run --no-project --python 3.9 --with pytest pytest      # floor run: Python 3.9 with the last pytest that supports it
 ```
 
-Both must pass before a change to a tool is committed, and the suite stays on the pytest API the two runs share. CI runs them as the two steps after `--check` in the same `drift-gate` job, so one status covers the drift gate and both test runs.
+Both must pass before a change to a tool is committed, and the suite stays on the pytest API the two runs share.
+
+The same suite holds one test of the build itself, `tests/test_build_rendering.py`: it imports `scripts/build_hosts.py` in-process, renders a small synthetic `core/` through one synthetic host definition into a temporary directory, and asserts that inline and file-backed slot values land in the rendered files in the build's substitution order, with one case for each refusal of a bad file-backed `[slots]` entry. It runs under the pinned interpreter only: the build needs Python 3.11+ (`tomllib`), so the module skips itself below 3.11 and the floor run reports it skipped. It covers rendering, not the check set or `--check`; run the pinned pytest after changing the build.
+
+CI runs both pytest runs as the two steps after `--check` in the same `drift-gate` job, so one status covers the drift gate and both test runs.
 
 The root `VERSION` file holds the plugin version and nothing else. `uv run scripts/set_version.py <MAJOR.MINOR.PATCH>` writes it together with its mirrored surfaces (the root `.claude-plugin/marketplace.json` entry, `pyproject.toml`, and `uv.lock`); the version in every host manifest is rendered from `VERSION` by the build, never edited by hand.
 

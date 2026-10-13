@@ -141,3 +141,18 @@ Rewrite `docs/design-claims.md` (claim 18's "names the capability, and the runti
 - A search of `docs/` for the retired capability-conditional phrasing (`where the host`, `host can`/`cannot`/`offers`/`allows`/`supports`/`sends`, `blocking form`, `blocking wait`, `runtime selects`, `host-dependent paragraph`, `where it cannot`, `once per run`, `session-continuation equivalent`, `as under Antigravity`) finds none; `uv run scripts/build_hosts.py --check` still passes.
 
 ---
+
+## Restructure CONTRIBUTING Development Section
+
+Restructure `CONTRIBUTING.md ## Development`: replace its `settings.toml` sentence and its inline check list with a short description of what a host definition is (settings plus templates, with wording differences as named slots whose values sit inline or in `slots/` files) and a pointer to the build script's docstring as the one complete reference for settings keys and checks; extend the test paragraph to cover the build rendering test, which runs under the pinned interpreter only and is skipped by the floor run; and state the development rule for contributors that host differences reach `core/` as named slots rather than capability-conditional prose and that a rendered tree never names another host's mechanism. Verified by reading the section against the build docstring and the committed definitions.
+
+**Verified:**
+
+- The `settings.toml` sentence (plugin-root literal, keys to strip, renames, excluded paths, layout) and the inline check list are gone from `CONTRIBUTING.md ## Development`.
+- The section describes a host definition as a `settings.toml` beside the host's template files, with wording differences as named `{{SLOT_NAME}}` slots whose values sit in `slots/` files by convention (`NAME = { file = "slots/NAME.md" }`) or inline (`NAME = "text"`), matching the build docstring and the committed definitions under `scripts/hosts/`.
+- The section points to the module docstring of `scripts/build_hosts.py` as the one complete reference for settings keys, slot forms, and checks, and the build paragraph refers to the check set as listed there.
+- The test paragraph covers `tests/test_build_rendering.py`: in-process render of a synthetic `core/` and host definition, inline and file-backed slot values in substitution order, one case per file-backed refusal, run under the pinned interpreter only and skipped by the floor run (confirmed: pinned run 4 passed, floor run 1 skipped).
+- The section states the two development rules: host differences reach `core/` as named slots rather than capability-conditional prose, and a rendered tree never names another host's mechanism (every file, templates and slot values included; a rule, not a check, since `host-name-in-core` scans `core/` only).
+- `uv run scripts/build_hosts.py --check` passes.
+
+---
