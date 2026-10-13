@@ -92,5 +92,9 @@ On every write (initialize, append, insert, move) the tool parses the whole task
 
 The insert subcommand takes the task title as a positional command-line argument after `MILESTONE_DIR` and reads only the body prose on standard input as a quoted heredoc, the open-question tool's `add` form. The tool composes the `##` heading line, the body, and the trailing `---` itself, so a `##` line, a `---` line, or any heading text in the piped body is never treated as structure, and an empty title is refused on its own. The initialize subcommand keeps reading whole sections on standard input, so the tool has two input shapes: title argument plus body for the one-section insert, section form for `derive-tasks`' list. `submit-task` splits the section it authors from `task-format.md`'s template into the title argument, quoted for the shell, and the body heredoc.
 
+### The insert subcommand's position
+
+The insert subcommand carries every position `submit-task` can choose, and every call states it: exactly one of `--end`, `--before <Task Title>`, or `--after <Task Title>`, held in a required mutually exclusive group, so a call with no position flag is a malformed invocation refused with argparse's exit 2 rather than a section landing silently at the end. There is no default position and no separate append subcommand: the end position is `insert --end`, and the one-section append the decisions above mention is that form. `submit-task` maps the choice its step 3 makes (`append`, `before: <Task Title>`, `after: <Task Title>`) onto those three flags in its one fixed command.
+
 ## Out of Scope
 
