@@ -78,5 +78,9 @@ The development rule that a rendered tree never names another host's mechanism c
 
 Slot values keep naming no host, their own included: a value reaches its host's mechanism through that host's identifiers (tool names such as `spawn_agent` or `Agent`, config keys such as `agents.max_threads`, file names, command names) and otherwise describes it in host-neutral words such as "this host". The rewritten "name no host" invariant in `CLAUDE.md` states that it covers every rendered runtime file, slot values included. Nothing in the build enforces it in values: `host-name-in-core` keeps scanning `core/` only.
 
+### CONTRIBUTING.md Development section
+
+The section is restructured in this milestone. Its `settings.toml` sentence and check list are replaced by a short description of what a host definition is (settings plus templates, wording differences as named slots whose values sit inline or in files) and a pointer to the build script's docstring as the one complete reference for settings keys and checks; the test paragraph covers the pinned-only build rendering test. The section also states the new development rule for contributors: host differences reach `core/` as named slots rather than capability-conditional prose, and a rendered tree never names another host's mechanism.
+
 ## Out of Scope
 
