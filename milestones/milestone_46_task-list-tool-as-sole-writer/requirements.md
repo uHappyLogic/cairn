@@ -84,5 +84,9 @@ The tool refuses a before or after anchor that names no section in `TASKS_TODO.m
 
 Beyond refusing an empty title or body, the insert and append subcommands write whatever title and body they are given verbatim, a body line that reads as a `---` separator or a `## ` heading included, and the move copies its section as it stands. The tool checks no rule of `task-format.md`, structural or quantitative: title length and case, sentence count, and the ban on sub-headings and labeled sections all stay with the authoring skills exactly as today, so `task-format.md` remains the format's only home and no authored brief is ever refused for its wording.
 
+### Whole-file render on every write
+
+On every write (initialize, append, insert, move) the tool parses the whole task file into its heading line and its `##` sections (title, body prose, and for a done entry the `**Verified:**` bullets), applies the change to that model, and renders the entire file in one canonical layout: a blank line after the heading, after the body, after the label, after the last bullet, and after each `---`, with the file ending in `---` plus one newline. Every section the call did not touch is re-emitted in that layout too, so blank-line drift anywhere in the file is normalized silently on the first write, while the body prose itself is carried through as parsed text. The file is replaced through the same-directory temporary file, as `open_questions.py` does.
+
 ## Out of Scope
 
