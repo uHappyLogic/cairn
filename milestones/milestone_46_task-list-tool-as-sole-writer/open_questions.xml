@@ -27,4 +27,7 @@
       <drawback>It needs a repair rule (replace or insert) that is more complex than either checking the heading or ignoring it, and that rule has to be tested. It still rewrites a line outside the section being written without saying so, which depends on the whole-file-rewrite-or-splice axis owned by a sibling question. A file that is not a task file at all gets a heading added on top of it instead of being refused.</drawback>
     </alternative>
   </open-question>
+  <open-question id="Structural lines on re-parse">
+    <question>When a later write re-parses a task file whole, how does the tool treat a body line that an earlier insert wrote verbatim and that reads as a `---` separator or a `## ` heading: as structure, so the section ends or splits there, or as part of its section, and by what parsing rule?</question>
+  </open-question>
 </open-questions>
