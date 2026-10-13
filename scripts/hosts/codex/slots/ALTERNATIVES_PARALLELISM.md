@@ -1,2 +1,3 @@
 they run
-together where the host allows it
+together, in rounds of at most the session's subagent
+thread cap

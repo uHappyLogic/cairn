@@ -18,7 +18,8 @@ only party in this pass that changes the question document, `<MILESTONE_DIR>/ope
 written out in full as its fenced block shows it, never through a variable, alias, or function
 of your own defined to stand for the command or any part of it. Alternatives are enumerated per
 question against the siblings as scope only, so the dispatches are independent: they run
-together where the host allows it, and the files they land are embedded and committed in
+together, in rounds of at most the session's subagent
+thread cap, and the files they land are embedded and committed in
 batches, one fixed shell call per batch — one `Alternatives-annotation: <Short Title>` commit
 per annotated question, none for a skipped one. It is **argument-free**, records **no
 decisions**, triggers **no cascades**, and writes no `<recommendation>` — it only supplies the
@@ -107,22 +108,24 @@ regenerated is named in the same `strip` call.
 Dispatch one read-only subagent per question step 1b printed, in **rounds of at most the
 session's configured subagent thread cap**: the value of the `agents.max_threads` setting in the
 session's configuration (also read under its newer name,
-`agents.max_concurrent_threads_per_session`), or 6, its default, when the setting is unset.
-Dispatch a round of up to that many pending questions at once, then wait in **one** `wait_agent`
-call on every agent in the round until each has landed its file or ended in a failure, and run
-the batch call (sub-step **d**) once over the round's files. When that batch call refuses no
-file, close the round's agents with the `close_agent` tool and dispatch the next round at the full
-cap. When it refuses some, first close the round's accepted and skipped agents with
-`close_agent`, keeping the refused ones open so repair by continuation still reaches them; then
-send every repair together (sub-step **e**), wait in one `wait_agent` call on the repair set
-alone, and run one more batch call over the repaired files; only then close the repaired agents
-and dispatch the next round at the full cap. Repairs never share a wait with a first dispatch and
-never take a slot from the next round. Repeat until every question step 1b printed has been
-dispatched and its round batched. No ranking or ordering precedes the dispatches: an alternative
-set is enumerated against the sibling questions as scope only, never against how a sibling will
-settle, so no dispatch reads what another wrote and their order changes nothing. However many run
-at once, the run writes the same blocks and lands the same commits; the cap changes only
-wall-clock time.
+`agents.max_concurrent_threads_per_session`), or 6, its default, when the setting is unset; a
+spawn beyond the cap is refused. Dispatch a round of up to that many pending questions at once,
+each under its own task name, then wait with the `wait_agent` tool until every agent in the
+round has delivered its final message. One `wait_agent` call names no agent: it returns at the
+first update from any of them, or at its timeout, and each agent's final message reaches you on
+its own, so call it again, with a long `timeout_ms`, until the round's last final message has
+arrived, and only then run the batch call (sub-step **d**) once over the round's files. A
+finished agent holds no slot and needs no closing, so when that batch call refuses no file,
+dispatch the next round at the full cap. When it refuses some, send every repair together
+(sub-step **e**), wait the same way until every agent of the repair set has delivered its final
+message — with no other agent running, every update is the repair set's — and run one more
+batch call over the repaired files; only then dispatch the next round at the full cap. Repairs
+never share a wait with a first dispatch and never take a slot from the next round. Repeat until
+every question step 1b printed has been dispatched and its round batched. No ranking or ordering
+precedes the dispatches: an alternative set is enumerated against the sibling questions as scope
+only, never against how a sibling will settle, so no dispatch reads what another wrote and their
+order changes nothing. However many run at once, the run writes the same blocks and lands the
+same commits; the cap changes only wall-clock time.
 
 **a. Create the run's scratch directory.** Before the first dispatch, run
 
@@ -231,26 +234,26 @@ the tool's `Error:` line or git's first line. An annotated question gets no line
   would be refused; note its Short Title with git's line for the step-4 advisory.
 
 **e. Repair every refused file once, all together.** The moment a batch call prints refused
-files, send every one of that call's repairs together in the same turn — immediately, never
-held back as a second phase once the first returns have all landed. Repair each question by
-whichever of these two branches the host supports, in this order:
+files, send every one of that call's repairs together in the same turn — immediately, before
+the next round is dispatched. Repair each question by the first of these two branches that
+applies:
 
-- **Continue the same agent session.** Where the host can continue a finished agent session and
-  you still hold that dispatch's handle — a follow-up message addressed to the agent id the
-  `spawn_agent` tool returned — send the corrective message below to **that same agent**. Its context
-  is intact, so it rewrites its file from the analysis it already did.
-- **Re-dispatch one fresh agent.** Where the host cannot continue a finished agent session, or
-  the handle is gone, dispatch **one** fresh default (generic) subagent
-  for that question with the `spawn_agent` tool, passing the **same prompt** as the original dispatch
-  with the corrective message below appended to it as a shape reminder. This second dispatch
-  redoes the analysis, so it is the fallback branch, never the preferred one.
+- **Continue the same agent session.** While you still hold the canonical task name the
+  `spawn_agent` tool returned for that dispatch, send the corrective message below to **that
+  same agent** with the `followup_task` tool addressed to that task name, which starts a new
+  turn on the finished agent (never `send_message`, which starts none). Its context is intact,
+  so it rewrites its file from the analysis it already did.
+- **Re-dispatch one fresh agent.** Where that task name is gone, spawn **one** fresh default
+  (generic) subagent for that question with the `spawn_agent` tool, under a task name no earlier
+  dispatch of this session used (a name already used is refused), passing the **same prompt** as
+  the original dispatch with the corrective message below appended to it as a shape reminder.
+  This second dispatch redoes the analysis, so it is the fallback branch, never the preferred
+  one.
 
-Where the single wait is the dispatch call's own blocking form, send every repair **without
-blocking**, so each later wake-up that brings repaired returns runs a batch call over whatever
-has landed by then; otherwise wait on the repair set as the paragraph opening this step
-describes. Either way a repaired file lands at its Short Title's path — the refused one already
-moved aside — and gets no special handling: the next batch call embeds and commits it like any
-other, and the repaired agent's final message gets the same last-line verdict (sub-step **c**).
+Then wait on the repair set as the paragraph opening this step describes. A repaired file lands
+at its Short Title's path — the refused one already moved aside — and gets no special handling:
+the next batch call embeds and commits it like any other, and the repaired agent's final message
+gets the same last-line verdict (sub-step **c**).
 
 Every repair sends this fixed one-paragraph corrective message, whose single slot is
 `<Error line>`:
