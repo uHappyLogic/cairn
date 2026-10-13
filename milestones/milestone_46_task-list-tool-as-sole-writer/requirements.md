@@ -64,5 +64,9 @@ Step 5 of `complete-procedure.md` shows the task-list tool's move command alone,
 
 The move renders both new file contents in memory before touching either, replaces `TASKS_DONE.md` first and `TASKS_TODO.md` second through the same-directory temporary-file writer, and if the second replace fails it writes `TASKS_DONE.md`'s original bytes back through the same writer, so the call ends with one `Error:` line, exit 1, and both files byte-for-byte as they were, keeping the shared contract that every failure leaves the files unchanged. Only if that restore also fails does the superset (entry in `TASKS_DONE.md`, section still in `TASKS_TODO.md`) remain, and the `Error:` line then says so. A re-run after a clean failure is an ordinary move, and the rollback is exercised in the tests by a monkeypatched replace.
 
+### No shared helper module
+
+The task-list tool is one self-contained file carrying its own copies of the stdin reader, `ToolError`, the one-`Error:`-line main with its describe/fail path, and the same-directory atomic writer, written for its own needs (keeping the target's mode, as `open_questions.py` does, since it rewrites existing files). `open_questions.py`, `define_milestone.py`, and the build stay untouched, so every rendered tool remains one runnable file copied byte-identical into each host and no run imports a sibling. The parity precedent is extended: a test asserts the new tool imports neither sibling, and its conformance to the shared output contract is pinned only behaviourally by its own subprocess tests, with no check that the copies match the siblings' text. A later milestone may still extract a module; this one does not.
+
 ## Out of Scope
 
