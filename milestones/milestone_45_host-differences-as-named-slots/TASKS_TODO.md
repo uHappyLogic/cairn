@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Antigravity Command-Line Facts In Docs
-
-Check every Antigravity command-line fact on `docs/ways-of-using-cairn.md` against the locally installed `agy` (the invocation form, `--dangerously-skip-permissions`, `--model` with `agy models`, `--add-dir` and its need on every `agy` line, and the move-a-line rule) and correct each one that differs, and replace the `--effort` value lists with a pointer to each host's own `--help` so the page lists no effort values for any host. Verified by reading the corrected legend and chains back against `agy --help` and `agy models` output.
-
----
-
 ## Rewrite Docs For Slot-Only Host Differences
 
 Rewrite `docs/design-claims.md` (claim 18's "names the capability, and the runtime selects the branch" sentence and example, and claim 13's once-per-run-or-once-per-wake-up wording), the `docs/skill-reference.md` alternatives-pass entry ("the one host-dependent paragraph", the inline `SendMessage` and rounds mentions, every "where the host" branch), and the two "where the host can wait" sentences of `docs/workflow.md` so they state that host differences reach `core/` only as named slots whose values sit inline or in files, that each rendered tree describes only its own wait and repair mechanism and never names another host's, and describe the alternatives pass's collection and repair as each host's definition now has them. Verified by a search of `docs/` finding none of the retired capability-conditional phrasing and the descriptions matching the three definitions' slot values.

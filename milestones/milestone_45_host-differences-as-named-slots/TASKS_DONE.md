@@ -110,3 +110,19 @@ Run a hands-on check against the locally installed `agy` covering dispatch, wait
 - A search of `hosts/antigravity` for other hosts' tools, files, and commands (`CLAUDE.md`, `SendMessage`, the `Agent` tool, `subagent_type`, `cairn:` agent names, `run_in_background`, `spawn_agent`, `wait_agent`, `followup_task`, `agents.max_threads`, Codex) finds none; the only hit for the word Claude is the `Claude-Session:` git trailer cited as example commit data in the capture skill, and the `/init` and `Read`/`Edit`/`Bash` mentions left in `core/` prose are the ones recorded under Out of Scope.
 
 ---
+
+## Antigravity Command-Line Facts In Docs
+
+Check every Antigravity command-line fact on `docs/ways-of-using-cairn.md` against the locally installed `agy` (the invocation form, `--dangerously-skip-permissions`, `--model` with `agy models`, `--add-dir` and its need on every `agy` line, and the move-a-line rule) and correct each one that differs, and replace the `--effort` value lists with a pointer to each host's own `--help` so the page lists no effort values for any host. Verified by reading the corrected legend and chains back against `agy --help` and `agy models` output.
+
+**Verified:**
+
+- The invocation form `agy -p "/cairn:<skill>"` matches the installed `agy` 1.3.4: `agy --help` lists `-p`/`--print`, `agy -p "/skills"` run from a workspace holding the plugin at `.agents/plugins/cairn` lists every skill as `cairn:<skill>`, and `agy -p "/cairn:ask-in-milestone-context ..."` expanded and ran the skill; the page's form is unchanged.
+- `--dangerously-skip-permissions` appears in `agy --help` under that name as auto-approving tool permission requests; the legend bullet is unchanged.
+- The `--model` bullet states that Antigravity takes a model id from the `agy models` list or its base model name without the trailing effort level, `--effort` choosing the level or the model's default applying; checked by runs accepting `--model gemini-3.8-flash-low`, `--model gemini-3.8-flash --effort low`, and `--model gemini-3.8-flash` alone, against the ids `agy models` prints.
+- The `--effort` bullet lists no value for any host and points to each host's own `--help` (`claude --help`, `agy --help`), adding that an Antigravity model may offer only some levels, as `--model gemini-3.8-flash --effort xhigh` was refused with the levels it has; the legend nowhere lists effort values.
+- `--add-dir` is no longer carried on the `agy` line or required by the move-a-line rule: a run without it from the project root took that directory as its workspace (it read a file, wrote one, and ran `git status` there) and the plugin's skills loaded from it; the bullet keeps that the flag exists under one name on all three hosts and states why no line carries it, and the now-unused `<project-root>` placeholder is removed, the notation paragraph saying two placeholders.
+- The move-a-line rule between Claude Code and Antigravity says change the binary, give accepted `--model`/`--effort` values or omit both, and keep `--dangerously-skip-permissions`, with no `--add-dir` clause; the Codex half is unchanged.
+- Every chain reads back against `agy --help`: the one `agy` line, `agy -p "/cairn:review-milestone-requirements" --dangerously-skip-permissions`, uses only flags `agy --help` lists, and no `<project-root>` or `--add-dir` remains in any chain; `uv run scripts/build_hosts.py --check` still passes.
+
+---
