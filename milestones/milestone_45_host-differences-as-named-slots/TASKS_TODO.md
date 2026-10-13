@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Build Rendering Test Under Pinned Interpreter
-
-Add one test module under `tests/` that opens with a module-level `pytest.skip(allow_module_level=True)` when `sys.version_info` is below `(3, 11)`, placed before any import of the build, then renders a small synthetic `core/` and one synthetic host definition (a `settings.toml` with inline and file-backed slots plus whatever templates it needs) into `tmp_path` by importing the build in-process, monkeypatching its module-level `CORE_DIR`, `LICENSE_FILE`, and `DEFINITIONS_DIR` onto the fixture, and calling `load_definition` and `render_host`, asserting the rendered files including a file-backed value landing in the right substitution order. The same module carries one case each for the three new loader refusals (a missing value file, a `..` escape outside `slots/`, and an integer entry), each writing a minimal definition into `tmp_path`, calling `load_definition` directly, and asserting a `BuildError` whose message names the slot and the refusal; the build code, `conftest.py`, `pyproject.toml`, and both pytest commands stay unchanged, and `main` and the check set are not exercised. Verified by `uv run pytest` passing with the module collected and `uv run --no-project --python 3.9 --with pytest pytest` reporting it skipped.
-
----
-
 ## Move Every Slot Value Into Files
 
 Rewrite the `[slots]` table of all three `scripts/hosts/<host>/settings.toml` files so every slot, the one-word and empty values included (`CONTEXT_FILE`, and the empty `COMPLETE_TASK_PROMPT_INSTRUCTIONS` and `ALTERNATIVES_PROMPT_INSTRUCTIONS` of Claude Code and Antigravity among them), is bound as `NAME = { file = "slots/NAME.md" }` to a file under that definition's `slots/` subdirectory, keeping each slot declared once with its explanatory comment above its entry, and holding a value that must end in a newline (the Codex prompt-opener values that end in two) in a file ending in one more newline than the value carries. This is a storage move only: no value's text changes. Verified by rebuilding and confirming `git status` shows no change under `hosts/` and `uv run scripts/build_hosts.py --check` passes.

@@ -15,3 +15,19 @@ Extend `scripts/build_hosts.py` so each `[slots]` entry may be either a plain st
 - `uv run scripts/build_hosts.py --check` passes against the unchanged definitions, and `git status` shows no change under `hosts/` (only `scripts/build_hosts.py` modified); `uv run pytest` still passes (544 tests).
 
 ---
+
+## Build Rendering Test Under Pinned Interpreter
+
+Add one test module under `tests/` that opens with a module-level `pytest.skip(allow_module_level=True)` when `sys.version_info` is below `(3, 11)`, placed before any import of the build, then renders a small synthetic `core/` and one synthetic host definition (a `settings.toml` with inline and file-backed slots plus whatever templates it needs) into `tmp_path` by importing the build in-process, monkeypatching its module-level `CORE_DIR`, `LICENSE_FILE`, and `DEFINITIONS_DIR` onto the fixture, and calling `load_definition` and `render_host`, asserting the rendered files including a file-backed value landing in the right substitution order. The same module carries one case each for the three new loader refusals (a missing value file, a `..` escape outside `slots/`, and an integer entry), each writing a minimal definition into `tmp_path`, calling `load_definition` directly, and asserting a `BuildError` whose message names the slot and the refusal; the build code, `conftest.py`, `pyproject.toml`, and both pytest commands stay unchanged, and `main` and the check set are not exercised. Verified by `uv run pytest` passing with the module collected and `uv run --no-project --python 3.9 --with pytest pytest` reporting it skipped.
+
+**Verified:**
+
+- `tests/test_build_rendering.py` exists under `tests/` and opens with a module-level `pytest.skip(..., allow_module_level=True)` when `sys.version_info < (3, 11)`, placed before any import of the build.
+- The module imports `scripts/build_hosts.py` in-process, monkeypatches its `CORE_DIR`, `LICENSE_FILE`, and `DEFINITIONS_DIR` onto a synthetic `core/`, `LICENSE`, and one synthetic host definition in `tmp_path` (a `settings.toml` with one inline and one file-backed slot, a `slots/` value file, and a `README.md` template), and calls `load_definition` and `render_host`.
+- The rendering case asserts the loaded slot map, the template list (the `slots/` file is not a template), the exact rendered file set, and every rendered file's exact contents, including the file-backed value with one trailing newline removed, its `{{PLUGIN_ROOT}}` replaced after the slot fill, its drop-pattern text removed after both, and the stripped frontmatter key.
+- The module carries one case each for a missing value file, a `..` escape outside `slots/`, and an integer entry, each writing a minimal definition into `tmp_path`, calling `load_definition` directly, and asserting a `BuildError` whose message names `slots.BAD_SLOT` and the refusal.
+- The build code, `conftest.py`, `pyproject.toml`, and both pytest commands are unchanged, `main` and the check set are not exercised, and `uv run scripts/build_hosts.py --check` still passes.
+- `uv run pytest` passes with the module collected (548 passed, its 4 cases included).
+- `uv run --no-project --python 3.9 --with pytest pytest` reports the module skipped (544 passed, 1 skipped).
+
+---
