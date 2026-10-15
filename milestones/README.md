@@ -13,9 +13,18 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_46_task-list-tool-as-sole-writer/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 46 — Task-list tool as sole writer
+
+- `core/tools/task_list.py`, a stdlib-only Python 3.9+ tool, is the only writer of `TASKS_TODO.md` and `TASKS_DONE.md` once `define_milestone.py` has created them, with three subcommands: `initialize` (the whole ordered list from stdin, landing whole or not at all), `insert` (one section at exactly one required `--end`, `--before`, or `--after` position), and `move` (one section to `TASKS_DONE.md` under the `**Verified:**` label with the bar read from stdin as opaque Markdown).
+- Every write re-parses the whole file and renders it in one canonical layout with its fixed heading, treats a `---` line as a separator only when a column-0 `## ` heading or the end of the file follows, and matches titles by exact whitespace- and case-folded equality, refusing a partial, shared, duplicate, or unknown title with one `Error:` line and the files unchanged.
+- `move` replaces `TASKS_DONE.md` first and `TASKS_TODO.md` second and writes the done file's original bytes back when the second replace fails, so a failed move leaves both files unchanged.
+- The tool touches no git and validates nothing of `task-format.md` beyond empty input; it is one self-contained file, and a test suite under `tests/test_task_list_*.py` covers each subcommand, the section and format rules, the rollback, the output contract, and parity with its siblings under both interpreters.
+- The `complete-task` agent and skill, `submit-task`, and `derive-tasks` each show one fixed shell call chaining the tool with the git step they own, so a refused write stages and commits nothing; `complete-procedure.md` shows the move alone, `submit-task` dropped its append fallback, and `derive-tasks` dropped its per-brief append.
+- The `CLAUDE.md` invariants, `milestones/README.md`, and `docs/` describe the tool as the sole writer and retire the four-call `Read`/`Edit` move and the ad-hoc move scripts.
 
 ### Milestone 45 — Host differences as named slots
 
@@ -493,3 +502,4 @@ Current milestone: `milestones/milestone_46_task-list-tool-as-sole-writer/`
 | 43 | Batched alternatives embeds from scratch files | `milestones/milestone_43_batched-alternatives-embeds-from-scratch/` |
 | 44 | Batched recommendation embeds in one shell call | `milestones/milestone_44_batched-recommendation-embeds-in-one/` |
 | 45 | Host differences as named slots | `milestones/milestone_45_host-differences-as-named-slots/` |
+| 46 | Task-list tool as sole writer | `milestones/milestone_46_task-list-tool-as-sole-writer/` |
