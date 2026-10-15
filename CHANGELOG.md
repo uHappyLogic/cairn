@@ -2,6 +2,18 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.8.5 — 2026-10-15
+
+### Task-list tool as sole writer (milestone 46)
+
+- A new stdlib-only tool, `tools/task_list.py`, is now the only writer of `TASKS_TODO.md` and `TASKS_DONE.md` once a milestone exists. It has three subcommands: `initialize` writes the whole ordered task list for `/derive-tasks` and lands it whole or not at all, `insert` places one task at the required `--end`, `--before`, or `--after` position for `/submit-task`, and `move` moves a finished task to `TASKS_DONE.md` under its `**Verified:**` bar.
+- Every write re-renders the whole file in one canonical layout and matches task titles exactly (case- and whitespace-insensitive), refusing a partial, duplicate, or unknown title with one `Error:` line and both files unchanged. A failed `move` leaves both files as they were.
+- Task completion no longer writes ad-hoc scripts to move a task: the `complete-task` agent and skill run the move chained with their git step in one shell call, so the completion tail is one turn shorter and a refused move stages and commits nothing.
+- Measured in field use over 71 task completions after the change against 411 before: moves done by an ad-hoc script fell from 78% to 1%, moves needing more than one write call from 23% to none, the median completion tail from 3 turns to 2 (with 86% of completions now ending in exactly 2), and the tool refused none of its calls. The saving is about 2.5% of a completion agent's cost, most of it in cached input.
+- `/submit-task` stops on an anchor that names no task instead of appending at the end, and `/derive-tasks` writes its whole list in one call rather than one append per brief.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.8.4...1.8.5
+
 ## 1.8.4 — 2026-10-13
 
 ### Host differences as named slots (milestone 45)
