@@ -182,6 +182,36 @@
   </open-question>
   <open-question id="Suite without agy">
     <question>When the agy suite is invoked on a machine where agy is not on PATH or the global plugin copy it needs is absent, does it skip its tests, fail them, or stop before any test with one line naming the missing prerequisite?</question>
+    <alternative id="Stop with one line">
+      Before any test runs, the suite checks both prerequisites (agy resolvable on PATH, the global plugin copy present at ~/.gemini/config/plugins/cairn) in one up-front check. When either is missing, it stops the whole run with a non-zero exit and one line naming the missing prerequisite. It reports no per-test outcome, and it treats both prerequisites the same way.
+      <advantage>An explicitly requested verification can never come back green on a machine that verified nothing. The single line names the exact cause, and no agy process is started only to fail, which keeps the report readable for the contributor or release pre-flight that asked for the run.</advantage>
+      <drawback>Aborting the run is only harmless if the suite is never collected as part of a broader run. If it lives somewhere a wholesale pytest invocation reaches it (the Suite location and invocation axis), a session-level stop on a machine without agy breaks that unrelated run instead of passing it by. It also needs a session-level hook or a separate entry point rather than the ordinary per-test idiom.</drawback>
+    </alternative>
+    <alternative id="Skip with reason">
+      Every suite test is skipped with a reason naming the missing prerequisite, and the run exits 0. This is a module-level skip in the manner of tests/test_build_rendering.py, which skips itself below Python 3.11 keyed on a condition checked before anything else, or one equivalent message and a zero exit if the suite is not pytest. Both prerequisites are treated the same way.
+      <advantage>It follows the repository&apos;s one existing conditional-module convention and the standard pytest idiom. That makes it harmless wherever the suite is collected on a machine without agy, CI&apos;s ubuntu job included, so the default run stays unchanged whatever the suite&apos;s location turns out to be.</advantage>
+      <drawback>A run someone asked for on a misconfigured machine exits 0 with everything skipped, and the exit code reads as success. A contributor gate or release pre-flight that keys on the result can then pass without exercising agy at all, which defeats the point of a suite that runs only when someone wants the integration verified.</drawback>
+    </alternative>
+    <alternative id="Fail each test">
+      The suite is collected and run as normal, and each test (through a shared fixture or per-test guard) fails with a message naming the missing prerequisite. The run exits non-zero and reports one failure per test, and both prerequisites are treated the same way.
+      <advantage>It stays within ordinary per-test pytest machinery, needing no session-level abort hook, while still guaranteeing that a requested run on an unprepared machine cannot read as a pass.</advantage>
+      <drawback>The report shows as many identical failures as the suite has tests, which buries the single real cause. It shares the stop option&apos;s hazard of turning any broader collection on a machine without agy red (the Suite location and invocation axis), with noisier output.</drawback>
+    </alternative>
+    <alternative id="Skip agy, fail copy">
+      The two prerequisites are treated differently. When agy is not on PATH, every test is skipped with a reason naming agy and the run exits 0, because the machine simply cannot run the suite. When agy is present but the global plugin copy is absent, the run fails non-zero with a line naming the missing copy, because the installation this milestone standardizes on is missing on a machine set up for agy.
+      <advantage>The outcome follows what the absence means. A machine without the host is not a finding, while a host without the global install is exactly the kind of setup fault the global-path standardization is meant to rule out, so it is reported loudly.</advantage>
+      <drawback>The split only makes sense if the suite drives the pre-installed global copy. If it installs its own copy, the second prerequisite never arises (the Suite plugin copy axis). It also keeps the skip option&apos;s risk that a requested run on a machine without agy exits 0, and it is two rules to document instead of one.</drawback>
+    </alternative>
+    <alternative id="Skip unless strict">
+      The suite skips with a reason naming the missing prerequisite and exits 0 by default. An explicit switch the suite documents (an environment variable or command-line flag) turns the same missing prerequisite into a stop before any test, with a non-zero exit and one line naming it. Both prerequisites get the same treatment in each mode.
+      <advantage>Any accidental or wholesale collection stays harmless, and a deliberate verification (a contributor gate or release pre-flight) can still demand that a missing prerequisite fail instead of passing silently.</advantage>
+      <drawback>It adds a second mode and a switch that every invoking site must remember to set. A gate that forgets the flag silently falls back to the skip behaviour and its false green. It is also more mechanism than a suite that already runs only on request may need.</drawback>
+    </alternative>
+    <alternative id="No prerequisite check">
+      The suite adds no detection of either prerequisite. Its tests invoke agy and read the global copy directly, and on a machine lacking either they fail with whatever the subprocess or agy itself raises: a FileNotFoundError for a missing binary, or agy&apos;s own error or a failed resolution for a missing copy.
+      <advantage>It adds no code and leaves no prerequisite list to keep in step with what the tests actually use. Any missing piece still makes the run non-zero.</advantage>
+      <drawback>The failure names no prerequisite. A missing global copy surfaces as a plugin-root resolution failure that looks exactly like the bug the suite exists to detect, so an unprepared machine produces a misleading regression report rather than a setup message.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Integration-change trigger">
     <question>How is the goal&apos;s rule that the agy suite runs when the Antigravity host integration changes realized, with CI ruled out — a CONTRIBUTING.md sentence naming the paths whose change requires a run before committing, a pre-flight step in the release-plugin skill, or both?</question>
