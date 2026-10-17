@@ -8,22 +8,45 @@
 # plugin_name below. Every host shares this exact key set: a key with nothing to declare
 # is left empty, never omitted.
 #
-# Hands-on check, 2026-10-13, against the installed `agy` 1.3.4 in headless (-p) runs from a
-# workspace holding this tree at the plugin_root path below, with its built-in plugin and
-# customization guides alongside. It sourced every slot value below.
+# Hands-on check, 2026-10-18, against the installed `agy` 1.4.1 in headless (-p) runs driving
+# the plugin's global install at ~/.gemini/config/plugins/cairn, the plugin_root path below,
+# with its built-in plugin and customization guides alongside. It confirmed every slot value
+# below as written, AGENT_WRITE_TOOLS included, and re-checked each point of the 2026-10-13
+# check against `agy` 1.3.4 that this block replaces; what it carried forward unchecked is
+# marked so.
+# - Install: `agy plugin list` reports the plugin enabled at that global path, source
+#   antigravity, with its 22 skills and 2 agents, and a session loads its skills from there.
+#   The rendered tilde path reaches the files two ways: run_command's shell expands it, so a
+#   `python3 ~/.gemini/config/plugins/cairn/tools/<tool>.py` command runs as written, while
+#   view_file refuses the tilde form as not absolute ("must be an absolute path"), and a run
+#   following a skill expanded it itself and read the shared procedures at the absolute path.
+#   A workspace's own .agents/plugins/ root is loaded beside the global install at session
+#   start, its agents dispatchable by bare name, though `agy plugin list` does not show it.
+# - Write tools, both agents: an agent file's frontmatter grants its subagent the tools its
+#   tools list names and nothing for an enable_write_tools key. On a throwaway agent pair,
+#   `enable_write_tools: true` alone left the agent the reading and messaging tools only (it
+#   could neither run a command nor write a file), while the tools list AGENT_WRITE_TOOLS
+#   carries granted run_command and write_to_file; the plugin's two agents, dispatched by
+#   their bare names with their real inputs, each landed the files only those tools produce
+#   (the alternatives agent's scratch file; the completion agent's task move with its paths
+#   staged). That list is what define_subagent writes for enable_write_tools, as a tools list
+#   of the same twelve names, into the conversation's own agents directory, not the install.
 # - Dispatch: the plugin's agents load from its agents/ directory with no other file, under
-#   their bare frontmatter names (a cairn:-namespaced name is refused as not found), and a
-#   dispatched agent carries its file's instructions without reading the file. invoke_subagent
-#   takes a Subagents array of TypeName, Role, and Prompt entries; twelve entries in one call
-#   all started and ran concurrently, and the call's result carries each conversation id.
-# - Waiting: invoke_subagent has no blocking form; it returns at once, and each agent's final
-#   message reaches the parent as a message that wakes it, with no polling needed.
+#   their bare frontmatter names (a plugin-namespaced `<plugin>:<agent>` name is refused as
+#   not found), and a dispatched agent carries its file's instructions without reading the
+#   file. invoke_subagent takes a Subagents array of TypeName, Role, and Prompt entries; two
+#   entries in one call started and ran concurrently here (twelve did on 2026-10-13), and the
+#   call's result carries each conversation id.
+# - Waiting: invoke_subagent has no blocking form; it returns at once (within two seconds,
+#   before any agent had ended), and each agent's final message reaches the parent as a
+#   message that wakes it, with no polling needed.
 # - Continuing an agent: a finished agent stays idle; send_message with that conversation id
 #   as Recipient returns at once and resumes the agent with its context intact, its reply
-#   arriving as another message.
+#   arriving as another message (one agent created a file on its first turn and appended to
+#   it on the second).
 # - Context file: the workspace root AGENTS.md (and GEMINI.md) loaded as workspace rules and
-#   CLAUDE.md did not; /init is no command of this host, a print run passing it to the model
-#   as plain text.
+#   CLAUDE.md did not, with no file read by the model. Carried forward from 2026-10-13: /init
+#   is no command of this host, a print run passing it to the model as plain text.
 
 # The plugin name that fills every {{NAME}} slot in the templates beside this file.
 plugin_name = "cairn"

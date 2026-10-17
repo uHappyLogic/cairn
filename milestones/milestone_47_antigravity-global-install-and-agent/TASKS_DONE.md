@@ -172,3 +172,19 @@ Over one shared narrow path set (`scripts/hosts/antigravity/`, `core/agents/*.md
 - Only the two files changed; `uv run scripts/build_hosts.py --check` passes; the diff command with the real `<LAST_TAG>` (`1.8.5`) substituted lists the nine trigger-set paths changed this milestone; `uv run pytest agy_tests --collect-only -q` passes the suite's prerequisite check and collects its three tests without running them
 
 ---
+
+## Rewrite The Antigravity Hands-On Check Block
+
+Run the hands-on check against the installed agy 1.4.0 and rewrite the dated block in the header of `scripts/hosts/antigravity/settings.toml` as that new check, naming the global `~/.gemini/config/plugins/cairn` path as the install checked, the `enable_write_tools` check on both agents, and the points the 2026-10-13 run sourced (dispatch, waiting, continuing an agent, context file), each re-checked or carried forward. It stays the one record of what was checked, carries no reference to the agy suite, and the `CLAUDE.md` invariant stays as worded. Verified when the block names every point and no suite and `--check` still passes.
+
+**Verified:**
+
+- The dated block in the header of `scripts/hosts/antigravity/settings.toml` is rewritten as a new hands-on check dated 2026-10-18 in headless `-p` runs, naming the installed `agy` version actually checked, 1.4.1: the 1.4.0 the brief names had been updated by the time of the run, and `which -a agy` resolves only `~/.local/bin/agy`
+- The block names the global `~/.gemini/config/plugins/cairn` path as the install checked: `agy plugin list` reports the plugin enabled there with 22 skills and 2 agents, `view_file` refuses the tilde form as not absolute while `run_command` runs the tilde `python3` command as written, and a workspace `.agents/plugins/` root loads beside the global install at session start without appearing in `agy plugin list`
+- The block names the `enable_write_tools` check on both agents: on a throwaway agent pair under 1.4.1, `enable_write_tools: true` in the frontmatter left the agent reading and messaging tools only (no `run_command` or `write_to_file` in its transcript, no file landed) while the same `tools:` list granted both; the plugin's two agents, dispatched by bare name with their real inputs, landed their files; `define_subagent` with `enable_write_tools` wrote the same twelve-name `tools:` list into the conversation's brain directory, not the install
+- The block carries the four 2026-10-13 points, each re-checked against 1.4.1 — dispatch (bare names, `probe:list-agent` refused as not found, two entries in one `invoke_subagent` call ran concurrently with each conversation id returned), waiting (the call returned within two seconds and each final message arrived as a wake-up message), continuing an agent (`send_message` to the conversation id returned at once and the agent appended to its file with context intact), context file (`AGENTS.md` and `GEMINI.md` loaded, `CLAUDE.md` not, no file read) — with the twelve-entry count and the `/init` fact marked carried forward
+- The block stays the one record of what was checked: only `scripts/hosts/antigravity/settings.toml` changed, the slot comments keep mechanism terms with no version, and `CLAUDE.md`, its hands-on-check invariant included, is untouched
+- The header carries no reference to the agy suite: a grep for `suite`, `agy_tests`, `pytest`, and `test` over it finds nothing
+- `uv run scripts/build_hosts.py` leaves `hosts/` byte-unchanged and `uv run scripts/build_hosts.py --check` passes; `uv run pytest` passes (684 passed); `uv run pytest agy_tests` passes with the edit in place (3 passed), the installed copy byte-identical with `hosts/antigravity/` afterwards
+
+---
