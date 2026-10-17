@@ -286,6 +286,26 @@
   </open-question>
   <open-question id="Fixture workspace">
     <question>In what workspace does the agy suite run each headless agy process — a temporary git repository the suite seeds through the plugin&apos;s own tools with a milestone and open questions, a committed fixture directory under tests/fixtures/ copied to a temporary location, or the cairn repository checkout itself?</question>
+    <alternative id="Tool-seeded temp repository">
+      Each agy process runs in its own fresh git repository under the system temp location (a pytest tmp_path or a mktemp -d directory), which the suite builds at run time: git init, a milestones/README.md with its Current milestone: pointer written by the suite itself (no tool writes that file), the milestone directory created by define_milestone.py from a goal piped on stdin, its open questions appended by open_questions.py add, and an initial commit, all before the agy -p line runs with that directory as its working directory.
+      <advantage>The workspace is always in the exact layout and canonical XML form the current tools produce, so it can never drift from the milestone format the plugin expects, and every run starts from a clean, isolated, reproducible state that no earlier run or the cairn history can disturb.</advantage>
+      <drawback>The seed is code to maintain: the question texts and goal live as strings in the suite, the README pointer is still hand-written, and a bug in define_milestone.py or open_questions.py breaks the agy suite&apos;s setup rather than surfacing as an Antigravity finding, which blurs what a failure means.</drawback>
+    </alternative>
+    <alternative id="Committed fixture copied to temp">
+      A new committed directory under tests/fixtures/ holds a small project tree (milestones/README.md with its pointer, one milestone directory with requirements.md, open_questions.xml holding a few bare blocks, and the two task files); for each agy process the suite copies it to a fresh temporary directory, as conftest.py&apos;s milestone_dir fixture already does for the tool tests, then runs git init and an initial commit there, since a nested .git cannot be committed inside the fixture.
+      <advantage>The starting state is static, reviewable in a diff, and identical on every run, following the copy-to-tmp_path pattern the suite already uses, so the setup depends on no plugin tool being correct and a failure points at the host integration.</advantage>
+      <drawback>The fixture is a second hand-maintained copy of the milestone layout: a later change to the file set or the XML form leaves it stale with nothing checking it, and the git initialisation still has to be scripted per run.</drawback>
+    </alternative>
+    <alternative id="Cairn checkout in place">
+      Each agy process runs with the cairn repository checkout itself as its working directory, against whatever milestone milestones/README.md currently points at, with no workspace created, copied, or seeded by the suite.
+      <advantage>No setup at all: the workspace is a real cairn-managed project with real milestones, so the run is as close to a user&apos;s use as the repository can offer.</advantage>
+      <drawback>The runs write into the maintainer&apos;s own history: a committing skill lands Alternatives-annotation or other commits on the current milestone, the result depends on that milestone&apos;s live state (or fails outright when the pointer reads none), runs are not reproducible or isolable, and the checkout&apos;s own AGENTS.md and dirty working tree can steer or block the agent.</drawback>
+    </alternative>
+    <alternative id="Bare temp repository, no milestone">
+      Each agy process runs in its own fresh, empty git repository under the system temp location, holding no milestones/ directory, pointer, or open questions; whatever a test needs (a file to write, a command to run) is named in its prompt rather than pre-seeded.
+      <advantage>The smallest possible workspace, with nothing to seed or maintain and no dependence on the milestone format, so the suite checks only plugin-root resolution and subagent tool execution and nothing else can fail it.</advantage>
+      <drawback>It is viable only if the sibling questions on the subagent probe&apos;s shape and the resolution test&apos;s surfaces settle on probes that need no milestone; a full cairn skill run, or a python3 tool command over a milestone directory, has nothing to operate on here.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Suite run parameters">
     <question>Does the agy suite pin the model, effort, and print timeout it passes on each agy -p line, or run at the host&apos;s defaults with no --model, --effort, or --print-timeout as the headless chains in docs/ways-of-using-cairn.md do?</question>
