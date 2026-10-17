@@ -92,3 +92,21 @@ Add one committed directory under `tests/fixtures/` holding a small project tree
 - `tests/test_format.py` and `tests/test_sort.py` discover golden directories as those holding `open_questions.xml` directly, so the project tree is not collected as a golden document; `uv run pytest` (684 passed) and the 3.9 floor run (680 passed, 1 skipped) pass
 
 ---
+
+## Scaffold The Agy Suite Outside Testpaths
+
+Create the suite's own directory at the repository root (for example `agy_tests/`) with a `conftest.py` holding its fixtures: one up-front prerequisite check that stops the whole run before any test with a non-zero exit and one line naming the missing prerequisite (agy resolvable on `PATH`, the global copy present at `~/.gemini/config/plugins/cairn`, and that copy byte-identical with the repository's `hosts/antigravity/` tree, naming the remedy of re-extracting or copying the built tree), never skipping and treating every prerequisite the same way; a seeded-repository fixture that copies the fixture project to a fresh temporary directory and runs `git init` and an initial commit there for every agy process; and a launcher running `agy -p` with `--dangerously-skip-permissions`, no `--model` and no `--effort`, and one fixed `--print-timeout` value chosen by the suite, enforcing no wall-clock limit of its own, holding no model id, and writing nothing to the user's installation. `testpaths = ["tests"]`, `pyproject.toml`, and the CI workflow stay unchanged, with no marker, `addopts`, naming convention, or environment variable involved. Verified when `uv run pytest` and the 3.9 floor run collect nothing from the directory, `uv run pytest agy_tests` reaches it, and a hidden prerequisite produces exactly the one-line stop with no per-test outcome.
+
+**Verified:**
+
+- `agy_tests/` exists at the repository root holding `conftest.py` alone, with no `__init__.py`, like `tests/`
+- `conftest.py` holds one up-front check (a `pytest_cmdline_main` hook) that tests, in order, `agy` resolvable on `PATH`, the copy present at `~/.gemini/config/plugins/cairn`, and that copy byte-identical with `hosts/antigravity/` (every file path and its bytes); on the first missing one it writes one stderr line naming it (the identity line naming the first differing path and the remedy of re-extracting or copying the built tree) and returns exit code 1 before pytest configures its reporting, never skipping, each prerequisite through the same mechanism
+- The `seeded_repo` fixture copies `tests/fixtures/agy_project` to a fresh directory under `tmp_path` on every call and runs `git init`, a local user identity, `git add -A`, and one initial commit there; two calls yield two distinct repositories, each with exactly one commit and a clean status
+- The `run_agy` fixture runs exactly `agy -p <prompt> --dangerously-skip-permissions --print-timeout 20m` (plus `--output-format` only when asked), with no `--model`, no `--effort`, no `timeout=` of its own, no model id anywhere in the suite, and the user's real `HOME`; the suite only reads under the installed copy, and a smoke run of that exact flag set against the installed `agy` with stdin from `/dev/null` answered the prompt and exited 0
+- `pyproject.toml` (`testpaths = ["tests"]`, no marker or `addopts`) and `.github/workflows/drift-gate.yml` are unchanged, and the suite relies on no naming convention or environment variable
+- `uv run pytest` passes (684 passed) and `uv run --no-project --python 3.9 --with pytest pytest` passes (680 passed, 1 skipped), both collecting zero items from `agy_tests/`
+- `uv run pytest agy_tests` reaches the directory: in the current state (installed copy at release 1.8.5) its check stops the run on the README difference, and under a synthetic `HOME` holding an identical copy pytest proceeds to collection (0 items; 29 passed when `tests/test_sort.py` is named alongside) and a throwaway test file exercising both fixtures passed and was removed
+- A hidden prerequisite (`agy` off `PATH`; no copy under an empty synthetic `HOME`; a copy differing by one byte) produces exactly one stderr line, empty stdout, and exit 1, with no per-test outcome even when `tests/test_sort.py` is named in the same run
+- `uv run scripts/build_hosts.py --check` passes and the installed plugin copy is unchanged by the suite
+
+---
