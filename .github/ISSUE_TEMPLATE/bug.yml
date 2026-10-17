@@ -18,7 +18,7 @@ body:
     id: cairn-version
     attributes:
       label: Cairn version
-      description: The release you have installed — the `version` field of the plugin manifest (`.claude-plugin/plugin.json` in the installed plugin on Claude Code, `.agents/plugins/cairn/plugin.json` on Antigravity, `.codex-plugin/plugin.json` on Codex), or the release tag you extracted.
+      description: The release you have installed — the `version` field of the plugin manifest (`.claude-plugin/plugin.json` in the installed plugin on Claude Code, `~/.gemini/config/plugins/cairn/plugin.json` on Antigravity, `.codex-plugin/plugin.json` on Codex), or the release tag you extracted.
       placeholder: MAJOR.MINOR.PATCH
     validations:
       required: true

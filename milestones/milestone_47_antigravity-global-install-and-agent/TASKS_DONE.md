@@ -61,3 +61,17 @@ In the README template under `scripts/hosts/antigravity/` and the root `README.m
 - The rebuilt `hosts/antigravity/README.md` carries the template's section verbatim, and `uv run scripts/build_hosts.py --check` passes.
 
 ---
+
+## Correct Remaining Stale Antigravity Path Mentions
+
+Correct the two tracked, non-historical statements outside the install sections and the host definition that still name the workspace-local plugin path or say the plugin loads from the working directory: the `--add-dir` bullet in `docs/ways-of-using-cairn.md`, and the Antigravity manifest location in `.github/ISSUE_TEMPLATE/bug.yml`, which becomes `~/.gemini/config/plugins/cairn/plugin.json`. `CHANGELOG.md` entries and finished milestones' files stay as written. Verified when a `git grep` for `.agents/plugins/cairn` outside `hosts/`, `milestones/`, and `CHANGELOG.md` finds only the removal command the install sections carry.
+
+**Verified:**
+
+- The `--add-dir` bullet in `docs/ways-of-using-cairn.md` no longer says an `agy` run loads the plugin from its working directory; it keeps the working directory as the run's workspace and states the plugin loads from its installed location (on Antigravity the global `~/.gemini/config/plugins/cairn`), never from the working directory.
+- The Cairn-version description in `.github/ISSUE_TEMPLATE/bug.yml` names the Antigravity manifest at `~/.gemini/config/plugins/cairn/plugin.json`, with the Claude Code and Codex manifest locations unchanged.
+- `CHANGELOG.md` and every file under `milestones/` are unchanged.
+- `git grep` for `.agents/plugins/cairn` outside `hosts/`, `milestones/`, and `CHANGELOG.md` finds only the `rm -rf .agents/plugins/cairn` removal command in the root `README.md` and `scripts/hosts/antigravity/README.md` install sections.
+- No other file changed, and `uv run scripts/build_hosts.py --check` passes.
+
+---

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Correct Remaining Stale Antigravity Path Mentions
-
-Correct the two tracked, non-historical statements outside the install sections and the host definition that still name the workspace-local plugin path or say the plugin loads from the working directory: the `--add-dir` bullet in `docs/ways-of-using-cairn.md`, and the Antigravity manifest location in `.github/ISSUE_TEMPLATE/bug.yml`, which becomes `~/.gemini/config/plugins/cairn/plugin.json`. `CHANGELOG.md` entries and finished milestones' files stay as written. Verified when a `git grep` for `.agents/plugins/cairn` outside `hosts/`, `milestones/`, and `CHANGELOG.md` finds only the removal command the install sections carry.
-
----
-
 ## Commit The Agy Suite Fixture Project
 
 Add one committed directory under `tests/fixtures/` holding a small project tree: `milestones/README.md` with its `Current milestone:` pointer, one milestone directory with `requirements.md`, an `open_questions.xml` holding a few bare blocks in the tool's canonical form, and the two task files carrying the one trivial task the direct dispatches need. The fixture is what each agy process is seeded from, so it depends on no plugin tool being correct. Verified when, on a copy, the open-question tool's `list` prints the blocks' Short Titles and the task-list tool's `move` accepts the trivial task.
