@@ -44,5 +44,9 @@ Fix the two Antigravity runtime failures reported in `temp/agy_runtime_issues_re
 - **The install section carries a first-install restart note.** Both the README template and the root `README.md` follow the extract command with one sentence: Antigravity discovers a new plugin directory only on startup, so a running agy session must be restarted after the extract. The sentence is identical in both copies, covers the first install only, says nothing about re-extracting a newer release over an existing global copy, and adds no listing or verification command.
 - **Every tracked stale path mention is corrected.** Beyond the two installation sections and the host definition's comments, the milestone corrects every tracked, non-historical statement that names the workspace-local plugin path or says the plugin loads from the working directory: the `--add-dir` bullet in `docs/ways-of-using-cairn.md`, the Antigravity manifest location in `.github/ISSUE_TEMPLATE/bug.yml` (to `~/.gemini/config/plugins/cairn/plugin.json`), and the opening sentence of the `scripts/hosts/antigravity/README.md` template describing extraction into a workspace's `.agents/plugins/cairn/`. `CHANGELOG.md` entries and finished milestones' files stay as written.
 
+### The agy suite
+
+- **The suite is a separate pytest directory outside `testpaths`.** It lives in its own directory at the repository root (for example `agy_tests/`) with its own `conftest.py` holding its fixtures (seeded repositories, an agy launcher). `testpaths = ["tests"]` and the CI workflow stay as they are, so `uv run pytest` and the 3.9 floor run never reach it, and no marker, `addopts`, naming convention, or environment variable is involved. It is invoked by naming the directory: `uv run pytest agy_tests`.
+
 ## Out of Scope
 
