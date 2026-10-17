@@ -113,6 +113,36 @@
   </open-question>
   <open-question id="Resolution test surfaces">
     <question>Which surfaces does the suite&apos;s plugin-root resolution test cover — the orchestrator&apos;s file read of a shared procedure, its python3 tool command, and the same two inside a dispatched agent, or only the tool command — given that the report&apos;s failures showed up on both the file read and the command?</question>
+    <alternative id="Full matrix both agents">
+      The resolution test covers all four surfaces in both rendered agents: the orchestrator&apos;s file read of a shared procedure and its python3 tool command, and inside each dispatched agent (provide-alternatives-to-open-question and complete-task) its own file read of a shared procedure (alternatives-procedure.md, complete-procedure.md) and its own tool command (open_questions.py, task_list.py), each surface asserted separately.
+      <advantage>Every place the report saw a path fail is pinned, and each agent&apos;s distinct procedure file and tool is exercised, so a literal form that resolves in the shell but not in the host&apos;s file-reading tool, or in the orchestrator but not in an agent whose prompt carries no plugin path, fails a named assertion rather than a later run.</advantage>
+      <drawback>It is the costliest shape: at least two agent dispatches per run, each a slow headless agy process using model calls, and complete-task needs a fixture task it can complete; how cheaply the agent surfaces can be reached depends on the shape the subagent probe takes and the fixture workspace the suite uses.</drawback>
+    </alternative>
+    <alternative id="Full matrix one agent">
+      The resolution test covers all four surfaces — the orchestrator&apos;s file read of a shared procedure and its python3 tool command, and the same two inside one dispatched agent (provide-alternatives-to-open-question, the agent the report observed failing) — and does not dispatch complete-task for resolution.
+      <advantage>Both failure surfaces are covered in both contexts the report distinguishes, including the agent whose prompt carries no plugin path, at the cost of a single agent dispatch; both agents&apos; rendered literals come from the same plugin_root, so one agent stands in for the other&apos;s resolution.</advantage>
+      <drawback>complete-task&apos;s own read of complete-procedure.md and its task_list.py command go unexercised, so a fault specific to that agent file&apos;s rendering or context is caught only by its write-tools probe, if that probe touches those paths; whether it does depends on the shape the subagent probe takes.</drawback>
+    </alternative>
+    <alternative id="Orchestrator read and command">
+      The resolution test covers the orchestrator only, on both surfaces: its file read of a shared procedure and its python3 tool command; no dispatched agent&apos;s resolution is asserted by this test.
+      <advantage>It pins both failure modes the report observed in the orchestrator — the view_file stat failure and python&apos;s exit 2 — in one headless agy process with no dispatch, keeping the test fast and its pass signal simple.</advantage>
+      <drawback>The dispatched agent, whose prompt carries no plugin path and which never sees the absolute SKILL.md path the orchestrator receives, is exactly where a form that relies on that metadata would fail, and this test does not look there; agent-side resolution is then verified only if the subagent probe happens to exercise it, which depends on the shape that probe takes.</drawback>
+    </alternative>
+    <alternative id="Command in both contexts">
+      The resolution test covers the python3 tool command only, in both contexts: once run by the orchestrator and once run inside a dispatched agent; no file read of a shared procedure is asserted in either.
+      <advantage>A failed command is loud and mechanically checkable (a non-zero exit and a no-such-file line in the transcript or output), whereas a failed file read may be silently recovered by the model searching for the file, so the test keys on the unambiguous signal while still covering the agent context the orchestrator&apos;s metadata does not reach.</advantage>
+      <drawback>The host&apos;s file-reading tool and the shell resolve paths differently (the shell expands a tilde or $HOME, a file-reading tool may not), so a literal form that passes the command check can still break every shared-procedure read; whether that gap matters depends on the literal form chosen for the plugin root.</drawback>
+    </alternative>
+    <alternative id="Orchestrator command only">
+      The resolution test covers one surface in one context: the orchestrator&apos;s python3 tool command; neither file reads nor any dispatched agent is asserted.
+      <advantage>It is the smallest, fastest, and least flaky test: one headless agy process, no dispatch, and a pass signal (the tool&apos;s output or exit status) that needs no transcript inspection.</advantage>
+      <drawback>It covers one of the four places the report&apos;s failures appeared, leaving the file-read surface and the agent context — the two places a literal form is most likely to resolve differently — to be caught only by a later real run; how much that leaves exposed depends on the literal form chosen for the plugin root.</drawback>
+    </alternative>
+    <alternative id="No dedicated resolution test">
+      The suite carries no separate resolution test: plugin-root resolution is treated as verified whenever the end-to-end subagent check passes, since that run cannot succeed unless the orchestrator&apos;s and the agent&apos;s reads and commands resolved; no surface is asserted on its own.
+      <advantage>It adds no extra agy process or assertion beyond what the suite already runs, keeping the on-demand suite as short and cheap as possible while still failing when resolution is broken.</advantage>
+      <drawback>A failure reports only that the run failed, not which surface or context broke, and a model that recovers from a failed read by searching for the file can pass with a broken literal; whether the end-to-end check touches any given surface at all depends on the shape the subagent probe takes.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Fixture workspace">
     <question>In what workspace does the agy suite run each headless agy process — a temporary git repository the suite seeds through the plugin&apos;s own tools with a milestone and open questions, a committed fixture directory under tests/fixtures/ copied to a temporary location, or the cairn repository checkout itself?</question>
