@@ -380,6 +380,46 @@
   </open-question>
   <open-question id="Integration-change trigger">
     <question>How is the goal&apos;s rule that the agy suite runs when the Antigravity host integration changes realized, with CI ruled out — a CONTRIBUTING.md sentence naming the paths whose change requires a run before committing, a pre-flight step in the release-plugin skill, or both?</question>
+    <alternative id="Contributor sentence, narrow paths">
+      A sentence in CONTRIBUTING.md&apos;s ## Development section, beside the two pytest runs and the rule that both must pass before a tool change is committed. It names a narrow path set whose change requires an agy suite run before committing: the Antigravity definition directory scripts/hosts/antigravity/ (plugin_root, strip_frontmatter_keys, slots, templates), the agent sources core/agents/*.md, scripts/build_hosts.py, and the suite itself. The release-plugin skill is not changed and nothing enforces the rule.
+      <advantage>It is one sentence in the file that already holds every test-run rule. It fires only on the files that produced this milestone&apos;s two failures (the plugin-root literal and the agent frontmatter), so a run costs real agy time and model calls only when the integration itself moved.</advantage>
+      <drawback>It is advisory. Nothing stops a commit or a release that skipped the run. A core/ change that breaks Antigravity some other way, such as a new shared-procedure path or a new python3 command form in a skill, falls outside the list and is never checked. The command it names depends on how the sibling suite-location question settles.</drawback>
+    </alternative>
+    <alternative id="Contributor sentence, any tree change">
+      The same CONTRIBUTING.md ## Development sentence, but its trigger is broad: any commit that changes a file under hosts/antigravity/. Since that tree is rebuilt and committed with every core/ change, this means nearly every runtime change. The release-plugin skill is not changed and nothing enforces the rule.
+      <advantage>The trigger matches the rendered artifact Antigravity actually loads, so no breaking change can fall outside it. It is also checkable at a glance with git diff --stat, with no path list to maintain as the integration&apos;s sources move.</advantage>
+      <drawback>Nearly every commit would need a slow, model-backed agy run, which makes the rule costly enough to be skipped routinely. That erodes what it is meant to guarantee, and it is still advisory with nothing to catch a skipped run.</drawback>
+    </alternative>
+    <alternative id="Release gate on changed paths">
+      A new pre-flight check in .claude/skills/release-plugin/SKILL.md step 2. It runs git diff --name-only between the last release tag and HEAD over the narrow path set (scripts/hosts/antigravity/, core/agents/*.md, scripts/build_hosts.py, the suite). When any of those changed, it runs the agy suite and stops the release on a failure. No CONTRIBUTING.md sentence is added.
+      <advantage>It is enforced at the one point where a broken Antigravity tree reaches users, the publish into cairn-antigravity. It reuses the last-tag value step 1 already resolves, and releases with no integration change pay nothing.</advantage>
+      <drawback>A regression is caught only at release, possibly many commits after it landed, when it is harder to bisect. The skill never waives a gate, so a release cut on a machine without agy is blocked outright unless the gate handles that case, which depends on the sibling suite-without-agy question. If the suite installs over the global copy (the sibling plugin-copy question), the step breaks the pre-flight&apos;s rule that no check writes anything.</drawback>
+    </alternative>
+    <alternative id="Release gate every release">
+      A new pre-flight check in the release-plugin skill&apos;s step 2 that runs the agy suite on every release, whatever changed, and stops the release on a failure. No path list exists and no CONTRIBUTING.md sentence is added.
+      <advantage>It is the simplest enforced form. There is no path list to keep current and no way for an unlisted file to slip past, so every published Antigravity tree has passed the real agy CLI.</advantage>
+      <drawback>Every release, including Claude- or Codex-only patch releases, pays the suite&apos;s time and model cost and needs agy installed. Like the conditional gate, it catches a regression only at release, and it carries the same conditions on the sibling suite-without-agy and plugin-copy questions.</drawback>
+    </alternative>
+    <alternative id="Sentence plus gated release">
+      Both mechanisms over one shared narrow path set (scripts/hosts/antigravity/, core/agents/*.md, scripts/build_hosts.py, the suite). A CONTRIBUTING.md ## Development sentence requires a run before committing a change to those paths. A release-plugin pre-flight check runs the suite when those paths changed since the last tag and stops the release on a failure.
+      <advantage>A run is expected at commit time, when a failure is cheapest to fix, and enforced at release time, when it would otherwise reach users. So a skipped commit-time run is still caught before publication.</advantage>
+      <drawback>The path list lives in two files that must be kept in step by hand. A commit-time run that was skipped is caught only at release. It inherits the release gate&apos;s conditions on the sibling suite-without-agy and plugin-copy questions.</drawback>
+    </alternative>
+    <alternative id="Sentence plus every release">
+      A CONTRIBUTING.md ## Development sentence that names the narrow path set for commit-time runs, together with a release-plugin pre-flight check that runs the agy suite on every release, whatever changed, and stops the release on a failure.
+      <advantage>The commit-time list stays short and cheap to follow, while the unconditional release run backs it up for anything the list misses, such as a core/ change that breaks Antigravity outside the named paths. No path list has to be duplicated in the release skill.</advantage>
+      <drawback>It has the highest standing cost: every release needs agy and pays a suite run even when nothing Antigravity-related changed, and contributors still have the advisory sentence to follow. It carries the same sibling conditions as the other release-gate options.</drawback>
+    </alternative>
+    <alternative id="Agent-facing context line">
+      The trigger rule, with the narrow path set, is written as a point under CLAUDE.md&apos;s ## Development section instead of CONTRIBUTING.md, so that every agent session working in the repository, including complete-task agents executing milestone tasks, loads it. The release-plugin skill is not changed.
+      <advantage>Most changes here are made by agents running milestone tasks, and CLAUDE.md is the one file every such session loads automatically. So the rule reaches the runner most likely to make an integration change and able to run the suite as part of its acceptance bar.</advantage>
+      <drawback>CLAUDE.md states that the build loop and test runs are documented in CONTRIBUTING.md, with CLAUDE.md holding only points not recorded there. Putting a test-run rule there splits that home, and human contributors reading CONTRIBUTING.md never see it. It is still advisory, with nothing at release to catch a skipped run.</drawback>
+    </alternative>
+    <alternative id="No trigger mechanism">
+      No sentence, gate, or context line is added. The suite runs only when the maintainer chooses to run it, and the goal&apos;s &quot;when the Antigravity host integration changes&quot; is left to the maintainer&apos;s judgment for good rather than written down anywhere.
+      <advantage>It adds no prose, no path list to maintain, and no release dependency on agy. It fits a single-maintainer project where the person changing the Antigravity integration is the same person who wrote the suite.</advantage>
+      <drawback>The goal names the integration-change trigger as part of what the milestone delivers, so leaving it unrealized arguably leaves the goal half met. Nothing records when a run is due, so the next plugin-root or frontmatter regression can ship exactly as this milestone&apos;s two failures did.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Hands-on check record">
     <question>What becomes of the dated hands-on-check block in the header of scripts/hosts/antigravity/settings.toml once a repeatable suite exists — this milestone&apos;s run updates it to name agy 1.4.0, the global path, and the write-tools check and it stays the one record of what was checked, or it is replaced by a pointer to the suite as the way to re-check?</question>
