@@ -38,5 +38,9 @@ Fix the two Antigravity runtime failures reported in `temp/agy_runtime_issues_re
 - **The write-tools key reaches the agents through a frontmatter slot.** A named slot placeholder sits inside the frontmatter of both `core/agents/*.md` files; the Antigravity definition's value file holds `enable_write_tools: true`, and the Claude Code and Codex definitions declare the slot with an empty value file, placed so an empty value leaves no blank frontmatter line. No build code, schema, or `strip_frontmatter_keys` list changes, `color` stays the one structural exception, and the rendered frontmatter is validated by the existing YAML checks.
 - **The build gains a declared required-keys check.** Every host definition declares one new settings key, kept in the shared key set, naming the frontmatter keys and values each rendered agent file must carry: `enable_write_tools = true` for Antigravity, empty for Claude Code and Codex. `check_host_tree` gains one generic check that fails `--check`, and so the drift gate and CI, when a rendered agent lacks a declared key or carries a different value. The check is host-neutral data plus generic Python, mirroring `stripped-key-present`; the agy suite stays the behavioural check beside it.
 
+### Installation documentation
+
+- **The install docs carry a removal instruction for stale workspace-local copies.** The README's Antigravity installation section, in the template under `scripts/hosts/antigravity/` and the root `README.md` that carries it word for word, gains a short note for projects that extracted cairn under an earlier release: remove the project's `.agents/plugins/cairn/` directory, with the literal command and one clause on why (the old copy is discovered beside the global one and predates the subagents' write and shell tools). The note says nothing about how the host ranks or merges the two copies.
+
 ## Out of Scope
 
