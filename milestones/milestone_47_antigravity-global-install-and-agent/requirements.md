@@ -32,5 +32,9 @@ Fix the two Antigravity runtime failures reported in `temp/agy_runtime_issues_re
 
 ## Decisions
 
+### Antigravity host tree
+
+- **Plugin root is the tilde literal.** `plugin_root` in `scripts/hosts/antigravity/settings.toml` becomes `~/.gemini/config/plugins/cairn`, the form the host's own plugin guide writes the path, so every rendered read path and `python3` command in the Antigravity tree names that tilde path. The literal is fixed at build time; `core/`, the dispatch prompts, and the agent files are unchanged, and the runner gets no resolution rule. Whether the host's file-reading tool takes a tilde path is left to the suite's resolution test to pin.
+
 ## Out of Scope
 
