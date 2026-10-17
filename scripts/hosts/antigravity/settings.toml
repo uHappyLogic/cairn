@@ -49,10 +49,14 @@ prose_drop_patterns = []
 strip_frontmatter_keys = ["color"]
 
 # Frontmatter keys and values every rendered agent file must carry, which the build's
-# declared-key-mismatch check confirms. This host equips a subagent with the tools to create
-# and edit files and run commands only when its frontmatter sets enable_write_tools to true,
-# which the AGENT_WRITE_TOOLS slot writes, so a value lost from that slot fails the build.
-required_agent_frontmatter = { enable_write_tools = true }
+# declared-key-mismatch check confirms. This host grants an agent file's subagent the tools
+# its frontmatter tools list names, and the AGENT_WRITE_TOOLS slot writes that list, so the
+# same list is declared here and an entry lost or reordered in the slot fails the build.
+required_agent_frontmatter = { tools = [
+    "send_message", "view_file", "read_url_content", "search_web", "schedule", "generate_image",
+    "multi_replace_file_content", "replace_file_content", "write_to_file", "run_command",
+    "manage_task", "notebook_edit",
+] }
 
 # Individual files moved after the layout below is applied: each `from` path, relative to
 # the host tree root, is written at its `to` path instead.
@@ -125,7 +129,9 @@ ALTERNATIVES_CONCURRENCY = { file = "slots/ALTERNATIVES_CONCURRENCY.md" }
 # AGENT_WRITE_TOOLS: frontmatter lines added to both agent files, standing at the start of
 # the frontmatter's closing line so each line the value carries ends in its own newline and an
 # empty value adds no line.
-# This host equips a subagent with the tools to create and edit files and run commands only
-# when its frontmatter sets enable_write_tools to true, and both agents write files and run
-# the plugin's tools, so the value sets it.
+# This host grants an agent file's subagent the tools its frontmatter tools list names, and
+# reads no enable_write_tools key there (only its define_subagent tool takes that flag, and
+# writes its own grant as a tools list). Both agents write files and run the plugin's tools,
+# so the value is the list define_subagent writes for a write-enabled subagent, its reading
+# and messaging tools included, which leaves the agents holding the set such a subagent does.
 AGENT_WRITE_TOOLS = { file = "slots/AGENT_WRITE_TOOLS.md" }

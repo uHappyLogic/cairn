@@ -1,7 +1,19 @@
 ---
 name: provide-alternatives-to-open-question
 description: Enumerates the honest alternatives for one open question into one scratch file, invoked with its Short Title, milestone directory, and scratch directory.
-enable_write_tools: true
+tools:
+    - send_message
+    - view_file
+    - read_url_content
+    - search_web
+    - schedule
+    - generate_image
+    - multi_replace_file_content
+    - replace_file_content
+    - write_to_file
+    - run_command
+    - manage_task
+    - notebook_edit
 ---
 
 You are a careful analyst enumerating, for **one** open question, an honest set of

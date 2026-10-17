@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Switch The Write-Tool Grant To A Tools List
-
-Replace the Antigravity `AGENT_WRITE_TOOLS` slot value, the `enable_write_tools: true` line the installed agy ignores in an agent file's frontmatter, with a `tools:` list naming the host's file-writing and command-running tools as its `define_subagent` tool materializes them for a write-enabled subagent (`write_to_file`, `replace_file_content`, `multi_replace_file_content`, and `run_command` among them), keeping the Claude Code and Codex values empty, and extend `required_agent_frontmatter` with the build's `declared-key-mismatch` check so the Antigravity definition pins that list value. Rebuild `hosts/`, refresh the installed copy at `~/.gemini/config/plugins/cairn` from the rebuilt tree, and confirm with one headless `agy -p` dispatch of each plugin agent that it now holds write and shell tools, so the subagent probe can pass against the installed copy. Verified when `--check` and both pytest runs pass, both rendered Antigravity agents carry the `tools:` list and no `enable_write_tools` key, and the installed copy is byte-identical with `hosts/antigravity/`.
-
----
-
 ## Add The Subagent Write-Tool Probe
 
 Add tests whose headless `agy -p` prompts dispatch each plugin agent directly, bypassing the orchestrator skills: `provide-alternatives-to-open-question` with a fixture Short Title, the seeded milestone directory, and a scratch directory the suite created, and `complete-task` with the heading of the fixture's trivial task. The pass signal is the files each agent lands, the scratch file holding `<alternative>` elements and the task's section moved from `TASKS_TODO.md` into `TASKS_DONE.md` by the task-list tool with the two paths staged, with no final message or transcript record read and no trivial write-and-run task replacing an agent's real contract. Verified by `uv run pytest agy_tests` passing against the refreshed installed copy.

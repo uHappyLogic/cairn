@@ -126,3 +126,20 @@ Add the suite's resolution test: one dispatch-free headless agy process in a see
 - `uv run scripts/build_hosts.py --check` passes and only the two suite paths changed
 
 ---
+
+## Switch The Write-Tool Grant To A Tools List
+
+Replace the Antigravity `AGENT_WRITE_TOOLS` slot value, the `enable_write_tools: true` line the installed agy ignores in an agent file's frontmatter, with a `tools:` list naming the host's file-writing and command-running tools as its `define_subagent` tool materializes them for a write-enabled subagent (`write_to_file`, `replace_file_content`, `multi_replace_file_content`, and `run_command` among them), keeping the Claude Code and Codex values empty, and extend `required_agent_frontmatter` with the build's `declared-key-mismatch` check so the Antigravity definition pins that list value. Rebuild `hosts/`, refresh the installed copy at `~/.gemini/config/plugins/cairn` from the rebuilt tree, and confirm with one headless `agy -p` dispatch of each plugin agent that it now holds write and shell tools, so the subagent probe can pass against the installed copy. Verified when `--check` and both pytest runs pass, both rendered Antigravity agents carry the `tools:` list and no `enable_write_tools` key, and the installed copy is byte-identical with `hosts/antigravity/`.
+
+**Verified:**
+
+- `scripts/hosts/antigravity/slots/AGENT_WRITE_TOOLS.md` holds a `tools:` list naming exactly the twelve tools the installed agy's `define_subagent` materializes for a write-enabled subagent (`send_message`, `view_file`, `read_url_content`, `search_web`, `schedule`, `generate_image`, `multi_replace_file_content`, `replace_file_content`, `write_to_file`, `run_command`, `manage_task`, `notebook_edit`), pinned by having it define one throwaway subagent, in that order and layout, with no `enable_write_tools` line; the Claude Code and Codex value files stay empty
+- `scripts/hosts/antigravity/settings.toml` declares `required_agent_frontmatter = { tools = [...] }` with that same list, with its comment and the `AGENT_WRITE_TOOLS` slot comment rewritten in mechanism terms and no version; the Claude Code and Codex definitions keep `{}`
+- `scripts/build_hosts.py`'s loader accepts an array of non-empty strings as a `required_agent_frontmatter` value, `declared-key-mismatch` compares a declared array with the rendered list element by element in order, type included (`declared_value_matches`), and the module docstring documents the array form
+- The rebuilt `hosts/antigravity/agents/*.md` frontmatters carry the `tools:` list and no `enable_write_tools` key; the Claude Code and Codex trees are byte-unchanged (only the two Antigravity agents changed under `hosts/`)
+- `uv run scripts/build_hosts.py --check` passes; with `run_command` temporarily removed from the slot value it fails with `declared-key-mismatch` on both Antigravity agents, and passes again once the slot is restored byte-exact
+- `uv run pytest` passes (684 passed) and `uv run --no-project --python 3.9 --with pytest pytest` passes (680 passed, 1 skipped)
+- The installed copy at `~/.gemini/config/plugins/cairn` was refreshed from the rebuilt tree (backed up first; only the two agent files changed) and is byte-identical with `hosts/antigravity/`, and `agy agents` still lists both plugin agents
+- One headless `agy -p` dispatch of each plugin agent against the refreshed copy, with its real inputs in a seeded fixture copy, landed the files only write and shell tools can produce: the alternatives agent's `Data file format.xml` holding four `<alternative>` elements (its transcript shows `run_command` x3 and `write_to_file` x1), and the completion agent's `README.md` with the task moved into `TASKS_DONE.md` by the task-list tool and the three paths staged, nothing committed (its transcript shows `run_command` x2 and `write_to_file` x1)
+
+---

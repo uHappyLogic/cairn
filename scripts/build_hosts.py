@@ -38,11 +38,11 @@ newline is held in a file ending in one more. The definition is refused when a f
 entry names a missing file or a path outside slots/, and when an entry is neither form.
 
 required_agent_frontmatter is an inline table of the frontmatter keys every rendered
-agents/<name>.md must carry and the value each must hold, written as TOML scalars (a string,
-boolean, integer, or float) and compared, type included, with what yaml.safe_load reads from
-the rendered frontmatter; a host that declares none holds the empty table {}. The build adds
-no key itself: the keys reach the agents through core/ and the slots, and this setting only
-checks that they arrived.
+agents/<name>.md must carry and the value each must hold, written as a TOML scalar (a string,
+boolean, integer, or float) or an array of strings, and compared, type included and an array
+element by element in order, with what yaml.safe_load reads from the rendered frontmatter; a
+host that declares none holds the empty table {}. The build adds no key itself: the keys
+reach the agents through core/ and the slots, and this setting only checks that they arrived.
 
 With no host argument every discovered host is built; one or more host names build only
 those. Each selected host is rendered from core/ into a temporary directory and the whole
@@ -281,9 +281,14 @@ def load_definition(directory, core_dirs):
     for key, value in settings["required_agent_frontmatter"].items():
         if not FRONTMATTER_KEY_RE.match(f"{key}:"):
             raise BuildError(f"{label}: required_agent_frontmatter key {key!r} is not a frontmatter key")
-        if not isinstance(value, (str, bool, int, float)):
+        if isinstance(value, list):
+            if not all(isinstance(item, str) and item for item in value):
+                raise BuildError(
+                    f"{label}: every required_agent_frontmatter.{key} entry must be a non-empty string"
+                )
+        elif not isinstance(value, (str, bool, int, float)):
             raise BuildError(
-                f"{label}: required_agent_frontmatter.{key} must be a string, boolean, integer, or float"
+                f"{label}: required_agent_frontmatter.{key} must be a string, boolean, integer, float, or array of strings"
             )
     for pattern in settings["prose_drop_patterns"]:
         try:
@@ -599,6 +604,19 @@ def json_versions(node, keypath="$"):
             yield from json_versions(value, f"{keypath}[{index}]")
 
 
+def declared_value_matches(actual, expected):
+    """Whether a frontmatter value yaml.safe_load read equals a declared one, type included:
+    a scalar must match in type and value, an array in length and in each element's type and
+    value, in order."""
+    if type(actual) is not type(expected):
+        return False
+    if isinstance(expected, list):
+        return len(actual) == len(expected) and all(
+            type(a) is type(e) and a == e for a, e in zip(actual, expected)
+        )
+    return actual == expected
+
+
 def check_host_tree(defn, tree, origins, definitions, version):
     failures = []
     foreign_roots = [
@@ -671,7 +689,7 @@ def check_host_tree(defn, tree, origins, definitions, version):
                                     failures.append(
                                         (label, "declared-key-mismatch", f'frontmatter lacks "{key}", declared as {expected!r}')
                                     )
-                                elif type(loaded[key]) is not type(expected) or loaded[key] != expected:
+                                elif not declared_value_matches(loaded[key], expected):
                                     failures.append(
                                         (
                                             label,

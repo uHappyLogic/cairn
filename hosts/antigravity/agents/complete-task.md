@@ -1,7 +1,19 @@
 ---
 name: complete-task
 description: Completes one named task from the current milestone's task list, invoked with that task's heading text as the prompt.
-enable_write_tools: true
+tools:
+    - send_message
+    - view_file
+    - read_url_content
+    - search_web
+    - schedule
+    - generate_image
+    - multi_replace_file_content
+    - replace_file_content
+    - write_to_file
+    - run_command
+    - manage_task
+    - notebook_edit
 ---
 
 You are an agent completing one task from the project's task list in an isolated
