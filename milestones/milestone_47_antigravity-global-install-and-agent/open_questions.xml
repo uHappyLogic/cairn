@@ -30,6 +30,31 @@
   </open-question>
   <open-question id="Stale workspace-local copies">
     <question>What do the installation docs say to a user whose project still holds a .agents/plugins/cairn/ copy extracted under an earlier release, which the host would discover beside the global copy — an instruction to remove it, a statement that a workspace-local copy is unsupported, or nothing?</question>
+    <alternative id="Removal instruction">
+      The README&apos;s Antigravity installation section (the template under scripts/hosts/antigravity/ and the root README.md that carries it word for word) gains a short note for projects that extracted cairn under an earlier release: remove the project&apos;s .agents/plugins/cairn/ directory, with the literal command to do so and one clause on why (the old copy is discovered beside the global one, and it predates the subagents&apos; write and shell tools). The note says nothing about how the host ranks or merges the two copies.
+      <advantage>Gives the one concrete action that removes the risk. A stale 1.8.5-or-earlier copy carries the agent files without enable_write_tools, so if the host loads it the user hits exactly the reported failure again. A command they can paste closes that off without needing to know how the host chooses between duplicates.</advantage>
+      <drawback>Puts a destructive command in the install docs that every new reader sees, even though it only applies to projects that installed before this release. It also tells users to act on behaviour nobody has checked: how agy handles two plugins both named cairn, one global and one in .agents/plugins/, was not part of any hands-on check.</drawback>
+    </alternative>
+    <alternative id="Unsupported statement">
+      The README&apos;s Antigravity installation section states that the global ~/.gemini/config/plugins/cairn copy is the only supported installation and that a workspace-local .agents/plugins/cairn/ copy is unsupported. It gives no command and no removal instruction, and says nothing about how the host treats the two copies together.
+      <advantage>Draws the support line in one declarative sentence that stays true however agy ranks duplicate plugins. Bug reports from a project that still holds an old copy can be pointed back at that sentence, and the docs gain no destructive command.</advantage>
+      <drawback>Leaves the user to work out that &quot;unsupported&quot; means &quot;delete it&quot;, and that the old copy may be why subagents fail. Someone who skims past it can keep running a copy without write tools, see the reported FAILED: subagents, and get no hint of the cause.</drawback>
+    </alternative>
+    <alternative id="Observed-behaviour note">
+      This milestone first checks by hand what agy 1.4.0 does when a workspace holds a .agents/plugins/cairn/ copy beside the global one: whether it loads both, prefers one, or reports a conflict through agy plugin list. The README&apos;s Antigravity section then states the observed result and the action that follows from it, which is a removal instruction if the workspace copy is loaded or shadows the global one, and no note if the host ignores it.
+      <advantage>Bases the docs on what the host actually does rather than on an assumed conflict. The note is written only when it is needed, and when it is, it can say exactly what the user will see, so it holds no guess about precedence and no warning against a problem that doesn&apos;t exist.</advantage>
+      <drawback>Adds one more hands-on probe to the milestone and makes the README wording depend on its outcome, so the docs task can&apos;t be written until the probe has run. The observed behaviour is pinned to one agy version and can drift on a later release without the note being rechecked.</drawback>
+    </alternative>
+    <alternative id="Release notes only">
+      The README&apos;s installation section describes only the fresh global install and says nothing about earlier copies. The advice to remove a project&apos;s .agents/plugins/cairn/ copy goes into the CHANGELOG.md entry for the release that moves the path, which /release-plugin writes at release time, so it reaches the people who are upgrading.
+      <advantage>Puts the migration advice where upgrading users look and keeps the install section clean for the far larger set of new readers. Once the release is old, the advice sits in history instead of lingering as a permanent caveat in the README.</advantage>
+      <drawback>The milestone itself writes nothing, so whether the advice lands depends on the release step picking it up from the milestone&apos;s commits. A user who reinstalls from the README months later without reading the changelog never sees it.</drawback>
+    </alternative>
+    <alternative id="Say nothing">
+      The installation docs say nothing about workspace-local copies, now or later. The Antigravity section shows only the global extract command, and a project that still holds a .agents/plugins/cairn/ copy is left as it is.
+      <advantage>Keeps the docs to the one install path and adds no wording that depends on unverified host behaviour. The Antigravity tree has had few installs, so few projects, perhaps only the maintainer&apos;s own, are likely to hold an old copy at all.</advantage>
+      <drawback>Any project that does hold an old copy is left exposed to the exact failure this milestone fixes: the host may load the stale agents, which lack enable_write_tools, and nothing in the docs points to the leftover directory as the cause.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Install restart note">
     <question>Does the README&apos;s Antigravity installation section, now extracting into ~/.gemini/config/plugins/cairn once per machine rather than once per project, tell the user that the host discovers a new plugin directory only on startup and that a running agy session must be restarted after the extract, or does it keep to the extract command alone?</question>
