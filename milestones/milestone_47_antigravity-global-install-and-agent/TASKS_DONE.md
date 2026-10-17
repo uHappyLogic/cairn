@@ -158,3 +158,17 @@ Add tests whose headless `agy -p` prompts dispatch each plugin agent directly, b
 - `uv run pytest` passes (684 passed) and `uv run --no-project --python 3.9 --with pytest pytest` passes (680 passed, 1 skipped), each collecting zero items from `agy_tests/`; `pyproject.toml`, `.github/workflows/drift-gate.yml`, and the installed copy are unchanged, and `uv run scripts/build_hosts.py --check` passes
 
 ---
+
+## Add The Agy Suite Run Trigger
+
+Over one shared narrow path set (`scripts/hosts/antigravity/`, `core/agents/*.md`, `scripts/build_hosts.py`, and the suite's own directory), add a sentence to `CONTRIBUTING.md`'s `## Development` section requiring an agy suite run (`uv run pytest agy_tests`) before committing a change to those paths, and a new pre-flight check in `.claude/skills/release-plugin/SKILL.md` that runs the suite when any of those paths changed since `<LAST_TAG>` and stops the release on a failure, costing nothing when none changed and staying within the pre-flight's no-write rule because the suite writes nothing to the installation. Verified by reading both edits against the path set and by the pre-flight's check count and wording staying consistent.
+
+**Verified:**
+
+- `CONTRIBUTING.md`'s `## Development` section carries a paragraph whose requiring sentence names `uv run pytest agy_tests` as the run that must pass before committing a change to `scripts/hosts/antigravity/`, `core/agents/*.md`, `scripts/build_hosts.py`, or `agy_tests/` itself, the suite's directory being the live name `agy_tests/`
+- `.claude/skills/release-plugin/SKILL.md`'s `### 2. Pre-flight stops` carries the new check `g`, after `f` and before step 3, that lists the paths `git diff --name-only <LAST_TAG>..HEAD` changed over exactly that same set (`scripts/hosts/antigravity/`, `'core/agents/*.md'`, `scripts/build_hosts.py`, `agy_tests/`), runs `uv run pytest agy_tests` only when that list is non-empty, and stops the release on a non-zero exit, reporting pytest's output; no output means the suite does not run and the check costs nothing
+- The check states that it keeps the step's no-write rule, the suite writing nothing to the installation it drives and running every agy process in a seeded fixture copy under a temporary directory, so the step's "None of them writes anything." sentence stays true
+- The count line reads "Run all seven checks", the step's route sentence gained the route the new check blocks (an Antigravity host integration the installed `agy` no longer runs), the lettered headings run `a`–`g` once each, every existing `step 2a`–`2f` cross-reference (lines 308, 381, 499, 725, 782, 804, 819, 883) still names an unchanged check, and the file still contains no `$` followed by a digit
+- Only the two files changed; `uv run scripts/build_hosts.py --check` passes; the diff command with the real `<LAST_TAG>` (`1.8.5`) substituted lists the nine trigger-set paths changed this milestone; `uv run pytest agy_tests --collect-only -q` passes the suite's prerequisite check and collects its three tests without running them
+
+---

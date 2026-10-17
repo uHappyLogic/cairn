@@ -98,9 +98,10 @@ git describe --tags --abbrev=0 --exclude=<VERSION>
 
 ### 2. Pre-flight stops
 
-Run all six checks. Each one blocks a route by which the release would tag something other
-than a fresh build of committed `core/`, or publish into a place that does not exist or
-cannot run its traffic workflow, so any failure stops the run. None of them writes anything.
+Run all seven checks. Each one blocks a route by which the release would tag something other
+than a fresh build of committed `core/`, publish into a place that does not exist or cannot
+run its traffic workflow, or ship an Antigravity host integration the installed `agy` no
+longer runs, so any failure stops the run. None of them writes anything.
 
 **a. The tracked working tree is clean.**
 
@@ -242,6 +243,36 @@ minting a second one. The badge row waits for the first workflow run because bef
 `traffic-data` branch does not exist and the row would show a broken badge. Like the
 repository commands, these steps belong to the maintainer: the skill prints them and exits
 with nothing changed.
+
+**g. The agy suite passes when the Antigravity host integration changed since the last
+release.** The suite under `agy_tests/` drives the installed `agy` CLI against the global
+plugin copy at `~/.gemini/config/plugins/cairn`; it sits outside `testpaths`, so neither
+`uv run pytest` nor CI reaches it. It is owed a run only when its trigger set changed — the
+Antigravity host definition, the agent files, the build, or the suite itself — so list the
+paths among them that `<LAST_TAG>..HEAD` changed:
+
+```bash
+git diff --name-only <LAST_TAG>..HEAD -- \
+  scripts/hosts/antigravity/ 'core/agents/*.md' scripts/build_hosts.py agy_tests/
+```
+
+No output means none of them changed since the last release: the suite does not run and
+the check costs nothing. Any output means the release would ship an Antigravity integration
+that differs from the one last released, so run the suite:
+
+```bash
+uv run pytest agy_tests
+```
+
+A zero exit passes the check. A non-zero exit stops the run: report pytest's output — the
+failing tests, or the one `agy suite prerequisite missing:` line the suite prints before any
+test when `agy` is not on `PATH` or the copy is missing or differs from the committed
+`hosts/antigravity/` tree (a fresh build, by step e). The remedy is the maintainer's, outside
+this skill — fix the integration, or re-extract the release or copy the built tree into place
+as that line says — then re-run `/release-plugin <VERSION>`. The check keeps this step's
+no-write rule: the suite writes nothing to the installation it drives, and every agy process
+it starts runs in a seeded copy of the fixture project under a temporary directory, so
+nothing tracked changes.
 
 ### 3. Validate the version argument
 
