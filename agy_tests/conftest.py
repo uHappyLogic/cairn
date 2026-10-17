@@ -155,3 +155,11 @@ def run_agy():
         )
 
     return run
+
+
+@pytest.fixture
+def plugin_root():
+    """The installed copy's path in the two forms a run meets it in: (PLUGIN_ROOT_TILDE,
+    PLUGIN_ROOT), the tilde literal every rendered read path and python3 command carries and
+    its expansion under the user's real HOME."""
+    return PLUGIN_ROOT_TILDE, PLUGIN_ROOT

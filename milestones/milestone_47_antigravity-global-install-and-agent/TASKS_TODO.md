@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add The Plugin-Root Resolution Test
-
-Add the suite's resolution test: one dispatch-free headless agy process in a seeded repository whose printed output asserts separately that the orchestrator read a shared procedure at the global `~/.gemini/config/plugins/cairn` path and ran a `python3` tool command there, which also pins whether the host's file-reading tool takes the tilde path. No dispatched agent's resolution is asserted by this test. Verified by `uv run pytest agy_tests` passing against the installed copy after it has been refreshed from the rebuilt `hosts/antigravity/` tree, an explicit act outside the suite.
-
----
-
 ## Add The Subagent Write-Tool Probe
 
 Add tests whose headless `agy -p` prompts dispatch each plugin agent directly, bypassing the orchestrator skills: `provide-alternatives-to-open-question` with a fixture Short Title, the seeded milestone directory, and a scratch directory the suite created, and `complete-task` with the heading of the fixture's trivial task. The pass signal is the files each agent lands, the scratch file holding `<alternative>` elements and the task's section moved from `TASKS_TODO.md` into `TASKS_DONE.md` by the task-list tool with the two paths staged, with no final message or transcript record read and no trivial write-and-run task replacing an agent's real contract. Verified by `uv run pytest agy_tests` passing against the refreshed installed copy.

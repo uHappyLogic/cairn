@@ -110,3 +110,19 @@ Create the suite's own directory at the repository root (for example `agy_tests/
 - `uv run scripts/build_hosts.py --check` passes and the installed plugin copy is unchanged by the suite
 
 ---
+
+## Add The Plugin-Root Resolution Test
+
+Add the suite's resolution test: one dispatch-free headless agy process in a seeded repository whose printed output asserts separately that the orchestrator read a shared procedure at the global `~/.gemini/config/plugins/cairn` path and ran a `python3` tool command there, which also pins whether the host's file-reading tool takes the tilde path. No dispatched agent's resolution is asserted by this test. Verified by `uv run pytest agy_tests` passing against the installed copy after it has been refreshed from the rebuilt `hosts/antigravity/` tree, an explicit act outside the suite.
+
+**Verified:**
+
+- `agy_tests/test_plugin_root_resolution.py` holds the resolution test: one headless agy process per run, through the suite's `run_agy` launcher in a `seeded_repo` repository with `--output-format stream-json`, driving the dispatch-free `submit-task` skill and asserting that no agent-dispatch tool step (`invoke_subagent`, `define_subagent`, `manage_subagents`, `browser_subagent`) appears in its output
+- From that process's printed output the test asserts separately that the orchestrator read a shared procedure at the global path (a DONE `view_file` step whose `AbsolutePath` lies under the expanded `~/.gemini/config/plugins/cairn/shared/`; the observed runs read `get-current-milestone.md` and `task-format.md`) and ran a `python3` tool command there (a DONE `run_command` step running `python3 ~/.gemini/config/plugins/cairn/tools/task_list.py insert …` in the tilde or expanded form, whose output is the chained call's `submission commit landed` or nothing, corroborated by the seeded `TASKS_TODO.md` gaining its second section)
+- It pins the tilde handling: the host's `view_file` refuses a tilde path with "must be an absolute path" (observed in a smoke run), so the test asserts that every `view_file` call carrying a tilde path ended in ERROR and that the shared procedure was reached at the expanded absolute path, with the module docstring recording the pinned fact and that a DONE tilde read fails the test
+- No dispatched agent's resolution is asserted; `agy_tests/conftest.py` gained only the `plugin_root` fixture returning the tilde literal and its expansion, the launcher unchanged (no `--model`, no `--effort`, the fixed `--print-timeout 20m`, no model id anywhere in the suite)
+- `pyproject.toml` (`testpaths = ["tests"]`) and `.github/workflows/drift-gate.yml` are unchanged; `uv run pytest` passes (684 passed) and `uv run --no-project --python 3.9 --with pytest pytest` passes (680 passed, 1 skipped), each collecting zero items from `agy_tests/`
+- The installed copy at `~/.gemini/config/plugins/cairn` was refreshed from the rebuilt `hosts/antigravity/` tree as an explicit act outside the suite (the previous copy backed up first), after which `uv run pytest agy_tests` passes (1 passed in 59 s) and the copy is byte-identical with `hosts/antigravity/` afterwards, the suite having written nothing to it
+- `uv run scripts/build_hosts.py --check` passes and only the two suite paths changed
+
+---
