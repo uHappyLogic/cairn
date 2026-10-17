@@ -47,6 +47,7 @@ Fix the two Antigravity runtime failures reported in `temp/agy_runtime_issues_re
 ### The agy suite
 
 - **The suite is a separate pytest directory outside `testpaths`.** It lives in its own directory at the repository root (for example `agy_tests/`) with its own `conftest.py` holding its fixtures (seeded repositories, an agy launcher). `testpaths = ["tests"]` and the CI workflow stay as they are, so `uv run pytest` and the 3.9 floor run never reach it, and no marker, `addopts`, naming convention, or environment variable is involved. It is invoked by naming the directory: `uv run pytest agy_tests`.
+- **The subagent probe dispatches both agents directly with their real inputs.** The suite's headless `agy -p` prompts dispatch each plugin agent directly, bypassing the orchestrator skills: `provide-alternatives-to-open-question` with a fixture Short Title, the fixture milestone directory, and a scratch directory the suite created, and `complete-task` with the heading of one trivial fixture task. The pass signal is the files each agent lands: the alternatives scratch file holding `<alternative>` elements, and the fixture task's section moved from `TASKS_TODO.md` into `TASKS_DONE.md` by the task-list tool with the two paths staged. No trivial write-and-run task replaces an agent's real contract, and no final message or transcript record is read.
 
 ## Out of Scope
 
