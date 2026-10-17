@@ -27,6 +27,7 @@ plugin_root = "${DEMO_ROOT}"
 plugin_dir = ""
 prose_drop_patterns = [' \\[drop me\\]']
 strip_frontmatter_keys = ["color"]
+required_agent_frontmatter = {}
 renames = []
 exclude = []
 
@@ -135,6 +136,7 @@ def write_definition(tmp_path, slot_entry, files=()):
         "plugin_dir = \"\"\n"
         "prose_drop_patterns = []\n"
         "strip_frontmatter_keys = []\n"
+        "required_agent_frontmatter = {}\n"
         "renames = []\n"
         "exclude = []\n"
         "\n"

@@ -4,8 +4,8 @@ Usage: uv run scripts/build_hosts.py [<host> ...] [--check]
 
 A host is declared by a definition directory scripts/hosts/<host>/ holding a settings.toml
 (plugin_name, the plugin_root literal, the plugin_dir that literal stands for,
-prose_drop_patterns, strip_frontmatter_keys, the [layout] of core/'s top-level directories,
-renames, exclude, and the [slots] table) beside that host's template files and an optional
+prose_drop_patterns, strip_frontmatter_keys, required_agent_frontmatter, the [layout] of
+core/'s top-level directories, renames, exclude, and the [slots] table) beside that host's template files and an optional
 slots/ subdirectory of slot value files; every file in the directory other than
 settings.toml and the files under slots/ is a template rendered to the same relative path
 in the host tree with its {{VERSION}} slot filled from the root VERSION file and its
@@ -36,6 +36,13 @@ ending (a final LF or CRLF) removed when present; every other byte, earlier trai
 newlines and spaces included, is substituted as written, so a value that must end in a
 newline is held in a file ending in one more. The definition is refused when a file-backed
 entry names a missing file or a path outside slots/, and when an entry is neither form.
+
+required_agent_frontmatter is an inline table of the frontmatter keys every rendered
+agents/<name>.md must carry and the value each must hold, written as TOML scalars (a string,
+boolean, integer, or float) and compared, type included, with what yaml.safe_load reads from
+the rendered frontmatter; a host that declares none holds the empty table {}. The build adds
+no key itself: the keys reach the agents through core/ and the slots, and this setting only
+checks that they arrived.
 
 With no host argument every discovered host is built; one or more host names build only
 those. Each selected host is rendered from core/ into a temporary directory and the whole
@@ -70,6 +77,9 @@ Checks (every selected host, every failure listed):
                             against the definition's plugin_dir (the directory the literal
                             stands for at runtime) rather than the tree root
   stripped-key-present      no frontmatter key the definition strips is still present
+  declared-key-mismatch     every rendered agents/<name>.md frontmatter carries each key
+                            the definition's required_agent_frontmatter declares, holding
+                            exactly the declared value
   manifest-json, manifest-version
                             every rendered JSON template parses, and every "version" value
                             in it is exactly the VERSION literal
@@ -140,6 +150,7 @@ SETTINGS_SCHEMA = {
     "plugin_dir": str,
     "prose_drop_patterns": list,
     "strip_frontmatter_keys": list,
+    "required_agent_frontmatter": dict,
     "renames": list,
     "exclude": list,
     "layout": dict,
@@ -162,6 +173,7 @@ class HostDefinition:
         self.plugin_dir = normalize_plugin_dir(settings["plugin_dir"])
         self.prose_drop_patterns = [re.compile(p) for p in settings["prose_drop_patterns"]]
         self.strip_frontmatter_keys = list(settings["strip_frontmatter_keys"])
+        self.required_agent_frontmatter = dict(settings["required_agent_frontmatter"])
         self.renames = [(r["from"], r["to"]) for r in settings["renames"]]
         self.exclude = [e.strip("/") for e in settings["exclude"]]
         self.layout = dict(settings["layout"])
@@ -266,6 +278,13 @@ def load_definition(directory, core_dirs):
     for key in ("prose_drop_patterns", "strip_frontmatter_keys", "exclude"):
         if not all(isinstance(item, str) and item for item in settings[key]):
             raise BuildError(f"{label}: every {key} entry must be a non-empty string")
+    for key, value in settings["required_agent_frontmatter"].items():
+        if not FRONTMATTER_KEY_RE.match(f"{key}:"):
+            raise BuildError(f"{label}: required_agent_frontmatter key {key!r} is not a frontmatter key")
+        if not isinstance(value, (str, bool, int, float)):
+            raise BuildError(
+                f"{label}: required_agent_frontmatter.{key} must be a string, boolean, integer, or float"
+            )
     for pattern in settings["prose_drop_patterns"]:
         try:
             re.compile(pattern)
@@ -556,12 +575,16 @@ def check_root_marketplace(version):
     return failures
 
 
+def is_agent_file(core_rel):
+    """Whether a core/ file is an agent definition."""
+    parts = core_rel.split("/")
+    return parts[0] == "agents" and len(parts) == 2 and parts[1].endswith(".md")
+
+
 def requires_frontmatter(core_rel):
     """Whether a core/ file is a skill or agent definition, which must carry frontmatter."""
     parts = core_rel.split("/")
-    return (parts[0] == "skills" and len(parts) == 3 and parts[2] == "SKILL.md") or (
-        parts[0] == "agents" and len(parts) == 2 and parts[1].endswith(".md")
-    )
+    return (parts[0] == "skills" and len(parts) == 3 and parts[2] == "SKILL.md") or is_agent_file(core_rel)
 
 
 def json_versions(node, keypath="$"):
@@ -642,6 +665,20 @@ def check_host_tree(defn, tree, origins, definitions, version):
                             value = loaded.get(key)
                             if not isinstance(value, str) or not value.strip():
                                 failures.append((label, "frontmatter-keys", f'no "{key}" value'))
+                        if is_agent_file(origin_rel):
+                            for key, expected in defn.required_agent_frontmatter.items():
+                                if key not in loaded:
+                                    failures.append(
+                                        (label, "declared-key-mismatch", f'frontmatter lacks "{key}", declared as {expected!r}')
+                                    )
+                                elif type(loaded[key]) is not type(expected) or loaded[key] != expected:
+                                    failures.append(
+                                        (
+                                            label,
+                                            "declared-key-mismatch",
+                                            f'frontmatter carries "{key}" as {loaded[key]!r}, declared as {expected!r}',
+                                        )
+                                    )
                         description = loaded.get("description")
                         if isinstance(description, str):
                             words = len(description.split())

@@ -47,6 +47,11 @@ prose_drop_patterns = []
 # every key core/ carries, so nothing is stripped.
 strip_frontmatter_keys = []
 
+# Frontmatter keys and values every rendered agent file must carry, which the build's
+# declared-key-mismatch check confirms. Claude Code needs no frontmatter key to give a plugin
+# agent the session's file-writing and shell tools, so nothing is declared.
+required_agent_frontmatter = {}
+
 # Individual files moved after the layout below is applied: each `from` path, relative to
 # the host tree root, is written at its `to` path instead.
 renames = []

@@ -29,3 +29,20 @@ Place one named slot placeholder inside the frontmatter of both `core/agents/*.m
 - `uv run scripts/build_hosts.py --check` passes and `uv run pytest` passes (684 passed).
 
 ---
+
+## Add Declared Agent Frontmatter Keys Check
+
+Give every host definition one new settings key in the shared `SETTINGS_SCHEMA` naming the frontmatter keys and values each rendered agent file must carry (`enable_write_tools = true` for Antigravity, empty for Claude Code and Codex), and add to `check_host_tree` one generic check, mirroring `stripped-key-present`, that fails `--check` when a rendered agent lacks a declared key or carries a different value. Document the key and the check in the build's module docstring and declare the key in `tests/test_build_rendering.py`'s synthetic definitions, since the shared key set is required of every definition. Verified when `--check` passes on the committed trees, fails when the Antigravity slot value is temporarily emptied, and the pinned pytest passes.
+
+**Verified:**
+
+- `SETTINGS_SCHEMA` in `scripts/build_hosts.py` carries the new shared key `required_agent_frontmatter` (a dict), loaded onto `HostDefinition` and validated by the loader (each key a frontmatter key name, each value a string, boolean, integer, or float).
+- `scripts/hosts/antigravity/settings.toml` declares `required_agent_frontmatter = { enable_write_tools = true }`; the Claude Code and Codex definitions declare it empty (`{}`), each with a comment above the key.
+- `check_host_tree` has one generic check, `declared-key-mismatch`, mirroring `stripped-key-present`, that fails when a rendered `agents/<name>.md` frontmatter lacks a declared key or carries a different value (type included).
+- The build's module docstring documents the `required_agent_frontmatter` key and lists the `declared-key-mismatch` check in the check set.
+- Both synthetic definitions in `tests/test_build_rendering.py` declare `required_agent_frontmatter = {}`.
+- `uv run scripts/build_hosts.py --check` passes on the committed trees.
+- With `scripts/hosts/antigravity/slots/AGENT_WRITE_TOOLS.md` temporarily emptied, `--check` exits 1 with `declared-key-mismatch` on both Antigravity agents (a value of the string `"true"` fails the same way); restored, `--check` passes again.
+- `uv run pytest` passes (684 passed).
+
+---

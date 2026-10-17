@@ -48,6 +48,12 @@ prose_drop_patterns = []
 # reads the agents' `color` key, so this tree carries none.
 strip_frontmatter_keys = ["color"]
 
+# Frontmatter keys and values every rendered agent file must carry, which the build's
+# declared-key-mismatch check confirms. This host equips a subagent with the tools to create
+# and edit files and run commands only when its frontmatter sets enable_write_tools to true,
+# which the AGENT_WRITE_TOOLS slot writes, so a value lost from that slot fails the build.
+required_agent_frontmatter = { enable_write_tools = true }
+
 # Individual files moved after the layout below is applied: each `from` path, relative to
 # the host tree root, is written at its `to` path instead.
 renames = []

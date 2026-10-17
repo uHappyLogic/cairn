@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Declared Agent Frontmatter Keys Check
-
-Give every host definition one new settings key in the shared `SETTINGS_SCHEMA` naming the frontmatter keys and values each rendered agent file must carry (`enable_write_tools = true` for Antigravity, empty for Claude Code and Codex), and add to `check_host_tree` one generic check, mirroring `stripped-key-present`, that fails `--check` when a rendered agent lacks a declared key or carries a different value. Document the key and the check in the build's module docstring and declare the key in `tests/test_build_rendering.py`'s synthetic definitions, since the shared key set is required of every definition. Verified when `--check` passes on the committed trees, fails when the Antigravity slot value is temporarily emptied, and the pinned pytest passes.
-
----
-
 ## Rewrite Antigravity Installation Section For Global Install
 
 In the README template under `scripts/hosts/antigravity/` and the root `README.md` section that carries it word for word, change the extract commands and prose to install into `~/.gemini/config/plugins/cairn`, and correct the template's opening sentence that describes extraction into a workspace's `.agents/plugins/cairn/`. Follow the extract command with one identical sentence stating that Antigravity discovers a new plugin directory only on startup, so a running agy session must be restarted after the extract (first install only, no re-extract advice, no listing or verification command), and add a short note for projects that extracted cairn under an earlier release: the literal command removing the project's `.agents/plugins/cairn/` directory with one clause on why (the old copy is discovered beside the global one and predates the subagents' write and shell tools), saying nothing about how the host ranks or merges the two copies. Verified when the two installation sections are identical, the rebuilt `hosts/antigravity/README.md` carries the template, and `--check` passes.

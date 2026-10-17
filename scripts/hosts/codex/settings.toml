@@ -53,6 +53,11 @@ prose_drop_patterns = []
 # reads the agents' `color` key, so this tree carries none.
 strip_frontmatter_keys = ["color"]
 
+# Frontmatter keys and values every rendered agent file must carry, which the build's
+# declared-key-mismatch check confirms. Codex runs each agent as its default subagent, which
+# reads the agent file as instructions rather than frontmatter, so nothing is declared.
+required_agent_frontmatter = {}
+
 # Individual files moved after the layout below is applied: each `from` path, relative to
 # the host tree root, is written at its `to` path instead.
 renames = []
