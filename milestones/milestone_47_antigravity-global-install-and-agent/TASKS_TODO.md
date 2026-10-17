@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add The Subagent Write-Tool Probe
-
-Add tests whose headless `agy -p` prompts dispatch each plugin agent directly, bypassing the orchestrator skills: `provide-alternatives-to-open-question` with a fixture Short Title, the seeded milestone directory, and a scratch directory the suite created, and `complete-task` with the heading of the fixture's trivial task. The pass signal is the files each agent lands, the scratch file holding `<alternative>` elements and the task's section moved from `TASKS_TODO.md` into `TASKS_DONE.md` by the task-list tool with the two paths staged, with no final message or transcript record read and no trivial write-and-run task replacing an agent's real contract. Verified by `uv run pytest agy_tests` passing against the refreshed installed copy.
-
----
-
 ## Add The Agy Suite Run Trigger
 
 Over one shared narrow path set (`scripts/hosts/antigravity/`, `core/agents/*.md`, `scripts/build_hosts.py`, and the suite's own directory), add a sentence to `CONTRIBUTING.md`'s `## Development` section requiring an agy suite run (`uv run pytest agy_tests`) before committing a change to those paths, and a new pre-flight check in `.claude/skills/release-plugin/SKILL.md` that runs the suite when any of those paths changed since `<LAST_TAG>` and stops the release on a failure, costing nothing when none changed and staying within the pre-flight's no-write rule because the suite writes nothing to the installation. Verified by reading both edits against the path set and by the pre-flight's check count and wording staying consistent.
