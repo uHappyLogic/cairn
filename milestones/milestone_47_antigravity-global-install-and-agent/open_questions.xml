@@ -1,1 +1,47 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Plugin-root literal form">
+    <question>In what form does the rendered Antigravity tree name the global plugin root in every path it reads and every python3 command it runs — a tilde path (~/.gemini/config/plugins/cairn), a $HOME-prefixed path, the ${PLUGIN_ROOT} string the agy binary carries for MCP and hook configuration, or a prose rule telling the runner to resolve the root from the absolute SKILL.md path the host loads a skill from — given that the one literal must resolve both in the host&apos;s file-reading tool and in a shell command, in the orchestrator and in a dispatched agent whose prompt carries no plugin path?</question>
+  </open-question>
+  <open-question id="Write-tools key mechanism">
+    <question>How does the enable_write_tools: true frontmatter key reach the two rendered Antigravity agent files — written into core/agents/*.md and stripped from the Claude Code and Codex trees through their strip_frontmatter_keys as color is today, added at render time by a new per-host build setting that inserts frontmatter keys, or written into the core files and left standing in every host&apos;s tree as a key the other hosts ignore?</question>
+  </open-question>
+  <open-question id="Write-tools build guard">
+    <question>Does scripts/build_hosts.py gain a check that fails --check when a rendered Antigravity agent file lacks enable_write_tools: true, so a later edit that drops the key is caught by the drift gate and CI, or is the on-demand agy suite the only guard against the key going missing?</question>
+  </open-question>
+  <open-question id="Stale workspace-local copies">
+    <question>What do the installation docs say to a user whose project still holds a .agents/plugins/cairn/ copy extracted under an earlier release, which the host would discover beside the global copy — an instruction to remove it, a statement that a workspace-local copy is unsupported, or nothing?</question>
+  </open-question>
+  <open-question id="Install restart note">
+    <question>Does the README&apos;s Antigravity installation section, now extracting into ~/.gemini/config/plugins/cairn once per machine rather than once per project, tell the user that the host discovers a new plugin directory only on startup and that a running agy session must be restarted after the extract, or does it keep to the extract command alone?</question>
+  </open-question>
+  <open-question id="Docs beyond README">
+    <question>Does the milestone correct the sentence in docs/ways-of-using-cairn.md stating that an agy run loads the plugin from its working directory, which the global install makes false, or is the documentation change limited to the README&apos;s Antigravity installation section and the host definition&apos;s own comments?</question>
+  </open-question>
+  <open-question id="Suite location and invocation">
+    <question>Where does the on-demand agy suite live and how is it kept out of uv run pytest and the CI job — a marked module under tests/ that a default addopts deselects and an explicit marker selects, a directory outside pytest&apos;s testpaths that is run by naming its path, or a standalone script outside pytest invoked directly — given that the default run must stay unchanged on a machine with no agy?</question>
+  </open-question>
+  <open-question id="Suite plugin copy">
+    <question>Which plugin copy does the agy suite drive — the copy already installed at ~/.gemini/config/plugins/cairn as it stands, the freshly built hosts/antigravity/ tree that the suite installs over that path before running, or a copy installed under an isolated HOME the suite sets for the agy process so the user&apos;s own installation is never touched?</question>
+  </open-question>
+  <open-question id="Subagent probe shape">
+    <question>How does the agy suite exercise a subagent&apos;s write and shell tools and what signal does it accept as a pass — a full /cairn:provide-alternatives-to-all-open-questions run on a fixture milestone, passing when the alternatives land in open_questions.xml and its commit, or a minimal headless prompt that dispatches the agent directly with a trivial write-and-run task, passing on the agent&apos;s final message or a file it lands?</question>
+  </open-question>
+  <open-question id="Resolution test surfaces">
+    <question>Which surfaces does the suite&apos;s plugin-root resolution test cover — the orchestrator&apos;s file read of a shared procedure, its python3 tool command, and the same two inside a dispatched agent, or only the tool command — given that the report&apos;s failures showed up on both the file read and the command?</question>
+  </open-question>
+  <open-question id="Fixture workspace">
+    <question>In what workspace does the agy suite run each headless agy process — a temporary git repository the suite seeds through the plugin&apos;s own tools with a milestone and open questions, a committed fixture directory under tests/fixtures/ copied to a temporary location, or the cairn repository checkout itself?</question>
+  </open-question>
+  <open-question id="Suite run parameters">
+    <question>Does the agy suite pin the model, effort, and print timeout it passes on each agy -p line, or run at the host&apos;s defaults with no --model, --effort, or --print-timeout as the headless chains in docs/ways-of-using-cairn.md do?</question>
+  </open-question>
+  <open-question id="Suite without agy">
+    <question>When the agy suite is invoked on a machine where agy is not on PATH or the global plugin copy it needs is absent, does it skip its tests, fail them, or stop before any test with one line naming the missing prerequisite?</question>
+  </open-question>
+  <open-question id="Integration-change trigger">
+    <question>How is the goal&apos;s rule that the agy suite runs when the Antigravity host integration changes realized, with CI ruled out — a CONTRIBUTING.md sentence naming the paths whose change requires a run before committing, a pre-flight step in the release-plugin skill, or both?</question>
+  </open-question>
+  <open-question id="Hands-on check record">
+    <question>What becomes of the dated hands-on-check block in the header of scripts/hosts/antigravity/settings.toml once a repeatable suite exists — this milestone&apos;s run updates it to name agy 1.4.0, the global path, and the write-tools check and it stays the one record of what was checked, or it is replaced by a pointer to the suite as the way to re-check?</question>
+  </open-question>
+</open-questions>
