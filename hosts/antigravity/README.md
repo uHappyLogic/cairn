@@ -11,7 +11,7 @@
 
 Cairn brings all the important questions up to be decided upfront, so you can hand long-running execution to your agent confidently.
 
-This repository is the Google Antigravity distribution of [Cairn](https://github.com/uHappyLogic/cairn). It carries the built Antigravity plugin tree exactly as a Cairn release published it: the `plugin.json` manifest beside the plugin's skills, agents, and shared procedures, laid out to be extracted into a workspace's `.agents/plugins/cairn/` directory.
+This repository is the Google Antigravity distribution of [Cairn](https://github.com/uHappyLogic/cairn). It carries the built Antigravity plugin tree exactly as a Cairn release published it: the `plugin.json` manifest beside the plugin's skills, agents, and shared procedures, laid out to be extracted into the global `~/.gemini/config/plugins/cairn/` directory that Antigravity loads the plugin from.
 
 > **Generated — do not edit.** Every file on `main`, this README included, is rendered from the sources of [uHappyLogic/cairn](https://github.com/uHappyLogic/cairn) by its host build and published verbatim by each Cairn release; nothing here is edited by hand, and a change made here would be overwritten by the next release. The repository's only other branch, `traffic-data`, is not built from anything and no release touches it — the traffic workflow this tree carries, which runs only in this repository and never in an installed copy, writes its per-day data file and badge SVGs there daily for the two badges above this page's title as well as for the adoption table in the root repository's README, and its own daily fetch of that branch counts as one unique clone a day in the clones badge. Issues are disabled in this repository on purpose — report problems and propose changes as issues and pull requests at [uHappyLogic/cairn](https://github.com/uHappyLogic/cairn), never here.
 
@@ -21,14 +21,22 @@ Cairn has two runtime prerequisites: **git**, with your project root inside a gi
 
 ### Antigravity
 
-From your project root, extract the latest release into `.agents/plugins/cairn`, the path Antigravity loads the plugin from:
+Extract the latest release into `~/.gemini/config/plugins/cairn`, the global path Antigravity loads the plugin from in every project:
 
 ```bash
-mkdir -p .agents/plugins/cairn
-curl -sL https://github.com/uHappyLogic/cairn-antigravity/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 -C .agents/plugins/cairn
+mkdir -p ~/.gemini/config/plugins/cairn
+curl -sL https://github.com/uHappyLogic/cairn-antigravity/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 -C ~/.gemini/config/plugins/cairn
 ```
 
-The `main` archive is always the latest release, since `main` advances only by release snapshots. To pin a release instead of tracking the latest, swap `refs/heads/main` in that URL for `refs/tags/<tag>`, using a tag from the [releases page](https://github.com/uHappyLogic/cairn-antigravity/releases).
+Antigravity discovers a new plugin directory only on startup, so restart any running `agy` session after the extract.
+
+**Extracted Cairn into a project under an earlier release?** From that project's root, remove the old copy, since Antigravity discovers it beside the global one and it predates the subagents' write and shell tools:
+
+```bash
+rm -rf .agents/plugins/cairn
+```
+
+The `main` archive is always the latest release, since `main` advances only by release snapshots. To pin a release instead of tracking the latest, swap `refs/heads/main` in the extract command's URL for `refs/tags/<tag>`, using a tag from the [releases page](https://github.com/uHappyLogic/cairn-antigravity/releases).
 
 ### Bootstrap your project
 

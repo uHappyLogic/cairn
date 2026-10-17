@@ -69,11 +69,19 @@ Cairn has two runtime prerequisites: **git**, with your project root inside a gi
 
 ### Antigravity
 
-From your project root, extract the latest release into `.agents/plugins/cairn`, the path Antigravity loads the plugin from:
+Extract the latest release into `~/.gemini/config/plugins/cairn`, the global path Antigravity loads the plugin from in every project:
 
 ```bash
-mkdir -p .agents/plugins/cairn
-curl -sL https://github.com/uHappyLogic/cairn-antigravity/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 -C .agents/plugins/cairn
+mkdir -p ~/.gemini/config/plugins/cairn
+curl -sL https://github.com/uHappyLogic/cairn-antigravity/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 -C ~/.gemini/config/plugins/cairn
+```
+
+Antigravity discovers a new plugin directory only on startup, so restart any running `agy` session after the extract.
+
+**Extracted Cairn into a project under an earlier release?** From that project's root, remove the old copy, since Antigravity discovers it beside the global one and it predates the subagents' write and shell tools:
+
+```bash
+rm -rf .agents/plugins/cairn
 ```
 
 ### Codex

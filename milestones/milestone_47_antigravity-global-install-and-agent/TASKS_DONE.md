@@ -46,3 +46,18 @@ Give every host definition one new settings key in the shared `SETTINGS_SCHEMA` 
 - `uv run pytest` passes (684 passed).
 
 ---
+
+## Rewrite Antigravity Installation Section For Global Install
+
+In the README template under `scripts/hosts/antigravity/` and the root `README.md` section that carries it word for word, change the extract commands and prose to install into `~/.gemini/config/plugins/cairn`, and correct the template's opening sentence that describes extraction into a workspace's `.agents/plugins/cairn/`. Follow the extract command with one identical sentence stating that Antigravity discovers a new plugin directory only on startup, so a running agy session must be restarted after the extract (first install only, no re-extract advice, no listing or verification command), and add a short note for projects that extracted cairn under an earlier release: the literal command removing the project's `.agents/plugins/cairn/` directory with one clause on why (the old copy is discovered beside the global one and predates the subagents' write and shell tools), saying nothing about how the host ranks or merges the two copies. Verified when the two installation sections are identical, the rebuilt `hosts/antigravity/README.md` carries the template, and `--check` passes.
+
+**Verified:**
+
+- The `### Antigravity` sections of `scripts/hosts/antigravity/README.md` and the root `README.md` extract into `~/.gemini/config/plugins/cairn` (`mkdir -p` and `tar -C` both name that path), with prose naming it as the global path Antigravity loads the plugin from.
+- The template's opening sentence describes extraction into the global `~/.gemini/config/plugins/cairn/` directory, no longer a workspace's `.agents/plugins/cairn/`.
+- Directly after the extract command both sections carry the identical sentence "Antigravity discovers a new plugin directory only on startup, so restart any running `agy` session after the extract.", covering the first install only, with no re-extract advice and no listing or verification command.
+- Both sections carry the identical earlier-release note with the literal `rm -rf .agents/plugins/cairn` command and one clause on why (discovered beside the global one, predates the subagents' write and shell tools), saying nothing about how the host ranks or merges the two copies.
+- The two installation sections are identical in everything this task writes; the root section is an exact prefix of the template's, which alone keeps the release-pinning paragraph the root README dropped on purpose in commit 3b8f636.
+- The rebuilt `hosts/antigravity/README.md` carries the template's section verbatim, and `uv run scripts/build_hosts.py --check` passes.
+
+---
