@@ -112,3 +112,9 @@ ALTERNATIVES_REPAIR = { file = "slots/ALTERNATIVES_REPAIR.md" }
 # in the background and each agent's ending wakes the session, so the run batches each time it
 # wakes rather than waiting once.
 ALTERNATIVES_CONCURRENCY = { file = "slots/ALTERNATIVES_CONCURRENCY.md" }
+# AGENT_WRITE_TOOLS: frontmatter lines added to both agent files, standing at the start of
+# the frontmatter's closing line so each line the value carries ends in its own newline and an
+# empty value adds no line.
+# Claude Code gives a plugin agent the session's file-writing and shell tools without any
+# frontmatter key, so the value is empty.
+AGENT_WRITE_TOOLS = { file = "slots/AGENT_WRITE_TOOLS.md" }

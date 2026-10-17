@@ -126,3 +126,9 @@ ALTERNATIVES_REPAIR = { file = "slots/ALTERNATIVES_REPAIR.md" }
 # refused round's repair set its own wait and batch, and dispatches the next round at the full
 # cap, a finished agent holding no slot.
 ALTERNATIVES_CONCURRENCY = { file = "slots/ALTERNATIVES_CONCURRENCY.md" }
+# AGENT_WRITE_TOOLS: frontmatter lines added to both agent files, standing at the start of
+# the frontmatter's closing line so each line the value carries ends in its own newline and an
+# empty value adds no line.
+# Codex runs each agent as its default subagent, which reads the agent file as instructions
+# rather than frontmatter and already has the session's tools, so the value is empty.
+AGENT_WRITE_TOOLS = { file = "slots/AGENT_WRITE_TOOLS.md" }

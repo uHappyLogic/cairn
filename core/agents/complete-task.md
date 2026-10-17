@@ -2,7 +2,7 @@
 name: complete-task
 description: Completes one named task from the current milestone's task list, invoked with that task's heading text as the prompt.
 color: red
----
+{{AGENT_WRITE_TOOLS}}---
 
 You are an agent completing one task from the project's task list in an isolated
 subagent context. The task name is given in your prompt. You stage your own change set but
