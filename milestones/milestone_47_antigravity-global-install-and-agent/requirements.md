@@ -35,6 +35,7 @@ Fix the two Antigravity runtime failures reported in `temp/agy_runtime_issues_re
 ### Antigravity host tree
 
 - **Plugin root is the tilde literal.** `plugin_root` in `scripts/hosts/antigravity/settings.toml` becomes `~/.gemini/config/plugins/cairn`, the form the host's own plugin guide writes the path, so every rendered read path and `python3` command in the Antigravity tree names that tilde path. The literal is fixed at build time; `core/`, the dispatch prompts, and the agent files are unchanged, and the runner gets no resolution rule. Whether the host's file-reading tool takes a tilde path is left to the suite's resolution test to pin.
+- **The write-tools key reaches the agents through a frontmatter slot.** A named slot placeholder sits inside the frontmatter of both `core/agents/*.md` files; the Antigravity definition's value file holds `enable_write_tools: true`, and the Claude Code and Codex definitions declare the slot with an empty value file, placed so an empty value leaves no blank frontmatter line. No build code, schema, or `strip_frontmatter_keys` list changes, `color` stays the one structural exception, and the rendered frontmatter is validated by the existing YAML checks.
 
 ## Out of Scope
 
