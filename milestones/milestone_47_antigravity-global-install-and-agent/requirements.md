@@ -41,6 +41,7 @@ Fix the two Antigravity runtime failures reported in `temp/agy_runtime_issues_re
 ### Installation documentation
 
 - **The install docs carry a removal instruction for stale workspace-local copies.** The README's Antigravity installation section, in the template under `scripts/hosts/antigravity/` and the root `README.md` that carries it word for word, gains a short note for projects that extracted cairn under an earlier release: remove the project's `.agents/plugins/cairn/` directory, with the literal command and one clause on why (the old copy is discovered beside the global one and predates the subagents' write and shell tools). The note says nothing about how the host ranks or merges the two copies.
+- **The install section carries a first-install restart note.** Both the README template and the root `README.md` follow the extract command with one sentence: Antigravity discovers a new plugin directory only on startup, so a running agy session must be restarted after the extract. The sentence is identical in both copies, covers the first install only, says nothing about re-extracting a newer release over an existing global copy, and adds no listing or verification command.
 
 ## Out of Scope
 
