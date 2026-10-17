@@ -1,44 +1,4 @@
 <open-questions>
-  <open-question id="Suite run parameters">
-    <question>Does the agy suite pin the model, effort, and print timeout it passes on each agy -p line, or run at the host&apos;s defaults with no --model, --effort, or --print-timeout as the headless chains in docs/ways-of-using-cairn.md do?</question>
-    <applied-principle>Check tier claims against the live environment</applied-principle>
-    <recommendation option="Host defaults agy timeout">Model and effort stay what the documented agy chains run, so a pass means the documented invocation works and no model id is held to go stale with the models list, while --print-timeout, a flag the installed CLI carries, ends a hung run with agy&apos;s own exit and output within a known time on the visible command line.</recommendation>
-    <alternative id="Host defaults agy timeout">
-      Every agy -p line carries no --model and no --effort, running at the account&apos;s defaults as the documented chains do, but carries one fixed --print-timeout value chosen by the suite, so agy itself ends any headless run that exceeds the bound.
-      <advantage>A hung run fails within a known time instead of blocking the suite, while the model and effort stay those a user&apos;s documented agy chain actually gets, so the suite still exercises the representative configuration.</advantage>
-      <drawback>The model and effort still drift with the account&apos;s defaults, so runs are not reproducible; the one timeout value must fit a default model whose speed the suite does not control, so it is either loose enough to waste time on a hang or tight enough to cut a slow but correct run; the suite&apos;s lines no longer match the docs&apos; lines token for token.</drawback>
-    </alternative>
-    <alternative id="Host defaults unbounded">
-      Every agy -p line the suite runs carries no --model, no --effort, and no --print-timeout, exactly like the agy lines in docs/ways-of-using-cairn.md, and the suite adds no wall-clock bound of its own: each headless process runs at the account&apos;s default model and effort and waits until its turn completes (agy&apos;s default --print-timeout of 0s).
-      <advantage>The suite runs exactly the command line a user&apos;s documented agy chain runs, so a pass means the documented invocation works, and the suite holds no model id or timeout value that can go stale when the agy models list or the host&apos;s speed changes.</advantage>
-      <drawback>Results depend on whatever default model and effort the account has on the day, so two runs are not comparable and a failure may be the model&apos;s rather than the plugin&apos;s; a run that hangs (a subagent waiting on a tool it lacks, an auth prompt) hangs the suite until the invoker interrupts it by hand.</drawback>
-    </alternative>
-    <alternative id="Host defaults harness timeout">
-      Every agy -p line carries no --model, no --effort, and no --print-timeout, identical in its flags to the documented agy lines, and the suite&apos;s own process launcher instead enforces a fixed wall-clock limit on each agy process, killing it and failing the test when the limit passes.
-      <advantage>Keeps the agy command line exactly the documented one while still bounding every run, and the bound also catches a hang that happens before agy&apos;s print loop starts (startup, plugin discovery, authentication), which --print-timeout may not cover.</advantage>
-      <drawback>Model and effort drift with the account&apos;s defaults as in every defaults option; a killed process leaves no clean agy exit or final output to diagnose from, and the bound lives in harness code rather than on the visible command line, so its form depends on whether the suite is a pytest module or a standalone script (the axis the suite-location question owns).</drawback>
-    </alternative>
-    <alternative id="Pinned model unbounded">
-      Every agy -p line carries a fixed --model (a base model name from the agy models list) and a fixed --effort level that model offers, both literals in the suite, and no --print-timeout, with no wall-clock bound of the suite&apos;s own, so each run waits until its turn completes.
-      <advantage>Every run uses the same model and effort, so results are comparable across runs and machines and a failure points at the plugin or host integration rather than at a changed default, while the suite keeps the documented chains&apos; unbounded wait that never cuts a slow but correct run.</advantage>
-      <drawback>The pinned model id goes stale when the agy models list changes, and a run naming a model or effort the account lacks stops before testing anything; the suite&apos;s lines diverge from the documented defaults-only agy lines, so a pass no longer proves the default configuration works; a hang still blocks the suite until interrupted.</drawback>
-    </alternative>
-    <alternative id="Pinned model agy timeout">
-      Every agy -p line carries a fixed --model, a fixed --effort level that model offers, and a fixed --print-timeout, all three literals in the suite, so each run is fully specified on its command line and agy ends any run that exceeds the bound.
-      <advantage>The most repeatable form: model, effort, and time limit are all fixed and visible on each line, so runs are comparable, a hang fails within a known time, and the timeout can be sized against one known model&apos;s speed rather than an unknown default&apos;s.</advantage>
-      <drawback>Three literals to maintain: the model id goes stale with the agy models list and a missing model or effort stops the run, the timeout needs re-tuning when the pinned model changes, and the lines diverge furthest from the documented defaults-only agy lines, so the configuration users actually run is the one the suite never exercises.</drawback>
-    </alternative>
-    <alternative id="Pinned model harness timeout">
-      Every agy -p line carries a fixed --model and a fixed --effort level that model offers, both literals in the suite, and no --print-timeout; the suite&apos;s own process launcher enforces a fixed wall-clock limit on each agy process, killing it and failing the test when the limit passes.
-      <advantage>Runs are reproducible on model and effort, and the bound covers every phase of the process, startup and plugin discovery included, without relying on how agy&apos;s own --print-timeout behaves.</advantage>
-      <drawback>Carries the pinned model&apos;s staleness and missing-model stop, and a killed process leaves no clean agy exit or output to diagnose from; the bound lives in harness code whose form depends on whether the suite is a pytest module or a standalone script (the axis the suite-location question owns).</drawback>
-    </alternative>
-    <alternative id="Invoker-chosen with default bound">
-      The suite passes no --model and no --effort unless the invoker supplies them (for example through environment variables the suite reads), in which case it passes the supplied values verbatim on every agy -p line; it passes a fixed default --print-timeout that the invoker may override the same way, an override of 0 restoring the unbounded wait.
-      <advantage>The default run matches the documented defaults-only invocation while never hanging, and a maintainer chasing a failure can pin a model and effort, or lift the bound, for one run without editing the suite, so no model id is hard-coded to go stale.</advantage>
-      <drawback>Adds a configuration surface the suite must document and read, and a run&apos;s outcome depends on settings that appear nowhere in the suite&apos;s files, so a reported pass or failure means little unless the run also records which model, effort, and timeout it used.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Suite plugin copy">
     <question>Which plugin copy does the agy suite drive — the copy already installed at ~/.gemini/config/plugins/cairn as it stands, the freshly built hosts/antigravity/ tree that the suite installs over that path before running, or a copy installed under an isolated HOME the suite sets for the agy process so the user&apos;s own installation is never touched?</question>
     <applied-principle>Check tier claims against the live environment</applied-principle>
