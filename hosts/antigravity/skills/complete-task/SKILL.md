@@ -24,7 +24,7 @@ For completing the whole task list unattended, use `/complete-all-tasks` instead
 ### 1. Run the shared procedure inline
 
 Read and follow the shared procedure at
-`.agents/plugins/cairn/shared/complete-procedure.md`, carrying out every step **yourself, in this conversation**,
+`~/.gemini/config/plugins/cairn/shared/complete-procedure.md`, carrying out every step **yourself, in this conversation**,
 its step 5 move run as the one shell call step 2 shows. Never spawn the `complete-task` agent.
 
 ### 2. Move and commit the completion in one shell call
@@ -33,7 +33,7 @@ Run the procedure's step 5 move as this one fixed shell call, written out in ful
 shown, with only `<MILESTONE_DIR>`, `<Task Title>`, the bar's bullets, and the paths replaced:
 
 ```
-python3 .agents/plugins/cairn/tools/task_list.py move <MILESTONE_DIR> "<Task Title>" <<'EOF' &&
+python3 ~/.gemini/config/plugins/cairn/tools/task_list.py move <MILESTONE_DIR> "<Task Title>" <<'EOF' &&
 - <criterion 1, as verified>
 - <criterion 2, as verified>
 EOF
@@ -44,7 +44,7 @@ fi
 
 The move command and its heredoc are exactly the ones the procedure's step 5 shows. After the
 `&&` the call carries out the three steps of the shared commit procedure at
-`.agents/plugins/cairn/shared/commit-procedure.md` itself — its dirty-own-path guard, the
+`~/.gemini/config/plugins/cairn/shared/commit-procedure.md` itself — its dirty-own-path guard, the
 path-scoped `git add`, and the subject-only commit under `Task-completion: <Task Title>`, the
 full `##` heading the procedure located — over this skill's own change set: the exact paths
 the completion procedure recorded as it created or edited files while carrying out the task,

@@ -28,7 +28,7 @@ it are clear.
 
 ### 0. Find the current milestone
 
-Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 1. Read context for triage
 
@@ -51,7 +51,7 @@ You hold the whole task list, so you decide where the task goes:
 
 ### 4. Author the task section inline
 
-Read the shared task format at `.agents/plugins/cairn/shared/task-format.md` and write the task section
+Read the shared task format at `~/.gemini/config/plugins/cairn/shared/task-format.md` and write the task section
 **yourself, in this conversation**, following its template and authoring guidelines exactly.
 That file owns the shape of a task section.
 
@@ -77,7 +77,7 @@ Then run this one fixed shell call, written out in full exactly as shown, with o
 `<MILESTONE_DIR>`, `<New Task Title>`, `<position flag>`, and the body replaced:
 
 ```
-python3 .agents/plugins/cairn/tools/task_list.py insert <MILESTONE_DIR> "<New Task Title>" <position flag> <<'EOF' &&
+python3 ~/.gemini/config/plugins/cairn/tools/task_list.py insert <MILESTONE_DIR> "<New Task Title>" <position flag> <<'EOF' &&
 <the 1–3 sentence description>
 EOF
 if [ -n "$(git status --porcelain -- <MILESTONE_DIR>/TASKS_TODO.md)" ]; then
@@ -88,7 +88,7 @@ fi
 Every title in the call (the new title in both places, and any anchor) is written inside
 double quotes, with any `"`, `$`, `` ` ``, or `\` it holds escaped by a backslash. After the
 `&&` the call carries out the three steps of the shared commit procedure at
-`.agents/plugins/cairn/shared/commit-procedure.md` itself — its dirty-own-path guard, the
+`~/.gemini/config/plugins/cairn/shared/commit-procedure.md` itself — its dirty-own-path guard, the
 path-scoped `git add`, and the subject-only commit under `Task-submission: <New Task Title>`
 — over this skill's own change set, `<MILESTONE_DIR>/TASKS_TODO.md`, written out on the
 command line in both places and never held in a shell variable. Git's success output is

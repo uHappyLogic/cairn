@@ -75,7 +75,7 @@ Replace the (empty) `## Relevant starting state` section in `requirements.md` wi
 
 ### 6. Commit the starting state
 
-Read and follow the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
+Read and follow the shared commit procedure at `~/.gemini/config/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set: `milestones/<milestone_id>/requirements.md` (the file whose `## Relevant starting state` section it just filled).
 - **SUBJECT** — `Starting-state: <milestone_id>`.

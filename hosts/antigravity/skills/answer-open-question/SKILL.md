@@ -44,17 +44,17 @@ Compare the parsed answer text — **trimmed and lowercased** — against the re
 
 ### 3. Find the current milestone
 
-Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path. Hold `<MILESTONE_DIR>` — you need it for the delegated recording and the commit.
+Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path. Hold `<MILESTONE_DIR>` — you need it for the delegated recording and the commit.
 
 ### 4. Record the answer
 
-Read and follow the shared hand-answer procedure at `.agents/plugins/cairn/shared/hand-answer-procedure.md`, carrying out every step **yourself, in this conversation**. Pass it the `<MILESTONE_DIR>` resolved in step 3, the **Short Title** parsed in step 1, and the **answer text** resolved in step 2 as its `MILESTONE_DIR`, `SHORT TITLE`, and `ANSWER` inputs, and pass **no `RECORDED OPTION`** — a literal answer lifts no option id, so the recording core forms its one judgment itself: whether the answer plainly settles on one of the answered block's own alternatives.
+Read and follow the shared hand-answer procedure at `~/.gemini/config/plugins/cairn/shared/hand-answer-procedure.md`, carrying out every step **yourself, in this conversation**. Pass it the `<MILESTONE_DIR>` resolved in step 3, the **Short Title** parsed in step 1, and the **answer text** resolved in step 2 as its `MILESTONE_DIR`, `SHORT TITLE`, and `ANSWER` inputs, and pass **no `RECORDED OPTION`** — a literal answer lifts no option id, so the recording core forms its one judgment itself: whether the answer plainly settles on one of the answered block's own alternatives.
 
 That procedure names the standing picks on the other open questions that the answer undermines, then delegates the locate / analyse / fold / remove / cascade recording to the shared recording core, handing it those names. Its whole read of `<MILESTONE_DIR>/open_questions.xml` with the file-reading tool is for reasoning only, and every locate, list, lift, and write of that file is a call to the plugin's open-question tool. If the Short Title matches no block, the core's `locate` call fails and it stops without changes — relay the tool's `Error:` line, which lists the ids the document holds, so the user can retry.
 
 ### 5. Commit the manual answer
 
-Read and follow the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these three inputs, using the `<MILESTONE_DIR>` resolved in step 3:
+Read and follow the shared commit procedure at `~/.gemini/config/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these three inputs, using the `<MILESTONE_DIR>` resolved in step 3:
 
 - **PATHS** — this skill's own edits: `<MILESTONE_DIR>/open_questions.xml` and `<MILESTONE_DIR>/requirements.md`.
 - **SUBJECT** — exactly `Manual-answer: <Short Title>` (the answered question's handle). The marker is the provenance `/capture-milestone-principle-updates` reads when it walks a milestone's answer commits across all three subjects: `Manual-answer:` and `Alternative-answer:` mark override signals it distills new principles from, while `Recommendation-answer:` marks evidence about existing principles only.

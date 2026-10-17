@@ -8,7 +8,7 @@ annotates, held in view together as one whole-set judgment, and inline by the
 the two inputs below and renders the result; this file describes only the analytical work
 itself — ground, then recommend one. Enumerating the alternatives is a separate unit of work,
 run earlier by a different runner, and lives in
-`.agents/plugins/cairn/shared/alternatives-procedure.md`; this procedure takes its output as
+`~/.gemini/config/plugins/cairn/shared/alternatives-procedure.md`; this procedure takes its output as
 given.
 
 ## Inputs
@@ -52,7 +52,7 @@ its alternatives, disclose that dependency: name the sibling (its Short Title) a
 you assumed it will settle on, by that option's label in the sibling's own set. The caller
 decides how that disclosure is rendered. That whole read is for reasoning only: every locate,
 list, or lift of a block is a call to the plugin's open-question tool,
-`python3 .agents/plugins/cairn/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`, never a
+`python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`, never a
 search over the file.
 
 ### 2. Recommend one

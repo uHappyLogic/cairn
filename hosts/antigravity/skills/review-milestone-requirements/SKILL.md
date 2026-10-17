@@ -15,7 +15,7 @@ review → (discuss) → answer → review → answer → … → converged → 
 
 Each pass does three jobs: **reconcile** the existing questions against what's now decided, **surface** the new gaps, and report whether the requirements have **converged**.
 
-Every write this skill makes to `open_questions.xml`, and every listing of its blocks, is a call to the plugin's open-question tool, `python3 .agents/plugins/cairn/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`, written out in full on every call, never through a variable, alias, or function of your own defined to stand for the command or any part of it — the tool is that file's sole writer and owns the document's escaping and layout: a mutator prints nothing on success, `list` prints bare ids one per line, and any failure is one `Error: <reason>` line on stderr with a non-zero exit and the document left unchanged. Reading the document whole to reason over it is the one thing done directly, with the file-reading tool. Never edit `open_questions.xml` yourself.
+Every write this skill makes to `open_questions.xml`, and every listing of its blocks, is a call to the plugin's open-question tool, `python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`, written out in full on every call, never through a variable, alias, or function of your own defined to stand for the command or any part of it — the tool is that file's sole writer and owns the document's escaping and layout: a mutator prints nothing on success, `list` prints bare ids one per line, and any failure is one `Error: <reason>` line on stderr with a non-zero exit and the document left unchanged. Reading the document whole to reason over it is the one thing done directly, with the file-reading tool. Never edit `open_questions.xml` yourself.
 
 ## review-milestone-requirements
 
@@ -52,7 +52,7 @@ The open questions live beside it in `<MILESTONE_DIR>/open_questions.xml` — on
 
 ### 0. Find the current milestone
 
-Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path.
+Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path.
 
 ### 1. Read the documents and take inventory
 
@@ -73,7 +73,7 @@ This is the step that makes the skill loop-aware: the documents have been edited
 Each removal, on either path, is one bare call — no `--option`, since a prune or dedup records nothing:
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py remove <MILESTONE_DIR> "<Short Title>"
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py remove <MILESTONE_DIR> "<Short Title>"
 ```
 
 In that one write the tool deletes the block and strips every block whose embedded pick depended on it — and every block that depended on those in turn — of its `<recommendation>`, `<depends-on>`, and `<applied-principle>` children, keeping its `<alternative>` children, so no `<depends-on>` tag is left naming a removed or stripped block; a stripped block stays in the document as a live question, its alternatives intact, for the next `/recommend-all-open-questions` pass to re-pick. Stripping decides nothing, records nothing under `## Decisions`, and adds nothing to the step-5 report — the committed diff is its record.
@@ -94,7 +94,7 @@ Add only genuinely new questions — don't re-raise anything already present (yo
 Author each new finding as one `add` call, the question text as its heredoc body:
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py add <MILESTONE_DIR> "<Short Title>" <<'EOF'
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py add <MILESTONE_DIR> "<Short Title>" <<'EOF'
 <Question text here.>
 EOF
 ```
@@ -108,7 +108,7 @@ Do not restructure or rewrite existing content — `requirements.md` is not edit
 
 ### 4. Commit the reshaped requirements
 
-Read and follow the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
+Read and follow the shared commit procedure at `~/.gemini/config/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set, the milestone's two requirements documents: `<MILESTONE_DIR>/open_questions.xml` (where every prune, dedup, and new block of this pass landed) and `<MILESTONE_DIR>/requirements.md`.
 - **SUBJECT** — `Requirements-review: <milestone_id>`.
@@ -120,7 +120,7 @@ The shared procedure owns the no-op guard, the path-scoped staging, and the comm
 Run
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py list <MILESTONE_DIR>
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py list <MILESTONE_DIR>
 ```
 
 It prints the Short Title of every `<open-question>` block still in the document, one per line in document order; empty output is a converged document. That print — not your recollection of the pass — is what the two items below are read from.

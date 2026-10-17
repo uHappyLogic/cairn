@@ -31,7 +31,7 @@ Read `<overall_goal_description>` and choose a short title that names the milest
 From the workspace root, run the tool once, passing the title as one quoted argument and `<overall_goal_description>` unchanged on standard input through a **quoted-delimiter heredoc** (`<<'EOF'`, so nothing inside is expanded; pick a delimiter line the goal text does not contain):
 
 ```
-python3 .agents/plugins/cairn/tools/define_milestone.py --title "<title>" <<'EOF'
+python3 ~/.gemini/config/plugins/cairn/tools/define_milestone.py --title "<title>" <<'EOF'
 <overall_goal_description>
 EOF
 ```
@@ -42,7 +42,7 @@ If the call fails — the shell cannot find `python3`, or the tool exits non-zer
 
 ### 3. Commit the new milestone
 
-Read and follow the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs, both exactly as the tool printed them in step 2:
+Read and follow the shared commit procedure at `~/.gemini/config/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs, both exactly as the tool printed them in step 2:
 
 - **PATHS** — the milestone directory path, the tool's second line; the directory holds exactly the four files the tool just created.
 - **SUBJECT** — the tool's first line.

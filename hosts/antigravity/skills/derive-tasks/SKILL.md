@@ -26,7 +26,7 @@ No arguments. The skill always reads from and writes to the current milestone di
 
 ### 0. Find the current milestone
 
-Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 1. Read source documents
 
@@ -34,14 +34,14 @@ Read `AGENTS.md` at the workspace root for the project's domain context, working
 
 Read `<MILESTONE_DIR>/requirements.md` in full, plus any files referenced in its **Relevant starting state** section, so you understand the exact starting point.
 
-Read the shared task format at `.agents/plugins/cairn/shared/task-format.md`. That file owns the shape of every task section you write in step 7 — its template and authoring guidelines.
+Read the shared task format at `~/.gemini/config/plugins/cairn/shared/task-format.md`. That file owns the shape of every task section you write in step 7 — its template and authoring guidelines.
 
 ### 2. Check for unresolved open questions
 
 Run
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py list <MILESTONE_DIR>
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py list <MILESTONE_DIR>
 ```
 
 It prints the Short Title of every `<open-question>` block still in `<MILESTONE_DIR>/open_questions.xml`, one per line. If it prints nothing, the precondition holds — proceed. If it prints anything, stop immediately and output, with the printed lines as the bullets verbatim:
@@ -94,12 +94,12 @@ If the run derived no brief at all — every requirement is already satisfied �
 
 ### 7. Write and commit the task list in one shell call
 
-Write every brief as one task section, using the template and the authoring guidelines from `.agents/plugins/cairn/shared/task-format.md` exactly: its `##` title heading, its description, and its trailing `---`. The brief you decomposed in step 3 *is* the task body; writing it down is a transcription into that format, not a second authoring pass that adds detail.
+Write every brief as one task section, using the template and the authoring guidelines from `~/.gemini/config/plugins/cairn/shared/task-format.md` exactly: its `##` title heading, its description, and its trailing `---`. The brief you decomposed in step 3 *is* the task body; writing it down is a transcription into that format, not a second authoring pass that adds detail.
 
 Then run this one fixed shell call, written out in full exactly as shown, with only `<MILESTONE_DIR>`, `<milestone_id>` (the last path component of `<MILESTONE_DIR>`), and the sections replaced — every brief's section in the heredoc, **in dependency order**, so the finished file reads top-to-bottom in that order:
 
 ```
-python3 .agents/plugins/cairn/tools/task_list.py initialize <MILESTONE_DIR> <<'EOF' &&
+python3 ~/.gemini/config/plugins/cairn/tools/task_list.py initialize <MILESTONE_DIR> <<'EOF' &&
 ## <Task Title 1>
 
 <1–3 sentence description>
@@ -117,7 +117,7 @@ if [ -n "$(git status --porcelain -- <MILESTONE_DIR>/TASKS_TODO.md)" ]; then
 fi
 ```
 
-The tool replaces `<MILESTONE_DIR>/TASKS_TODO.md` with its heading followed by the whole list in the order given, or, refusing anything in it, prints one `Error:` line and leaves the file byte-for-byte unchanged. After the `&&` the call carries out the three steps of the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md` itself — its dirty-own-path guard, the path-scoped `git add`, and the subject-only commit under `Task-derivation: <milestone_id>` — over this skill's own change set, `<MILESTONE_DIR>/TASKS_TODO.md`, written out on the command line in both places and never held in a shell variable. Git's success output is silenced. Never write the briefs into the file any other way, one at a time or by editing it.
+The tool replaces `<MILESTONE_DIR>/TASKS_TODO.md` with its heading followed by the whole list in the order given, or, refusing anything in it, prints one `Error:` line and leaves the file byte-for-byte unchanged. After the `&&` the call carries out the three steps of the shared commit procedure at `~/.gemini/config/plugins/cairn/shared/commit-procedure.md` itself — its dirty-own-path guard, the path-scoped `git add`, and the subject-only commit under `Task-derivation: <milestone_id>` — over this skill's own change set, `<MILESTONE_DIR>/TASKS_TODO.md`, written out on the command line in both places and never held in a shell variable. Git's success output is silenced. Never write the briefs into the file any other way, one at a time or by editing it.
 
 What the call prints is the whole outcome: `derivation commit landed` when the commit landed; nothing when the guard found the file unchanged (the list matched what it already held); otherwise the tool's one `Error:` line, with `TASKS_TODO.md` unchanged and nothing committed, or git's message for a commit it refused.
 

@@ -124,7 +124,7 @@ Never write a current-milestone pointer into `AGENTS.md`; the pointer lives only
 
 ### 7. Commit the bootstrap
 
-Read and follow the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
+Read and follow the shared commit procedure at `~/.gemini/config/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set: **always** `milestones/README.md` (created or edited in step 5), and **additionally** `AGENTS.md` **only on runs where step 6 created it or appended the `## Milestone Workflow` section to it**. When step 6 left an existing section as-is, `AGENTS.md` is not in the set and the commit covers `milestones/README.md` alone. This conditional inclusion is keyed on whether this skill's step 6 made the edit — decided as the edit is (or is not) made, never by diffing or inspecting content.
 - **SUBJECT** — `Workflow-bootstrap: milestones`.

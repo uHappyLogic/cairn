@@ -46,7 +46,7 @@ Takes no arguments — it sweeps every `<open-question>` block in the current mi
 
 ### 0. Find the current milestone
 
-Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`.
+Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`.
 Never use a hardcoded path.
 
 ### 1. Gather the questions once, in three tool calls
@@ -54,7 +54,7 @@ Never use a hardcoded path.
 **a. Every question.** Run
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py list <MILESTONE_DIR>
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py list <MILESTONE_DIR>
 ```
 
 It prints the `id` (Short Title) of every `<open-question>` block, one per line in document
@@ -64,7 +64,7 @@ one `Error: <reason>` line on stderr is the report: print it and stop.
 **b. The ones without alternatives — the stop test.** Run
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py list --without-alternatives <MILESTONE_DIR>
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py list --without-alternatives <MILESTONE_DIR>
 ```
 
 It prints, in document order, the ids of the blocks carrying no `<alternative>` element. If it
@@ -77,7 +77,7 @@ when this call prints nothing does the pass continue.
 **c. The ones without a recommendation.** Run
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py list --without-recommendation <MILESTONE_DIR>
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py list --without-recommendation <MILESTONE_DIR>
 ```
 
 It prints, in document order, the ids of the blocks carrying no `<recommendation>` element —
@@ -109,7 +109,7 @@ against, and never revises it.
 **Escape hatch for a stale recommendation:** to force a fresh pick on a block, run
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py strip --recommendation <MILESTONE_DIR> "<Short Title>" …
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py strip --recommendation <MILESTONE_DIR> "<Short Title>" …
 ```
 
 (one or more Short Titles), then re-run this skill. `strip --recommendation` deletes only the
@@ -139,7 +139,7 @@ already standing on it. That whole read is for reasoning only; it changes nothin
 nothing you later write against, since every write names a block by its Short Title.
 
 Then read and follow the shared pick procedure at
-`.agents/plugins/cairn/shared/recommend-procedure.md`, carrying out its steps yourself over
+`~/.gemini/config/plugins/cairn/shared/recommend-procedure.md`, carrying out its steps yourself over
 **every question step 1c printed, held in view together as one judgment**. For each such
 question its QUESTION is the block's Short Title and `<question>` text and its ALTERNATIVES
 are the block's own `<alternative>` elements, taken as given — the pick names one of them by
@@ -207,19 +207,19 @@ elements replaced:
 
 ```
 body=''
-if { err="$(python3 .agents/plugins/cairn/tools/open_questions.py embed --recommendation <MILESTONE_DIR> "<Short Title>" 2>&1)"; } <<'EOF'
+if { err="$(python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py embed --recommendation <MILESTONE_DIR> "<Short Title>" 2>&1)"; } <<'EOF'
 <the block's rendered elements>
 EOF
 then
   body="${body:+$body
-}$(python3 .agents/plugins/cairn/tools/open_questions.py lift <MILESTONE_DIR> "<Short Title>")"
+}$(python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py lift <MILESTONE_DIR> "<Short Title>")"
 else
   printf '%s\t%s\n' "<Short Title>" "$err"
 fi
 if [ -n "$body" ] && [ -n "$(git status --porcelain -- <MILESTONE_DIR>/open_questions.xml)" ]; then
   git add <MILESTONE_DIR>/open_questions.xml && git commit -q -m "Recommendation-annotation: <milestone_id>" -m "$body" && echo 'annotation commit landed'
 fi &&
-python3 .agents/plugins/cairn/tools/open_questions.py sort <MILESTONE_DIR> &&
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py sort <MILESTONE_DIR> &&
 if [ -n "$(git status --porcelain -- <MILESTONE_DIR>/open_questions.xml)" ]; then
   git add <MILESTONE_DIR>/open_questions.xml && git commit -q -m "Question-ordering: <milestone_id>" && echo 'ordering commit landed'
 fi
@@ -253,7 +253,7 @@ reads alike, never `$'\n'` or `echo -e`. On a refusal the call prints the block'
 a tab, and the `Error:` line, and adds no line to `body`.
 
 After the last section the call carries out the three steps of the shared commit procedure at
-`.agents/plugins/cairn/shared/commit-procedure.md` itself — its dirty-own-path guard, the
+`~/.gemini/config/plugins/cairn/shared/commit-procedure.md` itself — its dirty-own-path guard, the
 path-scoped `git add` of `<MILESTONE_DIR>/open_questions.xml` alone (never `git add -A`), and
 the commit under `Recommendation-annotation: <milestone_id>` with the lifted lines, one per
 annotated block in section order, as its body through the procedure's own second `-m` form.

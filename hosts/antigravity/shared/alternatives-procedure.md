@@ -7,7 +7,7 @@ by the read-only `provide-alternatives-to-open-question` subagent during the alt
 sweep. The caller supplies the one input below and renders the result; this file describes
 only the analytical work itself — ground, then enumerate. Picking one of the alternatives is
 a separate unit of work, run later by a different runner over the set this procedure
-produces, and lives in `.agents/plugins/cairn/shared/recommend-procedure.md`; nothing here forms a
+produces, and lives in `~/.gemini/config/plugins/cairn/shared/recommend-procedure.md`; nothing here forms a
 preference.
 
 ## Inputs

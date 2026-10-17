@@ -43,7 +43,7 @@ Leave the `## Current Milestone` heading, the `## Milestone History` section, an
 
 ### 4. Commit the activation
 
-Read and follow the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
+Read and follow the shared commit procedure at `~/.gemini/config/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set: `milestones/README.md` (the file whose `Current milestone:` pointer it just overwrote).
 - **SUBJECT** — `Milestone-activation: milestone_<number>_<slug>`.

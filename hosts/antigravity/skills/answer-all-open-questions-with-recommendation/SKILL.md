@@ -39,7 +39,7 @@ Takes no arguments — it sweeps every `<open-question>` block in the current mi
 
 ### 0. Find the current milestone, once
 
-Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use
+Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use
 a hardcoded path. Resolve it **once per run** and hold it: every tool call, every recorded
 answer, and every commit below uses this one directory, the one the run walked.
 
@@ -48,7 +48,7 @@ answer, and every commit below uses this one directory, the one the run walked.
 Run
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py walk <MILESTONE_DIR>
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py walk <MILESTONE_DIR>
 ```
 
 It prints one line per `<open-question>` block that carries a `<recommendation>` element — the
@@ -82,11 +82,11 @@ what it touched, so within step 3 the answer core's `locate` print of the block 
 For each Short Title in the gathered order, in turn:
 
 **a. Record it through the shared procedure, from its lift step.** Read and follow
-`.agents/plugins/cairn/shared/answer-with-recommendation-procedure.md`, carrying out its steps
+`~/.gemini/config/plugins/cairn/shared/answer-with-recommendation-procedure.md`, carrying out its steps
 yourself, with the `<MILESTONE_DIR>` from step 0 and this Short Title as its `MILESTONE_DIR` and
 `SHORT TITLE` inputs. It lifts the block's recommendation with one `lift` call — the only lift
 this question gets — and delegates the recording to
-`.agents/plugins/cairn/shared/answer-procedure.md` (locate, analyse, fold, remove with the lifted
+`~/.gemini/config/plugins/cairn/shared/answer-procedure.md` (locate, analyse, fold, remove with the lifted
 option passed verbatim, cascade).
 
 - **The lift fails** — one `Error:` line, the procedure's no-recommendation guard stopping
@@ -109,7 +109,7 @@ may raise is not reported and never added: it is the next `/review-milestone-req
 pass's to find.
 
 **b. Commit this answer before the next question.** Read and follow the shared commit
-procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself,
+procedure at `~/.gemini/config/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself,
 with these three inputs:
 
 - **PATHS** — `<MILESTONE_DIR>/open_questions.xml` and `<MILESTONE_DIR>/requirements.md`, the
@@ -141,7 +141,7 @@ the procedure after a successful lift stops the run the same way.
 When the gathered order is exhausted, run the same call once more:
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py walk <MILESTONE_DIR>
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py walk <MILESTONE_DIR>
 ```
 
 A single pass either records a block or finds it removed or stripped by a cascade, so this

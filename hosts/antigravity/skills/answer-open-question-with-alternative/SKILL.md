@@ -40,7 +40,7 @@ The skill resolves the current milestone itself, so nothing needs to be looked u
 
 ### 1. Find the current milestone
 
-Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded
+Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded
 task-list path. Hold `<MILESTONE_DIR>` — you need it for the lift, the delegated recording,
 and the commit.
 
@@ -51,7 +51,7 @@ reasoning only, and every locate, list, lift, and write of it is a call to the p
 open-question tool, that file's sole writer. Run
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py lift <MILESTONE_DIR> "<Short Title>" --alternative "<Alternative Id>"
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py lift <MILESTONE_DIR> "<Short Title>" --alternative "<Alternative Id>"
 ```
 
 On success it prints one line, "`<id>` — `<what-it-is>`": the chosen alternative's `id` as the
@@ -76,7 +76,7 @@ report why, quoting the tool's `Error:` line, which names the failed lookup:
 Hand the **`<MILESTONE_DIR>`** from step 1 as its `MILESTONE_DIR` input, the resolved
 **`<Short Title>`**, the derived **ANSWER**, and the **RECORDED OPTION** from step 2 (the same
 value ANSWER opens with, passed separately so the core hands it to the tool as an exact id
-rather than parsing it out of ANSWER) to `.agents/plugins/cairn/shared/hand-answer-procedure.md` and
+rather than parsing it out of ANSWER) to `~/.gemini/config/plugins/cairn/shared/hand-answer-procedure.md` and
 follow it unchanged **yourself, in this conversation**. That procedure reads
 `open_questions.xml` whole, names the standing picks on the other open questions that the
 answer undermines, and delegates the recording work to the shared recording core, handing it
@@ -88,7 +88,7 @@ Do **not** spawn any subagent — there is no `answer-open-question-with-alterna
 ### 4. Commit the alternative answer
 
 Read and follow the shared commit procedure at
-`.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these three inputs, using the
+`~/.gemini/config/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these three inputs, using the
 `<MILESTONE_DIR>` from step 1:
 
 - **PATHS** — this skill's own edits: `<MILESTONE_DIR>/open_questions.xml` and

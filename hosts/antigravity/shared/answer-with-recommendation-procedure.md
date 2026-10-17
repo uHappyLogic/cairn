@@ -33,7 +33,7 @@ SHORT TITLE, and the lifted `option` value as RECORDED OPTION, is what it hands 
 Run the plugin's open-question tool:
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py lift <MILESTONE_DIR> "<SHORT TITLE>"
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py lift <MILESTONE_DIR> "<SHORT TITLE>"
 ```
 
 On success it prints one line, "`<option>` — `<rationale>`": the block's
@@ -53,5 +53,5 @@ anything** and report why, quoting the tool's `Error:` line: nothing is recorded
 Hand the given **MILESTONE_DIR** and **SHORT TITLE**, the derived **ANSWER**, and the
 **RECORDED OPTION** lifted in step 1 (passed separately, so the core hands it to the tool
 as an exact id rather than parsing it out of ANSWER) to
-`.agents/plugins/cairn/shared/answer-procedure.md` and follow it unchanged. That procedure owns the recording work (locate, analyse, fold, remove, cascade);
+`~/.gemini/config/plugins/cairn/shared/answer-procedure.md` and follow it unchanged. That procedure owns the recording work (locate, analyse, fold, remove, cascade);
 this procedure only lifts and delegates.

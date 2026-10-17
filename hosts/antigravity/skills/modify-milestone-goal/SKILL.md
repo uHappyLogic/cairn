@@ -24,7 +24,7 @@ Replaces the `## Goal` of the current milestone's `requirements.md` with a revis
 
 ### 0. Find the current milestone
 
-Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path.
+Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path.
 
 ### 1. Read the current Goal
 
@@ -44,7 +44,7 @@ If the intended change is genuinely ambiguous, state the revised wording you pro
 Reason about what the new goal may have invalidated. Do **not** write this analysis into the document and do **not** edit those sections — it informs your own reasoning, and its one consequence in the files is the pick clearing of step 5:
 
 - Which `## Decisions` entries the new goal contradicts, moots, or leaves dangling.
-- Which open questions it newly settles, newly opens, or makes irrelevant — read `<MILESTONE_DIR>/open_questions.xml` whole with the file-reading tool for this, as you read `requirements.md` in step 1; that whole read is for reasoning only, and every locate, list, lift, and write is a call to the plugin's open-question tool, `python3 .agents/plugins/cairn/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`. Never edit the file yourself.
+- Which open questions it newly settles, newly opens, or makes irrelevant — read `<MILESTONE_DIR>/open_questions.xml` whole with the file-reading tool for this, as you read `requirements.md` in step 1; that whole read is for reasoning only, and every locate, list, lift, and write is a call to the plugin's open-question tool, `python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`. Never edit the file yourself.
 - Which standing picks the revision undermines. A standing pick is the `<recommendation>` element an open question carries; it was formed under the goal being replaced. For each block carrying one, hold two texts from the read: the what-it-is text of the `<alternative>` its `<recommendation option="…">` names, and the one-line rationale that is the `<recommendation>` element's own text. Read them against the revised Goal and what it directly entails. The pick is **undermined** when either holds:
   - **The option can no longer be carried out.** The recommended alternative, as its what-it-is text reads, cannot be carried out alongside the revised Goal.
   - **The stated reason no longer holds.** The rationale states or plainly presupposes something the revision changed — a fact about the project, a constraint, the scope or aim of the milestone, a sibling's expected outcome — so the reason no longer holds as written, even though the option itself could still be carried out.
@@ -62,7 +62,7 @@ Replace the body of the `## Goal` section with the revised goal text. Touch noth
 When step 3 named at least one undermined pick, clear them all with one call to the open-question tool, passing every named block's Short Title (its `id` as the document holds it), each as its own quoted argument:
 
 ```bash
-python3 .agents/plugins/cairn/tools/open_questions.py strip --recommendation <MILESTONE_DIR> "<Short Title>" …
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py strip --recommendation <MILESTONE_DIR> "<Short Title>" …
 ```
 
 The call deletes each named block's `<recommendation>`, `<depends-on>`, and `<applied-principle>` children and keeps its `<alternative>` children, so the block stays a live question for the next `/recommend-all-open-questions` run to re-pick under the revised goal. It touches no other block: a block whose `<depends-on>` names a cleared block keeps its pick and its tag. Do not follow such tags and do not add those blocks to the call — the clearing is not transitive.
@@ -73,7 +73,7 @@ If the call exits non-zero, stop: print its `Error:` line verbatim, state that t
 
 ### 6. Commit the goal revision
 
-Read and follow the shared commit procedure at `.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
+Read and follow the shared commit procedure at `~/.gemini/config/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set: `<MILESTONE_DIR>/requirements.md` (the file whose `## Goal` section it just revised) and `<MILESTONE_DIR>/open_questions.xml` (the document step 5 clears picks from), so a goal revision and the picks it cleared are one commit.
 - **SUBJECT** — `Goal-revision: <milestone_id>`.

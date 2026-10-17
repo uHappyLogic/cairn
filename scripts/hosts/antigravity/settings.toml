@@ -29,9 +29,10 @@
 plugin_name = "cairn"
 
 # The literal that replaces every {{PLUGIN_ROOT}} placeholder in the rendered core/ files.
-# Antigravity defines no plugin-root variable and loads the plugin from this path relative
-# to the consuming workspace root, so references become that workspace-relative literal.
-plugin_root = ".agents/plugins/cairn"
+# Antigravity defines no plugin-root variable for skill text, so references become the fixed
+# path of the plugin's global install, written in the tilde form the host's own plugin guide
+# uses for where a plugin lives.
+plugin_root = "~/.gemini/config/plugins/cairn"
 
 # The path from this host tree's root to the directory plugin_root stands for at runtime,
 # empty when that directory is the tree root. The dangling-plugin-root check resolves every

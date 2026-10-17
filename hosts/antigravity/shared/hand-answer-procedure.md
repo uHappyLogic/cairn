@@ -87,7 +87,7 @@ are **UNDERMINED PICKS**. When no pick is undermined there is none to pass.
 
 Hand the given **MILESTONE_DIR**, **SHORT TITLE**, and **ANSWER**, the **RECORDED OPTION**
 when the caller supplied one, and the **UNDERMINED PICKS** named in step 2 (nothing for that
-input when step 2 named none) to `.agents/plugins/cairn/shared/answer-procedure.md` and follow it
+input when step 2 named none) to `~/.gemini/config/plugins/cairn/shared/answer-procedure.md` and follow it
 unchanged. That procedure owns the recording work (locate, analyse, fold, remove, cascade)
 and passes the names to the tool as given; this procedure only reads, judges, and
 delegates, and reports nothing about the picks it named.

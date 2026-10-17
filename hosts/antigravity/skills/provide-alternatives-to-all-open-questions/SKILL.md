@@ -37,7 +37,7 @@ Takes no arguments — it sweeps every `<open-question>` block in the current mi
 
 ### 0. Find the current milestone
 
-Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`.
+Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`.
 Never use a hardcoded path.
 
 ### 1. Gather the questions once, in two tool calls
@@ -45,7 +45,7 @@ Never use a hardcoded path.
 **a. Every question.** Run
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py list <MILESTONE_DIR>
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py list <MILESTONE_DIR>
 ```
 
 It prints the `id` (Short Title) of every `<open-question>` block, one per line in document
@@ -55,7 +55,7 @@ one `Error: <reason>` line on stderr is the report: print it and stop.
 **b. The ones without alternatives.** Run
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py list --without-alternatives <MILESTONE_DIR>
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py list --without-alternatives <MILESTONE_DIR>
 ```
 
 It prints, in document order, the ids of the blocks carrying no `<alternative>` element — the
@@ -83,7 +83,7 @@ pass, which picks against it. The primary re-run motive is exactly the bare set 
 **Escape hatch for a stale alternative set:** to force a fresh set on a block, run
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py strip <MILESTONE_DIR> "<Short Title>" …
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py strip <MILESTONE_DIR> "<Short Title>" …
 ```
 
 (one or more Short Titles), then re-run this skill. The bare `strip` deletes every child of
@@ -181,7 +181,7 @@ and `<MILESTONE_DIR>` replaced by their paths:
 mkdir -p "<scratch dir>/processed"
 find "<scratch dir>" -maxdepth 1 -type f -name '*.xml' | while IFS= read -r f; do
   t="${f##*/}"; t="${t%.xml}"
-  if err="$(python3 .agents/plugins/cairn/tools/open_questions.py embed --alternatives <MILESTONE_DIR> "$t" < "$f" 2>&1)"; then
+  if err="$(python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py embed --alternatives <MILESTONE_DIR> "$t" < "$f" 2>&1)"; then
     if [ -n "$(git status --porcelain -- <MILESTONE_DIR>/open_questions.xml)" ]; then
       out="$(git add <MILESTONE_DIR>/open_questions.xml 2>&1 && git commit -q -m "Alternatives-annotation: $t" 2>&1)" ||
         printf '%s\t%s\n' "$t" "$(printf '%s\n' "$out" | head -n 1)"
@@ -199,7 +199,7 @@ Short Title from the file name and redirects the file into `embed --alternatives
 the file's `<alternative>` elements into the existing block in canonical form or refuses it
 with one `Error:` line and the document unchanged. Each question the tool accepted is then
 committed by the steps of the shared commit procedure at
-`.agents/plugins/cairn/shared/commit-procedure.md` — its dirty-own-path guard, the path-scoped
+`~/.gemini/config/plugins/cairn/shared/commit-procedure.md` — its dirty-own-path guard, the path-scoped
 `git add` of `<MILESTONE_DIR>/open_questions.xml` alone (never `git add -A`), and a subject-only
 commit under `Alternatives-annotation: <Short Title>` with **no body** — with git's success
 output silenced. Every file the call piped, accepted or refused, is then moved into the
@@ -282,7 +282,7 @@ inspection.
 **g. Closing check.** After the last batch call, run once
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py list --without-alternatives <MILESTONE_DIR>
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py list --without-alternatives <MILESTONE_DIR>
 ```
 
 Every id it prints that is among the ids step 1b gathered and is not already noted for the

@@ -8,7 +8,7 @@ supplies the inputs below and wraps the result; this file describes only the rec
 itself — locate, analyse, fold, remove, cascade.
 
 Every read and write of `open_questions.xml` here is a call to the plugin's open-question
-tool, `python3 .agents/plugins/cairn/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`,
+tool, `python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`,
 written out in full on every call, never through a variable, alias, or function of your own
 defined to stand for the command or any part of it; the tool is that file's sole writer: a
 read prints the bare value asked for, a write prints nothing on
@@ -47,7 +47,7 @@ optional:
 Run
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py locate <MILESTONE_DIR> "<SHORT TITLE>"
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py locate <MILESTONE_DIR> "<SHORT TITLE>"
 ```
 
 On success it prints the matched block verbatim — its `<question>` and, when the recommend
@@ -89,7 +89,7 @@ always lands first.
 Run
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py remove <MILESTONE_DIR> "<SHORT TITLE>" [--option "<OPTION>"] [--undermined "<UNDERMINED SHORT TITLE>" …]
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py remove <MILESTONE_DIR> "<SHORT TITLE>" [--option "<OPTION>"] [--undermined "<UNDERMINED SHORT TITLE>" …]
 ```
 
 whether or not the block carries embedded children, with `--undermined` followed by every
@@ -127,7 +127,7 @@ If the decision moots another entry or forces its answer, fold any implied const
 since nothing was recorded for it:
 
 ```
-python3 .agents/plugins/cairn/tools/open_questions.py remove <MILESTONE_DIR> "<MOOTED SHORT TITLE>"
+python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py remove <MILESTONE_DIR> "<MOOTED SHORT TITLE>"
 ```
 
 one call per mooted entry. Each call reconciles that entry's dependents itself, so nothing

@@ -30,7 +30,7 @@ When the answer surfaces a concrete next step, this skill names the right cairn 
 
 ### 0. Find the current milestone
 
-Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 If the pointer is `none` (no active milestone), don't dead-end. Tell the user there's no open milestone, then answer from what *is* available — the `## Milestone History` and completed-milestone table in `milestones/README.md` — if the question is about past work. If they're clearly asking about active work that doesn't exist yet, say so and point them at `/define-milestone-goal` (or `/goto-next-milestone` if a milestone is defined but not active).
 
@@ -39,7 +39,7 @@ If the pointer is `none` (no active milestone), don't dead-end. Tell the user th
 Read in parallel, so the answer rests on the real state rather than memory:
 
 - `<MILESTONE_DIR>/requirements.md` — the goal, relevant starting state, and recorded decisions.
-- `<MILESTONE_DIR>/open_questions.xml` — any remaining open questions, each an `<open-question>` block carrying whatever alternatives and recommendation the recommend sweep has embedded. Read it whole with the file-reading tool, exactly as you read `requirements.md`; that whole read is for reasoning only, and a locate, list, or lift of one block is a call to the plugin's open-question tool, `python3 .agents/plugins/cairn/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`, never a search of your own over the file.
+- `<MILESTONE_DIR>/open_questions.xml` — any remaining open questions, each an `<open-question>` block carrying whatever alternatives and recommendation the recommend sweep has embedded. Read it whole with the file-reading tool, exactly as you read `requirements.md`; that whole read is for reasoning only, and a locate, list, or lift of one block is a call to the plugin's open-question tool, `python3 ~/.gemini/config/plugins/cairn/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`, never a search of your own over the file.
 - `<MILESTONE_DIR>/TASKS_DONE.md` — completed tasks. Each entry's description and `**Verified:**` bar tell you *what the task was meant to achieve* — the intent behind the deliverable that now exists.
 - `<MILESTONE_DIR>/TASKS_TODO.md` — pending tasks, in priority order. Their ordering explains dependencies ("what's blocking what").
 - `AGENTS.md` — the project's domain context, conventions, and real names for its systems and files, so your answer uses the project's vocabulary.

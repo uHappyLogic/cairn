@@ -28,18 +28,18 @@ first.
 
 ### 1. Find the current milestone
 
-Follow `.agents/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never
+Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never
 use a hardcoded path. Hold `<MILESTONE_DIR>` — you need it for the delegated recording and
 the commit.
 
 ### 2. Run the shared lift-then-delegate procedure inline
 
 Read and follow the shared procedure at
-`.agents/plugins/cairn/shared/answer-with-recommendation-procedure.md`, carrying out every step
+`~/.gemini/config/plugins/cairn/shared/answer-with-recommendation-procedure.md`, carrying out every step
 **yourself, in this conversation**. Pass it the `<MILESTONE_DIR>` from step 1 and the
 `<Short Title>` from the invocation as its `MILESTONE_DIR` and `SHORT TITLE` inputs. That
 procedure owns the lift → delegate work, composing over
-`.agents/plugins/cairn/shared/answer-procedure.md`, which owns the
+`~/.gemini/config/plugins/cairn/shared/answer-procedure.md`, which owns the
 locate/analyse/fold/remove/cascade recording; every read and write of `open_questions.xml`
 in either is a call to the plugin's open-question tool.
 
@@ -56,7 +56,7 @@ Commit nothing — go no further.
 ### 3. Commit the recommendation answer
 
 Read and follow the shared commit procedure at
-`.agents/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these three inputs, using the
+`~/.gemini/config/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these three inputs, using the
 `<MILESTONE_DIR>` from step 1:
 
 - **PATHS** — this skill's own edits: `<MILESTONE_DIR>/open_questions.xml` and
