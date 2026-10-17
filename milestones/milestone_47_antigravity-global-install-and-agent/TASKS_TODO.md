@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Commit The Agy Suite Fixture Project
-
-Add one committed directory under `tests/fixtures/` holding a small project tree: `milestones/README.md` with its `Current milestone:` pointer, one milestone directory with `requirements.md`, an `open_questions.xml` holding a few bare blocks in the tool's canonical form, and the two task files carrying the one trivial task the direct dispatches need. The fixture is what each agy process is seeded from, so it depends on no plugin tool being correct. Verified when, on a copy, the open-question tool's `list` prints the blocks' Short Titles and the task-list tool's `move` accepts the trivial task.
-
----
-
 ## Scaffold The Agy Suite Outside Testpaths
 
 Create the suite's own directory at the repository root (for example `agy_tests/`) with a `conftest.py` holding its fixtures: one up-front prerequisite check that stops the whole run before any test with a non-zero exit and one line naming the missing prerequisite (agy resolvable on `PATH`, the global copy present at `~/.gemini/config/plugins/cairn`, and that copy byte-identical with the repository's `hosts/antigravity/` tree, naming the remedy of re-extracting or copying the built tree), never skipping and treating every prerequisite the same way; a seeded-repository fixture that copies the fixture project to a fresh temporary directory and runs `git init` and an initial commit there for every agy process; and a launcher running `agy -p` with `--dangerously-skip-permissions`, no `--model` and no `--effort`, and one fixed `--print-timeout` value chosen by the suite, enforcing no wall-clock limit of its own, holding no model id, and writing nothing to the user's installation. `testpaths = ["tests"]`, `pyproject.toml`, and the CI workflow stay unchanged, with no marker, `addopts`, naming convention, or environment variable involved. Verified when `uv run pytest` and the 3.9 floor run collect nothing from the directory, `uv run pytest agy_tests` reaches it, and a hidden prerequisite produces exactly the one-line stop with no per-test outcome.

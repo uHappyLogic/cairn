@@ -20,7 +20,9 @@ from open_questions import (
 )
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
-FIXTURE_NAMES = sorted(path.name for path in FIXTURES.iterdir() if path.is_dir())
+FIXTURE_NAMES = sorted(
+    path.name for path in FIXTURES.iterdir() if (path / open_questions.DOCUMENT_NAME).is_file()
+)
 
 
 def read_fixture(name):

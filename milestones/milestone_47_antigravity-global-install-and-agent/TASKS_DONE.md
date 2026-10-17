@@ -75,3 +75,20 @@ Correct the two tracked, non-historical statements outside the install sections 
 - No other file changed, and `uv run scripts/build_hosts.py --check` passes.
 
 ---
+
+## Commit The Agy Suite Fixture Project
+
+Add one committed directory under `tests/fixtures/` holding a small project tree: `milestones/README.md` with its `Current milestone:` pointer, one milestone directory with `requirements.md`, an `open_questions.xml` holding a few bare blocks in the tool's canonical form, and the two task files carrying the one trivial task the direct dispatches need. The fixture is what each agy process is seeded from, so it depends on no plugin tool being correct. Verified when, on a copy, the open-question tool's `list` prints the blocks' Short Titles and the task-list tool's `move` accepts the trivial task.
+
+**Verified:**
+
+- `tests/fixtures/agy_project/` holds `milestones/README.md` and one milestone directory `milestones/milestone_01_pocket-ledger-foundations/` with exactly `requirements.md`, `open_questions.xml`, `TASKS_TODO.md`, and `TASKS_DONE.md`, none of them ignored by git
+- `milestones/README.md` carries the one `Current milestone:` line naming that milestone directory in backticks, in the bootstrap skill's template shape
+- `requirements.md` carries the four prose headings the milestone-definition tool creates (Goal, Relevant starting state, Decisions, Out of Scope)
+- `open_questions.xml` holds three bare blocks (`Data file format`, `Date input form`, `Summary period selection`) and is byte-identical to the open-question tool's own `add` rendering
+- `TASKS_TODO.md` holds the one trivial task `Add The Project README` in the task-format shape and is byte-identical to the task-list tool's `initialize` rendering; `TASKS_DONE.md` is the empty canonical file
+- On a copy, `python3 core/tools/open_questions.py list` exits 0 and prints exactly the three Short Titles, one per line
+- On a copy, `python3 core/tools/task_list.py move … "Add The Project README"` exits 0 printing nothing, leaving the section under `**Verified:**` in the copy's `TASKS_DONE.md` and the copy's `TASKS_TODO.md` empty, with the committed fixture unchanged
+- `tests/test_format.py` and `tests/test_sort.py` discover golden directories as those holding `open_questions.xml` directly, so the project tree is not collected as a golden document; `uv run pytest` (684 passed) and the 3.9 floor run (680 passed, 1 skipped) pass
+
+---

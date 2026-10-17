@@ -13,7 +13,9 @@ import open_questions
 from open_questions import Alternative, Dependency, Document, Question, Recommendation
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
-FIXTURE_NAMES = sorted(path.name for path in FIXTURES.iterdir() if path.is_dir())
+FIXTURE_NAMES = sorted(
+    path.name for path in FIXTURES.iterdir() if (path / open_questions.DOCUMENT_NAME).is_file()
+)
 HATCH = "Escape hatch under sole writer"
 ROOT_FORM = "Root element form"
 BARE = "Fixture bare block"

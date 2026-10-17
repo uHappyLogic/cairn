@@ -1,0 +1,11 @@
+<open-questions>
+  <open-question id="Data file format">
+    <question>Which on-disk format should the single data file use for the recorded expenses?</question>
+  </open-question>
+  <open-question id="Date input form">
+    <question>Which form should the date of an expense take when a user enters it on the command line?</question>
+  </open-question>
+  <open-question id="Summary period selection">
+    <question>How should a user name the period a per-category summary covers?</question>
+  </open-question>
+</open-questions>
