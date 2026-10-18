@@ -48,5 +48,9 @@ The sweep is described in `docs/skill-reference.md` (its own `###` entry), `docs
 
 The sweep forms no contradiction advisory: its upfront reasoning makes no contradiction judgment, the batched call prints no contradiction line, and the report carries no contradiction pairs, so the sweep's fold-time duty to record the pick anyway and hold the pair is retired. In this milestone `review-milestone-requirements` gains a `## Decisions` consistency step that reads the recorded decisions against each other and surfaces a conflicting pair as a gap, for example as an open question settling which entry stands, flagging the conflict without resolving it. The next review pass after a sweep is where a contradiction is noticed.
 
+### Template test coverage
+
+The batched call's shell template is exercised by an automated test in `tests/` that runs in CI under both pytest interpreters. It extracts the fixed call from a rendered host tree, fills its per-question placeholders for a golden fixture milestone copied into a temporary git repository, and runs the call under bash. It asserts one `Recommendation-answer:` commit per answered question, with the lifted line as body, path-scoped to `open_questions.xml` and `requirements.md`, and carrying the block's removal, and it asserts that a question whose lift fails is skipped silently. The stop path after a fold is not covered by the test and stays with the Claude Code hands-on check.
+
 ## Out of Scope
 
