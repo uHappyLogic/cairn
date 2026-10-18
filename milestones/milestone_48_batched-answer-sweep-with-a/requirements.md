@@ -112,5 +112,9 @@ The batched call leaves every post-fold step's stderr unredirected, so the tool'
 
 The sweep's own file states every per-question mechanical step its batched call runs: the lift with its silent skip, the fold through the fold command, the remove with the lifted option, and the commit. It stops following `answer-with-recommendation-procedure.md` altogether, whose intro then names only `answer-open-question-with-recommendation`, and keeps a reference to `answer-procedure.md` only for the judgment the batched call cannot do: the fold step's rules on what the decision text says (clean prose, no citation marker, the live document's section names), the one home the Fold body form decision keeps them in, plus whatever form of the analyse step's questions the sweep keeps. The core's intro is reworded to say the sweep follows its fold-content rules and analyse step, not its tool steps, and the `CLAUDE.md` sweep invariant and the shell-literal clause are reworded to match. The rules are not copied into a second home, and the procedures gain no batched-path branches.
 
+### Requirements read placement
+
+`requirements.md` is read whole with the file-reading tool, never through shell output, and the skill tells the runner to send that read in the same turn as the compact view's fixed shell call, as two independent tool calls. The compact view call stays limited to the question document and keeps the shape its decision fixes, and the skill shows no shell command for the read. The sentence names no capability and degrades to today's two calls on a host that serializes them, so it is the same slot-free text in every host tree.
+
 ## Out of Scope
 
