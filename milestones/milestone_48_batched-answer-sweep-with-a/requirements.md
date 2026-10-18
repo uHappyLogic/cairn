@@ -116,5 +116,9 @@ The sweep's own file states every per-question mechanical step its batched call 
 
 `requirements.md` is read whole with the file-reading tool, never through shell output, and the skill tells the runner to send that read in the same turn as the compact view's fixed shell call, as two independent tool calls. The compact view call stays limited to the question document and keeps the shape its decision fixes, and the skill shows no shell command for the read. The sentence names no capability and degrades to today's two calls on a host that serializes them, so it is the same slot-free text in every host tree.
 
+### Stranded fold guard
+
+The batched call carries a clean-own-paths precondition: its first command, ahead of the first question's section, runs `git status --porcelain` on the milestone's `open_questions.xml` and `requirements.md`, each path its own literal argument, and if that prints anything the call prints one fixed line (for example `dirty before start`) and ends before any lift, fold, remove, or commit. Any staged or unstaged change counts, whatever its origin, a hand fix to `requirements.md` included, which must therefore be committed before a re-run. The report step prints this stop with the porcelain lines and the remedy (commit or discard the leftover, then re-run) in place of the status line. A stop after a fold still leaves the tree as it stands, never rolled back, and the compact view call is untouched. The guard sits inside the one template the decided test exercises, which adds a dirty-start case beside its other assertions, and the skill's sentence saying it needs no clean working tree narrows to these two files only, never the whole tree.
+
 ## Out of Scope
 
