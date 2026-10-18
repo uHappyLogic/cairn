@@ -6,8 +6,10 @@ ASD-STE100 Simplified Technical English, a controlled register whose short
 sentences and one-meaning-per-word vocabulary keep each claim unambiguous, so
 that it reads the same to a reader and to the author of a test. Each **Metric**
 line names the test that would check its claim. The repository's test suite
-runs only the test of claim 11, against the open-question tool and the
-task-list tool; no suite runs the other tests yet.
+runs only two of these tests: the test of claim 11, against the open-question
+tool, the task-list tool, and the fold tool, and the first part of the test of
+claim 2, against the one shell call of the batch answer skill; no suite runs
+the other tests yet.
 
 ## Decisions
 
@@ -24,6 +26,8 @@ task-list tool; no suite runs the other tests yet.
   answer was made: manual, recommendation, or alternative. A revert of that
   commit opens the question again.
 - **Metric:** Commits per decision (must be 1), and the result of a revert test.
+  The `tests/` suite runs the first part of this test on the shell call of
+  the batch answer skill.
 
 ### 3. The person decides. The machine gives advice only.
 
@@ -116,10 +120,15 @@ task-list tool; no suite runs the other tests yet.
   same stdlib tool creates them with the milestone. After that, the task-list
   tool is the only writer of the two files. Each derivation, submission, and
   move is a tool call. The tool writes the whole file again in one canonical
-  layout. A move changes both files, or neither.
+  layout. A move changes both files, or neither. The decisions in
+  `requirements.md` are prose, and no tool is the only writer of that file.
+  The batch answer skill adds each decision with the stdlib fold tool. That
+  tool adds the decision, the heading of its subsection when that heading is
+  new, and the blank lines around them. It changes no other byte of the file.
 - **Metric:** Golden-file diff of the document after an answer, a cascade, or
-  a prune, and of the task files after each task-list write. The `tests/`
-  suite runs this test on the open-question tool and on the task-list tool.
+  a prune, of the task files after each task-list write, and of
+  `requirements.md` after each fold. The `tests/` suite runs this test on the
+  open-question tool, on the task-list tool, and on the fold tool.
 
 ### 12. Repository hygiene is structural.
 
