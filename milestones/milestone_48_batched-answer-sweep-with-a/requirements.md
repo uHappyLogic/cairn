@@ -120,5 +120,9 @@ The sweep's own file states every per-question mechanical step its batched call 
 
 The batched call carries a clean-own-paths precondition: its first command, ahead of the first question's section, runs `git status --porcelain` on the milestone's `open_questions.xml` and `requirements.md`, each path its own literal argument, and if that prints anything the call prints one fixed line (for example `dirty before start`) and ends before any lift, fold, remove, or commit. Any staged or unstaged change counts, whatever its origin, a hand fix to `requirements.md` included, which must therefore be committed before a re-run. The report step prints this stop with the porcelain lines and the remedy (commit or discard the leftover, then re-run) in place of the status line. A stop after a fold still leaves the tree as it stands, never rolled back, and the compact view call is untouched. The guard sits inside the one template the decided test exercises, which adds a dirty-start case beside its other assertions, and the skill's sentence saying it needs no clean working tree narrows to these two files only, never the whole tree.
 
+### Conflict surfacing form
+
+The review pass's `## Decisions` consistency step authors one open-question block per conflicting pair through the open-question tool's `add`, its question text naming both entries' `###` headings under `## Decisions` and asking which entry stands, and the block is committed in the pass's `Requirements-review:` commit like any other new gap. The report gains no new advisory: the block shows only as a Short Title in the still-open list, and the convergence verdict is still read from the `list` print alone, so the conflict holds convergence and the `derive-tasks` precondition until the block is answered. The block then goes through the alternatives pass, the recommendation pass, and either the sweep or a hand answer like any other question, and no convergence rule or tool changes.
+
 ## Out of Scope
 
