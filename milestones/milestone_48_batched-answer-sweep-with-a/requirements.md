@@ -44,5 +44,9 @@ The sweep is described in `docs/skill-reference.md` (its own `###` entry), `docs
 
 ## Decisions
 
+### Contradiction detection
+
+The sweep forms no contradiction advisory: its upfront reasoning makes no contradiction judgment, the batched call prints no contradiction line, and the report carries no contradiction pairs, so the sweep's fold-time duty to record the pick anyway and hold the pair is retired. In this milestone `review-milestone-requirements` gains a `## Decisions` consistency step that reads the recorded decisions against each other and surfaces a conflicting pair as a gap, for example as an open question settling which entry stands, flagging the conflict without resolving it. The next review pass after a sweep is where a contradiction is noticed.
+
 ## Out of Scope
 
