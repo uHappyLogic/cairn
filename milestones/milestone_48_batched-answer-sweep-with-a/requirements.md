@@ -76,5 +76,9 @@ The compact view is one fixed shell call with no tool change, shown in full and 
 
 The mooting judgment and the cascade are dropped from the sweep's path entirely: the runner never asks whether a pick moots another entry, and the batched call carries only lift, fold, remove with the option, and commit for each walked question, so the template keeps one fixed section shape and the sweep stays a pure recorder of picks as given. An entry a recorded decision moots stays in `open_questions.xml`; if it carries a pick and its lift still succeeds, the run records it as given, and otherwise it waits for the next review pass, which removes a block a recorded decision covers as cleanup of recorded state or flags it.
 
+### Status line source
+
+The report step learns whether the batched call committed at least one answer from the call's own output: each question's section chains one fixed, identifier-free marker line (for example `answer commit landed`) behind its `git commit -q` with `&&`, so the call prints one marker per landed `Recommendation-answer:` commit, the form the two batched-call precedents and the task-list chains already use. The report prints `Recommendations recorded.` when at least one marker appeared and the no-op line when none did, and both of today's no-op causes stay (an empty step-1 `walk`, and every lift failing). No shell variable tracks state across sections, and on a stop the markers already printed show how far the run got.
+
 ## Out of Scope
 
