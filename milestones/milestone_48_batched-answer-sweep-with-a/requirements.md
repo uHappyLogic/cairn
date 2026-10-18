@@ -72,5 +72,9 @@ A heading that matches no `###` heading under `## Decisions` is created, never r
 
 The compact view is one fixed shell call with no tool change, shown in full and run as shown with only `<MILESTONE_DIR>` replaced: it runs `list --with-question` and then pipes `walk`'s print into a `while IFS= read -r` loop that prints each id followed by that id's `lift` line, every tool invocation written as the full fixed command. That call doubles as the sweep's gather and order, a failed lift prints its `Error:` line in place of the pick, and the loop variable is exempted by the shell-literal invariant's clause for the sweep as the batch calls' per-item values are. The open-question tool, its contract, and its test suite stay unchanged.
 
+### Mooting cascade in batch
+
+The mooting judgment and the cascade are dropped from the sweep's path entirely: the runner never asks whether a pick moots another entry, and the batched call carries only lift, fold, remove with the option, and commit for each walked question, so the template keeps one fixed section shape and the sweep stays a pure recorder of picks as given. An entry a recorded decision moots stays in `open_questions.xml`; if it carries a pick and its lift still succeeds, the run records it as given, and otherwise it waits for the next review pass, which removes a block a recorded decision covers as cleanup of recorded state or flags it.
+
 ## Out of Scope
 
