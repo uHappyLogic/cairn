@@ -128,5 +128,9 @@ The review pass's `## Decisions` consistency step authors one open-question bloc
 
 The batched-call test finds the call as the one fenced block of the rendered sweep file that holds a command only the call carries (the fold command), and fails when no fence or more than one fence holds it. It finds the per-question section by lines the call already needs: from the section's fixed opening line through the column-0 line that closes it, the same span the step's prose names to the runner as the lines written once per question, as the recommendation pass names its section. Everything from the fixed header line printed before the completeness walk to the end of the fence is the footer, written once. Nothing is added to the runtime file for the test: no marker comment, fence info string, shell comment lines, or split fences, so the author and the test read one stated boundary and an edit that breaks it fails the drift gate.
 
+### Compact view test coverage
+
+The compact view's fixed shell call gets an automated test of its own in `tests/`, run in CI under both pytest interpreters, that extracts the call from a rendered host tree, replaces `<MILESTONE_DIR>` with a golden fixture milestone copied to a temporary directory, runs the call under bash, and asserts its print: every block's id, tab, and question text in document order, recommendation-less blocks included, followed by each walked id and that id's lifted line in walk order. It runs under bash only, matching the batched-call test, and needs no git repository since the call writes nothing. The test finds this second fence by the same anchor rule as the batched call, a command only it carries (`list` with its question flag). The failed-lift branch, which no valid fixture can provoke, stays with the Claude Code hands-on check.
+
 ## Out of Scope
 
