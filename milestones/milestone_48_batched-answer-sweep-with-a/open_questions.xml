@@ -1,1 +1,53 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Fold command home">
+    <question>Where does the new shell-callable fold command live, and what is it called in every rendered command, invariant, doc entry, and test: a flag on the open-question tool&apos;s remove subcommand that folds and removes in one process (fold-before-remove atomic by construction, but the tool&apos;s one-file contract and the invariant built on it change), or a subcommand of a new self-contained tool file for requirements.md beside the three existing tools, chained before remove with &amp;&amp; as the task-list tool is chained with its git step (one tool per document, the harmless superset on a failed remove kept)?</question>
+  </open-question>
+  <open-question id="Fold write scope">
+    <question>Does the fold command re-parse requirements.md and re-render the whole file in one canonical layout on every write, normalizing the blank lines of every section it did not touch as the task-list tool does, or splice the decision into the one place it lands and leave every other byte of the file as it stands, so a Recommendation-answer: commit diff holds only the folded decision?</question>
+  </open-question>
+  <open-question id="Fold body form">
+    <question>Does the fold command write the decision body it reads on standard input verbatim as opaque Markdown, so the runner chooses per milestone between a prose paragraph and a bulleted lead-and-text entry as the two recent shapes of the Decisions section show, or does it render one fixed entry form of its own from the body?</question>
+  </open-question>
+  <open-question id="Missing subsection handling">
+    <question>When the fold command is given a subsection heading that no ### heading under ## Decisions of requirements.md matches, does it create that subsection at the end of ## Decisions and fold the decision into it, or refuse the call with an Error: line and the file unchanged?</question>
+  </open-question>
+  <open-question id="Fold refusal set">
+    <question>Beyond an empty body, what does the fold command refuse with requirements.md left unchanged (a file holding no ## Decisions heading, a body holding a heading line, anything of the body&apos;s prose), given that the sibling tools write what they are given and validate nothing of the formats whose rules live in the shared procedures?</question>
+  </open-question>
+  <open-question id="Subsection requirement">
+    <question>Must every fold name a ### subsection under ## Decisions to land in, as both recent shapes of the section use (one subsection per decision, or a few topical ones), or may a call name none and have the decision land directly under ## Decisions after whatever the section already holds?</question>
+  </open-question>
+  <open-question id="Option value source">
+    <question>In the batched call, where does each remove --option value come from: written into the call by the runner from the compact view&apos;s lifted pick when the call is composed (the snapshot being live for every block whose lift later succeeds, since a cascade strips a block&apos;s whole recommendation half or nothing), or taken inside the call from the lift&apos;s own print, for instance through an option-only print the lift subcommand would gain?</question>
+  </open-question>
+  <open-question id="Compact view command">
+    <question>Is the compact view of the question document (id, question text, lifted pick) one new print of the open-question tool, such as flags on walk or list that print all three per block in one call, or composed in one fixed shell call from the existing list --with-question and one lift per walked id, each written out in full?</question>
+  </open-question>
+  <open-question id="Compact view block scope">
+    <question>Does the compact view the sweep reads cover every open-question block, the recommendation-less ones included with their question text, so the run can see a sibling a decision might moot, or only the blocks walk prints, since the sweep records nothing for a block without a pick?</question>
+  </open-question>
+  <open-question id="Sweep procedure references">
+    <question>Once the sweep writes lift, fold, remove, and commit into its own batched call, does it still follow the two shared answer procedures for anything (the lift step&apos;s no-recommendation guard, the answer core&apos;s analyse questions), or does its own file state every per-question step and the two procedures say they are followed by the single-question skills alone, as the recommendation pass&apos;s batching did in its own file?</question>
+  </open-question>
+  <open-question id="Mooting cascade in batch">
+    <question>Does the batched sweep keep the answer core&apos;s cascade to mooted entries, folding an implied constraint and bare-removing the mooted block inside the mooting answer&apos;s section of the call, or drop that judgment from the sweep&apos;s path and leave an entry a recorded decision moots to the next review pass, given that it fired once in 856 measured answers?</question>
+  </open-question>
+  <open-question id="Contradiction advisory timing">
+    <question>When every fold of a run happens inside one shell call, where is the contradiction advisory formed: once upfront over the whole walked set, against the recorded Decisions and the run&apos;s own earlier picks, before the call is composed, or not at all in the sweep, with a contradiction left for the next review pass to notice?</question>
+  </open-question>
+  <open-question id="Status line source">
+    <question>How does the report step learn whether the batched call committed at least one answer, so it can choose between the Recommendations recorded. line and the no-op line: from one fixed marker line the call prints once after its last section, from a marker line printed per landed commit as the recommendation pass&apos;s call does, or from something read after the call such as the end-of-run walk?</question>
+  </open-question>
+  <open-question id="End-of-run walk placement">
+    <question>Does the completeness walk ride inside the batched call after its last section, so a run without a failure costs one call for the loop and the check together, or stay its own call after the batched one, so that it still runs when a section stopped the call?</question>
+  </open-question>
+  <open-question id="Stop report print">
+    <question>On a failure after a fold inside the batched call, how do the stopped question&apos;s Short Title and the tool&apos;s Error: line reach the report: the call prints one fixed stopped-at line naming the Short Title and lets the tool&apos;s stderr pass through beside it, or it captures each step&apos;s stderr and prints the Short Title paired with the Error: line as the recommendation pass&apos;s call does for a refused block?</question>
+  </open-question>
+  <open-question id="Fold refusal handling">
+    <question>When the fold command itself refuses a question&apos;s decision, so nothing of that question has been folded yet, does the batched call skip that question and go on to the next section as it does for a failed lift, or stop the run there as it does for a failure after a fold?</question>
+  </open-question>
+  <open-question id="Template test coverage">
+    <question>Is the batched call&apos;s shell template exercised by an automated test that runs the rendered call against a fixture milestone and checks the per-answer commits and the stop path, or verified by the Claude Code hands-on check alone with the other two trees reviewed as rendered, as the recommendation pass&apos;s template was?</question>
+  </open-question>
+</open-questions>
