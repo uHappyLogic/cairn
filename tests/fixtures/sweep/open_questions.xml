@@ -1,0 +1,48 @@
+<open-questions>
+  <open-question id="Storage backend">
+    <question>Which store backs the cache?</question>
+    <recommendation option="SQLite file">A crash mid-write is the one failure a cache must survive, and a transaction rules it out while the store stays one file.</recommendation>
+    <alternative id="SQLite file">
+      Keep every entry in one SQLite database file beside the project.
+      <advantage>A transaction keeps a crashed write from corrupting the store.</advantage>
+      <drawback>The store needs the sqlite3 module at run time.</drawback>
+    </alternative>
+    <alternative id="Flat JSON file">
+      Keep every entry in one JSON file rewritten whole on every change.
+      <advantage>The store is readable and diffable by hand.</advantage>
+      <drawback>Every write rewrites the whole file, and a crash mid-write loses it.</drawback>
+    </alternative>
+  </open-question>
+  <open-question id="Retry limit">
+    <question>How many times is a failed read retried before it is reported?</question>
+    <recommendation option="Three retries">Three retries ride out a transient fault without hiding a lasting one for long.</recommendation>
+    <alternative id="Three retries">
+      Retry a failed read three times, then report the last error.
+      <advantage>A transient fault is ridden out without the caller seeing it.</advantage>
+      <drawback>A lasting fault is reported only after three more waits.</drawback>
+    </alternative>
+    <alternative id="No retry">
+      Report a failed read at once, retrying nothing.
+      <advantage>A fault reaches the caller with no delay.</advantage>
+      <drawback>Every transient fault surfaces as an error.</drawback>
+    </alternative>
+  </open-question>
+  <open-question id="Cache eviction">
+    <question>How does the cache evict entries once it is full?</question>
+    <depends-on question="Storage backend" option="Flat JSON file"/>
+    <recommendation option="Drop whole file">With a flat JSON store every write already rewrites the whole file, so dropping it on overflow costs nothing a per-entry eviction would save.</recommendation>
+    <alternative id="Drop whole file">
+      Delete the whole store when it outgrows its limit and start empty.
+      <advantage>Eviction is one delete, with no bookkeeping per entry.</advantage>
+      <drawback>Every warm entry is lost along with the cold ones.</drawback>
+    </alternative>
+    <alternative id="Least recently used">
+      Evict the entries read least recently until the store fits its limit again.
+      <advantage>Warm entries survive an eviction.</advantage>
+      <drawback>Every read updates a recency stamp, which is one more write.</drawback>
+    </alternative>
+  </open-question>
+  <open-question id="Cache warmup">
+    <question>Is the cache warmed before its first read?</question>
+  </open-question>
+</open-questions>

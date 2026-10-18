@@ -181,10 +181,11 @@ def test_sort_is_the_identity_on_every_golden_fixture(run_tool, milestone_dir, n
     document = target / open_questions.DOCUMENT_NAME
     before = document.read_bytes()
     stat_before = document.stat()
+    names_before = sorted(path.name for path in target.iterdir())
     silent(run_tool("sort", str(target)))
     assert document.read_bytes() == before
     assert (document.stat().st_ino, document.stat().st_mtime_ns) == (stat_before.st_ino, stat_before.st_mtime_ns)
-    assert sorted(path.name for path in target.iterdir()) == [open_questions.DOCUMENT_NAME]
+    assert sorted(path.name for path in target.iterdir()) == names_before
 
 
 def test_sort_is_the_identity_on_the_annotated_fixture_and_walk_is_its_annotated_prefix(run_tool, milestone_dir):
