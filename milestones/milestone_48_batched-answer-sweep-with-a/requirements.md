@@ -60,5 +60,9 @@ The fold lives in a new self-contained stdlib-only Python 3.9+ tool file named f
 
 The fold command is a byte-preserving splice: it reads the whole file only to locate `## Decisions` and the target landing point, inserts the decision text there with exactly the blank lines the two seams need (one blank line before and after the inserted block, adding one only where the neighbouring line is not already blank), and writes every other byte of the file back unchanged, normalizing nothing it did not write, so each `Recommendation-answer:` commit's `requirements.md` diff is exactly the folded decision. It departs from the task-list tool's whole-file render on purpose, because `requirements.md` keeps being written by hand and the fold is not its sole writer; the seam cases (end of file without a trailing blank line, a subsection holding no body yet, a section ending in a bullet list) are small, tested code.
 
+### Fold body form
+
+The fold command treats the body it reads on standard input as opaque Markdown: it writes it verbatim with only its leading and trailing blank lines trimmed, adding no bullet, bold lead, or paragraph wrapping of its own, as the task-list tool's `move` writes its bar. Every format rule stays in the answer core's fold step, where the three Edit-based skills already read it, and the runner chooses each entry's shape by matching the subsection it lands in: a prose paragraph where the milestone's Decisions use one subsection per decision, a `- **Lead.** text` bullet where they use topical subsections of bullets, so sweep folds and hand folds in one milestone take the same shape by the same judgment. The tool gains no rendering path for a prose section it does not otherwise parse.
+
 ## Out of Scope
 
