@@ -13,9 +13,18 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_48_batched-answer-sweep-with-a/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 48 — Batched answer sweep with a fold tool
+
+- `answer-all-open-questions-with-recommendation` records a whole run in one fixed batched shell call: a stranded-fold guard, then per walked question a silently skipped lift, a fold, a `remove` with the literal option, and one `Recommendation-answer:` commit with a landed marker, stopping resumably on the first failure and closing with the completeness `walk`.
+- The sweep's setup is one compact-view shell call printing every block's id and question text plus each walked pick and its alternative's what-it-is, with `requirements.md` read whole in the same turn, retiring the whole XML read, the per-answer `locate`, and the zsh-breaking `=====` separator.
+- A new self-contained tool, `core/tools/requirements.py`, offers `fold <MILESTONE_DIR> --section "<Heading>"`, a byte-preserving splice of an opaque decision body under a named `###` subsection of `## Decisions`, created when missing, called by the sweep only.
+- The sweep no longer runs the mooting cascade or forms a contradiction advisory; `review-milestone-requirements` instead gained a `## Decisions` consistency step that authors one open question per conflicting pair of recorded decisions.
+- The fold tool has its own test suite, and two new fixed-call tests extract the sweep's compact view and batched call from the rendered Claude Code tree and run them under bash under both interpreters.
+- `CLAUDE.md` invariants and the docs describe the batched sweep and the fold tool, and the rewritten sweep was checked hands-on in Claude Code.
 
 ### Milestone 47 — Antigravity global install and agent tools
 
@@ -514,3 +523,4 @@ Current milestone: `milestones/milestone_48_batched-answer-sweep-with-a/`
 | 45 | Host differences as named slots | `milestones/milestone_45_host-differences-as-named-slots/` |
 | 46 | Task-list tool as sole writer | `milestones/milestone_46_task-list-tool-as-sole-writer/` |
 | 47 | Antigravity global install and agent tools | `milestones/milestone_47_antigravity-global-install-and-agent/` |
+| 48 | Batched answer sweep with a fold tool | `milestones/milestone_48_batched-answer-sweep-with-a/` |
