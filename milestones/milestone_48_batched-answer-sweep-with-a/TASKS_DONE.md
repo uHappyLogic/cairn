@@ -102,3 +102,17 @@ Add to `tests/` an automated test of the sweep's batched call, run under both py
 - `uv run pytest` passes (785 passed) and `uv run --no-project --python 3.9 --with pytest pytest` passes (781 passed, 1 skipped), the four new tests collected and passing under both, with `tests/test_sort.py`'s identity test comparing the fixture directory's listing before and after the sort so a fixture milestone holding `requirements.md` passes it
 
 ---
+
+## Add Compact View Call Test
+
+Add to `tests/` an automated test of the sweep's compact view call, run under both pytest interpreters and needing no git repository: it finds the call as the one fenced block of the rendered Claude Code sweep file holding `list` with its `--with-question` flag (failing on none or more than one), replaces `<MILESTONE_DIR>` with a copy of a golden fixture milestone whose document holds recommendation-bearing and recommendation-less blocks, runs it under bash with the tree's plugin-root variable exported to the tree root, and asserts the print exactly: every block's id, a tab, and its question text in document order, then for each walked id in walk order the id, its lifted line, and its picked alternative's what-it-is line; the failed-lift branch stays with the hands-on check. Verified by both pytest runs passing with the test collected and passing on the committed `hosts/claude/` tree.
+
+**Verified:**
+
+- `tests/test_sweep_compact_view.py` finds the call as the one fenced block of the committed `hosts/claude/skills/answer-all-open-questions-with-recommendation/SKILL.md` holding `list` with its `--with-question` flag (`/tools/open_questions.py list --with-question `) and fails on none or more than one (mutated copies with a second such fence and with the flag removed both failed the test)
+- it replaces only `<MILESTONE_DIR>` (no other placeholder left) with the relative path of a copy of the golden fixture milestone `tests/fixtures/compact_view/`, whose `open_questions.xml`, in the tool's canonical sorted form, holds three recommendation-bearing blocks (one a dependent, one rationale holding its own spaced em dash, one option holding an entity) and two recommendation-less ones (one with alternatives, one bare); the new fixture also passes the suite's canonical round-trip and sort-identity tests
+- it runs the call under bash in a plain temporary directory with no git repository, `CLAUDE_PLUGIN_ROOT` exported to `hosts/claude` and `python3` resolving to the suite's own interpreter, and asserts exit 0, empty stderr, and the print exactly: every block's id, a tab, and its un-escaped question text in document order, then for each walked id in walk order the id, its lifted line, and its picked alternative's what-it-is line; the document is left byte-for-byte unchanged (mutated copies taking the option by the shortest suffix or dropping the `lift --alternative` line both failed the test)
+- the failed-lift branch is not provoked and stays with the hands-on check; no runtime file changed (`git status` shows nothing under `core/` or `hosts/`) and `uv run scripts/build_hosts.py --check` passes
+- `uv run pytest` passes (790 passed) and `uv run --no-project --python 3.9 --with pytest pytest` passes (786 passed, 1 skipped), the two new tests collected and passing under both
+
+---

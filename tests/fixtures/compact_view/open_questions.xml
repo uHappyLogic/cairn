@@ -1,0 +1,62 @@
+<open-questions>
+  <open-question id="Log format">
+    <question>Which format are log lines written in?</question>
+    <applied-principle>Machine-readable first</applied-principle>
+    <recommendation option="JSON lines">One object per line keeps every field machine-readable — and grep still finds a line by its text.</recommendation>
+    <alternative id="JSON lines">
+      Write each log entry as one JSON object on its own line.
+      <advantage>Every field stays machine-readable.</advantage>
+      <drawback>A line is harder to read by eye.</drawback>
+    </alternative>
+    <alternative id="Plain text">
+      Write each log entry as one human-readable line of text.
+      <advantage>A line reads at a glance with no tool.</advantage>
+      <drawback>Every field must be parsed back out of free text.</drawback>
+    </alternative>
+  </open-question>
+  <open-question id="Log level default">
+    <question>Which level does a run log at when none is configured?</question>
+    <recommendation option="Info">Info records every state change a user would ask about without the noise of debug output.</recommendation>
+    <alternative id="Info">
+      Log at info level unless a level is configured.
+      <advantage>Every state change is on record.</advantage>
+      <drawback>A long run writes a large log.</drawback>
+    </alternative>
+    <alternative id="Warning">
+      Log at warning level unless a level is configured.
+      <advantage>The log stays small.</advantage>
+      <drawback>A normal run leaves no trace of what it did.</drawback>
+    </alternative>
+  </open-question>
+  <open-question id="Rotation trigger">
+    <question>What triggers a log file&apos;s rotation: its size &amp; age, or a &quot;nightly&quot; &lt;cron&gt; schedule?</question>
+    <depends-on question="Log format" option="JSON lines"/>
+    <recommendation option="Size &amp; age">JSON lines grow fast under load, so size bounds a file where a schedule cannot.</recommendation>
+    <alternative id="Size &amp; age">
+      Rotate a file once it passes 10 MB or turns a day old, whichever comes first.
+      <advantage>No file grows past its bound.</advantage>
+      <drawback>Rotation times are irregular.</drawback>
+    </alternative>
+    <alternative id="Nightly schedule">
+      Rotate every file at midnight whatever its size.
+      <advantage>Each file holds exactly one day.</advantage>
+      <drawback>A busy day can grow one file without bound.</drawback>
+    </alternative>
+  </open-question>
+  <open-question id="Log shipping">
+    <question>Are logs shipped to a central collector?</question>
+    <alternative id="Ship to collector">
+      Forward every log line to one central collector.
+      <advantage>Every host&apos;s logs are searchable in one place.</advantage>
+      <drawback>A collector outage drops or delays log lines.</drawback>
+    </alternative>
+    <alternative id="Keep local">
+      Keep every log on the host that wrote it.
+      <advantage>No network path is needed.</advantage>
+      <drawback>A search spans every host by hand.</drawback>
+    </alternative>
+  </open-question>
+  <open-question id="Log sampling">
+    <question>Are repeated log lines sampled under load?</question>
+  </open-question>
+</open-questions>
