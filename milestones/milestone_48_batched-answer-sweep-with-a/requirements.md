@@ -68,5 +68,9 @@ The fold command treats the body it reads on standard input as opaque Markdown: 
 
 A heading that matches no `###` heading under `## Decisions` is created, never refused: the fold command appends the `###` heading at the end of `## Decisions`, just before the next `##` heading, and folds the decision under it, while a heading that matches folds into the existing subsection. Headings are matched after whitespace and case folding, which catches most reworded repeats; a true near-duplicate subsection stays visible in the answer's commit diff. The same call shape therefore serves the first decision of a fresh milestone, whose `## Decisions` is created empty, and every later one, with no hand edit outside the batched call.
 
+### Compact view command
+
+The compact view is one fixed shell call with no tool change, shown in full and run as shown with only `<MILESTONE_DIR>` replaced: it runs `list --with-question` and then pipes `walk`'s print into a `while IFS= read -r` loop that prints each id followed by that id's `lift` line, every tool invocation written as the full fixed command. That call doubles as the sweep's gather and order, a failed lift prints its `Error:` line in place of the pick, and the loop variable is exempted by the shell-literal invariant's clause for the sweep as the batch calls' per-item values are. The open-question tool, its contract, and its test suite stay unchanged.
+
 ## Out of Scope
 
