@@ -151,3 +151,23 @@ Update the documentation surfaces: `docs/skill-reference.md`'s `answer-all-open-
 - `uv run scripts/build_hosts.py --check` passes
 
 ---
+
+## Hands-On Check Of Sweep In Claude Code
+
+Run the rewritten sweep hands-on in Claude Code from the checkout's own `hosts/claude` marketplace install, headless as `docs/ways-of-using-cairn.md` invokes it, against a throwaway project whose current milestone holds recommendation-bearing blocks, a recommendation-less one, and a stale `<depends-on>` that makes one lift fail, covering the compact view and the requirements read sent in one turn, the batched call composed and run as shown, one commit per answer, the silent skip, the report's status line, and the stop path after a fold (provoked by hand on the shown call), and rewrite the dated block in the header of `scripts/hosts/claude/settings.toml` as that check, naming the installed `claude` version and the points covered while carrying forward its earlier points; read the rendered `hosts/antigravity/` and `hosts/codex/` sweep files through against the Claude Code one with no run, confirming they differ only by plugin root, and record nothing in those hosts' blocks. Verified when the block names every point checked, no other host's block and no `CLAUDE.md` invariant changes, and `uv run scripts/build_hosts.py --check` passes.
+
+**Verified:**
+
+- The sweep was run headless in Claude Code from the checkout's own hosts/claude marketplace install (`claude plugin list`: cairn 1.8.5, user scope, read from /Users/lucask/workspace/cairn/hosts/claude) as `claude -p "/cairn:answer-all-open-questions-with-recommendation" --dangerously-skip-permissions --model "fable" --effort high`, against a throwaway git project whose current milestone held two recommendation-bearing blocks, a recommendation-less block, and a stale `<depends-on>` block.
+- The runner sent step 1's compact view call (byte-equal to the shown fence with only `<MILESTONE_DIR>` replaced) and the whole Read of requirements.md in one assistant turn.
+- The batched call was composed and run as shown: byte-equal to the template with guard and footer once and one section per walked id in walk order, printing two `answer commit landed` lines and `completeness walk` with nothing after.
+- One commit per answer: two `Recommendation-answer:` commits, each with the lifted line as body, path-scoped to open_questions.xml and requirements.md, each removing its block and adding only its folded decision.
+- Silent skip: the stale block's pick was stripped by the first answer's remove (alternatives kept), its section's lift failed and it printed and committed nothing.
+- Status line: the run printed only `Recommendations recorded.`, exit 0.
+- Stop after a fold, provoked by hand on the shown call in zsh with an option outside the block's set: remove's own `Error:` line, `stopped at<TAB>Retry limit`, no completeness walk, earlier answer committed, fold uncommitted with block standing; the re-run's guard printed `dirty before start` with the porcelain line, and a headless run on that tree reported the dirty start with the porcelain line and remedy, changing nothing.
+- The compact view's failed-lift branch, provoked by hand on the shown call, printed the tool's `Error:` line in place of the pick with no what-it-is line and continued the loop.
+- The dated block in the header of scripts/hosts/claude/settings.toml was rewritten as the 2026-10-18 check against `claude` 2.1.302, naming every point checked and carrying forward the 2026-10-13 points marked as such.
+- The rendered hosts/antigravity/ and hosts/codex/plugins/cairn/ sweep SKILL.md (and the shared procedures and tools it calls) were read against the Claude Code one and differ only by plugin root, with no run; no other host's block and no CLAUDE.md invariant changed (git diff names only scripts/hosts/claude/settings.toml).
+- `uv run scripts/build_hosts.py --check` passes (and `uv run pytest`: 790 passed).
+
+---

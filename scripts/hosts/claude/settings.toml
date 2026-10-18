@@ -8,23 +8,64 @@
 # plugin_name below. Every host shares this exact key set: a key with nothing to declare
 # is left empty, never omitted.
 #
-# Hands-on check, 2026-10-13, against the installed `claude` 2.1.296 in headless (-p) runs,
-# with the subagent documentation alongside. It sourced ALTERNATIVES_CONCURRENCY,
-# ALTERNATIVES_PARALLELISM, and ALTERNATIVES_REPAIR, and confirmed CONTEXT_FILE,
-# COMPLETE_TASK_DISPATCH, COMPLETE_TASK_PROMPT_INSTRUCTIONS, ALTERNATIVES_DISPATCH, and
-# ALTERNATIVES_PROMPT_INSTRUCTIONS as written.
-# - Dispatch: the Agent tool takes subagent_type; the plugin's agents are registered under
-#   their cairn:-namespaced names with their instructions; several dispatches sent in one
-#   message run concurrently, and each call's result carries the agent id.
-# - Waiting: a dispatch runs in the background by default, its call returning at once and the
-#   agent's ending waking the session with its final message. A foreground (blocking) form,
-#   run_in_background set to false, exists only with fork mode off, which the documentation
-#   gives as the headless default and not the interactive one, where the foreground cannot be
-#   requested; so the background form is the one wait every session has.
-# - Continuing a finished agent: SendMessage addressed to the agent id resumes the finished
-#   agent with its context intact; it never blocks, returning at once, and the resumed agent's
-#   ending wakes the session again.
-# - Context file: the session loads the workspace root CLAUDE.md as project instructions.
+# Hands-on check, 2026-10-18, against the installed `claude` 2.1.302 in headless (-p) runs of
+# the inline answer sweep, which carries no wording slot, so it re-sourced no value below. It
+# carries forward unchecked, and marks so, each point of the 2026-10-13 check against `claude`
+# 2.1.296 that this block replaces, which ran with the subagent documentation alongside,
+# sourced ALTERNATIVES_CONCURRENCY, ALTERNATIVES_PARALLELISM, and ALTERNATIVES_REPAIR, and
+# confirmed CONTEXT_FILE, COMPLETE_TASK_DISPATCH, COMPLETE_TASK_PROMPT_INSTRUCTIONS,
+# ALTERNATIVES_DISPATCH, and ALTERNATIVES_PROMPT_INSTRUCTIONS as written.
+# - Install: `claude plugin list` reports the plugin enabled at user scope, read from this
+#   checkout's hosts/claude through its directory marketplace. A run in a throwaway git
+#   project, started as `claude -p "/cairn:answer-all-open-questions-with-recommendation"
+#   --dangerously-skip-permissions --model "fable" --effort high`, loaded the skill from there,
+#   its text arriving with every ${CLAUDE_PLUGIN_ROOT} already resolved to that directory's
+#   absolute path, and the Bash tool ran every call in zsh.
+# - Compact view and requirements read: the project's current milestone held two
+#   recommendation-bearing blocks, a third whose <depends-on> assumed an option of the first
+#   other than its pick, and one recommendation-less block. The runner sent step 1's call,
+#   as shown with only <MILESTONE_DIR> replaced, and the whole Read of requirements.md in one
+#   turn; the call printed every block's id and question text, then each walked id with its
+#   lifted line and its picked alternative's what-it-is line.
+# - Batched call: composed exactly as shown, its guard and footer written once and one section
+#   per walked id in walk order, the stale block's included, and run as one call that printed
+#   `answer commit landed` twice, then `completeness walk` with nothing after it.
+# - One commit per answer: two `Recommendation-answer: <Short Title>` commits, each with its
+#   lifted line as body, path-scoped to open_questions.xml and requirements.md, each removing
+#   its block and adding only its folded decision, one into an existing subsection and one
+#   under the subsection its fold created.
+# - Silent skip: the first answer's remove stripped the stale block's pick, keeping its
+#   alternatives, so that block's section failed its lift and printed and committed nothing.
+# - Status line: the run printed only `Recommendations recorded.` and exited 0, the
+#   recommendation-less block untouched.
+# - Stop after a fold, provoked by hand on the shown call in zsh with a second section whose
+#   option names none of its block's alternatives: the fold landed, remove printed its own
+#   Error: line, the section printed `stopped at`, a tab, and the Short Title, and the call
+#   ended with no completeness walk, the first answer committed and the fold left uncommitted
+#   with its block standing. Re-running the shown call printed `dirty before start` and the
+#   porcelain line and ended before any lift; a headless run on that tree did the same and
+#   reported the dirty start with the porcelain line verbatim and the remedy, changing nothing.
+# - Failed lift in the compact view, provoked by hand on the shown call with one walked id's
+#   lift sent to a title the document lacks: the tool's Error: line printed in place of the
+#   pick, no what-it-is line followed, and the loop went on to the next id.
+# - Turns: the clean run took seven, one lost to the runner's own read of the two shared
+#   procedures the steps name joined by an `echo ======` separator, which zsh refused as an
+#   =cmd expansion; the dirty-start run took five.
+# - Dispatch (carried forward from 2026-10-13): the Agent tool takes subagent_type; the
+#   plugin's agents are registered under their cairn:-namespaced names with their
+#   instructions; several dispatches sent in one message run concurrently, and each call's
+#   result carries the agent id.
+# - Waiting (carried forward from 2026-10-13): a dispatch runs in the background by default,
+#   its call returning at once and the agent's ending waking the session with its final
+#   message. A foreground (blocking) form, run_in_background set to false, exists only with
+#   fork mode off, which the documentation gives as the headless default and not the
+#   interactive one, where the foreground cannot be requested; so the background form is the
+#   one wait every session has.
+# - Continuing a finished agent (carried forward from 2026-10-13): SendMessage addressed to
+#   the agent id resumes the finished agent with its context intact; it never blocks,
+#   returning at once, and the resumed agent's ending wakes the session again.
+# - Context file (carried forward from 2026-10-13): the session loads the workspace root
+#   CLAUDE.md as project instructions.
 
 # The plugin name that fills every {{NAME}} slot in the templates beside this file.
 plugin_name = "cairn"
