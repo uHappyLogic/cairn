@@ -3,9 +3,11 @@
 This is the single source of truth for recording an answer to one open question of a
 milestone: the decision lands under `## Decisions` of `<MILESTONE_DIR>/requirements.md` and
 the answered block leaves `<MILESTONE_DIR>/open_questions.xml`. It is followed inline by the
-single-question answer skills and, once per question, by the inline answer sweep. The caller
-supplies the inputs below and wraps the result; this file describes only the recording work
-itself — locate, analyse, fold, remove, cascade.
+single-question answer skills. The inline answer sweep draws only on its analyse step's
+questions and its fold step's rules for what a decision says and the shape it takes, never on
+its tool steps, which the sweep's own batched call replaces. The caller supplies the inputs
+below and wraps the result; this file describes only the recording work itself — locate,
+analyse, fold, remove, cascade.
 
 Every read and write of `open_questions.xml` here is a call to the plugin's open-question
 tool, `python3 ${PLUGIN_ROOT}/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`,
@@ -79,7 +81,9 @@ Add a concise statement under `## Decisions` of `<MILESTONE_DIR>/requirements.md
 relevant existing subsection, or a new subsection if none fits — capturing what was decided
 and any constraint it imposes. Write it as **clean prose with no citation marker**: the
 document records the decision itself, not where it came from. Match the live document's
-section names.
+section names, and match each entry's shape to the subsection it lands in: a prose paragraph
+where the milestone's `## Decisions` holds one subsection per decision, a
+`- **Lead.** text` bullet where it holds topical subsections of bullets.
 
 Write this edit **before** removing the answered block in step 4; the recorded decision
 always lands first.

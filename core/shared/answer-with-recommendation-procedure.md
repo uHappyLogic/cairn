@@ -5,8 +5,8 @@ recommendation** as its answer in a milestone. It composes over
 `shared/answer-procedure.md` (the recording core): it lifts the `<recommendation>` element
 the recommend sweep embedded in the question block, then delegates the actual recording to
 that core unchanged. It is followed inline by the `answer-open-question-with-recommendation`
-skill and, once per question, by the inline answer sweep. The caller supplies the inputs
-below and wraps the result; this file describes only the work itself — lift, delegate.
+skill. The caller supplies the inputs below and wraps the result; this file describes only
+the work itself — lift, delegate.
 
 ## Inputs
 
