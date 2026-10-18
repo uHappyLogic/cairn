@@ -100,5 +100,9 @@ The compact view covers every open-question block in the document: each block `w
 
 The completeness `walk` is written into the batched call as its last command, after the last question section, so a run without a failure costs one call for the loop and the check together and keeps the check that a hand-composed section was not dropped. A stop after a fold ends the call before the walk is reached, so a stopped run gets no walk, as today, where a walk after a stop would print only the stopped and unreached questions. One fixed header line printed before the walk separates its bare ids from the marker lines in the call's output.
 
+### Fold refusal handling
+
+A fold refusal is handled like a failure after a fold: the batched call stops at that question's section, records nothing more, and leaves the tree as it stands, which for the refused question is clean since the fold wrote nothing and the remove and commit never ran. The report carries the stop through the same path as any other stop, so there is one failure branch per section; a fix is applied by hand or in a later run and the sweep is re-run from the top. Walk order's dependencies-first guarantee therefore holds for every commit that lands, and no pick tagged on the refused question is recorded against an outcome that was never recorded.
+
 ## Out of Scope
 
