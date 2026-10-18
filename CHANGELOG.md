@@ -2,6 +2,23 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.8.6 — 2026-10-18
+
+### Batched answer sweep with a fold tool (milestone 48)
+
+- `/answer-all-open-questions-with-recommendation` now records a whole run in one batched shell call, walking the questions in the tool's dependency order and landing one `Recommendation-answer:` commit per answer. It refuses to start while either milestone file holds an uncommitted change, and on the first failure it stops at the named question with the tree left for a re-run to resume.
+- The sweep's setup is one compact view printed by the open-question tool, read in the same turn as `requirements.md`. The whole read of `open_questions.xml`, the per-answer `locate`, and the `=====` separator that broke under zsh are retired.
+- A new stdlib-only tool, `tools/requirements.py`, offers `fold`: it splices one decision under a named `###` subsection of `## Decisions`, creating the subsection when none matches, and writes back every other byte of `requirements.md` unchanged. The sweep folds through it instead of ad-hoc edit scripts.
+- The sweep records every pick as given and no longer runs the mooting cascade or prints a contradiction advisory. `/review-milestone-requirements` instead checks the recorded decisions against each other and raises one open question per conflicting pair, holding convergence until it is answered.
+
+### Antigravity global install and agent tools (milestone 47)
+
+- The Antigravity plugin installs globally at `~/.gemini/config/plugins/cairn`, and every rendered read path and tool command names that location instead of a workspace-local `.agents/plugins/cairn`. The installation section extracts there, says to restart after the first install, and gives the command to remove a stale workspace-local copy.
+- Both Antigravity agents declare a `tools:` list naming the host's file-writing and command-running tools, replacing the `enable_write_tools` key the installed `agy` ignores, so dispatched agents can write their files and run commands.
+- The host build checks each host's required agent frontmatter with a new `declared-key-mismatch` check, and a new on-demand suite, `agy_tests/`, drives the installed `agy` against the global copy; it runs before a change to the Antigravity integration is committed and in the release pre-flight when that integration changed.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.8.5...1.8.6
+
 ## 1.8.5 — 2026-10-15
 
 ### Task-list tool as sole writer (milestone 46)
