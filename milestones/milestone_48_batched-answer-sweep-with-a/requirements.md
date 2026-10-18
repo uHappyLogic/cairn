@@ -52,5 +52,9 @@ The sweep forms no contradiction advisory: its upfront reasoning makes no contra
 
 The batched call's shell template is exercised by an automated test in `tests/` that runs in CI under both pytest interpreters. It extracts the fixed call from a rendered host tree, fills its per-question placeholders for a golden fixture milestone copied into a temporary git repository, and runs the call under bash. It asserts one `Recommendation-answer:` commit per answered question, with the lifted line as body, path-scoped to `open_questions.xml` and `requirements.md`, and carrying the block's removal, and it asserts that a question whose lift fails is skipped silently. The stop path after a fold is not covered by the test and stays with the Claude Code hands-on check.
 
+### Fold command home
+
+The fold lives in a new self-contained stdlib-only Python 3.9+ tool file named for its document, `core/tools/requirements.py`, beside the three existing tools, with `fold` as its one subcommand for now, called as `python3 {{PLUGIN_ROOT}}/tools/requirements.py fold <MILESTONE_DIR> --section "<Heading>"` with the body on standard input and chained before the unchanged `remove` as `fold … && remove …`. The file carries its own copies of the stdin reader, error type, atomic writer, and main, imports no sibling (pinned by a parity test like the task-list tool's), and gets its own flat test files and conftest fixture. The open-question tool and its invariant stay unchanged, and the new tool gets its own short `CLAUDE.md` invariant.
+
 ## Out of Scope
 
