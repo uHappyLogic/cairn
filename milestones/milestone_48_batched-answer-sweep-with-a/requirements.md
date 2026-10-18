@@ -108,5 +108,9 @@ A fold refusal is handled like a failure after a fold: the batched call stops at
 
 The batched call leaves every post-fold step's stderr unredirected, so the tool's own `Error:` line, or git's message for a refused commit, reaches the output exactly as printed, and on that failure the section prints one fixed line naming the question, such as `stopped at`, a tab, and the Short Title, before ending the call. Only the lift's stderr is silenced (`2>/dev/null`), so a failed lift stays the silent skip. No error text is held in a shell variable and no capture wrapper is added to the fold, remove, or commit steps; since every failure after a lift stops the call there is at most one failure per call, and the report step pairs the stopped-at line with the `Error:` line printed beside it, a multi-line git message reaching it verbatim.
 
+### Sweep procedure references
+
+The sweep's own file states every per-question mechanical step its batched call runs: the lift with its silent skip, the fold through the fold command, the remove with the lifted option, and the commit. It stops following `answer-with-recommendation-procedure.md` altogether, whose intro then names only `answer-open-question-with-recommendation`, and keeps a reference to `answer-procedure.md` only for the judgment the batched call cannot do: the fold step's rules on what the decision text says (clean prose, no citation marker, the live document's section names), the one home the Fold body form decision keeps them in, plus whatever form of the analyse step's questions the sweep keeps. The core's intro is reworded to say the sweep follows its fold-content rules and analyse step, not its tool steps, and the `CLAUDE.md` sweep invariant and the shell-literal clause are reworded to match. The rules are not copied into a second home, and the procedures gain no batched-path branches.
+
 ## Out of Scope
 
