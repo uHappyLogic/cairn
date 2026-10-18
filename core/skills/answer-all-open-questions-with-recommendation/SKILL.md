@@ -17,14 +17,16 @@ It runs **inline and dispatches no agent**: you are the single writer of this ru
 every answer yourself, in this conversation, one question at a time in the order the tool gives
 you, each answer committed before the next question is touched. You record **every pick as
 given** and never judge it — a pick is never re-weighed, replaced, or skipped on its merits.
-Every gather, order, re-check, and change of `open_questions.xml` is a call to the plugin's
-open-question tool, and every tool call the run makes — this skill's own and the per-question
-calls of the procedures it follows, the lift procedure's `lift` and the answer procedure's
-`locate`, `remove`, and cascade `remove` — is written out in full as its fenced block shows it,
-never through a variable, alias, or function of your own defined to stand for the command or
-any part of it; the one whole read of the document with the file-reading tool (step 2) is
-for reasoning only. It requires **no** clean-working-tree precondition: every commit is
-path-scoped to the milestone's two files.
+Every gather, order, view, re-check, and change of `open_questions.xml` is a call to the
+plugin's open-question tool, and the document is never read with the file-reading tool: the
+gather, the order, and the view of it are one fixed shell call (step 1). Every tool call the
+run makes — this skill's own, those inside step 1's loop included, and the per-question calls
+of the procedures it follows, the lift procedure's `lift` and the answer procedure's `locate`,
+`remove`, and cascade `remove` — is written out in full as its fenced block shows it, never
+through a variable, alias, or function of your own defined to stand for the command or any part
+of it. `requirements.md` is read whole once with the file-reading tool, in the same turn as
+step 1's call (step 2), for reasoning only. It requires **no** clean-working-tree precondition:
+every commit is path-scoped to the milestone's two files.
 
 ## Usage
 
@@ -43,39 +45,61 @@ Follow `{{PLUGIN_ROOT}}/shared/get-current-milestone.md` to resolve `<MILESTONE_
 a hardcoded path. Resolve it **once per run** and hold it: every tool call, every recorded
 answer, and every commit below uses this one directory, the one the run walked.
 
-### 1. Gather the order with one `walk` call
+### 1. Gather, order, and view the questions in one fixed shell call
 
-Run
+Run this one fixed shell call, written out in full exactly as shown, with only
+`<MILESTONE_DIR>` replaced:
 
 ```
-python3 {{PLUGIN_ROOT}}/tools/open_questions.py walk <MILESTONE_DIR>
+python3 {{PLUGIN_ROOT}}/tools/open_questions.py list --with-question <MILESTONE_DIR> &&
+python3 {{PLUGIN_ROOT}}/tools/open_questions.py walk <MILESTONE_DIR> | while IFS= read -r id; do
+  printf '%s\n' "$id"
+  if pick="$(python3 {{PLUGIN_ROOT}}/tools/open_questions.py lift <MILESTONE_DIR> "$id" 2>&1)"; then
+    printf '%s\n' "$pick"
+    python3 {{PLUGIN_ROOT}}/tools/open_questions.py lift --alternative "${pick%% — *}" <MILESTONE_DIR> "$id"
+  else
+    printf '%s\n' "$pick"
+  fi
+done
 ```
 
-It prints one line per `<open-question>` block that carries a `<recommendation>` element — the
-block's `id` (its Short Title), bare — each block placed after every printed block its
-`<depends-on>` tags name. That one call is the whole gather and the whole ordering: never read
-`open_questions.xml` to gather or to order. Recommendation-less blocks are not printed.
+Its `list --with-question` prints every `<open-question>` block in document order, one line
+each: the block's `id` (its Short Title), a tab, and its `<question>` text —
+recommendation-less blocks included. Its `walk` then yields the `id` of every block that
+carries a `<recommendation>` element, each placed after every yielded block its `<depends-on>`
+tags name, and for each one in that order the loop prints three lines: the `id`, bare; the
+block's lifted line, "`<option>` — `<rationale>`"; and the picked alternative's line,
+"`<option>` — `<what-it-is>`", lifted with the option taken from the held line as its text
+before the first spaced em dash. A walked `id` whose lift fails is followed by that lift's
+`Error:` line in place of the pick and by no alternative line: it has no pick to record, and
+its own lift in step 3 is its skip. `id` and `pick` are each one quoted value per walked
+question, set and used within this one call, never a tool command or a path list.
 
-If the call prints nothing, no block carries a `<recommendation>` element: print the no-op line
-(step 5) and stop. If it fails, its one `Error: <reason>` line on stderr is the report: print it
-and stop.
+That one call is the whole gather, the whole ordering, and the whole view of the question
+document: never read `open_questions.xml` with the file-reading tool, to gather, to order, or
+to reason over. The walked ids, in the order printed, are the run's order; a block printed only
+in the tab-separated lines carries no `<recommendation>` and is left untouched.
 
-You walk this printed order **exactly once** (step 3). There is **no** outer re-gather loop:
-recording only removes blocks or strips their picks, so the order never gains a question under
-you.
+If the call prints no walked id — nothing after the tab-separated lines, or nothing at all — no
+block carries a `<recommendation>` element: print the no-op line (step 5) and stop. If it
+prints an `Error: <reason>` line that follows no walked id, the gather itself failed and that
+line is the report: print it and stop.
 
-### 2. Read the whole set once, for reasoning only
+You walk this printed order **exactly once** (step 3), and the call is never run again to
+re-check a question or confirm a skip: each question's `lift` in step 3a is its re-check and
+its skip. There is **no** outer re-gather loop: recording only removes blocks or strips their
+picks, so the order never gains a question under you.
 
-Read `<MILESTONE_DIR>/open_questions.xml` and `<MILESTONE_DIR>/requirements.md` **whole**,
-once, with the file-reading tool. This snapshot gives every recording in step 3 its view of the
-sibling questions and the decisions already recorded — the view the answer core's analyse step
-and the contradiction advisory reason over — so no question pays for its own re-read.
+### 2. Read `requirements.md` whole, in the same turn as step 1's call
 
-The snapshot is context, never a source of truth for the loop. It never gathers, orders,
-re-checks, or confirms a skip: the `walk` call gathered and ordered, and each question's `lift`
-call (step 3a) is its re-check and its skip. Once a cascade lands, the snapshot is stale for
-what it touched, so within step 3 the answer core's `locate` print of the block and the live
-`requirements.md` take precedence over it.
+Read `<MILESTONE_DIR>/requirements.md` **whole**, once, with the file-reading tool, never
+through shell output. Neither this read nor step 1's call needs the other's output, so send
+the two in the same turn, as two independent tool calls.
+
+This read and step 1's print are the context every recording in step 3 reasons over — the
+decisions already recorded, and each question's text and pick — so no question pays for its own
+re-read. Write each question's decision from its question text, its lifted line, and its picked
+alternative's what-it-is line, as the view printed them.
 
 ### 3. Record each question in order, one commit per answer
 
@@ -84,8 +108,8 @@ For each Short Title in the gathered order, in turn:
 **a. Record it through the shared procedure, from its lift step.** Read and follow
 `{{PLUGIN_ROOT}}/shared/answer-with-recommendation-procedure.md`, carrying out its steps
 yourself, with the `<MILESTONE_DIR>` from step 0 and this Short Title as its `MILESTONE_DIR` and
-`SHORT TITLE` inputs. It lifts the block's recommendation with one `lift` call — the only lift
-this question gets — and delegates the recording to
+`SHORT TITLE` inputs. It lifts the block's recommendation with one `lift` call — this
+question's re-check against the live document — and delegates the recording to
 `{{PLUGIN_ROOT}}/shared/answer-procedure.md` (locate, analyse, fold, remove with the lifted
 option passed verbatim, cascade).
 
@@ -138,7 +162,7 @@ the procedure after a successful lift stops the run the same way.
 
 ### 4. Check completeness with one end-of-run `walk`
 
-When the gathered order is exhausted, run the same call once more:
+When the gathered order is exhausted, run the tool's `walk` once more:
 
 ```
 python3 {{PLUGIN_ROOT}}/tools/open_questions.py walk <MILESTONE_DIR>
