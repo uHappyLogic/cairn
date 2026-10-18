@@ -80,5 +80,9 @@ The mooting judgment and the cascade are dropped from the sweep's path entirely:
 
 The report step learns whether the batched call committed at least one answer from the call's own output: each question's section chains one fixed, identifier-free marker line (for example `answer commit landed`) behind its `git commit -q` with `&&`, so the call prints one marker per landed `Recommendation-answer:` commit, the form the two batched-call precedents and the task-list chains already use. The report prints `Recommendations recorded.` when at least one marker appeared and the no-op line when none did, and both of today's no-op causes stay (an empty step-1 `walk`, and every lift failing). No shell variable tracks state across sections, and on a stop the markers already printed show how far the run got.
 
+### Fold refusal set
+
+Beyond an empty body and the baseline input failures every sibling tool already has, the fold command refuses, with `requirements.md` byte-for-byte unchanged, only a file that holds no column-0 `## Decisions` heading or holds more than one, the same rule as the task-list tool refusing an anchor that names no section. The body is written verbatim, heading lines included, nothing of the prose is checked, and a body already present under `## Decisions` is folded again: there is no duplicate no-op, since a checkout of the uncommitted fold already gives a resume, and the smallest refusal surface gives the batched call the fewest stops.
+
 ## Out of Scope
 
