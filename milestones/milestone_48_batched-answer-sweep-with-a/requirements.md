@@ -92,5 +92,9 @@ The fold command takes the `###` subsection heading as a required argument on ev
 
 In the batched call the runner writes each section's `remove --option` value as a literal quoted argument when it composes the call, copied from the pick the compact view lifted for that block, which keeps the answer core's rule that the option reaches `remove` as an exact id never parsed from the answer text. Inside the call nothing derives or checks the option: the section's `lift` still runs first and its print is held only as the commit body and the skip test, and `remove` receives the value the runner wrote and still refuses an id outside the block's set. The value is live for every block whose lift succeeds, because a cascade strips a block's whole recommendation half or nothing, and the open-question tool is unchanged.
 
+### Compact view block scope
+
+The compact view covers every open-question block in the document: each block `walk` prints appears with its id, question text, and lifted pick, and every recommendation-less block appears too, with its id and full question text and no pick. The `list` print already carries every block's id and question text, so covering the recommendation-less blocks costs nothing while filtering them out would add a step to the fixed call, and after a full recommendation pass those blocks are the few it skipped.
+
 ## Out of Scope
 
