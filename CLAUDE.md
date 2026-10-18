@@ -13,6 +13,7 @@ uv run scripts/build_hosts.py                           # rebuild hosts/ from co
 uv run scripts/build_hosts.py --check                   # drift gate: fails if the committed hosts/ trees differ from a fresh build
 uv run pytest                                           # Python tool suite under the pinned interpreter (.python-version)
 uv run --no-project --python 3.9 --with pytest pytest   # the same suite at the 3.9 floor; run both before committing a tool change
+uv run pytest agy_tests                                 # on-demand suite driving the installed agy against ~/.gemini/config/plugins/cairn; run before committing an Antigravity integration change
 uv run scripts/set_version.py X.Y.Z                     # bump VERSION and its three mirrors; releases go through /release-plugin instead
 ```
 
@@ -35,6 +36,7 @@ scripts/hosts/<host>/            — one declarative host definition per host: s
 scripts/build_hosts.py           — the one generic host build and validation gate (see its docstring and CONTRIBUTING.md ## Development)
 scripts/set_version.py           — writes VERSION and its three mirrors (marketplace.json, pyproject.toml, uv.lock) in lockstep; touches no git
 tests/                           — pytest suite of the tools under core/tools/, one flat test_<name>.py per subcommand or concern, golden fixtures under tests/fixtures/, plus test_build_rendering.py, the build's in-process rendering test, which runs under the pinned interpreter only
+agy_tests/                       — on-demand suite driving the real agy CLI against the global Antigravity copy, outside testpaths and CI, seeded from tests/fixtures/agy_project/; see CONTRIBUTING.md ## Development
 hosts/<host>/                    — committed build output, never hand-edited; published verbatim into uHappyLogic/cairn-<host> at release
 .claude/skills/release-plugin/   — maintainer-only release skill, outside core/ so no host renders it
 milestones/                      — this repo's own milestones (self-dogfooding); milestones/README.md holds the Current milestone: pointer

@@ -13,9 +13,19 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_47_antigravity-global-install-and-agent/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 47 — Antigravity global install and agent tools
+
+- The Antigravity `plugin_root` is the tilde literal `~/.gemini/config/plugins/cairn`, so every rendered read path and `python3` tool command in `hosts/antigravity/` names the global install instead of a workspace-local `.agents/plugins/cairn`.
+- Both Antigravity agents carry a `tools:` frontmatter list naming the host's file-writing and command-running tools (`write_to_file`, `replace_file_content`, `multi_replace_file_content`, and `run_command` among them) through a new `AGENT_WRITE_TOOLS` slot, empty in the Claude Code and Codex trees, replacing the `enable_write_tools` key the installed `agy` ignores in an agent file.
+- Every host definition declares `required_agent_frontmatter`, and the build's new `declared-key-mismatch` check fails `--check` when a rendered agent lacks a declared key or holds a different value, the Antigravity definition pinning its tools list.
+- The Antigravity installation section, in the README template and the root `README.md` alike, extracts into the global path, follows the extract with a restart-on-first-install sentence, and gives the removal command for a stale workspace-local `.agents/plugins/cairn/` copy; the remaining stale path mentions in `docs/ways-of-using-cairn.md` and the bug issue template were corrected.
+- A new on-demand suite, `agy_tests/`, sits outside `testpaths` and CI and runs as `uv run pytest agy_tests`: it stops with one line before any test unless `agy` is on `PATH` and the global copy matches `hosts/antigravity/` byte for byte, seeds each headless `agy -p` run from the committed `tests/fixtures/agy_project/`, and tests plugin-root resolution plus direct dispatches of both agents landing their real files.
+- `CONTRIBUTING.md` requires a suite run before committing a change to the Antigravity integration paths, and the release-plugin pre-flight runs the suite when any of those paths changed since the last release tag.
+- The hands-on check block in the Antigravity `settings.toml` was rewritten as a check against `agy` 1.4.0 at the global install, covering both agents' write and shell tools.
 
 ### Milestone 46 — Task-list tool as sole writer
 
@@ -503,3 +513,4 @@ Current milestone: `milestones/milestone_47_antigravity-global-install-and-agent
 | 44 | Batched recommendation embeds in one shell call | `milestones/milestone_44_batched-recommendation-embeds-in-one/` |
 | 45 | Host differences as named slots | `milestones/milestone_45_host-differences-as-named-slots/` |
 | 46 | Task-list tool as sole writer | `milestones/milestone_46_task-list-tool-as-sole-writer/` |
+| 47 | Antigravity global install and agent tools | `milestones/milestone_47_antigravity-global-install-and-agent/` |
