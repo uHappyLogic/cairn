@@ -104,5 +104,9 @@ The completeness `walk` is written into the batched call as its last command, af
 
 A fold refusal is handled like a failure after a fold: the batched call stops at that question's section, records nothing more, and leaves the tree as it stands, which for the refused question is clean since the fold wrote nothing and the remove and commit never ran. The report carries the stop through the same path as any other stop, so there is one failure branch per section; a fix is applied by hand or in a later run and the sweep is re-run from the top. Walk order's dependencies-first guarantee therefore holds for every commit that lands, and no pick tagged on the refused question is recorded against an outcome that was never recorded.
 
+### Stop report print
+
+The batched call leaves every post-fold step's stderr unredirected, so the tool's own `Error:` line, or git's message for a refused commit, reaches the output exactly as printed, and on that failure the section prints one fixed line naming the question, such as `stopped at`, a tab, and the Short Title, before ending the call. Only the lift's stderr is silenced (`2>/dev/null`), so a failed lift stays the silent skip. No error text is held in a shell variable and no capture wrapper is added to the fold, remove, or commit steps; since every failure after a lift stops the call there is at most one failure per call, and the report step pairs the stopped-at line with the `Error:` line printed beside it, a multi-line git message reaching it verbatim.
+
 ## Out of Scope
 
