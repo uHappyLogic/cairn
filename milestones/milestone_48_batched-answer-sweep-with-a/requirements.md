@@ -84,5 +84,9 @@ The report step learns whether the batched call committed at least one answer fr
 
 Beyond an empty body and the baseline input failures every sibling tool already has, the fold command refuses, with `requirements.md` byte-for-byte unchanged, only a file that holds no column-0 `## Decisions` heading or holds more than one, the same rule as the task-list tool refusing an anchor that names no section. The body is written verbatim, heading lines included, nothing of the prose is checked, and a body already present under `## Decisions` is folded again: there is no duplicate no-op, since a checkout of the uncommitted fold already gives a resume, and the smallest refusal surface gives the batched call the fewest stops.
 
+### Subsection requirement
+
+The fold command takes the `###` subsection heading as a required argument on every call, with argparse's exit 2 when it is missing, mirroring the task-list tool's required position group, so every decision lands under a named subsection of `## Decisions` and there is no form of the call that names none. Both recent shapes of the section hold decisions only under a heading, and an optional argument would add a placement branch whose no-heading path either mis-files the decision into the last subsection or invents a third shape of the section.
+
 ## Out of Scope
 
