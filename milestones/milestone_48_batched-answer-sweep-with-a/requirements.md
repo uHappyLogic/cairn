@@ -56,5 +56,9 @@ The batched call's shell template is exercised by an automated test in `tests/` 
 
 The fold lives in a new self-contained stdlib-only Python 3.9+ tool file named for its document, `core/tools/requirements.py`, beside the three existing tools, with `fold` as its one subcommand for now, called as `python3 {{PLUGIN_ROOT}}/tools/requirements.py fold <MILESTONE_DIR> --section "<Heading>"` with the body on standard input and chained before the unchanged `remove` as `fold … && remove …`. The file carries its own copies of the stdin reader, error type, atomic writer, and main, imports no sibling (pinned by a parity test like the task-list tool's), and gets its own flat test files and conftest fixture. The open-question tool and its invariant stay unchanged, and the new tool gets its own short `CLAUDE.md` invariant.
 
+### Fold write scope
+
+The fold command is a byte-preserving splice: it reads the whole file only to locate `## Decisions` and the target landing point, inserts the decision text there with exactly the blank lines the two seams need (one blank line before and after the inserted block, adding one only where the neighbouring line is not already blank), and writes every other byte of the file back unchanged, normalizing nothing it did not write, so each `Recommendation-answer:` commit's `requirements.md` diff is exactly the folded decision. It departs from the task-list tool's whole-file render on purpose, because `requirements.md` keeps being written by hand and the fold is not its sole writer; the seam cases (end of file without a trailing blank line, a subsection holding no body yet, a section ending in a bullet list) are small, tested code.
+
 ## Out of Scope
 
