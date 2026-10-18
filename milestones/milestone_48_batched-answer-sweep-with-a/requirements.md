@@ -96,5 +96,9 @@ In the batched call the runner writes each section's `remove --option` value as 
 
 The compact view covers every open-question block in the document: each block `walk` prints appears with its id, question text, and lifted pick, and every recommendation-less block appears too, with its id and full question text and no pick. The `list` print already carries every block's id and question text, so covering the recommendation-less blocks costs nothing while filtering them out would add a step to the fixed call, and after a full recommendation pass those blocks are the few it skipped.
 
+### End-of-run walk placement
+
+The completeness `walk` is written into the batched call as its last command, after the last question section, so a run without a failure costs one call for the loop and the check together and keeps the check that a hand-composed section was not dropped. A stop after a fold ends the call before the walk is reached, so a stopped run gets no walk, as today, where a walk after a stop would print only the stopped and unreached questions. One fixed header line printed before the walk separates its bare ids from the marker lines in the call's output.
+
 ## Out of Scope
 
