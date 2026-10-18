@@ -1,9 +1,9 @@
-"""Shared fixtures for the suite of the three tools under core/tools/.
+"""Shared fixtures for the suite of the four tools under core/tools/.
 
 Each tool is importable by its module name (`open_questions`, `define_milestone`,
-`task_list`) through the `pythonpath = ["core/tools"]` line in pyproject.toml and driven
-end-to-end as a subprocess under the interpreter running the suite, so every exit status,
-stdout, and stderr the tests see is exactly what a caller sees.
+`task_list`, `requirements`) through the `pythonpath = ["core/tools"]` line in
+pyproject.toml and driven end-to-end as a subprocess under the interpreter running the
+suite, so every exit status, stdout, and stderr the tests see is exactly what a caller sees.
 """
 
 import shutil
@@ -21,6 +21,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 TOOL = REPO_ROOT / "core" / "tools" / "open_questions.py"
 DEFINE_TOOL = REPO_ROOT / "core" / "tools" / "define_milestone.py"
 TASK_LIST_TOOL = REPO_ROOT / "core" / "tools" / "task_list.py"
+REQUIREMENTS_TOOL = REPO_ROOT / "core" / "tools" / "requirements.py"
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
 
@@ -120,6 +121,38 @@ def task_list_dir(tmp_path):
         done_bytes = (FIXTURES / "task_list_done.md").read_bytes() if done is None else done
         (destination / "TASKS_TODO.md").write_bytes(todo_bytes)
         (destination / "TASKS_DONE.md").write_bytes(done_bytes)
+        return destination
+
+    return build
+
+
+@pytest.fixture
+def run_requirements():
+    """Run the fold tool as a subprocess: run_requirements("fold", str(dir), "--section",
+    "A Heading", stdin=b"The decision."). Standard input is always piped (empty when stdin is
+    None), so the child never inherits a terminal."""
+
+    def run(*args, stdin=None):
+        return subprocess.run(
+            [sys.executable, "-B", str(REQUIREMENTS_TOOL), *args],
+            input=b"" if stdin is None else stdin,
+            capture_output=True,
+            check=False,
+        )
+
+    return run
+
+
+@pytest.fixture
+def requirements_dir(tmp_path):
+    """A fresh milestone directory holding requirements.md: by default a copy of the golden
+    requirements fixture, or the given bytes (requirements_dir(b"## Decisions\\n")) -> Path."""
+
+    def build(requirements=None, name="milestone"):
+        destination = tmp_path / name
+        destination.mkdir()
+        data = (FIXTURES / "requirements.md").read_bytes() if requirements is None else requirements
+        (destination / "requirements.md").write_bytes(data)
         return destination
 
     return build
