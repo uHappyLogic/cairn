@@ -76,7 +76,7 @@ Each removal, on either path, is one bare call — no `--option`, since a prune 
 python3 ${PLUGIN_ROOT}/tools/open_questions.py remove <MILESTONE_DIR> "<Short Title>"
 ```
 
-In that one write the tool deletes the block and strips every block whose embedded pick depended on it — and every block that depended on those in turn — of its `<recommendation>`, `<depends-on>`, and `<applied-principle>` children, keeping its `<alternative>` children, so no `<depends-on>` tag is left naming a removed or stripped block; a stripped block stays in the document as a live question, its alternatives intact, for the next `/recommend-all-open-questions` pass to re-pick. Stripping decides nothing, records nothing under `## Decisions`, and adds nothing to the step-5 report — the committed diff is its record.
+In that one write the tool deletes the block and strips every block whose embedded pick depended on it — and every block that depended on those in turn — of its `<recommendation>`, `<depends-on>`, and `<applied-principle>` children, keeping its `<alternative>` children, so no `<depends-on>` tag is left naming a removed or stripped block; a stripped block stays in the document as a live question, its alternatives intact, for the next `/recommend-all-open-questions` pass to re-pick. Stripping decides nothing, records nothing under `## Decisions`, and adds nothing to the step-6 report — the committed diff is its record.
 
 You **never** record a decision, fold an answer into `## Decisions`, or otherwise resolve a question here. Recording answers belongs to `/answer-open-question` alone. This step only shapes the question set to match decisions that already exist — removing settled or repeated blocks, and with them the analysis that depended on them.
 
@@ -104,9 +104,15 @@ The tool appends the block after the existing ones and owns its shape — escapi
 - **The question text.** Because a block does not sit next to the requirement it concerns, **each question must stand on its own** — brief, self-contained, and question-shaped, fully understandable without the surrounding context, never a design proposal. And **each question asks one choice**: a gap that holds two choices becomes two questions, one per choice. The one exception is choices in one gap that constrain each other, so that not every pairing of them is viable — author those as a single multi-axis question that asks both choices at once.
 - **The Short Title** (the block's `id`): a 2–5 word phrase that uniquely identifies the question within the document (e.g. "Getting-started section order", "Glossary term scope"). It is the stable handle the question is cited by in conversation and located by in the answering and recommendation skills, which match it **case-insensitively** — so keep every Short Title unique across all blocks even ignoring case. The tool refuses an id an existing block already carries (its `Error:` line names it); pick a distinct title and call again.
 
-Do not restructure or rewrite existing content — `requirements.md` is not edited by this pass, and the question document changes only through the `remove` calls of step 2 and the `add` calls here.
+Do not restructure or rewrite existing content — `requirements.md` is not edited by this pass, and the question document changes only through the `remove` calls of step 2 and the `add` calls here and in step 4.
 
-### 4. Commit the reshaped requirements
+### 4. Check the recorded decisions against each other
+
+Decisions recorded one answer at a time can come to contradict each other, and this pass is where such a pair is noticed. From your step-1 read, read the `## Decisions` entries against each other. Two entries conflict when both cannot hold as written — carrying out one breaks the other, or they fix different values for the same name, threshold, or behaviour; an entry that only refines, narrows, or extends another is no conflict.
+
+For each conflicting pair that no standing block already flags, author one block with step 3's `add` call, under step 3's rules for the question text and the Short Title: the question names the `###` heading each entry sits under in `## Decisions` (quoting enough of each to tell them apart where both share one heading), states briefly what each says, and asks which entry stands. This flags the conflict without resolving it — never edit, reword, or remove either entry, and never decide which one stands, since that is an answer's to record. The block rides in step 5's commit like any other new block, and step 6 shows it only as a Short Title in the still-open list.
+
+### 5. Commit the reshaped requirements
 
 Read and follow the shared commit procedure at `${PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
 
@@ -115,7 +121,7 @@ Read and follow the shared commit procedure at `${PLUGIN_ROOT}/shared/commit-pro
 
 The shared procedure owns the no-op guard, the path-scoped staging, and the commit. Its dirty-own-path guard covers this skill's no-op case: a pass that reconciled, pruned, and surfaced nothing leaves both files unchanged, so nothing is staged and nothing is committed; a pass that reshaped the question set commits that reshaping.
 
-### 5. Report convergence
+### 6. Report convergence
 
 Run
 
@@ -134,4 +140,4 @@ Follow that terse line with only the two pieces of decision-critical state git n
   - If `list` printed anything → the requirements are **not** ready; the next loop step is to answer them, then re-run this skill.
   - If it printed nothing → say explicitly that the requirements look **ready for `/derive-tasks`**.
 
-**No-op pass.** When the step-4 dirty-own-path guard fires — this pass reconciled, pruned, and surfaced nothing, so both files are unchanged and nothing was committed — do **not** print `Requirements reviewed.` Instead print a single distinct line stating that nothing changed and briefly why (e.g. "No changes — the question set already matched the recorded decisions and no new gaps surfaced."). Still report the still-open list and convergence verdict above, since that state is unchanged but the user still needs it to decide the next loop step.
+**No-op pass.** When the step-5 dirty-own-path guard fires — this pass reconciled, pruned, and surfaced nothing, so both files are unchanged and nothing was committed — do **not** print `Requirements reviewed.` Instead print a single distinct line stating that nothing changed and briefly why (e.g. "No changes — the question set already matched the recorded decisions and no new gaps surfaced."). Still report the still-open list and convergence verdict above, since that state is unchanged but the user still needs it to decide the next loop step.

@@ -35,3 +35,19 @@ Add the fold tool's tests to `tests/`, driven as subprocesses through a `run_req
 - `uv run pytest` passed (778 passed, up from 684) and `uv run --no-project --python 3.9 --with pytest pytest` passed (774 passed, 1 skipped), the one skip being `tests/test_build_rendering.py`; `uv run scripts/build_hosts.py --check` still passes
 
 ---
+
+## Add Decisions Consistency Step To Review
+
+Give `core/skills/review-milestone-requirements/SKILL.md` a `## Decisions` consistency step that reads the recorded decisions against each other from the pass's whole read and, for each pair that conflicts, authors one `<open-question>` block through the open-question tool's `add` whose question text names both entries' `###` headings under `## Decisions` and asks which entry stands, flagging the conflict without resolving it, so the next review pass after a sweep is where a contradiction is noticed; the block rides in the pass's `Requirements-review:` commit like any other new gap, the report gains no advisory (the block shows only as a Short Title in the still-open list, holding convergence and the `derive-tasks` precondition until it is answered), and no convergence rule, tool, or other skill changes. Verified by reading the edited skill against the milestone's `## Decisions` (one step, the tool contract stated in at most one sentence, no new report line), and by the rebuild so `uv run scripts/build_hosts.py --check` passes.
+
+**Verified:**
+
+- `core/skills/review-milestone-requirements/SKILL.md` carries exactly one new step, `### 4. Check the recorded decisions against each other`, which reads the `## Decisions` entries against each other from the pass's step-1 whole read, with no new read.
+- For each conflicting pair that no standing block already flags, the step authors one `<open-question>` block through step 3's open-question tool `add` call, its question text naming the `###` heading each entry sits under in `## Decisions` (quoting each where both share a heading) and asking which entry stands.
+- The step flags the conflict without resolving it: it forbids editing, rewording, or removing either entry and forbids deciding which stands, and step 3's closing sentence now names the step-4 `add` calls as the only other change to the question document.
+- The block rides in the pass's `Requirements-review: <milestone_id>` commit (step 5, PATHS unchanged) like any other new block, and the report (step 6) gains no line or advisory: the block shows only as a Short Title in the still-open list, with the convergence verdict still read from the `list` print alone.
+- The tool contract appears at the new site in one sentence that references step 3's `add` call and restates no escaping, layout, or output rules, and the file names no host.
+- The later steps are renumbered (commit 5, report 6) with the in-file `step-5`/`step-6` references updated, and no convergence rule, tool, or other skill changed: `git status` shows only that SKILL.md and its three rendered copies.
+- `uv run scripts/build_hosts.py` rebuilt the three host trees and `uv run scripts/build_hosts.py --check` passes.
+
+---
