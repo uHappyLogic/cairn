@@ -88,5 +88,9 @@ Beyond an empty body and the baseline input failures every sibling tool already 
 
 The fold command takes the `###` subsection heading as a required argument on every call, with argparse's exit 2 when it is missing, mirroring the task-list tool's required position group, so every decision lands under a named subsection of `## Decisions` and there is no form of the call that names none. Both recent shapes of the section hold decisions only under a heading, and an optional argument would add a placement branch whose no-heading path either mis-files the decision into the last subsection or invents a third shape of the section.
 
+### Option value source
+
+In the batched call the runner writes each section's `remove --option` value as a literal quoted argument when it composes the call, copied from the pick the compact view lifted for that block, which keeps the answer core's rule that the option reaches `remove` as an exact id never parsed from the answer text. Inside the call nothing derives or checks the option: the section's `lift` still runs first and its print is held only as the commit body and the skip test, and `remove` receives the value the runner wrote and still refuses an id outside the block's set. The value is live for every block whose lift succeeds, because a cascade strips a block's whole recommendation half or nothing, and the open-question tool is unchanged.
+
 ## Out of Scope
 
