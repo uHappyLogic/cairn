@@ -18,7 +18,7 @@ The raw prompt is one fixed text, versioned alongside the benchmark, and placed 
 Carry out the task described in PROJECT.md.
 ```
 
-In the manual deliveries that sentence is the whole user message; in the cairn delivery it is the argument of `/cairn:define-milestone-goal`, which reads the file to fill the milestone's Goal. No scenario gets extra wording, hints, or clarification, and no message differs between prompts: only the file's content changes from prompt 1 to prompt 2.
+In the manual deliveries that sentence is the whole user message; in the cairn deliveries it is the argument of `/cairn:define-milestone-goal`, which reads the file to fill the milestone's Goal. No scenario gets extra wording, hints, or clarification, and no message differs between prompts: only the file's content changes from prompt 1 to prompt 2. The one exception is the stakeholder's brief in the `cairn_<version>_assess_answers_manually` delivery, which is that delivery's whole point and is described with it.
 
 The prompt is deliberately underspecified in a few named places (for example team setup, the tie, controls, persistence) so that real open questions exist for Cairn to surface. It is still specific enough that the manual scenarios can produce a working result; the gaps are decisions, not missing instructions. It also states nothing about the expectations the seed gives evidence for; those are the hidden requirements of the next section.
 
@@ -26,12 +26,12 @@ The prompt is deliberately underspecified in a few named places (for example tea
 
 A hidden requirement is an expectation the project's stakeholder holds that the prompt does not state and the seed gives evidence for. It differs from the gaps the prompt deliberately leaves open: a gap is a decision with several defensible answers, and its metric is whether the scenario surfaced and recorded it; a hidden requirement has one right answer, and its metric is whether the artifact meets it. It exists to test the question-and-answer loop as a whole: a review pass that asks what the prompt did not, a recommendation grounded in the live project, and a decision recorded and carried into the tasks.
 
-- **The statement never reaches a scenario; the evidence does.** The requirement is written down in the inputs area and on the rating checklist and nowhere else. Its evidence lives in the seed, so every scenario gets it byte-identical and a manual scenario can act on it as well as a cairn scenario can. Nothing in `PROJECT.md` points at it. A requirement with no evidence in the seed would measure luck, so it is not a valid hidden requirement.
+- **The statement never reaches a run's repository; the evidence does.** The requirement is written down in the inputs area and on the rating checklist and nowhere else. Its evidence lives in the seed, so every scenario gets it byte-identical and a manual scenario can act on it as well as a cairn scenario can. Nothing in `PROJECT.md` points at it. The one place a statement is spoken inside a run is the brief given to the stakeholder's stand-in in the `cairn_<version>_assess_answers_manually` delivery: a message, never a file, which the rest of that chain sees only through the decisions it led to, recorded in the milestone's own files. A requirement with no evidence in the seed would measure luck, so it is not a valid hidden requirement.
 - **The evidence is calibrated.** It must make one answer clearly best once the question is asked, while the prompt alone gives no reason to ask it. A seed file that states the requirement outright measures whether the agent read a file; evidence too faint to settle the question measures a guess.
-- **Two measurements.** *Met*: a line on the rating checklist, applied to the artifact by a rater who does not know the scenario, scored as a count where the requirement allows one. *Surfaced*: whether the run's process left a record of the question. For a cairn scenario that record is the question block a review pass added, read from the run branch and judged by hand until a judge is written; for a manual scenario it is only an assumption note the agent happened to leave, so surfaced is reported for the cairn scenarios and stated as unobservable for the others.
+- **Two measurements.** *Met*: a line on the rating checklist, applied to the artifact by a rater who does not know the scenario, scored as a count where the requirement allows one. *Surfaced*: whether the run's process left a record of the question. For a cairn scenario that record is the question block a review pass added, read from the run branch and judged by hand until a judge is written; for a manual scenario it is only an assumption note the agent happened to leave, so surfaced is reported for the cairn scenarios and stated as unobservable for the others. The assess delivery adds two more, read from the stand-in's report (see the delivery): *covered*, whether an alternative met the requirement once it was surfaced, and *answered*, whether the stand-in recorded that alternative.
 - **Versioning.** A hidden requirement is tied to the seed tag that carries its evidence and to the prompt blob that leaves it unstated. Changing the evidence is a seed bump, and the analysis groups by both before comparing scenarios.
 - **One per prompt**, listed under its own heading in the project section and never in the "deliberately left open" list, so the planted-gap count of claim 1 stays clean.
-- **What the chain can show.** The cairn chain accepts its own recommendations, so a met hidden requirement shows surfacing plus a grounded recommendation. With a person in the loop the same question would reach them to answer, which is the workflow's intended value and is not what this benchmark measures.
+- **What each chain can show.** The YOLO chain accepts its own recommendations, so a met hidden requirement there shows surfacing plus a grounded recommendation, with no person involved. The assess chain puts a stand-in for the stakeholder at the answer step, so a met requirement there shows surfacing, an alternative set that covered the right answer, and the stand-in's decision carried through to the artifact. The gap between the two, under one model strategy, is what a person who reads the questions and answers the ones that matter to them gains, which is the workflow's intended value.
 
 ## Scenarios
 
@@ -39,7 +39,7 @@ A scenario is a delivery paired with a model strategy. Both are definitions stor
 
 ### Deliveries
 
-A delivery is the way the project is delivered: a list of fixed messages, in order, each sent as one headless invocation. No message carries prompt text, because the prompt reaches the run as the committed `PROJECT.md`. A cairn delivery also names the plugin commit it runs. Three deliveries are the primary ones; ablations add more (see "How Cairn development uses the benchmark").
+A delivery is the way the project is delivered: a list of fixed messages, in order, each sent as one headless invocation. No message carries prompt text, because the prompt reaches the run as the committed `PROJECT.md`. A cairn delivery also names the plugin commit it runs. Four deliveries are defined here; ablations add more (see "How Cairn development uses the benchmark").
 
 #### `manual_prompt`
 
@@ -75,6 +75,52 @@ The YOLO cairn chain is a sequence of the Cairn commands merged together that do
 /cairn:complete-all-tasks
 ```
 
+#### `cairn_<version>_assess_answers_manually`
+
+The YOLO chain with the stakeholder put back in at the one step the workflow built for them. It is the YOLO delivery's list with one message inserted after `/cairn:provide-alternatives-to-all-open-questions` and differs from it in nothing else, so the two scenarios under one model strategy isolate that turn. The inserted turn is played by a stand-in for the project's stakeholder: the person Cairn's questions are meant to reach, who knows what they want beyond what `PROJECT.md` says and who, in a real project, would read the questions and answer the ones that matter to them. The stand-in is defined by the benchmark, in the delivery definition; nothing in the plugin knows it exists. The scenario exists to show what that person gains by investing the time, measured as the hidden requirements the artifact meets.
+
+```
+/cairn:init-milestone-base-workflow
+/cairn:define-milestone-goal Carry out the task described in PROJECT.md.
+/cairn:goto-next-milestone
+/cairn:specify-milestone-starting-state
+/cairn:review-milestone-requirements
+/cairn:provide-alternatives-to-all-open-questions
+<the stakeholder's turn>
+/cairn:recommend-all-open-questions
+/cairn:answer-all-open-questions-with-recommendation
+/cairn:derive-tasks
+/cairn:complete-all-tasks
+```
+
+The stakeholder's turn is one headless invocation like the others. Its message is a fixed instruction followed by the brief: the statements of the hidden requirements keyed to the run's seed tag and prompt blob, one line each, inserted by the harness from the inputs area. Those of the prompt being run only, not of earlier prompts, so each prompt's measurement stays its own; and the statements only, not the evidence, which the stand-in can read in the clone like anyone else, and not the rater's check, which is the measurement.
+
+```
+You are the person this project is for. Read PROJECT.md, then the current
+milestone's open questions with their alternatives. Beyond what PROJECT.md
+says, you want the following:
+
+<one line per hidden requirement of this prompt>
+
+For every open question where one alternative serves what you want and the
+others do not, record it with
+/cairn:answer-open-question-with-alternative <Short Title>. <Alternative Id>
+and leave every other question unanswered. Edit no file yourself. Finish
+with one line per item above: the question you answered for it and the
+alternative, or "no question" if none bore on it, or "no alternative" if a
+question did but none of its alternatives served it.
+```
+
+What the turn may and may not do follows from what the scenario has to isolate:
+
+- **It answers only where the brief decides.** A question the brief says nothing about is left to the recommendation pass, as in the YOLO chain. If the stand-in also answered by taste, the artifact would differ from the YOLO artifact in ways not attributable to the brief, and the comparison would say less. The stand-in does not model every user; it models the knowledge a user has and the prompt does not.
+- **It answers from the alternatives only.** `answer-open-question-with-alternative` records one of the enumerated options and nothing else, so the stand-in can carry a requirement through only when the alternatives pass laid out an option that meets it. That is deliberate: Cairn's design holds that an alternative set is covering, and this is the scenario where that property has a right answer to check against. A requirement the stand-in reports as "no alternative" is a coverage failure of the alternatives pass, "no question" is a surfacing failure of the review pass, and the two are separate findings in the stand-in's report, which the harness reads from the turn's output.
+- **It runs before the recommendation pass.** The stand-in sees alternatives and no recommendation, so its answers are its own, not an edit of the recommender's. The recommendation pass then runs on the remaining questions with the stand-in's decisions already recorded in `requirements.md`, which is the grounding Cairn gives a recommendation formed after a person has decided some of the siblings.
+- **The brief leaves no trace but decisions.** The message is never written to the clone, and the later invocations are fresh processes that see only the milestone files. After the turn the harness asserts that the work tree is clean, that every commit the turn added is an `Alternative-answer:` commit, and that the auto-memory directory for the clone path is byte-identical to before the turn. A failed assertion stops the chain there, recorded like any early stop, because a brief that reached the rest of the chain by another route makes the run attributable to nothing.
+- **Recorded as sent.** The harness writes the message as sent, brief included, beside the turn's invocation output, since it is the one message of any delivery whose text the definition does not fix verbatim. The model strategy keys the turn by its fixed instruction.
+
+The scenario is read against the YOLO scenario of the same version and model strategy, which differs from it by the stakeholder's turn alone. Its multi-prompt control is derived like any other: it mirrors the turn count and the models but carries no brief, so that comparison folds the brief in with Cairn's structure, and only the comparison against YOLO isolates it.
+
 ### Model strategies
 
 A model strategy assigns one model and one effort level to every message of the delivery it is paired with, keyed by the message, and is written in its own file in the inputs area under its id. Nothing in a run picks a model: every invocation runs under the pair its strategy assigns, and the harness refuses a scenario whose strategy leaves one of the delivery's messages unassigned. The file holds the exact `--model` value, never an alias such as `opus`, because an alias moves between host releases and the strategy must mean the same thing for the life of the trend. A strategy's id is a name when it holds several pairs (`models_strategy_1`) and the pair itself when it holds one (`opus_5_5_high`).
@@ -93,6 +139,9 @@ Cairn is meant to be used under a mixed strategy, because its skills differ in w
 | `/cairn:answer-all-open-questions-with-recommendation` | Fable 5.1 | high |
 | `/cairn:derive-tasks` | Fable 5.1 | xhigh |
 | `/cairn:complete-all-tasks` | Opus 5.5 | high |
+| the stakeholder's turn (assess delivery) | Fable 5.1 | xhigh |
+
+The stakeholder's turn, which no Cairn snippet covers, gets the pair of the recommendation pass, because reading the whole question set and choosing is the same kind of work; the strategy keys it by its fixed instruction, since its brief varies by prompt.
 
 Comparing models or efforts is not a separate experiment: it is the comparison of two scenarios that share a delivery, and the cost difference between them is the price of the strategy. A scenario whose strategy mixes models is a valid scenario, because the mix is its definition. What is not a valid run of this benchmark is one whose invocations depart from the strategy the scenario names, since its result cannot be attributed to any scenario.
 
@@ -134,7 +183,7 @@ Root-level housekeeping (the README, the instructions for working on the harness
 - Every shared input is versioned by content, not by name: a run's manifest records the seed as a tag and each prompt as a blob hash. Changing any shared input starts a new comparison set; the analysis groups runs by their shared-input versions before it compares scenarios.
 - The seed source is the one input a run does not read in place. The harness turns it into an orphan commit and tags it; runs branch from the tag, never from the source directory. It contains nothing produced by Cairn: any Cairn artifact a run needs is created by the cairn chain's own bootstrap line, so the seed is the same for all scenarios without leaking the plugin's guidance into the manual ones. Its README is the one place the hidden requirements' evidence lives, and nothing in it states them.
 - The plugin under test is an input like any other: each cairn delivery names one commit (a release or a candidate), which the harness checks out into a plugin checkout used by that delivery's runs only, loaded per invocation and never installed at user level, so the manual scenarios cannot see its skills. Several cairn deliveries may name several commits, one checkout each.
-- A delivery definition is a list of fixed messages and, for a cairn delivery, the plugin commit, nothing else; a model strategy is the model and effort per message. Every other flag (permissions, output format, plugin directory) is added by the harness, so each setting a run executes under is set in exactly one place: the strategy for model and effort, the harness for the rest. The multi-prompt control is the one definition not stored: it is derived from the cairn scenario its id names at run time, so the two can never drift.
+- A delivery definition is a list of fixed messages and, for a cairn delivery, the plugin commit, nothing else, with one exception: the stakeholder's turn of the assess delivery is a fixed instruction the harness completes with the hidden requirements of the prompt being run, so its brief is versioned by the hidden-requirement entries it is composed from. A model strategy is the model and effort per message. Every other flag (permissions, output format, plugin directory) is added by the harness, so each setting a run executes under is set in exactly one place: the strategy for model and effort, the harness for the rest. The multi-prompt control is the one definition not stored: it is derived from the cairn scenario its id names at run time, so the two can never drift.
 - A hidden requirement is an input too: one entry per prompt stating the requirement, the seed evidence it rests on, and the check a rater applies, keyed to the seed tag and the prompt blob. No run sees the entry; the rating instructions carry its check line.
 
 **The harness** is the only writer of the record areas. It sees the whole repository; a run sees only its clone. A harness change must not change what a run sees or is given; a change that would (a different flag, a different continuation message) is an input change and is versioned as one.
@@ -164,7 +213,7 @@ The run procedure, invoked with a scenario id, a prompt index, and for a second 
    claude -p "<message>" --dangerously-skip-permissions --model "<model>" --effort "<effort>" --output-format json
    ```
 
-   A cairn delivery's lines add `--plugin-dir` pointing at the checkout of the commit the delivery names. Stdout is written to the run's invocation outputs under `results/<id>/`, one file per invocation in chain order, with stderr and the model and effort the invocation ran under beside it. A non-zero exit stops the chain; the run is still recorded, with the manifest stating how many invocations were made, because an early stop is a result, not a failed measurement.
+   A cairn delivery's lines add `--plugin-dir` pointing at the checkout of the commit the delivery names. The assess delivery's stakeholder turn is composed, recorded, and checked as its section states. Stdout is written to the run's invocation outputs under `results/<id>/`, one file per invocation in chain order, with stderr and the model and effort the invocation ran under beside it. A non-zero exit stops the chain; the run is still recorded, with the manifest stating how many invocations were made, because an early stop is a result, not a failed measurement.
 6. **Push.** Add the remote back and push `run/<id>`.
 7. **Snapshot.** On the benchmark checkout, read the run branch's tree into `runs/<id>/` with a prefixed read-tree and check the files out.
 8. **Manifest.** Write the manifest under `results/<id>/` from the invocation outputs and the environment.
@@ -225,7 +274,7 @@ The benchmark measures Cairn, and Cairn's development reads the measurement. Tha
 Four uses are adopted now:
 
 - **Any commit is a valid plugin input.** A cairn delivery names a commit, not a release, and the manifest records it as such. A Cairn branch is benchmarked before it merges by defining a cairn delivery whose version segment is that branch's short commit; the analysis groups runs by plugin commit, so a candidate and the release it would follow are compared like any two versions, under the same model strategy. Nothing else in the run procedure changes.
-- **A cairn scenario alone yields process metrics that need no rater.** The invocation outputs and the run branch of a cairn run carry signals the harness reads directly: whether the chain completed or where it stopped, questions surfaced per review pass and whether a hidden requirement is among them, alternatives and recommendations the annotating passes reported as skipped, anomalies the answer sweep reported, tasks derived, and token cost per skill. A development check runs one cairn scenario only, with no manual scenarios and no rating, and reads these out. This is the fast loop: it costs one chain per candidate commit and gives a result the same day.
+- **A cairn scenario alone yields process metrics that need no rater.** The invocation outputs and the run branch of a cairn run carry signals the harness reads directly: whether the chain completed or where it stopped, questions surfaced per review pass and whether a hidden requirement is among them, alternatives and recommendations the annotating passes reported as skipped, anomalies the answer sweep reported, tasks derived, token cost per skill, and for the assess delivery the stand-in's report of which hidden requirements were surfaced, covered, and answered. A development check runs one cairn scenario only, with no manual scenarios and no rating, and reads these out. This is the fast loop: it costs one chain per candidate commit and gives a result the same day.
 - **Cairn's design claims are the metric contract.** Cairn's `docs/design-claims.md` lists its claims, each with a named metric, and states that only one is tested. The analysis implements the subset of those metrics its data reaches, each as a function over manifests and run branches, and reports them per plugin commit. The planted gaps of claim 1 are the "deliberately left open" list under each prompt, so that claim is measurable from the first run. The hidden requirements test claims 1 and 4 together, as the one case where a surfaced question and a project-grounded answer have a right outcome to check against. A Cairn milestone that changes behaviour names the claim it expects to move, and the next run against its commit confirms or refutes it. The link between the repositories is this document on one side and the analysis on the other, never code.
 - **Ablation deliveries attribute value to single skills.** A delivery is a message list, so a chain without the starting-state skill, a chain without the recommendation pass, or a chain with two review passes is one more delivery under its own id (`cairn_1_8_3_yolo_no_starting_state`), paired with the same model strategy, which assigns by message and so covers whichever lines the ablation keeps. Comparing an ablated chain to the full chain under one strategy says whether one skill earns its cost, which the primary scenarios cannot say. An ablation that needs the turn-count control gets its own multi-prompt scenario, derived as always from the cairn scenario it mirrors.
 
