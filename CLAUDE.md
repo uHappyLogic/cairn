@@ -42,6 +42,7 @@ hosts/<host>/                    — committed build output, never hand-edited; 
 .claude/skills/release-plugin/   — maintainer-only release skill, outside core/ so no host renders it
 milestones/                      — this repo's own milestones (self-dogfooding); milestones/README.md holds the Current milestone: pointer
 milestones/answer_decision_principles.md — project-wide principle store read by recommend-procedure.md, written only by capture-milestone-principle-updates
+ideas/                           — design drafts that precede any milestone, versioned so they can be revised in the open; holds the benchmark draft
 .github/workflows/drift-gate.yml — CI: --check then both pytest runs in one job; actions pinned to SHAs bumped by hand
 .github/workflows/traffic-badges.yml — daily traffic-badge workflow; its copies under scripts/hosts/ are kept in sync by hand (grep github-traffic-badge@)
 docs/                            — workflow.md (phase narrative, how skills commit, learning loop), skill-reference.md (one entry per skill), design-claims.md, ways-of-using-cairn.md (headless chains)
