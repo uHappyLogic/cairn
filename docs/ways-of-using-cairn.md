@@ -4,7 +4,7 @@ How to chain Cairn's skills as headless command lines, one goal per section: eac
 
 ## Notation and flags
 
-Every line is one headless run, `claude -p "/cairn:<skill>"` on Claude Code, `agy -p "/cairn:<skill>"` on Antigravity, or `codex exec '$cairn:<skill>'` on Codex, where `/cairn:<skill>` is the skill's slash command under the plugin's `cairn:` namespace, `$cairn:<skill>` is the same skill under Codex's `$` sigil (single-quoted so the shell passes the `$` through as written), and the process exits when the skill finishes. Angle brackets mark the only text you substitute; every other token runs as written. The page uses two placeholders: `<goal>` is the milestone's goal description, exactly as the skill reference spells it in `define-milestone-goal <overall_goal_description>`, written as plain prose with no double quote since it sits inside the line's quoted prompt (no single quote on a Codex line, whose prompt is single-quoted), and `<milestone_id>` is the milestone's directory name under `milestones/`, exactly as the skill reference spells it in `specify-milestone-starting-state <milestone_id>`.
+Every line is one headless run, `claude -p "/cairn:<skill>"` on Claude Code, `agy -p "/cairn:<skill>"` on Antigravity, or `codex exec '$cairn:<skill>'` on Codex, where `/cairn:<skill>` is the skill's slash command under the plugin's `cairn:` namespace, `$cairn:<skill>` is the same skill under Codex's `$` sigil (single-quoted so the shell passes the `$` through as written), and the process exits when the skill finishes. Angle brackets mark the only text you substitute; every other token runs as written. The page uses five placeholders: `<goal>` is the milestone's goal description, exactly as the skill reference spells it in `define-milestone-goal <overall_goal_description>`, written as plain prose with no double quote since it sits inside the line's quoted prompt (no single quote on a Codex line, whose prompt is single-quoted); `<milestone_id>` is the milestone's directory name under `milestones/`, exactly as the skill reference spells it in `specify-milestone-starting-state <milestone_id>`; `<Short Title>` is an open question's Short Title and `<Alternative Id>` the `id` of one of its embedded alternatives, the two halves the skill reference spells as `answer-open-question-with-alternative <question_name>. <alternative id>`; and `<answer text>` is your own answer to a question, which `answer-open-question <question_name>` takes after the Short Title and a period, written as plain prose under the same quoting rule as `<goal>`.
 
 The headless flags:
 
@@ -34,6 +34,19 @@ claude -p "/cairn:specify-milestone-starting-state <milestone_id>" --dangerously
 claude -p "/cairn:review-milestone-requirements" --dangerously-skip-permissions --model "fable" --effort high;
 claude -p "/cairn:provide-alternatives-to-all-open-questions" --dangerously-skip-permissions --model "opus" --effort high;
 claude -p "/cairn:recommend-all-open-questions" --dangerously-skip-permissions --model "fable" --effort high;
+```
+
+## Answering the questions that matter to you
+
+Run this once [Starting a milestone](#starting-a-milestone) has put a recommendation on every question and you have read the annotated set: one answer line per decision you make yourself, in the first form to record an alternative you name by its id, the recommended one or another, and in the second to record an answer in your own words where no alternative fits, each clearing the picks on other questions it undermines; the recommend line then picks again for exactly the questions so cleared, the next line records every remaining recommendation, and the last two derive the task list and complete it, so the milestone needs you at the keyboard once, between the two chains, and leaves the ordered task list completed. The answer lines run on `fable` at `--effort high`, each inline over one question; the recommend and sweep lines on `fable` at `--effort high`, each one inline pass over the whole set; and the last two lines as in [Executing tasks](#executing-tasks).
+
+```sh
+claude -p "/cairn:answer-open-question-with-alternative <Short Title>. <Alternative Id>" --dangerously-skip-permissions --model "fable" --effort high;
+claude -p "/cairn:answer-open-question <Short Title>. <answer text>" --dangerously-skip-permissions --model "fable" --effort high;
+claude -p "/cairn:recommend-all-open-questions" --dangerously-skip-permissions --model "fable" --effort high;
+claude -p "/cairn:answer-all-open-questions-with-recommendation" --dangerously-skip-permissions --model "fable" --effort high;
+claude -p "/cairn:derive-tasks" --dangerously-skip-permissions --model "fable" --effort high;
+claude -p "/cairn:complete-all-tasks" --dangerously-skip-permissions --model "opus" --effort xhigh;
 ```
 
 ## Running a mixed-agent requirements review

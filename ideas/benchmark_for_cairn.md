@@ -77,7 +77,7 @@ The YOLO cairn chain is a sequence of the Cairn commands merged together that do
 
 #### `cairn_<version>_assess_answers_manually`
 
-The YOLO chain with the stakeholder put back in at the one step the workflow built for them. It is the YOLO delivery's list with one message inserted after `/cairn:provide-alternatives-to-all-open-questions` and differs from it in nothing else, so the two scenarios under one model strategy isolate that turn. The inserted turn is played by a stand-in for the project's stakeholder: the person Cairn's questions are meant to reach, who knows what they want beyond what `PROJECT.md` says and who, in a real project, would read the questions and answer the ones that matter to them. The stand-in is defined by the benchmark, in the delivery definition; nothing in the plugin knows it exists. The scenario exists to show what that person gains by investing the time, measured as the hidden requirements the artifact meets.
+The YOLO chain with the stakeholder put back in at the one step the workflow built for them. It is the YOLO delivery's list with two messages inserted after `/cairn:recommend-all-open-questions`: the stakeholder's turn, and a second run of the recommendation pass, which picks again for every question whose pick the turn's answers cleared and picks nothing on a turn that cleared none. It differs from the YOLO list in nothing else, so the two scenarios under one model strategy isolate the turn, the second pass being its consequence. The inserted turn is played by a stand-in for the project's stakeholder: the person Cairn's questions are meant to reach, who knows what they want beyond what `PROJECT.md` says and who, in a real project, would read the questions and answer the ones that matter to them. The stand-in is defined by the benchmark, in the delivery definition; nothing in the plugin knows it exists. The scenario exists to show what that person gains by investing the time, measured as the hidden requirements the artifact meets.
 
 ```
 /cairn:init-milestone-base-workflow
@@ -86,6 +86,7 @@ The YOLO chain with the stakeholder put back in at the one step the workflow bui
 /cairn:specify-milestone-starting-state
 /cairn:review-milestone-requirements
 /cairn:provide-alternatives-to-all-open-questions
+/cairn:recommend-all-open-questions
 <the stakeholder's turn>
 /cairn:recommend-all-open-questions
 /cairn:answer-all-open-questions-with-recommendation
@@ -97,29 +98,33 @@ The stakeholder's turn is one headless invocation like the others. Its message i
 
 ```
 You are the person this project is for. Read PROJECT.md, then the current
-milestone's open questions with their alternatives. Beyond what PROJECT.md
-says, you want the following:
+milestone's open questions with their alternatives and recommendations.
+Beyond what PROJECT.md says, you want the following:
 
 <one line per hidden requirement of this prompt>
 
 For every open question where one alternative serves what you want and the
 others do not, record it with
 /cairn:answer-open-question-with-alternative <Short Title>. <Alternative Id>
-and leave every other question unanswered. Edit no file yourself. Finish
-with one line per item above: the question you answered for it and the
-alternative, or "no question" if none bore on it, or "no alternative" if a
-question did but none of its alternatives served it.
+whether or not it is the recommended one. For every open question that bears
+on what you want but none of whose alternatives serves it, record what you
+want in your own words with
+/cairn:answer-open-question <Short Title>. <answer text>
+Leave every other question unanswered. Edit no file yourself. Finish with
+one line per item above: the question you answered for it and the
+alternative, or the question and "in my words" if none of its alternatives
+served it, or "no question" if none bore on it.
 ```
 
 What the turn may and may not do follows from what the scenario has to isolate:
 
-- **It answers only where the brief decides.** A question the brief says nothing about is left to the recommendation pass, as in the YOLO chain. If the stand-in also answered by taste, the artifact would differ from the YOLO artifact in ways not attributable to the brief, and the comparison would say less. The stand-in does not model every user; it models the knowledge a user has and the prompt does not.
-- **It answers from the alternatives only.** `answer-open-question-with-alternative` records one of the enumerated options and nothing else, so the stand-in can carry a requirement through only when the alternatives pass laid out an option that meets it. That is deliberate: Cairn's design holds that an alternative set is covering, and this is the scenario where that property has a right answer to check against. The stand-in's closing lines say which step fell short when one did, "no question" pointing at the review pass and "no alternative" at the alternatives pass; they are kept with the turn's output as part of the run's record, read by hand when a hidden requirement was not delivered, and never folded into a metric.
-- **It runs before the recommendation pass.** The stand-in sees alternatives and no recommendation, so its answers are its own, not an edit of the recommender's. The recommendation pass then runs on the remaining questions with the stand-in's decisions already recorded in `requirements.md`, which is the grounding Cairn gives a recommendation formed after a person has decided some of the siblings.
-- **The brief leaves no trace but decisions.** The message is never written to the clone, and the later invocations are fresh processes that see only the milestone files. After the turn the harness asserts that the work tree is clean, that every commit the turn added is an `Alternative-answer:` commit, and that the auto-memory directory for the clone path is byte-identical to before the turn. A failed assertion stops the chain there, recorded like any early stop, because a brief that reached the rest of the chain by another route makes the run attributable to nothing.
+- **It answers only where the brief decides.** A question the brief says nothing about is left unanswered, its recommendation recorded by the sweep as in the YOLO chain. If the stand-in also answered by taste, the artifact would differ from the YOLO artifact in ways not attributable to the brief, and the comparison would say less. The stand-in does not model every user; it models the knowledge a user has and the prompt does not.
+- **It answers from the alternatives where one serves, and in its own words where none does.** `answer-open-question-with-alternative` records one of the enumerated options, so where the alternatives pass laid out an option that meets the requirement the stand-in carries it through by choosing it; where no option does, it records the requirement itself with `answer-open-question`, as a person who knows what they want would, rather than letting a gap in the set lose it. Cairn's design holds that an alternative set is covering, and this is the scenario where that property has a right answer to check against: every `Manual-answer:` commit the turn adds is a question whose set missed what the stakeholder wanted. The stand-in's closing lines say which step fell short when one did, "no question" pointing at the review pass and "in my words" at the alternatives pass; they are kept with the turn's output as part of the run's record, read by hand when a hidden requirement was not delivered, and never folded into a metric.
+- **It runs after the recommendation pass.** The stand-in sees every question with its alternatives and its pick, as a person reading the annotated set does, and acts only where the brief decides: skimming the picks and stopping where one is wrong or no alternative serves is the shorter session, and it is the one Cairn's workflow is built for. Each hand answer clears, in the same write, the picks on other questions it undermines, those a `<depends-on>` tag declared and those the stand-in names, transitively, so no standing pick is left assuming an outcome the turn decided otherwise. The second run of the recommendation pass then picks again for exactly those questions, with the stand-in's decisions already recorded in `requirements.md`, which is the grounding Cairn gives a recommendation formed after a person has decided some of the siblings, and the sweep records every pick that stands.
+- **The brief leaves no trace but decisions.** The message is never written to the clone, and the later invocations are fresh processes that see only the milestone files. After the turn the harness asserts that the work tree is clean, that every commit the turn added is an `Alternative-answer:` or `Manual-answer:` commit, and that the auto-memory directory for the clone path is byte-identical to before the turn. A failed assertion stops the chain there, recorded like any early stop, because a brief that reached the rest of the chain by another route makes the run attributable to nothing.
 - **Recorded as sent.** The harness writes the message as sent, brief included, beside the turn's invocation output, since it is the one message of any delivery whose text the definition does not fix verbatim. The model strategy keys the turn by its fixed instruction.
 
-The scenario is read against the YOLO scenario of the same version and model strategy, which differs from it by the stakeholder's turn alone. Its multi-prompt control is derived like any other: it mirrors the turn count and the models but carries no brief, so that comparison folds the brief in with Cairn's structure, and only the comparison against YOLO isolates it.
+The scenario is read against the YOLO scenario of the same version and model strategy, which differs from it by the stakeholder's turn and the second recommendation pass that turn needs. Its multi-prompt control is derived like any other: it mirrors the turn count and the models but carries no brief, so that comparison folds the brief in with Cairn's structure, and only the comparison against YOLO isolates it.
 
 ### Model strategies
 
@@ -141,7 +146,7 @@ Cairn is meant to be used under a mixed strategy, because its skills differ in w
 | `/cairn:complete-all-tasks` | Opus 5.5 | high |
 | the stakeholder's turn (assess delivery) | Fable 5.1 | xhigh |
 
-The stakeholder's turn, which no Cairn snippet covers, gets the pair of the recommendation pass, because reading the whole question set and choosing is the same kind of work; the strategy keys it by its fixed instruction, since its brief varies by prompt.
+The stakeholder's turn, which no Cairn snippet covers, gets the pair of the recommendation pass, because reading the whole question set and choosing is the same kind of work; the strategy keys it by its fixed instruction, since its brief varies by prompt. The recommendation pass appears twice in the assess delivery, before the turn and after it, and runs under its one pair both times, since the strategy keys by message.
 
 Comparing models or efforts is not a separate experiment: it is the comparison of two scenarios that share a delivery, and the cost difference between them is the price of the strategy. A scenario whose strategy mixes models is a valid scenario, because the mix is its definition. What is not a valid run of this benchmark is one whose invocations depart from the strategy the scenario names, since its result cannot be attributed to any scenario.
 
@@ -177,9 +182,12 @@ Every run of every scenario records, from the JSON output of each invocation:
 
 - total input and output tokens, and cost in dollars,
 - wall-clock duration,
-- number of invocations actually made (a chain that stops early reports fewer).
+- number of invocations actually made (a chain that stops early reports fewer),
+- attentive sessions, declared by the delivery, and the wall-clock of each unattended stretch between them.
 
 These are reported per scenario next to the quality results, in the same row of the ranking table (see "The README page"), never omitted. Cairn is expected to cost more; the benchmark states by how much and lets the reader weigh it against the quality difference. A quality win that is not accompanied by its cost is not a reportable result of this benchmark.
+
+An attentive session is one stretch of the operator's attention: it begins when the run stops until a person has read it and decided, and it ends when that person launches the next chain, with a wait long enough to leave the keyboard separating two sessions. The count is what Cairn's batching exists to keep small, gathering every question into one turn and running unattended on both sides of it, and it is a property of the delivery rather than of the run: one session to write the prompt and launch, plus one per stand-in turn, so the manual deliveries and the YOLO chain read one per prompt and the assess delivery two. It is declared from the delivery definition, not measured, because the harness sends every message and no wait inside a run comes near the threshold; the result review counts for no scenario, since every scenario has exactly one and it is rated rather than operated. Beside the count the analysis reports the wall-clock of each unattended stretch, the sum of the invocations between two sessions, from the per-invocation durations, so a reader sees how long each chain ran on its own. The count is not an axis: it is a cost of the delivery, read next to what the extra session bought on the hidden-requirements axis. It says nothing about interactive use of any approach, where a person is needed each time the agent asks or stops and nobody knows how often that is, because no delivery here models it.
 
 ## Repository layout and isolation
 
@@ -300,14 +308,14 @@ The repository's README is the benchmark's one page of results, the page a reade
 
 ### The ranking table
 
-The table shows that Cairn beats the other approaches as a family of configurations, not as one tuned winner. A configuration of Cairn is a version under a model strategy, that is, one cairn scenario. The table has one row per scenario of the four primary deliveries (`manual_prompt`, the multi-prompt controls, `cairn_<version>_yolo`, `cairn_<version>_assess_answers_manually`) that has complete ratings in the current comparison set, ordered by rank, and the columns are the rank, the scenario id, the overall score, the five axes, cost in dollars, wall-clock time, invocations made over planned, and the number of runs behind the row. The reading it exists to give is several Cairn rows, under different versions and model strategies, standing above the best manual row; so every rated Cairn configuration appears, the ones that lose included, because a table filtered to the best Cairn row would show one configuration and say nothing about configurations. Cost sits in the same row as the scores, so the rule that a quality win is reported with its cost holds on the page itself, and a reader who finds the margin not worth the price finds that out in the same line. Ablation deliveries and candidate commits are development inputs; they appear in the analysis output and never on the page. The shape, with the cells left to the analysis:
+The table shows that Cairn beats the other approaches as a family of configurations, not as one tuned winner. A configuration of Cairn is a version under a model strategy, that is, one cairn scenario. The table has one row per scenario of the four primary deliveries (`manual_prompt`, the multi-prompt controls, `cairn_<version>_yolo`, `cairn_<version>_assess_answers_manually`) that has complete ratings in the current comparison set, ordered by rank, and the columns are the rank, the scenario id, the overall score, the five axes, cost in dollars, wall-clock time, invocations made over planned, attentive sessions, and the number of runs behind the row. The reading it exists to give is several Cairn rows, under different versions and model strategies, standing above the best manual row; so every rated Cairn configuration appears, the ones that lose included, because a table filtered to the best Cairn row would show one configuration and say nothing about configurations. Cost sits in the same row as the scores, so the rule that a quality win is reported with its cost holds on the page itself, and a reader who finds the margin not worth the price finds that out in the same line. Ablation deliveries and candidate commits are development inputs; they appear in the analysis output and never on the page. The shape, with the cells left to the analysis:
 
-| # | scenario | overall | stated | hidden | implied | continuity | experience | cost | time | invocations | runs |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | `cairn_1_8_3_assess_answers_manually_models_strategy_1` | … | … | … | … | … | … | $… | … | 22/22 | … |
-| 2 | `cairn_1_8_3_yolo_models_strategy_1` | … | … | … | … | … | … | $… | … | 20/20 | … |
-| 3 | `manual_multi_prompt_as_cairn_1_8_3_yolo_models_strategy_1` | … | … | … | … | … | … | $… | … | 20/20 | … |
-| 4 | `manual_prompt_opus_5_5_high` | … | … | … | … | … | … | $… | … | 2/2 | … |
+| # | scenario | overall | stated | hidden | implied | continuity | experience | cost | time | invocations | sessions | runs |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | `cairn_1_8_3_assess_answers_manually_models_strategy_1` | … | … | … | … | … | … | $… | … | 24/24 | 4 | … |
+| 2 | `cairn_1_8_3_yolo_models_strategy_1` | … | … | … | … | … | … | $… | … | 20/20 | 2 | … |
+| 3 | `manual_multi_prompt_as_cairn_1_8_3_yolo_models_strategy_1` | … | … | … | … | … | … | $… | … | 20/20 | 2 | … |
+| 4 | `manual_prompt_opus_5_5_high` | … | … | … | … | … | … | $… | … | 2/2 | 2 | … |
 
 ### The radar
 
