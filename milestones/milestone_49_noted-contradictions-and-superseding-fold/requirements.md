@@ -58,6 +58,8 @@ Between October 2 and the milestone 48 release on October 18 the sweep still pri
 
 - **Invocation.** Replace is a second subcommand of `requirements.py` with its own name, `replace <MILESTONE_DIR> --section "<Heading>"`, the new text on stdin. It has its own argparse parser, help text, and refusal set, and reuses the file's internal readers, `## Decisions` locator, and atomic writer. `fold` stays exactly as it is, append-only, with its contract, call shape, and six test files untouched.
 
+- **Missing subsection.** `replace` matches `--section` against the `###` headings under `## Decisions` with the same whitespace- and case-folded exact equality `fold` uses. When no subsection matches, it prints one `Error:` line on stderr naming the heading, exits 1, and leaves `requirements.md` byte-for-byte unchanged. It never creates a subsection, so a replace can only rewrite an entry that already exists; `fold` keeps its create-at-end behaviour.
+
 ### Conflict questions in the sweep
 
 - **Recognition.** The signal is the question text. `review-milestone-requirements` step 4 opens every conflict question's text with one fixed phrase, stated once in that step, in a form that also names the two `###` headings of the pair. The sweep recognizes a conflict question when the question text printed by its compact view's `list --with-question` starts with that phrase, an exact-prefix check the runner makes when it composes the section; a block written before the convention falls back to the ordinary append section. The Short Title rules, the document format, and the open-question tool stay as they are.
