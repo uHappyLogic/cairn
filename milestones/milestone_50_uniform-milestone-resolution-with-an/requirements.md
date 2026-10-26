@@ -56,5 +56,9 @@ The error line for a `--milestone` override that matches no milestone directory 
 
 When no `--milestone` override is given, the pointer's path stays unchecked, as `get-current-milestone.md` handles it today: the procedure extracts the backtick-quoted path from `milestones/README.md` and hands it on as `<MILESTONE_DIR>` with no existence test. The existence check runs only on a `--milestone` override. A pointer naming a missing directory is caught downstream, by the first tool call's `Error: <path> does not exist` line or by the skill's own failed file read, since the pointer is written only by `goto-next-milestone` and `finish-current-milestone` from directories that exist.
 
+### Finish under override
+
+`finish-current-milestone` honours any matching `--milestone` override, whatever the pointer reads, and its pointer-clearing step becomes conditional: the pointer is overwritten with `none` only when the finished milestone is the one it names. If the pointer reads `none` it stays `none`, and if it names a different milestone it is left pointing there, untouched, because finishing a milestone must never deactivate a different one. Its stop on a `none` pointer applies only when no override is given. The history entry, the Completed Milestones row, and the `Milestone-finish:` commit are written as today in every case, and the CLAUDE.md invariant on the pointer clear is narrowed to say the clear happens exactly when the pointer names the finished milestone.
+
 ## Out of Scope
 
