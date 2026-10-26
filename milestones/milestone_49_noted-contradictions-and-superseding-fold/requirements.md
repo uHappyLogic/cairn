@@ -78,5 +78,9 @@ Between October 2 and the milestone 48 release on October 18 the sweep still pri
 
 - **Rewrite only.** The rewrite of the superseded entry is the whole record of a conflict answer, in every runner: no separate decision statement is folded anywhere under `## Decisions`, the sweep's conflict section swaps its `fold` call for the `replace` call, and the single-question skills' Edit-based fold edits the losing entry in place and adds nothing. `capture-milestone-principle-updates` stays unchanged and takes the rewritten entry's added lines in the `requirements.md` hunk as the commit's recorded decision.
 
+### Review pass handling of notes
+
+- **Clean up against recorded state only.** The review pass does not re-judge whether a noted pair conflicts; it checks each note only against what is already recorded. If a standing block already flags the pair, or if either named entry no longer stands as the note describes it (its heading is gone, or it has been rewritten so the two now hold together), the note is deleted with no block, as cleanup of recorded state. Every other note is authored as noted, one block per note, and then deleted.
+
 ## Out of Scope
 
