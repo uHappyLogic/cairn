@@ -13,9 +13,19 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_49_noted-contradictions-and-superseding-fold/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 49 — Noted contradictions and superseding fold
+
+- The shared answer core rewrites a standing `## Decisions` entry in place when a single-question answer plainly supersedes it, and otherwise writes a note under an optional `## Noted contradictions` section between `## Decisions` and `## Out of Scope`, which exists only while a note stands.
+- `review-milestone-requirements` turns each note into one open question opened by a fixed phrase naming the pair's two `###` headings and deletes the note, dropping it with no block when recorded state already covers it.
+- The fold tool gained a `replace <MILESTONE_DIR> --section "<Heading>"` subcommand that rewrites one existing `###` subsection's body byte-preservingly and never creates one, with `fold` left untouched.
+- The answer sweep recognizes a conflict question by the fixed phrase as an exact prefix and records it with one `replace` of the losing entry's subsection in place of `fold`, still judging nothing.
+- A conflict answer's whole record, in every runner, is the losing entry's rewrite, with no separate decision folded beside it.
+- `derive-tasks` resolves any conflicting pair of decisions by letting the later-recorded entry, found by commit, govern the brief, and is never blocked or flagged by a note.
+- New `replace` test files and a conflict section in the batched-call test cover the tool and the sweep, and `CLAUDE.md` and the docs describe the noted-contradictions flow.
 
 ### Milestone 48 — Batched answer sweep with a fold tool
 
@@ -524,3 +534,4 @@ Current milestone: `milestones/milestone_49_noted-contradictions-and-superseding
 | 46 | Task-list tool as sole writer | `milestones/milestone_46_task-list-tool-as-sole-writer/` |
 | 47 | Antigravity global install and agent tools | `milestones/milestone_47_antigravity-global-install-and-agent/` |
 | 48 | Batched answer sweep with a fold tool | `milestones/milestone_48_batched-answer-sweep-with-a/` |
+| 49 | Noted contradictions and superseding fold | `milestones/milestone_49_noted-contradictions-and-superseding-fold/` |
