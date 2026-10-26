@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Override Input To Pointer Procedure
-
-`core/shared/get-current-milestone.md` gains its one input, an optional leading `--milestone <milestone_id>` in the skill's invocation text: it states once the rule for recognizing the flag and separating it from the skill's own positional text, takes the value verbatim as the exact milestone directory name under `milestones/` (no bare-number resolution, no stripped `milestones/` prefix or trailing slash) to form `milestones/<milestone_id>/`, and resolves an override without reading the pointer, so it is honoured even when the pointer reads `none`. When `milestones/<milestone_id>/requirements.md` does not exist the procedure stops with no fallback to the pointer, on an error line naming the given value followed by a list of every `milestone_*` directory under `milestones/` and no pointer to `/define-milestone-goal`; with no override the pointer's path stays unchecked and is handed on exactly as today. Verified by reading the rendered procedure in each host tree and by `uv run scripts/build_hosts.py --check` passing after the `hosts/` rebuild.
-
----
-
 ## Uniform Resolution In Specify Starting State
 
 `specify-milestone-starting-state` loses its required positional `<milestone_id>`: its Usage fence becomes `/specify-milestone-starting-state [--milestone <milestone_id>]` with the prose and example under it describing the optional override, and its step 1 follows the shared pointer procedure to resolve `<MILESTONE_DIR>` like the other pointer-resolving skills, dropping its own "milestone not found" stop and `/define-milestone-goal` pointer, with its commit PATHS and `Starting-state: <milestone_id>` subject taking the id from the last path component of the resolved directory. This brings the skill under the uniform resolution rule so the Starting-a-milestone chain resolves the milestone `goto-next-milestone` just activated, while `capture-milestone-principle-updates` stays untouched with its required positional id. Verified by reading the rendered skill in each host tree and by `uv run scripts/build_hosts.py --check` passing after the `hosts/` rebuild.
