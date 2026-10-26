@@ -40,5 +40,9 @@ Between October 2 and the milestone 48 release on October 18 the sweep still pri
 
 ## Decisions
 
+### Noted contradictions section
+
+- **Entry content.** Each entry under `## Noted contradictions` holds the two `###` headings of the conflicting `## Decisions` entries, with enough of each entry's lead or opening words to tell them apart where they share a heading or sit among several bullets, plus one sentence in the answer skill's own words stating what each entry says and why both cannot hold. The note carries no ready-made question text; the review pass authors the block from the note.
+
 ## Out of Scope
 
