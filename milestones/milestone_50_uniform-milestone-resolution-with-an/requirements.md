@@ -44,5 +44,9 @@ The rule for recognizing a leading `--milestone <milestone_id>` in a skill's inv
 
 Every skill under the uniform resolution rule spells the optional leading flag at both of its per-skill sites, and no separate general statement is written. Each of the sixteen SKILL.md Usage fences shows the flag in its invocation form (for example `/submit-task [--milestone <milestone_id>] <issue description>`, or `/finish-current-milestone [--milestone <milestone_id>]`), and the prose under the fence describes it, so every "No arguments." line is replaced. Each matching `###` heading in `docs/skill-reference.md` spells it the same way. `specify-milestone-starting-state` gets the same optional form in place of its required positional id. `capture-milestone-principle-updates` stays as it is, with its required positional id.
 
+### Override existence test
+
+The check that a named `--milestone` override matches a milestone is that `milestones/<milestone_id>/requirements.md` exists, which also implies the directory exists. This is the same test `specify-milestone-starting-state` and `capture-milestone-principle-updates` apply to their positional id today, so the override and the capture exception accept the same milestones, pre-split ones included, while a stray or half-made directory is refused before any skill reads from it. The shared procedure stops on its error line when the file is missing, with no fallback to the pointer.
+
 ## Out of Scope
 
