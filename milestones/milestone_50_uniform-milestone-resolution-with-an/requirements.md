@@ -60,5 +60,9 @@ When no `--milestone` override is given, the pointer's path stays unchecked, as 
 
 `finish-current-milestone` honours any matching `--milestone` override, whatever the pointer reads, and its pointer-clearing step becomes conditional: the pointer is overwritten with `none` only when the finished milestone is the one it names. If the pointer reads `none` it stays `none`, and if it names a different milestone it is left pointing there, untouched, because finishing a milestone must never deactivate a different one. Its stop on a `none` pointer applies only when no override is given. The history entry, the Completed Milestones row, and the `Milestone-finish:` commit are written as today in every case, and the CLAUDE.md invariant on the pointer clear is narrowed to say the clear happens exactly when the pointer names the finished milestone.
 
+### Override forwarding to the completion agent
+
+`complete-all-tasks` passes the `<MILESTONE_DIR>` its step 0 resolved (from the override when one was given, from the pointer otherwise) on every dispatch, as a fixed `Milestone directory: <MILESTONE_DIR>` line in the prompt fence beside the task-name line, following the alternatives pass, so both dispatch sites share one unconditional prompt shape and no agent can diverge from the directory the orchestrator commits for. The `complete-task` agent file documents that line as a prompt value, and the agent uses the path as given with no resolution of its own. `complete-procedure.md` step 1 takes a supplied directory as given and runs the shared pointer procedure only when none is supplied, which is the case for the inline `complete-task` skill. The three hosts' `COMPLETE_TASK_DISPATCH` values stop saying the prompt "contains only the task name", and CLAUDE.md's dispatch-prompt invariant names the directory beside the heading.
+
 ## Out of Scope
 
