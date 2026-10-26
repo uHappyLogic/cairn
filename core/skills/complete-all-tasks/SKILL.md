@@ -39,7 +39,11 @@ Re-read `<MILESTONE_DIR>/TASKS_TODO.md` to get the current top task — the firs
 
 ```
 {{COMPLETE_TASK_PROMPT_INSTRUCTIONS}}Complete the task named: "<TASK_NAME>"
+
+Milestone directory: <MILESTONE_DIR>
 ```
+
+Every dispatch carries the `Milestone directory:` line, holding the `<MILESTONE_DIR>` step 0 resolved, whether from an override or from the pointer, so each agent works in the milestone this run commits for.
 
 Wait for the agent to return.
 

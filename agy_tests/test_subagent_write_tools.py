@@ -7,10 +7,10 @@ orchestrator skill stands between the probe and the agent.
   seeded milestone directory, and a scratch directory this test created. Its pass signal is
   the one file its contract has it land, `<scratch dir>/<Short Title>.xml`, holding
   `<alternative>` elements, with the seeded repository left exactly as committed.
-- `complete-task` is dispatched with the heading of the fixture's one trivial task. Its pass
-  signal is the task's deliverable landed in the seeded repository and the task's section
-  moved from `TASKS_TODO.md` into `TASKS_DONE.md` in the task-list tool's rendering, with
-  both task files staged and nothing committed.
+- `complete-task` is dispatched with the heading of the fixture's one trivial task and the
+  seeded milestone directory. Its pass signal is the task's deliverable landed in the seeded
+  repository and the task's section moved from `TASKS_TODO.md` into `TASKS_DONE.md` in the
+  task-list tool's rendering, with both task files staged and nothing committed.
 
 Each agent reaches its files only through the write and shell tools (the alternatives agent
 runs the open-question tool, writes its file, and renames it; the completion agent writes the
@@ -77,8 +77,10 @@ def alternatives_prompt(milestone_dir, scratch_dir):
     )
 
 
-# The completion orchestrator's dispatch prompt, as complete-all-tasks shows it.
-COMPLETION_PROMPT = f'Complete the task named: "{TASK_TITLE}"'
+def completion_prompt(milestone_dir):
+    """The completion orchestrator's dispatch prompt, as complete-all-tasks shows it: the
+    task's heading and the resolved milestone directory, nothing else."""
+    return f'Complete the task named: "{TASK_TITLE}"\n\nMilestone directory: {milestone_dir}'
 
 
 def records_of(stdout):
@@ -189,13 +191,14 @@ def test_the_alternatives_agent_lands_its_scratch_file(seeded_repo, run_agy, tmp
 def test_the_completion_agent_lands_the_task_and_stages_the_move(seeded_repo, run_agy):
     repository = seeded_repo()
     milestone = repository / FIXTURE_MILESTONE
+    prompt = completion_prompt(milestone)
 
     completed = run_agy(
-        dispatch_prompt(COMPLETION_AGENT, "Task completer", COMPLETION_PROMPT),
+        dispatch_prompt(COMPLETION_AGENT, "Task completer", prompt),
         cwd=repository,
         output_format="stream-json",
     )
-    assert_dispatched_only(completed, COMPLETION_AGENT, COMPLETION_PROMPT)
+    assert_dispatched_only(completed, COMPLETION_AGENT, prompt)
 
     # The task's deliverable, landed by the agent's file-writing tool.
     deliverable = repository / TASK_DELIVERABLE

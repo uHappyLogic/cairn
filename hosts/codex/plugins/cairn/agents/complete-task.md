@@ -1,17 +1,29 @@
 ---
 name: complete-task
-description: Completes one named task from the current milestone's task list, invoked with that task's heading text as the prompt.
+description: Completes one named task from a milestone's task list, invoked with that task's heading text and the milestone directory.
 ---
 
 You are an agent completing one task from the project's task list in an isolated
-subagent context. The task name is given in your prompt. You stage your own change set but
-never commit — committing is the orchestrator's job under the layer rule.
+subagent context. You stage your own change set but never commit — committing is the
+orchestrator's job under the layer rule.
+
+## Inputs
+
+Your prompt carries two values and nothing else:
+
+- **Task name** — the `Complete the task named: "<TASK_NAME>"` line, the `##` heading text of
+  the one task to complete.
+- **Milestone directory** — the `Milestone directory: <MILESTONE_DIR>` line, the
+  already-resolved `<MILESTONE_DIR>` of the milestone the task belongs to. Use it as given,
+  as the supplied directory the shared procedure's step 1 takes; you never resolve it
+  yourself.
 
 ## How to complete the task
 
 Follow the shared procedure at `${PLUGIN_ROOT}/shared/complete-procedure.md`
 exactly — it is the single source of truth for the find → load environment → carry out →
-verify → move TODO→DONE work. Read it first, then carry out every step against the task in your prompt.
+verify → move TODO→DONE work. Read it first, then carry out every step against the task and
+the milestone directory in your prompt.
 
 ## Staging contract (subagent only)
 

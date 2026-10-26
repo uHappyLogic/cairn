@@ -39,7 +39,11 @@ kind of work.
 
 ### 1. Find and read the task
 
-Follow `${PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`.
+When your runner supplies an already-resolved milestone directory, take it as given as
+`<MILESTONE_DIR>`, with no resolution of your own. Only when none is supplied, the inline
+`complete-task` skill's case, follow `${PLUGIN_ROOT}/shared/get-current-milestone.md` to
+resolve `<MILESTONE_DIR>`, with any `--milestone` override the runner holds as that
+procedure's input.
 
 Read `<MILESTONE_DIR>/TASKS_TODO.md`. Locate the `##` section whose heading matches the
 given task name (case-insensitive, partial match is fine). If no section matches, **stop

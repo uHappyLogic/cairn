@@ -35,11 +35,15 @@ Re-read `<MILESTONE_DIR>/TASKS_TODO.md` to get the current top task — the firs
 
 #### 2b. Spawn a subagent to complete the task
 
-Use the `invoke_subagent` tool with one entry in its `Subagents` array whose `TypeName` is the name this plugin registers the `complete-task` agent under, `complete-task`, whose `Role` is `Task completer`, and whose `Prompt` contains only the task name, substituting `<TASK_NAME>` with the exact `##` heading text (without the `##` prefix). The call returns at once, and the agent's final message reaches you as a message from it once it ends; that message is its return:
+Use the `invoke_subagent` tool with one entry in its `Subagents` array whose `TypeName` is the name this plugin registers the `complete-task` agent under, `complete-task`, whose `Role` is `Task completer`, and whose `Prompt` carries the task name and the milestone directory and nothing else, substituting `<TASK_NAME>` with the exact `##` heading text (without the `##` prefix) and `<MILESTONE_DIR>` with the directory resolved in step 0. The call returns at once, and the agent's final message reaches you as a message from it once it ends; that message is its return:
 
 ```
 Complete the task named: "<TASK_NAME>"
+
+Milestone directory: <MILESTONE_DIR>
 ```
+
+Every dispatch carries the `Milestone directory:` line, holding the `<MILESTONE_DIR>` step 0 resolved, whether from an override or from the pointer, so each agent works in the milestone this run commits for.
 
 Wait for the agent to return.
 

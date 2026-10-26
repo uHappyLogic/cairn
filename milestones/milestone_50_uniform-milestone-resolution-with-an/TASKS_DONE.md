@@ -74,3 +74,18 @@ The seven pointer-resolving skills that take no positional text (`answer-all-ope
 - `uv run scripts/build_hosts.py --check` passes (exit 0) after the `hosts/` rebuild.
 
 ---
+
+## Forward Milestone Directory To Completion Agent
+
+`complete-all-tasks` passes the `<MILESTONE_DIR>` its step 0 resolved on every dispatch as a fixed `Milestone directory: <MILESTONE_DIR>` line in its prompt fence beside the task-name line, following the alternatives pass's fence; `core/agents/complete-task.md` documents that line as a prompt value the agent uses as given with no resolution of its own; `core/shared/complete-procedure.md` step 1 takes a supplied directory as given and runs the shared pointer procedure only when none is supplied, the inline `complete-task` skill's case; and the three hosts' `COMPLETE_TASK_DISPATCH` slot values stop saying the prompt "contains only the task name". This keeps both dispatch sites on one unconditional prompt shape so no agent can diverge from the directory the orchestrator commits for. Verified by reading the rendered fence, agent file, and procedure in each host tree and by `uv run scripts/build_hosts.py --check` passing after the `hosts/` rebuild.
+
+**Verified:**
+
+- `core/skills/complete-all-tasks/SKILL.md` step 2b's prompt fence carries a fixed `Milestone directory: <MILESTONE_DIR>` line after the `Complete the task named: "<TASK_NAME>"` line, blank-line separated as in the alternatives pass's fence, and the sentence below the fence says every dispatch carries it, holding the `<MILESTONE_DIR>` step 0 resolved from an override or the pointer.
+- `core/agents/complete-task.md` gains an `## Inputs` section documenting the task-name line and the `Milestone directory:` line as its two prompt values, the directory used as given as the supplied directory the procedure's step 1 takes, never resolved by the agent; its description names the milestone directory beside the heading text (25-word cap and frontmatter checks pass in the build).
+- `core/shared/complete-procedure.md` step 1 takes a runner-supplied milestone directory as given as `<MILESTONE_DIR>` and follows `get-current-milestone.md` only when none is supplied, the inline `complete-task` skill's case, with any held `--milestone` override as that procedure's input.
+- The three hosts' `scripts/hosts/<host>/slots/COMPLETE_TASK_DISPATCH.md` values say the prompt carries the task name and the milestone directory and nothing else, substituting `<MILESTONE_DIR>` with the directory resolved in step 0; a grep for "only the task name", "heading text as the prompt", and "The task name is given" over `core`, `scripts`, `hosts`, and `agy_tests` prints nothing.
+- After `uv run scripts/build_hosts.py`, the rendered `skills/complete-all-tasks/SKILL.md` fence, `agents/complete-task.md` Inputs section, and `shared/complete-procedure.md` step 1 read as above in `hosts/claude`, `hosts/antigravity`, and `hosts/codex/plugins/cairn`, and `uv run scripts/build_hosts.py --check` passes.
+- `agy_tests/test_subagent_write_tools.py` dispatches the completion agent with the new two-line prompt (task heading plus seeded milestone directory), and `uv run pytest` (891 passed) and the 3.9 floor run (887 passed, 1 skipped) both pass.
+
+---

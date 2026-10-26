@@ -35,11 +35,15 @@ Re-read `<MILESTONE_DIR>/TASKS_TODO.md` to get the current top task — the firs
 
 #### 2b. Spawn a subagent to complete the task
 
-Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the `complete-task` agent under this plugin's namespace, `cairn:complete-task`, and a prompt containing only the task name, substituting `<TASK_NAME>` with the exact `##` heading text (without the `##` prefix):
+Use the `Agent` tool with `subagent_type` set to the namespaced registry name of the `complete-task` agent under this plugin's namespace, `cairn:complete-task`, and a prompt carrying the task name and the milestone directory and nothing else, substituting `<TASK_NAME>` with the exact `##` heading text (without the `##` prefix) and `<MILESTONE_DIR>` with the directory resolved in step 0:
 
 ```
 Complete the task named: "<TASK_NAME>"
+
+Milestone directory: <MILESTONE_DIR>
 ```
+
+Every dispatch carries the `Milestone directory:` line, holding the `<MILESTONE_DIR>` step 0 resolved, whether from an override or from the pointer, so each agent works in the milestone this run commits for.
 
 Wait for the agent to return.
 
