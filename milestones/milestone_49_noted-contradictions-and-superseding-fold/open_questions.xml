@@ -1,1 +1,47 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Note entry content">
+    <question>What does one entry under the new `## Noted contradictions` section of `requirements.md` hold: only the two `###` headings of the conflicting `## Decisions` entries, or those headings plus a one-sentence statement of what each entry says and why both cannot hold, given that the next review pass must turn the entry into a self-standing open question and `/derive-tasks` must read from it which pair is known?</question>
+  </open-question>
+  <open-question id="Note section creation">
+    <question>Is the `## Noted contradictions` section created empty with every milestone by the milestone-definition tool, so every `requirements.md` carries five sections and the four-section structure stated in `review-milestone-requirements` and `CLAUDE.md` changes, or created by the first single-question answer skill that writes a note and absent from a milestone that never records a conflict?</question>
+  </open-question>
+  <open-question id="Note section position">
+    <question>Where does `## Noted contradictions` sit in `requirements.md`: directly after `## Decisions` and before `## Out of Scope`, or after `## Out of Scope` as the file&apos;s last section, given that the fold tool ends the `## Decisions` section at the next column-0 `## ` heading either way?</question>
+  </open-question>
+  <open-question id="Note-writing home">
+    <question>Which runtime file carries the step that writes a noted contradiction: the shared answer core `answer-procedure.md`, whose analyse step already asks whether the answer contradicts a standing entry and which all three single-question skills follow, or the hand-answer procedure that only `answer-open-question` and `answer-open-question-with-alternative` follow, leaving `answer-open-question-with-recommendation` writing no note?</question>
+  </open-question>
+  <open-question id="Note versus rewrite at fold">
+    <question>When a single-question answer skill records an answer to an ordinary question and finds it contradicts a standing `## Decisions` entry of another question, does it always write a note and leave the old entry as it stands, or does it rewrite the old entry when the answer plainly supersedes it and write a note only when the answer does not plainly settle which entry should hold?</question>
+  </open-question>
+  <open-question id="Replace mode granularity">
+    <question>What does the fold tool&apos;s replace mode replace: the whole body of the `###` subsection named by `--section` with the text on standard input, keeping the heading, or one entry inside that subsection identified by a further argument, given that a milestone&apos;s `## Decisions` holds either one prose paragraph per subsection or topical subsections of several `- **Lead.** text` bullets?</question>
+  </open-question>
+  <open-question id="Conflict section call count">
+    <question>When the answer sweep&apos;s batched call records a conflict question whose answer rewrites entries under more than one `###` subsection, does that question&apos;s section carry one replace call per rewritten subsection chained ahead of its `remove`, or exactly one replace call for one subsection so every section keeps a fixed number of tool calls?</question>
+  </open-question>
+  <open-question id="Conflict question recognition">
+    <question>How does the answer sweep tell a conflict question, whose section uses the replace mode, from an ordinary one, given that a question block carries only its `id` and question text: by a fixed opening phrase the review pass writes into every conflict question&apos;s text, by a fixed Short Title convention such as a `Conflict:` prefix, or by the runner&apos;s own reading of the question text?</question>
+  </open-question>
+  <open-question id="Conflict answer record">
+    <question>When a conflict question is answered and the losing entry is rewritten, is that rewrite the whole record of the decision, or is a decision statement also folded under the winning entry&apos;s heading, given that `capture-milestone-principle-updates` reads the recorded decision from the added lines of the answer commit&apos;s `requirements.md` hunk?</question>
+  </open-question>
+  <open-question id="Review handling of notes">
+    <question>Does the review pass author one open question for every entry under `## Noted contradictions` exactly as noted, or apply its own conflict test to each note first and delete a note it judges to be a refinement rather than a conflict without authoring a block?</question>
+  </open-question>
+  <open-question id="Later-entry determination">
+    <question>How does `/derive-tasks` decide which of two conflicting `## Decisions` entries is the later-recorded one, given that a fold into an existing subsection lands earlier in the file than a newer subsection appended at the end: by position in the file, by the git history of the two entries, or by the note under `## Noted contradictions` naming which entry was recorded later?</question>
+  </open-question>
+  <open-question id="Tie-break scope">
+    <question>Does the `/derive-tasks` tie-break rule apply only to the pairs listed under `## Noted contradictions`, or to any two `## Decisions` entries the runner finds cannot both hold while deriving the briefs?</question>
+  </open-question>
+  <open-question id="Leftover notes at finish">
+    <question>When a milestone is finished with entries still standing under `## Noted contradictions`, because `/derive-tasks` was run without a further review pass, do those entries stay in the finished milestone&apos;s `requirements.md` untouched, or does `/finish-current-milestone` report them before it records the completion?</question>
+  </open-question>
+  <open-question id="Replace mode invocation">
+    <question>Is the fold tool&apos;s replace mode a flag on the existing `fold` subcommand, such as `fold --replace`, or a second subcommand of `requirements.py` with its own name?</question>
+  </open-question>
+  <open-question id="Replace of missing subsection">
+    <question>When the fold tool&apos;s replace mode is given a `--section` heading that matches no `###` subsection under `## Decisions`, does it refuse with one `Error:` line and leave the file unchanged, or create the subsection at the end of the section as `fold` does?</question>
+  </open-question>
+</open-questions>
