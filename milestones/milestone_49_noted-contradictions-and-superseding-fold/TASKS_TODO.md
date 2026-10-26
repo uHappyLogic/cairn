@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Cover Conflict Section In Batched Call Test
-
-Extend `tests/fixtures/sweep` with a recommendation-bearing conflict question whose text opens with the review pass's fixed phrase and whose losing entry sits in a `###` subsection of the fixture's `requirements.md`, and extend `tests/test_sweep_batched_call.py` to extract the conflict section from the rendered Claude Code tree at the boundaries the step states and run it under bash in the same clean run as the ordinary sections, asserting that its commit's `requirements.md` diff is exactly the rewritten subsection body with the heading line and every other byte unchanged, that the section holds one `replace` call and no `fold`, and that the ordinary sections, the silent skip, and the dirty-start stop behave as before. Verified by `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` both passing.
-
----
-
 ## Add Tie-Break Rule To Derive-Tasks
 
 Extend `core/skills/derive-tasks/SKILL.md` with the tie-break rule applied while building the briefs and the coverage matrix: where two `## Decisions` entries cannot both hold, the later-recorded entry governs the brief, found by the commit that added each entry's lines in `requirements.md` through blame or a pickaxe search path-scoped to that file, never by file position and never from the note; every pair listed under `## Noted contradictions` is taken as conflicting as noted without re-judging, any other pair the runner itself finds is resolved the same way, and nothing is flagged for either kind. The empty-`list` precondition stays as it is, so a noted contradiction never blocks the run. Verified by the rebuilt `hosts/` trees passing `uv run scripts/build_hosts.py --check`.

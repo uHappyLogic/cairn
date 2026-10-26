@@ -83,3 +83,18 @@ Extend `core/skills/answer-all-open-questions-with-recommendation/SKILL.md` so s
 - `tests/test_sweep_batched_call.py` and `tests/test_sweep_compact_view.py` still extract their calls and pass under both `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` (the full suites at 889 passed and 885 passed, 1 skipped).
 
 ---
+
+## Cover Conflict Section In Batched Call Test
+
+Extend `tests/fixtures/sweep` with a recommendation-bearing conflict question whose text opens with the review pass's fixed phrase and whose losing entry sits in a `###` subsection of the fixture's `requirements.md`, and extend `tests/test_sweep_batched_call.py` to extract the conflict section from the rendered Claude Code tree at the boundaries the step states and run it under bash in the same clean run as the ordinary sections, asserting that its commit's `requirements.md` diff is exactly the rewritten subsection body with the heading line and every other byte unchanged, that the section holds one `replace` call and no `fold`, and that the ordinary sections, the silent skip, and the dirty-start stop behave as before. Verified by `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` both passing.
+
+**Verified:**
+
+- `tests/fixtures/sweep/open_questions.xml` holds a new recommendation-bearing conflict question, `Entry cap`, written through the open-question tool and sorted. Its question text, as `list --with-question` prints it, opens with the review pass's fixed phrase, `Which conflicting decision stands: "Cache size" or "Memory budget"?`. The fixture's `requirements.md` gains both entries of the pair under `## Decisions`: the standing prose subsection `### Cache size`, and last the losing entry's topical subsection `### Memory budget`, which holds a conflicting bullet and an unchanged one.
+- `tests/test_sweep_batched_call.py` extracts the conflict section from the rendered Claude Code tree as the one fence holding the `replace` command, cut at the boundaries the step states (from `if pick=` through the column-0 `fi &&`). The boundary test also pins the step's statement of the conflict section's boundaries and of the exact opening `Which conflicting decision stands:`.
+- A template test asserts that the conflict section holds exactly one `replace` call and no `fold`, and that it differs from the ordinary question section only in the write line and its body placeholder. Another test checks that the fixture's question text starts with the review skill's rendered phrase filled with the fixture's two headings, in `## Decisions` order.
+- The clean run picks the conflict section for the question whose printed text starts with the opening, and runs it under bash in the same call as the ordinary sections (one `replace`, three `fold`s). In the conflict answer's commit, `requirements.md` equals the parent's version with only the losing subsection body swapped for the new body. The heading line, the next heading (created by the earlier retry fold), and every other byte are unchanged. Its diff is just the rewritten bullet, and the standing entry stays as written.
+- The ordinary sections still make one `Recommendation-answer:` commit per answer, each adding only its fold. The stripped dependent is still skipped silently, with no commit and no output. The dirty-start stop still ends the call before any write.
+- `uv run pytest` (891 passed) and `uv run --no-project --python 3.9 --with pytest pytest` (887 passed, 1 skipped) both pass.
+
+---

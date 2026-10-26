@@ -27,6 +27,20 @@
       <drawback>Every transient fault surfaces as an error.</drawback>
     </alternative>
   </open-question>
+  <open-question id="Entry cap">
+    <question>Which conflicting decision stands: &quot;Cache size&quot; or &quot;Memory budget&quot;? &quot;Cache size&quot; caps the cache at 100 entries, while the &quot;Entry cap.&quot; bullet under &quot;Memory budget&quot; caps it at 500.</question>
+    <recommendation option="Keep 100 entries">A full scan must stay fast, and the smaller cap keeps it fast while still absorbing the repeated reads the cache exists for.</recommendation>
+    <alternative id="Keep 100 entries">
+      Keep the 100-entry cap &quot;Cache size&quot; sets, and rewrite the &quot;Entry cap.&quot; bullet to cap the cache at 100 entries too.
+      <advantage>A full scan of the cache stays short.</advantage>
+      <drawback>More reads miss the cache and fall through to the slow store.</drawback>
+    </alternative>
+    <alternative id="Keep 500 entries">
+      Keep the 500-entry cap the &quot;Entry cap.&quot; bullet sets, and rewrite &quot;Cache size&quot; to cap the cache at 500 entries too.
+      <advantage>Fewer reads fall through to the slow store.</advantage>
+      <drawback>A full scan covers five times as many entries.</drawback>
+    </alternative>
+  </open-question>
   <open-question id="Cache eviction">
     <question>How does the cache evict entries once it is full?</question>
     <depends-on question="Storage backend" option="Flat JSON file"/>
