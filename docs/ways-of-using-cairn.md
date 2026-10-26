@@ -4,7 +4,7 @@ How to chain Cairn's skills as headless command lines, one goal per section: eac
 
 ## Notation and flags
 
-Every line is one headless run, `claude -p "/cairn:<skill>"` on Claude Code, `agy -p "/cairn:<skill>"` on Antigravity, or `codex exec '$cairn:<skill>'` on Codex, where `/cairn:<skill>` is the skill's slash command under the plugin's `cairn:` namespace, `$cairn:<skill>` is the same skill under Codex's `$` sigil (single-quoted so the shell passes the `$` through as written), and the process exits when the skill finishes. Angle brackets mark the only text you substitute; every other token runs as written. The page uses five placeholders: `<goal>` is the milestone's goal description, exactly as the skill reference spells it in `define-milestone-goal <overall_goal_description>`, written as plain prose with no double quote since it sits inside the line's quoted prompt (no single quote on a Codex line, whose prompt is single-quoted); `<milestone_id>` is the milestone's directory name under `milestones/`, exactly as the skill reference spells it in `specify-milestone-starting-state <milestone_id>`; `<Short Title>` is an open question's Short Title and `<Alternative Id>` the `id` of one of its embedded alternatives, the two halves the skill reference spells as `answer-open-question-with-alternative <question_name>. <alternative id>`; and `<answer text>` is your own answer to a question, which `answer-open-question <question_name>` takes after the Short Title and a period, written as plain prose under the same quoting rule as `<goal>`.
+Every line is one headless run, `claude -p "/cairn:<skill>"` on Claude Code, `agy -p "/cairn:<skill>"` on Antigravity, or `codex exec '$cairn:<skill>'` on Codex, where `/cairn:<skill>` is the skill's slash command under the plugin's `cairn:` namespace, `$cairn:<skill>` is the same skill under Codex's `$` sigil (single-quoted so the shell passes the `$` through as written), and the process exits when the skill finishes. Angle brackets mark the only text you substitute; every other token runs as written. The page uses four placeholders: `<goal>` is the milestone's goal description, exactly as the skill reference spells it in `define-milestone-goal <overall_goal_description>`, written as plain prose with no double quote since it sits inside the line's quoted prompt (no single quote on a Codex line, whose prompt is single-quoted); `<Short Title>` is an open question's Short Title and `<Alternative Id>` the `id` of one of its embedded alternatives, the two halves the skill reference spells as `answer-open-question-with-alternative <question_name>. <alternative id>`; and `<answer text>` is your own answer to a question, which `answer-open-question <question_name>` takes after the Short Title and a period, written as plain prose under the same quoting rule as `<goal>`.
 
 The headless flags:
 
@@ -17,7 +17,7 @@ To move a line between Claude Code and Antigravity, change the binary (`claude` 
 
 ## Setting up a project
 
-Run this once per project, in a fresh git repository: it bootstraps the workflow, committing `milestones/README.md` with the current-milestone pointer at `none` and the `CLAUDE.md` workflow guidance, then defines the first milestone and commits its directory without activating it, so the pointer still reads `none` and the [Starting a milestone](#starting-a-milestone) chain runs next, with `<milestone_id>` the directory `define-milestone-goal` created. Two preconditions come before the chain rather than in it: `git init` in the project root, since the bootstrap stops before writing anything outside a git work tree, and one `/init` run, whose `CLAUDE.md` environment context the later skills read and which the bootstrap sweeps into its own commit.
+Run this once per project, in a fresh git repository: it bootstraps the workflow, committing `milestones/README.md` with the current-milestone pointer at `none` and the `CLAUDE.md` workflow guidance, then defines the first milestone and commits its directory without activating it, so the pointer still reads `none` and the [Starting a milestone](#starting-a-milestone) chain runs next. Two preconditions come before the chain rather than in it: `git init` in the project root, since the bootstrap stops before writing anything outside a git work tree, and one `/init` run, whose `CLAUDE.md` environment context the later skills read and which the bootstrap sweeps into its own commit.
 
 ```sh
 claude -p "/cairn:init-milestone-base-workflow" --dangerously-skip-permissions --model "opus" --effort high;
@@ -30,7 +30,7 @@ Run this once a milestone is defined and the previous one is finished, so the cu
 
 ```sh
 claude -p "/cairn:goto-next-milestone" --dangerously-skip-permissions --model "opus" --effort high;
-claude -p "/cairn:specify-milestone-starting-state <milestone_id>" --dangerously-skip-permissions --model "fable" --effort high;
+claude -p "/cairn:specify-milestone-starting-state" --dangerously-skip-permissions --model "fable" --effort high;
 claude -p "/cairn:review-milestone-requirements" --dangerously-skip-permissions --model "fable" --effort high;
 claude -p "/cairn:provide-alternatives-to-all-open-questions" --dangerously-skip-permissions --model "opus" --effort high;
 claude -p "/cairn:recommend-all-open-questions" --dangerously-skip-permissions --model "fable" --effort high;

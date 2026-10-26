@@ -89,3 +89,19 @@ The seven pointer-resolving skills that take no positional text (`answer-all-ope
 - `agy_tests/test_subagent_write_tools.py` dispatches the completion agent with the new two-line prompt (task heading plus seeded milestone directory), and `uv run pytest` (891 passed) and the 3.9 floor run (887 passed, 1 skipped) both pass.
 
 ---
+
+## Spell The Flag In The Docs
+
+In `docs/skill-reference.md`, each of the sixteen pointer-resolving skills' `###` headings spells `[--milestone <milestone_id>]` exactly as that skill's Usage fence does, the `specify-milestone-starting-state <milestone_id>` heading taking the optional form in place of the required id and the `capture-milestone-principle-updates <milestone_id>` heading staying as it is. In `docs/ways-of-using-cairn.md`, the Starting-a-milestone chain runs `/cairn:specify-milestone-starting-state` with no argument, `<milestone_id>` leaves the notation paragraph's placeholder list (five placeholders become four), the Setting-up chain's closing clause "with `<milestone_id>` the directory `define-milestone-goal` created" is dropped, and the page says nothing about the `--milestone` flag. Verified by a grep for `<milestone_id>` over `docs/ways-of-using-cairn.md` printing nothing and by each updated heading matching its skill's rendered Usage fence.
+
+**Verified:**
+
+- In `docs/skill-reference.md`, the `###` headings of the sixteen pointer-resolving skills (`review-milestone-requirements`, `discuss-open-question`, `answer-open-question`, `answer-open-question-with-recommendation`, `answer-open-question-with-alternative`, `answer-all-open-questions-with-recommendation`, `modify-milestone-goal`, `provide-alternatives-to-all-open-questions`, `recommend-all-open-questions`, `derive-tasks`, `discuss-new-task`, `submit-task`, `complete-all-tasks`, `complete-task`, `ask-in-milestone-context`, `finish-current-milestone`) each spell `[--milestone <milestone_id>]` once, directly after the skill name and before any positional text, exactly as the first `/<skill>` line of that skill's rendered `hosts/claude/skills/<skill>/SKILL.md` Usage fence does (checked programmatically for all sixteen).
+- The `specify-milestone-starting-state` heading reads `specify-milestone-starting-state [--milestone <milestone_id>]`, the optional form in place of the required id, matching its rendered Usage fence.
+- The `capture-milestone-principle-updates <milestone_id>` heading is unchanged.
+- In `docs/ways-of-using-cairn.md`, the Starting-a-milestone chain line runs `claude -p "/cairn:specify-milestone-starting-state"` with no argument.
+- The notation paragraph says "The page uses four placeholders" and lists `<goal>`, `<Short Title>`, `<Alternative Id>`, and `<answer text>`, with the `<milestone_id>` clause removed.
+- The Setting-up chain's paragraph ends "the [Starting a milestone](#starting-a-milestone) chain runs next.", the clause "with `<milestone_id>` the directory `define-milestone-goal` created" dropped.
+- `grep -n '<milestone_id>' docs/ways-of-using-cairn.md` prints nothing, and `grep -n -- '--milestone' docs/ways-of-using-cairn.md` prints nothing, so the page says nothing about the flag.
+
+---
