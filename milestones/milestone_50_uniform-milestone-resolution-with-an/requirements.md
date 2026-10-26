@@ -48,5 +48,9 @@ Every skill under the uniform resolution rule spells the optional leading flag a
 
 The check that a named `--milestone` override matches a milestone is that `milestones/<milestone_id>/requirements.md` exists, which also implies the directory exists. This is the same test `specify-milestone-starting-state` and `capture-milestone-principle-updates` apply to their positional id today, so the override and the capture exception accept the same milestones, pre-split ones included, while a stray or half-made directory is refused before any skill reads from it. The shared procedure stops on its error line when the file is missing, with no fallback to the pointer.
 
+### Unmatched-override error content
+
+The error line for a `--milestone` override that matches no milestone directory names the value it was given, and the stop then lists every `milestone_*` directory present under `milestones/`, as `capture-milestone-principle-updates` prints today, because a miss on an exact name is almost always a mistyped or truncated slug and the exact names are what a retry needs. It carries no pointer to `/define-milestone-goal`.
+
 ## Out of Scope
 
