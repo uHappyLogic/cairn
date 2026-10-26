@@ -2,6 +2,18 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.8.7 — 2026-10-26
+
+### Noted contradictions and superseding fold (milestone 49)
+
+- When a single-question answer plainly supersedes a standing `## Decisions` entry, the answer skills now rewrite that entry in place instead of appending a contradicting decision beside it. When the answer does not plainly settle the conflict, they leave a note under a new optional `## Noted contradictions` section, which exists only while a note stands.
+- `/review-milestone-requirements` turns each note into one open question, opened by a fixed phrase naming the two conflicting `###` headings, and deletes the note. Notes already covered by recorded state are dropped with no question.
+- The fold tool `tools/requirements.py` gained a `replace` subcommand that rewrites the body of one existing `###` subsection byte-preservingly and never creates one. `fold` is unchanged.
+- The answer sweep recognizes a conflict question by that fixed phrase and records it with one `replace` of the losing entry's subsection, so a conflict answer's whole record is the rewritten entry in every runner.
+- `/derive-tasks` resolves any conflicting pair of decisions by letting the later-recorded entry, found by commit, govern the brief, and is never blocked or flagged by a note.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.8.6...1.8.7
+
 ## 1.8.6 — 2026-10-18
 
 ### Batched answer sweep with a fold tool (milestone 48)
