@@ -17,3 +17,21 @@ Give `core/tools/requirements.py` a second subcommand, `replace <MILESTONE_DIR> 
 - `uv run scripts/build_hosts.py` rebuilt the host trees, `uv run scripts/build_hosts.py --check` passes, and `hosts/claude/tools/requirements.py`, `hosts/antigravity/tools/requirements.py`, and `hosts/codex/plugins/cairn/tools/requirements.py` are byte-identical to `core/tools/requirements.py`.
 
 ---
+
+## Add Replace Mode Test Files
+
+Add new flat `tests/test_requirements_replace_<concern>.py` files over the golden fixture `tests/fixtures/requirements.md` pinning the `replace` contract: the whole-subsection rewrite for both recorded decision shapes with the heading line and every other byte unchanged, the folded heading match with the first of two matches winning and a same-named subsection outside `## Decisions` never matched, the verbatim body with its outer blank lines trimmed, the missing-subsection refusal naming the heading with no subsection created, the shared refusals (an empty heading or body, a missing or non-UTF-8 file, zero or more than one `## Decisions` heading), argparse's exit 2 on a missing `--section`, and `--help` listing both subcommands, leaving the six existing fold test files untouched. Also pin, in a new file, that a `fold`-created subsection lands immediately above a `## Noted contradictions` heading standing between `## Decisions` and `## Out of Scope`. Verified by `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` both passing with the new tests collected.
+
+**Verified:**
+
+- Five new flat files `tests/test_requirements_replace_{rewrite,matching,body,refusals,contract}.py` pin the `replace` contract over the golden fixture `tests/fixtures/requirements.md`, which is unchanged.
+- `test_requirements_replace_rewrite.py` pins the whole-subsection rewrite for both recorded decision shapes (the prose subsection and the topical-bullets subsection with its unchanged bullets carried in the body), plus the last subsection, with the heading line, the blank lines around the body, and every other byte unchanged, including the blank-line, file-end, empty-subsection, and CRLF seams.
+- `test_requirements_replace_matching.py` pins the whitespace- and case-folded heading match (non-ASCII included), the first of two matches winning, the subsection's extent to the next `###` or the end of `## Decisions`, and a same-named subsection outside `## Decisions` never matched, a heading only it carries being refused with the file unchanged.
+- `test_requirements_replace_body.py` pins the body written verbatim with only its outer blank lines trimmed: inner blank lines, indentation, bold-lead bullets, heading lines, markup, and non-ASCII text kept, no bullet or wrapping added, CRLF body lines taking the file's ending.
+- `test_requirements_replace_refusals.py` pins the missing-subsection refusal as one `Error:` line naming the folded heading, the file byte-for-byte unchanged and no subsection created, and the shared refusals: an empty heading, an empty body, a missing file (nothing created), a non-UTF-8 file, and zero or more than one column-0 `## Decisions` heading.
+- `test_requirements_replace_contract.py` pins argparse's exit 2 on a missing `--section` with the file unchanged, `--help` listing both `fold` and `replace`, `replace --help` naming `--section HEADING`, the silent success, one-line errors, and the terminal-stdin refusal.
+- The new file `tests/test_requirements_noted_contradictions.py` pins that a `fold`-created subsection lands immediately above a `## Noted contradictions` heading standing between `## Decisions` and `## Out of Scope`, on the golden fixture and on the fresh template, with the noted section's bytes unchanged.
+- The six existing fold test files (`test_requirements_{body,contract,landing,parity,refusals,splice}.py`) show no diff.
+- `uv run pytest` passes with 889 tests (790 before, the 99 new tests collected) and `uv run --no-project --python 3.9 --with pytest pytest` passes with 885 and 1 skipped (786 before, the 99 new tests collected).
+
+---
