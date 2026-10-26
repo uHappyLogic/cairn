@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add Replace Subcommand To Fold Tool
-
-Give `core/tools/requirements.py` a second subcommand, `replace <MILESTONE_DIR> --section "<Heading>"` with the new text on standard input, that has its own argparse parser, help text, and refusal set, reuses the file's internal readers, `## Decisions` locator, and atomic writer, and replaces everything between the matched `###` heading line (found by the same whitespace- and case-folded exact equality `fold` uses, the subsection running to the next `###` line or the end of `## Decisions`) and the subsection's end with the stdin text written verbatim with its outer blank lines trimmed, the heading line and every byte outside the subsection staying as they are. When no subsection matches it prints one `Error:` line on stderr naming the heading, exits 1, and leaves `requirements.md` byte-for-byte unchanged, never creating a subsection; `fold` stays exactly as it is, append-only, with its contract and call shape untouched, and the module docstring documents the new subcommand. Verified by both pytest runs passing and by `uv run scripts/build_hosts.py` rebuilding the host trees so `uv run scripts/build_hosts.py --check` passes with the tool byte-identical in each.
-
----
-
 ## Add Replace Mode Test Files
 
 Add new flat `tests/test_requirements_replace_<concern>.py` files over the golden fixture `tests/fixtures/requirements.md` pinning the `replace` contract: the whole-subsection rewrite for both recorded decision shapes with the heading line and every other byte unchanged, the folded heading match with the first of two matches winning and a same-named subsection outside `## Decisions` never matched, the verbatim body with its outer blank lines trimmed, the missing-subsection refusal naming the heading with no subsection created, the shared refusals (an empty heading or body, a missing or non-UTF-8 file, zero or more than one `## Decisions` heading), argparse's exit 2 on a missing `--section`, and `--help` listing both subcommands, leaving the six existing fold test files untouched. Also pin, in a new file, that a `fold`-created subsection lands immediately above a `## Noted contradictions` heading standing between `## Decisions` and `## Out of Scope`. Verified by `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` both passing with the new tests collected.

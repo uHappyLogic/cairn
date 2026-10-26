@@ -1,11 +1,14 @@
-"""The fold command for a milestone's requirements.md: it splices one decision under ## Decisions.
+"""The fold and replace commands for a milestone's requirements.md: fold splices one decision
+under ## Decisions, and replace rewrites the body of one existing subsection of it.
 
 Usage: python3 <plugin root>/tools/requirements.py fold MILESTONE_DIR --section HEADING
        (the decision on standard input)
+       python3 <plugin root>/tools/requirements.py replace MILESTONE_DIR --section HEADING
+       (the subsection's new body on standard input)
 
 define_milestone.py creates requirements.md with its milestone directory, and the file keeps
 being written by hand and by other writers afterwards: this module is not its only writer and
-writes one place of it only, so a call changes no byte it did not write. The subcommand takes
+writes one place of it only, so a call changes no byte it did not write. Each subcommand takes
 the already-resolved milestone directory as its first argument and acts on the requirements.md
 inside it, which must already exist: the call never creates it. The caller resolves the
 milestone; this module never reads milestones/README.md, and it touches no git.
@@ -18,15 +21,20 @@ Subcommands:
       one line) added at the end of the section, just before the next "## " heading. The
       --section flag is required on every call, so there is no form of the call that lands a
       decision under no subsection
+  replace MILESTONE_DIR --section HEADING
+      read a subsection's new body from standard input and write it in place of the body of
+      the "### " subsection of "## Decisions" whose heading is HEADING, keeping that heading
+      line and every byte outside the subsection's body. It never creates a subsection: when
+      none carries HEADING the call is refused. The --section flag is required on every call
 
-The decision is opaque Markdown: it is written verbatim with only its leading and trailing
-blank lines trimmed, adding no bullet, bold lead, or wrapping of its own; a heading line in
-it is written as given, nothing of its prose is checked, and a decision the section already
-holds is folded again.
+The body either subcommand reads is opaque Markdown: it is written verbatim with only its
+leading and trailing blank lines trimmed, adding no bullet, bold lead, or wrapping of its own;
+a heading line in it is written as given, nothing of its prose is checked, and a decision the
+section already holds is folded again.
 
-The free-text decision travels on standard input, never as an argument: the tool reads
+The free-text body travels on standard input, never as an argument: the tool reads
 sys.stdin.buffer to end of file exactly once per call and decodes it as UTF-8 itself, and it
-refuses a terminal stdin so a call that forgot to pipe its decision (a quoted heredoc, a
+refuses a terminal stdin so a call that forgot to pipe its body (a quoted heredoc, a
 redirected file) fails instead of blocking.
 
 Requirements file model, read whole on every call only to find the landing point:
@@ -39,19 +47,30 @@ Requirements file model, read whole on every call only to find the landing point
     whitespace-folding and case-folding; when two subsections carry it, the first is used
   - a line holding only whitespace is blank
 
-The splice: the block (when a subsection is created, its "### HEADING" line and a blank line,
-then the decision) is inserted directly after the last non-blank line of the matched
+The fold's splice: the block (when a subsection is created, its "### HEADING" line and a blank
+line, then the decision) is inserted directly after the last non-blank line of the matched
 subsection, or of the section when a subsection is created. One blank line is added before
 the block, the line it follows never being blank, and one after it only where the line that
 follows is not already blank; at the end of the file nothing follows, so nothing is added
 after the block, and a file whose last line had no line ending keeps ending without one.
+
+The replace's rewrite: the matched subsection's body runs from its first non-blank line after
+the heading line to its last non-blank line, and those lines, every blank line between them
+included, are replaced by the new body; the heading line and the blank lines standing between
+it and the body, and between the body and the subsection's end, are kept as they are. When the
+subsection holds no non-blank line after its heading, the new body is placed after the heading
+line exactly as the fold's splice places a block after its anchor. A body whose last line had
+no line ending at the end of the file keeps ending without one.
+
 Inserted lines end as the file's lines do (CRLF when its first line ending is CRLF, LF
 otherwise), and every other byte of the file is written back unchanged: nothing the call did
-not write is normalized, so the file's diff is exactly the folded decision.
+not write is normalized, so the file's diff is exactly the folded decision or the rewritten
+body.
 
 Refusals, each leaving requirements.md byte-for-byte unchanged: an empty HEADING, an empty
-decision, a requirements.md that is missing or not UTF-8 text, and a file holding no
-column-0 "## Decisions" heading or more than one. Nothing else is checked.
+body, a requirements.md that is missing or not UTF-8 text, and a file holding no column-0
+"## Decisions" heading or more than one; replace also refuses a HEADING no subsection of
+"## Decisions" carries, naming the heading. Nothing else is checked.
 
 Output and error contract:
   - a mutator prints nothing on success
@@ -128,7 +147,8 @@ def line_ending(lines):
 
 
 def decision_lines(text):
-    """The decision's lines, with its leading and trailing blank lines dropped."""
+    """The body's lines (a decision, or a subsection's new body), with its leading and
+    trailing blank lines dropped."""
     lines = text.replace("\r\n", "\n").split("\n")
     start, end = 0, len(lines)
     while start < end and is_blank(lines[start]):
@@ -267,6 +287,13 @@ def splice(lines, decisions, heading, decision):
     else:
         anchor = last_content_line(lines, *subsection)
         block = decision
+    return insert_after(lines, anchor, block)
+
+
+def insert_after(lines, anchor, block):
+    """The file's new text with block inserted directly after the non-blank line at index
+    anchor: one blank line before it, one after it only where the following line is not
+    already blank, nothing after it at the end of the file."""
     newline = line_ending(lines)
     block_text = newline.join(block)
     after = anchor + 1
@@ -277,6 +304,36 @@ def splice(lines, decisions, heading, decision):
     else:
         inserted = newline + newline + block_text
     return "".join(lines[:after]) + inserted + "".join(lines[after:])
+
+
+# --- the rewrite ----------------------------------------------------------------------
+
+
+def rewrite(lines, decisions, heading, body, path):
+    """The file's new text, its lines given and its "## Decisions" line at index decisions:
+    the body of the named subsection replaced by body, its heading line, the blank lines
+    around its body, and every byte outside it unchanged. A heading no subsection of the
+    section carries is a ToolError: the rewrite never creates a subsection."""
+    end = section_end(lines, decisions)
+    subsection = find_subsection(lines, decisions + 1, end, heading)
+    if subsection is None:
+        raise ToolError(
+            f"{path} holds no \"{SUBSECTION_PREFIX}{heading}\" subsection under "
+            f"\"{SECTION_PREFIX}{SECTION_TITLE}\"; replace rewrites an existing subsection only "
+            f"and never creates one"
+        )
+    start, stop = subsection
+    last = last_content_line(lines, start, stop)
+    if last == start:
+        return insert_after(lines, start, body)
+    first = start + 1
+    while is_blank(lines[first]):
+        first += 1
+    newline = line_ending(lines)
+    replacement = newline.join(body)
+    if lines[last].endswith("\n"):
+        replacement += newline
+    return "".join(lines[:first]) + replacement + "".join(lines[last + 1:])
 
 
 # --- subcommands ----------------------------------------------------------------------
@@ -296,13 +353,30 @@ def cmd_fold(args):
     return 0
 
 
+def cmd_replace(args):
+    heading = fold(args.section)
+    if not heading:
+        raise ToolError("the subsection heading given as --section is empty")
+    path = requirements_path(args.milestone_dir)
+    lines = split_lines(read_text(path))
+    decisions = find_decisions(lines, path)
+    body = decision_lines(read_body("the new subsection body"))
+    if not body:
+        raise ToolError("the new subsection body on standard input is empty")
+    write_bytes(path, rewrite(lines, decisions, heading, body, path).encode("utf-8"))
+    return 0
+
+
 # --- command line ---------------------------------------------------------------------
 
 
 def build_parser():
     parser = argparse.ArgumentParser(
         prog="requirements.py",
-        description="Fold a decision into the ## Decisions section of a milestone's existing requirements.md.",
+        description=(
+            "Fold a decision into the ## Decisions section of a milestone's existing "
+            "requirements.md, or replace the body of one of its existing subsections."
+        ),
     )
     subcommands = parser.add_subparsers(dest="subcommand", metavar="<subcommand>", required=True)
 
@@ -324,6 +398,25 @@ def build_parser():
         help="the heading of the ### subsection the decision lands in, compared whitespace-folded and case-folded",
     )
     fold_parser.set_defaults(func=cmd_fold)
+
+    replace_help = (
+        "replace the body of the ## Decisions subsection with the given heading by the text read "
+        "from standard input, verbatim, keeping the heading line and every byte outside the "
+        "subsection's body; a heading no subsection carries is refused, never created"
+    )
+    replace_parser = subcommands.add_parser("replace", help=replace_help, description=replace_help)
+    replace_parser.add_argument(
+        "milestone_dir",
+        metavar="MILESTONE_DIR",
+        help="the resolved milestone directory holding requirements.md",
+    )
+    replace_parser.add_argument(
+        "--section",
+        required=True,
+        metavar="HEADING",
+        help="the heading of the existing ### subsection whose body is replaced, compared whitespace-folded and case-folded",
+    )
+    replace_parser.set_defaults(func=cmd_replace)
     return parser
 
 
