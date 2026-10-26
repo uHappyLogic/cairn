@@ -50,5 +50,9 @@ Between October 2 and the milestone 48 release on October 18 the sweep still pri
 
 - **Home of the note-writing step.** The step that writes a noted contradiction lives in the shared answer core `core/shared/answer-procedure.md`, as its own numbered step acting on what the analyse step's fourth question (contradicts or supersedes anything already written) found, landing after the fold and before the block's removal. It applies unconditionally, so all three single-question skills write a note: `answer-open-question` and `answer-open-question-with-alternative` through `hand-answer-procedure.md`, and `answer-open-question-with-recommendation` through `answer-with-recommendation-procedure.md`. Neither composing procedure changes, and the core gains a step but no new input and no branch; the sweep's draw on the fold step's content rules never reaches the new step.
 
+### Fold tool replace mode
+
+- **Granularity.** Replace mode always works on a whole `###` subsection and takes no further argument. The subsection is found the way `fold` already finds it: the column-0 `### ` line matched by `--section` after whitespace and case folding, running to the next `### ` line or the end of `## Decisions`. Everything between the heading line and the subsection's end is replaced with the stdin text, written verbatim with its outer blank lines trimmed; the heading line and every byte outside the subsection stay as they are. In a topical subsection of `- **Lead.** text` bullets, the runner's heredoc carries the whole new body, unchanged bullets included.
+
 ## Out of Scope
 
