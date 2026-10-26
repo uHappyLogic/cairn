@@ -21,10 +21,12 @@ recommendation-bearing question at its *recommended* option unattended, use
 ## Invocation
 
 ```
-/answer-open-question-with-alternative <Short Title>. <Alternative Id>
+/answer-open-question-with-alternative [--milestone <milestone_id>] <Short Title>. <Alternative Id>
 ```
 
-Split the argument on the **first `.`** — exactly as `answer-open-question` does. Everything
+First strip a leading `--milestone <milestone_id>` from the argument by the rule in
+`${PLUGIN_ROOT}/shared/get-current-milestone.md`, holding any override for step 1, then split
+the rest on the **first `.`** — exactly as `answer-open-question` does. Everything
 before it is `<Short Title>` (the question handle); everything after it is `<Alternative Id>`
 (the `id` of the `<alternative>` to record). Trim surrounding whitespace from both halves.
 
@@ -34,7 +36,9 @@ before it is `<Short Title>` (the question handle); everything after it is `<Alt
 - `<Alternative Id>` must match (case-insensitive, against the `id` attribute) one of that
   block's embedded `<alternative id="...">` elements.
 
-The skill resolves the current milestone itself, so nothing needs to be looked up first.
+The skill resolves the current milestone itself, so nothing needs to be looked up first. The
+optional leading `--milestone <milestone_id>` names the milestone by its exact directory name
+under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
 
 ## Workflow
 

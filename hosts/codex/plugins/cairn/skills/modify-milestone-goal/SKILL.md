@@ -10,9 +10,10 @@ Replaces the `## Goal` of the current milestone's `requirements.md` with a revis
 ## Usage
 
 ```
-/modify-milestone-goal <new or revised goal text>
+/modify-milestone-goal [--milestone <milestone_id>] <new or revised goal text>
 ```
 
+- `--milestone <milestone_id>`: optional and leading; names the milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
 - `<new or revised goal text>`: either a complete replacement goal statement, or a described change to fold into the existing one (e.g. "also cover a quick-reference section"). If it is a delta, integrate it against the current Goal rather than discarding what is still true.
 
 **Example:**
@@ -24,7 +25,7 @@ Replaces the `## Goal` of the current milestone's `requirements.md` with a revis
 
 ### 0. Find the current milestone
 
-Follow `${PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path.
+First strip a leading `--milestone <milestone_id>` from the invocation text by the rule in `${PLUGIN_ROOT}/shared/get-current-milestone.md`, reading only the rest as the goal text. Follow `${PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path.
 
 ### 1. Read the current Goal
 

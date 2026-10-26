@@ -22,9 +22,10 @@ Once those are clear, `submit-task` takes over — keep what you produce high-le
 ## Usage
 
 ```
-/discuss-new-task <issue description>
+/discuss-new-task [--milestone <milestone_id>] <issue description>
 ```
 
+- `--milestone <milestone_id>`: optional and leading; names the milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
 - `<issue description>`: a free-form, possibly rough description of a problem, gap, or idea surfaced mid-flight. May be a single issue or a larger "we need to create X" that spans several pieces.
 
 **Example (single task):**
@@ -41,7 +42,7 @@ Once those are clear, `submit-task` takes over — keep what you produce high-le
 
 ### 0. Find the current milestone
 
-Follow `${PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+First strip a leading `--milestone <milestone_id>` from the invocation text by the rule in `${PLUGIN_ROOT}/shared/get-current-milestone.md`, reading only the rest as the issue description. Follow `${PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 1. Gather context
 

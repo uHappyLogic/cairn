@@ -15,19 +15,23 @@ To record **every** recommendation-bearing question unattended instead, use
 ## Invocation
 
 ```
-/answer-open-question-with-recommendation <Short Title>
+/answer-open-question-with-recommendation [--milestone <milestone_id>] <Short Title>
 ```
 
 `<Short Title>` must match (case-insensitive, against the block's `id`) an existing
 `<open-question>` block in `<MILESTONE_DIR>/open_questions.xml` that the
 `/recommend-all-open-questions` sweep has already annotated with a `<recommendation>`
 element. The skill resolves the current milestone itself, so nothing needs to be looked up
-first.
+first. The optional leading `--milestone <milestone_id>` names the milestone by its exact
+directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the
+current-milestone pointer.
 
 ## Workflow
 
 ### 1. Find the current milestone
 
+First strip a leading `--milestone <milestone_id>` from the invocation text by the rule in
+`${PLUGIN_ROOT}/shared/get-current-milestone.md`, reading only the rest as `<Short Title>`.
 Follow `${PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never
 use a hardcoded path. Hold `<MILESTONE_DIR>` — you need it for the delegated recording and
 the commit.

@@ -17,18 +17,20 @@ use `/discuss-new-task` first.
 ## Invocation
 
 ```
-/submit-task <issue description>
+/submit-task [--milestone <milestone_id>] <issue description>
 ```
 
 `<issue description>` is a free-form description of a problem or gap discovered during
 development, specific enough that the affected system, desired behavior, and how to verify
-it are clear.
+it are clear. The optional leading `--milestone <milestone_id>` names the milestone by its
+exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the
+current-milestone pointer.
 
 ## Workflow
 
 ### 0. Find the current milestone
 
-Follow `${PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+First strip a leading `--milestone <milestone_id>` from the invocation text by the rule in `${PLUGIN_ROOT}/shared/get-current-milestone.md`, reading only the rest as the issue description. Follow `${PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 1. Read context for triage
 

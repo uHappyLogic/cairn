@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Flag Clause In Positional-Text Skills
-
-The nine skills whose invocation carries positional text of their own (`answer-open-question`, `answer-open-question-with-recommendation`, `answer-open-question-with-alternative`, `ask-in-milestone-context`, `discuss-new-task`, `discuss-open-question`, `modify-milestone-goal`, `submit-task`, `complete-task`) each show `[--milestone <milestone_id>]` ahead of their positional text in their Usage or Invocation fence, with the prose under it describing the optional override, and each carries one clause at its own parse point (its parse step, or its step 0 where it has none) telling the runner to strip a leading `--milestone` value by the shared procedure before reading the rest, so the flag is never folded into a Short Title, an answer, a goal, a task name, or a question. `ask-in-milestone-context`'s `none`-pointer fallback is worded to apply only when no override is given, since an override never reads the pointer. Verified by reading the nine rendered skills in each host tree and by `uv run scripts/build_hosts.py --check` passing after the `hosts/` rebuild.
-
----
-
 ## Flag In Argument-Free Skill Usage
 
 The seven pointer-resolving skills that take no positional text (`answer-all-open-questions-with-recommendation`, `complete-all-tasks`, `derive-tasks`, `finish-current-milestone`, `provide-alternatives-to-all-open-questions`, `recommend-all-open-questions`, `review-milestone-requirements`) each show `[--milestone <milestone_id>]` in their Usage or Invocation fence, with prose under it describing the optional override in place of every "No arguments" line, and keep only their step-0 reference to the shared procedure with no parse clause of their own; `goto-next-milestone` and `init-milestone-base-workflow`, which are outside the rule, are left unchanged. Verified by confirming no "No arguments" line remains in those seven rendered skills in any host tree and by `uv run scripts/build_hosts.py --check` passing after the `hosts/` rebuild.

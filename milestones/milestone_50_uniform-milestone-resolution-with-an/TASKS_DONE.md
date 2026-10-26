@@ -30,3 +30,18 @@
 - `uv run scripts/build_hosts.py --check` passes (exit 0) after the `hosts/` rebuild.
 
 ---
+
+## Flag Clause In Positional-Text Skills
+
+The nine skills whose invocation carries positional text of their own (`answer-open-question`, `answer-open-question-with-recommendation`, `answer-open-question-with-alternative`, `ask-in-milestone-context`, `discuss-new-task`, `discuss-open-question`, `modify-milestone-goal`, `submit-task`, `complete-task`) each show `[--milestone <milestone_id>]` ahead of their positional text in their Usage or Invocation fence, with the prose under it describing the optional override, and each carries one clause at its own parse point (its parse step, or its step 0 where it has none) telling the runner to strip a leading `--milestone` value by the shared procedure before reading the rest, so the flag is never folded into a Short Title, an answer, a goal, a task name, or a question. `ask-in-milestone-context`'s `none`-pointer fallback is worded to apply only when no override is given, since an override never reads the pointer. Verified by reading the nine rendered skills in each host tree and by `uv run scripts/build_hosts.py --check` passing after the `hosts/` rebuild.
+
+**Verified:**
+
+- Each of the nine core skills (`answer-open-question`, `answer-open-question-with-recommendation`, `answer-open-question-with-alternative`, `ask-in-milestone-context`, `discuss-new-task`, `discuss-open-question`, `modify-milestone-goal`, `submit-task`, `complete-task`) shows `[--milestone <milestone_id>]` directly after the skill name and ahead of its positional text in its Usage or Invocation fence.
+- The prose under each of those fences describes the optional leading override: it names the milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
+- Each of the nine carries one clause at its own parse point (`answer-open-question` step 1's split; `answer-open-question-with-alternative`'s Invocation split rule; step 0 of `ask-in-milestone-context`, `discuss-new-task`, `discuss-open-question`, `modify-milestone-goal`, and `submit-task`; the milestone-finding step 1 of `answer-open-question-with-recommendation`; step 1 of `complete-task`) telling the runner to first strip a leading `--milestone <milestone_id>` by the rule in `get-current-milestone.md` and read only the rest as its Short Title, answer, goal text, issue description, task name, or question.
+- `ask-in-milestone-context`'s `none`-pointer fallback opens "If no override was given and the pointer is `none`" and states that an override never reads the pointer, so the fallback never applies to one.
+- The nine rendered skills in `hosts/claude/skills/`, `hosts/antigravity/skills/`, and `hosts/codex/plugins/cairn/skills/` were read and carry the fence, the override prose, the strip clause, and (for `ask-in-milestone-context`) the reworded fallback, with each host's plugin root substituted.
+- `uv run scripts/build_hosts.py --check` passes (exit 0) after the `hosts/` rebuild.
+
+---

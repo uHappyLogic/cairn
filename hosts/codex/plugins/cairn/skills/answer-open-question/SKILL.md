@@ -10,10 +10,10 @@ Resolves a named open question of the current milestone by recording the user's 
 ## Usage
 
 ```
-/answer-open-question <Short Title>. <answer text>
+/answer-open-question [--milestone <milestone_id>] <Short Title>. <answer text>
 ```
 
-The `<Short Title>` must match (case-insensitive, against the block's `id`) an existing `<open-question>` block. The `.` character is the separator. Everything after the first `.` is the answer.
+The `<Short Title>` must match (case-insensitive, against the block's `id`) an existing `<open-question>` block. The `.` character is the separator. Everything after the first `.` is the answer. The optional leading `--milestone <milestone_id>` names the milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
 
 **Example (literal answer):**
 ```
@@ -29,7 +29,7 @@ The `<Short Title>` must match (case-insensitive, against the block's `id`) an e
 
 ### 1. Parse the input
 
-Split the skill args on the first `.` character:
+First strip a leading `--milestone <milestone_id>` from the skill args by the rule in `${PLUGIN_ROOT}/shared/get-current-milestone.md`, holding any override for step 3, then split the rest on the first `.` character:
 - Before: the question **Short Title** (trim whitespace)
 - After: the **answer text** (trim whitespace)
 

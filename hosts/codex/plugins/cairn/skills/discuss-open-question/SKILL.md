@@ -10,10 +10,10 @@ Facilitates a deliberation on a named `<open-question>` block in the current mil
 ## Usage
 
 ```
-/discuss-open-question <Short Title>
+/discuss-open-question [--milestone <milestone_id>] <Short Title>
 ```
 
-The `<Short Title>` must match (case-insensitive) the `id` of an existing `<open-question>` block in `<MILESTONE_DIR>/open_questions.xml`.
+The `<Short Title>` must match (case-insensitive) the `id` of an existing `<open-question>` block in `<MILESTONE_DIR>/open_questions.xml`. The optional leading `--milestone <milestone_id>` names the milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
 
 **Example:**
 ```
@@ -24,7 +24,7 @@ The `<Short Title>` must match (case-insensitive) the `id` of an existing `<open
 
 ### 0. Find the current milestone
 
-Follow `${PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+First strip a leading `--milestone <milestone_id>` from the invocation text by the rule in `${PLUGIN_ROOT}/shared/get-current-milestone.md`, reading only the rest as the `<Short Title>`. Follow `${PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 1. Locate the question
 
