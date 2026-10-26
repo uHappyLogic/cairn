@@ -1,43 +1,4 @@
 <open-questions>
-  <open-question id="Later-entry determination">
-    <question>How does `/derive-tasks` decide which of two conflicting `## Decisions` entries is the later-recorded one, given that a fold into an existing subsection lands earlier in the file than a newer subsection appended at the end: by position in the file, by the git history of the two entries, or by the note under `## Noted contradictions` naming which entry was recorded later?</question>
-    <recommendation option="Git history">Every answer is already its own path-scoped commit, so the commit that added each entry&apos;s lines gives recording order for every pair, noted or not, where file position fails exactly in the fold-into-existing-subsection case and a note-carried order reaches none of the sweep-recorded pairs; a replace-mode rewrite that moves an entry&apos;s lines to a newer commit is itself the later decision about that entry.</recommendation>
-    <alternative id="Git history">
-      `/derive-tasks` finds the commit that added each entry&apos;s lines in `requirements.md` (for example by blame or a pickaxe search, path-scoped to that file) and treats the entry from the newer commit as the later-recorded one, for any conflicting pair. The note is not consulted for order.
-      <advantage>It follows actual recording order whatever the file position, and it works for every pair: noted, unnoted, and pairs recorded by the answer sweep, which writes no note. Every answer is already its own commit (`Manual-answer:`, `Alternative-answer:`, `Recommendation-answer:`), so the order is already on record.</advantage>
-      <drawback>It adds git reads and a line-to-commit step to a skill that currently reads only files. The result can be wrong when a later commit touched an entry&apos;s lines without deciding anything (a replace-mode rewrite, a hand tidy, a goal-revision edit), or when an entry is uncommitted or only partly re-edited. A wrong pick is silent, because the rule flags nothing.</drawback>
-    </alternative>
-    <alternative id="File position">
-      `/derive-tasks` treats the entry standing further down `## Decisions` as the later-recorded one, for any conflicting pair it meets. It needs no other source and adds no git read, no note field, and no change to how decisions are recorded.
-      <advantage>It is the cheapest rule. The runner applies it from the whole read of `requirements.md` it already makes, it works the same for noted and unnoted pairs, and it needs nothing from git or from the note format.</advantage>
-      <drawback>It gives the wrong answer in exactly the case the question names. A fold into an existing subsection, by the fold tool or by the Edit-based fold, lands above any newer subsection that was appended at the end of the section, so the older entry can sit lower down and govern the brief silently. Moving a subsection by hand also changes the result.</drawback>
-    </alternative>
-    <alternative id="Note names it">
-      The note under `## Noted contradictions` records which of its two entries is the later-recorded one, either by a fixed order such as the newly recorded entry always named second, or by an explicit label. The answer skill that writes the note knows this by construction, since the entry it has just recorded is the later one. `/derive-tasks` reads the order from the note, and for any pair no note names it states no way to determine order.
-      <advantage>The order is captured by the one runner that knows it for certain, at the moment it is known. `/derive-tasks` gets it with no git read and no inference, and file position stops mattering for the pairs that are noted.</advantage>
-      <drawback>It depends on two siblings. The note must carry the order (Note entry content), and the rule must reach only noted pairs (Tie-break scope). If the tie-break applies to any conflicting pair, every unnoted pair is left with no stated method, and that includes every conflict the sweep records, since the sweep writes no notes. A note the review pass has already turned into a question and deleted no longer carries the order either.</drawback>
-    </alternative>
-    <alternative id="Note, then git">
-      For a pair a note names, `/derive-tasks` takes the order from the note, which records which entry was written later. For any other conflicting pair it finds the commit that added each entry&apos;s lines and treats the newer one as later.
-      <advantage>Noted pairs get order from the source that knows it, and every other pair (sweep-recorded conflicts and conflicts the runner finds while deriving) still gets a rule grounded in recording order rather than in file position.</advantage>
-      <drawback>It carries both mechanisms: a note field the note writers must fill, and the git read with its rewrite and tidy blind spots for unnoted pairs. That makes it the most to state and test. The fallback is only worth its cost if the tie-break reaches unnoted pairs (Tie-break scope), and the note half depends on what a note holds (Note entry content).</drawback>
-    </alternative>
-    <alternative id="Note, then position">
-      For a pair a note names, `/derive-tasks` takes the order from the note, which records which entry was written later. For any other conflicting pair it treats the entry further down `## Decisions` as the later one.
-      <advantage>Noted pairs are ordered correctly from the one runner that knows the order, and the fallback costs nothing beyond the whole read `/derive-tasks` already makes, with no git read.</advantage>
-      <drawback>For unnoted pairs the fallback keeps the known fault of file position: an entry folded into an existing subsection can sit above an older entry in an appended subsection. Sweep-recorded conflicts, which are never noted, are the ones most exposed. It depends on Note entry content and on Tie-break scope reaching unnoted pairs.</drawback>
-    </alternative>
-    <alternative id="Recorded order marker">
-      Every decision entry carries an explicit recording-order marker written when it is folded, such as a date or a sequence number, written by both the fold tool and the Edit-based fold. `/derive-tasks` compares the markers of any conflicting pair, and the note carries no order.
-      <advantage>Order can be read straight from `requirements.md` for every pair, noted or not, with no git read, no inference, and no dependence on where a fold landed.</advantage>
-      <drawback>It changes the record itself. Every fold path has to write the marker, the fold tool has to stop treating the body as opaque, and the `## Decisions` prose stops being provenance-free, which is what `lift` folds and capture reads back. Existing entries carry no marker, so they would need a fallback anyway. That is far more surface than the tie-break rule the goal asks for.</drawback>
-    </alternative>
-    <alternative id="Unspecified method">
-      The tie-break rule says only that the later-recorded entry governs the brief, and names no way to determine which entry that is. The `/derive-tasks` runner judges order from whatever it has read (file position, a note, the entries&apos; wording, or history if it chooses to look).
-      <advantage>It adds no mechanics, no git read, and no note field. In the field, runners that reached a conflicting pair already let the later entry win (milestone_43&apos;s &quot;Wait expiry handling&quot; over &quot;Batch input selection&quot;).</advantage>
-      <drawback>Order is decided again on every run and can differ between runs. Because nothing is flagged, a wrong guess, most likely the file-position guess in the fold-into-existing-subsection case, silently shapes a brief, and nothing records why one entry won.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Leftover notes at finish">
     <question>When a milestone is finished with entries still standing under `## Noted contradictions`, because `/derive-tasks` was run without a further review pass, do those entries stay in the finished milestone&apos;s `requirements.md` untouched, or does `/finish-current-milestone` report them before it records the completion?</question>
     <applied-principle>Report only unrecoverable signals</applied-principle>
@@ -229,7 +190,6 @@
   </open-question>
   <open-question id="Tie-break scope">
     <question>Does the `/derive-tasks` tie-break rule apply only to the pairs listed under `## Noted contradictions`, or to any two `## Decisions` entries the runner finds cannot both hold while deriving the briefs?</question>
-    <depends-on question="Later-entry determination" option="Git history"/>
     <recommendation option="Any conflicting pair">It matches the goal&apos;s wording and the field record, where every pair that reached task derivation was unnoted, recorded by the sweep or by hand; noted pairs are taken as noted with no re-judging, and a brief that cannot satisfy both entries already forces the runner to notice the pair, so the rule only states what then governs.</recommendation>
     <alternative id="Any conflicting pair">
       The tie-break rule covers every pair of `## Decisions` entries that cannot both hold. Every pair listed under `## Noted contradictions` is taken as conflicting as noted, without re-judging. Any other pair the runner itself finds conflicting while building the briefs and the coverage matrix is resolved the same way, and the later-recorded entry governs. Nothing is flagged for either kind.
