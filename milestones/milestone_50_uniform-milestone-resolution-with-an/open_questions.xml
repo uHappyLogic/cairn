@@ -33,6 +33,36 @@
   </open-question>
   <open-question id="Unmatched-override error content">
     <question>What does the error line for a `--milestone` override that matches no milestone directory carry beyond naming the value it was given: nothing more, the `milestone_*` directories present (as `capture-milestone-principle-updates` prints today), or a pointer to `/define-milestone-goal` (as `specify-milestone-starting-state` prints today)?</question>
+    <alternative id="Value only">
+      The error line names the `--milestone` value it was given and states that no milestone directory matches it, and carries nothing else: no listing of `milestones/` and no suggestion of a next skill.
+      <advantage>The shortest stop for the shared procedure to state and for every skill to inherit: one sentence with no directory read on the failure path, and the same terse shape as the tools&apos; own `Error: &lt;path&gt; does not exist` refusals, so a headless chain&apos;s log gets one line rather than a fifty-line dump.</advantage>
+      <drawback>It gives the caller nothing to recover with: both skills that stop on an unknown id today print more than this (capture lists the directories, specify-milestone-starting-state points at `/define-milestone-goal`), so adopting it drops guidance the plugin already offers and leaves a mistyped or truncated slug, such as this milestone&apos;s own cut-off `with-an`, for the caller to look up by hand.</drawback>
+    </alternative>
+    <alternative id="Full directory list">
+      The error line names the value given, and the stop then lists every `milestone_*` directory present under `milestones/`, as `capture-milestone-principle-updates` prints today; no pointer to `/define-milestone-goal`.
+      <advantage>It carries exactly what a retry needs, the exact names the flag accepts, which matters most for the most common miss: a slug truncated to five folded words that nobody types from memory; and it reuses the one recovery behaviour the plugin already documents for an unknown id, so capture&apos;s own stop and the shared one read alike.</advantage>
+      <drawback>The list grows with every milestone (this repository holds about fifty, pre-split ones included), so in a long-lived project the stop prints a long block that buries the error line, and it says nothing to a caller whose milestone simply has not been defined yet.</drawback>
+    </alternative>
+    <alternative id="Define-goal pointer">
+      The error line names the value given and suggests running `/define-milestone-goal` first, as `specify-milestone-starting-state` prints today; no directory listing.
+      <advantage>Short and fixed-length whatever the project&apos;s size, and it preserves the one recovery line the skill that joins the uniform rule already prints, so specify-milestone-starting-state&apos;s user-visible stop does not change when its positional id becomes the flag.</advantage>
+      <drawback>It assumes the milestone does not exist yet, which fits specify-milestone-starting-state&apos;s place right after definition but misleads for the fifteen other skills, where an override almost always names an existing milestone mistyped or abbreviated; following the suggestion there would define a duplicate milestone instead of correcting the name.</drawback>
+    </alternative>
+    <alternative id="Full list and define-goal pointer">
+      The error line names the value given, the stop lists every `milestone_*` directory present under `milestones/`, and it adds that a milestone not among them is created with `/define-milestone-goal`.
+      <advantage>It covers both causes of a miss in one stop, a mistyped existing name (answered by the list) and a milestone not yet defined (answered by the pointer), and it keeps both recovery behaviours the plugin prints today, so neither positional-id skill loses guidance under the uniform rule.</advantage>
+      <drawback>It is the longest stop: the unbounded directory list plus a second recovery line, stated once in the shared procedure but printed in full on every miss, including in headless chain logs where nobody reads a fifty-line listing.</drawback>
+    </alternative>
+    <alternative id="Near-match list">
+      The error line names the value given and lists only the `milestone_*` directories whose name contains the given value (for instance every directory carrying a mistyped slug&apos;s surviving part or its number), saying so when none does; no full listing and no pointer to `/define-milestone-goal`.
+      <advantage>It keeps the recovery value of a listing while staying short in a large project: a truncated or mistyped slug usually shares a substring with the intended directory, so the stop typically prints one or two candidate names rather than every milestone ever defined.</advantage>
+      <drawback>It adds a matching rule the runtime prose must state and every runner must apply consistently (what counts as contained, case folding, a number with or without its zero padding), the kind of looseness a runner may read as permission to resolve the override itself; how useful it is depends on the value form the flag accepts, which the override-value-form question settles; and a value sharing no substring with its target gets an empty list and no guidance.</drawback>
+    </alternative>
+    <alternative id="Near-match list else define-goal pointer">
+      The error line names the value given; when one or more `milestone_*` directories contain the given value it lists those, and when none does it suggests `/define-milestone-goal` instead.
+      <advantage>Each branch answers the likely cause it detects: candidates when the value looks like a mistyped existing milestone, and the define pointer when nothing resembles it, so the stop stays short and its suggestion is rarely misleading.</advantage>
+      <drawback>It carries the near-match option&apos;s matching rule plus a branch on its outcome, so the shared procedure gains the most prose of any option for a failure path; the no-match branch can still send a caller with a badly mistyped existing name to define a duplicate milestone; and its usefulness depends on the value form the override-value-form question settles.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Pointer-path validation">
     <question>When no `--milestone` override is given and the milestone comes from the pointer in `milestones/README.md`, does the shared procedure apply to the pointer&apos;s path the same existence check it applies to an override, or does it keep trusting the pointer&apos;s path unchecked as it does today?</question>
