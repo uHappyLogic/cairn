@@ -74,6 +74,8 @@ Between October 2 and the milestone 48 release on October 18 the sweep still pri
 
 - **Later-entry determination.** `/derive-tasks` finds the commit that added each entry's lines in `requirements.md`, by blame or a pickaxe search path-scoped to that file, and treats the entry from the newer commit as the later-recorded one, for any conflicting pair. File position is never used for order, and the note under `## Noted contradictions` is not consulted for it.
 
+- **Scope.** The tie-break rule covers every pair of `## Decisions` entries that cannot both hold. Every pair listed under `## Noted contradictions` is taken as conflicting as noted, without re-judging; any other pair the runner itself finds conflicting while building the briefs and the coverage matrix is resolved the same way, and the later-recorded entry governs. Nothing is flagged for either kind.
+
 ### Conflict answer record
 
 - **Rewrite only.** The rewrite of the superseded entry is the whole record of a conflict answer, in every runner: no separate decision statement is folded anywhere under `## Decisions`, the sweep's conflict section swaps its `fold` call for the `replace` call, and the single-question skills' Edit-based fold edits the losing entry in place and adds nothing. `capture-milestone-principle-updates` stays unchanged and takes the rewritten entry's added lines in the `requirements.md` hunk as the commit's recorded decision.
