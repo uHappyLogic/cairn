@@ -105,3 +105,19 @@ In `docs/skill-reference.md`, each of the sixteen pointer-resolving skills' `###
 - `grep -n '<milestone_id>' docs/ways-of-using-cairn.md` prints nothing, and `grep -n -- '--milestone' docs/ways-of-using-cairn.md` prints nothing, so the page says nothing about the flag.
 
 ---
+
+## Record Milestone Resolution In CLAUDE.md
+
+`CLAUDE.md` gains one invariant recording the uniform resolution rule: every milestone-operating skill resolves through the shared pointer procedure by default or through one optional leading `--milestone <milestone_id>` override naming the exact directory, validated by the existence of its `requirements.md` with no fallback to the pointer and honoured when the pointer reads `none`, the flag-parsing rule stated once in the procedure with one clause at each positional-text skill's parse point, and `capture-milestone-principle-updates` the stated exception keeping its required positional id. In the same edit, the `finish-current-milestone` invariant is narrowed to say the pointer clear happens exactly when the pointer names the finished milestone, and the dispatch-prompt invariant names the milestone directory beside the task heading as `complete-all-tasks`' whole prompt. Verified by reading the three passages against the finished skills, procedure, and agent file.
+
+**Verified:**
+
+- `CLAUDE.md` `## Invariants` gains one new bullet recording the uniform resolution rule: the seventeen milestone-operating skills (the sixteen pointer-resolving ones plus `specify-milestone-starting-state`) resolve `<MILESTONE_DIR>` through `core/shared/get-current-milestone.md`, from the pointer by default or from one optional leading `--milestone <milestone_id>` override, matching the 17 skills whose Usage and `docs/skill-reference.md` headings spell `[--milestone <milestone_id>]`.
+- The invariant states the override's value form (exact directory name, verbatim, no bare-number resolution or stripped prefix/slash), its validation by the existence of `milestones/<milestone_id>/requirements.md`, the miss stopping on an `Error:` line plus the `milestone_*` listing with no fallback to the pointer, and the override honoured when the pointer reads `none`, matching the live `get-current-milestone.md`.
+- The invariant states the flag-parsing rule once in the procedure with one clause at each positional-text skill's parse point, matching the nine skills carrying a strip clause (`answer-open-question`, its two lifting variants, `ask-in-milestone-context`, `complete-task`, `discuss-new-task`, `discuss-open-question`, `modify-milestone-goal`, `submit-task`) and the argument-free skills carrying none.
+- The invariant names `capture-milestone-principle-updates` as the stated exception keeping its required positional id, matching its SKILL.md (no `--milestone` mention, `requirements.md` existence test, `milestone_*` listing).
+- The `finish-current-milestone` invariant is narrowed: the pointer is cleared to `none` exactly when it names the finished milestone, a `none` pointer stays `none` and one naming another milestone is left untouched, the `none` stop applies only without an override, and history, table row, and commit are written in every case, matching the live skill's steps 1 and 6.
+- The dispatch-prompt invariant names the resolved `<MILESTONE_DIR>` beside the task's `##` heading as `complete-all-tasks`' whole prompt and the agent's use of it as given, matching the skill's prompt fence, the `complete-task` agent's `## Inputs`, `complete-procedure.md` step 1, and the three `COMPLETE_TASK_DISPATCH` slot values.
+- `uv run scripts/build_hosts.py --check` passes after the edit.
+
+---
