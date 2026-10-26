@@ -229,6 +229,26 @@
   </open-question>
   <open-question id="Tie-break scope">
     <question>Does the `/derive-tasks` tie-break rule apply only to the pairs listed under `## Noted contradictions`, or to any two `## Decisions` entries the runner finds cannot both hold while deriving the briefs?</question>
+    <alternative id="Noted pairs only">
+      The tie-break rule covers exactly the pairs listed under `## Noted contradictions`. Each listed pair is taken as conflicting as noted, with no re-judging, and its later-recorded entry governs the brief. For any other pair of `## Decisions` entries, `/derive-tasks` states no rule: it gains no step that reads entries against each other, and a conflict the runner happens to notice is left to its own discretion, as today. Nothing is flagged either way.
+      <advantage>The rule stays mechanical and bounded. It fires only on pairs a single-question answer skill already judged at fold time, so `/derive-tasks` takes on no new contradiction judgment, which mirrors the sweep forming none. It also keeps the review pass&apos;s consistency step as the one place an unnoted conflict is noticed.</advantage>
+      <drawback>It does not cover the case the field record shows reaching task derivation: pairs no note recorded, from the sweep (which writes no notes) or from a hand edit. Those still get the silent, rule-less winner seen in `milestone_43`. Its usefulness also depends on a note naming the pair clearly enough for the runner to find both entries, an axis the note-content sibling owns.</drawback>
+    </alternative>
+    <alternative id="Noted pairs re-judged">
+      The tie-break rule covers only the pairs listed under `## Noted contradictions`, but the runner re-checks each one against the two entries as written and applies the rule only where it confirms they cannot both hold. A noted pair it judges compatible, for example a refinement, has both entries covered as requirements. For unnoted pairs there is no rule, and the runner&apos;s discretion applies as today. Nothing is flagged.
+      <advantage>A note recorded in error or made stale never causes a still-valid earlier constraint to be dropped from the briefs, and the scope stays bounded to pairs someone already suspected.</advantage>
+      <drawback>It adds a contradiction judgment to `/derive-tasks` while still leaving unnoted conflicts without a rule, so it carries the costs of both narrow and broad scope and the full benefit of neither. A pair re-judged as compatible is also dropped without any trace, since nothing is flagged.</drawback>
+    </alternative>
+    <alternative id="Any conflicting pair">
+      The tie-break rule covers every pair of `## Decisions` entries that cannot both hold. Every pair listed under `## Noted contradictions` is taken as conflicting as noted, without re-judging. Any other pair the runner itself finds conflicting while building the briefs and the coverage matrix is resolved the same way, and the later-recorded entry governs. Nothing is flagged for either kind.
+      <advantage>It matches the goal&apos;s wording (&quot;where two decisions cannot both hold&quot;) and closes the gap the field record shows: sweep-recorded and hand-edited conflicts that reach `/derive-tasks` get the same stated rule as noted ones, not an arbitrary silent winner.</advantage>
+      <drawback>`/derive-tasks` now forms a contradiction judgment over the unnoted entries. A runner that wrongly reads a refinement as a conflict silently drops the earlier entry&apos;s content from the briefs, with no flag to catch it. The rule also needs a way to tell which entry was recorded later that works when no note exists, an axis the later-entry-determination sibling owns.</drawback>
+    </alternative>
+    <alternative id="Any pair, notes as hints">
+      The tie-break rule covers every pair of `## Decisions` entries the runner itself judges cannot both hold, and notes and unnoted pairs are treated alike. Pairs listed under `## Noted contradictions` are hints the runner checks against the entries as written, not binding, and a noted pair it judges compatible has both entries covered. Wherever the runner confirms a conflict, the later-recorded entry governs. Nothing is flagged.
+      <advantage>A single test applies to every pair, so the rule&apos;s outcome depends only on what the entries say. A stale or mistaken note can never drop a valid constraint, and an unnoted conflict is still caught.</advantage>
+      <drawback>It carries the most judgment of any option, all of it silent. Both directions of error, a missed conflict and a refinement read as a conflict, reach the briefs with no flag. It also gives a note no binding force at task derivation, so its effect there rests on the runner&apos;s own reading. The later-recorded test must likewise work without a note, an axis the later-entry-determination sibling owns.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Leftover notes at finish">
     <question>When a milestone is finished with entries still standing under `## Noted contradictions`, because `/derive-tasks` was run without a further review pass, do those entries stay in the finished milestone&apos;s `requirements.md` untouched, or does `/finish-current-milestone` report them before it records the completion?</question>
