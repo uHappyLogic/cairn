@@ -54,5 +54,9 @@ Between October 2 and the milestone 48 release on October 18 the sweep still pri
 
 - **Granularity.** Replace mode always works on a whole `###` subsection and takes no further argument. The subsection is found the way `fold` already finds it: the column-0 `### ` line matched by `--section` after whitespace and case folding, running to the next `### ` line or the end of `## Decisions`. Everything between the heading line and the subsection's end is replaced with the stdin text, written verbatim with its outer blank lines trimmed; the heading line and every byte outside the subsection stay as they are. In a topical subsection of `- **Lead.** text` bullets, the runner's heredoc carries the whole new body, unchanged bullets included.
 
+### Conflict questions in the sweep
+
+- **Recognition.** The signal is the question text. `review-milestone-requirements` step 4 opens every conflict question's text with one fixed phrase, stated once in that step, in a form that also names the two `###` headings of the pair. The sweep recognizes a conflict question when the question text printed by its compact view's `list --with-question` starts with that phrase, an exact-prefix check the runner makes when it composes the section; a block written before the convention falls back to the ordinary append section. The Short Title rules, the document format, and the open-question tool stay as they are.
+
 ## Out of Scope
 
