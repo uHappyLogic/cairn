@@ -52,5 +52,9 @@ The check that a named `--milestone` override matches a milestone is that `miles
 
 The error line for a `--milestone` override that matches no milestone directory names the value it was given, and the stop then lists every `milestone_*` directory present under `milestones/`, as `capture-milestone-principle-updates` prints today, because a miss on an exact name is almost always a mistyped or truncated slug and the exact names are what a retry needs. It carries no pointer to `/define-milestone-goal`.
 
+### Pointer-path validation
+
+When no `--milestone` override is given, the pointer's path stays unchecked, as `get-current-milestone.md` handles it today: the procedure extracts the backtick-quoted path from `milestones/README.md` and hands it on as `<MILESTONE_DIR>` with no existence test. The existence check runs only on a `--milestone` override. A pointer naming a missing directory is caught downstream, by the first tool call's `Error: <path> does not exist` line or by the skill's own failed file read, since the pointer is written only by `goto-next-milestone` and `finish-current-milestone` from directories that exist.
+
 ## Out of Scope
 
