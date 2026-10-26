@@ -13,13 +13,19 @@
 # with its built-in plugin and customization guides alongside. It confirmed every slot value
 # below as written, AGENT_WRITE_TOOLS included, and re-checked each point of the 2026-10-13
 # check against `agy` 1.3.4 that this block replaces; what it carried forward unchecked is
-# marked so.
+# marked so. Re-checked 2026-10-26 against `agy` 1.4.7 by the agy suite and one headless
+# probe: the tilde-path reading and running below, and both agents' dispatch by bare name
+# with their tools list; the other points stand as checked on 2026-10-18.
 # - Install: `agy plugin list` reports the plugin enabled at that global path, source
 #   antigravity, with its 22 skills and 2 agents, and a session loads its skills from there.
 #   The rendered tilde path reaches the files two ways: run_command's shell expands it, so a
 #   `python3 ~/.gemini/config/plugins/cairn/tools/<tool>.py` command runs as written, while
-#   view_file refuses the tilde form as not absolute ("must be an absolute path"), and a run
-#   following a skill expanded it itself and read the shared procedures at the absolute path.
+#   the session's file-reading tool refuses the tilde form as not absolute ("must be an
+#   absolute path"), and a run following a skill expanded it itself and read the shared
+#   procedures at the absolute path. On 1.4.7 that tool is read_file (its path in Path),
+#   where 1.4.1 gave the session view_file (AbsolutePath); a dispatched agent granted
+#   view_file by its tools list still reads with view_file. run_command's result now wraps
+#   the printed output under an exit-code line and a `Command output:` line.
 #   A workspace's own .agents/plugins/ root is loaded beside the global install at session
 #   start, its agents dispatchable by bare name, though `agy plugin list` does not show it.
 # - Write tools, both agents: an agent file's frontmatter grants its subagent the tools its

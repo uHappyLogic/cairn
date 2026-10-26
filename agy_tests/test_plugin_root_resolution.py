@@ -10,11 +10,14 @@ as the tilde literal. The run's `--output-format stream-json` records each tool 
 parameters and its DONE or ERROR state, so the evidence is the host's own record of the
 orchestrator's calls, never a transcript file or the final message.
 
-What the test pins about the tilde path: the host's file-reading tool (`view_file`) refuses a
-path that starts with `~` ("must be an absolute path"), so the orchestrator reaches a shared
-procedure only by expanding the rendered literal to an absolute path, while the shell expands
-the same literal in a `python3` command unaided. A `view_file` call that carried a tilde path
-and still ended DONE fails the test, which is the signal that this pin needs rewriting.
+What the test pins about the tilde path: the host's file-reading tool refuses a path that
+starts with `~` ("must be an absolute path"), so the orchestrator reaches a shared procedure
+only by expanding the rendered literal to an absolute path, while the shell expands the same
+literal in a `python3` command unaided. The orchestrator's file-reading tool is `read_file`
+(its path in `Path`) and was `view_file` (its path in `AbsolutePath`) before, the name a
+dispatched agent's tools list still grants, so a read under either name counts. A read that
+carried a tilde path and still ended DONE fails the test, which is the signal that this pin
+needs rewriting.
 
 No dispatched agent's resolution is asserted here: the agents' own reads and commands are the
 subagent probe's business, and this process is asserted to have dispatched none.
@@ -32,8 +35,8 @@ ISSUE = (
 FIXTURE_TASKS_TODO = "milestones/milestone_01_pocket-ledger-foundations/TASKS_TODO.md"
 
 # The host's tool names, the one parameter of each this test reads, and the tools that
-# dispatch an agent.
-FILE_READING_TOOL = "view_file"  # parameters.AbsolutePath
+# dispatch an agent. The file-reading tools map each name to the parameter holding its path.
+FILE_READING_TOOLS = {"read_file": "Path", "view_file": "AbsolutePath"}
 SHELL_TOOL = "run_command"  # parameters.CommandLine
 DISPATCH_TOOLS = {"invoke_subagent", "define_subagent", "manage_subagents", "browser_subagent"}
 
@@ -64,6 +67,21 @@ def output_of(step):
     return step.get("tool_info", {}).get("output") or ""
 
 
+def command_output(step):
+    """A shell step's printed output. The host wraps it as an exit-code line, then a
+    `Command output:` line over what the command printed (that line and what follows absent
+    when it printed nothing); a wrapper reporting a non-zero exit yields None, and an
+    unwrapped output is returned as it stands."""
+    output = output_of(step).replace("\r\n", "\n")
+    if not output.startswith("Command exited with code "):
+        return output.strip()
+    status, _, rest = output.partition("\n")
+    if status.strip() != "Command exited with code 0.":
+        return None
+    _, marker, printed = rest.partition("Command output:")
+    return printed.strip() if marker else ""
+
+
 def test_the_orchestrator_reads_and_runs_at_the_global_plugin_root(seeded_repo, run_agy, plugin_root):
     tilde, root = plugin_root
     repository = seeded_repo()
@@ -81,13 +99,13 @@ def test_the_orchestrator_reads_and_runs_at_the_global_plugin_root(seeded_repo, 
 
     # The orchestrator read a shared procedure at the global path.
     reads = [
-        (parameter(step, "AbsolutePath"), step["state"])
+        (parameter(step, FILE_READING_TOOLS[step["tool_name"]]), step["state"])
         for step in steps
-        if step["tool_name"] == FILE_READING_TOOL
+        if step["tool_name"] in FILE_READING_TOOLS
     ]
     shared_prefix = str(root / "shared") + "/"
     shared_reads = sorted(path for path, state in reads if state == "DONE" and path.startswith(shared_prefix))
-    assert shared_reads, f"no DONE {FILE_READING_TOOL} call under {shared_prefix}; the calls were {reads}"
+    assert shared_reads, f"no DONE file-reading call under {shared_prefix}; the calls were {reads}"
 
     # The pin: the file-reading tool takes no tilde path. The shared procedure was reached at
     # the expanded absolute path above, and a tilde path, whenever one was tried, ended in ERROR.
@@ -111,7 +129,7 @@ def test_the_orchestrator_reads_and_runs_at_the_global_plugin_root(seeded_repo, 
         f"no DONE {SHELL_TOOL} call running task_list.py insert under {tilde}/tools/; "
         f"the commands were {[parameter(step, 'CommandLine') for step in commands]}"
     )
-    outputs = [output_of(step).strip() for step in inserts]
+    outputs = [command_output(step) for step in inserts]
     assert any(output in ("", "submission commit landed") for output in outputs), outputs
 
     # The tool at that root did the insert: the seeded task list gained its second section.
