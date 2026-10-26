@@ -36,5 +36,9 @@ Every SKILL.md is rendered byte-for-byte into the three host trees apart from `{
 
 ## Decisions
 
+### Flag-parsing rule home
+
+The rule for recognizing a leading `--milestone <milestone_id>` in a skill's invocation text and separating it from the skill's own positional text is stated once, in `get-current-milestone.md`, which every pointer-resolving skill's step 0 already references. In addition, each skill that takes positional text of its own carries one clause at its own parse point (its parse step, or its step 0 where it has none) telling the runner to strip a leading `--milestone` value by that procedure before reading the rest, so the flag is never folded into a Short Title, an answer, a goal, a task name, or a question. The skills that take no positional text keep only their step-0 reference to the procedure.
+
 ## Out of Scope
 

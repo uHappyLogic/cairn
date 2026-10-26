@@ -1,33 +1,4 @@
 <open-questions>
-  <open-question id="Flag-parsing home">
-    <question>Where is the rule for recognizing a leading `--milestone &lt;milestone_id&gt;` in a skill&apos;s invocation text and separating it from the skill&apos;s own positional text stated: once in the shared pointer procedure that every pointer-resolving skill&apos;s step 0 already references, or in each skill&apos;s own file?</question>
-    <recommendation option="Shared rule, local pointer">The rule keeps its one home in the procedure every runner already follows, and the one clause at each free-text skill&apos;s parse point is what stops the leading flag from being folded into a Short Title or an answer before resolution runs.</recommendation>
-    <alternative id="Shared rule, local pointer">
-      The recognition rule is stated once, in `get-current-milestone.md`, as above; in addition, each skill that takes positional text of its own carries one clause at its own parse point (its parse step, or its step 0 where it has none) telling the runner to strip a leading `--milestone` value by that procedure before reading the rest, while the skills that take no positional text keep only their step-0 reference.
-      <advantage>The rule keeps a single home while the skills whose own parsing runs before resolution, such as `answer-open-question`&apos;s `.` split and sentinel guard, are told to separate the flag at the moment they need it.</advantage>
-      <drawback>The skill files that take positional text each gain a sentence to edit and render into all three host trees, and a runner must recognize which skills need the clause; a skill whose positional text later changes can silently fall out of step with it.</drawback>
-    </alternative>
-    <alternative id="Shared procedure only">
-      The recognition rule is stated once, in `get-current-milestone.md`, beside its new override input: a leading `--milestone` token followed by one value is the override, and everything after that value is the skill&apos;s own positional text. No skill file states the rule or points at it from anywhere but its existing resolution step; each step-0 sentence (and `complete-procedure.md`&apos;s step 1) stays a plain reference to the procedure.
-      <advantage>One home for the rule in the file every pointer-resolving runner already follows, so the sixteen skills stay as they read today and the rule cannot drift between copies.</advantage>
-      <drawback>Some skills parse their own text before they resolve the milestone — `answer-open-question` splits its args on the first `.` in step 1 and runs its exact-match sentinel guard in step 2, both before step 3 follows the procedure — so a runner reaching the rule only at resolution would already have folded the flag into the Short Title or the answer, unless those steps are reordered.</drawback>
-    </alternative>
-    <alternative id="Separate flag-parsing file">
-      The recognition rule is stated once in a new shared file of its own (for example `core/shared/milestone-flag.md`), separate from `get-current-milestone.md`, which keeps only resolution and takes the already-separated override value as its one input; every pointer-resolving skill references the new file at its own parse point or step 0 before it follows the pointer procedure.
-      <advantage>Parsing invocation text and resolving a directory stay two units, matching the goal&apos;s wording that the pointer procedure gains the override value as its one input, and the parse rule is reached before any skill&apos;s own parsing runs.</advantage>
-      <drawback>Adds a shared file and a second reference to every one of the sixteen skills&apos; resolution path (and to `complete-procedure.md`), so each runner follows two procedures where it follows one today.</drawback>
-    </alternative>
-    <alternative id="Each skill&apos;s own file">
-      No shared statement of the rule: each skill states in its own file, at its own parse point or step 0, how a leading `--milestone` value is recognized and separated from the text that skill takes, and passes the value to `get-current-milestone.md`, which states nothing about parsing.
-      <advantage>Each skill controls exactly where in its own sequence the flag is separated, so skills such as `answer-open-question` that parse before resolving need no reordering and no cross-file lookup.</advantage>
-      <drawback>The same rule is written sixteen times (and once more in `complete-procedure.md`), against the shared-procedure pattern of one home per unit of work; copies can drift in wording or behaviour, and any later change to the rule touches every skill and every host tree.</drawback>
-    </alternative>
-    <alternative id="No stated rule">
-      The rule is stated nowhere: the step-0 sentences say only to pass the `--milestone` value when the invocation gives one, and recognizing and separating the leading flag is left to the runner&apos;s reading of the invocation and the skill&apos;s Usage text.
-      <advantage>The smallest change, adding no prose on parsing anywhere, on the view that a leading `--name value` flag is conventional enough for a runner to separate without instruction.</advantage>
-      <drawback>No skill takes a `--`-prefixed flag today, so there is no precedent in the runtime prose to lean on, and free-text skills are exposed — `answer-open-question`&apos;s `.` split and its exact whole-string sentinel match would run on unstripped text, so a flag can end up inside a Short Title or a recorded answer with nothing written to say it should not; how visible the flag form is to a runner also depends on how the Per-skill flag documentation question settles.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Per-skill flag documentation">
     <question>Does every skill under the uniform resolution rule show the optional `--milestone &lt;milestone_id&gt;` flag in its own Usage block and in its `docs/skill-reference.md` heading, or is the flag documented once in one general statement while each skill&apos;s invocation form stays as it reads today?</question>
     <recommendation option="Flag in every form">Every other argument is documented in each Usage fence and reference heading, so the flag follows the same convention, no Usage line reads No arguments while a flag applies, and the runner sees its full invocation form in the one file it reads.</recommendation>
