@@ -5,7 +5,7 @@ description: Review the current milestone's requirements to reconcile its open q
 
 # review-milestone-requirements
 
-The current "work in progress" requirements for the planned milestone live in two documents of the current milestone directory: `requirements.md` (the prose — goal, relevant starting state, decisions, out of scope) and `open_questions.xml` (one `<open-question>` block per question still open). The overall goal is to make that requirements set ready enough for the work to begin.
+The current "work in progress" requirements for the planned milestone live in two documents of the current milestone directory: `requirements.md` (the prose — goal, relevant starting state, decisions, any noted contradictions, out of scope) and `open_questions.xml` (one `<open-question>` block per question still open). The overall goal is to make that requirements set ready enough for the work to begin.
 
 This skill is the **repeatable engine** of the requirements-iteration loop — run it each time around:
 
@@ -25,7 +25,7 @@ Every write this skill makes to `open_questions.xml`, and every listing of its b
 
 ## Milestone requirements document structure
 
-`requirements.md` is prose Markdown in four sections:
+`requirements.md` is prose Markdown in four sections, with an optional fifth between `## Decisions` and `## Out of Scope`:
 ```md
 # Milestone <milestone_id>: <name>
 
@@ -41,10 +41,16 @@ Every write this skill makes to `open_questions.xml`, and every listing of its b
 
 <subsections with detailed requirements>
 
+## Noted contradictions
+
+<one bullet per pair of conflicting decisions an answer noted>
+
 ## Out of Scope
 
 <what the milestone deliberately leaves out>
 ```
+
+`## Noted contradictions` is present only while a note stands: a single-question answer skill inserts the heading with its first note, and step 4 of this pass turns each note into an open question or drops it, deleting the heading with the last note.
 
 The open questions live beside it in `<MILESTONE_DIR>/open_questions.xml` — one `<open-question id="Short Title">` block per question under a single root, each holding a `<question>` child and, once the recommend sweep has annotated it, `<alternative>`, `<applied-principle>`, `<depends-on>`, and `<recommendation>` children. No question block is ever placed inline in `requirements.md`.
 
@@ -56,9 +62,10 @@ Follow `${PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_D
 
 ### 1. Read the documents and take inventory
 
-Read `<MILESTONE_DIR>/requirements.md` and `<MILESTONE_DIR>/open_questions.xml` in full with the file-reading tool. That whole read is for reasoning only — every listing of the blocks and every change to the question document below is a tool call. Build a mental inventory of three things, because the rest of the pass plays them against each other:
+Read `<MILESTONE_DIR>/requirements.md` and `<MILESTONE_DIR>/open_questions.xml` in full with the file-reading tool. The whole read of `open_questions.xml` is for reasoning only — every listing of the blocks and every change to the question document below is a tool call. Build a mental inventory of four things, because the rest of the pass plays them against each other:
 
 - the **Decisions** already recorded (what's settled),
+- the **notes** under `## Noted contradictions`, when that section stands (pairs of decisions an answer found conflicting, not yet asked),
 - the **`<open-question>` blocks** already present (what's still flagged),
 - every stated requirement, constraint, and assumption.
 
@@ -104,22 +111,37 @@ The tool appends the block after the existing ones and owns its shape — escapi
 - **The question text.** Because a block does not sit next to the requirement it concerns, **each question must stand on its own** — brief, self-contained, and question-shaped, fully understandable without the surrounding context, never a design proposal. And **each question asks one choice**: a gap that holds two choices becomes two questions, one per choice. The one exception is choices in one gap that constrain each other, so that not every pairing of them is viable — author those as a single multi-axis question that asks both choices at once.
 - **The Short Title** (the block's `id`): a 2–5 word phrase that uniquely identifies the question within the document (e.g. "Getting-started section order", "Glossary term scope"). It is the stable handle the question is cited by in conversation and located by in the answering and recommendation skills, which match it **case-insensitively** — so keep every Short Title unique across all blocks even ignoring case. The tool refuses an id an existing block already carries (its `Error:` line names it); pick a distinct title and call again.
 
-Do not restructure or rewrite existing content — `requirements.md` is not edited by this pass, and the question document changes only through the `remove` calls of step 2 and the `add` calls here and in step 4.
+Do not restructure or rewrite existing content — this pass edits `requirements.md` only to delete the notes step 4 handles under `## Noted contradictions`, and the question document changes only through the `remove` calls of step 2 and the `add` calls here and in step 4.
 
 ### 4. Check the recorded decisions against each other
 
-Decisions recorded one answer at a time can come to contradict each other, and this pass is where such a pair is noticed. From your step-1 read, read the `## Decisions` entries against each other. Two entries conflict when both cannot hold as written — carrying out one breaks the other, or they fix different values for the same name, threshold, or behaviour; an entry that only refines, narrows, or extends another is no conflict.
+Decisions recorded one answer at a time can come to contradict each other, and this pass is where such a pair becomes an open question: either a single-question answer skill noted the pair under `## Noted contradictions`, or you notice it here. Every conflict question you author, on either path, is one block made with step 3's `add` call under step 3's rules for the question text and the Short Title, and its question text opens with one fixed phrase naming the `###` heading each entry sits under in `## Decisions`:
 
-For each conflicting pair that no standing block already flags, author one block with step 3's `add` call, under step 3's rules for the question text and the Short Title: the question names the `###` heading each entry sits under in `## Decisions` (quoting enough of each to tell them apart where both share one heading), states briefly what each says, and asks which entry stands. This flags the conflict without resolving it — never edit, reword, or remove either entry, and never decide which one stands, since that is an answer's to record. The block rides in step 5's commit like any other new block, and step 6 shows it only as a Short Title in the still-open list.
+```
+Which conflicting decision stands: "<first heading>" or "<second heading>"?
+```
+
+Write the opening `Which conflicting decision stands:` exactly as shown, since `/answer-all-open-questions-with-recommendation` recognizes a conflict question by that exact opening, then each heading copied exactly as it stands after `### `, the two in their `## Decisions` order (the same heading twice when both entries sit under one). After the phrase, state briefly what each entry says, quoting enough of each one's lead or opening words to tell them apart where both share one heading or sit among several bullets.
+
+**Noted pairs.** When `## Noted contradictions` stands, handle each note under it against recorded state only — never re-judge whether the noted pair conflicts:
+
+- **Drop a note already covered** — when a standing block already flags the pair, or either entry the note names no longer stands as the note describes it (its heading is gone from `## Decisions`, or its text has been rewritten so the two now hold together), delete the note and author no block. This is cleanup of recorded state, like step 2's prune.
+- **Otherwise ask it as noted** — author one conflict question for the note, stating the conflict as the note describes it, then delete the note.
+
+Delete each note from `requirements.md` with the file-editing tool, one targeted edit per note, and delete the `## Noted contradictions` heading in the same edit as the last note, leaving one blank line between the end of `## Decisions` and `## Out of Scope`, so the section is gone once no note stands. Change nothing else in `requirements.md`.
+
+**Pairs you notice.** Then, from your step-1 read, read the `## Decisions` entries against each other. Two entries conflict when both cannot hold as written — carrying out one breaks the other, or they fix different values for the same name, threshold, or behaviour; an entry that only refines, narrows, or extends another is no conflict. For each conflicting pair that no standing block already flags, a block just authored from a note included, author one conflict question.
+
+Neither path resolves a conflict: never edit, reword, or remove either `## Decisions` entry, and never decide which one stands, since that is an answer's to record. The new blocks and the note deletions ride in step 5's commit, and step 6 shows each new block only as a Short Title in the still-open list.
 
 ### 5. Commit the reshaped requirements
 
 Read and follow the shared commit procedure at `${PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
 
-- **PATHS** — this skill's own change set, the milestone's two requirements documents: `<MILESTONE_DIR>/open_questions.xml` (where every prune, dedup, and new block of this pass landed) and `<MILESTONE_DIR>/requirements.md`.
+- **PATHS** — this skill's own change set, the milestone's two requirements documents: `<MILESTONE_DIR>/open_questions.xml` (where every prune, dedup, and new block of this pass landed) and `<MILESTONE_DIR>/requirements.md` (where step 4's note deletions landed).
 - **SUBJECT** — `Requirements-review: <milestone_id>`.
 
-The shared procedure owns the no-op guard, the path-scoped staging, and the commit. Its dirty-own-path guard covers this skill's no-op case: a pass that reconciled, pruned, and surfaced nothing leaves both files unchanged, so nothing is staged and nothing is committed; a pass that reshaped the question set commits that reshaping.
+The shared procedure owns the no-op guard, the path-scoped staging, and the commit. Its dirty-own-path guard covers this skill's no-op case: a pass that reconciled, pruned, and surfaced nothing and found no note to handle leaves both files unchanged, so nothing is staged and nothing is committed; a pass that reshaped the question set or deleted a note commits that change.
 
 ### 6. Report convergence
 
@@ -131,7 +153,7 @@ python3 ${PLUGIN_ROOT}/tools/open_questions.py list <MILESTONE_DIR>
 
 It prints the Short Title of every `<open-question>` block still in the document, one per line in document order; empty output is a converged document. That print — not your recollection of the pass — is what the two items below are read from.
 
-On the success path, print exactly one fixed terse status line — `Requirements reviewed.` — carrying no identifier (no milestone id, no count, no commit subject). Do **not** re-narrate what the pass reshaped: there is no "What changed this pass" summary (blocks pruned, repeats merged, new questions raised, "possibly resolved — confirm" flags) and no handoff pointer toward `/discuss-open-question` or `/answer-open-question`.
+On the success path, print exactly one fixed terse status line — `Requirements reviewed.` — carrying no identifier (no milestone id, no count, no commit subject). Do **not** re-narrate what the pass reshaped: there is no "What changed this pass" summary (blocks pruned, repeats merged, new questions raised, notes deleted, "possibly resolved — confirm" flags) and no handoff pointer toward `/discuss-open-question` or `/answer-open-question`.
 
 Follow that terse line with only the two pieces of decision-critical state git never captures, so the user knows whether to loop again or move on:
 
@@ -140,4 +162,4 @@ Follow that terse line with only the two pieces of decision-critical state git n
   - If `list` printed anything → the requirements are **not** ready; the next loop step is to answer them, then re-run this skill.
   - If it printed nothing → say explicitly that the requirements look **ready for `/derive-tasks`**.
 
-**No-op pass.** When the step-5 dirty-own-path guard fires — this pass reconciled, pruned, and surfaced nothing, so both files are unchanged and nothing was committed — do **not** print `Requirements reviewed.` Instead print a single distinct line stating that nothing changed and briefly why (e.g. "No changes — the question set already matched the recorded decisions and no new gaps surfaced."). Still report the still-open list and convergence verdict above, since that state is unchanged but the user still needs it to decide the next loop step.
+**No-op pass.** When the step-5 dirty-own-path guard fires — this pass reconciled, pruned, and surfaced nothing and found no note, so both files are unchanged and nothing was committed — do **not** print `Requirements reviewed.` Instead print a single distinct line stating that nothing changed and briefly why (e.g. "No changes — the question set already matched the recorded decisions and no new gaps surfaced."). Still report the still-open list and convergence verdict above, since that state is unchanged but the user still needs it to decide the next loop step.

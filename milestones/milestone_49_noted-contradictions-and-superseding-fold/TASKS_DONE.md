@@ -52,3 +52,18 @@ Extend `core/shared/answer-procedure.md` so its analyse step judges each contrad
 - `uv run scripts/build_hosts.py` rebuilt the three host trees and `uv run scripts/build_hosts.py --check` passes; `uv run pytest` passes (889 passed).
 
 ---
+
+## Conflict Phrase And Note Handling In Review
+
+Extend `core/skills/review-milestone-requirements/SKILL.md` so its document-structure block keeps the four sections and adds `## Noted contradictions` as an optional fifth between `## Decisions` and `## Out of Scope`, present only while a note stands; so step 4 states once one fixed phrase, in a form that also names the two `###` headings of the pair, that opens every conflict question's text it authors; and so the pass handles each note under that section against recorded state only, deleting it with no block when a standing block already flags the pair or either named entry no longer stands as the note describes it (its heading gone, or rewritten so the two now hold together), otherwise authoring one block per note as noted without re-judging and then deleting the note, and deleting the heading too with the last note. Amend step 3's statement that the pass never edits `requirements.md` to allow this one edit, which rides in the existing `Requirements-review:` commit whose paths already include that file. Verified by the rebuilt `hosts/` trees passing `uv run scripts/build_hosts.py --check` and by the rendered skill reading consistently from its structure block through its report.
+
+**Verified:**
+
+- `core/skills/review-milestone-requirements/SKILL.md`'s document-structure block keeps the four sections and adds `## Noted contradictions` as an optional fifth between `## Decisions` and `## Out of Scope`, with a sentence stating it is present only while a note stands (an answer skill inserts the heading with its first note, step 4 deletes it with the last); the opening paragraph's list of the prose and step 1's inventory name the noted contradictions too.
+- Step 4 states once, in a fence, one fixed phrase that opens every conflict question's text it authors on either path, `Which conflicting decision stands: "<first heading>" or "<second heading>"?`, naming the two `###` headings of the pair, with the opening `Which conflicting decision stands:` to be written exactly as shown and each heading copied exactly as it stands after `### `.
+- Step 4 handles each note under `## Noted contradictions` against recorded state only, never re-judging the pair: a note is deleted with no block when a standing block already flags the pair or either named entry no longer stands as the note describes it (its heading gone, or rewritten so the two now hold together); otherwise one block is authored per note as noted and the note is then deleted; the heading is deleted in the same edit as the last note, and nothing else in `requirements.md` changes.
+- Step 3's statement that the pass never edits `requirements.md` now allows only the deletion of the notes step 4 handles; step 4 and step 5's PATHS state that the note deletions ride in the existing `Requirements-review:` commit, whose paths already include `requirements.md`, and step 5's no-op case and step 6's no-summary list and no-op pass account for note handling.
+- `uv run scripts/build_hosts.py` rebuilt the three host trees and `uv run scripts/build_hosts.py --check` passes; `uv run pytest` passes (889 passed).
+- The rendered `hosts/claude/skills/review-milestone-requirements/SKILL.md` reads consistently from its structure block through its report: no remaining claim that the pass leaves `requirements.md` unedited, the conflict-check step still never edits either `## Decisions` entry, and convergence is still an empty `list`.
+
+---
