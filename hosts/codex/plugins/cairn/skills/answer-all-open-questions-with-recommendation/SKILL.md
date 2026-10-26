@@ -100,13 +100,23 @@ the two in the same turn, as two independent tool calls.
 
 This read and step 1's print are the context every section of step 3 is composed from — the
 decisions already recorded and their `###` subsections, and each question's text and pick — so
-no question pays for its own re-read. Write each question's decision from its question text,
-its lifted line, and its picked alternative's what-it-is line, as the view printed them.
+no question pays for its own re-read. Write each question's decision — or a conflict
+question's new body, over its subsection as this read shows it — from its question text, its
+lifted line, and its picked alternative's what-it-is line, as the view printed them.
 
 ### 3. Record every question in one batched shell call
 
 **a. Compose each question's section.** For every walked `id` step 1 printed with a pick, in
-the printed order, decide three values before writing the call:
+the printed order, first tell its kind, then decide three values before writing the call.
+
+A question is a **conflict question** when its question text, as step 1's
+`list --with-question` printed it after the tab, starts with exactly
+`Which conflicting decision stands:` — the fixed opening `/review-milestone-requirements` gives
+every conflict question it authors, followed by the `###` headings of the two conflicting
+`## Decisions` entries in double quotes. That exact-prefix check of the printed text is the
+whole test. Every other question is an **ordinary question**, a block asking about a conflict
+but written before that opening existed, or worded any other way, included: its section folds
+a new decision, as the three values below describe.
 
 - **The decision** — the statement folded under `## Decisions`, written by the rules
   `${PLUGIN_ROOT}/shared/answer-procedure.md` sets in its fold step (step 3) for what a
@@ -128,9 +138,33 @@ the printed order, decide three values before writing the call:
   whole line when there is none), copied from step 1's print as a literal: the option reaches
   `remove` as an exact id, never derived in the call and never corrected.
 
+A conflict question takes its option the same way but its heading and its decision
+differently, because its whole record is the rewrite of the entry the pick sets aside — no
+new statement is folded anywhere under `## Decisions`:
+
+- **The heading** — the losing entry's `###` heading: of the two headings the opening names,
+  copied exactly as it quotes them, the one whose entry the pick does not keep as it stands
+  (one heading named twice, when both entries sit under it). Where the pick keeps neither
+  entry as written, take the one it changes more.
+- **The new body** — everything that subsection will hold below its heading line, down to the
+  next `###` heading or the end of `## Decisions`, since the fold tool replaces that whole
+  span: the losing entry with its conflicting text rewritten, by the same fold-step rules as a
+  decision, so it agrees with the pick, keeping whatever of it still holds and its shape, and
+  every other entry of the subsection carried unchanged — in a topical subsection every
+  unchanged bullet, the entry that stands included when it sits there too. Compose it from the
+  subsection as the call will leave it when the section runs: step 2's read with every earlier
+  section's write into that subsection applied, so the rewrite drops none of them.
+
+The call rewrites exactly one subsection per conflict question: the entry that stands, and any
+clause elsewhere in `requirements.md` the pick bears on, stay as written, and any conflict left
+standing is the next `/review-milestone-requirements` pass's `## Decisions` consistency step to
+flag. Telling a conflict question by its opening and rewriting its losing entry is still
+recording the pick as given: no contradiction is judged and no pick is weighed.
+
 **b. Run the call.** Run this one fixed shell call, written out in full exactly as shown, with
 only `<MILESTONE_DIR>` and each question section's `<Short Title>`, `<Heading>`, decision, and
-`<Option>` replaced:
+`<Option>` replaced, and each conflict question's section written as the conflict section
+shown after it:
 
 ```
 if [ -n "$(git status --porcelain -- <MILESTONE_DIR>/open_questions.xml <MILESTONE_DIR>/requirements.md)" ]; then
@@ -164,11 +198,35 @@ Title, heading, and option is written inside double quotes, with any `"`, `$`, `
 it holds escaped by a backslash. The lines before the first section and the lines from
 `echo 'completeness walk'` to the end are written once.
 
+A conflict question's copy is the **conflict section** instead — again the lines from
+`if pick=` through the column-0 `fi &&` that closes it, identical to the question section but
+for the one `replace` call standing where the `fold` call stands, its heredoc carrying the new
+body:
+
+```
+if pick="$(python3 ${PLUGIN_ROOT}/tools/open_questions.py lift <MILESTONE_DIR> "<Short Title>" 2>/dev/null)"; then
+  python3 ${PLUGIN_ROOT}/tools/requirements.py replace <MILESTONE_DIR> --section "<Heading>" <<'EOF' &&
+<the new body>
+EOF
+  python3 ${PLUGIN_ROOT}/tools/open_questions.py remove <MILESTONE_DIR> "<Short Title>" --option "<Option>" &&
+  if [ -n "$(git status --porcelain -- <MILESTONE_DIR>/open_questions.xml <MILESTONE_DIR>/requirements.md)" ]; then
+    git add <MILESTONE_DIR>/open_questions.xml <MILESTONE_DIR>/requirements.md && git commit -q -m "Recommendation-answer: <Short Title>" -m "$pick" && echo 'answer commit landed'
+  fi ||
+  { printf 'stopped at\t%s\n' "<Short Title>"; false; }
+fi &&
+```
+
+It is filled exactly as the question section is, with the losing entry's heading after
+`--section` and the new body between the `<<'EOF'` line and the `EOF` line, and it stands at
+the conflict question's place in step 1's printed order like any other section. Every section
+thus makes the same tool calls — one `lift`, one fold-tool call, one `remove` — and a
+conflict section holds exactly one `replace` and no `fold`.
+
 The call's first lines are the **stranded-fold guard**: when either milestone file holds any
-staged or unstaged change, whatever its origin — a fold a stopped run left uncommitted, or a
-hand edit — the call prints `dirty before start` and the `git status --porcelain` lines beneath
-it, then ends before any lift, fold, removal, or commit, so no leftover rides into an answer's
-commit.
+staged or unstaged change, whatever its origin — a fold or rewrite a stopped run left
+uncommitted, or a hand edit — the call prints `dirty before start` and the
+`git status --porcelain` lines beneath it, then ends before any lift, fold, removal, or
+commit, so no leftover rides into an answer's commit.
 
 In each section the `lift` is the question's re-check against the live document, with only its
 stderr silenced. When it fails — an earlier section's `remove` stripped this block's pick,
@@ -177,10 +235,12 @@ nothing and prints nothing: that is the **silent skip**, kept in no record and c
 read, the stripped block being the recommendation pass's to re-pick. When it succeeds, its one
 line, "`<option>` — `<rationale>`", is held in `pick` as the commit body, since once the answer
 is recorded the block is gone. Then the fold tool splices the decision verbatim at the end of
-the `<Heading>` subsection of `## Decisions`, so the recorded decision always lands before the
-block is removed; `remove` deletes the block with `--option` naming the recorded option and, in
-the same write, strips the pick of every block whose `<depends-on>` assumed another option of
-it, keeping their alternatives; and the section carries out the three steps of the shared
+the `<Heading>` subsection of `## Decisions` — in a conflict section its `replace` instead
+rewrites everything below that existing subsection's heading line with the new body, the
+heading line and every byte outside the subsection kept — so the recorded decision always
+lands before the block is removed; `remove` deletes the block with `--option` naming the
+recorded option and, in the same write, strips the pick of every block whose `<depends-on>`
+assumed another option of it, keeping their alternatives; and the section carries out the three steps of the shared
 commit procedure at `${PLUGIN_ROOT}/shared/commit-procedure.md` itself — its dirty-own-path
 guard, the path-scoped `git add` of the two milestone files (never `git add -A`), and the
 commit under `Recommendation-answer: <Short Title>` with the held line as its body through the
@@ -191,14 +251,16 @@ section's first line and used within it, never a tool command or a path list; no
 carries anything from one section to the next.
 
 A **stop**: when the fold, the `remove`, or a git step fails after a successful lift — the fold
-tool refusing, `remove` refusing the option, git refusing the commit — the failing command's
+tool refusing (a `replace` whose heading no `###` subsection of `## Decisions` carries
+included), `remove` refusing the option, git refusing the commit — the failing command's
 own `Error:` line or git's message reaches the output unredirected, the section prints
 `stopped at`, a tab, and the Short Title, and the call ends there: no later section and no
 completeness walk runs. The tree is left exactly as it stands — no rollback, no restore, no
 skip-and-continue, and never a change to `open_questions.xml` outside the tool — so every
 earlier answer is committed and only this question is unfinished: clean when the fold was
-refused, its decision folded and uncommitted with its block still standing when a later step
-failed. That stop is what keeps a stranded fold out of the next answer's commit.
+refused, its decision folded or its rewrite written, uncommitted, with its block still
+standing when a later step failed. That stop is what keeps a stranded fold out of the next
+answer's commit.
 
 After the last section the call prints the fixed header line `completeness walk` and runs the
 tool's `walk` once more as the completeness check. A single pass either records a block or

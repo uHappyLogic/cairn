@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Conflict Section In The Answer Sweep
-
-Extend `core/skills/answer-all-open-questions-with-recommendation/SKILL.md` so step 3a recognizes a conflict question by an exact-prefix check of its question text, as the view's `list --with-question` printed it, against the review pass's fixed phrase (a block written before the convention gets the ordinary append section), composing for it the losing entry's `###` heading and the whole new body of that subsection, unchanged bullets included in a topical subsection, with no decision folded anywhere else. The batched call's conflict section carries exactly one `python3 {{PLUGIN_ROOT}}/tools/requirements.py replace <MILESTONE_DIR> --section "<Heading>"` call on a quoted heredoc standing where `fold` stands, chained ahead of `remove`, and is otherwise identical to an ordinary section so every section keeps a fixed number of tool calls; the winning entry and any knock-on clause elsewhere stay as written for the next review pass's consistency step, and the sweep still records every pick as given and forms no contradiction judgment. Verified by the rebuilt `hosts/` trees passing `uv run scripts/build_hosts.py --check` and by `tests/test_sweep_batched_call.py` and `tests/test_sweep_compact_view.py` still extracting their calls.
-
----
-
 ## Cover Conflict Section In Batched Call Test
 
 Extend `tests/fixtures/sweep` with a recommendation-bearing conflict question whose text opens with the review pass's fixed phrase and whose losing entry sits in a `###` subsection of the fixture's `requirements.md`, and extend `tests/test_sweep_batched_call.py` to extract the conflict section from the rendered Claude Code tree at the boundaries the step states and run it under bash in the same clean run as the ordinary sections, asserting that its commit's `requirements.md` diff is exactly the rewritten subsection body with the heading line and every other byte unchanged, that the section holds one `replace` call and no `fold`, and that the ordinary sections, the silent skip, and the dirty-start stop behave as before. Verified by `uv run pytest` and `uv run --no-project --python 3.9 --with pytest pytest` both passing.
