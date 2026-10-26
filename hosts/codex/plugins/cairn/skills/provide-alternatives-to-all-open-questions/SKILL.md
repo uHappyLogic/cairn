@@ -21,18 +21,20 @@ question against the siblings as scope only, so the dispatches are independent: 
 together, in rounds of at most the session's subagent
 thread cap, and the files they land are embedded and committed in
 batches, one fixed shell call per batch — one `Alternatives-annotation: <Short Title>` commit
-per annotated question, none for a skipped one. It is **argument-free**, records **no
+per annotated question, none for a skipped one. It takes **no Short Title**, records **no
 decisions**, triggers **no cascades**, and writes no `<recommendation>` — it only supplies the
 alternatives the recommendation pass reads.
 
 ## Usage
 
 ```
-/provide-alternatives-to-all-open-questions
+/provide-alternatives-to-all-open-questions [--milestone <milestone_id>]
 ```
 
-Takes no arguments — it sweeps every `<open-question>` block in the current milestone's
-`open_questions.xml`.
+With no argument it sweeps every `<open-question>` block in the current milestone's
+`open_questions.xml`. The optional leading `--milestone <milestone_id>` names another milestone
+by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of
+the current-milestone pointer.
 
 ## Workflow
 

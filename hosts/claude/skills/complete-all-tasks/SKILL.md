@@ -10,10 +10,10 @@ Pure orchestrator. Reads the current milestone's task list and spawns one isolat
 ## Invocation
 
 ```
-/complete-all-tasks
+/complete-all-tasks [--milestone <milestone_id>]
 ```
 
-No arguments required.
+With no argument the skill completes the current milestone's tasks. The optional leading `--milestone <milestone_id>` names another milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
 
 ## Workflow
 

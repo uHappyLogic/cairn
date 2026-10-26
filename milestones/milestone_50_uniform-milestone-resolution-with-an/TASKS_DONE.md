@@ -45,3 +45,18 @@ The nine skills whose invocation carries positional text of their own (`answer-o
 - `uv run scripts/build_hosts.py --check` passes (exit 0) after the `hosts/` rebuild.
 
 ---
+
+## Flag In Argument-Free Skill Usage
+
+The seven pointer-resolving skills that take no positional text (`answer-all-open-questions-with-recommendation`, `complete-all-tasks`, `derive-tasks`, `finish-current-milestone`, `provide-alternatives-to-all-open-questions`, `recommend-all-open-questions`, `review-milestone-requirements`) each show `[--milestone <milestone_id>]` in their Usage or Invocation fence, with prose under it describing the optional override in place of every "No arguments" line, and keep only their step-0 reference to the shared procedure with no parse clause of their own; `goto-next-milestone` and `init-milestone-base-workflow`, which are outside the rule, are left unchanged. Verified by confirming no "No arguments" line remains in those seven rendered skills in any host tree and by `uv run scripts/build_hosts.py --check` passing after the `hosts/` rebuild.
+
+**Verified:**
+
+- Each of the seven core skills (`answer-all-open-questions-with-recommendation`, `complete-all-tasks`, `derive-tasks`, `finish-current-milestone`, `provide-alternatives-to-all-open-questions`, `recommend-all-open-questions`, `review-milestone-requirements`) shows `/<skill> [--milestone <milestone_id>]` in its Usage or Invocation fence.
+- The prose under each of those fences describes the optional leading override (with no argument the skill works on the current milestone; `--milestone <milestone_id>` names another by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer), replacing every "No arguments" / "Takes no arguments" line, and the two annotating passes' opening "**argument-free**" now reads "takes **no Short Title**".
+- Each of the seven keeps only its step-0 (for `finish-current-milestone`, step-1) reference to `get-current-milestone.md` and carries no parse clause of its own (no "strip a leading" clause in any of them).
+- `goto-next-milestone` and `init-milestone-base-workflow` are unchanged in `core/` and in every host tree.
+- No "No arguments", "Takes no arguments", or "argument-free" line remains in those seven rendered skills under `hosts/claude/skills/`, `hosts/antigravity/skills/`, or `hosts/codex/plugins/cairn/skills/`, each of which carries the new fence once.
+- `uv run scripts/build_hosts.py --check` passes (exit 0) after the `hosts/` rebuild.
+
+---

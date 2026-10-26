@@ -20,8 +20,10 @@ Every write this skill makes to `open_questions.xml`, and every listing of its b
 ## review-milestone-requirements
 
 ```
-/review-milestone-requirements
+/review-milestone-requirements [--milestone <milestone_id>]
 ```
+
+With no argument the skill reviews the current milestone. The optional leading `--milestone <milestone_id>` names another milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
 
 ## Milestone requirements document structure
 

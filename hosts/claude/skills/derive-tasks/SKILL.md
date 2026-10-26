@@ -12,10 +12,10 @@ Your job here is **decomposition and coverage**. You split the milestone into hi
 ## Usage
 
 ```
-/derive-tasks
+/derive-tasks [--milestone <milestone_id>]
 ```
 
-No arguments. The skill always reads from and writes to the current milestone directory.
+With no argument the skill reads from and writes to the current milestone directory. The optional leading `--milestone <milestone_id>` names another milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
 
 ## Preconditions
 

@@ -25,8 +25,8 @@ block, lifts each one the tool accepted, commits the document under one
 question, then sorts the document — the annotated blocks first in the order the answer sweep
 will walk them — and commits that reorder as its own `Question-ordering: <milestone_id>` commit,
 a fixed step of every run that found questions. A run makes that call once, and once more only
-to re-send the blocks it refused, so it lands at most two annotation commits. It is
-**argument-free**, records **no decisions**, triggers **no cascades**, and never adds, drops,
+to re-send the blocks it refused, so it lands at most two annotation commits. It takes
+**no Short Title**, records **no decisions**, triggers **no cascades**, and never adds, drops,
 or edits a block's `<alternative>` — it only picks and orders.
 Each embedded recommendation is consumed later, when it is recorded as an answer, by
 `/answer-open-question-with-recommendation` or the
@@ -35,12 +35,14 @@ Each embedded recommendation is consumed later, when it is recorded as an answer
 ## Usage
 
 ```
-/recommend-all-open-questions
+/recommend-all-open-questions [--milestone <milestone_id>]
 ```
 
-Takes no arguments — it sweeps every `<open-question>` block in the current milestone's
-`open_questions.xml`. `<milestone_id>` below is the last path component of `<MILESTONE_DIR>`
-(the directory name under `milestones/`).
+With no argument it sweeps every `<open-question>` block in the current milestone's
+`open_questions.xml`. The optional leading `--milestone <milestone_id>` names another milestone
+by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of
+the current-milestone pointer. `<milestone_id>` below is the last path component of
+`<MILESTONE_DIR>` (the directory name under `milestones/`).
 
 ## Workflow
 

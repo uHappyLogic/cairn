@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Flag In Argument-Free Skill Usage
-
-The seven pointer-resolving skills that take no positional text (`answer-all-open-questions-with-recommendation`, `complete-all-tasks`, `derive-tasks`, `finish-current-milestone`, `provide-alternatives-to-all-open-questions`, `recommend-all-open-questions`, `review-milestone-requirements`) each show `[--milestone <milestone_id>]` in their Usage or Invocation fence, with prose under it describing the optional override in place of every "No arguments" line, and keep only their step-0 reference to the shared procedure with no parse clause of their own; `goto-next-milestone` and `init-milestone-base-workflow`, which are outside the rule, are left unchanged. Verified by confirming no "No arguments" line remains in those seven rendered skills in any host tree and by `uv run scripts/build_hosts.py --check` passing after the `hosts/` rebuild.
-
----
-
 ## Finish Under Milestone Override
 
 `finish-current-milestone` honours a matching `--milestone` override whatever the pointer reads: its step-1 stop on a `none` pointer applies only when no override is given, and its pointer-clearing step becomes conditional, overwriting the `Current milestone:` line with `none` only when the pointer names the finished milestone, leaving a `none` pointer as `none` and a pointer naming a different milestone untouched, while the history entry, the Completed Milestones row, and the `Milestone-finish:` commit are written as today in every case. This is needed because finishing a milestone must never deactivate a different one. Verified by reading the rendered skill in each host tree and by `uv run scripts/build_hosts.py --check` passing after the `hosts/` rebuild.

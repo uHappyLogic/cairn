@@ -33,11 +33,13 @@ commit is path-scoped to them, so a dirty tree elsewhere stays out of it.
 ## Usage
 
 ```
-/answer-all-open-questions-with-recommendation
+/answer-all-open-questions-with-recommendation [--milestone <milestone_id>]
 ```
 
-Takes no arguments — it sweeps every `<open-question>` block in the current milestone's
-`open_questions.xml` that contains a `<recommendation>` element.
+With no argument it sweeps every `<open-question>` block in the current milestone's
+`open_questions.xml` that contains a `<recommendation>` element. The optional leading
+`--milestone <milestone_id>` names another milestone by its exact directory name under
+`milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
 
 ## Workflow
 

@@ -10,10 +10,10 @@ Wraps up the current milestone — verifies all tasks are done, records accompli
 ## Usage
 
 ```
-/finish-current-milestone
+/finish-current-milestone [--milestone <milestone_id>]
 ```
 
-No arguments.
+With no argument the skill finishes the current milestone. The optional leading `--milestone <milestone_id>` names another milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
 
 ## Workflow
 
