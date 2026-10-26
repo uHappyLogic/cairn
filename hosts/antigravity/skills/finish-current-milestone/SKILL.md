@@ -5,7 +5,7 @@ description: Mark the current milestone as done, recording its accomplishments i
 
 # finish-current-milestone
 
-Wraps up the current milestone — verifies all tasks are done, records accomplishments in `milestones/README.md`, clears the current-milestone pointer to "none" in `milestones/README.md`, and updates `AGENTS.md` only if the milestone introduced lasting changes to the project's environment context. It creates or modifies no files in `<MILESTONE_DIR>/`, and it never invokes `/capture-milestone-principle-updates`. Run this when all tasks are complete. After this, run `/define-milestone-goal` to define the next milestone, then `/goto-next-milestone` to activate it.
+Wraps up the current milestone — verifies all tasks are done, records accomplishments in `milestones/README.md`, clears the current-milestone pointer to "none" in `milestones/README.md` when it names the finished milestone, and updates `AGENTS.md` only if the milestone introduced lasting changes to the project's environment context. It creates or modifies no files in `<MILESTONE_DIR>/`, and it never invokes `/capture-milestone-principle-updates`. Run this when all tasks are complete. After this, run `/define-milestone-goal` to define the next milestone, then `/goto-next-milestone` to activate it.
 
 ## Usage
 
@@ -19,7 +19,7 @@ With no argument the skill finishes the current milestone. The optional leading 
 
 ### 1. Find the current milestone
 
-Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>` from the `Current milestone:` line in `milestones/README.md`. If the pointer is `none`, stop and tell the user there is no active milestone to finish.
+Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`, from a leading `--milestone <milestone_id>` override when one is given and from the `Current milestone:` line in `milestones/README.md` otherwise. A matching override is honoured whatever the pointer reads, `none` included. If no override was given and the pointer is `none`, stop and tell the user there is no active milestone to finish.
 
 Read `<MILESTONE_DIR>/requirements.md` and extract the milestone title from its top-level `# Milestone N: <Title>` heading (e.g. `# Milestone 1: Public Release Preparation` → title "Milestone 1 — Public Release Preparation"). The milestone number N comes from the path slug — strip any leading zeros when parsing it as an integer (e.g. `milestone_01_foo` → N is `1`).
 
@@ -64,13 +64,15 @@ Then add a one-line index entry to the `## Completed Milestones` table — appen
 
 Append the row in ascending milestone-number order (after any existing rows), altering no existing row. If the `## Completed Milestones` section or its table header does not exist, create it after `## Milestone History`.
 
-### 6. Clear the current milestone pointer
+### 6. Clear the current milestone pointer when it names the finished milestone
 
-In `milestones/README.md`, overwrite the `Current milestone:` line with the literal:
+In `milestones/README.md`, read the `Current milestone:` line. Only when its backtick-quoted path names the finished milestone's directory, `<MILESTONE_DIR>` (always the case when no override was given), overwrite that line with the literal:
 
 ```
 Current milestone: none
 ```
+
+When the line reads `none`, leave it `none`. When it names a different milestone, leave it pointing there, untouched. Steps 5 and 8 run as written in every case.
 
 Leave the `## Current Milestone` heading and all other content in `milestones/README.md` unchanged, and do not write the pointer into `AGENTS.md`.
 
@@ -84,7 +86,7 @@ If nothing in the milestone changes the project's environment context or structu
 
 Read and follow the shared commit procedure at `~/.gemini/config/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
 
-- **PATHS** — this skill's own change set: **always** `milestones/README.md` (it carries both the completion summary from steps 4–5 and the `Current milestone: none` pointer cleared in step 6, in the same edit), and **additionally** `AGENTS.md` **only on passes where step 7 actually edited it**. If step 7 was skipped, `AGENTS.md` is not in the set and the commit covers `milestones/README.md` alone. This conditional inclusion is keyed on whether this skill's step 7 edited the file — decided as the edit is (or is not) made, never by diffing or inspecting content.
+- **PATHS** — this skill's own change set: **always** `milestones/README.md` (it carries the completion summary from steps 4–5 and, on passes where step 6 cleared it, the `Current milestone: none` pointer, in the same edit), and **additionally** `AGENTS.md` **only on passes where step 7 actually edited it**. If step 7 was skipped, `AGENTS.md` is not in the set and the commit covers `milestones/README.md` alone. This conditional inclusion is keyed on whether this skill's step 7 edited the file — decided as the edit is (or is not) made, never by diffing or inspecting content.
 - **SUBJECT** — `Milestone-finish: milestone_<NN>_<slug>`.
 
 The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.

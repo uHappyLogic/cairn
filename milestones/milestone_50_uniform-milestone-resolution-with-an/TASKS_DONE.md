@@ -60,3 +60,17 @@ The seven pointer-resolving skills that take no positional text (`answer-all-ope
 - `uv run scripts/build_hosts.py --check` passes (exit 0) after the `hosts/` rebuild.
 
 ---
+
+## Finish Under Milestone Override
+
+`finish-current-milestone` honours a matching `--milestone` override whatever the pointer reads: its step-1 stop on a `none` pointer applies only when no override is given, and its pointer-clearing step becomes conditional, overwriting the `Current milestone:` line with `none` only when the pointer names the finished milestone, leaving a `none` pointer as `none` and a pointer naming a different milestone untouched, while the history entry, the Completed Milestones row, and the `Milestone-finish:` commit are written as today in every case. This is needed because finishing a milestone must never deactivate a different one. Verified by reading the rendered skill in each host tree and by `uv run scripts/build_hosts.py --check` passing after the `hosts/` rebuild.
+
+**Verified:**
+
+- `core/skills/finish-current-milestone/SKILL.md` step 1 resolves `<MILESTONE_DIR>` through `get-current-milestone.md` from a leading `--milestone <milestone_id>` override when given, states a matching override is honoured whatever the pointer reads (`none` included), and applies its "no active milestone to finish" stop only when no override was given and the pointer is `none`.
+- Step 6 is conditional: it overwrites the `Current milestone:` line with `Current milestone: none` only when the line's backtick-quoted path names the finished milestone's directory `<MILESTONE_DIR>` (always so with no override), leaves a `none` line as `none`, and leaves a line naming a different milestone untouched.
+- Step 6 states steps 5 and 8 run as written in every case, so the history entry, the Completed Milestones row, and the `Milestone-finish: milestone_<NN>_<slug>` commit of `milestones/README.md` are unchanged; the intro and step 8's PATHS note describe the pointer clear as happening only when the pointer names the finished milestone.
+- The rendered skill in `hosts/claude/`, `hosts/antigravity/`, and `hosts/codex/plugins/cairn/` carries the same wording, read after the rebuild.
+- `uv run scripts/build_hosts.py --check` passes (exit 0) after the `hosts/` rebuild.
+
+---
