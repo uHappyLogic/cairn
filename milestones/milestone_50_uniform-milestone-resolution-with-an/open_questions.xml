@@ -1,1 +1,29 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Override value form">
+    <question>What value does the `--milestone` flag accept: only the exact milestone directory name under `milestones/` (as `capture-milestone-principle-updates` takes its id today, verbatim with no bare-number resolution), or also a looser form such as a bare milestone number or a `milestones/`-prefixed path with or without its trailing slash?</question>
+  </open-question>
+  <open-question id="Flag-parsing home">
+    <question>Where is the rule for recognizing a leading `--milestone &lt;milestone_id&gt;` in a skill&apos;s invocation text and separating it from the skill&apos;s own positional text stated: once in the shared pointer procedure that every pointer-resolving skill&apos;s step 0 already references, or in each skill&apos;s own file?</question>
+  </open-question>
+  <open-question id="Per-skill flag documentation">
+    <question>Does every skill under the uniform resolution rule show the optional `--milestone &lt;milestone_id&gt;` flag in its own Usage block and in its `docs/skill-reference.md` heading, or is the flag documented once in one general statement while each skill&apos;s invocation form stays as it reads today?</question>
+  </open-question>
+  <open-question id="Override existence test">
+    <question>What does the check that a named `--milestone` override matches a milestone directory actually test: that the directory exists under `milestones/`, or that its `requirements.md` exists, which is the test both positional-id skills apply today?</question>
+  </open-question>
+  <open-question id="Unmatched-override error content">
+    <question>What does the error line for a `--milestone` override that matches no milestone directory carry beyond naming the value it was given: nothing more, the `milestone_*` directories present (as `capture-milestone-principle-updates` prints today), or a pointer to `/define-milestone-goal` (as `specify-milestone-starting-state` prints today)?</question>
+  </open-question>
+  <open-question id="Pointer-path validation">
+    <question>When no `--milestone` override is given and the milestone comes from the pointer in `milestones/README.md`, does the shared procedure apply to the pointer&apos;s path the same existence check it applies to an override, or does it keep trusting the pointer&apos;s path unchecked as it does today?</question>
+  </open-question>
+  <open-question id="Finish under override">
+    <question>When `finish-current-milestone` runs with a `--milestone` override naming a milestone other than the one the pointer reads (or while the pointer reads `none`), what happens to the pointer: it is cleared to `none` as today, it is left as it stands, or the skill refuses an override that does not match the pointer?</question>
+  </open-question>
+  <open-question id="Override forwarding shape">
+    <question>How does `complete-all-tasks` forward the milestone to each dispatched `complete-task` agent: the resolved `&lt;MILESTONE_DIR&gt;` on every dispatch, as the alternatives pass already does, or the `--milestone &lt;milestone_id&gt;` value only when one was given, leaving the agent to resolve the pointer itself otherwise?</question>
+  </open-question>
+  <open-question id="Chain-line invocation form">
+    <question>In the Starting-a-milestone chain of `docs/ways-of-using-cairn.md`, is `specify-milestone-starting-state` invoked with no argument, resolving the milestone the preceding `goto-next-milestone` line activated, or with the `--milestone &lt;milestone_id&gt;` flag?</question>
+  </open-question>
+</open-questions>
