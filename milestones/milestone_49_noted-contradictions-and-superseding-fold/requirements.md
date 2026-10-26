@@ -68,6 +68,8 @@ Between October 2 and the milestone 48 release on October 18 the sweep still pri
 
 - **Recognition.** The signal is the question text. `review-milestone-requirements` step 4 opens every conflict question's text with one fixed phrase, stated once in that step, in a form that also names the two `###` headings of the pair. The sweep recognizes a conflict question when the question text printed by its compact view's `list --with-question` starts with that phrase, an exact-prefix check the runner makes when it composes the section; a block written before the convention falls back to the ordinary append section. The Short Title rules, the document format, and the open-question tool stay as they are.
 
+- **Call count.** Every conflict question's section of the batched call carries exactly one `replace` call for exactly one subsection, the one holding the losing entry, chained ahead of `remove`. The sweep never rewrites a second subsection: the winning entry and any knock-on clause elsewhere stay as written, and a residual conflict is left to the next review pass's `## Decisions` consistency step to flag as a new question. Every section thus keeps a fixed number of tool calls, the conflict section differing from an ordinary one only in `replace` standing where `fold` stands.
+
 ### Task derivation tie-break
 
 - **Later-entry determination.** `/derive-tasks` finds the commit that added each entry's lines in `requirements.md`, by blame or a pickaxe search path-scoped to that file, and treats the entry from the newer commit as the later-recorded one, for any conflicting pair. File position is never used for order, and the note under `## Noted contradictions` is not consulted for it.
