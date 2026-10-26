@@ -13,9 +13,18 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_50_uniform-milestone-resolution-with-an/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 50 — Uniform milestone resolution with an override flag
+
+- `get-current-milestone.md` gained one optional input, a leading `--milestone <milestone_id>` naming the exact directory under `milestones/`, resolved without reading the pointer and validated by the existence of its `requirements.md`, stopping on an error line plus the list of `milestone_*` directories with no fallback to the pointer.
+- The procedure states the flag-recognition rule once, and each skill taking positional text of its own strips the flag by that rule at its parse point, so it never leaks into a Short Title, answer, goal, task name, or question.
+- `specify-milestone-starting-state` dropped its required positional id and now resolves like the other pointer-resolving skills, while `capture-milestone-principle-updates` keeps its positional id as the stated exception.
+- `finish-current-milestone` honours a matching override whatever the pointer reads and clears the pointer only when it names the finished milestone.
+- `complete-all-tasks` forwards its resolved directory to every `complete-task` agent dispatch as a fixed `Milestone directory:` prompt line, and `complete-procedure.md` takes a supplied directory as given.
+- Every affected skill's Usage fence and `docs/skill-reference.md` heading spell `[--milestone <milestone_id>]`, the headless chains in `docs/ways-of-using-cairn.md` no longer carry `<milestone_id>`, and `CLAUDE.md` records the resolution rule as an invariant.
 
 ### Milestone 49 — Noted contradictions and superseding fold
 
@@ -535,3 +544,4 @@ Current milestone: `milestones/milestone_50_uniform-milestone-resolution-with-an
 | 47 | Antigravity global install and agent tools | `milestones/milestone_47_antigravity-global-install-and-agent/` |
 | 48 | Batched answer sweep with a fold tool | `milestones/milestone_48_batched-answer-sweep-with-a/` |
 | 49 | Noted contradictions and superseding fold | `milestones/milestone_49_noted-contradictions-and-superseding-fold/` |
+| 50 | Uniform milestone resolution with an override flag | `milestones/milestone_50_uniform-milestone-resolution-with-an/` |
