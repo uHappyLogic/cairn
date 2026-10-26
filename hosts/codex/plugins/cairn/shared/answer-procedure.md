@@ -4,10 +4,11 @@ This is the single source of truth for recording an answer to one open question 
 milestone: the decision lands under `## Decisions` of `<MILESTONE_DIR>/requirements.md` and
 the answered block leaves `<MILESTONE_DIR>/open_questions.xml`. It is followed inline by the
 single-question answer skills. The inline answer sweep draws only on its analyse step's
-questions and its fold step's rules for what a decision says and the shape it takes, never on
-its tool steps, which the sweep's own batched call replaces. The caller supplies the inputs
-below and wraps the result; this file describes only the recording work itself — locate,
-analyse, fold, remove, cascade.
+first two questions and its fold step's rules for what a decision says and the shape it
+takes — never on the rewrites and notes that answer the analyse step's fourth question, nor
+on its tool steps, which the sweep's own batched call replaces. The caller supplies the
+inputs below and wraps the result; this file describes only the recording work itself —
+locate, analyse, fold, note, remove, cascade.
 
 Every read and write of `open_questions.xml` here is a call to the plugin's open-question
 tool, `python3 ${PLUGIN_ROOT}/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`,
@@ -31,14 +32,14 @@ optional:
 - **ANSWER** — the answer text for that question.
 - **RECORDED OPTION** *(optional)* — the option or alternative id the caller lifted as the
   decision, when it lifted one: the block's `<recommendation option="…">` value or the chosen
-  `<alternative id="…">` value, as plain text. Supplied, it is what step 4 passes to the
+  `<alternative id="…">` value, as plain text. Supplied, it is what step 5 passes to the
   tool's `remove` as `--option`, so the blocks that depended on the answered one are
-  reconciled against it as an exact id; absent, step 4 forms the one judgment described
+  reconciled against it as an exact id; absent, step 5 forms the one judgment described
   there. The caller either passes it or passes nothing — this procedure never derives it by
   parsing ANSWER, whose form is the caller's own convention.
 - **UNDERMINED PICKS** *(optional)* — the Short Titles of other open questions whose
-  standing pick the caller judged the answer undermines. Supplied, step 4 passes them to
-  the tool's `remove` as `--undermined`, exactly as given; absent, step 4 passes no
+  standing pick the caller judged the answer undermines. Supplied, step 5 passes them to
+  the tool's `remove` as `--undermined`, exactly as given; absent, step 5 passes no
   `--undermined`. Which picks an answer undermines is the caller's judgment alone — this
   procedure never names one itself and never adds to, trims, or re-judges the list.
 
@@ -54,7 +55,7 @@ python3 ${PLUGIN_ROOT}/tools/open_questions.py locate <MILESTONE_DIR> "<SHORT TI
 
 On success it prints the matched block verbatim — its `<question>` and, when the recommend
 sweep annotated it, its `<alternative id="…">`, `<applied-principle>`, `<depends-on>`, and
-`<recommendation>` children. Hold that print: step 2 reasons over it and step 4 judges
+`<recommendation>` children. Hold that print: step 2 reasons over it and step 5 judges
 against its alternative ids.
 
 If it fails — no block's `id` matches SHORT TITLE — **stop without changing anything** and
@@ -70,7 +71,16 @@ Before editing, reason about the answer's implications:
 - Does it make any other entry moot, or force a specific answer to one?
 - Does it contradict or supersede anything already written in the document?
 
-This analysis is how you reach the right edits in steps 3–5; it is not itself written into
+Judge each contradiction the fourth question finds with a standing `## Decisions` entry —
+one that cannot hold as written beside the decision:
+
+- **Plainly superseded** — the answer is clearly meant to replace that entry: step 3
+  rewrites the entry's conflicting text in place, and no note is written for it.
+- **Not plainly settled** — the answer does not plainly settle which of the two should
+  hold: the entry stays as written and step 4 notes the pair. Doubt notes: an entry the
+  answer only arguably replaces is noted, never rewritten.
+
+This analysis is how you reach the right edits in steps 3–6; it is not itself written into
 the document. Do not invent implications the answer text does not directly support, and if
 the answer is ambiguous or incomplete, remove what is clearly resolved and surface the rest
 rather than guessing — never add a brand-new question block to the document.
@@ -85,10 +95,40 @@ section names, and match each entry's shape to the subsection it lands in: a pro
 where the milestone's `## Decisions` holds one subsection per decision, a
 `- **Lead.** text` bullet where it holds topical subsections of bullets.
 
-Write this edit **before** removing the answered block in step 4; the recorded decision
+Two cases edit an existing entry in place, under its own heading and in its own shape:
+
+- **A conflict question.** When the answered question asks which of two `## Decisions`
+  entries stands, naming the `###` heading each sits under, edit the losing entry in place:
+  rewrite its conflicting text so it agrees with the entry that stands, keeping whatever of
+  it still holds, and leave the entry that stands as written. That rewrite is the whole
+  record of the answer — add nothing, folding no separate statement anywhere under
+  `## Decisions`.
+- **A plainly superseded entry.** For each entry step 2 judged plainly superseded, rewrite
+  its conflicting text in place, in the same pass of targeted edits as the fold, so it agrees
+  with the decision, and keep the rest of the entry as written.
+
+Write these edits **before** removing the answered block in step 5; the recorded decision
 always lands first.
 
-### 4. Remove the answered block
+### 4. Note the contradictions left standing
+
+For each pair step 2 judged not plainly settled, write one note under
+`## Noted contradictions` of `<MILESTONE_DIR>/requirements.md`, the section standing
+directly after `## Decisions` and before `## Out of Scope`. When the file holds no such
+section, insert its heading together with the first note, after the last line of
+`## Decisions` and before the `## Out of Scope` heading; otherwise add the note at the end of
+the section. When step 2 noted nothing, this step changes nothing.
+
+Each note is one `- ` bullet naming the two conflicting entries — the entry step 3 wrote or
+rewrote and the standing one — each by the `###` heading it sits under, with enough of its
+lead or opening words to tell it apart wherever it shares that heading with another entry or
+sits among several bullets, then one sentence in your own words stating what each entry says
+and why both cannot hold. Write no question text: the next
+`/review-milestone-requirements` pass authors the open question from the note.
+
+Write the notes, like the fold, **before** removing the answered block in step 5.
+
+### 5. Remove the answered block
 
 Run
 
@@ -124,7 +164,7 @@ pass nothing) and run the call again. It likewise refuses an `--undermined` titl
 matches no block, or that names the answered block itself, with the document unchanged; its
 `Error:` line names that title, so correct the list and run the same call again.
 
-### 5. Cascade to mooted entries
+### 6. Cascade to mooted entries
 
 If the decision moots another entry or forces its answer, fold any implied constraint into
 `## Decisions` the same way and then remove that entry with a bare `remove` — no `--option`,
@@ -136,10 +176,13 @@ python3 ${PLUGIN_ROOT}/tools/open_questions.py remove <MILESTONE_DIR> "<MOOTED S
 
 one call per mooted entry. Each call reconciles that entry's dependents itself, so nothing
 is left for this procedure to tidy, and this procedure reports nothing about what the calls
-of steps 4 and 5 reconciled — the two edited files are the record.
+of steps 5 and 6 reconciled — the two edited files are the record.
 
 Then both files are left in the now-updated state for any further work.
 
-Make the `## Decisions` folds of steps 3 and 5 separate, targeted edits — one per decision —
-rather than one large rewrite of a long file, and do not otherwise rewrite or restructure
-`requirements.md`; every change to `open_questions.xml` is a tool call above.
+Make the `## Decisions` folds of steps 3 and 6 separate, targeted edits — one per decision —
+rather than one large rewrite of a long file, and write each note of step 4 the same way. Do
+not otherwise rewrite or restructure `requirements.md`, with one exception: step 3's in-place
+rewrite of an existing entry — the losing entry of a conflict question, or an entry the
+answer plainly supersedes — each its own targeted edit. Every change to `open_questions.xml`
+is a tool call above.
