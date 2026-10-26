@@ -2,6 +2,19 @@
 
 Each entry is the notes of that version's [GitHub release](https://github.com/uHappyLogic/cairn/releases), verbatim, newest first.
 
+## 1.9.0 — 2026-10-26
+
+### Uniform milestone resolution with an override flag (milestone 50)
+
+- Every skill that works inside an existing milestone now accepts an optional leading `--milestone <milestone_id>`, the exact directory name under `milestones/`, to run against that milestone instead of the current one. The override is honoured even when the pointer reads `none`, and a name with no `requirements.md` behind it stops with an error listing every `milestone_*` directory, never falling back to the pointer.
+- The flag is stripped before a skill reads the rest of its arguments, so it never ends up in a Short Title, answer, goal, task name, or question.
+- `/specify-milestone-starting-state` no longer takes a required milestone id and resolves like the other skills. `/capture-milestone-principle-updates` keeps its required positional id.
+- `/finish-current-milestone` with an override finishes the named milestone and clears the pointer only when it names that milestone, leaving any other active milestone untouched.
+- `/complete-all-tasks` passes the milestone directory it resolved to every `complete-task` agent, so an override reaches the agents too.
+- Each affected skill's usage and its `docs/skill-reference.md` heading show `[--milestone <milestone_id>]`, and the headless chains in `docs/ways-of-using-cairn.md` no longer pass a milestone id.
+
+**Full Changelog**: https://github.com/uHappyLogic/cairn/compare/1.8.7...1.9.0
+
 ## 1.8.7 — 2026-10-26
 
 ### Noted contradictions and superseding fold (milestone 49)

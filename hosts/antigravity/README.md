@@ -50,7 +50,7 @@ Document your project — its domain context, working conventions, available too
 
 ## Source
 
-Built from [uHappyLogic/cairn](https://github.com/uHappyLogic/cairn) at release tag [`1.8.7`](https://github.com/uHappyLogic/cairn/releases/tag/1.8.7), whose release page carries the notes for this version. The exact source commit this tree was built from is recorded in the body of this repository's `Release: 1.8.7` commit.
+Built from [uHappyLogic/cairn](https://github.com/uHappyLogic/cairn) at release tag [`1.9.0`](https://github.com/uHappyLogic/cairn/releases/tag/1.9.0), whose release page carries the notes for this version. The exact source commit this tree was built from is recorded in the body of this repository's `Release: 1.9.0` commit.
 
 ## License
 
