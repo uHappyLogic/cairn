@@ -98,3 +98,17 @@ Extend `tests/fixtures/sweep` with a recommendation-bearing conflict question wh
 - `uv run pytest` (891 passed) and `uv run --no-project --python 3.9 --with pytest pytest` (887 passed, 1 skipped) both pass.
 
 ---
+
+## Add Tie-Break Rule To Derive-Tasks
+
+Extend `core/skills/derive-tasks/SKILL.md` with the tie-break rule applied while building the briefs and the coverage matrix: where two `## Decisions` entries cannot both hold, the later-recorded entry governs the brief, found by the commit that added each entry's lines in `requirements.md` through blame or a pickaxe search path-scoped to that file, never by file position and never from the note; every pair listed under `## Noted contradictions` is taken as conflicting as noted without re-judging, any other pair the runner itself finds is resolved the same way, and nothing is flagged for either kind. The empty-`list` precondition stays as it is, so a noted contradiction never blocks the run. Verified by the rebuilt `hosts/` trees passing `uv run scripts/build_hosts.py --check`.
+
+**Verified:**
+
+- `core/skills/derive-tasks/SKILL.md` step 3 carries a **Conflicting decisions.** rule applied while building the briefs and step 4's matrix: where two `## Decisions` entries cannot both hold as written, the later-recorded entry governs the brief.
+- The later entry is found by the commit that added each entry's lines, by `git blame` or a pickaxe search (`git log -S`) path-scoped to `<MILESTONE_DIR>/requirements.md`; the rule forbids ordering by file position and forbids taking the order from the note.
+- Every pair under `## Noted contradictions` is taken as conflicting as noted without re-judging, any other pair the runner finds is resolved the same way, and nothing is flagged for either kind (neither in step 6's plan nor step 8's report); step 4 adds that the earlier entry's conflicting text maps to no brief and is no gap.
+- The Preconditions list and step 2's empty-`list` check are unchanged, and the rule states a noted contradiction never blocks the run.
+- `uv run scripts/build_hosts.py` rebuilt the three `hosts/` copies of the skill, and `uv run scripts/build_hosts.py --check` passes (exit 0).
+
+---

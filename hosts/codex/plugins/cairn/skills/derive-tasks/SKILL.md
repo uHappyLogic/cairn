@@ -66,6 +66,8 @@ Apply these rules:
 - **One area per brief** — group by the natural boundary or area of the work, as defined by the project's organization in `AGENTS.md`. Do not mix distinct areas unless they are inseparable.
 - **No "nice to have" briefs** — only what the spec states. Do not pad the task list.
 
+**Conflicting decisions.** Where two `## Decisions` entries cannot both hold as written, the later-recorded entry governs the brief; an entry that only refines, narrows, or extends another is no conflict. Take every pair listed under `## Noted contradictions`, when that section stands, as conflicting as noted, without re-judging it, and resolve any other pair you find conflicting yourself, here or while building step 4's matrix, the same way. To tell which entry is later, find the commit that added each entry's lines by `git blame` or a pickaxe search (`git log -S`), path-scoped to `<MILESTONE_DIR>/requirements.md`: the entry from the newer commit is the later-recorded one (where an entry's lines came from more than one commit, the newest dates it). Never order a pair by its position in the file, and never take the order from the note. Flag nothing for either kind of pair, neither in step 6's plan nor in step 8's report: the brief simply follows the later entry. A noted contradiction never blocks the run, since step 2's `list` call stays the whole precondition.
+
 ### 4. Prove coverage (requirement → task matrix)
 
 Re-read `requirements.md` bullet by bullet and build a traceability matrix mapping **every** requirement, constraint, and behavioral detail to at least one brief:
@@ -78,6 +80,7 @@ Re-read `requirements.md` bullet by bullet and build a traceability matrix mappi
 
 - Every requirement must map to ≥1 brief. If a requirement maps to none, you have a gap — add a brief (or note why it's already satisfied by the project's existing state per the **Relevant starting state**).
 - If a requirement is already satisfied by what already exists — or by work already recorded in `<MILESTONE_DIR>/TASKS_DONE.md` — mark it so and do not create a brief for it; note it in the report instead.
+- Where step 3's tie-break let the later-recorded entry of a conflicting pair govern, that entry is the requirement a brief covers; the earlier entry's conflicting text maps to no brief and is no gap, while whatever else of that entry still holds maps as usual.
 - Do not invent requirements that aren't in the spec.
 
 Do not proceed until the matrix has no unexplained gaps.
