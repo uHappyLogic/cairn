@@ -40,5 +40,9 @@ Every SKILL.md is rendered byte-for-byte into the three host trees apart from `{
 
 The rule for recognizing a leading `--milestone <milestone_id>` in a skill's invocation text and separating it from the skill's own positional text is stated once, in `get-current-milestone.md`, which every pointer-resolving skill's step 0 already references. In addition, each skill that takes positional text of its own carries one clause at its own parse point (its parse step, or its step 0 where it has none) telling the runner to strip a leading `--milestone` value by that procedure before reading the rest, so the flag is never folded into a Short Title, an answer, a goal, a task name, or a question. The skills that take no positional text keep only their step-0 reference to the procedure.
 
+### Per-skill flag documentation
+
+Every skill under the uniform resolution rule spells the optional leading flag at both of its per-skill sites, and no separate general statement is written. Each of the sixteen SKILL.md Usage fences shows the flag in its invocation form (for example `/submit-task [--milestone <milestone_id>] <issue description>`, or `/finish-current-milestone [--milestone <milestone_id>]`), and the prose under the fence describes it, so every "No arguments." line is replaced. Each matching `###` heading in `docs/skill-reference.md` spells it the same way. `specify-milestone-starting-state` gets the same optional form in place of its required positional id. `capture-milestone-principle-updates` stays as it is, with its required positional id.
+
 ## Out of Scope
 
