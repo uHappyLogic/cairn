@@ -122,13 +122,20 @@ the other tests yet.
   move is a tool call. The tool writes the whole file again in one canonical
   layout. A move changes both files, or neither. The decisions in
   `requirements.md` are prose, and no tool is the only writer of that file.
-  The batch answer skill adds each decision with the stdlib fold tool. That
-  tool adds the decision, the heading of its subsection when that heading is
-  new, and the blank lines around them. It changes no other byte of the file.
+  The batch answer skill writes each decision with the stdlib fold tool. That
+  tool has two subcommands. The `fold` subcommand adds the decision, the
+  heading of its subsection when that heading is new, and the blank lines
+  around them. The `replace` subcommand writes a new body below the heading
+  of one subsection that exists. It does not make a new subsection. The batch
+  answer skill uses `replace` only for a question that asks which of two
+  conflicting decisions stands. For each such question, it changes one
+  subsection only: the subsection of the decision that does not stand. Each
+  subcommand changes no other byte of the file.
 - **Metric:** Golden-file diff of the document after an answer, a cascade, or
   a prune, of the task files after each task-list write, and of
-  `requirements.md` after each fold. The `tests/` suite runs this test on the
-  open-question tool, on the task-list tool, and on the fold tool.
+  `requirements.md` after each fold and each replace. The `tests/` suite runs
+  this test on the open-question tool, on the task-list tool, and on the fold
+  tool.
 
 ### 12. Repository hygiene is structural.
 
