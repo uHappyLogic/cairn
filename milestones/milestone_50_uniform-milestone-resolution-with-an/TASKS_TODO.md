@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Uniform Resolution In Specify Starting State
-
-`specify-milestone-starting-state` loses its required positional `<milestone_id>`: its Usage fence becomes `/specify-milestone-starting-state [--milestone <milestone_id>]` with the prose and example under it describing the optional override, and its step 1 follows the shared pointer procedure to resolve `<MILESTONE_DIR>` like the other pointer-resolving skills, dropping its own "milestone not found" stop and `/define-milestone-goal` pointer, with its commit PATHS and `Starting-state: <milestone_id>` subject taking the id from the last path component of the resolved directory. This brings the skill under the uniform resolution rule so the Starting-a-milestone chain resolves the milestone `goto-next-milestone` just activated, while `capture-milestone-principle-updates` stays untouched with its required positional id. Verified by reading the rendered skill in each host tree and by `uv run scripts/build_hosts.py --check` passing after the `hosts/` rebuild.
-
----
-
 ## Flag Clause In Positional-Text Skills
 
 The nine skills whose invocation carries positional text of their own (`answer-open-question`, `answer-open-question-with-recommendation`, `answer-open-question-with-alternative`, `ask-in-milestone-context`, `discuss-new-task`, `discuss-open-question`, `modify-milestone-goal`, `submit-task`, `complete-task`) each show `[--milestone <milestone_id>]` ahead of their positional text in their Usage or Invocation fence, with the prose under it describing the optional override, and each carries one clause at its own parse point (its parse step, or its step 0 where it has none) telling the runner to strip a leading `--milestone` value by the shared procedure before reading the rest, so the flag is never folded into a Short Title, an answer, a goal, a task name, or a question. `ask-in-milestone-context`'s `none`-pointer fallback is worded to apply only when no override is given, since an override never reads the pointer. Verified by reading the nine rendered skills in each host tree and by `uv run scripts/build_hosts.py --check` passing after the `hosts/` rebuild.

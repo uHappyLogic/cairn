@@ -10,25 +10,25 @@ Reads the milestone goal, explores the project's existing state, and writes a co
 ## Usage
 
 ```
-/specify-milestone-starting-state <milestone_id>
+/specify-milestone-starting-state [--milestone <milestone_id>]
 ```
 
-- `<milestone_id>`: the milestone directory name under `milestones/`, e.g. `milestone_12_user-guide`.
+With no argument the skill fills the current milestone. The optional leading `--milestone <milestone_id>` names another milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
 
 **Example:**
 ```
-/specify-milestone-starting-state milestone_12_user-guide
+/specify-milestone-starting-state --milestone milestone_12_user-guide
 ```
 
 ## Workflow
 
-### 1. Locate the milestone
+### 1. Find the milestone
 
-Resolve `milestones/<milestone_id>/requirements.md`. If the file does not exist, stop and report that the milestone was not found — suggest running `/define-milestone-goal` first.
+Follow `${PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path. `<milestone_id>` below is the last path component of `<MILESTONE_DIR>` (the directory name under `milestones/`).
 
 ### 2. Read the goal
 
-Read `requirements.md` in full. Extract the `## Goal` section. This is the lens for everything that follows — only surface starting state that is directly relevant to achieving or building on that goal.
+Read `<MILESTONE_DIR>/requirements.md` in full. Extract the `## Goal` section. This is the lens for everything that follows — only surface starting state that is directly relevant to achieving or building on that goal.
 
 ### 3. Load the environment and explore the project
 
@@ -77,7 +77,7 @@ Replace the (empty) `## Relevant starting state` section in `requirements.md` wi
 
 Read and follow the shared commit procedure at `${PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
 
-- **PATHS** — this skill's own change set: `milestones/<milestone_id>/requirements.md` (the file whose `## Relevant starting state` section it just filled).
+- **PATHS** — this skill's own change set: `<MILESTONE_DIR>/requirements.md` (the file whose `## Relevant starting state` section it just filled).
 - **SUBJECT** — `Starting-state: <milestone_id>`.
 
 The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.

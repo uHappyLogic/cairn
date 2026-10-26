@@ -15,3 +15,18 @@
 - `uv run scripts/build_hosts.py --check` passes (exit 0) after the `hosts/` rebuild.
 
 ---
+
+## Uniform Resolution In Specify Starting State
+
+`specify-milestone-starting-state` loses its required positional `<milestone_id>`: its Usage fence becomes `/specify-milestone-starting-state [--milestone <milestone_id>]` with the prose and example under it describing the optional override, and its step 1 follows the shared pointer procedure to resolve `<MILESTONE_DIR>` like the other pointer-resolving skills, dropping its own "milestone not found" stop and `/define-milestone-goal` pointer, with its commit PATHS and `Starting-state: <milestone_id>` subject taking the id from the last path component of the resolved directory. This brings the skill under the uniform resolution rule so the Starting-a-milestone chain resolves the milestone `goto-next-milestone` just activated, while `capture-milestone-principle-updates` stays untouched with its required positional id. Verified by reading the rendered skill in each host tree and by `uv run scripts/build_hosts.py --check` passing after the `hosts/` rebuild.
+
+**Verified:**
+
+- `core/skills/specify-milestone-starting-state/SKILL.md`'s Usage fence reads `/specify-milestone-starting-state [--milestone <milestone_id>]`, with the prose under it describing the optional leading override (no argument fills the current milestone; `--milestone <milestone_id>` names another by its exact directory name under `milestones/`) and an example using the flag; no required positional `<milestone_id>` remains.
+- Its step 1 follows `{{PLUGIN_ROOT}}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`, like the other pointer-resolving skills, and carries no "milestone not found" stop and no `/define-milestone-goal` pointer.
+- Its step 2 reads `<MILESTONE_DIR>/requirements.md`, its commit PATHS is `<MILESTONE_DIR>/requirements.md`, and its SUBJECT stays `Starting-state: <milestone_id>`, with `<milestone_id>` stated to be the last path component of the resolved `<MILESTONE_DIR>`.
+- `core/skills/capture-milestone-principle-updates/SKILL.md` is unchanged, keeping its required positional id.
+- The rendered skill in `hosts/claude/skills/`, `hosts/antigravity/skills/`, and `hosts/codex/plugins/cairn/skills/` was read and carries the new Usage, step 1, and commit inputs, with each host's plugin root substituted.
+- `uv run scripts/build_hosts.py --check` passes (exit 0) after the `hosts/` rebuild.
+
+---
