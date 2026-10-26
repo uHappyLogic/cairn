@@ -36,6 +36,21 @@
   </open-question>
   <open-question id="Pointer-path validation">
     <question>When no `--milestone` override is given and the milestone comes from the pointer in `milestones/README.md`, does the shared procedure apply to the pointer&apos;s path the same existence check it applies to an override, or does it keep trusting the pointer&apos;s path unchecked as it does today?</question>
+    <alternative id="Trust the pointer">
+      The pointer&apos;s path stays unchecked, as `get-current-milestone.md` handles it today: the procedure extracts the backtick-quoted path and hands it on as `&lt;MILESTONE_DIR&gt;` with no existence test, and the existence check runs only on a `--milestone` override. A pointer naming a missing directory is caught downstream, by the first tool call&apos;s `Error: &lt;path&gt; does not exist` line or by the skill&apos;s own failed file read.
+      <advantage>Keeps the default path exactly as it behaves today in all sixteen pointer-resolving skills, adding no step to the common case; the pointer is written only by `goto-next-milestone` and `finish-current-milestone`, so it rarely goes stale, and the three tools already refuse a missing document with a verbatim `Error:` line.</advantage>
+      <drawback>The two resolution routes behave differently on the same fault: a bad override stops at step 0 with one error line, while a stale pointer surfaces later and in a different form per skill (a tool&apos;s `Error:` line naming a file path, or a prose read failure in skills that call no tool first, such as `ask-in-milestone-context` or `discuss-open-question`), which weakens the milestone&apos;s goal of one uniform resolution rule.</drawback>
+    </alternative>
+    <alternative id="Same check, same error">
+      The procedure applies to the pointer&apos;s path exactly the existence check it applies to an override, and a pointer path that fails it stops on the same error line an unmatched override produces, with no fallback, so step 0 has one validation and one failure form whichever route supplied the milestone.
+      <advantage>Fully uniform: one check and one error line stated once in `get-current-milestone.md`, every skill fails at step 0 the same way on a missing milestone whatever its source, and no skill reaches a half-run state on a stale pointer.</advantage>
+      <drawback>The shared error line is worded for a value the user typed, so for a stale pointer it may misdirect the user toward the invocation rather than `milestones/README.md`; how well it fits depends on what the override error carries and what the override check tests, which the &quot;Unmatched-override error content&quot; and &quot;Override existence test&quot; questions settle. It also adds a check to every default-path run.</drawback>
+    </alternative>
+    <alternative id="Same check, pointer error">
+      The procedure applies to the pointer&apos;s path the same existence check it applies to an override, but a pointer path that fails it stops on its own error line, naming the path as read from the `Current milestone:` line of `milestones/README.md` and saying the pointer is stale, rather than the override&apos;s unmatched-value line.
+      <advantage>Fails every skill at step 0 on a stale pointer, as with an override, while telling the user where the bad value actually lives, so the remedy (fix the pointer or run `/finish-current-milestone`) is not confused with retyping a flag.</advantage>
+      <drawback>Adds a second error wording to the shared procedure, so the two routes share a test but not a failure form, and it is one more line to keep in step with the override error as the &quot;Unmatched-override error content&quot; question settles it; it also adds a check to every default-path run.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Finish under override">
     <question>When `finish-current-milestone` runs with a `--milestone` override naming a milestone other than the one the pointer reads (or while the pointer reads `none`), what happens to the pointer: it is cleared to `none` as today, it is left as it stands, or the skill refuses an override that does not match the pointer?</question>
