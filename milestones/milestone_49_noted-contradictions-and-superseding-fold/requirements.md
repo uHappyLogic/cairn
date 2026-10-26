@@ -46,5 +46,9 @@ Between October 2 and the milestone 48 release on October 18 the sweep still pri
 
 - **Position.** `## Noted contradictions` sits directly after `## Decisions` and before `## Out of Scope`, so the file's order is Goal, Relevant starting state, Decisions, Noted contradictions, Out of Scope. The fold tool's `## Decisions` section then ends at the `## Noted contradictions` heading, and a subsection it creates lands immediately above that heading. The position is stated wherever the file's structure is stated: the definition tool's template if the section is created with the milestone, the review pass's document-structure block, and `CLAUDE.md`'s milestone file structure.
 
+### Note writing in the answer core
+
+- **Home of the note-writing step.** The step that writes a noted contradiction lives in the shared answer core `core/shared/answer-procedure.md`, as its own numbered step acting on what the analyse step's fourth question (contradicts or supersedes anything already written) found, landing after the fold and before the block's removal. It applies unconditionally, so all three single-question skills write a note: `answer-open-question` and `answer-open-question-with-alternative` through `hand-answer-procedure.md`, and `answer-open-question-with-recommendation` through `answer-with-recommendation-procedure.md`. Neither composing procedure changes, and the core gains a step but no new input and no branch; the sweep's draw on the fold step's content rules never reaches the new step.
+
 ## Out of Scope
 
