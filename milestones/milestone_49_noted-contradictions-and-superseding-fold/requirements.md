@@ -44,5 +44,7 @@ Between October 2 and the milestone 48 release on October 18 the sweep still pri
 
 - **Entry content.** Each entry under `## Noted contradictions` holds the two `###` headings of the conflicting `## Decisions` entries, with enough of each entry's lead or opening words to tell them apart where they share a heading or sit among several bullets, plus one sentence in the answer skill's own words stating what each entry says and why both cannot hold. The note carries no ready-made question text; the review pass authors the block from the note.
 
+- **Position.** `## Noted contradictions` sits directly after `## Decisions` and before `## Out of Scope`, so the file's order is Goal, Relevant starting state, Decisions, Noted contradictions, Out of Scope. The fold tool's `## Decisions` section then ends at the `## Noted contradictions` heading, and a subsection it creates lands immediately above that heading. The position is stated wherever the file's structure is stated: the definition tool's template if the section is created with the milestone, the review pass's document-structure block, and `CLAUDE.md`'s milestone file structure.
+
 ## Out of Scope
 
