@@ -68,5 +68,9 @@ When no `--milestone` override is given, the pointer's path stays unchecked, as 
 
 The Starting-a-milestone chain of `docs/ways-of-using-cairn.md` runs `/cairn:specify-milestone-starting-state` with no argument, so it resolves the milestone the preceding `goto-next-milestone` line just wrote into the pointer and the chain's lines stay on one milestone by construction. No chain line carries `<milestone_id>` any more, so the placeholder is removed from the notation paragraph's list (five placeholders become four), and the Setting-up chain's closing clause "with `<milestone_id>` the directory `define-milestone-goal` created" is dropped. The page says nothing about the `--milestone` flag; the flag is documented where every skill argument is, in the skill reference.
 
+### Override value form
+
+The `--milestone` flag accepts only the exact milestone directory name under `milestones/` (for example `milestone_50_uniform-milestone-resolution-with-an`), used verbatim to form `milestones/<milestone_id>/`, exactly as `capture-milestone-principle-updates` takes its id today. It applies no bare-number resolution and strips no `milestones/` prefix or trailing slash, so any other spelling is simply a value that matches no directory. One milestone id thus means the same thing in every skill, the capture exception included, and the shared procedure gains an input with no normalization or lookup rule in prose.
+
 ## Out of Scope
 
