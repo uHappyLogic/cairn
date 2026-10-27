@@ -192,5 +192,9 @@ The ranking table's opening sentence is recast as an explicitly refutable expect
 
 The tie margin is derived per comparison set from the set's own measured noise, by a declared statistical bound on the difference of two scenarios' per-run overall scores, for example overlapping intervals at a declared level, widened by the rater agreement figure where one is reported. Scenarios within that margin of their group's top row share one rank number and are marked as tied, and cost plays no part in the rank, so rows are ordered only where the set's own per-run ranges separate them.
 
+### Hidden axis weight
+
+The hidden axis keeps equal weight: the overall score stays the unweighted mean of the stated, hidden, and implied axes, and the rank still orders by it. The hidden requirement stays one per prompt, so the axis keeps resting on the phase-1 reading line and the phase-2 yes-or-no test line. The draft adds the reason the hidden axis keeps its third despite its two checks, that it is the outcome the benchmark exists to test and the per-axis columns, the ranges beside the overall, and the measured tie rule absorb the two-check noise as ties, and the ranking table keeps the per-axis columns beside the overall as it does now.
+
 ## Out of Scope
 
