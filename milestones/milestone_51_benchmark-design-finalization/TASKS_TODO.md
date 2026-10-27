@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Draft Bounded Loop And Clarify Delivery
-
-Rework the draft's scenarios and phases sections so the delivery model gains a bounded loop (a named span of lines, review through sweep, repeated up to a count K declared in the delivery's definition, exited when the harness matches the review skill's fixed convergence line, used by both cairn deliveries with the assess planned turn in the first pass only, continuing to the derivation line with no escalation when K passes end unconverged, and unrolled to K in the multi-prompt mirror), a clarify-then-build manual delivery joins as the fifth primary delivery with its own family (a listing invocation, a planned operator turn under the same disclosure rule answering into the resumed session, then the pointer-sentence build in that session with the manual scenario knowledge), and the harness substitutes the current phase's committed PROJECT.md text into the cairn deliveries' define line as the sole stated exception to the rule that no message carries prompt text, each with the reason for gaps 2, 9, and 10. Verify by reading the delivery definitions, chain listings, and phase descriptions against the three decisions, with the `models_strategy_1` table and its usage-snippets sentence left as they stand.
-
----
-
 ## Draft Run Isolation And Environment Rules
 
 Rewrite the draft's isolation, one-run, and manifest text for the four isolation decisions: web search and fetch stay enabled with each run's tool calls, queries, fetched URLs, and network-reaching shell commands recorded, a run that reached the benchmark repository, its run branches, or its Pages site marked contaminated and the text stating, consistently with the void policy, whether such a run is excluded or re-run; a fresh host configuration directory per run from a committed content-versioned template reached through CLAUDE_CONFIG_DIR, recorded in the manifest in place of the `user_config` digests, credentials injected from outside and the directory deleted with the clone after the Run: commit; confinement by a dedicated unprivileged benchmark user on the development Mac with no container or second machine; and a content-versioned environment definition listed among the shared inputs that the pre-flight probes the live machine against. Verify by reading the sections against the four decisions and gap 4.
