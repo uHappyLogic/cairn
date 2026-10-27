@@ -108,5 +108,9 @@ A comparison set is defined by five versions: the seed tag, one version of each 
 
 Runs are strictly sequential: at most one run of the procedure is in progress at a time on the one benchmark checkout, enforced by the harness through a run lock a run refuses to start while another holds, rather than by convention. The one-run procedure keeps its clean-main pre-flight, its live reads of the inputs area, and its own Run: commit unchanged, so main has one writer by construction and no sibling clone exists while a run executes. "As soon as the parent's Run: commit exists" is reworded as a queue-ordering rule, a phase-2 run may be queued once its parent's Run: commit exists with no wait on any rating, not as parallelism. Concurrency is not designed now; adding it later is a harness change versioned like any other.
 
+### Over-ten question scoring
+
+The items of the animal reading line become every question a game of the artifact can ask, read from its source; a question no game can reach, such as an eleventh entry of a fixed-order list that only ever asks ten, is not an item. The score is the animal items over the items, scaled to 100, the general reading-line rule of "The rater" applied as written with no special case. For an artifact of exactly ten questions this gives the same number as the count out of ten, so the hidden-axis example stands, and the check line in "Prompt 1: the game" is reworded from "the ten questions" and "out of ten" to every question a game can ask.
+
 ## Out of Scope
 
