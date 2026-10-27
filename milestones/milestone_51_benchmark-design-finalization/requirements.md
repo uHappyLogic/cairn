@@ -88,5 +88,9 @@ The harness hands the rater the entry file plus every file in the run's tree rea
 
 The prompts state the entry point: prompt 1 asks for the single self-contained HTML file as index.html at the repository root, and prompt 2 states that the game stays reachable from that file. The run script then only asserts that a root index.html exists; when it does not, the manifest's entry field is recorded as null and the run is rated as having no entry. No detection heuristic and no hand edit remain, and the record exception for a hand-set entry is removed.
 
+### Model strategy source
+
+Cairn's usage documentation changes and the draft does not: docs/ways-of-using-cairn.md is rewritten to the draft's models_strategy_1 allocation, the sonnet alias at medium for the init, define, goto, and finish lines, fable at xhigh for the starting-state, review, recommend, and derive lines, and opus at high for complete-all-tasks, with the alternatives, sweep, and hand-answer lines unchanged, and the prose sentences that restate each section's settings rewritten to match. models_strategy_1 keeps its table and its "written from Cairn's own usage snippets" sentence, which thereby becomes true. This is a docs-only change needing no host rebuild.
+
 ## Out of Scope
 
