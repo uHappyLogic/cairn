@@ -128,5 +128,9 @@ In phase n the operator receives prompts 1 to n, taken byte-identical from the v
 
 ideas/benchmark_design_gaps.md is removed in this milestone, as its last change once every gap has been written into the draft as a decision. Nothing about the report survives in the working tree: it stays reachable only in git history from aeb280a, and the draft is the single home of every decision and of the reason for every adopted, adapted, or rejected fix, so one document in ideas/ is what hands to the benchmark repository.
 
+### Stale Cairn facts
+
+The draft separates illustration from claim throughout: concrete example values (scenario ids, the manifest's plugin and host versions, model ids) are kept but stated once as hypothetical examples that track no real version, so 1.8.3 and 2.1.283 may stay or be any plausible value, while every statement about the current content of a Cairn document or tool, the tested-claim count first, is rewritten to point at that document without restating a value that moves.
+
 ## Out of Scope
 

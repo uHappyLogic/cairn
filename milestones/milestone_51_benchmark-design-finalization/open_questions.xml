@@ -1,34 +1,4 @@
 <open-questions>
-  <open-question id="Stale Cairn facts">
-    <question>The draft&apos;s examples name Cairn 1.8.3 and a host binary 2.1.283 while this repository&apos;s VERSION reads 1.9.0, and it says docs/design-claims.md states that only one claim is tested where that document now says two. Are such facts refreshed to the current state in this milestone, or rewritten so the draft no longer states a fact that moves?</question>
-    <applied-principle>Description over retirement note</applied-principle>
-    <recommendation option="Mark examples, unpin claims">Keeps fully spelled examples readable by stating once that they track no real version, and rewrites the only statements that become false with age, claims about another document&apos;s content, to point at that document instead of copying a value that moves.</recommendation>
-    <alternative id="Mark examples, unpin claims">
-      Separate illustration from claim across the whole draft: concrete example values (scenario ids, the manifest&apos;s plugin and host versions, model ids) are kept but stated once as hypothetical examples that do not track any real version, so `1.8.3` and `2.1.283` may stay or be any plausible value; every statement about the current content of a Cairn document or tool, the tested-claim count first, is rewritten to point at that document without restating a value that moves.
-      <advantage>Keeps the readability of fully spelled examples while removing the only kind of statement that is actually wrong when it ages, a claim about another document&apos;s content, so the draft stays correct across releases with the smallest loss of concreteness.</advantage>
-      <drawback>Old-looking example versions may still read as stale to a reader who skips the hypothetical note, and the line between an example and a claim has to be judged statement by statement during the edit.</drawback>
-    </alternative>
-    <alternative id="Refresh named facts">
-      Refresh in place only the facts the question names: the scenario-id example and the YOLO delivery&apos;s version segment become `1_9_0`, the manifest example&apos;s plugin version becomes `1.9.0` and its host version the currently installed host binary&apos;s, and the design-claims sentence says the suite runs two of the document&apos;s tests (claim 11 and the first part of claim 2). Every other statement in the draft stays as written, and nothing marks the values as liable to move.
-      <advantage>The smallest edit: the draft matches the repository on the day the milestone finishes, its examples stay concrete, and the change is three or four lines in one commit.</advantage>
-      <drawback>Every fact refreshed is stale again at the next release or the next test added to design-claims.md, which the benchmark&apos;s own repository will likely be built after, so the same question recurs; other current-state facts the question did not name (model ids such as `opus_5_5` in scenario examples) are left unexamined.</drawback>
-    </alternative>
-    <alternative id="Refresh with full sweep">
-      Refresh every statement of Cairn&apos;s, the host&apos;s, or another document&apos;s current state across the whole draft to its value at milestone end: the named version numbers, host binary version, and tested-claim count, plus any other moving fact the sweep finds (model names and effort levels in examples, quoted counts or wording of Cairn documents). Values stay concrete and unmarked.
-      <advantage>The draft is wholly accurate as of the milestone&apos;s end, which is the state the goal hands to the benchmark repository&apos;s implementation, with no stale fact left for an implementer to trip on.</advantage>
-      <drawback>The largest refresh still decays at the first release or documentation change after the milestone, and a sweep of a 572-line draft for every moving fact costs review effort that buys accuracy for only as long as nothing moves.</drawback>
-    </alternative>
-    <alternative id="State no moving fact">
-      Adopt the rule that the draft states no fact that moves, applied across the whole draft: version numbers and the host binary version in examples become placeholders in the style the manifest example already uses for `&lt;sha&gt;` (for instance `cairn_&lt;version&gt;_yolo_models_strategy_1`, `&quot;version&quot;: &quot;&lt;plugin version&gt;&quot;`), other current-state values such as model ids in examples become placeholders or are dropped, and the design-claims sentence is rewritten to point at the document&apos;s own statement of which claims are tested, giving no count.
-      <advantage>The draft cannot go stale on these points again: the benchmark repository may be implemented at any later Cairn version with nothing to correct, and the design-claims link names a source of truth rather than copying it.</advantage>
-      <drawback>Examples lose their concreteness (a reader no longer sees a fully spelled scenario id or a filled manifest), and the rewrite touches more of the draft than the named facts, including examples whose concrete values helped explain the identifier scheme.</drawback>
-    </alternative>
-    <alternative id="Leave until implementation">
-      Change none of these facts in this milestone: the draft keeps `1.8.3`, `2.1.283`, and the one-tested-claim sentence, and refreshing or rewriting them is left to whoever implements the benchmark repository, since every run records the exact Cairn commit and host version it used anyway.
-      <advantage>Spends no milestone effort on facts that will move again before the benchmark exists, keeping this milestone on the eighteen design gaps its goal names.</advantage>
-      <drawback>The milestone&apos;s goal is a draft ready to implement, and it would hand over a sentence about design-claims.md that is already false today, plus examples that look like a pinned version, leaving the implementer to discover which statements are stale.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Manual clarify delivery">
     <question>The assess delivery differs from every manual delivery in two things at once, Cairn&apos;s structure and a planned stakeholder turn, and no manual delivery gets a planned turn, so the assess gain over manual cannot be attributed to Cairn alone. Does the benchmark add a manual delivery with a planned turn (the model lists the questions it needs answered, the operator answers them under the same disclosure rule, then the build instruction follows), and if so is it a primary delivery with a README row or an analysis-only control?</question>
     <recommendation option="Primary with own curve">The attribution rule needs a manual delivery that differs from assess in Cairn&apos;s structure alone, and only a fifth curve shows on the page what a turn buys without Cairn and what Cairn adds when both have one; five curves on three axes stay readable.</recommendation>
