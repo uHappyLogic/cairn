@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Draft Left-Open And Implied List Split
-
-Apply the overlap rules to both prompts' lists in the draft's project section: an item in both a left-open list and an implied list is split wherever a choice among ways remains, the implied line scoring only that some way through exists and the choice staying an unscored left-open item, and an item with no such choice goes to exactly one list by the stated test, implied when a quiz lacking it would be called broken or unfinished by any builder, left open when lacking it is a defensible product choice, with the verdict recorded per item and neither list thinned by a blanket rule, both rules stated in the text with gap 1's reason. Verify by checking that no item remains in both lists unsplit and that every moved item carries its verdict.
-
----
-
 ## Draft Checklist Line Test Specifications
 
 Write beside every test line in the draft's project section a short specification naming the case the test must drive the artifact into and the observable outcome it must assert, stated as an outcome rather than a means: prompt 1's six stated and thirteen implied lines, prompt 2's stated line and eleven implied lines, and prompt 2's carry-between-profiles hidden line, the award line's specification being award a point, take it back, and assert the score is back to its earlier value, with a confirmation that prevents the award counting as well. State that the specification is part of the checklist, still derived from the draft and nothing else, with each line keeping its id, and verify by counting the specified lines against those totals.

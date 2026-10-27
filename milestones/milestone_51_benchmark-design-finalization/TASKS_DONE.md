@@ -73,3 +73,18 @@ Write into the draft's hidden-requirement and operator sections the bearing-ques
 - The draft refers to the design-gaps report nowhere.
 
 ---
+
+## Draft Left-Open And Implied List Split
+
+Apply the overlap rules to both prompts' lists in the draft's project section: an item in both a left-open list and an implied list is split wherever a choice among ways remains, the implied line scoring only that some way through exists and the choice staying an unscored left-open item, and an item with no such choice goes to exactly one list by the stated test, implied when a quiz lacking it would be called broken or unfinished by any builder, left open when lacking it is a defensible product choice, with the verdict recorded per item and neither list thinned by a blanket rule, both rules stated in the text with gap 1's reason. Verify by checking that no item remains in both lists unsplit and that every moved item carries its verdict.
+
+**Verified:**
+
+- The "Implied requirements" bullet under "The axes" states both rules: an item in both lists is split wherever a choice remains among ways through its case (one no stated line already tests), the implied line scoring only that some way through exists and the choice staying an unscored left-open item, and an item with no such choice left goes to exactly one list by the stated test (implied when a host-run quiz lacking it would be called broken or unfinished by any builder, left open when lacking it is a defensible product choice); it says the verdict is recorded per item in the project section and that neither list is thinned by a blanket rule, and gives gap 1's reason (the item contradicted itself: called a decision, answered "your call", yet scored on one answer, so the axis rewarded more features, scored taste, and cost a minimal answer a line; and it read as tilting the axis toward Cairn), as the hidden requirement's one-list rule carried to the other two lists
+- Prompt 1's lists record a verdict for each of the nine items that met: team names and keyboard control moved to the left-open list only, each with its line removed and its test verdict and reason stated; team counts, the tie, undoing an award, skipping a question, progress, a reload, and a shared place split, each implied line reworded to accept any way through and each left-open item reworded to the choice among ways
+- Prompt 2's lists record a verdict for each of the six items that met (the editor's file, the built-in questions, choosing a set, answers off the big screen, answer validation, changing a set between questions), all split, each implied line reworded to accept any way through and each left-open item reworded to the choice among ways
+- No left-open item of either prompt is scored on one of its answers by an implied line: every item still in both lists is split, prompt 1 now holds eleven implied lines and prompt 2 eleven
+- The draft stays consistent with the lists: the phase-1 and phase-2 checklist counts read eleven implied lines for prompt 1, the "Open-ended beyond the flow" bullet names the post-split decisions, and the axis's way-through examples read "a resume or a warning before a reload"
+- The draft refers to the design-gaps report nowhere, and only `ideas/benchmark_for_cairn.md` changed, with `uv run scripts/build_hosts.py --check` passing
+
+---
