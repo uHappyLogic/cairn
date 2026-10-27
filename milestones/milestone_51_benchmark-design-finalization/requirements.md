@@ -164,5 +164,9 @@ Each prompt's hidden requirement is calibrated before scored runs by a pre-run p
 
 The checklist is materialized per prompt in the inputs area and committed with the hidden-requirement entries before a set's first scored run. Their blob hashes are fixed as frozen versions, and the harness refuses a scored run that does not match them. After the freeze, a changed hidden-requirement statement, which the operator reads, starts a new comparison set with fresh runs, while a changed checklist line or hidden check line is issued as a new rating version that re-rates every artifact of the set; the earlier ratings and frozen version are kept, and the analysis never mixes versions.
 
+### Scenario roster
+
+A comparison set declares a roster of scenarios before its first scored run, fixed for the set as a file in the inputs area, and the set counts as complete only when every roster scenario is rated. The roster must hold at least: cairn yolo and cairn assess for the set's Cairn version under the reference strategy models_strategy_1; the multi-prompt mirror of that cairn yolo scenario; the clarify delivery under the same rule-named pair; and manual_prompt under the single pair named by a stated rule, namely the most capable model the set's pinned host version offers at that model's highest effort level. Further scenarios may be listed on top of this minimum.
+
 ## Out of Scope
 

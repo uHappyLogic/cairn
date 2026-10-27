@@ -37,40 +37,6 @@
       <drawback>Chains differ greatly in length, from the single manual message to Cairn&apos;s eleven or more lines, so one deadline either binds Cairn or is slack for manual. It also lets a runaway early invocation use up the time of every later line, so the stop shows up at a line that did nothing wrong.</drawback>
     </alternative>
   </open-question>
-  <open-question id="Scenario roster">
-    <question>Nothing lists which scenarios a comparison set must contain, so &quot;complete&quot; is undefined and the strongest manual strategy can be left out while the radar claims to compare against it. Does a comparison set declare a roster of scenarios that must all be rated before it counts as complete, and what must the roster hold?</question>
-    <recommendation option="Roster with rule-named strongest manual">A pre-declared roster gives complete an exact meaning and guarantees the headline baseline by construction at the cost of one manual scenario; the minimum holds every primary delivery, the clarify delivery included under the same rule-named pair.</recommendation>
-    <alternative id="Roster with rule-named strongest manual">
-      A roster is declared before the set&apos;s first scored run and fixed for the set, as a file in the inputs area. It must hold at least the following: cairn yolo and cairn assess for the set&apos;s Cairn version under the reference strategy models_strategy_1; the multi-prompt mirror of that cairn yolo scenario; and manual_prompt under the single pair named by a stated rule, namely the most capable model the set&apos;s pinned host version offers at that model&apos;s highest effort level. Further scenarios may be listed on top of this minimum.
-      <advantage>The radar&apos;s claim to compare against the strongest manual configuration is guaranteed by construction at the cost of one manual scenario, and every primary delivery appears in every set. The headline comparison can therefore never be read against a deliberately weak baseline.</advantage>
-      <drawback>&quot;Strongest&quot; is assumed, not measured. Highest effort on the top model is not guaranteed to score best on this project, and &quot;most capable&quot; still needs a stated reading when the host offers models that trade one strength for another. Each run multiplies the cost of every mandatory scenario, depending on how many runs a set requires per scenario.</drawback>
-    </alternative>
-    <alternative id="No roster, claim narrowed">
-      A comparison set declares no roster. &quot;Complete&quot; is defined as every scenario that has at least one run in the set having both phases of each of its runs rated. The radar&apos;s claim about &quot;the strongest manual configuration&quot; is narrowed to &quot;the best manual configuration this set ran&quot;, and the line under the chart already names the scenario each curve comes from.
-      <advantage>Adds no new input file and no planning step. The draft&apos;s completeness condition and its radar wording become exact about what they promise, and the set stays free to run whatever the maintainer can afford.</advantage>
-      <drawback>Omission is still possible. A set can leave out the strongest manual configuration, or every multi-prompt control, and still count as complete, so it is the reader who has to notice from the scenario ids that a stronger manual pair was never run. A set&apos;s coverage depends on what happened to be run, not on a rule.</drawback>
-    </alternative>
-    <alternative id="Declared roster, free content">
-      Each comparison set has a roster file in the benchmark&apos;s inputs area that lists scenario ids. It is declared before the set&apos;s first scored run and not changed during the set. The set is complete once every listed scenario has its runs rated in both phases, and the README page draws only from roster scenarios. No rule constrains what the roster lists.
-      <advantage>&quot;Complete&quot; gets an exact, pre-declared meaning, and once a set has started it cannot pick its comparison after seeing the scores. All this costs is one short file per set.</advantage>
-      <drawback>Nothing stops the roster itself from leaving out the strongest manual configuration, so the radar&apos;s fairness claim still rests on the maintainer&apos;s judgment at declaration time. How a roster change relates to set identity depends on how the comparison set is defined.</drawback>
-    </alternative>
-    <alternative id="Roster with a manual sweep">
-      A roster is declared before the set&apos;s first scored run and fixed for the set. It must hold at least the following: cairn yolo and cairn assess under models_strategy_1; the multi-prompt mirror of that cairn yolo scenario; and manual_prompt under every model the set&apos;s pinned host version offers, each at its highest effort level. The strongest manual configuration is then whichever of these scores highest, not one named in advance.
-      <advantage>The strongest manual configuration is found by measurement instead of being assumed, which closes the gap a rule-named pair leaves. It also gives the manual family several configurations, as Cairn has, so a best-of selection is not lopsided between families.</advantage>
-      <drawback>Several manual scenarios per set multiply the cost of every set, run counts included. Choosing the best of several manual configurations brings in the best-of-noise selection effect that the radar curve rule has to account for, so how well this option works depends on how each family&apos;s curve is selected.</drawback>
-    </alternative>
-    <alternative id="Roster as delivery-strategy matrix">
-      A roster is declared before the set&apos;s first scored run and fixed for the set, as a matrix rather than a list. It names a set of single-pair model strategies (each model the pinned host offers, at its highest effort) plus Cairn&apos;s reference strategy. Every primary delivery runs under every single-pair strategy: manual_prompt, the multi-prompt mirror of each cairn yolo scenario, cairn yolo, and cairn assess. The two cairn deliveries also run under models_strategy_1. The set is complete only when every cell is rated.
-      <advantage>Every delivery is compared with every other under identical model pairs, so the attribution rule that &quot;two scenarios sharing a strategy isolate the delivery&quot; holds across the whole page. Every family also has the same configurations, which removes the selection asymmetry between Cairn and manual at its source.</advantage>
-      <drawback>This is the most expensive roster by far, since cost grows with deliveries times strategies times runs. Most of the cells run Cairn under a single pair it is not meant to be used with, so most of the spend measures configurations that do not reflect Cairn as it is used.</drawback>
-    </alternative>
-    <alternative id="Minimum roster, append-only">
-      A roster is declared before the set&apos;s first scored run with the same mandatory minimum as the rule-named option. That minimum is cairn yolo and cairn assess under models_strategy_1, the multi-prompt mirror of that yolo scenario, and manual_prompt under the most capable host model at its highest effort. Scenarios may be added to the roster while the set is in progress, but none is ever removed, and the set is complete once every scenario on the final roster is rated.
-      <advantage>The baseline guarantee holds, and a stronger manual pair or a new Cairn release that turns up mid-campaign can still join the set without starting a new one, which matters for a campaign that spans several days.</advantage>
-      <drawback>Additions made after scores are visible bring back post-hoc selection. A configuration can be added because an early result looked promising, which biases best-of curve selection, and a set whose roster keeps growing may never count as complete. Whether a mid-set addition is allowed at all depends on how the comparison set is defined.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Public inputs leak">
     <question>The benchmark&apos;s main branch is public, so the hidden requirements, the operator records, and every artifact are public and future models will train on them, wearing down the no-canned-solution requirement over time. How does the benchmark limit or account for its inputs and results leaking into training data?</question>
     <recommendation option="Flag then rotate inputs">The only fully open option that keeps the hidden axis meaningful indefinitely: the canary and dated flag make erosion visible, and rotation is the stated response when it fires; current frontier cutoffs predate the draft, so the first sets run unflagged.</recommendation>
@@ -112,7 +78,6 @@
   </open-question>
   <open-question id="Runs per scenario">
     <question>Phase 1 is run for every scenario &quot;as many times as the set calls for&quot;, with no number set and no stopping rule, so a margin between two scenarios can be noise. How many runs per scenario does a comparison set require?</question>
-    <depends-on question="Scenario roster" option="Roster with rule-named strongest manual"/>
     <recommendation option="Fixed three runs">Three is the smallest count that gives a median and a range per cell, so one run off the rails cannot alone decide a rank, while a set stays within a solo maintainer&apos;s budget; it binds the roster&apos;s scenarios, and a development or ablation run outside the roster keeps the fast loop&apos;s single run.</recommendation>
     <alternative id="Fixed three runs">
       The draft fixes the count at three phase-1 runs per scenario for every scenario of a comparison set, declared before the set&apos;s first scored run with no stopping rule, each with its own phase-2 child, so every row rests on three runs per prompt.
@@ -157,7 +122,6 @@
   </open-question>
   <open-question id="Radar curve selection">
     <question>Each family&apos;s radar curve is drawn from its highest-ranked scenario, and the best of several noisy scores is biased upward, more so for Cairn, which has many configurations (versions times strategies) where manual has few. Which scenario is each family&apos;s radar curve drawn from?</question>
-    <depends-on question="Scenario roster" option="Roster with rule-named strongest manual"/>
     <recommendation option="Pre-declared reference">Declaring each family&apos;s scenario before the first scored run removes the best-of-several bias outright and matches the Cairn curves and their mirror by construction, and with the roster&apos;s rule-named strongest manual pair as the manual reference the baseline is the a-priori strongest rather than a weak one.</recommendation>
     <alternative id="Pre-declared reference">
       Before a comparison set&apos;s first scored run, the set&apos;s definition names one reference scenario per family (for example both cairn deliveries for the current release under models_strategy_1, the multi-prompt control mirroring that yolo scenario, and one declared manual_prompt pair), and each curve is drawn from its declared scenario whatever the table&apos;s ranking turns out to be; every other configuration appears only in the table.
