@@ -88,3 +88,17 @@ Apply the overlap rules to both prompts' lists in the draft's project section: a
 - The draft refers to the design-gaps report nowhere, and only `ideas/benchmark_for_cairn.md` changed, with `uv run scripts/build_hosts.py --check` passing
 
 ---
+
+## Draft Checklist Line Test Specifications
+
+Write beside every test line in the draft's project section a short specification naming the case the test must drive the artifact into and the observable outcome it must assert, stated as an outcome rather than a means: prompt 1's six stated and thirteen implied lines, prompt 2's stated line and eleven implied lines, and prompt 2's carry-between-profiles hidden line, the award line's specification being award a point, take it back, and assert the score is back to its earlier value, with a confirmation that prevents the award counting as well. State that the specification is part of the checklist, still derived from the draft and nothing else, with each line keeping its id, and verify by counting the specified lines against those totals.
+
+**Verified:**
+
+- Every test line in the draft's project section carries a specification beside it, a `*Case:*` naming the case its test must drive the artifact into and an `*Assert:*` naming the observable outcome it must assert, each stated as an outcome that names no control or mechanism: prompt 1's six stated lines (newly listed under "Prompt 1: the game") and its implied lines, prompt 2's stated line (newly listed under "Prompt 2: the host's own questions") and its eleven implied lines, and prompt 2's carry-between-profiles hidden test line; prompt 1's animal reading line, not a test line, gets none
+- Counting the specified lines gives 6 stated and 11 implied for prompt 1, 1 stated, 11 implied, and 1 hidden for prompt 2, 30 in all and none outside the project section; prompt 1's implied total is the live draft's eleven, the decision's thirteen having counted the team-names and keyboard lines that the earlier "Draft Left-Open And Implied List Split" task removed by its per-item verdicts, and the phase-1 and phase-2 checklist counts in the draft already read eleven
+- The award line's specification is to award a question's point, take it back before the game moves on, and assert the team's score is back to its earlier value, a confirmation that keeps the award from counting, declined by the host, passing as well
+- "The checklist and the rank" states that each test line carries the specification written beside it in the project section, stated as an outcome rather than a means so the any-way-through rule still holds, that the specification is part of the checklist, derived from the draft with its line and from nothing else, and that the line keeps its id (a specification is no line of its own, and a carried line takes its specification with it), with gap 7's reason (fresh tests per rating could test one line differently, a weak test passing on a control that exists); the rater's test-line bullet and "Fit with the run rules" point at the specification
+- The draft refers to the design-gaps report nowhere, only `ideas/benchmark_for_cairn.md` changed, and `uv run scripts/build_hosts.py --check` passes
+
+---
