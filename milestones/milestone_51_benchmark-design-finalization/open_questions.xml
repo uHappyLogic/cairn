@@ -1,43 +1,4 @@
 <open-questions>
-  <open-question id="Fixed stop line wording">
-    <question>Each skill&apos;s success line is fixed and identifier-free, but apart from the bootstrap&apos;s no-op line the no-op and precondition-stop messages are prose whose wording the files only exemplify, so a harness matching final messages can recognize success but not which stop occurred. Does Cairn fix the wording of every skill&apos;s no-op and stop lines in this milestone?</question>
-    <recommendation option="Per-stop lines, every skill, tested">Extends the existing fixed-success-line invariant to every no-op and stop line as one plugin-wide convention rather than two, and the pytest pin makes the lines a contract a harness can rely on across versions instead of wording that drifts silently.</recommendation>
-    <alternative id="Per-stop lines, every skill, tested">
-      Every skill gets a fixed, unique, identifier-free first line for each distinct no-op and precondition-stop condition, with variable detail after it. The lines are listed in `docs/skill-reference.md`, and the CLAUDE.md terse-reporting invariant is extended to them. A pytest test checks each listed line verbatim against the rendered skill files and checks that every line is unique.
-      <advantage>The complete, checked contract: any final message of any skill can be classified exactly, and a rewording cannot reach a release without the test failing.</advantage>
-      <drawback>The most work in this milestone: every reporting step is edited, the hosts are rebuilt, and a new prose-scraping test is added and must be maintained. It also turns reporting wording across the whole plugin into a frozen interface that every later skill edit must respect, largely for the benefit of one benchmark harness.</drawback>
-    </alternative>
-    <alternative id="Leave wording unfixed">
-      Cairn&apos;s skills are not changed in this milestone. Every no-op and stop message keeps its current form: prose whose wording the SKILL.md files only exemplify, with the bootstrap&apos;s `Workflow already bootstrapped — nothing changed.` the one fixed exception. The draft states that a harness can recognize only the fixed success lines, so any final message that is not one counts as &quot;not a success&quot;, with which stop it was left unclassified or read by hand from the run record. The fix is left for a later Cairn milestone, or never made.
-      <advantage>No runtime file, host rebuild, or test changes. The draft already keeps where a chain stopped as unscored record read by hand, and success against non-success is enough to find the first invocation that did not complete.</advantage>
-      <drawback>The manifest cannot say which stop ended a chain (a derive refusal, an empty task list, a no-op finish), so telling a behavioural stop from a model&apos;s improvised message needs a person. Whether this is enough depends on the signal the sibling stop-detection question settles on. The same prose stop can also be worded differently from run to run, which weakens comparison across runs.</drawback>
-    </alternative>
-    <alternative id="Fixed class prefixes">
-      Every skill&apos;s no-op and stop messages open with one of a small fixed set of identifier-free class prefixes, for example one for &quot;nothing changed&quot; and one for &quot;stopped on a precondition&quot;. The rest of the line, and any lines after it, stay free prose, including variable detail such as Short Titles or a tool&apos;s `Error:` line. Each SKILL.md&apos;s reporting step states the prefix, and the set is listed once in `docs/skill-reference.md`. Nothing tests that the prefixes appear.
-      <advantage>A small, uniform edit across all skills that lets a harness sort each final message into success, no-op, or stop with one match, without fixing dozens of individual lines.</advantage>
-      <drawback>The harness can tell that a stop happened but not which one, so the question&apos;s aim of recognizing which stop occurred is only half met. Nothing catches a later edit that drops or rewords a prefix.</drawback>
-    </alternative>
-    <alternative id="Class prefixes, tested">
-      The same fixed class prefixes as above, on every skill&apos;s no-op and stop messages, with free prose after them. They are also pinned by a test in the pytest suite that reads the rendered skill files and fails when a reporting step no longer carries its listed prefix, or when the list in `docs/skill-reference.md` drifts from the skill files.
-      <advantage>The success / no-op / stop sorting becomes a checked contract that a benchmark harness can depend on across Cairn versions, at the cost of a single small test.</advantage>
-      <drawback>It still cannot say which stop occurred. It also adds a test that scrapes runtime prose, a kind of check the suite has so far kept only for the answer sweep&apos;s fixed shell calls, and every later change to a reporting step must keep that test passing.</drawback>
-    </alternative>
-    <alternative id="Per-stop lines, chain skills">
-      Only the skills the draft&apos;s chains invoke get fixed wording: bootstrap, define, goto, starting-state, review, the two annotating passes, the answer skills and sweep, derive, complete-all-tasks, and finish. Each distinct no-op and precondition-stop condition in them gets its own fixed, identifier-free first line, unique across the plugin. Variable detail (the titles derive-tasks lists, the sweep&apos;s stopped-at Short Title, a quoted `Error:` line) moves to the lines after it. The lines are listed in `docs/skill-reference.md`. Skills outside the chains keep example wording, and nothing tests the lines.
-      <advantage>A harness matching final messages can name exactly which stop ended a chain. The edit is limited to the skills the benchmark actually exercises, which keeps this milestone&apos;s runtime change and its rebuild bounded.</advantage>
-      <drawback>The plugin ends up with two reporting conventions, one for chain skills and one for the rest, so a skill that later joins a chain needs the same work redone. Nothing guards the fixed lines against drift, so a later wording edit silently breaks the harness&apos;s classification.</drawback>
-    </alternative>
-    <alternative id="Per-stop lines, chain, tested">
-      The same scope and form as the chain-skills option: a fixed, unique, identifier-free first line for each no-op and precondition stop in the chain skills, with variable detail on later lines and the list in `docs/skill-reference.md`. A pytest test also checks each listed line verbatim against the rendered skill files and checks that no two stops share a line. Skills outside the chains keep example wording.
-      <advantage>Exact stop identification for every skill the benchmark runs, as a contract checked on every commit, so a harness built against one Cairn version keeps classifying correctly on the next. The work stays limited to the chain skills.</advantage>
-      <drawback>Two reporting conventions remain. The new prose-scraping test must be maintained, and it fails on any rewording of a chain skill&apos;s stop step, which slows ordinary edits to those skills.</drawback>
-    </alternative>
-    <alternative id="Per-stop lines, every skill">
-      Every skill in the plugin, inside and outside the chains (capture, submit-task, complete-task, modify-milestone-goal, and the rest included), gets a fixed, unique, identifier-free first line for each distinct no-op and precondition-stop condition, with variable detail on the lines after it. The lines are listed in `docs/skill-reference.md`, and the CLAUDE.md terse-reporting invariant is extended from success lines to them. Nothing tests the lines.
-      <advantage>One uniform reporting rule across the whole plugin, matching the existing fixed-success-line invariant, so every stop in any chain, present or future, can be identified by its line.</advantage>
-      <drawback>The largest runtime edit of the prose options, touching every SKILL.md&apos;s reporting step and requiring a host rebuild, most of it for skills no benchmark chain runs. Nothing guards the lines against drift.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Finish with no tasks">
     <question>finish-current-milestone closes a milestone whenever TASKS_TODO.md holds no section, so a chain whose derivation line refused to run finishes an empty milestone, clears the pointer, and leaves a tree that looks like a completed chain. Should the finish skill refuse to close a milestone that recorded no completed task?</question>
     <applied-principle>Required input over optional branch</applied-principle>
@@ -739,7 +700,6 @@
   </open-question>
   <open-question id="Stop detection signal">
     <question>A Cairn skill that stops on its own precondition prints a message and exits 0, so the harness, which stops the chain only on a non-zero exit, carries on past it and can record a chain that closed an empty milestone as every invocation made. By what signal does the harness detect that an invocation stopped on a skill&apos;s own check rather than completing?</question>
-    <depends-on question="Fixed stop line wording" option="Per-stop lines, every skill, tested"/>
     <recommendation option="Expected success line">Cairn already ends every successful chain invocation on a fixed identifier-free line, so an allowlist catches every stop including ones no list anticipated, ends the chain so the pointer stays on milestone 1 as the phase-2 text assumes, and with fixed stop lines the recorded first stopping line names which stop it was.</recommendation>
     <alternative id="Expected success line">
       Signal: the final message of each cairn chain invocation (the `result` of its JSON output, after any replies) is matched against the delivery&apos;s per-line list of expected lines, the skill&apos;s fixed success line plus any no-op line whose wording is fixed (today only the bootstrap&apos;s `Workflow already bootstrapped — nothing changed.`), and a message carrying none of them counts as a stop. Consequence: a detected stop ends the chain exactly as a non-zero exit does, and the manifest records the first stopping line (for example `invocations.first_stop`) with `made` counting the invocations actually run. Needs no change to Cairn.

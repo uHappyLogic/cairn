@@ -60,5 +60,9 @@ The reply-or-no-reply classification of a final message is made by a distinct mo
 
 The harness creates a fresh host configuration directory for each run from a committed template and points every invocation of that run, replies and planned-turn answer invocations included, at it through CLAUDE_CONFIG_DIR; the directory holds no plugins, MCP servers, or hooks, so only the plugin passed by --plugin-dir loads, and no other run's transcripts or memory are inside it. The template is a shared input in the inputs area, versioned by content and recorded in the manifest in place of the user_config digests, so changing it starts a new comparison set under the existing rule. Credentials are injected per run from outside the template, as an API key in the environment or a copied login, and the directory is deleted with the clone after the Run: commit.
 
+### Fixed stop line wording
+
+Cairn fixes the wording of every skill's no-op and stop lines in this milestone. Every skill gets a fixed, unique, identifier-free first line for each distinct no-op and precondition-stop condition, with variable detail allowed after it, as one plugin-wide convention extending the existing fixed-success-line invariant. The lines are listed in docs/skill-reference.md, the CLAUDE.md terse-reporting invariant is extended to cover them, and a pytest test checks each listed line verbatim against the rendered skill files and checks that every line is unique, so the lines are a contract a harness can match across versions.
+
 ## Out of Scope
 
