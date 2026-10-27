@@ -770,6 +770,41 @@
   </open-question>
   <open-question id="Score spread reporting">
     <question>The ranking table has a runs column but no spread or interval beside any score, so a reader cannot tell a margin between two scenarios from noise. Is a per-run spread or interval reported beside every score, and where?</question>
+    <alternative id="No spread reported">
+      No spread or interval is reported anywhere: the ranking table keeps its runs column as the only sign of how many runs stand behind a row, the analysis output carries means only, and the radar draws means only. The draft states that a margin between two rows carries no measure of its noise, and leaves handling noise, if at all, to how many runs a set requires and to how the rank treats near-equal scores.
+      <advantage>Keeps the table at its twelve columns and the analysis at one number per cell, and adds no statistic whose meaning at a small run count would itself need explaining.</advantage>
+      <drawback>Leaves the gap exactly as the report found it: a reader still cannot tell a margin from noise, and the page&apos;s headline reading (several Cairn rows above the best manual row) rests on means of unstated variability; whether that is tolerable depends on the axes the runs-per-scenario and rank-tie siblings settle.</drawback>
+    </alternative>
+    <alternative id="Range beside every score">
+      Each score cell of the README ranking table (overall, the three axes, and the lost count) carries the minimum and maximum over the scenario&apos;s runs beside its mean, written in the cell as, for example, 82 (76–88), each run counted as one phase-1 run with its phase-2 child, whose two prompt scores are averaged as the scenario mean is; the analysis output carries the same ranges and every run&apos;s individual scores. Cost, time, invocations, and sessions stay means without spread, and the radar draws means only.
+      <advantage>A descriptive range needs no distributional assumption, is honest at any run count of two or more, and puts the variability on the landing page in the same cell a reader is already comparing, with no new column.</advantage>
+      <drawback>A range says how far runs scattered, not whether two means differ, so overlapping ranges are read as a tie by eye with no stated rule, and the range widens with every added run; a row resting on one run shows no range at all, which depends on the run count the runs-per-scenario sibling sets.</drawback>
+    </alternative>
+    <alternative id="Range beside every number">
+      As the range option, the minimum and maximum over the scenario&apos;s runs written in the cell beside each mean, but on every numeric cell of the README ranking table: the overall, the three axes, and the lost count, and also cost in dollars, wall-clock time, and attentive sessions; invocations made over planned stays as it is, and the radar draws means only. The analysis output carries the same ranges and every run&apos;s individual values.
+      <advantage>Puts cost and time under the same scrutiny as quality, so the page&apos;s rule that a quality win is read beside its cost holds for the cost&apos;s variability too, which matters most for Cairn, whose long chains are where a runaway or retried run inflates one run&apos;s cost.</advantage>
+      <drawback>Every cell of an already twelve-column table doubles in width, and the cost spread answers a question the report did not raise; it shares the range option&apos;s limits, a range that is not a test and empty at one run, the latter depending on the runs-per-scenario sibling.</drawback>
+    </alternative>
+    <alternative id="Confidence interval beside every score">
+      Each score cell of the README ranking table (overall, the three axes, and the lost count) carries a 95% confidence interval on its mean beside the mean, computed over the scenario&apos;s runs (each a phase-1 run with its phase-2 child), by a method the draft names once (a bootstrap over runs or a t-interval); the analysis output carries the same intervals and every run&apos;s individual scores. Cost and time stay means, and the radar draws means only.
+      <advantage>An interval on the mean speaks to the question the reader actually has, how precisely each row&apos;s score is known, and two rows whose intervals do not overlap differ by more than noise under a conservative reading.</advantage>
+      <drawback>At the small run counts an expensive Cairn chain affords, a t-interval is very wide and a bootstrap over a handful of runs is unstable or degenerate, so the method and a minimum run count must be stated, which ties this option to the runs-per-scenario sibling; overlapping per-row intervals also understate significance compared with an interval on the difference.</drawback>
+    </alternative>
+    <alternative id="Interval on the margin">
+      The per-score premise is rejected: instead of a spread beside each score, the README ranking table gains one column holding, for every row, the difference between its overall score and the overall of a stated reference row (the best manual row) with a 95% interval on that difference over the two scenarios&apos; runs; the per-axis differences with their intervals, and every run&apos;s individual scores, go in the analysis output. The score cells and the radar stay means.
+      <advantage>Answers exactly the comparison the page exists to make, whether a Cairn row stands above the best manual row by more than noise, in one column, with a single interval per row that is tighter and more honest than reading two per-row intervals for overlap.</advantage>
+      <drawback>Says nothing about the noise between two Cairn rows or two manual rows, ties the column&apos;s meaning to which row is the reference, and needs the same minimum run count and named method as any interval, depending on the runs-per-scenario sibling.</drawback>
+    </alternative>
+    <alternative id="Spread on overall only">
+      Only the overall score cell of the README ranking table carries the spread beside its mean (the minimum and maximum over the scenario&apos;s runs, each a phase-1 run with its phase-2 child); the three axis cells, the lost count, cost, and time stay means on the page, and the analysis output carries the spread of every score and every run&apos;s individual scores. The radar draws means only.
+      <advantage>Shows the variability of the one number the rank orders by, where a reader&apos;s ordering judgment is made, while keeping the table nearly as compact as it is now.</advantage>
+      <drawback>The axis cells, where the expected gain sits (the hidden axis rests on two checks per run and is the noisiest), stay bare on the page, so the per-axis reading the radar invites is still made without any measure of noise; a range is also empty at one run, depending on the runs-per-scenario sibling.</drawback>
+    </alternative>
+    <alternative id="Spread in analysis output only">
+      The README ranking table stays as it is, means and the runs column, with one line under it linking the analysis output; the analysis output carries every run&apos;s individual scores per scenario and, beside every mean, both its minimum-to-maximum range and its 95% confidence interval over the scenario&apos;s runs. The radar draws means only.
+      <advantage>Keeps the landing page compact and readable while putting the full record a careful reader needs one link away, with the raw per-run values that let them compute any statistic of their own.</advantage>
+      <drawback>The reader the page is written for, who reads the table and leaves, still cannot tell a margin from noise on the page itself, and a headline of Cairn rows standing above manual ones is shown without the qualification that might undo it; the interval&apos;s usefulness depends on the runs-per-scenario sibling.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Rank tie threshold">
     <question>The rank orders scenarios by overall score and breaks ties by cost, with no threshold below which two scores count as equal, so a difference within noise still orders two rows. Is there a margin under which two overall scores tie and cost decides?</question>
