@@ -1,34 +1,4 @@
 <open-questions>
-  <open-question id="Gaps report fate">
-    <question>Every gap in ideas/benchmark_design_gaps.md is to end as a decision in the draft, and the report&apos;s Where references are line numbers that shift with every edit of the draft. What happens to the report once its gaps are resolved?</question>
-    <applied-principle>Description over retirement note</applied-principle>
-    <recommendation option="Delete once resolved">The draft states every decision with its reason and this milestone&apos;s record maps each gap to it, so the dated report with its stale line numbers adds nothing a reader needs and stays reachable in history; one document in ideas/ is what hands to the benchmark repository.</recommendation>
-    <alternative id="Delete once resolved">
-      Remove ideas/benchmark_design_gaps.md in this milestone, as its last change once every gap has been written into the draft as a decision. Nothing about the report survives in the working tree: it stays reachable only in git history from aeb280a, and the draft is the single home of every decision and of the reason for every adopted, adapted, or rejected fix.
-      <advantage>Leaves exactly one document in ideas/ for the benchmark, so no reader can mistake a list of open gaps or a stale line reference for the current design, and nothing remains to keep in step with later edits of the draft.</advantage>
-      <drawback>The review that drove the milestone, including the proposed fixes the draft rejected, is visible only through git history; the milestone&apos;s Goal goes on naming a file that no longer exists in the tree, and anyone later asking why the draft took a given shape has to reconstruct the gap-to-decision mapping from commits.</drawback>
-    </alternative>
-    <alternative id="Keep untouched">
-      Leave the report exactly as committed in aeb280a, with no edit in this milestone: its header already names the draft commit 8d93140 its line references point into, so it stands as a dated snapshot of the review. Any later decision about it, such as when the benchmark moves into its own repository, is left to that later time.
-      <advantage>Costs nothing and keeps an honest, unaltered record of what the full read found and proposed, its line references still exact against the commit it names.</advantage>
-      <drawback>Beside the finalized draft it still reads as eighteen open problems with no sign that they were resolved or how, and a reader who misses the header&apos;s commit pin follows line numbers into the wrong parts of the live draft.</drawback>
-    </alternative>
-    <alternative id="Annotate as resolved snapshot">
-      Keep the report as a dated snapshot whose line references stay pinned to 8d93140 (stated as such at its top), and add to it a closing resolution record: for each of the eighteen gaps one line saying whether its fix was adopted, adapted, or rejected and naming the draft section where the decision now lives, by section heading rather than line number. Gaps found on the way are recorded in the draft only, not added to the report.
-      <advantage>Preserves the review as evidence while making its status unmistakable, and gives a reader a stable map from each gap to the decision that closed it without touching the report&apos;s original findings.</advantage>
-      <drawback>The resolution lines restate in a second file what the draft already says with its reasons, so a later revision of the draft can leave them pointing at a heading that moved or a decision that changed; writing them adds one more task to the milestone.</drawback>
-    </alternative>
-    <alternative id="Keep as living document">
-      Keep the report and maintain it alongside the draft: rewrite every Where reference from a line number to a section heading of the live draft, add each gap&apos;s resolution and the draft section holding it, and add any further gap found during the milestone as a new numbered entry, so the report remains a current index of the draft&apos;s reviewed decisions.
-      <advantage>The only option whose references stay valid as the draft keeps changing, giving one complete, current register of every gap the milestone resolved, the ones found on the way included.</advantage>
-      <drawback>Turns a dated review into a second document that every later edit of the draft must keep in step, roughly doubling the upkeep of the design, and it loses the record of what the draft looked like when the review was made.</drawback>
-    </alternative>
-    <alternative id="Fold into draft and delete">
-      Move the gap-to-decision record into the draft itself as a short closing section listing each gap of the 2026-10-26 review, and any found on the way, with the section where it was resolved and whether the fix was adopted, adapted, or rejected; then remove ideas/benchmark_design_gaps.md, leaving the draft as the one file in ideas/ for the benchmark.
-      <advantage>Keeps the traceability from review to decision while leaving a single document, one that carries that history with it when the design moves to the benchmark&apos;s own repository.</advantage>
-      <drawback>Puts review history, which says nothing about how to build or run the benchmark, into a design document meant to be ready for implementation, lengthening an already 572-line draft; the report&apos;s original reasoning for each gap survives only in git history.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Stale Cairn facts">
     <question>The draft&apos;s examples name Cairn 1.8.3 and a host binary 2.1.283 while this repository&apos;s VERSION reads 1.9.0, and it says docs/design-claims.md states that only one claim is tested where that document now says two. Are such facts refreshed to the current state in this milestone, or rewritten so the draft no longer states a fact that moves?</question>
     <applied-principle>Description over retirement note</applied-principle>

@@ -124,5 +124,9 @@ The README page keeps a generated list of superseded complete comparison sets, e
 
 In phase n the operator receives prompts 1 to n, taken byte-identical from the versioned prompt texts the manifest records, at every reactive turn and at the assess delivery's planned turn; the earlier prompts are marked as the stakeholder's earlier requests and prompt n as the current one. Its hidden knowledge stays phase n's statements only, so each prompt's measurement stays its own. The draft's sentence on the operator's input changes from "the prompt text as committed" to the prompts up to the current phase, and no versioning changes, because a revision of prompt 1 already invalidates both phases.
 
+### Gaps report fate
+
+ideas/benchmark_design_gaps.md is removed in this milestone, as its last change once every gap has been written into the draft as a decision. Nothing about the report survives in the working tree: it stays reachable only in git history from aeb280a, and the draft is the single home of every decision and of the reason for every adopted, adapted, or rejected fix, so one document in ideas/ is what hands to the benchmark repository.
+
 ## Out of Scope
 
