@@ -302,6 +302,41 @@
   </open-question>
   <open-question id="Invocation time limit">
     <question>No scenario invocation carries a time or turn limit while the rater has one, so a runaway session can hold a run open indefinitely. Does each invocation get a time or turn limit, and how is an invocation that hits it classified?</question>
+    <alternative id="No invocation limit">
+      Scenario invocations keep running with no time, turn, or spend limit, per invocation or per run, as the draft&apos;s one-run procedure now stands. A session ends only by itself or by a failed call, its wall-clock duration is recorded in the manifest as today, and no limit-hit end class exists.
+      <advantage>Adds no parameter to the design and cuts no scenario short. A slow invocation, most likely Cairn&apos;s long task-completion line, can never be stopped by a ceiling set too low, so no score depends on where the ceiling was set.</advantage>
+      <drawback>A runaway or hung session holds its run, and any campaign waiting behind it, open indefinitely. The only way to end it is a person killing the process, which breaks the draft&apos;s rule that nothing about a run is done by hand, and the kill leaves an end that no rule classifies.</drawback>
+    </alternative>
+    <alternative id="Wall-clock backstop as result">
+      The harness kills each claude -p process after a fixed wall-clock ceiling. This covers the first-form invocation and each operator-reply resume, each process timed on its own. The ceiling is set generously, well above the longest normal invocation (for example a stated multiple of a pilot&apos;s longest), and declared as a shared input of the comparison set. A kill stops the chain and is recorded in the manifest as its own end class (time limit). The run is then scored like any other early stop: a result, rated on the tree it left.
+      <advantage>Bounds every run with one harness-side mechanism that needs no host flag and catches hangs as well as loops. It rarely binds, so it does not shape scores, and it fits the draft&apos;s existing rule that an early stop is a result, not a failed measurement.</advantage>
+      <drawback>Wall-clock time also depends on API speed and the network, so a hit can come from a stalled connection rather than the model, and counting it as a result scores an outside slowdown against the scenario. Cairn&apos;s long invocations are the most exposed to this.</drawback>
+    </alternative>
+    <alternative id="Wall-clock backstop as infrastructure">
+      The same generous per-process wall-clock ceiling, declared as a shared input of the comparison set and enforced by the harness, but a kill is classified as an infrastructure failure, not a behavioural stop. It is recorded under that end class and handled by whatever the benchmark does with infrastructure failures, so it is not scored as the scenario&apos;s result.
+      <advantage>A scenario is not penalised for a session held open by something outside the model, such as a stalled API or network. That keeps the bias the gaps report raises (Cairn, the heaviest spender, being the likeliest to hit external limits) out of the scores.</advantage>
+      <drawback>A genuine model runaway, such as a loop that never converges, also gets treated as an infrastructure failure, which hides a real behavioural failure mode and can reward it with a retry. What a hit costs depends on the axis the infrastructure-failure question owns.</drawback>
+    </alternative>
+    <alternative id="Spend or turn cap as result">
+      Each invocation runs under a fixed cap the host enforces in the model&apos;s own terms: a dollar budget (claude -p&apos;s --max-budget-usd) or a cap on agentic turns where the host offers one. The cap is set generously and declared as a shared input of the comparison set, and there is no wall-clock ceiling. Reaching the cap is a behavioural early stop, recorded in the manifest under a limit end class and rated on the tree left.
+      <advantage>A cap counted in spend or turns does not depend on API or network speed, so a hit always reflects what the model did. Classifying it as a result is then sound. It is also one parameter that is easy to state and to reproduce.</advantage>
+      <drawback>It does not bound a hang that spends nothing, such as a stalled connection or a blocked tool call, so the indefinitely-open run the question raises remains possible. It also depends on a host flag whose scope over dispatched subagents must be confirmed, and that flag is recorded per host rather than enforced by the harness.</drawback>
+    </alternative>
+    <alternative id="Spend cap plus wall-clock backstop">
+      Two generous limits per claude -p process, both declared as shared inputs of the comparison set. The first is a host-enforced spend or turn cap; reaching it is a behavioural early stop, recorded and rated on the tree left. The second is a harness wall-clock ceiling set above anything the spend cap allows in normal operation; a kill there is classified as an infrastructure failure and handled by the infrastructure-failure policy. The manifest records which limit ended the invocation.
+      <advantage>Sorts the two ways a session runs away by mechanism, not by judgment: a model that keeps working hits the spend cap and is scored, and a session that stalls hits the clock and is not. This bounds every run without scoring outside slowdowns against a scenario.</advantage>
+      <drawback>Two parameters to set, declare, and justify instead of one, plus a dependence on a host flag whose coverage of subagents must be confirmed. Handling of the clock hit depends on the axis the infrastructure-failure question owns.</drawback>
+    </alternative>
+    <alternative id="Binding equal budget">
+      A deliberately tight per-invocation limit, in time or spend, that is the same for every scenario and chosen to bind rather than to catch only runaways. Reaching it is an early stop rated on the tree left, so the benchmark measures quality reached within a fixed resource budget.
+      <advantage>Answers the question of which approach does best when given the same resources, a comparison a reader can take at face value without weighing cost separately.</advantage>
+      <drawback>Turns the cost the draft reports beside quality into a constraint on quality. The draft states that Cairn is expected to cost more and that the benchmark reports by how much, so this would systematically cut Cairn&apos;s heaviest lines short and score that against it, and the scores would then depend on where the budget was set.</drawback>
+    </alternative>
+    <alternative id="Per-run deadline">
+      A single wall-clock ceiling on the whole run (every invocation, reply, and operator turn of one prompt&apos;s chain), declared as a shared input of the comparison set, with no per-invocation limit. When the deadline passes the harness kills the running process and stops the chain. The run is recorded with a deadline end class and rated on the tree left as an early stop.
+      <advantage>One number bounds every run&apos;s total duration, and with it the length of a campaign, without having to size a ceiling for each kind of invocation.</advantage>
+      <drawback>Chains differ greatly in length, from the single manual message to Cairn&apos;s eleven or more lines, so one deadline either binds Cairn or is slack for manual. It also lets a runaway early invocation use up the time of every later line, so the stop shows up at a line that did nothing wrong.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Rater calibration gate">
     <question>A new rating writes new browser tests for every checklist line, so two ratings of one artifact can test the same line at different strictness, and the draft&apos;s claim that a second rating gets the same number holds only for re-running an existing test. What must a rater version pass before it may rate a comparison set, and what is the acceptance rule?</question>
