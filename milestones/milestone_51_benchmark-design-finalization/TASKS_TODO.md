@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Review Skill Prints Fixed Convergence Line
-
-Give `review-milestone-requirements` a fixed, identifier-free convergence line, printed as its convergence verdict when its closing `list` is empty, as the exit signal the benchmark's bounded review loop matches in the invocation's final message, and spell the line in `docs/skill-reference.md` beside the skill's other fixed lines so the listed-line test pins it. Change it under `core/`, rebuild the hosts, and verify with `uv run scripts/build_hosts.py --check` and both pytest runs green.
-
----
-
 ## Align Usage Docs With Model Strategy
 
 Rewrite `docs/ways-of-using-cairn.md` to the draft's `models_strategy_1` allocation, the `sonnet` alias at `medium` for the init, define, goto, and finish lines, `fable` at `xhigh` for the starting-state, review, recommend, and derive lines, and `opus` at `high` for `complete-all-tasks`, with the alternatives, sweep, and hand-answer lines unchanged and every prose sentence that restates a section's settings rewritten to match, so the draft's "written from Cairn's own usage snippets" sentence becomes true. This is a docs-only change needing no host rebuild, verified by reading each chain line against the draft's table.

@@ -3,7 +3,9 @@ checked against the committed host trees: each listed line stands verbatim in th
 of every source its row names, in every tree, as a whole line of a fenced block or as a whole
 inline code span, and no line is listed twice. A stop a shared procedure owns is one row under
 that procedure, and a success line several skills share is one row naming them all, so the check
-that no line repeats is also the check that no two conditions share a line. The lines are a
+that no line repeats is also the check that no two conditions share a line. Besides each
+success, no-op, and stop line, the table lists the review's convergence verdict line, printed
+below its still-open list rather than as the first line. The lines are a
 contract a harness matches a headless run's final message against, so a skill file and its row
 change together or this test fails. The test only reads files, so it runs under both
 interpreters."""
@@ -17,7 +19,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 REFERENCE = REPO_ROOT / "docs" / "skill-reference.md"
 HOSTS = REPO_ROOT / "hosts"
 SECTION = "## Fixed console lines"
-KINDS = ("success", "no-op", "stop")
+KINDS = ("success", "no-op", "stop", "verdict")
 
 CODE_SPAN = re.compile(r"`([^`]+)`")
 BACKTICK_RUN = re.compile(r"`+")

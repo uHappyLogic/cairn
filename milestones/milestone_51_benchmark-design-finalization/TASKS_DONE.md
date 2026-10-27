@@ -28,3 +28,18 @@ Give every skill a fixed, unique, identifier-free first line for each distinct n
 - `uv run pytest` passes (1054 passed) and `uv run --no-project --python 3.9 --with pytest pytest` passes (1050 passed, 1 expected skip), the new test passing in both.
 
 ---
+
+## Review Skill Prints Fixed Convergence Line
+
+Give `review-milestone-requirements` a fixed, identifier-free convergence line, printed as its convergence verdict when its closing `list` is empty, as the exit signal the benchmark's bounded review loop matches in the invocation's final message, and spell the line in `docs/skill-reference.md` beside the skill's other fixed lines so the listed-line test pins it. Change it under `core/`, rebuild the hosts, and verify with `uv run scripts/build_hosts.py --check` and both pytest runs green.
+
+**Verified:**
+
+- `core/skills/review-milestone-requirements/SKILL.md` step 6 makes the convergence verdict, when the closing `list` prints nothing, exactly one fixed identifier-free line shown as a whole fenced-block line, `Requirements converged — ready for task derivation.`, printed on a reshaping pass and a no-op pass alike and never when `list` printed anything; the not-ready verdict is unchanged
+- `docs/skill-reference.md`'s `## Fixed console lines` table lists the line in a `review-milestone-requirements` row of kind `verdict` beside the skill's success and no-op rows, the section's opening paragraph says it is the one listed line printed below a first line and matched as a review loop's exit signal, and the skill's own entry points at it
+- `tests/test_fixed_console_lines.py` accepts the `verdict` kind and pins the line: it passes against all three rendered host trees and failed when the listed row was mutated, the uniqueness check passing with the line added
+- The `CLAUDE.md` terse-reporting invariant states the convergence line, when it prints, and its reason (the bounded loop's exit signal), and names it as the table's one verdict line
+- `uv run scripts/build_hosts.py` rebuilt the three host trees, each rendering the line in its `review-milestone-requirements/SKILL.md`, and `uv run scripts/build_hosts.py --check` passes
+- `uv run pytest` passes (1056 passed) and `uv run --no-project --python 3.9 --with pytest pytest` passes (1052 passed, 1 skipped)
+
+---

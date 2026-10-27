@@ -162,7 +162,13 @@ Follow that terse line with only the two pieces of decision-critical state git n
 - **What's still open** — the Short Titles `list` printed, one per line. No nudge pointer.
 - **Convergence** — `/derive-tasks` requires that **no `<open-question>` block remains**, which is exactly an empty `list`. So:
   - If `list` printed anything → the requirements are **not** ready; the next loop step is to answer them, then re-run this skill.
-  - If it printed nothing → say explicitly that the requirements look **ready for `/derive-tasks`**.
+  - If it printed nothing → the requirements are **ready for `/derive-tasks`**, and the convergence verdict is exactly this one fixed line, printed as a whole line of its own and carrying no identifier:
+
+```
+Requirements converged — ready for task derivation.
+```
+
+Print that line whenever `list` printed nothing, on a pass that reshaped the requirements and on a no-op pass alike, and never when it printed anything.
 
 **No-op pass.** When the step-5 dirty-own-path guard fires — this pass reconciled, pruned, and surfaced nothing and found no note, so both files are unchanged and nothing was committed — do **not** print `Requirements reviewed.` Instead print, in its place, this one fixed line:
 
