@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Draft Rater Scope And Calibration Rules
-
-Rewrite the draft's rater section for the four rating decisions: the rater receives the entry file plus every file in the run's tree reachable from it by load or link, followed transitively, and nothing else; a not-proved verdict gets one more attempt by a fresh rater session under the same rater definition and only a second not-proved scores zero, the not-proved count counting survivors only; one randomly chosen run per scenario per prompt is re-rated blind under the same rater version with scores using the first rating only and no threshold applied; and a calibration set per prompt version, one reference artifact plus deliberately broken variants so every test line is failed by at least one and reference items for each reading line, with recorded verdicts, which a rater version must reproduce exactly through the normal rating path, a single mismatch refusing it, before it may rate the set. Verify by reading the section against the four decisions and gaps 7 and 8.
-
----
-
 ## Draft Comparison Set And Input Versioning
 
 Rewrite the draft's comparison-set, input, and trend text: a set is five versions (the seed tag, one prompt version per phase, the operator definition, the rater definition, and one pinned host CLI version the pre-flight refuses a run against when the installed one differs, a new rater version re-rating existing runs into a new set without re-running); it declares before its first scored run a roster holding at least the stated minimum scenarios and three phase-1 runs per scenario each with its own phase-2 child and no stopping rule; the checklist and hidden-requirement entries are frozen by blob hash before that run with a changed statement starting a new set and a changed check line a new rating version; a superseded set carries an authored one-line reason without which regeneration refuses; the trend restarts as a labeled segment on every input change with nothing re-run; and everything stays public with a canary, a dated contamination flag read from published training cutoffs, and a rotation rule. Verify by reading the text against the seven decisions and gaps 11, 12, 15, and 16.
