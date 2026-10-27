@@ -144,5 +144,9 @@ Confinement is by operating-system file permissions on the development Mac, with
 
 The run environment (OS and version, the tools on PATH with their versions, the installed browsers) is written as one environment definition under the inputs area, versioned by content under an id like the operator definition, and listed among the shared inputs. The pre-flight probes the live machine and refuses the run when it does not match the definition, the manifest records the definition's id, and a change to the definition starts a new comparison set. The run agent is told nothing beyond what the seed's CLAUDE.md already says, and the rater's browser stays in the rater definition as now.
 
+### Stop detection signal
+
+The harness detects a stop by matching the final message of each cairn chain invocation (the result of its JSON output, after any replies) against the delivery's per-line list of expected lines, the skill's fixed success line plus any no-op line whose wording is fixed; a message carrying none of them counts as a stop, so an allowlist catches every stop including ones no list anticipated. A detected stop ends the chain exactly as a non-zero exit does, so the pointer stays on milestone 1 as the phase-2 text assumes, and the manifest records the first stopping line (for example invocations.first_stop) with made counting the invocations actually run. The signal itself needs no change to Cairn.
+
 ## Out of Scope
 
