@@ -37,45 +37,6 @@
       <drawback>Chains differ greatly in length, from the single manual message to Cairn&apos;s eleven or more lines, so one deadline either binds Cairn or is slack for manual. It also lets a runaway early invocation use up the time of every later line, so the stop shows up at a line that did nothing wrong.</drawback>
     </alternative>
   </open-question>
-  <open-question id="Trend across input changes">
-    <question>The published trend follows per-scenario aggregates across comparison sets and plugin commits, so a change to the inputs and a change to the plugin are mixed in one line, against the rule that a difference is attributed only to what differs between definitions. How does the trend continue when a shared input changes?</question>
-    <recommendation option="Segment without re-run">Every segment obeys the attribution rule at no cost beyond the runs the release gate and development loop already make, and since the gate runs the previous release under the candidate&apos;s inputs each segment starts with at least that pair; back-catalogue re-runs would grow without bound.</recommendation>
-    <alternative id="Segment without re-run">
-      Nothing is re-run when a shared input changes. The trend restarts as a new segment under the new comparison set and grows only as later commits are benchmarked under it. Each segment is drawn on its own, with the input change that opened it labeled at the boundary, and no line crosses from one segment to the next. The release gate already runs the previous release under the candidate&apos;s inputs, so a new segment starts with at least that pair.
-      <advantage>It needs no runs beyond those the release gate and the development loop already make, and every segment still obeys the attribution rule, because a line never joins points taken under different inputs.</advantage>
-      <drawback>Each input change throws away the trend&apos;s history. If inputs change about as often as releases ship, segments stay two or three points long and the trend says little more than the release-gate comparison. How often that happens depends on the comparison-set definition a sibling owns.</drawback>
-    </alternative>
-    <alternative id="Re-run every release">
-      The trend is kept within one comparison set. When a shared input changes, every plugin commit already on the trend is re-run under the new set, so every point on the published line shares the same seed, prompts, operator, and every other shared input, and a step between two points can only come from the plugin. The previous set&apos;s trend is kept as an archived record and is never joined to the new one. This is the gaps report&apos;s proposed fix (gap 12).
-      <advantage>Every difference along the line comes from the plugin commit alone, which fully meets the draft&apos;s attribution rule (&quot;:7&quot;, &quot;:11&quot;), and the trend always shows the full release history under the current inputs, the best ones the benchmark has.</advantage>
-      <drawback>Each input change costs a full chain and a rater run for every release on the trend, times the runs each scenario needs, and that cost keeps growing as releases accumulate. Old commits may no longer run under a newer host CLI or model, and then they drop off the line anyway. How often this cost comes due depends on which versions define a comparison set, which a sibling question owns; a set keyed to an auto-updating CLI would trigger it often. Which scenarios each re-run covers depends on the roster, which another sibling owns.</drawback>
-    </alternative>
-    <alternative id="Re-run recent window">
-      When a shared input changes, a fixed number of the most recent releases (stated in the draft, for example the last two or three) is re-run under the new set. A new trend segment starts at the oldest re-run release. Older points stay in the previous segment, drawn as a separate line with the input change marked at the break, and no line ever crosses a segment boundary.
-      <advantage>Each segment stays fully attributable to the plugin, the re-run cost of each input change is bounded no matter how many releases exist, and the recent history most relevant to current development carries over into the new segment.</advantage>
-      <drawback>The long-range trend falls into segments that cannot be compared with each other, so the trend cannot show cumulative progress beyond the window. The window size is a judgment call the draft has to defend. The cost per input change is still several releases&apos; worth of runs, and it comes due as often as the comparison-set definition, owned by a sibling, starts a new set.</drawback>
-    </alternative>
-    <alternative id="Anchor-spliced line">
-      When a shared input changes, one anchor release (the latest on the trend) is re-run under the new set. The new segment is then shifted by the anchor&apos;s score difference between the old and new sets, so the published trend stays one continuous line. The splice point and the estimated input effect are stated on the line.
-      <advantage>It keeps one continuous long-range trend for the cost of a single release&apos;s re-run per input change, and unlike an unmarked join it measures the input effect and reports it instead of folding it silently into the plugin&apos;s line.</advantage>
-      <drawback>The splice assumes an input change shifts every commit&apos;s score by the same amount, which a new prompt, rater, or operator has no reason to do. Errors from successive splices add up along the line, and the anchor&apos;s shift is itself a difference of two noisy scores, as reliable as the runs per scenario a sibling question sets. The line therefore still mixes input and plugin effects, only less visibly, which goes against the attribution rule.</drawback>
-    </alternative>
-    <alternative id="Frozen trend set">
-      The trend gets its own comparison set whose shared inputs are pinned and never revised. Every release is benchmarked under that frozen set for the trend, alongside whatever newer set drives the README page&apos;s ranking and radar. Input revisions go only into the newer sets. A segment break happens only when a frozen input can no longer be run at all, for example a retired model.
-      <advantage>Every point on the trend shares identical inputs for as long as they stay runnable, with no back-catalogue re-runs, so the line is both continuous and fully attributable to the plugin.</advantage>
-      <drawback>Every release pays for a second campaign on the frozen set, and the trend keeps measuring against inputs the benchmark has already found worth fixing (a corrected prompt, a calibrated rater), so it can disagree with the current page. Model retirement and host CLI updates force breaks anyway. Whether the CLI can be pinned at all depends on the comparison-set definition a sibling owns.</drawback>
-    </alternative>
-    <alternative id="Annotated mixed line">
-      The trend stays as the draft has it: per-scenario aggregates followed across comparison sets and plugin commits as one line. Each input change is marked on the line with what changed, and the draft states that the trend is a descriptive history that attributes nothing, carving it out of the attribution rule.
-      <advantage>It costs no runs and no new machinery, and it keeps the longest unbroken view of how the scores moved over the benchmark&apos;s life.</advantage>
-      <drawback>A step at an input change cannot be split between plugin and inputs. Cairn&apos;s changelog links to the trend for each release, which invites exactly the attribution the carve-out disclaims, and the draft&apos;s own statement that a difference is attributed only to what differs between definitions then has a published exception.</drawback>
-    </alternative>
-    <alternative id="No published trend">
-      No trend across comparison sets or plugin commits is published. The README page keeps the current set&apos;s ranking and radar. Each release&apos;s changelog entry links instead to that release&apos;s gate comparison, the candidate against the previous release under the same inputs and model strategy. The &quot;Published trend&quot; use is removed from the draft, or deferred as a convention with the reason stated.
-      <advantage>It removes the confound entirely without adding cost, since the release gate already produces a within-set comparison for every release, which is the attributable form of what a trend would show.</advantage>
-      <drawback>The benchmark loses any long-range view of Cairn&apos;s progress across releases, so a reader or a grant reviewer can see only pairwise steps and the current standing, not whether the plugin has improved over time.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Hidden-requirement pilot">
     <question>Each hidden requirement&apos;s evidence must settle the question once asked while the prompt alone gives no reason to ask, and nothing has tested this: prompt 1&apos;s &quot;ten questions of its own&quot; may already invite the topic question, and prompt 2&apos;s &quot;keep them for the next party&quot; sits close to the export convention. What procedure and acceptance rule calibrate each prompt&apos;s hidden requirement before scored runs?</question>
     <recommendation option="Split unasked and asked arms">Each half of the calibration rule gets its own measurement and threshold, so a failure says whether to weaken or strengthen the evidence, where a bare met rate cannot tell asking from inferring; the asked arm&apos;s fixed question is the entry&apos;s declared bearing scope.</recommendation>
@@ -185,7 +146,6 @@
   </open-question>
   <open-question id="Public inputs leak">
     <question>The benchmark&apos;s main branch is public, so the hidden requirements, the operator records, and every artifact are public and future models will train on them, wearing down the no-canned-solution requirement over time. How does the benchmark limit or account for its inputs and results leaking into training data?</question>
-    <depends-on question="Trend across input changes" option="Segment without re-run"/>
     <depends-on question="Hidden-requirement pilot" option="Split unasked and asked arms"/>
     <recommendation option="Flag then rotate inputs">The only fully open option that keeps the hidden axis meaningful indefinitely: the canary and dated flag make erosion visible, and rotation is the stated response when it fires; current frontier cutoffs predate the draft, so the first sets run unflagged.</recommendation>
     <alternative id="Flag then rotate inputs">

@@ -152,5 +152,9 @@ The harness detects a stop by matching the final message of each cairn chain inv
 
 A calibration set per prompt version is a shared input: one reference artifact that meets every checklist line, plus deliberately broken variants each built to fail a known set of lines, so that every test line is failed by at least one variant, and reference items with clear-cut verdicts for each reading line. Every artifact has a recorded verdict for every line, and the set is frozen beside the checklist version a comparison set uses. Before it may rate that set, a rater version rates every calibration artifact once through the normal rating path, writing fresh tests that the harness runs. The acceptance rule is exact: every verdict must match the recorded one, a not-proved verdict counts as a mismatch, and a single mismatch refuses the version, which is changed (guideline, model, effort, or budget) and calibrated again as a new rater version. The calibration ratings and their tests are committed as the version's evidence.
 
+### Trend across input changes
+
+Nothing is re-run when a shared input changes. The published trend restarts as a new segment under the new comparison set and grows only as later commits are benchmarked under it. Each segment is drawn on its own, with the input change that opened it labeled at the boundary, and no line crosses from one segment to the next. Because the release gate already runs the previous release under the candidate's inputs, a new segment starts with at least that pair, so every segment obeys the attribution rule at no cost beyond the runs the gate and the development loop already make.
+
 ## Out of Scope
 
