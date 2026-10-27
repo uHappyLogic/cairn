@@ -5,7 +5,7 @@ description: Mark the current milestone as done, recording its accomplishments i
 
 # finish-current-milestone
 
-Wraps up the current milestone — verifies all tasks are done, records accomplishments in `milestones/README.md`, clears the current-milestone pointer to "none" in `milestones/README.md` when it names the finished milestone, and updates `{{CONTEXT_FILE}}` only if the milestone introduced lasting changes to the project's environment context. It creates or modifies no files in `<MILESTONE_DIR>/`, and it never invokes `/capture-milestone-principle-updates`. Run this when all tasks are complete. After this, run `/define-milestone-goal` to define the next milestone, then `/goto-next-milestone` to activate it.
+Wraps up the current milestone — verifies that no open question stands and all tasks are done, records accomplishments in `milestones/README.md`, clears the current-milestone pointer to "none" in `milestones/README.md` when it names the finished milestone, and updates `{{CONTEXT_FILE}}` only if the milestone introduced lasting changes to the project's environment context. It creates or modifies no files in `<MILESTONE_DIR>/`, and it never invokes `/capture-milestone-principle-updates`. Run this when every open question is answered and all tasks are complete. After this, run `/define-milestone-goal` to define the next milestone, then `/goto-next-milestone` to activate it.
 
 ## Usage
 
@@ -31,7 +31,25 @@ Read in parallel:
 
 ### 3. Verify the milestone is done
 
-Check that `<MILESTONE_DIR>/TASKS_TODO.md` contains no `##` sections. If tasks remain, stop and tell the user to complete them first (or move them to the next milestone).
+First check that no open question stands. Run
+
+```
+python3 {{PLUGIN_ROOT}}/tools/open_questions.py list <MILESTONE_DIR>
+```
+
+It prints the Short Title of every `<open-question>` block still in `<MILESTONE_DIR>/open_questions.xml`, one per line. If it prints nothing, proceed. If it prints anything, stop immediately, writing and committing nothing whatever `TASKS_DONE.md` holds, and output, with the printed lines as the bullets verbatim:
+
+```
+Cannot finish the milestone: the following open questions must be resolved first:
+- <Short Title>
+- ...
+
+Run /answer-open-question for each one, then re-run /finish-current-milestone.
+```
+
+If the call fails, its one `Error: <reason>` line on stderr is the report: print it and stop. This `list` call is the whole check — never read `open_questions.xml` to make it yourself.
+
+Then check that `<MILESTONE_DIR>/TASKS_TODO.md` contains no `##` sections. If tasks remain, stop and tell the user to complete them first (or move them to the next milestone).
 
 ### 4. Compose the completion summary
 

@@ -90,7 +90,7 @@ Answers a free-form, informational question about the current milestone — its 
 
 ### `finish-current-milestone [--milestone <milestone_id>]`
 
-Verifies all tasks are done, writes a completion summary to `milestones/README.md`, and updates `CLAUDE.md` only for lasting changes to the project's environment context. Clears the current-milestone pointer — run `/define-milestone-goal` to define the next milestone, then `/goto-next-milestone` to activate it.
+Verifies that no open question stands and all tasks are done, stopping with nothing written while the open-question tool's `list` prints any block, whatever `TASKS_DONE.md` holds, then writes a completion summary to `milestones/README.md`, and updates `CLAUDE.md` only for lasting changes to the project's environment context. Clears the current-milestone pointer — run `/define-milestone-goal` to define the next milestone, then `/goto-next-milestone` to activate it.
 
 ### `goto-next-milestone`
 

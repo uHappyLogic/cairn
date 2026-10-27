@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Finish Stops On Standing Open Questions
-
-Make `finish-current-milestone` stop, writing and committing nothing, when the milestone's `open_questions.xml` still holds any question block, checked through the open-question tool's `list` call, whatever `TASKS_DONE.md` holds, with no check on completed tasks and no override flag, so a milestone whose derivation was refused on standing questions can no longer be closed empty while a decision-only milestone that answered everything still closes. Change it under `core/`, rebuild the hosts, and verify with `uv run scripts/build_hosts.py --check` and both pytest runs green.
-
----
-
 ## Fix Every Skill's No-Op And Stop Lines
 
 Give every skill a fixed, unique, identifier-free first line for each distinct no-op and precondition-stop condition, with variable detail allowed after it, as one plugin-wide convention extending the fixed-success-line invariant; list the lines in `docs/skill-reference.md`, extend the `CLAUDE.md` terse-reporting invariant to cover them, and add a pytest test that checks each listed line verbatim against the rendered skill files and that every line is unique. Verify by rebuilding the hosts and running `uv run scripts/build_hosts.py --check` and both pytest runs green with the new test passing.
