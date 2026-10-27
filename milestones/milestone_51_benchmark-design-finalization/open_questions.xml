@@ -1,38 +1,4 @@
 <open-questions>
-  <open-question id="Checklist line test specs">
-    <question>Each checklist line names a behaviour and nothing more, so a weak test (an undo button exists) and a strict one (the award is actually reversed) both satisfy it. Does each line carry a short specification of the case its test must drive and what it must assert?</question>
-    <recommendation option="Specs in the draft">The checklist is derived from the draft and nothing else, so the case each test must drive and the outcome it must assert belong beside the line at that one source, reviewed in the open now and frozen with the rest of the inputs.</recommendation>
-    <alternative id="Specs in the draft">
-      Every test line (prompt 1&apos;s six stated and thirteen implied lines, prompt 2&apos;s stated line and eleven implied lines, and prompt 2&apos;s carry-between-profiles hidden line) gets a short specification written now into the draft&apos;s project section beside the line. The specification names the case the test must drive the artifact into and the observable outcome it must assert, stated as an outcome rather than a means, so the &quot;any way through counts&quot; rule still holds: for the award line, award a point, take it back, and assert the score is back to its earlier value, with a confirmation that prevents the award counting as well. The specification becomes part of the checklist, which stays derived from the draft and nothing else, and keeps the line&apos;s id.
-      <advantage>Pins the strictness of every test line at the one source the checklist is already derived from, so two ratings of one artifact test the same case with the same assertion and the specs are reviewed in the open within this milestone.</advantage>
-      <drawback>Roughly thirty-two specs have to be written and agreed now, which lengthens the project section considerably, and an outcome stated too narrowly can fail a legitimate way through that the line&apos;s wording meant to accept.</drawback>
-    </alternative>
-    <alternative id="Spec form in draft, specs at implementation">
-      The draft adds the rule that every test line carries a specification of the case to drive and the outcome to assert, gives its form and one or two worked examples, and changes the derivation rule so the checklist is the draft&apos;s lines plus specifications authored in the benchmark repository&apos;s inputs area when the checklist is first built. The per-line specifications are not written in this milestone.
-      <advantage>Settles the design point (each line carries a spec) within the milestone&apos;s goal of finalizing the draft, without writing every spec before the harness, the rater, and an artifact to try them on exist.</advantage>
-      <drawback>The checklist stops being derived from the draft alone, and until the specs are written nothing pins strictness; whether they are fixed before scored runs depends on the input-freeze question.</drawback>
-    </alternative>
-    <alternative id="Specs in the rater definition">
-      The checklist lines stay behaviour-only as the draft has them; each test line&apos;s specification of the case to drive and the outcome to assert lives in the rater definition, beside its fixed rating guideline, so it is part of the rater version that every rating file names and the analysis groups by.
-      <advantage>A sharpened or corrected spec is a new rater version, never a change to the checklist, so line ids and the checklist&apos;s derivation stay untouched and ratings made under different specs never mix.</advantage>
-      <drawback>What a line means is split across two inputs, and a spec change regroups every earlier rating under an older rater version rather than being re-rated against the same checklist; how a rater version is gated depends on the rater-calibration question.</drawback>
-    </alternative>
-    <alternative id="Specs on ambiguous lines only">
-      Only the test lines where a weak and a strict test plainly diverge (an award taken back, a reload surviving, a skip keeping its place, a tie settled, edits not lost, the carry between profiles) get a short case-and-assertion specification in the draft&apos;s project section; the remaining lines stay behaviour-only.
-      <advantage>Spends the writing where the variance actually arises and keeps lines whose test has one obvious form, such as the file opening from disk, as short as they are.</advantage>
-      <drawback>Choosing which lines are ambiguous is itself a judgment, so a weak test the selection did not foresee still passes on an unspecified line.</drawback>
-    </alternative>
-    <alternative id="One strictness rule in the guideline">
-      No per-line specification. The rater&apos;s fixed rating guideline gains one general rule applied to every test line: a test must drive the artifact into the case the line names and assert the resulting state, never only the presence of a control, label, or button.
-      <advantage>Closes the named failure (a test that only finds an undo button) with one sentence that also covers lines added later, at no cost to the checklist&apos;s length.</advantage>
-      <drawback>Leaves to each rating what the resulting state is for each line, so two strict tests can still assert different outcomes and disagree on the same artifact.</drawback>
-    </alternative>
-    <alternative id="Lines stay as they are">
-      Nothing is added to the checklist lines or the rating guideline; a line keeps naming a behaviour only, and variance in test strictness is left to be caught by whatever checks of the rater the benchmark adopts.
-      <advantage>Keeps the checklist exactly as short and as derivable as it is now, and adds no input to write, freeze, or version.</advantage>
-      <drawback>Two ratings of one artifact can still test a line at different strictness, which also shows as lost or gained lines in phase 2 when nothing changed; whether that is caught at all depends on the rater-calibration and repeat-rating questions.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Not-proved scoring">
     <question>A test line the rater could not drive the artifact to scores zero like a missing behaviour, with the not-proved count reported beside the axis, which penalises an artifact a browser test finds hard to drive (a canvas-based UI) regardless of what a host could do with it. How is a not-proved line scored?</question>
     <recommendation option="Zero after re-attempt">Keeps the fixed denominator and the pass-or-fail line while removing the not-proved fails that are one session&apos;s bad luck, at the cost of a second rater session only on lines that failed to prove.</recommendation>
@@ -688,7 +654,6 @@
   </open-question>
   <open-question id="Rater calibration gate">
     <question>A new rating writes new browser tests for every checklist line, so two ratings of one artifact can test the same line at different strictness, and the draft&apos;s claim that a second rating gets the same number holds only for re-running an existing test. What must a rater version pass before it may rate a comparison set, and what is the acceptance rule?</question>
-    <depends-on question="Checklist line test specs" option="Specs in the draft"/>
     <recommendation option="Mutant set, one exact pass">A reference artifact with variants each built to fail known lines catches exactly the weak-test failure the question names with a rule that has one answer and no judgment, and with every line carrying a case-and-assertion spec an exact pass is reachable.</recommendation>
     <alternative id="Mutant set, one exact pass">
       A calibration set per prompt version is a shared input: one reference artifact that meets every checklist line, plus deliberately broken variants, each built to fail a known set of lines, so that every test line is failed by at least one variant. Each reading line gets reference items whose verdicts are clear-cut. Every artifact has a recorded verdict for every line. The set is frozen beside the checklist version a comparison set uses. Before it may rate that set, a rater version rates every calibration artifact once through the normal rating path, writing fresh tests that the harness runs. The acceptance rule is exact: every verdict must match the recorded one, and a not-proved verdict counts as a mismatch. A single mismatch refuses the version, which is changed (guideline, model, effort, or budget) and calibrated again as a new rater version. The calibration ratings and their tests are committed as the version&apos;s evidence.

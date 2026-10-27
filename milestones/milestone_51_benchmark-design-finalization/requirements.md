@@ -72,5 +72,9 @@ finish-current-milestone stops, writing and committing nothing, when the milesto
 
 One randomly chosen run of every scenario, for each prompt, is re-rated blind under the same rater version, so the sample grows with the roster at one repeat per scenario per prompt; scores use the first rating only. The per-line verdict agreement and the per-axis score difference are reported in one line beside the README ranking table, and the lost column carries a noise floor beside the mean lost count: the expected number of lines lost by rater disagreement alone, computed from the rate at which a line passing in one rating of an artifact fails in the other. No threshold is applied; a low agreement is published as it is.
 
+### Checklist line test specs
+
+Every test line gets a short specification written now into the draft's project section beside the line: prompt 1's six stated and thirteen implied lines, prompt 2's stated line and eleven implied lines, and prompt 2's carry-between-profiles hidden line. The specification names the case the test must drive the artifact into and the observable outcome it must assert, stated as an outcome rather than a means so the "any way through counts" rule still holds; for the award line, award a point, take it back, and assert the score is back to its earlier value, with a confirmation that prevents the award counting as well. The specification becomes part of the checklist, which stays derived from the draft and nothing else, and the line keeps its id.
+
 ## Out of Scope
 
