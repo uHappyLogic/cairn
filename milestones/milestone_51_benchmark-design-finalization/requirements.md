@@ -100,5 +100,9 @@ The delivery model gains a bounded loop: a named span of lines, review through s
 
 The harness substitutes the committed PROJECT.md text of the current phase into the cairn deliveries' define line, so each milestone records its own prompt verbatim under its Goal section and stays true after the file is overwritten. PROJECT.md is still written and committed under Prompt: <n> for every scenario, every manual delivery's message stays the pointer sentence, and the draft states this one substitution as the sole exception to the rule that no message carries prompt text. No scenario gains information by it, since every run finds the same committed text.
 
+### Comparison set definition
+
+A comparison set is defined by five versions: the seed tag, one version of each prompt per phase as the draft's "One versioning" rule already states, the operator definition, the rater definition, and one exact host CLI version. The host version is pinned: the set declares it, the harness switches off the host's auto-update for the campaign, and the pre-flight refuses a run whose installed host version differs. The rater version is part of the set's identity but the runs are not: a new rater version re-rates the existing runs, and those ratings form a new set over the same runs without re-running any scenario, so a rater fix costs a re-rating of immutable snapshots rather than a new campaign of runs.
+
 ## Out of Scope
 

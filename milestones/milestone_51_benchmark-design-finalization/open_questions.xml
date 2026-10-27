@@ -1,38 +1,4 @@
 <open-questions>
-  <open-question id="Comparison set definition">
-    <question>A comparison set is one seed tag and one version of each prompt, yet an operator change must also start a new set, the analysis groups by rater version, and the host CLI auto-updates across a campaign that spans several days. Which versions define a comparison set?</question>
-    <recommendation option="Pinned host, re-ratable">Every factor the draft already says changes results, operator, rater, and host included, is held fixed inside a set so a difference is attributable to the scenario definitions alone, while a rater fix costs a re-rating of immutable snapshots rather than a new campaign of token-heavy runs.</recommendation>
-    <alternative id="Pinned host, re-ratable">
-      A comparison set is defined by five versions: the seed tag, one version of each prompt (per phase, as the draft&apos;s &quot;One versioning&quot; rule already states), the operator definition, the rater definition, and one exact host CLI version. The host version is pinned: the set declares it, the harness switches off the host&apos;s auto-update for the campaign, and the pre-flight refuses a run whose installed host version differs. The rater version is part of the set&apos;s identity but the runs are not: a new rater version re-rates the existing runs, and those ratings form a new set over the same runs without re-running any scenario.
-      <advantage>Every factor the draft already says changes results is held fixed inside a set, so a difference within it can be attributed to the scenario definitions alone, as the draft&apos;s attribution rule requires, while a rater fix costs only a re-rating rather than a whole new campaign of Cairn&apos;s token-heavy runs.</advantage>
-      <drawback>It adds a pinning mechanism and a pre-flight check to the harness, and every host upgrade then starts a new set, so staying on a current host means re-running every scenario; how sets connect across such changes depends on the trend question, and when a set counts as complete depends on the roster question.</drawback>
-    </alternative>
-    <alternative id="Pinned host, campaign-bound rater">
-      A comparison set is defined by the seed tag, one version of each prompt per phase, the operator definition, the rater definition, and one exact host CLI version pinned as above (auto-update off, pre-flight refuses a mismatch). The rater version is bound to the campaign: runs are rated once, under the rater version of the set they were made for, and a new rater version is used only with a fresh set of runs, never to re-rate old ones.
-      <advantage>A set is one campaign with every version fixed from first run to last rating, which also keeps factors nobody records (server-side model behaviour, the date a run happened) as close together as they can be, and no run ever carries two ratings that a reader could pick between.</advantage>
-      <drawback>Any rater correction, even a fix to one weak test, requires re-running every scenario of the set, the costliest possible repair, and it gives a cheap re-rating no place to land; its weight depends on how often the rater calibration gate lets a rater version change.</drawback>
-    </alternative>
-    <alternative id="Recorded host, re-ratable">
-      A comparison set is defined by the seed tag, one version of each prompt per phase, the operator definition, and the rater definition; a new rater version re-rates the existing runs into a new set over the same runs. The host CLI version is not part of the set: it stays recorded in each manifest, as today, auto-update is left as it is, and the analysis reports which host versions a set&apos;s runs span beside its results.
-      <advantage>No pinning mechanism or pre-flight check is needed and runs always use the host as users actually receive it, while the factors the draft itself names as result-changing (operator, rater) are still held fixed within a set.</advantage>
-      <drawback>A campaign that spans several days can mix host versions inside one set, so a margin between two scenarios may partly reflect a host change one of them happened to run under, against the attribution rule; the record only lets a reader see the mixing after the fact, not exclude it.</drawback>
-    </alternative>
-    <alternative id="Recorded host, campaign-bound rater">
-      A comparison set is defined by the seed tag, one version of each prompt per phase, the operator definition, and the rater definition, with the rater bound to the campaign (runs are rated once, a new rater version only with a fresh set of runs). The host CLI version is recorded in each manifest only, not part of the set and not pinned, with the span of host versions reported beside the set&apos;s results.
-      <advantage>The set is the simplest operational unit, one campaign under one operator and one rater, with no host-control machinery and no question of which of two ratings of a run counts.</advantage>
-      <drawback>It combines the uncontrolled host drift inside a set with the full re-run cost of every rater correction, so it carries both the attribution risk of an unpinned host and the highest repair cost of the rater axis.</drawback>
-    </alternative>
-    <alternative id="Grouped host, re-ratable">
-      A comparison set is defined by the seed tag, one version of each prompt per phase, the operator definition, the rater definition, and the host CLI version, but the host version is not pinned: auto-update is left on, and the analysis groups runs by the host version their manifests record, so a host update mid-campaign splits the runs into two sets. A new rater version re-rates existing runs into a new set over the same runs.
-      <advantage>No result ever mixes host versions, as with pinning, yet the harness needs no control over the host&apos;s installation, only the manifest field it already writes.</advantage>
-      <drawback>An update arriving mid-campaign leaves a partial set that may never complete and forces the remaining scenarios, and possibly the finished ones, to be run again under the new version, so the timing of the host&apos;s release schedule decides how much of a campaign is wasted; what &quot;complete&quot; means for such a split set depends on the roster question.</drawback>
-    </alternative>
-    <alternative id="Grouped host, campaign-bound rater">
-      A comparison set is defined by the seed tag, one version of each prompt per phase, the operator definition, the rater definition, and the recorded host CLI version, with the host unpinned (an update splits the runs into a new set by their recorded version) and the rater bound to the campaign (runs rated once, a new rater version only with fresh runs).
-      <advantage>Every version a set depends on is held fixed without any host-control machinery, and each set remains a single campaign rated once, so there is never a choice between ratings or a mixed host inside a set.</advantage>
-      <drawback>Both kinds of change force fresh runs, a host update arriving on its own schedule and any rater correction alike, so it is the costliest option to keep current and the likeliest to leave sets incomplete.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Concurrent runs">
     <question>Phase 2 starts as soon as the parent&apos;s Run: commit exists, which implies runs in parallel, yet every run&apos;s pre-flight requires the benchmark checkout to be on a clean main and every run commits to it. Are runs sequential, or how do concurrent runs share the benchmark checkout?</question>
     <recommendation option="Sequential runs">Removes the contradiction with no new machinery: pre-flight, input reads, and the Run: commit stay as drafted, main has one writer by construction, no sibling clone exists while a run executes, and wall-clock is measured on an idle machine and account.</recommendation>
@@ -321,7 +287,6 @@
   </open-question>
   <open-question id="Execution environment input">
     <question>Nothing states what OS, tools on PATH, and browsers a run finds, though these shape what every scenario can build and what the rater can drive. Is the execution environment declared as a versioned shared input of a comparison set, recorded in the manifest only, or left unrecorded?</question>
-    <depends-on question="Comparison set definition" option="Pinned host, re-ratable"/>
     <recommendation option="Declared shared input">The environment shapes what every scenario can build, so it follows the rule every other result-shaping input already follows: declared by content, probed at pre-flight, and a change starting a new set, giving a re-run elsewhere a target instead of a guess.</recommendation>
     <alternative id="Declared shared input">
       The run environment (OS and version, the tools on PATH with their versions, the installed browsers) is written as one environment definition under the inputs area, versioned by content under an id like the operator definition, and listed among the shared inputs; the pre-flight probes the live machine and refuses the run when it does not match the definition, the manifest records the definition&apos;s id, and a change to the definition starts a new comparison set. The run agent is told nothing beyond what the seed&apos;s CLAUDE.md already says, and the rater&apos;s browser stays in the rater definition as now.
@@ -462,7 +427,6 @@
   </open-question>
   <open-question id="Trend across input changes">
     <question>The published trend follows per-scenario aggregates across comparison sets and plugin commits, so a change to the inputs and a change to the plugin are mixed in one line, against the rule that a difference is attributed only to what differs between definitions. How does the trend continue when a shared input changes?</question>
-    <depends-on question="Comparison set definition" option="Pinned host, re-ratable"/>
     <recommendation option="Segment without re-run">Every segment obeys the attribution rule at no cost beyond the runs the release gate and development loop already make, and since the gate runs the previous release under the candidate&apos;s inputs each segment starts with at least that pair; back-catalogue re-runs would grow without bound.</recommendation>
     <alternative id="Segment without re-run">
       Nothing is re-run when a shared input changes. The trend restarts as a new segment under the new comparison set and grows only as later commits are benchmarked under it. Each segment is drawn on its own, with the input change that opened it labeled at the boundary, and no line crosses from one segment to the next. The release gate already runs the previous release under the candidate&apos;s inputs, so a new segment starts with at least that pair.
@@ -541,7 +505,6 @@
   </open-question>
   <open-question id="Input freeze">
     <question>Each prompt&apos;s checklist is derived from the draft&apos;s project section, which no version pins, and nothing freezes the checklist and hidden requirements before a comparison set&apos;s first scored run. Are the checklist and hidden-requirement entries frozen before the first scored run of a set, and how?</question>
-    <depends-on question="Comparison set definition" option="Pinned host, re-ratable"/>
     <recommendation option="Gated freeze, re-rate">Pre-registers the checklist and hidden entries before any result exists with the harness enforcing it, and matches each correction to its cost: a run-side change the operator reads starts a new set, a rating-side line re-rates immutable snapshots.</recommendation>
     <alternative id="Gated freeze, re-rate">
       The checklist is materialized per prompt in the inputs area and committed with the hidden-requirement entries before a set&apos;s first scored run. Their blob hashes are fixed as frozen versions, and the harness refuses a scored run that does not match them. After the freeze, a changed hidden-requirement statement, which the operator reads, starts a new comparison set with fresh runs. A changed checklist line or hidden check line is issued as a new rating version that re-rates every artifact of the set. The earlier ratings and frozen version are kept, and the analysis never mixes versions.
