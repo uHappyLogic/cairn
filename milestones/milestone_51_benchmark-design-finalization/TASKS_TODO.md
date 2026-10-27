@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Draft Run Ending And Sequencing Rules
-
-Rewrite the draft's one-run procedure, manifest, and phase text so the harness classifies how each invocation ends and voids a run on the first infrastructure failure (recorded with a void marker naming cause and invocation, excluded from rating, never a phase-2 parent, replaced by a fresh run from the same parent, nothing retried, a distinct void line printed), detects a stop by matching each cairn invocation's final message against the delivery's per-line allowlist of fixed success and no-op lines with a detected stop ending the chain as a non-zero exit does and the first stopping line recorded as `invocations.first_stop`, sets no time, turn, or spend limit while recording wall-clock duration, runs strictly sequentially behind a run lock with the phase-2 start reworded as a queue-ordering rule, and only asserts a root `index.html` exists, recording a null entry otherwise with the hand-set exception removed. Verify by reading the procedure, the manifest, and the phase-2 text against the five decisions and gaps 5, 6, 8, and 13.
-
----
-
 ## Draft Rater Scope And Calibration Rules
 
 Rewrite the draft's rater section for the four rating decisions: the rater receives the entry file plus every file in the run's tree reachable from it by load or link, followed transitively, and nothing else; a not-proved verdict gets one more attempt by a fresh rater session under the same rater definition and only a second not-proved scores zero, the not-proved count counting survivors only; one randomly chosen run per scenario per prompt is re-rated blind under the same rater version with scores using the first rating only and no threshold applied; and a calibration set per prompt version, one reference artifact plus deliberately broken variants so every test line is failed by at least one and reference items for each reading line, with recorded verdicts, which a rater version must reproduce exactly through the normal rating path, a single mismatch refusing it, before it may rate the set. Verify by reading the section against the four decisions and gaps 7 and 8.
