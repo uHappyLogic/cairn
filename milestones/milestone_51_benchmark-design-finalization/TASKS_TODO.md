@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Draft Prompt Texts And Hidden Entries
-
-Revise the draft's two prompt texts and hidden-requirement entries: prompt 1 asks for the single self-contained HTML file as `index.html` at the repository root and prompt 2 states the game stays reachable from that file; prompt 1's entry gains the animal classification rule (a question is about an animal when the number it asks for counts animals or measures an animal or an animal kind, its body, lifespan, diet, speed, offspring, or behaviour, and anything else fails, the zoo's own operations included) with the Riverside Zoo animal count passing and the visitor count failing as worked verdicts; and its check line is reworded from "the ten questions" and "out of ten" to every question a game can ask, scored as the animal items over the items scaled to 100 under the general reading-line rule with no special case. Verify by reading the prompts and entries against the three decisions, with the reading-line definition and the hidden-axis example left as they stand.
-
----
-
 ## Draft Bounded Loop And Clarify Delivery
 
 Rework the draft's scenarios and phases sections so the delivery model gains a bounded loop (a named span of lines, review through sweep, repeated up to a count K declared in the delivery's definition, exited when the harness matches the review skill's fixed convergence line, used by both cairn deliveries with the assess planned turn in the first pass only, continuing to the derivation line with no escalation when K passes end unconverged, and unrolled to K in the multi-prompt mirror), a clarify-then-build manual delivery joins as the fifth primary delivery with its own family (a listing invocation, a planned operator turn under the same disclosure rule answering into the resumed session, then the pointer-sentence build in that session with the manual scenario knowledge), and the harness substitutes the current phase's committed PROJECT.md text into the cairn deliveries' define line as the sole stated exception to the rule that no message carries prompt text, each with the reason for gaps 2, 9, and 10. Verify by reading the delivery definitions, chain listings, and phase descriptions against the three decisions, with the `models_strategy_1` table and its usage-snippets sentence left as they stand.
