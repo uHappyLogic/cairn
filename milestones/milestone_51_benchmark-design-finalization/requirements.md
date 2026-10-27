@@ -136,5 +136,9 @@ The draft separates illustration from claim throughout: concrete example values 
 
 The benchmark adds a clarify-then-build manual delivery as a fifth primary delivery with its own README table rows: a listing invocation in which the model lists the questions it needs answered, a planned operator turn under the same disclosure rule answering into the resumed session, then the pointer-sentence build instruction in that session, with the manual scenario knowledge. It gets its own family and its own radar curve, raising the radar from four curves to five, so the page shows what a planned turn buys without Cairn and what Cairn adds when both have one.
 
+### Filesystem reach of runs
+
+Confinement is by operating-system file permissions on the development Mac, with no container and no second machine. Every invocation runs as a dedicated unprivileged benchmark user; the benchmark checkout and the maintainer's home are unreadable to it, each clone is created owned by that user with no group or other access, and the user's own home holds its own host configuration and projects directory. Isolation between runs relies on that user's state per run: other clones and earlier transcripts are moved out of its reach or deleted before the next invocation.
+
 ## Out of Scope
 
