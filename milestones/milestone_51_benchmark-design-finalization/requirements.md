@@ -148,5 +148,9 @@ The run environment (OS and version, the tools on PATH with their versions, the 
 
 The harness detects a stop by matching the final message of each cairn chain invocation (the result of its JSON output, after any replies) against the delivery's per-line list of expected lines, the skill's fixed success line plus any no-op line whose wording is fixed; a message carrying none of them counts as a stop, so an allowlist catches every stop including ones no list anticipated. A detected stop ends the chain exactly as a non-zero exit does, so the pointer stays on milestone 1 as the phase-2 text assumes, and the manifest records the first stopping line (for example invocations.first_stop) with made counting the invocations actually run. The signal itself needs no change to Cairn.
 
+### Rater calibration gate
+
+A calibration set per prompt version is a shared input: one reference artifact that meets every checklist line, plus deliberately broken variants each built to fail a known set of lines, so that every test line is failed by at least one variant, and reference items with clear-cut verdicts for each reading line. Every artifact has a recorded verdict for every line, and the set is frozen beside the checklist version a comparison set uses. Before it may rate that set, a rater version rates every calibration artifact once through the normal rating path, writing fresh tests that the harness runs. The acceptance rule is exact: every verdict must match the recorded one, a not-proved verdict counts as a mismatch, and a single mismatch refuses the version, which is changed (guideline, model, effort, or budget) and calibrated again as a new rater version. The calibration ratings and their tests are committed as the version's evidence.
+
 ## Out of Scope
 
