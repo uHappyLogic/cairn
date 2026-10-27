@@ -96,5 +96,9 @@ Cairn's usage documentation changes and the draft does not: docs/ways-of-using-c
 
 The delivery model gains a bounded loop: a named span of lines, review through sweep, repeated up to a count K declared in the delivery's definition, so a change of K is a new delivery id. Both primary cairn deliveries use it, the assess delivery's planned turn staying in the first pass only. The exit signal is a fixed, identifier-free convergence line that Cairn's review skill gains in this milestone, changed under core/ with the hosts rebuilt and both test runs green, which the harness matches in the review invocation's final message; on a match the harness skips the rest of the span and goes to the derivation line. When K passes end without convergence the chain continues to the derivation line, with no escalation pass. The multi-prompt mirror takes the loop's bound K unrolled, so its line count stays fixed and never below a cairn run's count.
 
+### Goal text in define line
+
+The harness substitutes the committed PROJECT.md text of the current phase into the cairn deliveries' define line, so each milestone records its own prompt verbatim under its Goal section and stays true after the file is overwritten. PROJECT.md is still written and committed under Prompt: <n> for every scenario, every manual delivery's message stays the pointer sentence, and the draft states this one substitution as the sole exception to the rule that no message carries prompt text. No scenario gains information by it, since every run finds the same committed text.
+
 ## Out of Scope
 
