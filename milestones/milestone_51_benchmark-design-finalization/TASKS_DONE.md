@@ -43,3 +43,18 @@ Give `review-milestone-requirements` a fixed, identifier-free convergence line, 
 - `uv run pytest` passes (1056 passed) and `uv run --no-project --python 3.9 --with pytest pytest` passes (1052 passed, 1 skipped)
 
 ---
+
+## Align Usage Docs With Model Strategy
+
+Rewrite `docs/ways-of-using-cairn.md` to the draft's `models_strategy_1` allocation, the `sonnet` alias at `medium` for the init, define, goto, and finish lines, `fable` at `xhigh` for the starting-state, review, recommend, and derive lines, and `opus` at `high` for `complete-all-tasks`, with the alternatives, sweep, and hand-answer lines unchanged and every prose sentence that restates a section's settings rewritten to match, so the draft's "written from Cairn's own usage snippets" sentence becomes true. This is a docs-only change needing no host rebuild, verified by reading each chain line against the draft's table.
+
+**Verified:**
+
+- Every `claude` line of `init-milestone-base-workflow`, `define-milestone-goal`, `goto-next-milestone`, and `finish-current-milestone` in `docs/ways-of-using-cairn.md` carries `--model "sonnet" --effort medium`, matching the draft's Sonnet 5.5 / medium rows.
+- Every `claude` line of `specify-milestone-starting-state`, `review-milestone-requirements` (the Starting a milestone line), `recommend-all-open-questions` (all four lines), and `derive-tasks` (all three lines) carries `--model "fable" --effort xhigh`, matching the draft's Fable 5.1 / xhigh rows.
+- Every `complete-all-tasks` line (all four) carries `--model "opus" --effort high`, matching the draft's Opus 5.5 / high row.
+- The alternatives lines (`opus` at `high`), the sweep lines and both hand-answer lines (`fable` at `high`) are unchanged and match the draft's rows; the `agy` review line and the stuck-milestone escalation review line (`opus` at `max`), which have no row in `models_strategy_1`, are left as they stood.
+- Every prose sentence restating a section's settings (Starting a milestone, Answering the questions that matter to you, Running a mixed-agent requirements review, Putting more intelligence into a stuck milestone, Executing tasks) names the same model and effort as that section's lines, and the `--model` legend's alias examples now include `sonnet`, which `claude --help` lists.
+- `ideas/benchmark_for_cairn.md` is untouched, its `models_strategy_1` table and "written from Cairn's own usage snippets" sentence standing as before; only `docs/ways-of-using-cairn.md` changed, no host was rebuilt, and `uv run scripts/build_hosts.py --check` passes.
+
+---

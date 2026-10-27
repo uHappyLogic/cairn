@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Align Usage Docs With Model Strategy
-
-Rewrite `docs/ways-of-using-cairn.md` to the draft's `models_strategy_1` allocation, the `sonnet` alias at `medium` for the init, define, goto, and finish lines, `fable` at `xhigh` for the starting-state, review, recommend, and derive lines, and `opus` at `high` for `complete-all-tasks`, with the alternatives, sweep, and hand-answer lines unchanged and every prose sentence that restates a section's settings rewritten to match, so the draft's "written from Cairn's own usage snippets" sentence becomes true. This is a docs-only change needing no host rebuild, verified by reading each chain line against the draft's table.
-
----
-
 ## Draft Operator And Hidden Requirement Rules
 
 Write into the draft's hidden-requirement and operator sections the bearing-question test (a one-line bearing scope beside each entry's statement, the topic or theme of the questions for prompt 1 and where a prepared set is stored or how it is carried to another computer for prompt 2, governing disclosure and the planned turn's "bears on" lines, a catch-all or off-scope question getting nothing beyond PROJECT.md), the reply-need classifier as a distinct tool-less model call under a fixed model and effort pair with its one stated rule, recorded verdict and one-clause reason, and tokens recorded beside the operator's apart from the totals, the operator's input of prompts 1 to n in phase n with phase n's hidden knowledge only, and the two-arm hidden-requirement pilot with its met-rate ceiling, hit-rate floor, and fix rules, each stated with the reason for the gap it resolves. Verify by reading the sections against the four decisions and gaps 3, 14, and 17 of the report.
