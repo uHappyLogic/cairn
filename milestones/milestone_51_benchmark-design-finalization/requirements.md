@@ -132,5 +132,9 @@ ideas/benchmark_design_gaps.md is removed in this milestone, as its last change 
 
 The draft separates illustration from claim throughout: concrete example values (scenario ids, the manifest's plugin and host versions, model ids) are kept but stated once as hypothetical examples that track no real version, so 1.8.3 and 2.1.283 may stay or be any plausible value, while every statement about the current content of a Cairn document or tool, the tested-claim count first, is rewritten to point at that document without restating a value that moves.
 
+### Manual clarify delivery
+
+The benchmark adds a clarify-then-build manual delivery as a fifth primary delivery with its own README table rows: a listing invocation in which the model lists the questions it needs answered, a planned operator turn under the same disclosure rule answering into the resumed session, then the pointer-sentence build instruction in that session, with the manual scenario knowledge. It gets its own family and its own radar curve, raising the radar from four curves to five, so the page shows what a planned turn buys without Cairn and what Cairn adds when both have one.
+
 ## Out of Scope
 
