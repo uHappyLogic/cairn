@@ -76,5 +76,9 @@ One randomly chosen run of every scenario, for each prompt, is re-rated blind un
 
 Every test line gets a short specification written now into the draft's project section beside the line: prompt 1's six stated and thirteen implied lines, prompt 2's stated line and eleven implied lines, and prompt 2's carry-between-profiles hidden line. The specification names the case the test must drive the artifact into and the observable outcome it must assert, stated as an outcome rather than a means so the "any way through counts" rule still holds; for the award line, award a point, take it back, and assert the score is back to its earlier value, with a confirmation that prevents the award counting as well. The specification becomes part of the checklist, which stays derived from the draft and nothing else, and the line keeps its id.
 
+### Not-proved scoring
+
+A not-proved verdict does not stand on the rater's first report: the harness gives that line one more attempt by a fresh rater session under the same rater definition, and only a second not-proved scores zero, like an absent line. The line still counts in the fixed denominator, a line the second attempt proves passes, and the not-proved count beside each axis counts only verdicts that survived the re-attempt. The pass-or-fail line and the fixed denominator are kept, at the cost of a second rater session only on lines that failed to prove.
+
 ## Out of Scope
 
