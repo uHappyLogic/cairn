@@ -112,5 +112,9 @@ Runs are strictly sequential: at most one run of the procedure is in progress at
 
 The items of the animal reading line become every question a game of the artifact can ask, read from its source; a question no game can reach, such as an eleventh entry of a fixed-order list that only ever asks ten, is not an item. The score is the animal items over the items, scaled to 100, the general reading-line rule of "The rater" applied as written with no special case. For an artifact of exactly ten questions this gives the same number as the count out of ten, so the hidden-axis example stands, and the check line in "Prompt 1: the game" is reworded from "the ten questions" and "out of ten" to every question a game can ask.
 
+### Animal item rule
+
+The prompt 1 hidden-requirement entry states a classification rule for borderline items. A question is about an animal when the number it asks for counts animals or measures an animal or an animal kind: its body, lifespan, diet, speed, offspring, or behaviour. A question about anything else fails, the zoo's own operations included (visitors, staff, ticket prices, opening years). The entry gives the two cited items as worked verdicts: how many animals live at Riverside Zoo passes and the zoo's visitor count fails. The reading-line definition and the requirement's wording stay as they are.
+
 ## Out of Scope
 
