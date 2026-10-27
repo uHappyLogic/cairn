@@ -56,5 +56,9 @@ Each hidden-requirement entry gains a one-line bearing scope beside its statemen
 
 The reply-or-no-reply classification of a final message is made by a distinct model call with no tools and a fixed model and effort pair, defined and versioned with the operator definition and recorded in the manifest. It reads only the final message, never the prompt or the hidden knowledge, under one stated rule: a message that asks, confirms, or offers a choice gets a reply; one that reports completion, a stop, or an error, or closes with an offer, gets none. It outputs the verdict and a one-clause reason, and only a reply verdict invokes the operator. Every verdict and reason goes into the invocation's record file; a no-reply verdict is not an operator turn and adds no attentive session; the classifier's tokens are recorded beside the operator's, apart from the totals.
 
+### Host configuration isolation
+
+The harness creates a fresh host configuration directory for each run from a committed template and points every invocation of that run, replies and planned-turn answer invocations included, at it through CLAUDE_CONFIG_DIR; the directory holds no plugins, MCP servers, or hooks, so only the plugin passed by --plugin-dir loads, and no other run's transcripts or memory are inside it. The template is a shared input in the inputs area, versioned by content and recorded in the manifest in place of the user_config digests, so changing it starts a new comparison set under the existing rule. Credentials are injected per run from outside the template, as an API key in the environment or a copied login, and the directory is deleted with the clone after the Run: commit.
+
 ## Out of Scope
 
