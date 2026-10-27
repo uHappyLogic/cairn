@@ -84,5 +84,9 @@ A not-proved verdict does not stand on the rater's first report: the harness giv
 
 The harness hands the rater the entry file plus every file in the run's tree reachable from it by load or by link (src and href attributes, script and style imports, and fetch targets that name a file present in the tree), followed transitively, and nothing else of the tree. A linked editor page and its assets therefore reach the rater, while every file the artifact never points at, process files included, stays out, so the scope is defined by the artifact itself and blindness needs no exclusion list.
 
+### Entry point detection
+
+The prompts state the entry point: prompt 1 asks for the single self-contained HTML file as index.html at the repository root, and prompt 2 states that the game stays reachable from that file. The run script then only asserts that a root index.html exists; when it does not, the manifest's entry field is recorded as null and the run is rated as having no entry. No detection heuristic and no hand edit remain, and the record exception for a hand-set entry is removed.
+
 ## Out of Scope
 
