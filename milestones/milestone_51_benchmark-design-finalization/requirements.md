@@ -36,5 +36,9 @@ A change under `core/` is followed by `uv run scripts/build_hosts.py`, a commit 
 
 ## Decisions
 
+### Web tool access
+
+Web search and fetch stay enabled in every scenario invocation; the harness restricts neither the tools nor the network. After each run the harness reads the session's tool calls, its web search queries, its fetched URLs, and its shell commands that reach the network, and records them in the run's unpublished record. A run whose calls reached the benchmark repository, its run branches, or its Pages site is marked contaminated, and the draft states whether such a run is excluded from its comparison set or re-run.
+
 ## Out of Scope
 
