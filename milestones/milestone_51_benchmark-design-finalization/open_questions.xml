@@ -1,43 +1,4 @@
 <open-questions>
-  <open-question id="Repeat rating agreement">
-    <question>The lost count compares two independent ratings, the parent&apos;s and the child&apos;s, so rater noise shows as lines lost or gained when nothing changed, and no agreement figure is reported anywhere. Is a sample of each comparison set&apos;s artifacts rated twice with the agreement reported beside the scores, and at what sample size?</question>
-    <recommendation option="Per-scenario sample on the page">Puts the agreement figure and a noise floor beside the lost count where the margin is read, with every scenario contributing so no delivery&apos;s artifact style escapes the sample, at one repeat per scenario per prompt.</recommendation>
-    <alternative id="Per-scenario sample on the page">
-      One randomly chosen run of every scenario, for each prompt, is re-rated blind under the same rater version, so the sample grows with the roster; scores use the first rating only. The per-line verdict agreement and the per-axis score difference are reported in one line beside the README ranking table, and the lost column carries a noise floor beside the mean lost count: the expected number of lines lost by rater disagreement alone, computed from the rate at which a line passing in one rating of an artifact fails in the other. No threshold is applied; a low agreement is published as it is.
-      <advantage>Puts the noise figure where the scores and the lost count are read, so a reader compares the lost count to what noise alone produces, and every scenario contributes, so an artifact style one delivery tends to produce cannot escape the sample.</advantage>
-      <drawback>Rater cost grows with the roster, one repeat per scenario per prompt still gives a coarse per-scenario estimate, and the page gains one more figure to explain. Its size depends on the sibling scenario roster and runs-per-scenario decisions.</drawback>
-    </alternative>
-    <alternative id="No repeat rating">
-      No artifact is rated twice and no agreement figure is computed. The draft&apos;s claim under &quot;The axes&quot; that a second rating of the same artifact gets the same number is narrowed to re-running a committed test, and the lost count is described as a tally that includes rater noise, a lost line being a pointer to the run record and never evidence on its own. Rater variability is left to whatever the rater version must pass before rating and to how precisely each checklist line is specified.
-      <advantage>Costs no extra rater run and adds nothing to the harness, the rating file, the analysis, or the page, while making the draft stop claiming a repeatability nobody measured.</advantage>
-      <drawback>The lost count, the number phase 2 is expected to show Cairn&apos;s margin on, stays uninterpretable: a reader cannot tell whether a mean of two lost lines is behaviour or noise, and a rater version that drifts between ratings goes unnoticed. How much this costs depends on how strict the sibling rater calibration gate and checklist line specifications turn out to be.</drawback>
-    </alternative>
-    <alternative id="Small fixed sample, analysis only">
-      The harness re-rates a fixed number of randomly chosen artifacts per prompt in each comparison set (for example five), as a fresh blind rating under the same rater version, the rater not told it is a repeat. Scores and the lost count use the first rating only. The analysis output reports the per-line verdict agreement (the share of lines with the same verdict in both ratings) and the per-axis score difference for the sample; the README page carries nothing new.
-      <advantage>Gives a developer a measured noise floor for every comparison set at a small, fixed rater cost that does not grow with the scenario roster or the number of runs.</advantage>
-      <drawback>A sample this small yields a wide estimate and may miss the artifacts hardest to rate (a canvas UI, an unusual entry structure), and a reader of the page, where the ranking and the lost column are read, never sees the figure.</drawback>
-    </alternative>
-    <alternative id="Sample with agreement threshold">
-      The per-scenario repeat sample and the page reporting of the per-scenario option, plus a declared minimum agreement (for example a per-line verdict agreement under which the set fails) that is part of the rater definition. A comparison set whose sample falls below it is not complete: its page is not regenerated, and it is rated again under a revised rater version.
-      <advantage>Turns the agreement figure into a guarantee: no comparison set reaches the page with a rater whose ratings demonstrably did not reproduce on that set&apos;s own artifacts, which a calibration set of reference artifacts cannot show.</advantage>
-      <drawback>The threshold is a number nobody can derive and must be argued for, a failing set costs a full re-rating and can stall a campaign, and the gate overlaps the sibling rater calibration gate, so its value depends on what that gate already requires before a rater version may rate.</drawback>
-    </alternative>
-    <alternative id="Every artifact rated twice">
-      Every run id gets two independent blind ratings under the same rater version. A line&apos;s score is the mean of its two verdicts, the agreement per scenario and per axis is reported beside the scores on the page, and a prompt-1 line counts as lost only when both ratings of the parent pass it and both ratings of the child fail it.
-      <advantage>Halves the effect of single-rating noise on every score and makes the lost count robust by construction, with an agreement figure for every scenario rather than an estimate from a sample.</advantage>
-      <drawback>Doubles the rating cost and time of every comparison set and of every development check, which the fast loop under &quot;How Cairn development uses the benchmark&quot; was built to keep at one rater run per candidate commit, and a line with split verdicts scores a half that no test can re-derive.</drawback>
-    </alternative>
-    <alternative id="Targeted confirmation of lost lines">
-      No random sample is drawn. Every line the analysis sorts as lost (and as gained) between a parent and its child is re-rated afresh on both artifacts, with a new test for that line only, and counts as lost only when the re-rating confirms both verdicts. The confirmation rate is reported beside the lost count; the axis scores carry no agreement figure.
-      <advantage>Spends rater runs only on the number the question names, so the published lost count holds only differences that reproduced, at a cost proportional to how many lines changed rather than to the size of the set.</advantage>
-      <drawback>Measures noise only where a verdict already changed, so a line falsely kept or falsely failed on both artifacts is never caught, the confirmation re-rating removes false losses without finding missed ones, and the axis scores, which rank the scenarios, get no noise figure at all.</drawback>
-    </alternative>
-    <alternative id="Per-scenario sample plus lost-line confirmation">
-      The per-scenario repeat sample with its agreement line and noise floor beside the README table, and in addition the targeted re-rating of every lost and gained line on both parent and child, a line counting as lost only when the re-rating confirms it.
-      <advantage>Covers both halves of the problem: the axis scores get a measured agreement figure on the page, and the lost count is both confirmed line by line and set against a noise floor.</advantage>
-      <drawback>The most harness and analysis work of any partial option, two separate repeat mechanisms to specify and keep in step, and a rater cost that grows with both the roster and the number of changed lines; its size depends on the sibling scenario roster and runs-per-scenario decisions.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Checklist line test specs">
     <question>Each checklist line names a behaviour and nothing more, so a weak test (an undo button exists) and a strict one (the award is actually reversed) both satisfy it. Does each line carry a short specification of the case its test must drive and what it must assert?</question>
     <recommendation option="Specs in the draft">The checklist is derived from the draft and nothing else, so the case each test must drive and the outcome it must assert belong beside the line at that one source, reviewed in the open now and frozen with the rest of the inputs.</recommendation>

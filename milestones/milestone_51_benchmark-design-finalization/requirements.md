@@ -68,5 +68,9 @@ Cairn fixes the wording of every skill's no-op and stop lines in this milestone.
 
 finish-current-milestone stops, writing and committing nothing, when the milestone's open_questions.xml still holds any question block, read through the open-question tool's list or the skill's own read of the file, whatever TASKS_DONE.md holds. It adds no check on completed tasks and no override flag: a decision-only milestone that answered everything still closes, and a milestone abandoned with open questions is closed by answering them. This targets the one failure path, a derivation refused on standing questions.
 
+### Repeat rating agreement
+
+One randomly chosen run of every scenario, for each prompt, is re-rated blind under the same rater version, so the sample grows with the roster at one repeat per scenario per prompt; scores use the first rating only. The per-line verdict agreement and the per-axis score difference are reported in one line beside the README ranking table, and the lost column carries a noise floor beside the mean lost count: the expected number of lines lost by rater disagreement alone, computed from the rate at which a line passing in one rating of an artifact fails in the other. No threshold is applied; a low agreement is published as it is.
+
 ## Out of Scope
 
