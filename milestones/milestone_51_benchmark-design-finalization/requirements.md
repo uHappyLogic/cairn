@@ -48,5 +48,9 @@ The harness classifies how each invocation ends, and on the first infrastructure
 
 An item that appears both in a prompt's deliberately-left-open list and in its implied-requirement list is split wherever a choice among ways remains: the implied line scores only that some way through exists, and the choice among ways stays an unscored left-open item. An item with no such choice left goes to exactly one list by a test the draft states: implied when a quiz lacking it would be called broken or unfinished by any builder, left open when lacking it is a defensible product choice, with the verdict recorded per item. The draft states both rules, and neither list is thinned by a blanket rule.
 
+### Bearing-question test
+
+Each hidden-requirement entry gains a one-line bearing scope beside its statement, versioned with the entry, naming the decision or decisions a question must ask about to receive the disclosure: for prompt 1 the topic or theme of the questions, for prompt 2 where a prepared set is stored or how it is carried to another computer. The harness inserts the scope with the statement into the operator's hidden knowledge, and the operator discloses the statement only when a question asks about something in the scope; a catch-all or an off-scope question gets nothing beyond what PROJECT.md says. The same scope governs the planned turn's "bears on" lines, so every disclosure is checkable against written text rather than the operator's private reading.
+
 ## Out of Scope
 
