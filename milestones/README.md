@@ -13,9 +13,20 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_51_benchmark-design-finalization/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 51 — Benchmark design finalization
+
+- `ideas/benchmark_for_cairn.md` now carries a written decision for each of the eighteen gaps in the 2026-10-26 design-gaps report, and the report was removed, so the draft is the single benchmark document under `ideas/`.
+- The draft states the checklist's overlap rules, a test specification beside every test line, the revised prompt texts with the animal classification rule, and the bearing-question test, reply-need classifier, and two-arm pilot for the hidden requirements.
+- Its delivery model gained a bounded review-through-sweep loop that exits on the review skill's fixed convergence line, and a fifth primary delivery, clarify-then-build, joined it.
+- Its run rules now cover per-run host configuration and user isolation, voiding a run on infrastructure failure, stop detection against fixed lines, strictly sequential runs, a rater limited to files reachable from the entry, a calibration gate, and five-version comparison sets with frozen inputs.
+- Its README page section now frames the table and radar as refutable expectations, with min–max spreads, noise-derived rank ties, and a generated list of superseded sets.
+- `finish-current-milestone` now stops while any open question stands, checked through the open-question tool's `list`.
+- Every skill opens each no-op and stop report with a fixed, unique line, `review-milestone-requirements` prints a fixed convergence line, and `docs/skill-reference.md`'s `## Fixed console lines` table, checked by `tests/test_fixed_console_lines.py`, lists them all.
+- `docs/ways-of-using-cairn.md` follows the draft's `models_strategy_1` model and effort allocation.
 
 ### Milestone 50 — Uniform milestone resolution with an override flag
 
@@ -545,3 +556,4 @@ Current milestone: `milestones/milestone_51_benchmark-design-finalization/`
 | 48 | Batched answer sweep with a fold tool | `milestones/milestone_48_batched-answer-sweep-with-a/` |
 | 49 | Noted contradictions and superseding fold | `milestones/milestone_49_noted-contradictions-and-superseding-fold/` |
 | 50 | Uniform milestone resolution with an override flag | `milestones/milestone_50_uniform-milestone-resolution-with-an/` |
+| 51 | Benchmark design finalization | `milestones/milestone_51_benchmark-design-finalization/` |
