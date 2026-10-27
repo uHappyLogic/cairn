@@ -1025,6 +1025,36 @@
   </open-question>
   <open-question id="Animal item rule">
     <question>&quot;About an animal&quot; has borderline items, such as the zoo&apos;s visitor count or how many animals live at the zoo, while a reading line promises one defensible answer per item. Does the hidden-requirement entry state a classification rule for borderline items?</question>
+    <alternative id="Subject-of-the-number rule">
+      The prompt 1 hidden-requirement entry states a classification rule. A question is about an animal when the number it asks for counts animals or measures an animal or an animal kind: its body, lifespan, diet, speed, offspring, or behaviour. A question about anything else fails, the zoo&apos;s own operations included (visitors, staff, ticket prices, opening years). The entry gives the gap&apos;s two items as worked verdicts: how many animals live at Riverside Zoo passes and the zoo&apos;s visitor count fails. The reading-line definition and the requirement&apos;s wording stay as they are.
+      <advantage>It settles both cited borderline items and the obvious variants of them with one test the rater can apply and a reader can check, so the promise of one defensible answer per item holds without changing what the stakeholder is said to want.</advantage>
+      <drawback>The line between counting animals and describing the zoo stays a judgment at its edges, for example the number of keepers per elephant or the size of the penguin enclosure. Whether two ratings agree on those edges is measured only where the rater-calibration and repeat-rating questions put a check.</drawback>
+    </alternative>
+    <alternative id="Animal-kind fact rule">
+      The entry states a stricter rule. A question passes only when its answer is a fact about an animal kind (a species or a group such as birds) that holds independently of any particular place or institution. A count or measure tied to Riverside Zoo or any other zoo fails, including how many animals live at the zoo, and so does the visitor count. The entry gives both items as worked fail verdicts. The requirement&apos;s wording stays as it is.
+      <advantage>It is the sharpest rule of the set: membership turns on whether the answer is a general fact of nature, which also screens out questions about the fictional zoo whose numbers have no checkable source.</advantage>
+      <drawback>It is narrower than the stakeholder&apos;s evident wish, a zoo members&apos; evening where a question about the zoo&apos;s own animals would be welcome. An artifact that read the evidence well can then lose points on questions a person would call animal questions, which makes the hidden axis partly a test of guessing the rule.</drawback>
+    </alternative>
+    <alternative id="Zoo-widened requirement">
+      The hidden requirement itself is restated from &quot;every question is about an animal&quot; to &quot;every question is about animals or the zoo&quot;, with a rule saying a question passes when the number it asks for concerns an animal, an animal kind, or Riverside Zoo and its running. Both cited items pass. The entry gives them as worked verdicts, and a question about neither (a city&apos;s population, a historical date unrelated to the zoo) fails.
+      <advantage>It removes the cited borderline by moving the class to the boundary the seed&apos;s evidence (the zoo&apos;s members&apos; evening) actually supports, so an artifact is not penalised for a zoo question the stakeholder would accept.</advantage>
+      <drawback>It changes the hidden requirement rather than clarifying it. That loosens what the evidence must make clearly best, which the hidden-requirement pilot question&apos;s calibration then has to cover, and it moves the borderline to a new edge, for example questions about the zoo&apos;s town or about conservation in general.</drawback>
+    </alternative>
+    <alternative id="Animal-mention rule">
+      The entry states a near-mechanical rule: a question passes when its text names an animal, an animal kind, or animals as a group, whatever the number it asks for. How many animals live at Riverside Zoo passes, and the zoo&apos;s visitor count fails unless its wording names an animal. The entry gives both as worked verdicts.
+      <advantage>Two raters, or a rater and a reader, all but always reach the same verdict, because the check reads the question&apos;s words rather than weighing its topic.</advantage>
+      <drawback>It scores wording rather than topic, so a question such as &quot;how many people queued to see the pandas&quot; passes while being about visitors. That lets an artifact that only sprinkled animal words score as if it met the requirement.</drawback>
+    </alternative>
+    <alternative id="General doubt-fails rule">
+      The entry states no class rule of its own. The reading-line definition in the rater section gains one general rule for every reading line: an item whose class membership the rater cannot settle from the line&apos;s wording is recorded as doubtful with its reason and scored as failing. The two cited items are left to that rule.
+      <advantage>One sentence covers this line and any future reading line, and the doubt is made visible in the recorded verdicts instead of hidden in a silent call either way.</advantage>
+      <drawback>Whether an item is doubtful is itself a judgment, so the promise of one defensible answer moves rather than holds. Failing every doubtful item also biases the line against artifacts whose questions lean on the zoo, which the stakeholder may well have welcomed.</drawback>
+    </alternative>
+    <alternative id="No rule, gap rejected">
+      No classification rule is added, either in the entry or in the reading-line definition. The draft records the gap as rejected, giving as its reason that every item and verdict is recorded as the line&apos;s evidence for a reader to check, and that borderline items are expected to be few among ten built-in questions. The requirement and the reading-line promise stay worded as they are.
+      <advantage>It adds nothing to the inputs and keeps the hidden requirement in the stakeholder&apos;s own plain words, relying on evidence the design already records.</advantage>
+      <drawback>The promise of one defensible answer per item stays unmet for exactly the items the gap names. A borderline question can then score differently between two ratings, and the rater&apos;s model decides it unseen, which is the noise the axes section says no line carries.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Public inputs leak">
     <question>The benchmark&apos;s main branch is public, so the hidden requirements, the operator records, and every artifact are public and future models will train on them, wearing down the no-canned-solution requirement over time. How does the benchmark limit or account for its inputs and results leaking into training data?</question>
