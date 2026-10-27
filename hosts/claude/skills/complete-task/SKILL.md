@@ -75,6 +75,12 @@ Carry no task heading, verification detail, or commit subject, and print no foll
 pointer.
 
 If nothing was committed because the completion was abandoned before it changed any file —
-step 2's call never ran, or its guard found no path changed — print instead a distinct
-one-line no-op message stating that nothing was completed and briefly why (e.g. `No task completed — no file
-changed.`), not the terse success line.
+step 2's call never ran, or its guard found no path changed — print instead this one fixed
+no-op line, not the terse success line:
+
+```
+No task completed — no file changed.
+```
+
+A task name matching no section is the procedure's own stop: its fixed line and the
+available headings are the whole report.

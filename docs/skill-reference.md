@@ -50,7 +50,7 @@ Revises the `## Goal` of the **already-defined** current milestone — the one s
 
 ### `capture-milestone-principle-updates <milestone_id>`
 
-The **on-demand** principle harvester — the **sole writer** of the project-wide principle store `milestones/answer_decision_principles.md`. It takes a **required** `<milestone_id>` (the milestone directory name under `milestones/`, e.g. `milestone_12_user-guide`, exactly as `/specify-milestone-starting-state` takes it) and runs against any milestone whose `milestones/<milestone_id>/requirements.md` exists — the current milestone, an unfinished one, or one long finished (backfill included); it never consults the current-milestone pointer or the milestone's finish status. Running it right after `/finish-current-milestone` is the natural moment, since the milestone's answer set is complete by then, but finish is never a precondition. Two start-of-run guards are each a one-line notice plus a single confirmation, never a stop: a milestone that already has a `Principle-capture:` commit, and a store carrying uncommitted edits (which then become the baseline the rewrite builds on). It walks the milestone's answer commits across **all three provenances** with a path-scoped `git log -- milestones/<milestone_id>/open_questions.xml` (every answer removes its block from that file, and the path is itself the lower boundary) and reads each commit with one `git show` naming both `open_questions.xml` and `requirements.md`: from the `open_questions.xml` hunk's removed lines — only those within the answered block's own `-<open-question id="…">` … `-</open-question>` boundaries, never a sibling block the cascade mooted or a stray line it cleared from a sibling that still stands — it reconstructs the `<question>`, the `<alternative>` elements, the cited `<applied-principle>` elements, and the `<recommendation>` you saw, and from the `requirements.md` hunk's added lines the decision you recorded. Manual and alternative answers that overrode the recommendation are the **override signal**: where such a commit carries no rationale of yours, it asks why you preferred your option — showing its best guess, one prompt per commit, each skippable, with a one-shot accept-every-guess / skip-every-prompt choice up front so backfill stays workable. Accepted recommendations are **evidence only**: a cited principle is reinforced (and shielded from pruning in that pass), a contradicted one flagged. From the override reasoning and deliberated manual bodies it distills generalizable keep/eliminate directives, dedups them against each other, and composes **one whole-store rewrite** — adds, revisions, prunes, merges, generalizations, and shortenings together, salvaging a contradicted entry by narrowing, generalizing, or replacing it before deleting it, and holding every directive to a roughly 40–80-word target under the "as short as it can be while still reading as an intuitive rule" test — written in place, printing no diff. You review the working-tree change with `git diff`, request changes in conversation, and **one confirmation gates the commit**: on acceptance it commits the store path-scoped under `Principle-capture: <milestone_id>`, with one body line per store change naming its kind and the answer that drove it; on rejection it restores the store to its pre-write snapshot and commits nothing. An empty commit range, a set that neither generalizes nor contradicts the store, and a rewrite identical to its baseline all yield the same single-line "nothing captured" report.
+The **on-demand** principle harvester — the **sole writer** of the project-wide principle store `milestones/answer_decision_principles.md`. It takes a **required** `<milestone_id>` (the milestone directory name under `milestones/`, e.g. `milestone_12_user-guide`, exactly as `/specify-milestone-starting-state` takes it) and runs against any milestone whose `milestones/<milestone_id>/requirements.md` exists — the current milestone, an unfinished one, or one long finished (backfill included); it never consults the current-milestone pointer or the milestone's finish status. Running it right after `/finish-current-milestone` is the natural moment, since the milestone's answer set is complete by then, but finish is never a precondition. Two start-of-run guards are each a one-line notice plus a single confirmation, never a stop: a milestone that already has a `Principle-capture:` commit, and a store carrying uncommitted edits (which then become the baseline the rewrite builds on). It walks the milestone's answer commits across **all three provenances** with a path-scoped `git log -- milestones/<milestone_id>/open_questions.xml` (every answer removes its block from that file, and the path is itself the lower boundary) and reads each commit with one `git show` naming both `open_questions.xml` and `requirements.md`: from the `open_questions.xml` hunk's removed lines — only those within the answered block's own `-<open-question id="…">` … `-</open-question>` boundaries, never a sibling block the cascade mooted or a stray line it cleared from a sibling that still stands — it reconstructs the `<question>`, the `<alternative>` elements, the cited `<applied-principle>` elements, and the `<recommendation>` you saw, and from the `requirements.md` hunk's added lines the decision you recorded. Manual and alternative answers that overrode the recommendation are the **override signal**: where such a commit carries no rationale of yours, it asks why you preferred your option — showing its best guess, one prompt per commit, each skippable, with a one-shot accept-every-guess / skip-every-prompt choice up front so backfill stays workable. Accepted recommendations are **evidence only**: a cited principle is reinforced (and shielded from pruning in that pass), a contradicted one flagged. From the override reasoning and deliberated manual bodies it distills generalizable keep/eliminate directives, dedups them against each other, and composes **one whole-store rewrite** — adds, revisions, prunes, merges, generalizations, and shortenings together, salvaging a contradicted entry by narrowing, generalizing, or replacing it before deleting it, and holding every directive to a roughly 40–80-word target under the "as short as it can be while still reading as an intuitive rule" test — written in place, printing no diff. You review the working-tree change with `git diff`, request changes in conversation, and **one confirmation gates the commit**: on acceptance it commits the store path-scoped under `Principle-capture: <milestone_id>`, with one body line per store change naming its kind and the answer that drove it; on rejection it restores the store to its pre-write snapshot and commits nothing. An empty commit range, a set that neither generalizes nor contradicts the store, a rewrite identical to its baseline, and a rejected rewrite each yield a single-line "nothing captured" report, one fixed line per case.
 
 ### `provide-alternatives-to-all-open-questions [--milestone <milestone_id>]`
 
@@ -95,3 +95,90 @@ Verifies that no open question stands and all tasks are done, stopping with noth
 ### `goto-next-milestone`
 
 Activates the lowest-numbered undone milestone without asking: scans `milestones/` for the directories `/define-milestone-goal` created whose number has no heading under `## Milestone History`, and updates `milestones/README.md` to point at the lowest-numbered one as the current milestone. It stops only when the pointer does not read `none` (run `/finish-current-milestone` first) or when no undone milestone exists (run `/define-milestone-goal` first). Creates no files or directories. A defined milestone that is never finished is picked on every run, so an unwanted one is skipped by removing its directory, for example by reverting its `Milestone-definition:` commit.
+
+## Fixed console lines
+
+Every skill's console report opens with one fixed line saying how the run ended, carrying no identifier (no milestone id, Short Title, task heading, or count): its **success** line when it did its work, a **no-op** line when it ended cleanly having changed nothing, or a **stop** line when it stopped short of its work. Each no-op and stop condition a skill states has a line of its own, and whatever detail the condition needs — the tool's `Error:` line verbatim, a list of Short Titles, a remedy — follows on the lines below it. No skill sets an exit code, so this first line is what a headless run's final message is matched by: a harness that holds each skill's success and no-op lines can tell a clean end from a stop, and the stop line names which condition stopped it, across versions. The table lists every such line exactly as it is printed, and no line appears twice: a stop a shared procedure owns — resolving the milestone, or looking up the task to complete — has one line, listed under that procedure and printed by every skill that follows it, and the one success line three answer skills share is one row naming all three. The purely conversational `discuss-milestone-goal`, `discuss-new-task`, and `ask-in-milestone-context` print no fixed line of their own. `tests/test_fixed_console_lines.py` checks every line verbatim against the rendered files of every host tree and checks that no line repeats, so a line changes only together with its row here.
+
+| Source | Kind | Line |
+|--------|------|------|
+| `init-milestone-base-workflow` | success | `Workflow bootstrapped.` |
+| `init-milestone-base-workflow` | no-op | `Workflow already bootstrapped — nothing changed.` |
+| `init-milestone-base-workflow` | no-op | `Bootstrap committed nothing — the scaffold already matched the last commit.` |
+| `init-milestone-base-workflow` | stop | `Bootstrap stopped — no git work tree at the workspace root.` |
+| `init-milestone-base-workflow` | stop | `Bootstrap stopped — no suitable python3 interpreter.` |
+| `define-milestone-goal` | success | `Milestone defined.` |
+| `define-milestone-goal` | no-op | `Milestone not committed — its directory held no uncommitted file.` |
+| `define-milestone-goal` | stop | `Milestone not defined — the definition tool failed.` |
+| `specify-milestone-starting-state` | success | `Starting state recorded.` |
+| `specify-milestone-starting-state` | no-op | `Starting state unchanged — nothing committed.` |
+| `review-milestone-requirements` | success | `Requirements reviewed.` |
+| `review-milestone-requirements` | no-op | `Requirements unchanged — the review found nothing to reshape.` |
+| `discuss-open-question` | stop | `Cannot discuss: no open question matches the title.` |
+| `answer-open-question`, `answer-open-question-with-recommendation`, `answer-open-question-with-alternative` | success | `Answer recorded.` |
+| `answer-open-question` | stop | `Answer not recorded — the input has no "." separator.` |
+| `answer-open-question` | stop | `Answer not recorded — "record the recommendation" is retired here.` |
+| `answer-open-question` | stop | `Answer not recorded — no open question matches the title.` |
+| `answer-open-question-with-recommendation` | stop | `Recommendation not recorded — the lift was refused.` |
+| `answer-open-question-with-alternative` | stop | `Alternative not recorded — the lift was refused.` |
+| `answer-open-question-with-alternative` | stop | `Alternative not recorded — the recording core stopped.` |
+| `answer-all-open-questions-with-recommendation` | success | `Recommendations recorded.` |
+| `answer-all-open-questions-with-recommendation` | no-op | `No recommendations recorded — no question carries one.` |
+| `answer-all-open-questions-with-recommendation` | no-op | `No recommendations recorded — every pick was stripped before its turn.` |
+| `answer-all-open-questions-with-recommendation` | stop | `Sweep stopped — the question gather failed.` |
+| `answer-all-open-questions-with-recommendation` | stop | `Sweep stopped — the milestone files already held changes.` |
+| `answer-all-open-questions-with-recommendation` | stop | `Sweep stopped — an answer could not be recorded.` |
+| `modify-milestone-goal` | success | `Goal revised.` |
+| `modify-milestone-goal` | no-op | `Goal unchanged — the revision matched the existing goal.` |
+| `modify-milestone-goal` | stop | `Goal revision stopped — clearing the undermined picks failed.` |
+| `capture-milestone-principle-updates` | success | `Principles captured.` |
+| `capture-milestone-principle-updates` | no-op | `Nothing captured or committed — no answer commit touches the milestone.` |
+| `capture-milestone-principle-updates` | no-op | `Nothing captured or committed — no answer generalizes or contradicts the store.` |
+| `capture-milestone-principle-updates` | no-op | `Nothing captured or committed — the store already holds what the milestone teaches.` |
+| `capture-milestone-principle-updates` | no-op | `Nothing captured or committed — the rewrite was declined and the store restored.` |
+| `capture-milestone-principle-updates` | stop | `Capture stopped — no milestone id was given.` |
+| `capture-milestone-principle-updates` | stop | `Capture stopped — no milestone directory matches the id.` |
+| `capture-milestone-principle-updates` | stop | `Capture stopped — declined at a start-of-run guard.` |
+| `provide-alternatives-to-all-open-questions` | success | `Alternatives embedded.` |
+| `provide-alternatives-to-all-open-questions` | no-op | `No alternatives embedded — the document holds no questions.` |
+| `provide-alternatives-to-all-open-questions` | no-op | `No alternatives embedded — every question already carries a set.` |
+| `provide-alternatives-to-all-open-questions` | no-op | `No alternatives embedded — every dispatched question was skipped.` |
+| `provide-alternatives-to-all-open-questions` | stop | `Alternatives pass stopped — the question list failed.` |
+| `recommend-all-open-questions` | success | `Recommendations embedded.` |
+| `recommend-all-open-questions` | success | `Questions reordered.` |
+| `recommend-all-open-questions` | no-op | `No recommendations embedded — the document holds no questions.` |
+| `recommend-all-open-questions` | no-op | `Nothing embedded or reordered — every question already carries a recommendation.` |
+| `recommend-all-open-questions` | no-op | `Nothing embedded or reordered — every question to pick was skipped.` |
+| `recommend-all-open-questions` | stop | `Recommendation pass stopped — the question list failed.` |
+| `recommend-all-open-questions` | stop | `Recommendation pass stopped — some questions lack alternatives.` |
+| `derive-tasks` | success | `Tasks derived.` |
+| `derive-tasks` | no-op | `No tasks derived — every requirement is already satisfied.` |
+| `derive-tasks` | no-op | `No tasks derived — the list matched the task file already.` |
+| `derive-tasks` | stop | `Cannot derive tasks: the following open questions must be resolved first:` |
+| `derive-tasks` | stop | `Cannot derive tasks: the open-question check failed.` |
+| `derive-tasks` | stop | `Cannot derive tasks: the task-list tool refused the list.` |
+| `submit-task` | success | `Task submitted.` |
+| `submit-task` | no-op | `Task not submitted — the task file was unchanged.` |
+| `submit-task` | stop | `Task not submitted — an existing task already covers it.` |
+| `submit-task` | stop | `Task not submitted — the issue is not a task for this milestone.` |
+| `submit-task` | stop | `Task not submitted — the issue is too vague to author.` |
+| `submit-task` | stop | `Task not submitted — the task-list tool refused the insert.` |
+| `complete-all-tasks` | success | `All tasks completed.` |
+| `complete-all-tasks` | no-op | `No tasks to complete — the task list is empty.` |
+| `complete-all-tasks` | no-op | `Task run committed nothing — no task staged a change.` |
+| `complete-all-tasks` | stop | `Task run stopped — a task failed.` |
+| `complete-all-tasks` | stop | `Task run stopped — a task agent returned no status.` |
+| `complete-task` | success | `Task completed.` |
+| `complete-task` | no-op | `No task completed — no file changed.` |
+| `finish-current-milestone` | success | `Milestone finished.` |
+| `finish-current-milestone` | no-op | `Nothing to finish — no changes to commit.` |
+| `finish-current-milestone` | stop | `Cannot finish the milestone: the following open questions must be resolved first:` |
+| `finish-current-milestone` | stop | `Cannot finish the milestone: the open-question check failed.` |
+| `finish-current-milestone` | stop | `Cannot finish the milestone: tasks remain to be completed.` |
+| `goto-next-milestone` | success | `Milestone activated.` |
+| `goto-next-milestone` | no-op | `Activation committed nothing — the pointer already matched the last commit.` |
+| `goto-next-milestone` | stop | `No milestone activated — the current one is not finished.` |
+| `goto-next-milestone` | stop | `No milestone activated — no undone milestone is defined.` |
+| `shared/get-current-milestone.md` | stop | `No milestone matches the --milestone value.` |
+| `shared/get-current-milestone.md` | stop | `No current milestone — the pointer reads none.` |
+| `shared/complete-procedure.md` | stop | `No task matches the given name.` |

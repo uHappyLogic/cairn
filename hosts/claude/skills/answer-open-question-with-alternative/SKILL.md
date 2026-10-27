@@ -67,7 +67,8 @@ spaced em dash is **RECORDED OPTION**. Derive both from this print alone; never 
 answer text.
 
 **Guard — clean stop, change nothing.** If the call fails, stop without editing anything and
-report why, quoting the tool's `Error:` line, which names the failed lookup:
+report why: the fixed line `Alternative not recorded — the lift was refused.` first, then
+below it the tool's `Error:` line quoted verbatim, which names the failed lookup:
 - no block's `id` matches `<Short Title>` — the line lists the ids the document holds, so the
   user can retry;
 - the matched block carries **no** `<alternative>` elements at all — the
@@ -88,6 +89,10 @@ those names — locate, analyse, fold the decision into `## Decisions` of `requi
 clean prose, remove the block from `open_questions.xml`, and cascade to any mooted siblings.
 
 Do **not** spawn any subagent — there is no `answer-open-question-with-alternative` agent.
+
+If the recording core stops on the tool's `Error:` line, it has changed nothing: print the
+fixed line `Alternative not recorded — the recording core stopped.` first, then below it that
+`Error:` line quoted verbatim.
 
 ### 4. Commit the alternative answer
 
@@ -129,8 +134,8 @@ introduced — surface these but do **not** add them to the document without use
 
 **No-op case:** if step 4's dirty-own-path guard fired — nothing was committed because
 neither file changed (step 2 or the recording core in step 3 stopped on the tool's `Error:`
-line) — do **not** print the terse success line. Instead print a single line stating that
-nothing was recorded and briefly why.
+line) — do **not** print the terse success line. The report is that stop's own message,
+opening with the fixed line its step gives.
 
 Then stay available: the user may now ask follow-up questions or request adjustments, with the
 full recording context still in hand.

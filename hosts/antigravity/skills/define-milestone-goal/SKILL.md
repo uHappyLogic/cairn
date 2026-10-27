@@ -38,7 +38,7 @@ EOF
 
 On success the tool prints exactly two lines: the commit subject, then the milestone directory path. Hold both unchanged for step 3; compose, reword, and re-derive neither.
 
-If the call fails — the shell cannot find `python3`, or the tool exits non-zero with one `Error: <reason>` line on stderr — stop here and report it in full, quoting the shell's or the tool's line verbatim (a missing interpreter is the Python 3.9+ prerequisite `/init-milestone-base-workflow` checks for). The tool leaves nothing behind on failure, so there is nothing to clean up and nothing to commit.
+If the call fails — the shell cannot find `python3`, or the tool exits non-zero with one `Error: <reason>` line on stderr — stop here and report it in full: the fixed line `Milestone not defined — the definition tool failed.` first, then the shell's or the tool's line verbatim below it (a missing interpreter is the Python 3.9+ prerequisite `/init-milestone-base-workflow` checks for). The tool leaves nothing behind on failure, so there is nothing to clean up and nothing to commit.
 
 ### 3. Commit the new milestone
 
@@ -59,4 +59,8 @@ Milestone defined.
 
 Do not add the created directory path, the title, the goal text, or a next-step pointer.
 
-If instead the step-3 dirty-own-path guard fired (nothing under the milestone directory changed, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the milestone directory holds no uncommitted files; nothing committed.`
+If instead the step-3 dirty-own-path guard fired (nothing under the milestone directory changed, so nothing was committed), do not print the terse line — print this one fixed line and nothing else:
+
+```
+Milestone not committed — its directory held no uncommitted file.
+```

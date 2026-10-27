@@ -85,9 +85,10 @@ to reason over. The walked ids, in the order printed, are the run's order; a blo
 in the tab-separated lines carries no `<recommendation>` and is left untouched.
 
 If the call prints no walked id — nothing after the tab-separated lines, or nothing at all — no
-block carries a `<recommendation>` element: print the no-op line (step 4) and stop. If it
-prints an `Error: <reason>` line that follows no walked id, the gather itself failed and that
-line is the report: print it and stop.
+block carries a `<recommendation>` element: print the first no-op line of step 4 and stop. If
+it prints an `Error: <reason>` line that follows no walked id, the gather itself failed: print
+the fixed line `Sweep stopped — the question gather failed.` first, then that `Error:` line
+verbatim below it, and stop.
 
 You walk this printed order **exactly once** (step 3), and this call is never run again to
 re-check a question or confirm a skip: each section's own `lift` in step 3's call is its
@@ -291,10 +292,12 @@ identifier and no count, chosen by the call's markers:
 Recommendations recorded.
 ```
 
-when step 3's call printed at least one `answer commit landed`. When the run committed nothing
-— step 1 printed no walked id, or the call reached its `completeness walk` line with no marker
-before it because no section's lift succeeded — print instead one distinct line stating that
-nothing was recorded and briefly why.
+when step 3's call printed at least one `answer commit landed`. When the run committed nothing,
+print instead the one fixed no-op line its case gives:
+
+- **Step 1 printed no walked id** — `No recommendations recorded — no question carries one.`
+- **The call reached its `completeness walk` line with no marker before it**, because no
+  section's lift succeeded — `No recommendations recorded — every pick was stripped before its turn.`
 
 Beside that line print only the **completeness anomaly**, when it fired, since git records it
 nowhere: each line the call printed after `completeness walk` (an id, or the walk's `Error:`
@@ -304,14 +307,15 @@ Print nothing else: no skipped question is named, no contradiction or new-questi
 given, no recommendation-less block is enumerated, and no recorded answer is re-narrated — the
 commits are the record.
 
-Two stops replace the status line:
+Two stops replace the status line, each opening with its own fixed line:
 
-- **Dirty start** — the call printed `dirty before start`: report that the run recorded nothing
-  because the milestone's own files already held changes, print the porcelain lines the call
-  printed beneath it verbatim, and give the remedy — commit or discard those changes, then
-  re-run this skill.
-- **Stopped at a question** — the call printed `stopped at`, a tab, and a Short Title: report
-  that Short Title paired with the `Error:` line or git message printed beside it, quoted
+- **Dirty start** — the call printed `dirty before start`: print the fixed line
+  `Sweep stopped — the milestone files already held changes.` first, then below it the
+  porcelain lines the call printed beneath its marker verbatim, and the remedy — commit or
+  discard those changes, then re-run this skill. The run recorded nothing.
+- **Stopped at a question** — the call printed `stopped at`, a tab, and a Short Title: print
+  the fixed line `Sweep stopped — an answer could not be recorded.` first, then below it that
+  Short Title paired with the `Error:` line or git message printed beside it, quoted
   verbatim, a multi-line git message whole. Every answer before it is committed; whatever this
   question left uncommitted in the two files stays as it is, and the next run's guard stops on
   it until it is committed or discarded.

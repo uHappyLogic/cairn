@@ -54,7 +54,7 @@ Cannot derive tasks: the following open questions must be resolved first:
 Run /answer-open-question for each one, then re-run /derive-tasks.
 ```
 
-If the call fails, its one `Error: <reason>` line on stderr is the report: print it and stop. This `list` call is the whole check — never read `open_questions.xml` to make it yourself.
+If the call fails, stop and report it: the fixed line `Cannot derive tasks: the open-question check failed.` first, then its one `Error: <reason>` line from stderr verbatim below it. This `list` call is the whole check — never read `open_questions.xml` to make it yourself.
 
 ### 3. Decompose into high-level task briefs
 
@@ -124,7 +124,7 @@ The tool replaces `<MILESTONE_DIR>/TASKS_TODO.md` with its heading followed by t
 
 What the call prints is the whole outcome: `derivation commit landed` when the commit landed; nothing when the guard found the file unchanged (the list matched what it already held); otherwise the tool's one `Error:` line, with `TASKS_TODO.md` unchanged and nothing committed, or git's message for a commit it refused.
 
-On the tool's `Error:` line — two briefs whose titles fold to the same title, or a section with an empty title or body — commit nothing and stop: report the failure quoting the `Error:` line verbatim, and print neither status line of step 8.
+On the tool's `Error:` line — two briefs whose titles fold to the same title, or a section with an empty title or body — commit nothing and stop: report the failure with the fixed line `Cannot derive tasks: the task-list tool refused the list.` first and the `Error:` line quoted verbatim below it, and print no line of step 8.
 
 ### 8. Verify coverage and report
 
@@ -132,4 +132,7 @@ Re-read the finished `<MILESTONE_DIR>/TASKS_TODO.md` and confirm every brief fro
 
 On the success path — the call printed `derivation commit landed` — print exactly one fixed terse status line for the whole run — `Tasks derived.` — with no list of the ordered task titles and no next-step pointer. **Alongside** that terse line, keep the one git-absent advisory this step owns: explicitly flag any requirement you could not trace to a task (flag as a gap — never silently omit).
 
-If the run derived nothing — step 6 skipped the call because no brief was derived, or step 7's dirty-own-path guard found `TASKS_TODO.md` unchanged, so nothing is committed — do not print the terse success line; instead print a distinct one-line message stating that nothing changed and why (no tasks were derived, or the derived list matched the file already).
+If the run derived nothing, so nothing is committed, do not print the terse success line; instead print the one fixed no-op line its case gives:
+
+- **Step 6 skipped the call because no brief was derived** — `No tasks derived — every requirement is already satisfied.`
+- **Step 7's dirty-own-path guard found `TASKS_TODO.md` unchanged** — `No tasks derived — the list matched the task file already.`

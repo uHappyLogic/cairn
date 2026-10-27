@@ -25,7 +25,13 @@ This skill and the workflow skills commit their own changes with git, so every p
 
 Run `git rev-parse --is-inside-work-tree` once, in the workspace root. If it prints `true`, the check passes: continue to step 2. It passes anywhere inside a work tree — a subdirectory of a larger repository, or a freshly initialized repository with no commits yet — with no existing commit required, no match with the repository's top level required, and no advisory printed when the two differ.
 
-Otherwise — the shell reports `git` as not found, or the probe prints `false` or fails with a not-a-repository error — **stop before any write**: create and edit nothing, prompt for nothing, and never run `git init` yourself. Print one full message that states, in order:
+Otherwise — the shell reports `git` as not found, or the probe prints `false` or fails with a not-a-repository error — **stop before any write**: create and edit nothing, prompt for nothing, and never run `git init` yourself. Print one full message whose first line is the fixed line
+
+```
+Bootstrap stopped — no git work tree at the workspace root.
+```
+
+and whose lines below it state, in order:
 
 - **What it looked for** — a git work tree at the workspace root.
 - **What it found** — that the `git` executable is missing, or that the directory is not a work tree.
@@ -40,7 +46,13 @@ The workflow skills run the plugin's stdlib-only Python tools, kept in its `tool
 
 Run `python3 --version`. If it prints a version of 3.9 or later, the check passes: continue to step 3. Compare the version numerically, minor by minor — `3.10` and `3.13` are later than `3.9`, `3.8` is not.
 
-Otherwise — `python3` is not found, or it reports a version below 3.9 — run `python --version` as well. Its result decides nothing about passing; it only makes the message below precise. Then **stop before any write**: create and edit nothing, and print one full message that states, in order:
+Otherwise — `python3` is not found, or it reports a version below 3.9 — run `python --version` as well. Its result decides nothing about passing; it only makes the message below precise. Then **stop before any write**: create and edit nothing, and print one full message whose first line is the fixed line
+
+```
+Bootstrap stopped — no suitable python3 interpreter.
+```
+
+and whose lines below it state, in order:
 
 - **What it looked for** — a Python 3.9 or later interpreter answering as `python3`, and failing that as `python`.
 - **What it found** — for each of the two names, that it was not found or the exact version it reported.
@@ -143,4 +155,8 @@ Workflow bootstrapped.
 
 Do not list which items were created or left untouched, the pointer's initial value, the commit, or any next-step or handoff pointer; the commit diff shows which files were created or appended to.
 
-If instead the step-7 dirty-own-path guard fired (none of the paths changed, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the scaffold was already committed; nothing committed.`
+If instead the step-7 dirty-own-path guard fired (none of the paths changed, so nothing was committed), do not print the terse line — print this one fixed line and nothing else:
+
+```
+Bootstrap committed nothing — the scaffold already matched the last commit.
+```

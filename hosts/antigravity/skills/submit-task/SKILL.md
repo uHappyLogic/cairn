@@ -41,8 +41,8 @@ Read in parallel:
 
 ### 2. Triage
 
-- **Duplicate?** If an existing pending task or a completed task already covers this issue, stop and tell the user which task covers it. Do not add a duplicate.
-- **In scope?** If the issue clearly belongs to a different milestone or is really an open design decision, say so and point to the better tool (`/discuss-open-question`) instead of queuing it.
+- **Duplicate?** If an existing pending task or a completed task already covers this issue, stop: print the fixed line `Task not submitted — an existing task already covers it.` first, then below it which task covers it. Do not add a duplicate.
+- **In scope?** If the issue clearly belongs to a different milestone or is really an open design decision, stop instead of queuing it: print the fixed line `Task not submitted — the issue is not a task for this milestone.` first, then below it why, pointing to the better tool (`/discuss-open-question`).
 
 ### 3. Decide the position
 
@@ -102,8 +102,10 @@ nothing when the guard found the file unchanged; otherwise the tool's one `Error
 
 On the tool's `Error:` line — an anchor naming no section, or a title `TASKS_TODO.md` already
 holds — insert nothing, commit nothing, and stop: never re-run the call with another position
-or insert the task any other way. Report the failure quoting the `Error:` line verbatim, so
-the user can re-run with a correct anchor or a distinct title.
+or insert the task any other way. Report the failure with the fixed line
+`Task not submitted — the task-list tool refused the insert.` first, then below it the
+`Error:` line quoted verbatim, so the user can re-run with a correct anchor or a distinct
+title.
 
 ### 6. Confirm
 
@@ -116,8 +118,12 @@ Carry no task title, insert position, or commit subject, and print no next-step 
 pointer.
 
 If step 5's dirty-own-path guard found `TASKS_TODO.md` unchanged — nothing was committed —
-print instead a distinct one-line no-op message stating that nothing was submitted and
-briefly why (e.g. `No task submitted — nothing was authored.`), not the terse success line.
+print instead this one fixed no-op line, not the terse success line:
 
-If you could not author a concrete task — typically because the issue was too vague — say so
-and suggest `/discuss-new-task` to sharpen it first.
+```
+Task not submitted — the task file was unchanged.
+```
+
+If you could not author a concrete task — typically because the issue was too vague — stop:
+print the fixed line `Task not submitted — the issue is too vague to author.` first, then
+below it a suggestion to run `/discuss-new-task` to sharpen it first.

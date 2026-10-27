@@ -52,8 +52,10 @@ python3 ${PLUGIN_ROOT}/tools/open_questions.py list <MILESTONE_DIR>
 ```
 
 It prints the `id` (Short Title) of every `<open-question>` block, one per line in document
-order. If it prints nothing, the document holds no questions: say so and stop. If it fails, its
-one `Error: <reason>` line on stderr is the report: print it and stop.
+order. If it prints nothing, the document holds no questions: print the one fixed no-op line
+`No alternatives embedded — the document holds no questions.` and stop. If it fails, print the
+fixed line `Alternatives pass stopped — the question list failed.` first, then its one
+`Error: <reason>` line from stderr verbatim below it, and stop.
 
 **b. The ones without alternatives.** Run
 
@@ -64,7 +66,7 @@ python3 ${PLUGIN_ROOT}/tools/open_questions.py list --without-alternatives <MILE
 It prints, in document order, the ids of the blocks carrying no `<alternative>` element — the
 ones this run annotates. Every other block already carries its alternatives and is **skipped**
 (step 2). If this call prints nothing, every block already carries alternatives: there is
-nothing to dispatch, so skip step 3 and go straight to step 4's no-op line.
+nothing to dispatch, so skip step 3 and go straight to step 4's no-op line for that case.
 
 Hold the ids **b** printed: each is the Short Title its question's dispatch prompt carries, and
 nothing else is gathered for a dispatch — the subagent fetches its own block. They are also the
@@ -315,10 +317,12 @@ print (step 3 sub-step **g**):
    alternatives, its `Alternatives-annotation: <Short Title>` commit landed by a batch call —
    print `Alternatives embedded.`
 2. **Else nothing was annotated** — every id step 1b gathered is still printed, or step 1b
-   printed nothing and no dispatch ran — print no success line; print instead a distinct
-   one-line message stating that nothing changed and why: every block already carried
-   `<alternative>` elements (step 1b printed nothing), or every dispatched question was still
-   skipped.
+   printed nothing and no dispatch ran — print no success line; print instead the one fixed
+   no-op line its case gives:
+   - **Every block already carried `<alternative>` elements** (step 1b printed nothing) —
+     `No alternatives embedded — every question already carries a set.`
+   - **Every dispatched question was still skipped** —
+     `No alternatives embedded — every dispatched question was skipped.`
 
 Each line is the whole of its output and names no identifier: no annotated-vs-skipped
 breakdown, no per-question listing, and no next-step pointer to `/recommend-all-open-questions`.
@@ -342,4 +346,5 @@ whether it was embedded only after the single repair attempt. The embedded block
 the whole record, so a recovered return is reported exactly like a clean one — no
 recovered-or-repaired listing, no count, no note.
 
-If there were no questions at all, say so and stop (step 1a) — nothing to report.
+If there were no questions at all, or the step-1a call failed, step 1a's line is the whole
+output — nothing to report here.

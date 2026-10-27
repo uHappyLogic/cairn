@@ -92,4 +92,8 @@ Starting state recorded.
 
 Do not add the milestone id, the count of systems documented, or a next-step pointer.
 
-If instead the step-6 dirty-own-path guard fired (`requirements.md` was unchanged, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the starting state was already up to date; nothing committed.`
+If instead the step-6 dirty-own-path guard fired (`requirements.md` was unchanged, so nothing was committed), do not print the terse line — print this one fixed line and nothing else:
+
+```
+Starting state unchanged — nothing committed.
+```

@@ -52,13 +52,14 @@ the `milestones/` root, **above** any one milestone, so principles accumulate ac
 
 ### 1. Locate the milestone
 
-If no `<milestone_id>` argument was given, stop and report that the milestone id is required, showing
-the usage above.
+If no `<milestone_id>` argument was given, stop and report that the milestone id is required: the
+fixed line `Capture stopped — no milestone id was given.` first, then the usage above below it.
 
 Resolve `<MILESTONE_DIR>` as `milestones/<milestone_id>/`. If `milestones/<milestone_id>/requirements.md`
-does not exist, **stop without changing anything** and report that the milestone was not found —
-list the `milestone_*` directories present under `milestones/` so the caller can retry with one of
-them. Directory existence is the only validation; nothing about the milestone's finish status is
+does not exist, **stop without changing anything** and report that the milestone was not found:
+the fixed line `Capture stopped — no milestone directory matches the id.` first, then below it the
+`milestone_*` directories present under `milestones/`, one per line, so the caller can retry with
+one of them. Directory existence is the only validation; nothing about the milestone's finish status is
 consulted.
 
 The same `<milestone_id>` feeds, verbatim, the repeat-capture guard's anchored grep in step 2, the
@@ -69,7 +70,8 @@ path-scoped commit walk in step 3, and the commit subject in step 7.
 Two guards run here, before the commit walk. Each is a **one-line notice plus a single proceed
 confirmation, never a stop**: on a hit, print the one-line notice, ask once whether to proceed, and
 on yes continue exactly as if the guard had not fired. Declining is the user's clean stop — report
-it in one line, having read nothing further, changed nothing, and committed nothing. With no hit, a
+it in the one fixed line `Capture stopped — declined at a start-of-run guard.`, having read nothing
+further, changed nothing, and committed nothing. With no hit, a
 guard prints nothing and asks nothing; the run continues unchanged.
 
 1. **Repeat-capture guard.** The `Principle-capture: <milestone_id>` commit subject is the record
@@ -558,15 +560,17 @@ it. No empty commit records the rejection. Go to step 8 (nothing captured).
   pointer. A rewrite that was written but not committed
   never earns this line.
 - **If nothing was captured**, report it in a **single line** — distinct from the terse success
-  line, never a collapse into `Principles captured.` — stating that nothing was captured, that
-  nothing was committed, and briefly which case ended the run. The four cases share this one-line
-  shape and differ only in that brief reason:
-  - **empty commit range** (step 3): no answer commits touch this milestone's `open_questions.xml`;
-  - **no candidates** (step 5): commits were in range, but none generalizes and none contradicts
-    the store;
-  - **composed store identical to its baseline** (step 6): everything the milestone teaches is
-    already in the store, so nothing was written;
-  - **rejection** (step 7): the rewrite was declined and the store restored to its pre-write state.
+  line, never a collapse into `Principles captured.` — the one fixed line of the case that ended
+  the run, each stating that nothing was captured or committed and which case it was:
+  - **empty commit range** (step 3), no answer commits touch this milestone's `open_questions.xml` —
+    `Nothing captured or committed — no answer commit touches the milestone.`
+  - **no candidates** (step 5), commits were in range, but none generalizes and none contradicts
+    the store — `Nothing captured or committed — no answer generalizes or contradicts the store.`
+  - **composed store identical to its baseline** (step 6), everything the milestone teaches is
+    already in the store, so nothing was written —
+    `Nothing captured or committed — the store already holds what the milestone teaches.`
+  - **rejection** (step 7), the rewrite was declined and the store restored to its pre-write state —
+    `Nothing captured or committed — the rewrite was declined and the store restored.`
 
   Each is the distinct one-line no-op message for a pass that changed none of its own paths — git
   holds no record of a no-op, so the console must carry it.

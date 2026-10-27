@@ -32,10 +32,10 @@ honoured whatever the pointer reads, `none` included.
    `milestones/<milestone_id>/`.
 
 3. Otherwise **stop without changing anything**, with no fallback to the pointer. Report the
-   error line `Error: --milestone <milestone_id> matches no milestone directory`, the value
-   exactly as given, followed by every `milestone_*` directory present under `milestones/`,
-   one name per line, so the caller can retry with one of them. The error line and that list
-   are the whole report.
+   fixed line `No milestone matches the --milestone value.` first, then the error line
+   `Error: --milestone <milestone_id> matches no milestone directory`, the value exactly as
+   given, followed by every `milestone_*` directory present under `milestones/`, one name per
+   line, so the caller can retry with one of them. Those lines are the whole report.
 
 ## Resolving from the pointer
 
@@ -49,8 +49,10 @@ With no override:
 2. Examine the value after the prefix:
 
    - If the value is the bare token `none` (no backticks) — `Current milestone: none`
-     — there is no active milestone. Stop and report accordingly; do not attempt to
-     read a milestone directory.
+     — there is no active milestone. Stop and report it with the fixed line
+     `No current milestone — the pointer reads none.` first, then the remedy below it:
+     run `/goto-next-milestone` to activate a defined milestone, or name one with a
+     leading `--milestone <milestone_id>`. Do not attempt to read a milestone directory.
 
    - Otherwise the value is a backtick-quoted path, e.g.
      `` Current milestone: `milestones/milestone_01_public-release-prep/` ``.

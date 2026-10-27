@@ -33,13 +33,13 @@ First strip a leading `--milestone <milestone_id>` from the skill args by the ru
 - Before: the question **Short Title** (trim whitespace)
 - After: the **answer text** (trim whitespace)
 
-If no `.` is found, report a parse error and show the expected format.
+If no `.` is found, stop and report the parse error: the fixed line `Answer not recorded — the input has no "." separator.` first, then the expected format below it.
 
 ### 2. Redirect guard for the retired sentinel
 
 Compare the parsed answer text — **trimmed and lowercased** — against the retired sentinel `record the recommendation`, as an **exact whole-string match** (never a substring: an answer that merely *contains* those words is a literal answer, not the sentinel). This is a pure string comparison on the parsed text — no milestone resolution, no file read.
 
-- **Exactly the sentinel — redirect and stop:** recording a question's embedded recommendation lives in `/answer-open-question-with-recommendation`. **Stop without recording or committing anything** and print a redirect message telling the user to record the recommendation via `/answer-open-question-with-recommendation <Short Title>` instead (or to answer with literal text here via `/answer-open-question <Short Title>. <answer text>`).
+- **Exactly the sentinel — redirect and stop:** recording a question's embedded recommendation lives in `/answer-open-question-with-recommendation`. **Stop without recording or committing anything** and print the fixed line `Answer not recorded — "record the recommendation" is retired here.` first, then below it a redirect message telling the user to record the recommendation via `/answer-open-question-with-recommendation <Short Title>` instead (or to answer with literal text here via `/answer-open-question <Short Title>. <answer text>`).
 - **Anything else — literal-answer path:** the parsed answer text *is* the `ANSWER`. Carry it forward to the recording in step 4.
 
 ### 3. Find the current milestone
@@ -50,7 +50,7 @@ Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resol
 
 Read and follow the shared hand-answer procedure at `~/.gemini/config/plugins/cairn/shared/hand-answer-procedure.md`, carrying out every step **yourself, in this conversation**. Pass it the `<MILESTONE_DIR>` resolved in step 3, the **Short Title** parsed in step 1, and the **answer text** resolved in step 2 as its `MILESTONE_DIR`, `SHORT TITLE`, and `ANSWER` inputs, and pass **no `RECORDED OPTION`** — a literal answer lifts no option id, so the recording core forms its one judgment itself: whether the answer plainly settles on one of the answered block's own alternatives.
 
-That procedure names the standing picks on the other open questions that the answer undermines, then delegates the locate / analyse / fold / remove / cascade recording to the shared recording core, handing it those names. Its whole read of `<MILESTONE_DIR>/open_questions.xml` with the file-reading tool is for reasoning only, and every locate, list, lift, and write of that file is a call to the plugin's open-question tool. If the Short Title matches no block, the core's `locate` call fails and it stops without changes — relay the tool's `Error:` line, which lists the ids the document holds, so the user can retry.
+That procedure names the standing picks on the other open questions that the answer undermines, then delegates the locate / analyse / fold / remove / cascade recording to the shared recording core, handing it those names. Its whole read of `<MILESTONE_DIR>/open_questions.xml` with the file-reading tool is for reasoning only, and every locate, list, lift, and write of that file is a call to the plugin's open-question tool. If the Short Title matches no block, the core's `locate` call fails and it stops without changes — print the fixed line `Answer not recorded — no open question matches the title.` first, then below it relay the tool's `Error:` line, which lists the ids the document holds, so the user can retry.
 
 ### 5. Commit the manual answer
 
@@ -72,4 +72,4 @@ Answer recorded.
 
 Do **not** re-narrate which question resolved or how the documents changed (the removed block, the decision folded into `## Decisions`, the cascading resolutions). Alongside the terse line keep only the one piece of genuinely git-absent advisory output: any new open questions the answer may have introduced — surface these but do **not** add them to the document without user confirmation.
 
-**No-op case:** if step 5's dirty-own-path guard fired — nothing was committed because neither file changed (a step 1 parse error, the step 2 retired-sentinel redirect, or a step 4 stop on the tool's `Error:` line) — do **not** print the terse success line. Instead print a single line stating that nothing was recorded and briefly why.
+**No-op case:** if step 5's dirty-own-path guard fired — nothing was committed because neither file changed (a step 1 parse error, the step 2 retired-sentinel redirect, or a step 4 stop on the tool's `Error:` line) — do **not** print the terse success line. The report is that stop's own message, opening with the fixed line its step gives.

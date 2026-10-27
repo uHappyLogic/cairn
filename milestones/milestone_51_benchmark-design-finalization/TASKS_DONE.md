@@ -13,3 +13,18 @@ Make `finish-current-milestone` stop, writing and committing nothing, when the m
 - `uv run pytest` passes (891 passed) and `uv run --no-project --python 3.9 --with pytest pytest` passes (887 passed, 1 skipped)
 
 ---
+
+## Fix Every Skill's No-Op And Stop Lines
+
+Give every skill a fixed, unique, identifier-free first line for each distinct no-op and precondition-stop condition, with variable detail allowed after it, as one plugin-wide convention extending the fixed-success-line invariant; list the lines in `docs/skill-reference.md`, extend the `CLAUDE.md` terse-reporting invariant to cover them, and add a pytest test that checks each listed line verbatim against the rendered skill files and that every line is unique. Verify by rebuilding the hosts and running `uv run scripts/build_hosts.py --check` and both pytest runs green with the new test passing.
+
+**Verified:**
+
+- Every no-op and stop condition each skill states, and each stop the shared milestone-resolution and completion procedures own, opens its report with one fixed, identifier-free line as the whole first line, its variable detail (the tool's `Error:` line verbatim, Short Titles, a remedy) on the lines below it, changed under `core/` in 19 skills and 2 shared procedures.
+- `docs/skill-reference.md` gains a `## Fixed console lines` section whose table lists all 80 fixed lines (success, no-op, and stop) with source and kind, a shared-procedure stop listed once under its procedure and the shared `Answer recorded.` as one row naming its three skills.
+- The `CLAUDE.md` terse-reporting invariant extends the fixed-line rule to every no-op and stop line as one plugin-wide convention, with its reason (no exit code, so a harness matches the final message), the listing, and the test; the milestone-resolution invariant's miss wording and the `tests/` layout entry match.
+- `tests/test_fixed_console_lines.py` checks each listed line verbatim against the rendered source files of every host tree (claude, antigravity, codex), as a whole fenced-block line or a whole inline code span, checks that no line repeats and no line carries a placeholder, and failed on a mutated and on a duplicated row before passing (163 cases).
+- `uv run scripts/build_hosts.py` rebuilt the three host trees and `uv run scripts/build_hosts.py --check` passes.
+- `uv run pytest` passes (1054 passed) and `uv run --no-project --python 3.9 --with pytest pytest` passes (1050 passed, 1 expected skip), the new test passing in both.
+
+---

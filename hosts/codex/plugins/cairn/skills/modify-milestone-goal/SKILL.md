@@ -70,7 +70,7 @@ The call deletes each named block's `<recommendation>`, `<depends-on>`, and `<ap
 
 This is the only change the skill makes to `open_questions.xml`: no block is removed, added, or reworded, whatever step 3 found the revision to settle, open, or make irrelevant. When step 3 named no undermined pick, or the step-4 edit left the `## Goal` section as it was, make no call.
 
-If the call exits non-zero, stop: print its `Error:` line verbatim, state that the Goal edit stands uncommitted in `requirements.md`, and do not commit.
+If the call exits non-zero, stop and do not commit: print the fixed line `Goal revision stopped — clearing the undermined picks failed.` first, then below it the call's `Error:` line verbatim and that the Goal edit stands uncommitted in `requirements.md`.
 
 ### 6. Commit the goal revision
 
@@ -91,4 +91,8 @@ Goal revised.
 
 Do not add the before → after goal text, the downstream-impact analysis from step 3, the picks step 5 cleared, the milestone id, or a next-step pointer. (The step-3 analysis still runs — it informs your own reasoning — but is not printed; the commit's diff is the record of the cleared picks.)
 
-If instead the step-6 dirty-own-path guard fired (the `## Goal` section was unchanged, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the revised goal matched the existing one; nothing committed.`
+If instead the step-6 dirty-own-path guard fired (the `## Goal` section was unchanged, so nothing was committed), do not print the terse line — print this one fixed line and nothing else:
+
+```
+Goal unchanged — the revision matched the existing goal.
+```

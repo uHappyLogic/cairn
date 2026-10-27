@@ -23,7 +23,11 @@ Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resol
 
 ### 1. Read the task list
 
-Read `<MILESTONE_DIR>/TASKS_TODO.md` and confirm it has at least one `##` section. If the file is empty or has no `##` sections, report that the task list is empty and stop.
+Read `<MILESTONE_DIR>/TASKS_TODO.md` and confirm it has at least one `##` section. If the file is empty or has no `##` sections, print this one fixed no-op line and stop:
+
+```
+No tasks to complete — the task list is empty.
+```
 
 ### 2. For each task (top to bottom)
 
@@ -47,8 +51,8 @@ Every dispatch carries the `Milestone directory:` line, holding the `<MILESTONE_
 
 Wait for the agent to return.
 
-- If the agent reports FAILED, stop the loop, report the task name and the failure reason to the user, and stop. Do not proceed to 2c.
-- If the agent returns without an explicit DONE or FAILED status (e.g. it returned early, produced no output, or gave an ambiguous result), treat this as FAILED. Report what was returned, stop the loop, and do not proceed to 2c. **Never attempt to complete the task yourself as a fallback.**
+- If the agent reports FAILED, stop the loop and end the run: print the fixed line `Task run stopped — a task failed.` first, then below it the task name and the failure reason. Do not proceed to 2c.
+- If the agent returns without an explicit DONE or FAILED status (e.g. it returned early, produced no output, or gave an ambiguous result), treat this as FAILED: stop the loop, print the fixed line `Task run stopped — a task agent returned no status.` first, then below it the task name and what was returned, and do not proceed to 2c. **Never attempt to complete the task yourself as a fallback.**
 - On `DONE`, the agent has already **staged** its task's change set path-scoped — the paths it created or edited, plus the two milestone task-list files. You commit that staged index in 2c; you stage nothing yourself and the agent hands back nothing to collect.
 
 #### 2c. Commit the staged change set
@@ -68,4 +72,8 @@ Go back to 2a and process the next task.
 
 On the success path, when `<MILESTONE_DIR>/TASKS_TODO.md` contains no more `##` sections, print exactly one fixed terse status line for the whole run — `All tasks completed.` — and nothing more: no list of the tasks that were completed and no next-step pointer.
 
-If the run committed nothing — every per-task commit in step 2c hit its no-op guard, so nothing was staged across the whole run — do not print the terse success line; instead print a distinct one-line message stating that nothing changed and why (nothing was committed this run).
+If the run committed nothing — every per-task commit in step 2c hit its no-op guard, so nothing was staged across the whole run — do not print the terse success line; instead print this one fixed no-op line:
+
+```
+Task run committed nothing — no task staged a change.
+```

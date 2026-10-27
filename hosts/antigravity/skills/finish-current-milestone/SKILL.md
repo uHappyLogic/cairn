@@ -19,7 +19,7 @@ With no argument the skill finishes the current milestone. The optional leading 
 
 ### 1. Find the current milestone
 
-Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`, from a leading `--milestone <milestone_id>` override when one is given and from the `Current milestone:` line in `milestones/README.md` otherwise. A matching override is honoured whatever the pointer reads, `none` included. If no override was given and the pointer is `none`, stop and tell the user there is no active milestone to finish.
+Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`, from a leading `--milestone <milestone_id>` override when one is given and from the `Current milestone:` line in `milestones/README.md` otherwise. A matching override is honoured whatever the pointer reads, `none` included. If no override was given and the pointer is `none`, that procedure's stop ends the run, its fixed line opening the report.
 
 Read `<MILESTONE_DIR>/requirements.md` and extract the milestone title from its top-level `# Milestone N: <Title>` heading (e.g. `# Milestone 1: Public Release Preparation` → title "Milestone 1 — Public Release Preparation"). The milestone number N comes from the path slug — strip any leading zeros when parsing it as an integer (e.g. `milestone_01_foo` → N is `1`).
 
@@ -47,9 +47,9 @@ Cannot finish the milestone: the following open questions must be resolved first
 Run /answer-open-question for each one, then re-run /finish-current-milestone.
 ```
 
-If the call fails, its one `Error: <reason>` line on stderr is the report: print it and stop. This `list` call is the whole check — never read `open_questions.xml` to make it yourself.
+If the call fails, stop and report it: the fixed line `Cannot finish the milestone: the open-question check failed.` first, then its one `Error: <reason>` line from stderr verbatim below it. This `list` call is the whole check — never read `open_questions.xml` to make it yourself.
 
-Then check that `<MILESTONE_DIR>/TASKS_TODO.md` contains no `##` sections. If tasks remain, stop and tell the user to complete them first (or move them to the next milestone).
+Then check that `<MILESTONE_DIR>/TASKS_TODO.md` contains no `##` sections. If tasks remain, stop: print the fixed line `Cannot finish the milestone: tasks remain to be completed.` first, then below it the advice to complete them first (or move them to the next milestone).
 
 ### 4. Compose the completion summary
 
@@ -119,7 +119,7 @@ Milestone finished.
 
 Do not restate the milestone name, the tasks-completed count, the accomplishment bullets written into `milestones/README.md`, the pointer clear, any `AGENTS.md` sections touched, or the commit. Do not print any next-step or handoff pointer.
 
-If step 8's dirty-own-path no-op guard fired (the pass changed no files, so nothing was committed), do not print the terse success line. Instead print a distinct one-line message stating that nothing changed and briefly why, for example:
+If step 8's dirty-own-path no-op guard fired (the pass changed no files, so nothing was committed), do not print the terse success line. Instead print this one fixed no-op line and nothing else:
 
 ```
 Nothing to finish — no changes to commit.

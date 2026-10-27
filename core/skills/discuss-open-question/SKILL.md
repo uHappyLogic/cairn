@@ -36,7 +36,7 @@ python3 {{PLUGIN_ROOT}}/tools/open_questions.py locate <MILESTONE_DIR> "<Short T
 
 On success it prints the **whole matched block** verbatim — its `<question>` text plus whatever the two annotating passes have embedded so far: the `<alternative>` elements (each with its `id`, what-it-is text, `<advantage>`, and `<drawback>`), and any `<applied-principle>`, `<depends-on>`, and `<recommendation>` children. That block is the question context the deliberation runs on and the **QUESTION** you carry into step 3, and what it holds fixes the block's state for step 3: a block with `<alternative>` elements carries a **frozen alternative set**; one with none is **bare**; a `<recommendation option="…">` element, when present, is the sweep's **standing pick**.
 
-If it fails — no block's `id` matches the title — report the mismatch, quoting the tool's `Error:` line, which lists every id the document holds so the user can retry.
+If it fails — no block's `id` matches the title — stop and report the mismatch: the fixed line `Cannot discuss: no open question matches the title.` first, then below it the tool's `Error:` line quoted verbatim, which lists every id the document holds so the user can retry.
 
 ### 2. Gather context
 

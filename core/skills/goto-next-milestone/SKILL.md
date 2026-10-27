@@ -19,7 +19,7 @@ No arguments. The milestone to activate is discovered automatically.
 
 ### 1. Check prerequisites
 
-Read `milestones/README.md` and find the line whose prefix is `Current milestone:`. If that line is not `Current milestone: none` (i.e. it still points to an active milestone path), stop and tell the user to run `/finish-current-milestone` first.
+Read `milestones/README.md` and find the line whose prefix is `Current milestone:`. If that line is not `Current milestone: none` (i.e. it still points to an active milestone path), stop and print the fixed line `No milestone activated — the current one is not finished.` first, then below it the remedy: run `/finish-current-milestone` first.
 
 ### 2. Pick the lowest candidate
 
@@ -29,7 +29,7 @@ Read `milestones/README.md` and collect the done numbers: the integer N parsed f
 
 The **candidates** are the milestone directories in `milestones/` whose number matches no done number.
 
-If there are no candidates, stop and tell the user to run `/define-milestone-goal` first to create a milestone. Otherwise activate the candidate with the lowest number, without asking the user anything.
+If there are no candidates, stop and print the fixed line `No milestone activated — no undone milestone is defined.` first, then below it the remedy: run `/define-milestone-goal` first to create a milestone. Otherwise activate the candidate with the lowest number, without asking the user anything.
 
 ### 3. Update milestones/README.md
 
@@ -60,4 +60,8 @@ Milestone activated.
 
 Do not add the activated milestone's path or title, or a next-step pointer.
 
-If instead the step-4 dirty-own-path guard fired (the `Current milestone:` pointer was unchanged, so nothing was committed), do not print the terse line — print a single concise line stating that nothing changed and briefly why, e.g. `No change — the pointer line already matched the last commit; nothing committed.`
+If instead the step-4 dirty-own-path guard fired (the `Current milestone:` pointer was unchanged, so nothing was committed), do not print the terse line — print this one fixed line and nothing else:
+
+```
+Activation committed nothing — the pointer already matched the last commit.
+```

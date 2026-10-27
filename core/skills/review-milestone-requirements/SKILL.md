@@ -164,4 +164,10 @@ Follow that terse line with only the two pieces of decision-critical state git n
   - If `list` printed anything → the requirements are **not** ready; the next loop step is to answer them, then re-run this skill.
   - If it printed nothing → say explicitly that the requirements look **ready for `/derive-tasks`**.
 
-**No-op pass.** When the step-5 dirty-own-path guard fires — this pass reconciled, pruned, and surfaced nothing and found no note, so both files are unchanged and nothing was committed — do **not** print `Requirements reviewed.` Instead print a single distinct line stating that nothing changed and briefly why (e.g. "No changes — the question set already matched the recorded decisions and no new gaps surfaced."). Still report the still-open list and convergence verdict above, since that state is unchanged but the user still needs it to decide the next loop step.
+**No-op pass.** When the step-5 dirty-own-path guard fires — this pass reconciled, pruned, and surfaced nothing and found no note, so both files are unchanged and nothing was committed — do **not** print `Requirements reviewed.` Instead print, in its place, this one fixed line:
+
+```
+Requirements unchanged — the review found nothing to reshape.
+```
+
+Still report the still-open list and convergence verdict above, below that line, since that state is unchanged but the user still needs it to decide the next loop step.

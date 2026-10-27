@@ -52,10 +52,11 @@ it is the commit body below.
 
 **Clean-stop-and-point:** if the shared procedure's `lift` call fails — the tool's `Error:`
 line says no block has that id, or that the matched block carries no `<recommendation>`
-element — it stops without changing anything. Relay that `Error:` line to the user and point
-them to run `/recommend-all-open-questions` first (so the question gets an embedded
-recommendation), or to record a literal answer via `/answer-open-question <Short Title>. <answer text>`.
-Commit nothing — go no further.
+element — it stops without changing anything. Print the fixed line
+`Recommendation not recorded — the lift was refused.` first, then below it relay that
+`Error:` line to the user and point them to run `/recommend-all-open-questions` first (so the
+question gets an embedded recommendation), or to record a literal answer via
+`/answer-open-question <Short Title>. <answer text>`. Commit nothing — go no further.
 
 ### 3. Commit the recommendation answer
 
@@ -95,8 +96,8 @@ without user confirmation.
 
 **No-op case:** if step 3's dirty-own-path guard fired — nothing was committed because
 neither file changed (step 2's clean stop on the `lift` call's `Error:` line) — do **not**
-print the terse success line. Instead print a single line stating that nothing was recorded
-and briefly why.
+print the terse success line. The report is step 2's stop message, opening with its fixed
+line.
 
 Then stay available: the user may now ask follow-up questions or request adjustments, with
 the full recording context still in hand.

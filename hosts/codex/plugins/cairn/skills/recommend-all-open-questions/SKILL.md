@@ -60,8 +60,10 @@ python3 ${PLUGIN_ROOT}/tools/open_questions.py list <MILESTONE_DIR>
 ```
 
 It prints the `id` (Short Title) of every `<open-question>` block, one per line in document
-order. If it prints nothing, the document holds no questions: say so and stop. If it fails, its
-one `Error: <reason>` line on stderr is the report: print it and stop.
+order. If it prints nothing, the document holds no questions: print the one fixed no-op line
+`No recommendations embedded — the document holds no questions.` and stop. If it fails, print
+the fixed line `Recommendation pass stopped — the question list failed.` first, then its one
+`Error: <reason>` line from stderr verbatim below it, and stop.
 
 **b. The ones without alternatives — the stop test.** Run
 
@@ -71,10 +73,11 @@ python3 ${PLUGIN_ROOT}/tools/open_questions.py list --without-alternatives <MILE
 
 It prints, in document order, the ids of the blocks carrying no `<alternative>` element. If it
 prints **anything**, this pass cannot run: it picks only against a frozen alternative set, and
-a block without one has nothing to pick from. **Stop without changing anything**, print the
-ids it listed, and point the user at `/provide-alternatives-to-all-open-questions`, which
-supplies those blocks' alternatives — a re-run of this skill afterwards picks for them. Only
-when this call prints nothing does the pass continue.
+a block without one has nothing to pick from. **Stop without changing anything**: print the
+fixed line `Recommendation pass stopped — some questions lack alternatives.` first, then below
+it the ids the call listed, and point the user at `/provide-alternatives-to-all-open-questions`,
+which supplies those blocks' alternatives — a re-run of this skill afterwards picks for them.
+Only when this call prints nothing does the pass continue.
 
 **c. The ones without a recommendation.** Run
 
@@ -313,18 +316,21 @@ three in strict order and print the first that holds.
    committed.
 2. **Else the sort committed** — no call printed `annotation commit landed`, but one printed
    `ordering commit landed`, because the sort moved a block — print `Questions reordered.`
-3. **Else nothing was committed** — no call printed either marker — print no success line;
-   print instead a distinct one-line message stating that nothing changed and why: every block
-   already carried a `<recommendation>` element, or every block step 1c printed was left
-   un-annotated — skipped in step 3 because no option of its set survived, or refused again in
-   step 6 — and the document was already in sorted order.
+3. **Else nothing was committed** — no call printed either marker, so the document was already
+   in sorted order — print no success line; print instead the one fixed no-op line its case
+   gives:
+   - **Every block already carried a `<recommendation>` element** (step 1c printed nothing) —
+     `Nothing embedded or reordered — every question already carries a recommendation.`
+   - **Every block step 1c printed was left un-annotated** — skipped in step 3 because no option
+     of its set survived, or refused again in step 6 —
+     `Nothing embedded or reordered — every question to pick was skipped.`
 
 Each line is the whole of its output and names no identifier: no annotated-vs-skipped
 breakdown, no moved-block count, no per-question listing, and no consumer pointer to the
 `/answer-open-question-with-recommendation` / `/answer-all-open-questions-with-recommendation`
-skills. Those three lines are the whole vocabulary, and the strict order is what keeps each
+skills. Those lines are the whole vocabulary, and the strict order is what keeps each
 true to the git log: the success line means there are new recommendations to answer, the
-reorder line that the document was reordered and nothing else was committed, and the no-op
+reorder line that the document was reordered and nothing else was committed, and a no-op
 line that this run left git history untouched.
 
 Alongside whichever line is chosen, print only the blocks left un-annotated, one per line as
@@ -347,6 +353,6 @@ A block that **was** annotated gets **no console mention at all**, however its f
 reached the document — the first call or the re-send. The embedded block in the diff is the
 whole record.
 
-If there were no questions at all, say so and stop (step 1a) — nothing to report. If step 1b
-stopped the run, its stop message is the whole output — nothing was committed, and nothing
-is reported here.
+If there were no questions at all, or the step-1a call failed, step 1a's line is the whole
+output — nothing to report here. If step 1b stopped the run, its stop message is the whole
+output — nothing was committed, and nothing is reported here.

@@ -47,9 +47,9 @@ procedure's input.
 
 Read `<MILESTONE_DIR>/TASKS_TODO.md`. Locate the `##` section whose heading matches the
 given task name (case-insensitive, partial match is fine). If no section matches, **stop
-without changing anything** and report that no matching task was found, listing the
-available `##` headings so the caller can retry. Do not carry out anything that is not a
-task in `TASKS_TODO.md`.
+without changing anything** and report it with the fixed line `No task matches the given name.`
+first, then the available `##` headings below it, one per line, so the caller can retry. Do
+not carry out anything that is not a task in `TASKS_TODO.md`.
 
 Read the located section in full, from its `##` heading to its trailing `---`, and hold its
 full heading text: it is the `<Task Title>` step 5 passes to the move. Its description is the
