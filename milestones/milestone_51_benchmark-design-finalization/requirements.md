@@ -196,5 +196,9 @@ The tie margin is derived per comparison set from the set's own measured noise, 
 
 The hidden axis keeps equal weight: the overall score stays the unweighted mean of the stated, hidden, and implied axes, and the rank still orders by it. The hidden requirement stays one per prompt, so the axis keeps resting on the phase-1 reading line and the phase-2 yes-or-no test line. The draft adds the reason the hidden axis keeps its third despite its two checks, that it is the outcome the benchmark exists to test and the per-axis columns, the ranges beside the overall, and the measured tie rule absorb the two-check noise as ties, and the ranking table keeps the per-axis columns beside the overall as it does now.
 
+### Invocation time limit
+
+Scenario invocations run with no time, turn, or spend limit, per invocation or per run, as the draft's one-run procedure now stands. A session ends only by itself or by a failed call, its wall-clock duration is recorded in the manifest as today, and no limit-hit end class exists.
+
 ## Out of Scope
 
