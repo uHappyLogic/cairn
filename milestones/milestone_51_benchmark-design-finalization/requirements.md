@@ -40,5 +40,9 @@ A change under `core/` is followed by `uv run scripts/build_hosts.py`, a commit 
 
 Web search and fetch stay enabled in every scenario invocation; the harness restricts neither the tools nor the network. After each run the harness reads the session's tool calls, its web search queries, its fetched URLs, and its shell commands that reach the network, and records them in the run's unpublished record. A run whose calls reached the benchmark repository, its run branches, or its Pages site is marked contaminated, and the draft states whether such a run is excluded from its comparison set or re-run.
 
+### Infrastructure failure policy
+
+The harness classifies how each invocation ends, and on the first infrastructure failure (a usage limit, an API overload, or a network error) it stops the chain and voids the run: the run is recorded with its outputs and a void marker naming the failure's cause and the invocation it hit, it is excluded from rating and scoring, it is never a phase-2 parent, and a fresh run of the same scenario, from the same parent for phase 2, is drawn in its place. Nothing is retried. A void is reported plainly so its cause can be addressed: the harness prints a distinct void line at the stop naming the cause and the invocation, the voided run's tokens stay in its own record and enter no scenario total, and the README reports beside each scenario's runs column how many of its runs were voided and why, while the voided artifacts stay off the published pages.
+
 ## Out of Scope
 
