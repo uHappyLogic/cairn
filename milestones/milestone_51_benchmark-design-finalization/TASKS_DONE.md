@@ -227,3 +227,18 @@ Rewrite the draft's README page section and the rank paragraph: the table's and 
 - The draft refers to the design-gaps report nowhere. Only `ideas/benchmark_for_cairn.md` changed, and `uv run scripts/build_hosts.py --check` passes.
 
 ---
+
+## Separate Draft Examples From Cairn Claims
+
+Pass over the whole draft so every concrete example value (scenario ids, the manifest's plugin and host versions, model ids) is kept but stated once as a hypothetical example tracking no real version, while every statement about the current content of a Cairn document or tool, the tested-claim count in `docs/design-claims.md` first, points at that document without restating a value that moves. Verify by searching the draft for version numbers, model ids, and Cairn document references and confirming each is a marked example or a pointer.
+
+**Verified:**
+
+- One paragraph at the end of "What the benchmark is" states once that every version the draft's examples spell out is hypothetical and tracks no real release, naming the Cairn version 1.8.3 (`1_8_3` inside an id), the host version 2.1.283, and the model names Opus 5.5, Sonnet 5.5, and Fable 5.1 (`opus_5_5` inside an id), any plausible value serving and the real ones being whatever a run records; it also states that Cairn's skills, files, and commit subjects are named as the plugin had them when the draft was written, that the design points at a Cairn document (usage documentation, skill reference, design claims) rather than restating a value from it, and that what the harness matches of a skill's output is copied from the documentation of the plugin commit a delivery names
+- The examples are kept as they stood: the scenario and delivery ids built on `1_8_3` and `opus_5_5_high`, the manifest's plugin version 1.8.3 and host version 2.1.283, and the `models_strategy_1` table's model names; the manifest block is introduced as an example of one phase-1 run, its counts made consistent with the YOLO list (15 planned and made over two loop passes, 16 classifier verdicts with its one reply)
+- The design-claims sentence states no tested count: `docs/design-claims.md` is said to state which of its metrics Cairn's own test suite runs, read there and never restated because it changes as Cairn adds tests; the claims it relies on are named by substance (finding the open questions before the work starts, advice from the live project) rather than by number, and the step-counting metrics are given as an illustration rather than as the document's list
+- Searching the draft for version numbers finds only the examples the note names, placeholder and cell-format values, and Mermaid 11.6, a fixed minimum of a third-party renderer and no Cairn fact; searching for model ids finds only the names the note marks and the alias `opus` given as an example of an alias
+- Searching the draft for Cairn document references (usage documentation and usage snippets, skill reference, design claims, test suite, changelog) finds only pointers: each names the document and restates no value from it, no model or effort setting, fixed console line, quoting rule, claim number, or tested count
+- Only `ideas/benchmark_for_cairn.md` changed, the draft refers to the design-gaps report nowhere, and `uv run scripts/build_hosts.py --check` passes
+
+---
