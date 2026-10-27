@@ -92,5 +92,9 @@ The prompts state the entry point: prompt 1 asks for the single self-contained H
 
 Cairn's usage documentation changes and the draft does not: docs/ways-of-using-cairn.md is rewritten to the draft's models_strategy_1 allocation, the sonnet alias at medium for the init, define, goto, and finish lines, fable at xhigh for the starting-state, review, recommend, and derive lines, and opus at high for complete-all-tasks, with the alternatives, sweep, and hand-answer lines unchanged, and the prose sentences that restate each section's settings rewritten to match. models_strategy_1 keeps its table and its "written from Cairn's own usage snippets" sentence, which thereby becomes true. This is a docs-only change needing no host rebuild.
 
+### Bounded review loop
+
+The delivery model gains a bounded loop: a named span of lines, review through sweep, repeated up to a count K declared in the delivery's definition, so a change of K is a new delivery id. Both primary cairn deliveries use it, the assess delivery's planned turn staying in the first pass only. The exit signal is a fixed, identifier-free convergence line that Cairn's review skill gains in this milestone, changed under core/ with the hosts rebuilt and both test runs green, which the harness matches in the review invocation's final message; on a match the harness skips the rest of the span and goes to the derivation line. When K passes end without convergence the chain continues to the derivation line, with no escalation pass. The multi-prompt mirror takes the loop's bound K unrolled, so its line count stays fixed and never below a cairn run's count.
+
 ## Out of Scope
 
