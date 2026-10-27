@@ -1,1 +1,125 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Left-open implied overlap">
+    <question>Six of prompt 1&apos;s and three of prompt 2&apos;s deliberately-left-open items (team names, undoing an award, skipping a question, progress shown, keyboard control, reload survival; the built-in questions surviving, choosing a set at the start, answer validation) also appear as scored implied-requirement lines, so a minimal choice the prompt leaves open loses points on the implied axis. Where an item appears in both lists, which list keeps it: is it a scored implied line, an unscored open decision, or both with the overlap stated as intended?</question>
+  </open-question>
+  <open-question id="Manual clarify delivery">
+    <question>The assess delivery differs from every manual delivery in two things at once, Cairn&apos;s structure and a planned stakeholder turn, and no manual delivery gets a planned turn, so the assess gain over manual cannot be attributed to Cairn alone. Does the benchmark add a manual delivery with a planned turn (the model lists the questions it needs answered, the operator answers them under the same disclosure rule, then the build instruction follows), and if so is it a primary delivery with a README row or an analysis-only control?</question>
+  </open-question>
+  <open-question id="Bearing-question test">
+    <question>The operator discloses a hidden requirement in reply to any question whose answer the statement changes, which a catch-all such as &quot;anything else I should know before I start?&quot; satisfies, so the hidden axis can reward a vague closing question rather than a surfaced one. What test decides that a question bears on a hidden requirement?</question>
+  </open-question>
+  <open-question id="Reply need classification">
+    <question>After each invocation the harness hands the final message to the operator; a message that asks gets a reply while one that reports completion, a stop, or an error, or closes with an offer, gets none, but nothing says who makes that classification, and it is not recorded. How is the reply-or-no-reply classification of a final message made and recorded?</question>
+  </open-question>
+  <open-question id="Host configuration isolation">
+    <question>Every invocation loads the user-level configuration beside the plugin under test (other plugins, MCP servers, hooks, settings); the pre-flight checks only that Cairn is not installed at user level, and the manifest&apos;s user_config digests can detect a change but cannot recreate the configuration on another machine. How is the host configuration a run executes under isolated from the maintainer&apos;s own and made reproducible?</question>
+  </open-question>
+  <open-question id="Web tool access">
+    <question>Both Cairn agents and every manual invocation run with web search and fetch enabled, and once the Pages site and the run branches are public a web search for the project&apos;s name finds earlier artifacts and the repository holding the hidden requirements. Are web search and fetch tools disallowed in scenario invocations?</question>
+  </open-question>
+  <open-question id="Filesystem reach of runs">
+    <question>From its clone an agent can read the benchmark checkout, whose inputs area holds the hidden-requirement statements, the sibling clones in the shared scratch directory, and other runs&apos; session transcripts under the host&apos;s projects directory, and the maintainer&apos;s notes record that Docker Desktop blocks these runs on the development machine. What confinement keeps a run from reading the benchmark checkout, other clones, and other runs&apos; transcripts, and on what machine do runs then execute?</question>
+  </open-question>
+  <open-question id="Execution environment input">
+    <question>Nothing states what OS, tools on PATH, and browsers a run finds, though these shape what every scenario can build and what the rater can drive. Is the execution environment declared as a versioned shared input of a comparison set, recorded in the manifest only, or left unrecorded?</question>
+  </open-question>
+  <open-question id="Stop detection signal">
+    <question>A Cairn skill that stops on its own precondition prints a message and exits 0, so the harness, which stops the chain only on a non-zero exit, carries on past it and can record a chain that closed an empty milestone as every invocation made. By what signal does the harness detect that an invocation stopped on a skill&apos;s own check rather than completing?</question>
+  </open-question>
+  <open-question id="Fixed stop line wording">
+    <question>Each skill&apos;s success line is fixed and identifier-free, but apart from the bootstrap&apos;s no-op line the no-op and precondition-stop messages are prose whose wording the files only exemplify, so a harness matching final messages can recognize success but not which stop occurred. Does Cairn fix the wording of every skill&apos;s no-op and stop lines in this milestone?</question>
+  </open-question>
+  <open-question id="Finish with no tasks">
+    <question>finish-current-milestone closes a milestone whenever TASKS_TODO.md holds no section, so a chain whose derivation line refused to run finishes an empty milestone, clears the pointer, and leaves a tree that looks like a completed chain. Should the finish skill refuse to close a milestone that recorded no completed task?</question>
+  </open-question>
+  <open-question id="Infrastructure failure policy">
+    <question>An early stop is counted as a result, which also covers a usage limit, an API overload, or a network error reaching an invocation as a failed call, and Cairn spends the most tokens so is the likeliest to hit them. What does the harness do with an invocation that ends in an infrastructure failure rather than in the model&apos;s own stop?</question>
+  </open-question>
+  <open-question id="Invocation time limit">
+    <question>No scenario invocation carries a time or turn limit while the rater has one, so a runaway session can hold a run open indefinitely. Does each invocation get a time or turn limit, and how is an invocation that hits it classified?</question>
+  </open-question>
+  <open-question id="Rater calibration gate">
+    <question>A new rating writes new browser tests for every checklist line, so two ratings of one artifact can test the same line at different strictness, and the draft&apos;s claim that a second rating gets the same number holds only for re-running an existing test. What must a rater version pass before it may rate a comparison set, and what is the acceptance rule?</question>
+  </open-question>
+  <open-question id="Repeat rating agreement">
+    <question>The lost count compares two independent ratings, the parent&apos;s and the child&apos;s, so rater noise shows as lines lost or gained when nothing changed, and no agreement figure is reported anywhere. Is a sample of each comparison set&apos;s artifacts rated twice with the agreement reported beside the scores, and at what sample size?</question>
+  </open-question>
+  <open-question id="Checklist line test specs">
+    <question>Each checklist line names a behaviour and nothing more, so a weak test (an undo button exists) and a strict one (the award is actually reversed) both satisfy it. Does each line carry a short specification of the case its test must drive and what it must assert?</question>
+  </open-question>
+  <open-question id="Not-proved scoring">
+    <question>A test line the rater could not drive the artifact to scores zero like a missing behaviour, with the not-proved count reported beside the axis, which penalises an artifact a browser test finds hard to drive (a canvas-based UI) regardless of what a host could do with it. How is a not-proved line scored?</question>
+  </open-question>
+  <open-question id="Rater artifact scope">
+    <question>The rater receives the entry file and the files it loads, so an editor page reached only by a link or a saved set file beside the HTML never reaches it and every line about it fails as not proved. What part of a run&apos;s tree does the rater receive?</question>
+  </open-question>
+  <open-question id="Entry point detection">
+    <question>The run script detects a root index.html, and a run that put its entry elsewhere gets the manifest&apos;s entry field by hand, against the rule that nothing about a run is done by hand and by a person who sees the manifest&apos;s scenario. How is a run&apos;s entry point determined when it is not a root index.html?</question>
+  </open-question>
+  <open-question id="Model strategy source">
+    <question>The reference strategy models_strategy_1 is said to be written from Cairn&apos;s own usage snippets, but only three of its twelve rows match docs/ways-of-using-cairn.md, which assigns Opus at high to the bootstrap, define, goto, and finish lines, Fable at high to the starting-state, review, recommend, and derive lines, and Opus at xhigh to task completion. Which of the two changes to match the other, or do they diverge with the &quot;as it is used&quot; claim dropped?</question>
+  </open-question>
+  <open-question id="Bounded review loop">
+    <question>docs/ways-of-using-cairn.md repeats the review pass until it reports convergence, raises the review line to a stronger model for a stuck milestone, and re-runs task completion after a usage-limit stop, none of which a fixed message list can express, and the YOLO chain runs the review once. Does the delivery model gain a bounded loop (a named span of lines repeated up to a declared count until the review line prints its convergence verdict), with the bound part of the delivery?</question>
+  </open-question>
+  <open-question id="Goal text in define line">
+    <question>The define line records &quot;Carry out the task described in PROJECT.md.&quot; verbatim as milestone 1&apos;s goal, and phase 2 overwrites that file, so from then on the recorded goal points at prompt 2 and the phase-2 starting-state pass reads a milestone whose goal no longer describes what it built. What text does the define line carry as the milestone goal?</question>
+  </open-question>
+  <open-question id="Runs per scenario">
+    <question>Phase 1 is run for every scenario &quot;as many times as the set calls for&quot;, with no number set and no stopping rule, so a margin between two scenarios can be noise. How many runs per scenario does a comparison set require?</question>
+  </open-question>
+  <open-question id="Score spread reporting">
+    <question>The ranking table has a runs column but no spread or interval beside any score, so a reader cannot tell a margin between two scenarios from noise. Is a per-run spread or interval reported beside every score, and where?</question>
+  </open-question>
+  <open-question id="Rank tie threshold">
+    <question>The rank orders scenarios by overall score and breaks ties by cost, with no threshold below which two scores count as equal, so a difference within noise still orders two rows. Is there a margin under which two overall scores tie and cost decides?</question>
+  </open-question>
+  <open-question id="Radar curve selection">
+    <question>Each family&apos;s radar curve is drawn from its highest-ranked scenario, and the best of several noisy scores is biased upward, more so for Cairn, which has many configurations (versions times strategies) where manual has few. Which scenario is each family&apos;s radar curve drawn from?</question>
+  </open-question>
+  <open-question id="Hidden axis weight">
+    <question>The hidden-requirements axis rests on two checks per run (one reading line in phase 1 and one test line in phase 2) yet weighs one third of the overall score, as much as roughly thirty-seven implied lines. Does the hidden axis keep equal weight in the overall score, or is it reported beside an overall computed without it?</question>
+  </open-question>
+  <open-question id="Comparison set definition">
+    <question>A comparison set is one seed tag and one version of each prompt, yet an operator change must also start a new set, the analysis groups by rater version, and the host CLI auto-updates across a campaign that spans several days. Which versions define a comparison set?</question>
+  </open-question>
+  <open-question id="Scenario roster">
+    <question>Nothing lists which scenarios a comparison set must contain, so &quot;complete&quot; is undefined and the strongest manual strategy can be left out while the radar claims to compare against it. Does a comparison set declare a roster of scenarios that must all be rated before it counts as complete, and what must the roster hold?</question>
+  </open-question>
+  <open-question id="Trend across input changes">
+    <question>The published trend follows per-scenario aggregates across comparison sets and plugin commits, so a change to the inputs and a change to the plugin are mixed in one line, against the rule that a difference is attributed only to what differs between definitions. How does the trend continue when a shared input changes?</question>
+  </open-question>
+  <open-question id="Concurrent runs">
+    <question>Phase 2 starts as soon as the parent&apos;s Run: commit exists, which implies runs in parallel, yet every run&apos;s pre-flight requires the benchmark checkout to be on a clean main and every run commits to it. Are runs sequential, or how do concurrent runs share the benchmark checkout?</question>
+  </open-question>
+  <open-question id="Hidden-requirement pilot">
+    <question>Each hidden requirement&apos;s evidence must settle the question once asked while the prompt alone gives no reason to ask, and nothing has tested this: prompt 1&apos;s &quot;ten questions of its own&quot; may already invite the topic question, and prompt 2&apos;s &quot;keep them for the next party&quot; sits close to the export convention. What procedure and acceptance rule calibrate each prompt&apos;s hidden requirement before scored runs?</question>
+  </open-question>
+  <open-question id="Over-ten question scoring">
+    <question>The animal reading line scores the count of animal questions out of ten, which is undefined for an artifact that holds more than ten questions or draws ten per game. How is that line scored for such an artifact?</question>
+  </open-question>
+  <open-question id="Animal item rule">
+    <question>&quot;About an animal&quot; has borderline items, such as the zoo&apos;s visitor count or how many animals live at the zoo, while a reading line promises one defensible answer per item. Does the hidden-requirement entry state a classification rule for borderline items?</question>
+  </open-question>
+  <open-question id="Public inputs leak">
+    <question>The benchmark&apos;s main branch is public, so the hidden requirements, the operator records, and every artifact are public and future models will train on them, wearing down the no-canned-solution requirement over time. How does the benchmark limit or account for its inputs and results leaking into training data?</question>
+  </open-question>
+  <open-question id="Input freeze">
+    <question>Each prompt&apos;s checklist is derived from the draft&apos;s project section, which no version pins, and nothing freezes the checklist and hidden requirements before a comparison set&apos;s first scored run. Are the checklist and hidden-requirement entries frozen before the first scored run of a set, and how?</question>
+  </open-question>
+  <open-question id="Superseded sets on page">
+    <question>The README shows only the latest complete comparison set, so a seed bump replaces a bad result on the landing page with no trace. Does the page keep superseded comparison sets linked with the reason each was superseded?</question>
+  </open-question>
+  <open-question id="Operator prompt history">
+    <question>The operator&apos;s input is the prompt text as committed, which in phase 2 is prompt 2 alone, so a phase-2 question about the game&apos;s existing flow reaches a stakeholder who does not know the game they asked for in phase 1. Which prompts does the operator receive in phase n?</question>
+  </open-question>
+  <open-question id="Table claim wording">
+    <question>The ranking-table section opens by saying the table shows that Cairn beats the other approaches, while the radar text says the page states no claim the data does not. Does that sentence change to say the table shows whether Cairn beats them?</question>
+  </open-question>
+  <open-question id="Gaps report fate">
+    <question>Every gap in ideas/benchmark_design_gaps.md is to end as a decision in the draft, and the report&apos;s Where references are line numbers that shift with every edit of the draft. What happens to the report once its gaps are resolved?</question>
+  </open-question>
+  <open-question id="Stale Cairn facts">
+    <question>The draft&apos;s examples name Cairn 1.8.3 and a host binary 2.1.283 while this repository&apos;s VERSION reads 1.9.0, and it says docs/design-claims.md states that only one claim is tested where that document now says two. Are such facts refreshed to the current state in this milestone, or rewritten so the draft no longer states a fact that moves?</question>
+  </open-question>
+</open-questions>
