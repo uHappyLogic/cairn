@@ -44,5 +44,9 @@ Web search and fetch stay enabled in every scenario invocation; the harness rest
 
 The harness classifies how each invocation ends, and on the first infrastructure failure (a usage limit, an API overload, or a network error) it stops the chain and voids the run: the run is recorded with its outputs and a void marker naming the failure's cause and the invocation it hit, it is excluded from rating and scoring, it is never a phase-2 parent, and a fresh run of the same scenario, from the same parent for phase 2, is drawn in its place. Nothing is retried. A void is reported plainly so its cause can be addressed: the harness prints a distinct void line at the stop naming the cause and the invocation, the voided run's tokens stay in its own record and enter no scenario total, and the README reports beside each scenario's runs column how many of its runs were voided and why, while the voided artifacts stay off the published pages.
 
+### Left-open implied overlap
+
+An item that appears both in a prompt's deliberately-left-open list and in its implied-requirement list is split wherever a choice among ways remains: the implied line scores only that some way through exists, and the choice among ways stays an unscored left-open item. An item with no such choice left goes to exactly one list by a test the draft states: implied when a quiz lacking it would be called broken or unfinished by any builder, left open when lacking it is a defensible product choice, with the verdict recorded per item. The draft states both rules, and neither list is thinned by a blanket rule.
+
 ## Out of Scope
 
