@@ -180,5 +180,9 @@ A comparison set requires three phase-1 runs per scenario for every scenario of 
 
 Before a comparison set's first scored run, the set's definition names one reference scenario per family, for example both cairn deliveries for the current release under models_strategy_1, the multi-prompt control mirroring that yolo scenario, and one declared manual_prompt pair, and each radar curve is drawn from its declared scenario whatever the table's ranking turns out to be; every other configuration appears only in the table. With the roster's rule-named strongest manual pair as the manual reference, the baseline is the a-priori strongest rather than a best-of-several pick.
 
+### Score spread reporting
+
+Each score cell of the README ranking table (overall, the three axes, and the lost count) carries the minimum and maximum over the scenario's runs beside its mean, written in the cell as, for example, 82 (76–88), each run counted as one phase-1 run with its phase-2 child, whose two prompt scores are averaged as the scenario mean is; the analysis output carries the same ranges and every run's individual scores. Cost, time, invocations, and sessions stay means without spread, and the radar draws means only.
+
 ## Out of Scope
 
