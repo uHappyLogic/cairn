@@ -172,5 +172,9 @@ A comparison set declares a roster of scenarios before its first scored run, fix
 
 Everything stays public. The draft keeps a canary in the inputs and a dated contamination flag on a comparison set whose inputs may have reached its models' training data, read from published training cutoffs against the inputs' publication date; current frontier cutoffs predate the draft, so the first sets run unflagged. A flagged set, or inputs older than a stated age where no cutoff is published, triggers a rotation before the next headline comparison set: the rotation brings new hidden requirements with new seed evidence, and the prompts or the whole project change when the leak reaches the project's own rules. Only then is the old project retired, still public.
 
+### Runs per scenario
+
+A comparison set requires three phase-1 runs per scenario for every scenario of its roster, declared before the set's first scored run with no stopping rule, each with its own phase-2 child, so every row rests on three runs per prompt and gives a median and a range per cell. A development or ablation run outside the roster keeps the fast loop's single run.
+
 ## Out of Scope
 
