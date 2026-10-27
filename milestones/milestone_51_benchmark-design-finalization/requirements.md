@@ -64,5 +64,9 @@ The harness creates a fresh host configuration directory for each run from a com
 
 Cairn fixes the wording of every skill's no-op and stop lines in this milestone. Every skill gets a fixed, unique, identifier-free first line for each distinct no-op and precondition-stop condition, with variable detail allowed after it, as one plugin-wide convention extending the existing fixed-success-line invariant. The lines are listed in docs/skill-reference.md, the CLAUDE.md terse-reporting invariant is extended to cover them, and a pytest test checks each listed line verbatim against the rendered skill files and checks that every line is unique, so the lines are a contract a harness can match across versions.
 
+### Finish with no tasks
+
+finish-current-milestone stops, writing and committing nothing, when the milestone's open_questions.xml still holds any question block, read through the open-question tool's list or the skill's own read of the file, whatever TASKS_DONE.md holds. It adds no check on completed tasks and no override flag: a decision-only milestone that answered everything still closes, and a milestone abandoned with open questions is closed by answering them. This targets the one failure path, a derivation refused on standing questions.
+
 ## Out of Scope
 
