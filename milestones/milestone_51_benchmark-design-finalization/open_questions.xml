@@ -1,33 +1,4 @@
 <open-questions>
-  <open-question id="Rater artifact scope">
-    <question>The rater receives the entry file and the files it loads, so an editor page reached only by a link or a saved set file beside the HTML never reaches it and every line about it fails as not proved. What part of a run&apos;s tree does the rater receive?</question>
-    <recommendation option="Reference closure from entry">A linked editor page and its assets reach the rater while every file the artifact never points at, process files included, stays out, so the scope is still defined by the artifact itself and blindness needs no exclusion list.</recommendation>
-    <alternative id="Reference closure from entry">
-      The harness hands the rater the entry file plus every file in the run&apos;s tree reachable from it by load or by link (src and href attributes, script and style imports, fetch targets that name a file present in the tree), followed transitively, and nothing else of the tree.
-      <advantage>A linked editor page and its assets reach the rater while any file the artifact never points at, every process file included, stays out, so the scope is still defined by the artifact itself and needs no exclusion list.</advantage>
-      <drawback>A file nothing references, such as a set file beside the HTML meant to be opened through a file picker, is still missed, as is a target built in script at run time; the crawler is a new piece of harness logic whose misses show as not-proved lines indistinguishable from the artifact&apos;s own.</drawback>
-    </alternative>
-    <alternative id="Entry and loaded files">
-      Keep the draft&apos;s scope unchanged: the rater gets a copy of the entry file and the files it loads, served over a local address and as a file, with prompt 2&apos;s &quot;whether the editor is part of the same file&quot; left open as it stands.
-      <advantage>Nothing changes in the draft, and the rater gets exactly what a host opening the entry file runs: no process file (milestones/, CLAUDE.md, PROJECT.md, notes, a .claude/ directory) can reach it, so blindness needs no exclusion list.</advantage>
-      <drawback>An editor page reached only by a link, or a set file committed beside the HTML, never reaches the rater, so a multi-file answer to a question the prompt deliberately leaves open loses every editor line as not proved; the score then measures a layout choice rather than whether the editor exists.</drawback>
-    </alternative>
-    <alternative id="Loaded files with single-file rule">
-      Keep the entry-and-loaded scope, and close the gap on the artifact side instead: drop &quot;whether the editor is part of the same file&quot; from prompt 2&apos;s left-open list and state that the artifact stays the one self-contained file prompt 1 asked for, so every conforming artifact is wholly inside what the rater receives.
-      <advantage>The rater&apos;s scope stays the narrowest and simplest to state, and it becomes sufficient by construction, since prompt 1&apos;s single-file stated line, carried into prompt 2&apos;s checklist, already makes a split artifact fail that line.</advantage>
-      <drawback>It changes a shared input and removes a decision the draft deliberately left open for phase 2 to exercise, and a split artifact is still penalised twice (the single-file line and every editor line as not proved), so the rater&apos;s scope rather than the checklist decides how much a split costs.</drawback>
-    </alternative>
-    <alternative id="Web-asset files of the tree">
-      The harness hands the rater every file of the run&apos;s tree whose type is a web asset or data file (HTML, CSS, JavaScript, JSON, CSV, plain text, images, audio, fonts), outside .git, milestones/, and dot-directories, and leaving out the seed&apos;s own files (README.md, CLAUDE.md, PROJECT.md) whatever their type.
-      <advantage>A linked editor page and an unreferenced set file beside the HTML both reach the rater, while Markdown notes, plans, and other prose a run leaves behind stay out by type, so a run&apos;s process traces are unlikely to name its scenario to the rater.</advantage>
-      <drawback>A data file in a type the list does not name is dropped and fails its lines as not proved, so the list has to be maintained per project and becomes part of the rater version; a process note a run wrote as a .txt or .json still passes the filter.</drawback>
-    </alternative>
-    <alternative id="Whole tree minus process paths">
-      The harness hands the rater the run&apos;s whole tree except a fixed exclusion list: .git, milestones/, CLAUDE.md, PROJECT.md, and dot-directories such as .claude/, as the design-gaps report&apos;s gap 8 proposes.
-      <advantage>Nothing the artifact could need is missed, whatever its layout or file types, so a not-proved line can no longer be caused by the scope, and the rule is one short list the harness applies with no parsing.</advantage>
-      <drawback>Any file a run writes outside the list (a NOTES.md, a plan, a README edited to describe the workflow) reaches the rater and can tell it which family produced the artifact, so blindness depends on the list anticipating every delivery&apos;s habits rather than on what the harness hands over by construction.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Entry point detection">
     <question>The run script detects a root index.html, and a run that put its entry elsewhere gets the manifest&apos;s entry field by hand, against the rule that nothing about a run is done by hand and by a person who sees the manifest&apos;s scenario. How is a run&apos;s entry point determined when it is not a root index.html?</question>
     <recommendation option="Prompt names the file">Fixing index.html in the shared prompt reduces detection to an existence check with no heuristic and no person, and it is the one option under which a phase-2 game page plus a separate editor page at the root cannot yield a null entry.</recommendation>

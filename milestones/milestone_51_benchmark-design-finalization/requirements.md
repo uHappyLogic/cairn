@@ -80,5 +80,9 @@ Every test line gets a short specification written now into the draft's project 
 
 A not-proved verdict does not stand on the rater's first report: the harness gives that line one more attempt by a fresh rater session under the same rater definition, and only a second not-proved scores zero, like an absent line. The line still counts in the fixed denominator, a line the second attempt proves passes, and the not-proved count beside each axis counts only verdicts that survived the re-attempt. The pass-or-fail line and the fixed denominator are kept, at the cost of a second rater session only on lines that failed to prove.
 
+### Rater artifact scope
+
+The harness hands the rater the entry file plus every file in the run's tree reachable from it by load or by link (src and href attributes, script and style imports, and fetch targets that name a file present in the tree), followed transitively, and nothing else of the tree. A linked editor page and its assets therefore reach the rater, while every file the artifact never points at, process files included, stays out, so the scope is defined by the artifact itself and blindness needs no exclusion list.
+
 ## Out of Scope
 
