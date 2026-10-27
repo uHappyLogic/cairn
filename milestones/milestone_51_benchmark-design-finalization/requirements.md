@@ -188,5 +188,9 @@ Each score cell of the README ranking table (overall, the three axes, and the lo
 
 The ranking table's opening sentence is recast as an explicitly refutable expectation in the style the phase-2 paragraph already uses, stating in advance that Cairn is expected to beat the other approaches and naming the table as what would refute it, with the section's purpose sentence folded in. The radar's opening is recast the same way: it is where the expected gain is located by axis, its curves are drawn whatever they show, and a Cairn curve inside a manual one refutes the expectation on that axis; the radar's existing list of axes where the gain is expected stays as the stated expectation.
 
+### Rank tie threshold
+
+The tie margin is derived per comparison set from the set's own measured noise, by a declared statistical bound on the difference of two scenarios' per-run overall scores, for example overlapping intervals at a declared level, widened by the rater agreement figure where one is reported. Scenarios within that margin of their group's top row share one rank number and are marked as tied, and cost plays no part in the rank, so rows are ordered only where the set's own per-run ranges separate them.
+
 ## Out of Scope
 

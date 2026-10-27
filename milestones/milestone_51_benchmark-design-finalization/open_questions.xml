@@ -37,48 +37,8 @@
       <drawback>Chains differ greatly in length, from the single manual message to Cairn&apos;s eleven or more lines, so one deadline either binds Cairn or is slack for manual. It also lets a runaway early invocation use up the time of every later line, so the stop shows up at a line that did nothing wrong.</drawback>
     </alternative>
   </open-question>
-  <open-question id="Rank tie threshold">
-    <question>The rank orders scenarios by overall score and breaks ties by cost, with no threshold below which two scores count as equal, so a difference within noise still orders two rows. Is there a margin under which two overall scores tie and cost decides?</question>
-    <recommendation option="Measured margin, shared rank">Rows are ordered only where the set&apos;s own per-run ranges separate them and tied rows share a rank, so the headline reading is claimed only when the data supports it, no constant has to be argued for, and cost stays unranked as the draft states.</recommendation>
-    <alternative id="Measured margin, shared rank">
-      The margin is derived per comparison set from the set&apos;s own measured noise, by a declared statistical bound on the difference of two scenarios&apos; per-run overall scores (for example overlapping intervals at a declared level, widened by the rater agreement figure where one is reported); scenarios within it of their group&apos;s top row share one rank number and are marked as tied, and cost plays no part in the rank.
-      <advantage>The most defensible statement the page can make: rows are ordered only where the set&apos;s own data separates them, and the benchmark never weighs cost against quality for the reader.</advantage>
-      <drawback>Depends on several runs per scenario and a computed spread, owned by the Runs per scenario and Score spread reporting questions; it carries the most analysis machinery, the threshold varies between comparison sets, and with few runs most rows may tie, leaving the table&apos;s headline reading and the radar&apos;s &quot;highest-ranked scenario&quot; (the Radar curve selection question) without a clear order.</drawback>
-    </alternative>
-    <alternative id="No tie margin">
-      The rank stays as the draft has it: scenarios are ordered by the exact overall score, only two exactly equal scores tie, and cost breaks such a tie in favour of the cheaper scenario. No margin is declared, and whether a margin between two rows is noise is left to whatever the table reports beside the scores.
-      <advantage>Nothing new to define, justify, or keep in step: the rank is a total order computed mechanically from the per-axis means, with no constant anyone has to argue for and no grouping rule for chains of near-equal scores.</advantage>
-      <drawback>Overall scores are means of fractions, so exact equality practically never occurs and the cost rule is dead text; a difference well inside noise still orders two rows, so the table&apos;s intended reading (Cairn rows above the best manual row) can rest on noise, and a reader can tell otherwise only if the table reports a spread, which the Score spread reporting question owns.</drawback>
-    </alternative>
-    <alternative id="Display precision, cost decides">
-      Overall scores are compared at the precision the table prints them (for example whole points on the 0 to 100 scale): two scores that print the same tie, and the cheaper scenario ranks higher. No noise-based margin is declared.
-      <advantage>The rank never contradicts what the reader sees, since two rows showing the same overall are never ordered by an invisible decimal, and the existing cost rule becomes live without introducing a tuned constant.</advantage>
-      <drawback>Print precision is a formatting choice, not a noise estimate: differences of a few points, which can still be rater or run noise, keep ordering rows, so the gap the question raises is narrowed only at its smallest end.</drawback>
-    </alternative>
-    <alternative id="Display precision, shared rank">
-      Overall scores are compared at the precision the table prints them: two scores that print the same share one rank number and are marked as tied, and their listing order within the tie carries no claim (cost no longer breaks ties). No noise-based margin is declared.
-      <advantage>Removes the contradiction between the draft&apos;s rule that cost is never ranked and its use of cost as a tie-breaker, while keeping the rank consistent with what is printed and adding no constant.</advantage>
-      <drawback>Like the other print-precision option it leaves noise-sized differences ordering rows; and a shared top rank within a family leaves the radar&apos;s &quot;highest-ranked scenario&quot; ambiguous, which needs a rule from the Radar curve selection question.</drawback>
-    </alternative>
-    <alternative id="Fixed margin, cost decides">
-      The draft declares one fixed margin in points on the 0 to 100 overall score, set before a comparison set&apos;s first scored run and versioned with the analysis; two scenarios whose overall scores differ by less than it tie, and the cheaper one ranks higher. Tie groups are formed from the top of the order down, each row joining the group whose top row it is within the margin of, so chains of near-equal scores resolve one way.
-      <advantage>A quality difference too small to trust can no longer put an expensive scenario above a cheaper one, which is the reading the cost tie-break was written for; the rule is simple, reproducible from the columns, and identical across comparison sets, so ranks under it compare over the trend.</advantage>
-      <drawback>The margin&apos;s value is chosen before any noise has been measured, so it is a guess that may be too tight to matter or too loose to separate real differences; it brings cost into the rank, against the draft&apos;s statement that cost is never ranked, and can lift a cheap manual row above a Cairn row on the page&apos;s headline reading.</drawback>
-    </alternative>
-    <alternative id="Fixed margin, shared rank">
-      The draft declares one fixed margin in points on the 0 to 100 overall score, set before a comparison set&apos;s first scored run and versioned with the analysis; scenarios whose overall scores fall within it of their group&apos;s top row share one rank number and are marked as tied, and cost plays no part in the rank, staying a column the reader weighs.
-      <advantage>Says exactly what the data supports, that the tied rows are indistinguishable on quality, without the benchmark weighing cost for the reader, which keeps the rank consistent with the draft&apos;s rule that cost is never ranked.</advantage>
-      <drawback>The margin is still a guess made before noise is measured; tied groups make the table&apos;s ordering partly uninformative, and the radar&apos;s &quot;highest-ranked scenario&quot; becomes ambiguous within a tied group, which needs a rule from the Radar curve selection question.</drawback>
-    </alternative>
-    <alternative id="Measured margin, cost decides">
-      The margin is not a constant but is derived per comparison set from the set&apos;s own measured noise: two scenarios tie when the difference between their overall scores lies within a declared statistical bound computed from their per-run scores (for example overlapping intervals at a declared level, widened by the rater agreement figure where one is reported), and within a tie the cheaper scenario ranks higher. The bound&apos;s formula and level are declared in the draft before the first scored run.
-      <advantage>A tie means precisely &quot;this difference is within the noise the set actually showed&quot;, so the rank tracks the data rather than a guessed constant, and cost decides only where quality genuinely cannot.</advantage>
-      <drawback>It exists only if the set carries several runs per scenario and computes a per-run spread, axes owned by the Runs per scenario and Score spread reporting questions (with one run per scenario no bound can be computed); the analysis grows more complex, the threshold moves between comparison sets so ranks are not formed under one rule over the trend, and cost enters the rank against the draft&apos;s statement that it is never ranked.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Hidden axis weight">
     <question>The hidden-requirements axis rests on two checks per run (one reading line in phase 1 and one test line in phase 2) yet weighs one third of the overall score, as much as roughly thirty-seven implied lines. Does the hidden axis keep equal weight in the overall score, or is it reported beside an overall computed without it?</question>
-    <depends-on question="Rank tie threshold" option="Measured margin, shared rank"/>
     <recommendation option="Keep equal weight">The hidden axis is the outcome the benchmark exists to test, so it keeps full influence on the rank, with the per-axis columns and ranges beside the overall and the measured tie rule absorbing the two-check noise as ties rather than a weight burying the signal.</recommendation>
     <alternative id="Keep equal weight">
       The overall score stays the unweighted mean of the stated, hidden, and implied axes, and the rank still orders by it. The hidden requirement stays one per prompt, so the axis keeps resting on the phase-1 reading line (a count out of ten) and the phase-2 yes-or-no test line. The draft adds the reason the hidden axis keeps its third despite its two checks, and the ranking table keeps the per-axis columns beside the overall as it does now.
