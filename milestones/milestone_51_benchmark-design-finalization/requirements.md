@@ -104,5 +104,9 @@ The harness substitutes the committed PROJECT.md text of the current phase into 
 
 A comparison set is defined by five versions: the seed tag, one version of each prompt per phase as the draft's "One versioning" rule already states, the operator definition, the rater definition, and one exact host CLI version. The host version is pinned: the set declares it, the harness switches off the host's auto-update for the campaign, and the pre-flight refuses a run whose installed host version differs. The rater version is part of the set's identity but the runs are not: a new rater version re-rates the existing runs, and those ratings form a new set over the same runs without re-running any scenario, so a rater fix costs a re-rating of immutable snapshots rather than a new campaign of runs.
 
+### Concurrent runs
+
+Runs are strictly sequential: at most one run of the procedure is in progress at a time on the one benchmark checkout, enforced by the harness through a run lock a run refuses to start while another holds, rather than by convention. The one-run procedure keeps its clean-main pre-flight, its live reads of the inputs area, and its own Run: commit unchanged, so main has one writer by construction and no sibling clone exists while a run executes. "As soon as the parent's Run: commit exists" is reworded as a queue-ordering rule, a phase-2 run may be queued once its parent's Run: commit exists with no wait on any rating, not as parallelism. Concurrency is not designed now; adding it later is a harness change versioned like any other.
+
 ## Out of Scope
 
