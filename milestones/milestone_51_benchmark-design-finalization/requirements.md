@@ -160,5 +160,9 @@ Nothing is re-run when a shared input changes. The published trend restarts as a
 
 Each prompt's hidden requirement is calibrated before scored runs by a pre-run pilot with two arms per prompt, one for each half of the calibration rule, each run a small fixed number of times under the strongest manual model pair. The unasked arm runs manual_prompt with the operator's hidden knowledge withheld, so every question gets a reply that discloses nothing; it measures whether the prompt and seed lead to the requirement with no disclosure, and its acceptance rule is a met-rate ceiling. The asked arm gives a model the seed tree and the prompt plus one fixed bearing question written by the maintainer, the entry's declared bearing scope (what the questions should be about; where a written set should live), with no operator, and checks whether its answer, grounded in the evidence alone, is the hidden requirement; its acceptance rule is a hit-rate floor. A requirement passes only when both arms pass. A failed ceiling is fixed by weakening the evidence or the prompt's invitation, and a failed floor by strengthening the evidence, each as a seed bump or prompt revision followed by another pilot. Pilot runs are never scored.
 
+### Input freeze
+
+The checklist is materialized per prompt in the inputs area and committed with the hidden-requirement entries before a set's first scored run. Their blob hashes are fixed as frozen versions, and the harness refuses a scored run that does not match them. After the freeze, a changed hidden-requirement statement, which the operator reads, starts a new comparison set with fresh runs, while a changed checklist line or hidden check line is issued as a new rating version that re-rates every artifact of the set; the earlier ratings and frozen version are kept, and the analysis never mixes versions.
+
 ## Out of Scope
 
