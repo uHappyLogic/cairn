@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Draft Operator And Hidden Requirement Rules
-
-Write into the draft's hidden-requirement and operator sections the bearing-question test (a one-line bearing scope beside each entry's statement, the topic or theme of the questions for prompt 1 and where a prepared set is stored or how it is carried to another computer for prompt 2, governing disclosure and the planned turn's "bears on" lines, a catch-all or off-scope question getting nothing beyond PROJECT.md), the reply-need classifier as a distinct tool-less model call under a fixed model and effort pair with its one stated rule, recorded verdict and one-clause reason, and tokens recorded beside the operator's apart from the totals, the operator's input of prompts 1 to n in phase n with phase n's hidden knowledge only, and the two-arm hidden-requirement pilot with its met-rate ceiling, hit-rate floor, and fix rules, each stated with the reason for the gap it resolves. Verify by reading the sections against the four decisions and gaps 3, 14, and 17 of the report.
-
----
-
 ## Draft Left-Open And Implied List Split
 
 Apply the overlap rules to both prompts' lists in the draft's project section: an item in both a left-open list and an implied list is split wherever a choice among ways remains, the implied line scoring only that some way through exists and the choice staying an unscored left-open item, and an item with no such choice goes to exactly one list by the stated test, implied when a quiz lacking it would be called broken or unfinished by any builder, left open when lacking it is a defensible product choice, with the verdict recorded per item and neither list thinned by a blanket rule, both rules stated in the text with gap 1's reason. Verify by checking that no item remains in both lists unsplit and that every moved item carries its verdict.
