@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Draft Run Isolation And Environment Rules
-
-Rewrite the draft's isolation, one-run, and manifest text for the four isolation decisions: web search and fetch stay enabled with each run's tool calls, queries, fetched URLs, and network-reaching shell commands recorded, a run that reached the benchmark repository, its run branches, or its Pages site marked contaminated and the text stating, consistently with the void policy, whether such a run is excluded or re-run; a fresh host configuration directory per run from a committed content-versioned template reached through CLAUDE_CONFIG_DIR, recorded in the manifest in place of the `user_config` digests, credentials injected from outside and the directory deleted with the clone after the Run: commit; confinement by a dedicated unprivileged benchmark user on the development Mac with no container or second machine; and a content-versioned environment definition listed among the shared inputs that the pre-flight probes the live machine against. Verify by reading the sections against the four decisions and gap 4.
-
----
-
 ## Draft Run Ending And Sequencing Rules
 
 Rewrite the draft's one-run procedure, manifest, and phase text so the harness classifies how each invocation ends and voids a run on the first infrastructure failure (recorded with a void marker naming cause and invocation, excluded from rating, never a phase-2 parent, replaced by a fresh run from the same parent, nothing retried, a distinct void line printed), detects a stop by matching each cairn invocation's final message against the delivery's per-line allowlist of fixed success and no-op lines with a detected stop ending the chain as a non-zero exit does and the first stopping line recorded as `invocations.first_stop`, sets no time, turn, or spend limit while recording wall-clock duration, runs strictly sequentially behind a run lock with the phase-2 start reworded as a queue-ordering rule, and only asserts a root `index.html` exists, recording a null entry otherwise with the hand-set exception removed. Verify by reading the procedure, the manifest, and the phase-2 text against the five decisions and gaps 5, 6, 8, and 13.
