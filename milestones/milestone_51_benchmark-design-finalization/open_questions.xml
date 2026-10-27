@@ -697,6 +697,46 @@
   </open-question>
   <open-question id="Runs per scenario">
     <question>Phase 1 is run for every scenario &quot;as many times as the set calls for&quot;, with no number set and no stopping rule, so a margin between two scenarios can be noise. How many runs per scenario does a comparison set require?</question>
+    <alternative id="One run each">
+      The draft fixes the count at one phase-1 run per scenario of a comparison set, for every scenario alike, with phase 2 run once from it as now; the runs column then always reads 1 and a margin is read as a single observation.
+      <advantage>Cheapest complete set: every scenario costs one chain per phase, the same unit as the development fast loop, so a full set (the Cairn chains being the costliest and likeliest to hit usage limits) stays affordable and finishes soonest.</advantage>
+      <drawback>Gives no spread at all, so no margin between two scenarios can be told from noise and the hidden axis (two pass-or-fail checks per run) swings by a whole third of the overall score on one run; it resolves the gap only by stating that the page&apos;s ranking is anecdotal.</drawback>
+    </alternative>
+    <alternative id="Fixed three runs">
+      The draft fixes the count at three phase-1 runs per scenario for every scenario of a comparison set, declared before the set&apos;s first scored run with no stopping rule, each with its own phase-2 child, so every row rests on three runs per prompt.
+      <advantage>The smallest count that yields a median and a range per score, so a spread can stand beside each cell and a run that went off the rails cannot alone decide a rank, at three times the cost of a single run.</advantage>
+      <drawback>Three runs give only a rough spread: an interval from three points is wide, so most margins between close scenarios still come out unresolved, and a binary-heavy axis like hidden moves in thirds; what the spread is and how ties are called are the spread-reporting and tie-threshold questions&apos; to settle.</drawback>
+    </alternative>
+    <alternative id="Fixed five runs">
+      The draft fixes the count at five phase-1 runs per scenario for every scenario of a comparison set, declared before the set&apos;s first scored run with no stopping rule, each with its own phase-2 child.
+      <advantage>Enough runs for an interval narrow enough to separate a moderate margin, such as Cairn rows against the best manual row, while keeping a set within a few days of runs.</advantage>
+      <drawback>Five times the single-run cost on every scenario, the Cairn chains and their usage-limit exposure included, and still too few to resolve small margins or to estimate the hidden axis finer than in fifths.</drawback>
+    </alternative>
+    <alternative id="Fixed ten runs">
+      The draft fixes the count at ten phase-1 runs per scenario for every scenario of a comparison set, declared before the set&apos;s first scored run with no stopping rule, each with its own phase-2 child.
+      <advantage>Gives intervals tight enough that small margins and per-axis differences, the hidden axis included, can be read as findings rather than noise, which is what the page&apos;s claim that several Cairn rows stand above the best manual row needs.</advantage>
+      <drawback>Ten full chains per phase per scenario make a set cost roughly ten times a single pass and take many days, which multiplies the infrastructure-failure and CLI-version drift a long campaign meets and puts the release gate&apos;s slow loop further out of reach.</drawback>
+    </alternative>
+    <alternative id="Sequential with cap">
+      The draft fixes a stopping rule instead of a number: every scenario starts with a declared minimum (three runs), and further phase-1 runs, each with its phase-2 child, are added to the scenarios whose margin to an adjacent ranked row is still unresolved until it resolves or a declared cap (such as ten) is reached; minimum, cap, and rule are declared before the set&apos;s first scored run, and scenarios may end with different run counts.
+      <advantage>Spends runs only where a margin is close, so clearly separated scenarios stay cheap and close ones get the resolution they need, with the stopping rule fixed in advance rather than left to the maintainer.</advantage>
+      <drawback>Adaptive stopping inflates false separations unless the rule corrects for it, unequal counts complicate the table and when a set counts as complete, and the rule depends on how the spread is computed and what counts as a tie, which the spread-reporting and tie-threshold questions own.</drawback>
+    </alternative>
+    <alternative id="Tiered by role">
+      The draft fixes a uniform count for the scenarios that appear on the page (the four primary deliveries), declared before the set&apos;s first scored run and no fewer than three, with no stopping rule, while ablation deliveries and candidate-commit scenarios, which appear only in the analysis output, run once each.
+      <advantage>Concentrates the cost on the rows the published ranking and radar rest on, while the ablation and candidate runs stay at the fast loop&apos;s one-run price that the development uses already assume.</advantage>
+      <drawback>Ablation and candidate comparisons inherit no spread, so a single-run result can still mislead a development decision, and the rule needs a stated boundary of which scenarios are primary, which depends on the roster the scenario-roster question owns.</drawback>
+    </alternative>
+    <alternative id="Declared per set">
+      The draft fixes no number but requires every comparison set to declare its run count per scenario (uniform across the set&apos;s scenarios, at least two) in the set&apos;s definition before its first scored run, recorded beside the set&apos;s other versioned inputs, so later runs cannot be added after results are seen.
+      <advantage>Closes the stopping-rule hole, the count being fixed before any result can influence it, while leaving each set free to match its count to its budget and purpose.</advantage>
+      <drawback>Different sets can carry different counts, so the trend across sets mixes rows of unequal precision, and the draft still says nothing about what count makes a margin meaningful; whether the declaration rides in the set&apos;s definition depends on the comparison-set-definition question.</drawback>
+    </alternative>
+    <alternative id="Leave count open">
+      The draft keeps &quot;as many times as the set calls for&quot; with no number and no stopping rule, the gap rejected with the reason stated in the text: the runs column already shows how many runs stand behind each row, and noise is left to whatever spread and tie handling the page reports.
+      <advantage>Commits no budget and no statistical design before a single run exists, so the first sets can be run at whatever count the maintainer can afford and the number chosen later from observed variance.</advantage>
+      <drawback>Leaves optional stopping open, since runs can be added until a margin looks right, and a margin between two scenarios stays possibly noise unless the spread-reporting and tie-threshold questions supply what this count would have.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Score spread reporting">
     <question>The ranking table has a runs column but no spread or interval beside any score, so a reader cannot tell a margin between two scenarios from noise. Is a per-run spread or interval reported beside every score, and where?</question>
