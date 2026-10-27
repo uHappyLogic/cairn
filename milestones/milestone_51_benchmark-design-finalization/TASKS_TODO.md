@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Draft Comparison Set And Input Versioning
-
-Rewrite the draft's comparison-set, input, and trend text: a set is five versions (the seed tag, one prompt version per phase, the operator definition, the rater definition, and one pinned host CLI version the pre-flight refuses a run against when the installed one differs, a new rater version re-rating existing runs into a new set without re-running); it declares before its first scored run a roster holding at least the stated minimum scenarios and three phase-1 runs per scenario each with its own phase-2 child and no stopping rule; the checklist and hidden-requirement entries are frozen by blob hash before that run with a changed statement starting a new set and a changed check line a new rating version; a superseded set carries an authored one-line reason without which regeneration refuses; the trend restarts as a labeled segment on every input change with nothing re-run; and everything stays public with a canary, a dated contamination flag read from published training cutoffs, and a rotation rule. Verify by reading the text against the seven decisions and gaps 11, 12, 15, and 16.
-
----
-
 ## Draft README Table And Radar Rework
 
 Rewrite the draft's README page section and the rank paragraph: the table's and the radar's openings recast as refutable expectations naming the table and the curves as what would refute them, each score cell carrying its minimum and maximum beside the mean as `82 (76–88)` with cost, time, invocations, and sessions staying means, ranks shared within a tie margin derived from the set's own per-run noise with cost playing no part, the hidden axis keeping its equal third with the stated reason, one declared reference scenario per family drawn on the radar whatever the ranking, five curves with the clarify family's rows and curve added, the voided-run count and causes beside the runs column, the repeat-rating agreement line and the lost column's noise floor, and the generated list of superseded sets with versions, input diff, reason, and link. Verify by reading the section against the nine decisions it carries and gaps 11, 16, and 18.
