@@ -116,5 +116,9 @@ The items of the animal reading line become every question a game of the artifac
 
 The prompt 1 hidden-requirement entry states a classification rule for borderline items. A question is about an animal when the number it asks for counts animals or measures an animal or an animal kind: its body, lifespan, diet, speed, offspring, or behaviour. A question about anything else fails, the zoo's own operations included (visitors, staff, ticket prices, opening years). The entry gives the two cited items as worked verdicts: how many animals live at Riverside Zoo passes and the zoo's visitor count fails. The reading-line definition and the requirement's wording stay as they are.
 
+### Superseded sets on page
+
+The README page keeps a generated list of superseded complete comparison sets, each with its versions, the computed input diff against the set that replaced it, and a link to its last regenerated page. Each entry also carries a one-line reason for the supersession, authored as part of the inputs that start the new set and read by the analysis; regeneration refuses to run while any superseded set lacks a reason, so a bump to escape a bad result cannot pass as a fix. A set abandoned before it completed is not listed and remains visible only in main's history.
+
 ## Out of Scope
 
