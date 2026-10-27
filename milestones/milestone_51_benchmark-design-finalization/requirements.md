@@ -52,5 +52,9 @@ An item that appears both in a prompt's deliberately-left-open list and in its i
 
 Each hidden-requirement entry gains a one-line bearing scope beside its statement, versioned with the entry, naming the decision or decisions a question must ask about to receive the disclosure: for prompt 1 the topic or theme of the questions, for prompt 2 where a prepared set is stored or how it is carried to another computer. The harness inserts the scope with the statement into the operator's hidden knowledge, and the operator discloses the statement only when a question asks about something in the scope; a catch-all or an off-scope question gets nothing beyond what PROJECT.md says. The same scope governs the planned turn's "bears on" lines, so every disclosure is checkable against written text rather than the operator's private reading.
 
+### Reply need classification
+
+The reply-or-no-reply classification of a final message is made by a distinct model call with no tools and a fixed model and effort pair, defined and versioned with the operator definition and recorded in the manifest. It reads only the final message, never the prompt or the hidden knowledge, under one stated rule: a message that asks, confirms, or offers a choice gets a reply; one that reports completion, a stop, or an error, or closes with an offer, gets none. It outputs the verdict and a one-clause reason, and only a reply verdict invokes the operator. Every verdict and reason goes into the invocation's record file; a no-reply verdict is not an operator turn and adds no attentive session; the classifier's tokens are recorded beside the operator's, apart from the totals.
+
 ## Out of Scope
 
