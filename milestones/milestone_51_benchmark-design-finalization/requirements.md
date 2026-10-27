@@ -184,5 +184,9 @@ Before a comparison set's first scored run, the set's definition names one refer
 
 Each score cell of the README ranking table (overall, the three axes, and the lost count) carries the minimum and maximum over the scenario's runs beside its mean, written in the cell as, for example, 82 (76–88), each run counted as one phase-1 run with its phase-2 child, whose two prompt scores are averaged as the scenario mean is; the analysis output carries the same ranges and every run's individual scores. Cost, time, invocations, and sessions stay means without spread, and the radar draws means only.
 
+### Table claim wording
+
+The ranking table's opening sentence is recast as an explicitly refutable expectation in the style the phase-2 paragraph already uses, stating in advance that Cairn is expected to beat the other approaches and naming the table as what would refute it, with the section's purpose sentence folded in. The radar's opening is recast the same way: it is where the expected gain is located by axis, its curves are drawn whatever they show, and a Cairn curve inside a manual one refutes the expectation on that axis; the radar's existing list of axes where the gain is expected stays as the stated expectation.
+
 ## Out of Scope
 
