@@ -1040,6 +1040,41 @@
   </open-question>
   <open-question id="Table claim wording">
     <question>The ranking-table section opens by saying the table shows that Cairn beats the other approaches, while the radar text says the page states no claim the data does not. Does that sentence change to say the table shows whether Cairn beats them?</question>
+    <alternative id="Keep the assertion">
+      The opening sentence of &quot;The ranking table&quot; in ideas/benchmark_for_cairn.md stays as written (&quot;The table shows that Cairn beats the other approaches as a family of configurations, not as one tuned winner&quot;). No other sentence of the table or radar sections changes, and the draft records that the sentence was kept, with the reason, as the resolution of gap 18.
+      <advantage>It states plainly the result the benchmark was built to show. The radar&apos;s rule that the page states no claim the curves do not is about the generated page, not about this design prose, so the two need not conflict, and the draft is not edited at all.</advantage>
+      <drawback>The draft would assert a result before any run exists. That contradicts its own refutable framing at the phase-2 expectation and in the radar text, and it is exactly the inconsistency the gaps report flags. It also reads as a benchmark designed to confirm its author&apos;s product, which weakens the &quot;proof of whether Cairn helps&quot; purpose stated in the general idea.</drawback>
+    </alternative>
+    <alternative id="Whether, opener only">
+      Only the opening sentence changes, from &quot;shows that Cairn beats&quot; to &quot;shows whether Cairn beats the other approaches as a family of configurations, not as one tuned winner&quot;. The rest of the table section stays as written, including &quot;The reading it exists to give is several Cairn rows … standing above the best manual row&quot;, and the radar section stays as written.
+      <advantage>It is the smallest edit that removes the contradiction the gaps report names. It is the report&apos;s own fix, word for word, and it leaves the &quot;family of configurations&quot; framing that justifies listing every Cairn row.</advantage>
+      <drawback>The purpose sentence a few lines later still describes Cairn rows above the best manual row as the reading the table exists to give, with no counterpart for a table where they stand below. The radar still opens with &quot;how much better, and where&quot;, so the section would ask &quot;whether&quot; and then assume the answer.</drawback>
+    </alternative>
+    <alternative id="Whether across the table section">
+      The opening sentence changes to &quot;shows whether Cairn beats …&quot;, and the table section&apos;s purpose sentence is reworded to match: several Cairn rows standing above the best manual row becomes the reading the table is built to make visible if it holds, and a table where they stand below is published in the same form. The radar section stays as written.
+      <advantage>The whole ranking-table section then reads as neutral, opener and purpose sentence alike. It keeps the reason every Cairn configuration appears, losers included, and leaves the radar text, which already says it draws whatever the data shows, untouched.</advantage>
+      <drawback>The radar&apos;s opening line &quot;The radar shows how much better, and where&quot; still assumes a margin exists, so the results section stays neutral in one half and presumptive in the other.</drawback>
+    </alternative>
+    <alternative id="Whether across table and radar">
+      The table&apos;s opener and purpose sentence change as in the table-section rewording (&quot;whether&quot;, and a losing table published in the same form). The radar&apos;s opening line also changes from &quot;how much better, and where&quot; to a neutral form saying whether the Cairn curves sit outside the manual ones, by how much, and on which axes. The rest of the radar text is unchanged, including its no-claim rule and the reasoning behind which curves are drawn.
+      <advantage>Every sentence that introduces a part of the results section then states a question rather than an answer, which matches the radar&apos;s existing &quot;the page states no claim the curves do not&quot; rule and makes the whole page consistent with it.</advantage>
+      <drawback>It is the largest of the &quot;whether&quot; edits and reaches into radar prose next to the curve-selection reasoning. If that reasoning is rewritten separately, the two edits touch the same paragraph and must be kept consistent (a condition on the radar curve choice, which a sibling question owns).</drawback>
+    </alternative>
+    <alternative id="Stated expectation, table only">
+      The opening sentence is recast as a refutable expectation instead of a neutral question, in the style of the draft&apos;s phase-2 paragraph. The table is where the benchmark expects several Cairn rows, under different versions and model strategies, to stand above the best manual row, and a table in which they do not refutes that expectation and is published all the same. The purpose sentence is folded into this statement. The radar section stays as written.
+      <advantage>It keeps the benchmark&apos;s hypothesis on the page explicitly, which a bare &quot;whether&quot; drops, and names in advance the result that would refute it. That is a stronger honesty commitment than neutrality, and it matches how the draft already treats phase 2.</advantage>
+      <drawback>It still leads with the outcome the author expects, which a reader may take as advocacy. The radar&apos;s &quot;how much better, and where&quot; stays presumptive, so the expectation is stated as refutable for the table but not for the chart beside it.</drawback>
+    </alternative>
+    <alternative id="Stated expectation, table and radar">
+      The table&apos;s opener is recast as the refutable expectation described for the table-only expectation option, with the purpose sentence folded in. The radar&apos;s opening is recast the same way: it is where the expected gain is located by axis, its curves are drawn whatever they show, and a Cairn curve inside a manual one refutes the expectation on that axis. The radar&apos;s existing list of axes where the gain is expected stays as the stated expectation.
+      <advantage>The whole results section carries one consistent, explicitly falsifiable hypothesis, the same framing the phase-2 paragraph uses. A reader sees both what was predicted and that a contrary result is shown, in the table and the chart alike.</advantage>
+      <drawback>It rewrites the most prose, including radar text beside the curve-selection reasoning a sibling question may also change (a condition on that radar curve choice). Like the table-only expectation, it keeps the author&apos;s expected outcome at the head of each part.</drawback>
+    </alternative>
+    <alternative id="Drop the framing sentence">
+      The opening sentence is removed rather than reworded, and the table section opens with what the table is: one row per rated configuration of the four primary deliveries, ordered by rank. The purpose sentence keeps only its rule that every rated Cairn configuration appears, losers included, without describing which reading is expected. The radar section stays as written.
+      <advantage>The table section then makes no claim and states no hypothesis, so nothing in it can contradict the radar&apos;s no-claim rule. It describes only what the analysis generates, which is all an implementer of the table needs.</advantage>
+      <drawback>The README introduction says the table and the radar &quot;answer two different questions&quot;, and this would leave the table&apos;s question unstated. The reason Cairn is shown as a family of configurations rather than one tuned winner also loses its stated motivation.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Gaps report fate">
     <question>Every gap in ideas/benchmark_design_gaps.md is to end as a decision in the draft, and the report&apos;s Where references are line numbers that shift with every edit of the draft. What happens to the report once its gaps are resolved?</question>
