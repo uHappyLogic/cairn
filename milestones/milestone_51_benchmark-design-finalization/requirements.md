@@ -168,5 +168,9 @@ The checklist is materialized per prompt in the inputs area and committed with t
 
 A comparison set declares a roster of scenarios before its first scored run, fixed for the set as a file in the inputs area, and the set counts as complete only when every roster scenario is rated. The roster must hold at least: cairn yolo and cairn assess for the set's Cairn version under the reference strategy models_strategy_1; the multi-prompt mirror of that cairn yolo scenario; the clarify delivery under the same rule-named pair; and manual_prompt under the single pair named by a stated rule, namely the most capable model the set's pinned host version offers at that model's highest effort level. Further scenarios may be listed on top of this minimum.
 
+### Public inputs leak
+
+Everything stays public. The draft keeps a canary in the inputs and a dated contamination flag on a comparison set whose inputs may have reached its models' training data, read from published training cutoffs against the inputs' publication date; current frontier cutoffs predate the draft, so the first sets run unflagged. A flagged set, or inputs older than a stated age where no cutoff is published, triggers a rotation before the next headline comparison set: the rotation brings new hidden requirements with new seed evidence, and the prompts or the whole project change when the leak reaches the project's own rules. Only then is the old project retired, still public.
+
 ## Out of Scope
 
