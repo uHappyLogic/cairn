@@ -1269,6 +1269,36 @@
   </open-question>
   <open-question id="Superseded sets on page">
     <question>The README shows only the latest complete comparison set, so a seed bump replaces a bad result on the landing page with no trace. Does the page keep superseded comparison sets linked with the reason each was superseded?</question>
+    <alternative id="Latest only, history in git">
+      The README&apos;s results section stays as drafted, showing only the current complete comparison set, with no list of superseded sets and no stated reason. The draft adds one sentence saying that every earlier set&apos;s page survives in the history of `main` (each regeneration is a commit, and the records are append-only), and that why a shared input changed is read from the commit that changed it.
+      <advantage>Adds no mechanism and no authored input. The page stays exactly a ranking table and a radar, and nothing is lost, because main&apos;s linear, append-only history already keeps every regenerated page and every run.</advantage>
+      <drawback>Gap 16 stays open where it matters: a reader on the landing page sees no trace that an earlier set existed, so a bad result replaced by a seed bump is recoverable only by someone who already suspects it and digs through git history. A commit subject is also not a stated reason.</drawback>
+    </alternative>
+    <alternative id="Complete sets, generated diff">
+      Below the table and radar, the results section gains a generated list of every superseded complete comparison set, newest first. Each entry gives the set&apos;s defining versions, the shared inputs that differ from the set that replaced it (computed by the analysis from the manifests, for example seed v1 to v2 or a prompt blob change), and a link to the page as last regenerated for that set (the README blob at the commit that regenerated it). No human-written reason is carried, and a set abandoned before it completed is not listed.
+      <advantage>Fully generated from the records, like the rest of the section, so it needs no new authored input and no person can leave an entry out. Every replaced result stays one click from the landing page.</advantage>
+      <drawback>It says what changed, never why, so a bump made to escape a bad result looks the same as a legitimate fix. A set abandoned before its ratings completed never reached the page, so it leaves no trace at all, which is the cheapest way to make a bad result disappear.</drawback>
+    </alternative>
+    <alternative id="Complete sets, required reason">
+      The same generated list of superseded complete sets, each with its versions, the computed input diff, and a link to its last regenerated page. Each entry also carries a one-line reason, authored as part of the inputs that start the new set and read by the analysis. Regeneration refuses while any superseded set lacks a reason. A set abandoned before it completed is not listed.
+      <advantage>States the why beside the what on the landing page, so a reader can judge whether a supersession was a fix or an escape. Because regeneration refuses without a reason, the reason cannot be quietly skipped.</advantage>
+      <drawback>Adds an authored input and a refusal to the analysis step, and nothing checks the reason&apos;s prose for honesty. Abandoning a set before its ratings complete still removes a bad partial result with no trace.</drawback>
+    </alternative>
+    <alternative id="Every started set, required reason">
+      The list covers every comparison set that received at least one scored run, abandoned ones included, and not only complete ones. A complete superseded set gets its versions, input diff, and link to its last regenerated page. An abandoned set gets its versions, input diff, and its run and rated counts, with no aggregate score, so the page never shows aggregates a landing run would move. Every entry carries a required one-line authored reason, and regeneration refuses while any entry lacks one.
+      <advantage>Closes both escapes gap 16 describes: no set that produced a scored run can vanish from the page, whether it was replaced after completing or abandoned before, and each is accompanied by a stated reason.</advantage>
+      <drawback>The heaviest option. The draft needs a rule for when a set has started that separates a development-loop cairn run, which is rated the moment it lands, from a scored campaign run. Every aborted set, setup mistakes included, adds a permanent page entry, so the list grows with operational noise. How a set is defined is an axis the sibling question on comparison set definition owns.</drawback>
+    </alternative>
+    <alternative id="Every started set, generated diff">
+      The list covers every comparison set that received at least one scored run, abandoned ones included. Each entry carries only generated content: its versions, the computed input diff from its successor, and either a link to its last regenerated page (complete sets) or its run and rated counts with no aggregate (abandoned sets). No authored reason is carried and nothing refuses.
+      <advantage>Leaves no set that produced a scored run off the page while staying fully generated, with no authored input and no new refusal, so the trace can be neither skipped nor forgotten.</advantage>
+      <drawback>It shows that a set was dropped and what changed, but never why, so a reader still cannot tell an honest abandonment from an escape. It needs the same started-set rule as the reasoned variant, against the development-loop runs, and it depends on how the sibling question on comparison set definition is settled.</drawback>
+    </alternative>
+    <alternative id="Trace in the linked trend">
+      The results section itself stays exactly a table and a radar. The trend output the page already links to marks each comparison-set boundary: the superseded set&apos;s versions, the input diff, a link to its last regenerated page, and a required one-line authored reason, with regeneration refusing while a boundary lacks one. The page&apos;s existing link to the trend is relabelled so that it names the superseded sets it leads to. Only complete sets are covered.
+      <advantage>Keeps the landing page as drafted and puts the supersession record next to the per-set aggregates it explains, in the analysis output that already follows results across comparison sets, so no second cross-set history appears.</advantage>
+      <drawback>The trace sits one link away in analysis output rather than on the landing page, so a casual reader of the page still sees no sign that a result was replaced. It depends on how the trend continues across input changes, an axis the sibling question on that trend owns. Abandoned incomplete sets stay invisible.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Operator prompt history">
     <question>The operator&apos;s input is the prompt text as committed, which in phase 2 is prompt 2 alone, so a phase-2 question about the game&apos;s existing flow reaches a stakeholder who does not know the game they asked for in phase 1. Which prompts does the operator receive in phase n?</question>
