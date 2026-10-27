@@ -120,5 +120,9 @@ The prompt 1 hidden-requirement entry states a classification rule for borderlin
 
 The README page keeps a generated list of superseded complete comparison sets, each with its versions, the computed input diff against the set that replaced it, and a link to its last regenerated page. Each entry also carries a one-line reason for the supersession, authored as part of the inputs that start the new set and read by the analysis; regeneration refuses to run while any superseded set lacks a reason, so a bump to escape a bad result cannot pass as a fix. A set abandoned before it completed is not listed and remains visible only in main's history.
 
+### Operator prompt history
+
+In phase n the operator receives prompts 1 to n, taken byte-identical from the versioned prompt texts the manifest records, at every reactive turn and at the assess delivery's planned turn; the earlier prompts are marked as the stakeholder's earlier requests and prompt n as the current one. Its hidden knowledge stays phase n's statements only, so each prompt's measurement stays its own. The draft's sentence on the operator's input changes from "the prompt text as committed" to the prompts up to the current phase, and no versioning changes, because a revision of prompt 1 already invalidates both phases.
+
 ## Out of Scope
 
