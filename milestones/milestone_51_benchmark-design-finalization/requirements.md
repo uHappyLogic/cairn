@@ -176,5 +176,9 @@ Everything stays public. The draft keeps a canary in the inputs and a dated cont
 
 A comparison set requires three phase-1 runs per scenario for every scenario of its roster, declared before the set's first scored run with no stopping rule, each with its own phase-2 child, so every row rests on three runs per prompt and gives a median and a range per cell. A development or ablation run outside the roster keeps the fast loop's single run.
 
+### Radar curve selection
+
+Before a comparison set's first scored run, the set's definition names one reference scenario per family, for example both cairn deliveries for the current release under models_strategy_1, the multi-prompt control mirroring that yolo scenario, and one declared manual_prompt pair, and each radar curve is drawn from its declared scenario whatever the table's ranking turns out to be; every other configuration appears only in the table. With the roster's rule-named strongest manual pair as the manual reference, the baseline is the a-priori strongest rather than a best-of-several pick.
+
 ## Out of Scope
 

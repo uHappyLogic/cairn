@@ -37,50 +37,6 @@
       <drawback>Chains differ greatly in length, from the single manual message to Cairn&apos;s eleven or more lines, so one deadline either binds Cairn or is slack for manual. It also lets a runaway early invocation use up the time of every later line, so the stop shows up at a line that did nothing wrong.</drawback>
     </alternative>
   </open-question>
-  <open-question id="Radar curve selection">
-    <question>Each family&apos;s radar curve is drawn from its highest-ranked scenario, and the best of several noisy scores is biased upward, more so for Cairn, which has many configurations (versions times strategies) where manual has few. Which scenario is each family&apos;s radar curve drawn from?</question>
-    <recommendation option="Pre-declared reference">Declaring each family&apos;s scenario before the first scored run removes the best-of-several bias outright and matches the Cairn curves and their mirror by construction, and with the roster&apos;s rule-named strongest manual pair as the manual reference the baseline is the a-priori strongest rather than a weak one.</recommendation>
-    <alternative id="Pre-declared reference">
-      Before a comparison set&apos;s first scored run, the set&apos;s definition names one reference scenario per family (for example both cairn deliveries for the current release under models_strategy_1, the multi-prompt control mirroring that yolo scenario, and one declared manual_prompt pair), and each curve is drawn from its declared scenario whatever the table&apos;s ranking turns out to be; every other configuration appears only in the table.
-      <advantage>Removes the selection bias outright, since nothing about the chart depends on which noisy score came out highest, and fixes the scenarios behind the curves so the two Cairn curves and the multi-prompt curve are matched by construction.</advantage>
-      <drawback>The radar no longer shows any family at its best, so a declared manual pair that turns out weaker than another rated manual configuration makes the Cairn margin read against a weak baseline, exactly what the draft wanted to avoid; its worth depends on what the set must hold and how it is declared, an axis the scenario-roster question owns.</drawback>
-    </alternative>
-    <alternative id="Highest-ranked kept">
-      Each family&apos;s curve stays drawn from its highest-ranked scenario in the current comparison set&apos;s table, as the draft has it, and the gap is rejected in the draft&apos;s text with the reason stated: the ranking table lists every rated configuration, so the radar is read as best against best and the table carries the configuration count.
-      <advantage>Needs no new rule, no extra declaration, and no change to the analysis, and it keeps the draft&apos;s reading of every approach at its best configuration and of every radar value as a ranking-table cell.</advantage>
-      <drawback>The upward bias of a best-of-several pick stays in the chart and grows with the number of configurations, which favours the Cairn families (and the multi-prompt controls that mirror them) over manual_prompt, so the page&apos;s claim of a fair, honest margin rests on a selection known to favour the system it measures.</drawback>
-    </alternative>
-    <alternative id="Highest-ranked disclosed">
-      Each family&apos;s curve stays drawn from its highest-ranked scenario, and the line under the chart that names each curve&apos;s scenario also states how many rated configurations it was chosen from, with one sentence in the radar text saying that a best-of pick is biased upward the more configurations stand behind it; the draft&apos;s sentence calling the selection fair is rewritten to match.
-      <advantage>Keeps the draft&apos;s selection and every radar value a table cell while removing the unstated part of the bias, so a reader can weigh a Cairn curve chosen from many configurations against a manual one chosen from few.</advantage>
-      <drawback>Discloses the bias without reducing it: the curves still overstate the many-configuration families, and the chart, which a reader takes in before the line under it, keeps showing a margin the disclosure itself says is inflated.</drawback>
-    </alternative>
-    <alternative id="Coupled best configuration">
-      One Cairn configuration (a version under a model strategy) is chosen as the one whose cairn scenarios rank highest in the set, and the cairn yolo, cairn assess, and multi-prompt curves are all drawn from that one configuration&apos;s three scenarios; the manual_prompt curve is drawn from its own highest-ranked scenario.
-      <advantage>Makes the gap between the two Cairn curves isolate the stakeholder&apos;s turn and the gap to the multi-prompt curve isolate Cairn&apos;s structure, as the draft&apos;s radar text claims they do, which independent best-of picks across different versions and strategies cannot guarantee, and it replaces three best-of selections over the Cairn configurations with one.</advantage>
-      <drawback>Still selects on the same noisy scores it then draws, so the Cairn curves keep an upward bias that grows with the number of configurations, and the multi-prompt curve is no longer that family&apos;s best, which can understate the strongest manual-side configuration the draft says Cairn is read against.</drawback>
-    </alternative>
-    <alternative id="Asymmetric declaration">
-      The two Cairn curves are drawn from pre-declared reference scenarios named before the set&apos;s first scored run (one version under one model strategy), while the manual_prompt and multi-prompt curves are each drawn from their family&apos;s highest-ranked scenario in the table.
-      <advantage>Turns the selection bias against Cairn rather than for it: the Cairn curves carry no best-of inflation while the manual curves keep theirs, so any Cairn margin the chart shows is conservative and the draft&apos;s reading against the strongest manual configuration still holds.</advantage>
-      <drawback>Mixes two selection rules on one chart, so the gap between curves no longer measures any single comparison, the multi-prompt curve may come from a different configuration than the Cairn curves it is meant to mirror, and a real Cairn margin can be understated or hidden.</drawback>
-    </alternative>
-    <alternative id="Equal configuration pools">
-      Each family&apos;s curve is drawn from its highest-ranked scenario among an equal number of configurations per family, the same count for every family and the configurations in each pool declared before the set&apos;s first scored run; a family with more rated configurations than the count draws only from its declared pool.
-      <advantage>Keeps every family shown at its best and every radar value a table cell while making the best-of bias the same size for every family, so it no longer favours the family with more configurations.</advantage>
-      <drawback>Equal bias is not zero bias, so every curve stays inflated relative to a single scenario&apos;s true score, and the manual_prompt family must be run under as many strategies as Cairn has configurations in its pool, raising the cost of every set; its viability depends on what the set&apos;s roster must hold, an axis the scenario-roster question owns.</drawback>
-    </alternative>
-    <alternative id="Split-sample selection">
-      Each family&apos;s scenario is still chosen as its highest-ranked, but the ranking used for the choice is computed from one fixed half of each scenario&apos;s runs (declared before the set, for example the odd-numbered runs) and the curve&apos;s values from the other half, so the chosen scenario&apos;s drawn scores come from runs that played no part in choosing it.
-      <advantage>Keeps every family shown at its best configuration while removing the selection bias from the drawn values for every family alike, whatever the number of configurations behind it.</advantage>
-      <drawback>Halves the runs behind every drawn value, making each curve noisier, and the drawn values are no longer cells of the ranking table unless the table gains held-out columns, against the draft&apos;s rule that nothing depends on the chart; it needs at least two runs per scenario, a count the runs-per-scenario question owns.</drawback>
-    </alternative>
-    <alternative id="Family aggregate">
-      No single scenario is chosen: each family&apos;s curve is the per-axis mean over every rated scenario of that family in the current comparison set (for the Cairn families, the current version&apos;s scenarios across its model strategies), and the line under the chart states how many scenarios each curve averages.
-      <advantage>Involves no selection at all, so there is no best-of bias, and it matches the ranking table&apos;s own stated reading that Cairn wins as a family of configurations rather than as one tuned winner.</advantage>
-      <drawback>A curve is no longer any scenario a reader could run, its values are not table cells, and a weak or deliberately exploratory configuration drags its family down, so the curve&apos;s height depends on which configurations happened to be rated, an axis the scenario-roster question owns.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Score spread reporting">
     <question>The ranking table has a runs column but no spread or interval beside any score, so a reader cannot tell a margin between two scenarios from noise. Is a per-run spread or interval reported beside every score, and where?</question>
     <recommendation option="Range beside every score">A min-to-max range is honest at three runs where an interval is wide or degenerate, needs no distributional assumption, and sits in the cell a reader already compares; cost and time stay means since the report raised noise on quality only.</recommendation>
@@ -122,7 +78,6 @@
   </open-question>
   <open-question id="Table claim wording">
     <question>The ranking-table section opens by saying the table shows that Cairn beats the other approaches, while the radar text says the page states no claim the data does not. Does that sentence change to say the table shows whether Cairn beats them?</question>
-    <depends-on question="Radar curve selection" option="Pre-declared reference"/>
     <recommendation option="Stated expectation, table and radar">The results section then carries one explicitly falsifiable hypothesis in the style the phase-2 paragraph already uses, naming in advance the table and the curve that would refute it, which is a stronger honesty commitment than a bare whether and consistent across both parts.</recommendation>
     <alternative id="Stated expectation, table and radar">
       The table&apos;s opener is recast as the refutable expectation described for the table-only expectation option, with the purpose sentence folded in. The radar&apos;s opening is recast the same way: it is where the expected gain is located by axis, its curves are drawn whatever they show, and a Cairn curve inside a manual one refutes the expectation on that axis. The radar&apos;s existing list of axes where the gain is expected stays as the stated expectation.
