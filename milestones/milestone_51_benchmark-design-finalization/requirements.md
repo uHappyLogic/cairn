@@ -140,5 +140,9 @@ The benchmark adds a clarify-then-build manual delivery as a fifth primary deliv
 
 Confinement is by operating-system file permissions on the development Mac, with no container and no second machine. Every invocation runs as a dedicated unprivileged benchmark user; the benchmark checkout and the maintainer's home are unreadable to it, each clone is created owned by that user with no group or other access, and the user's own home holds its own host configuration and projects directory. Isolation between runs relies on that user's state per run: other clones and earlier transcripts are moved out of its reach or deleted before the next invocation.
 
+### Execution environment input
+
+The run environment (OS and version, the tools on PATH with their versions, the installed browsers) is written as one environment definition under the inputs area, versioned by content under an id like the operator definition, and listed among the shared inputs. The pre-flight probes the live machine and refuses the run when it does not match the definition, the manifest records the definition's id, and a change to the definition starts a new comparison set. The run agent is told nothing beyond what the seed's CLAUDE.md already says, and the rater's browser stays in the rater definition as now.
+
 ## Out of Scope
 
