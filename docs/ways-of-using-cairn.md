@@ -4,7 +4,7 @@ How to chain Cairn's skills as headless command lines, one goal per section: eac
 
 ## Notation and flags
 
-Every line is one headless run, `claude -p "/cairn:<skill>"` on Claude Code, `agy -p "/cairn:<skill>"` on Antigravity, or `codex exec '$cairn:<skill>'` on Codex, where `/cairn:<skill>` is the skill's slash command under the plugin's `cairn:` namespace, `$cairn:<skill>` is the same skill under Codex's `$` sigil (single-quoted so the shell passes the `$` through as written), and the process exits when the skill finishes. Angle brackets mark the only text you substitute; every other token runs as written. The page uses four placeholders: `<goal>` is the milestone's goal description, exactly as the skill reference spells it in `define-milestone-goal <overall_goal_description>`, written as plain prose with no double quote since it sits inside the line's quoted prompt (no single quote on a Codex line, whose prompt is single-quoted); `<Short Title>` is an open question's Short Title and `<Alternative Id>` the `id` of one of its embedded alternatives, the two halves the skill reference spells as `answer-open-question-with-alternative <question_name>. <alternative id>`; and `<answer text>` is your own answer to a question, which `answer-open-question <question_name>` takes after the Short Title and a period, written as plain prose under the same quoting rule as `<goal>`.
+Every line is one headless run, `claude -p "/cairn:<skill>"` on Claude Code, `agy -p "/cairn:<skill>"` on Antigravity, or `codex exec '$cairn:<skill>'` on Codex, where `/cairn:<skill>` is the skill's slash command under the plugin's `cairn:` namespace, `$cairn:<skill>` is the same skill under Codex's `$` sigil (single-quoted so the shell passes the `$` through as written), and the process exits when the skill finishes. Angle brackets mark the only text you substitute; every other token runs as written. The page uses five placeholders: `<goal>` is the milestone's goal description, exactly as the skill reference spells it in `define-milestone-goal <overall_goal_description>`, written as plain prose with no double quote since it sits inside the line's quoted prompt (no single quote on a Codex line, whose prompt is single-quoted); `<Short Title>` is an open question's Short Title and `<Alternative Id>` the `id` of one of its embedded alternatives, the two halves the skill reference spells as `answer-open-question-with-alternative <question_name>. <alternative id>`; and `<answer text>` is your own answer to a question, which `answer-open-question <question_name>` takes after the Short Title and a period, written as plain prose under the same quoting rule as `<goal>`; and `<milestone_id>` is a milestone's exact directory name under `milestones/`, as `define-milestone-goal` created it (for example `milestone_12_user-guide`, with no `milestones/` prefix and no trailing slash), the value of the optional leading flag the skill reference spells as `[--milestone <milestone_id>]`.
 
 The headless flags:
 
@@ -85,6 +85,18 @@ claude -p "/cairn:derive-tasks" --dangerously-skip-permissions --model "fable" -
 claude -p "/cairn:complete-all-tasks" --dangerously-skip-permissions --model "opus" --effort high;
 # wait until your account's usage window has reset
 claude -p "/cairn:complete-all-tasks" --dangerously-skip-permissions --model "opus" --effort high;
+```
+
+## Preparing the next milestone while the current one runs
+
+Run this when you want the next milestone's questions ready before the current one is finished: it defines the next milestone without activating it, then aims every following line at it with a leading `--milestone <milestone_id>`, so the starting state, the first review pass's open questions, their alternatives, and a recommendation on each are committed for that milestone while the current-milestone pointer keeps naming the one in progress and its own chains run unchanged. The flag goes first, before any text of the skill's own, and names the milestone directly without reading the pointer, so it works whatever the pointer reads, `none` included; a value matching no milestone stops the line with nothing changed and lists the `milestone_*` directories present to retry with. The `<milestone_id>` the later lines take is the directory `define-milestone-goal` created, which its `Milestone-definition: <milestone_id>` commit subject names (`git log -1 --format=%s` right after the first line), and once the current milestone is finished, [Starting a milestone](#starting-a-milestone)'s `goto-next-milestone` line activates this one if it is the lowest-numbered undone milestone. The starting state describes the project as it stands when the line runs, so rerun that line, and the review after it, if the milestone still in progress changes what it describes.
+
+```sh
+claude -p "/cairn:define-milestone-goal <goal>" --dangerously-skip-permissions --model "sonnet" --effort medium;
+claude -p "/cairn:specify-milestone-starting-state --milestone <milestone_id>" --dangerously-skip-permissions --model "fable" --effort xhigh;
+claude -p "/cairn:review-milestone-requirements --milestone <milestone_id>" --dangerously-skip-permissions --model "fable" --effort xhigh;
+claude -p "/cairn:provide-alternatives-to-all-open-questions --milestone <milestone_id>" --dangerously-skip-permissions --model "opus" --effort high;
+claude -p "/cairn:recommend-all-open-questions --milestone <milestone_id>" --dangerously-skip-permissions --model "fable" --effort xhigh;
 ```
 
 ## Finishing a milestone
