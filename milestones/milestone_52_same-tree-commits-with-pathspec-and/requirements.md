@@ -70,5 +70,7 @@ The agent's path file is the task's whole change set: the created and edited pat
 
 The `environment`, `repo`, `git`, and `run_call` helpers move from `tests/test_sweep_batched_call.py` into `tests/conftest.py`: `environment` as a fixture, `git` and `run_call` as module-level helpers or fixtures returning them, and `repo` generalized into a factory fixture taking which fixture milestones to seed, on the pattern of the existing `milestone_dir` and `task_list_dir` factories, while the sweep-specific seeding stays in its own test. `test_sweep_batched_call.py` is rewritten to use them, the new parallel test uses them too, and `test_sweep_compact_view.py` keeps its own copies untouched.
 
+The lock retry is tested deterministically through one fixed call extracted from the rendered tree, run in a `tmp_path` repository in two cases. In the first, the test holds `.git/index.lock` and releases it within the retry window, then asserts the commit landed with only its own paths. In the second, the test creates the lock and never removes it, then asserts that the call ends within a time limit a little above the retry bound, that it passes on git's `Unable to create '…/.git/index.lock'` message, and that no commit landed. The other fixed calls are not run against a held lock and not checked by text, and the parallel test is not relied on for the retry.
+
 ## Out of Scope
 
