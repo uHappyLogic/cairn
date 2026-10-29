@@ -42,26 +42,34 @@ python3 {{PLUGIN_ROOT}}/tools/task_list.py move <MILESTONE_DIR> "<Task Title>" <
 - <criterion 1, as verified>
 - <criterion 2, as verified>
 EOF
-if [ -n "$(git status --porcelain -- <recorded path 1> <recorded path 2> <MILESTONE_DIR>/TASKS_TODO.md <MILESTONE_DIR>/TASKS_DONE.md)" ]; then
-  git add <recorded path 1> <recorded path 2> <MILESTONE_DIR>/TASKS_TODO.md <MILESTONE_DIR>/TASKS_DONE.md && git commit -q -m "Task-completion: <Task Title>" && echo 'completion commit landed'
+out="$(python3 {{PLUGIN_ROOT}}/tools/commit.py --subject "Task-completion: <Task Title>" -- <recorded path 1> <recorded path 2> <MILESTONE_DIR>/TASKS_TODO.md <MILESTONE_DIR>/TASKS_DONE.md)" &&
+if [ -z "$out" ]; then
+  echo 'completion commit landed'
 fi
 ```
 
 The move command and its heredoc are exactly the ones the procedure's step 5 shows. After the
-`&&` the call carries out the three steps of the shared commit procedure at
-`{{PLUGIN_ROOT}}/shared/commit-procedure.md` itself — its dirty-own-path guard, the
-path-scoped `git add`, and the subject-only commit under `Task-completion: <Task Title>`, the
-full `##` heading the procedure located — over this skill's own change set: the exact paths
-the completion procedure recorded as it created or edited files while carrying out the task,
-plus the two milestone task-list files `<MILESTONE_DIR>/TASKS_TODO.md` (the task left it) and
-`<MILESTONE_DIR>/TASKS_DONE.md` (the task joined it). The guard and the `git add` name the
-same paths, every path written out on the command line as its own argument and none held in
-a shell variable — never `git add -A`. Git's success output is silenced.
+`&&` the call runs the one command of the shared commit procedure at
+`{{PLUGIN_ROOT}}/shared/commit-procedure.md`, the plugin's commit tool, with
+`Task-completion: <Task Title>`, the full `##` heading the procedure located, as its subject,
+no body, and this skill's own change set as its paths: the exact paths the completion
+procedure recorded as it created or edited files while carrying out the task, plus the two
+milestone task-list files `<MILESTONE_DIR>/TASKS_TODO.md` (the task left it) and
+`<MILESTONE_DIR>/TASKS_DONE.md` (the task joined it), every path written out on the command
+line after `--` as its own argument and none held in a shell variable. The tool runs the
+dirty-own-path guard over those paths, stages exactly them (never `git add -A`), and commits
+them with them as the commit's pathspec, so nothing else the index holds — a change another
+run has staged included — rides in the completion's commit, and it repeats a git write another
+process's lock refused before giving up. Its stdout is captured in `out`: empty when the commit
+landed, its fixed no-op line when none of the paths changed, so `completion commit landed` is
+printed only when `out` is empty and a no-op commits and prints nothing. `out` is one quoted
+value set and used within this one call, never a tool command or a path list.
 
 What the call prints is the whole outcome: `completion commit landed` when the commit landed;
-nothing when the guard found none of the paths changed; otherwise the move's one `Error:` line
-(both task files unchanged, nothing staged or committed — diagnose it, fix it, and run the call
-again) or git's message for a commit it refused.
+nothing when the commit tool found none of the paths changed; otherwise the move's one
+`Error:` line (both task files unchanged, nothing staged or committed — diagnose it, fix it,
+and run the call again) or, once the move has landed, the commit tool's one `Error:` line,
+naming the git command that failed and carrying git's own message, with nothing committed.
 
 ### 3. Hand back
 
@@ -75,8 +83,8 @@ Carry no task heading, verification detail, or commit subject, and print no foll
 pointer.
 
 If nothing was committed because the completion was abandoned before it changed any file —
-step 2's call never ran, or its guard found no path changed — print instead this one fixed
-no-op line, not the terse success line:
+step 2's call never ran, or its commit tool found no path changed — print instead this one
+fixed no-op line, not the terse success line:
 
 ```
 No task completed — no file changed.

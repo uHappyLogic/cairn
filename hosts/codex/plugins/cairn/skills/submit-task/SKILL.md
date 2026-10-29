@@ -82,29 +82,38 @@ Then run this one fixed shell call, written out in full exactly as shown, with o
 python3 ${PLUGIN_ROOT}/tools/task_list.py insert <MILESTONE_DIR> "<New Task Title>" <position flag> <<'EOF' &&
 <the 1–3 sentence description>
 EOF
-if [ -n "$(git status --porcelain -- <MILESTONE_DIR>/TASKS_TODO.md)" ]; then
-  git add <MILESTONE_DIR>/TASKS_TODO.md && git commit -q -m "Task-submission: <New Task Title>" && echo 'submission commit landed'
+out="$(python3 ${PLUGIN_ROOT}/tools/commit.py --subject "Task-submission: <New Task Title>" -- <MILESTONE_DIR>/TASKS_TODO.md)" &&
+if [ -z "$out" ]; then
+  echo 'submission commit landed'
 fi
 ```
 
 Every title in the call (the new title in both places, and any anchor) is written inside
 double quotes, with any `"`, `$`, `` ` ``, or `\` it holds escaped by a backslash. After the
-`&&` the call carries out the three steps of the shared commit procedure at
-`${PLUGIN_ROOT}/shared/commit-procedure.md` itself — its dirty-own-path guard, the
-path-scoped `git add`, and the subject-only commit under `Task-submission: <New Task Title>`
-— over this skill's own change set, `<MILESTONE_DIR>/TASKS_TODO.md`, written out on the
-command line in both places and never held in a shell variable. Git's success output is
-silenced.
+`&&` the call runs the one command of the shared commit procedure at
+`${PLUGIN_ROOT}/shared/commit-procedure.md`, the plugin's commit tool, with
+`Task-submission: <New Task Title>` as its subject, no body, and this skill's own change set,
+`<MILESTONE_DIR>/TASKS_TODO.md`, as its one path, written out on the command line and never
+held in a shell variable. The tool runs the dirty-own-path guard over the file, stages exactly
+it, and commits it with it as the commit's pathspec, so nothing else the index holds — a change
+another run has staged included — rides in the submission's commit, and it repeats a git write
+another process's lock refused before giving up. Its stdout is captured in `out`: empty when
+the commit landed, its fixed no-op line when the file did not change, so
+`submission commit landed` is printed only when `out` is empty and a no-op commits and prints
+nothing. `out` is one quoted value set and used within this one call, never a tool command or
+a path list.
 
 What the call prints is the whole outcome: `submission commit landed` when the commit landed;
-nothing when the guard found the file unchanged; otherwise the tool's one `Error:` line, with
-`TASKS_TODO.md` unchanged and nothing committed, or git's message for a commit it refused.
+nothing when the commit tool found the file unchanged; otherwise one `Error:` line — the
+task-list tool's, with `TASKS_TODO.md` unchanged and nothing committed, or, once the insert
+has landed, the commit tool's, naming the git command that failed and carrying git's own
+message, with nothing committed.
 
-On the tool's `Error:` line — an anchor naming no section, or a title `TASKS_TODO.md` already
-holds — insert nothing, commit nothing, and stop: never re-run the call with another position
-or insert the task any other way. Report the failure with the fixed line
-`Task not submitted — the task-list tool refused the insert.` first, then below it the
-`Error:` line quoted verbatim, so the user can re-run with a correct anchor or a distinct
+On the task-list tool's `Error:` line — an anchor naming no section, or a title
+`TASKS_TODO.md` already holds — insert nothing, commit nothing, and stop: never re-run the
+call with another position or insert the task any other way. Report the failure with the
+fixed line `Task not submitted — the task-list tool refused the insert.` first, then below it
+the `Error:` line quoted verbatim, so the user can re-run with a correct anchor or a distinct
 title.
 
 ### 6. Confirm
@@ -117,8 +126,8 @@ On the success path — the task was authored, inserted, and committed, the call
 Carry no task title, insert position, or commit subject, and print no next-step or follow-up
 pointer.
 
-If step 5's dirty-own-path guard found `TASKS_TODO.md` unchanged — nothing was committed —
-print instead this one fixed no-op line, not the terse success line:
+If step 5's commit tool found `TASKS_TODO.md` unchanged — nothing was committed — print
+instead this one fixed no-op line, not the terse success line:
 
 ```
 Task not submitted — the task file was unchanged.

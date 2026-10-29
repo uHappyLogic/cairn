@@ -61,3 +61,19 @@ Replace the inlined guard, `git add`, and `git commit` in the three question-doc
 - `uv run scripts/build_hosts.py` rebuilt the three host trees and `uv run scripts/build_hosts.py --check` passes.
 
 ---
+
+## Route The Task-File Writer Calls Through The Tool
+
+Replace the inlined guard, `git add`, and `git commit` in the inline `complete-task` skill's, `submit-task`'s, and `derive-tasks`' fixed calls with the commit tool's command chained behind their task-list tool call, each capturing the tool's stdout and echoing its landed-commit marker only when that capture is empty, with their prose following. Each task-file commit then carries exactly its own paths and survives another run's lock. Verified by the three rendered calls running as shown against a scratch repository and the rebuilt host trees passing `--check`.
+
+**Verified:**
+
+- The inline `complete-task` skill's fixed call chains `task_list.py move` behind `&&` with `out="$(python3 {{PLUGIN_ROOT}}/tools/commit.py --subject "Task-completion: <Task Title>" -- <recorded path 1> <recorded path 2> <MILESTONE_DIR>/TASKS_TODO.md <MILESTONE_DIR>/TASKS_DONE.md)"` and echoes `completion commit landed` only when `out` is empty, its inlined `git status` guard, `git add`, and `git commit -q` gone.
+- `submit-task`'s fixed call chains `task_list.py insert` behind `&&` with `out="$(python3 {{PLUGIN_ROOT}}/tools/commit.py --subject "Task-submission: <New Task Title>" -- <MILESTONE_DIR>/TASKS_TODO.md)"` and echoes `submission commit landed` only when `out` is empty, its inlined guard, `git add`, and `git commit` gone.
+- `derive-tasks`' fixed call chains `task_list.py initialize` behind `&&` with `out="$(python3 {{PLUGIN_ROOT}}/tools/commit.py --subject "Task-derivation: <milestone_id>" -- <MILESTONE_DIR>/TASKS_TODO.md)"` and echoes `derivation commit landed` only when `out` is empty, its inlined guard, `git add`, and `git commit` gone.
+- No `git status`, `git add`, or `git commit` command remains in the three skills in any rendered host tree (`hosts/claude`, `hosts/antigravity`, `hosts/codex/plugins/cairn`), each call holding `tools/commit.py`; the prose keeps only `never git add -A`.
+- The prose follows: each skill names the shared commit procedure's one command, the commit tool, with its subject, no body, and its own paths written literally; describes the tool's guard, path-scoped stage, pathspec commit keeping another run's staged change out, and lock retry; names `out` as one quoted value captured from the tool's stdout; lists the call's outcomes with the task-list tool's `Error:` line told from the commit tool's (naming the failing git command, carrying git's message); keys each no-op line on the commit tool finding the paths unchanged; scopes `submit-task`'s and `derive-tasks`' refusal stops to the task-list tool's `Error:` line; every fixed console line unchanged.
+- The three rendered Claude Code calls, extracted from `hosts/claude/` and run as shown against scratch repositories under bash 5.3, bash 3.2, zsh, and sh with another run's change staged and an untracked file present: every derivation, submission, and completion commit carried exactly its own paths and the staged change stayed staged; a repeated derivation printed and committed nothing; a duplicate-title list and an unknown anchor printed one task-list `Error:` line and committed nothing; a completion with `.git/index.lock` held for one second landed with only its own paths; a pre-commit hook refusal printed only the commit tool's `Error: git commit exited 1: …` line, no marker, and committed nothing.
+- `uv run scripts/build_hosts.py` rebuilt the three host trees and `uv run scripts/build_hosts.py --check` passes; `uv run pytest` (1093 passed) and `uv run --no-project --python 3.9 --with pytest pytest` (1089 passed, 1 skipped) pass.
+
+---

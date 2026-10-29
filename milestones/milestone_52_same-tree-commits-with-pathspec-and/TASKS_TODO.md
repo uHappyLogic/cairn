@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Route The Task-File Writer Calls Through The Tool
-
-Replace the inlined guard, `git add`, and `git commit` in the inline `complete-task` skill's, `submit-task`'s, and `derive-tasks`' fixed calls with the commit tool's command chained behind their task-list tool call, each capturing the tool's stdout and echoing its landed-commit marker only when that capture is empty, with their prose following. Each task-file commit then carries exactly its own paths and survives another run's lock. Verified by the three rendered calls running as shown against a scratch repository and the rebuilt host trees passing `--check`.
-
----
-
 ## Test The Lock Retry Through One Fixed Call
 
 Add one test that extracts the inline `complete-task` skill's fixed call from the rendered Claude Code tree — the one fixed call the parallel test leaves unrun — and runs it in a `tmp_path` repository in two cases: holding `.git/index.lock` and releasing it within the retry window, asserting the commit landed with only its own paths; and creating the lock and never removing it, asserting the call ends within a time limit a little above the retry bound, passes on git's `Unable to create '…/.git/index.lock'` message, and lands no commit. This is the milestone's deterministic proof of the retry, which the parallel test is not relied on for and which no other fixed call is run against a lock for. Verified by the test passing under both interpreters on the conftest git fixtures.

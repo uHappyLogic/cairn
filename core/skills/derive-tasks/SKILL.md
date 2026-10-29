@@ -115,16 +115,17 @@ python3 {{PLUGIN_ROOT}}/tools/task_list.py initialize <MILESTONE_DIR> <<'EOF' &&
 
 ---
 EOF
-if [ -n "$(git status --porcelain -- <MILESTONE_DIR>/TASKS_TODO.md)" ]; then
-  git add <MILESTONE_DIR>/TASKS_TODO.md && git commit -q -m "Task-derivation: <milestone_id>" && echo 'derivation commit landed'
+out="$(python3 {{PLUGIN_ROOT}}/tools/commit.py --subject "Task-derivation: <milestone_id>" -- <MILESTONE_DIR>/TASKS_TODO.md)" &&
+if [ -z "$out" ]; then
+  echo 'derivation commit landed'
 fi
 ```
 
-The tool replaces `<MILESTONE_DIR>/TASKS_TODO.md` with its heading followed by the whole list in the order given, or, refusing anything in it, prints one `Error:` line and leaves the file byte-for-byte unchanged. After the `&&` the call carries out the three steps of the shared commit procedure at `{{PLUGIN_ROOT}}/shared/commit-procedure.md` itself — its dirty-own-path guard, the path-scoped `git add`, and the subject-only commit under `Task-derivation: <milestone_id>` — over this skill's own change set, `<MILESTONE_DIR>/TASKS_TODO.md`, written out on the command line in both places and never held in a shell variable. Git's success output is silenced. Never write the briefs into the file any other way, one at a time or by editing it.
+The task-list tool replaces `<MILESTONE_DIR>/TASKS_TODO.md` with its heading followed by the whole list in the order given, or, refusing anything in it, prints one `Error:` line and leaves the file byte-for-byte unchanged. After the `&&` the call runs the one command of the shared commit procedure at `{{PLUGIN_ROOT}}/shared/commit-procedure.md`, the plugin's commit tool, with `Task-derivation: <milestone_id>` as its subject, no body, and this skill's own change set, `<MILESTONE_DIR>/TASKS_TODO.md`, as its one path, written out on the command line and never held in a shell variable. The tool runs the dirty-own-path guard over the file, stages exactly it, and commits it with it as the commit's pathspec, so nothing else the index holds — a change another run has staged included — rides in the derivation's commit, and it repeats a git write another process's lock refused before giving up. Its stdout is captured in `out`: empty when the commit landed, its fixed no-op line when the file did not change, so `derivation commit landed` is printed only when `out` is empty and a no-op commits and prints nothing. `out` is one quoted value set and used within this one call, never a tool command or a path list. Never write the briefs into the file any other way, one at a time or by editing it.
 
-What the call prints is the whole outcome: `derivation commit landed` when the commit landed; nothing when the guard found the file unchanged (the list matched what it already held); otherwise the tool's one `Error:` line, with `TASKS_TODO.md` unchanged and nothing committed, or git's message for a commit it refused.
+What the call prints is the whole outcome: `derivation commit landed` when the commit landed; nothing when the commit tool found the file unchanged (the list matched what it already held); otherwise one `Error:` line — the task-list tool's, with `TASKS_TODO.md` unchanged and nothing committed, or, once the list has been written, the commit tool's, naming the git command that failed and carrying git's own message, with nothing committed.
 
-On the tool's `Error:` line — two briefs whose titles fold to the same title, or a section with an empty title or body — commit nothing and stop: report the failure with the fixed line `Cannot derive tasks: the task-list tool refused the list.` first and the `Error:` line quoted verbatim below it, and print no line of step 8.
+On the task-list tool's `Error:` line — two briefs whose titles fold to the same title, or a section with an empty title or body — commit nothing and stop: report the failure with the fixed line `Cannot derive tasks: the task-list tool refused the list.` first and the `Error:` line quoted verbatim below it, and print no line of step 8.
 
 ### 8. Verify coverage and report
 
@@ -135,4 +136,4 @@ On the success path — the call printed `derivation commit landed` — print ex
 If the run derived nothing, so nothing is committed, do not print the terse success line; instead print the one fixed no-op line its case gives:
 
 - **Step 6 skipped the call because no brief was derived** — `No tasks derived — every requirement is already satisfied.`
-- **Step 7's dirty-own-path guard found `TASKS_TODO.md` unchanged** — `No tasks derived — the list matched the task file already.`
+- **Step 7's commit tool found `TASKS_TODO.md` unchanged** — `No tasks derived — the list matched the task file already.`
