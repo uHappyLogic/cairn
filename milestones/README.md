@@ -13,7 +13,7 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: none
+Current milestone: `milestones/milestone_52_same-tree-commits-with-pathspec-and/`
 
 ## Milestone History
 
