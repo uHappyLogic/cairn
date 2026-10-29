@@ -86,12 +86,15 @@ there.
 
 ### 3. Carry out the task
 
-**Uncommitted changes already in the tree may be a previous run's partial work.** A run of
-this procedure can be resuming an earlier one that failed or was interrupted part-way, which
-leaves its partial work uncommitted in the working tree. Before editing anything, inspect
-what is already uncommitted: whatever bears on this task is work already done — read it,
-continue from it, and carry its paths in the running list below — rather than redoing or
-reverting it. Uncommitted changes that do not bear on this task are not yours to touch.
+**Uncommitted changes already in the tree may be a previous run's partial work or another
+run's live work.** A run of this procedure can be resuming an earlier one that failed or was
+interrupted part-way, which leaves its partial work uncommitted in the working tree, and it
+can share the tree with other runs still in progress, whose edits stay uncommitted until
+each commits its own. Before editing anything, inspect what is already uncommitted. In
+either case, whatever bears on this task is work already done — read it, continue from it,
+and carry its paths in the running list below — rather than redoing or reverting it, and
+uncommitted changes that do not bear on this task are not yours to touch: leave them exactly
+as they stand and keep their paths out of your running list.
 
 **The task gives you the goal, not a procedure — you own the design.**
 Derive the flow yourself from the task's description and the acceptance bar you derived in

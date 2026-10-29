@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Extend The Resumption Rule To Live Work
-
-Rewrite the opening of step 3 of `core/shared/complete-procedure.md` so uncommitted changes in the tree are named as either a previous run's partial work or another run's live work, with the runner continuing from what bears on its task and leaving the rest untouched in both cases. Several `complete-all-tasks` runs may now share one working tree, so the rule must cover work that is in progress rather than abandoned. Verified by the rebuilt host trees passing `--check` with both runners' files still pointing at the unchanged step.
-
----
-
 ## Completion Agent Writes Its Path File
 
 Change `core/agents/complete-task.md` so it takes a third prompt line, `Scratch directory: <scratch dir>`, stages nothing, and runs step 5 as one fixed shell call chaining the task-list tool's `move` with the write of the task's whole change set — the recorded created and edited paths plus `<MILESTONE_DIR>/TASKS_TODO.md` and `<MILESTONE_DIR>/TASKS_DONE.md`, one path per line — to a file of one fixed name per run inside that scratch directory, behind the move's `&&`, with its return protocol reworded to match. The orchestrator commits each task from that file, so the agent's return becomes a file as the alternatives agent's already is. Verified by `agy_tests/test_subagent_write_tools.py` updated to the three-line prompt and to the landed path file as its pass signal, and the rebuilt host trees passing `--check`.

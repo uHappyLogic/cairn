@@ -91,3 +91,16 @@ Add one test that extracts the inline `complete-task` skill's fixed call from th
 - The test passes under both interpreters: `uv run pytest` (1096 passed) and `uv run --no-project --python 3.9 --with pytest pytest` (1092 passed, 1 skipped), the new file's 3 tests passing in each.
 
 ---
+
+## Extend The Resumption Rule To Live Work
+
+Rewrite the opening of step 3 of `core/shared/complete-procedure.md` so uncommitted changes in the tree are named as either a previous run's partial work or another run's live work, with the runner continuing from what bears on its task and leaving the rest untouched in both cases. Several `complete-all-tasks` runs may now share one working tree, so the rule must cover work that is in progress rather than abandoned. Verified by the rebuilt host trees passing `--check` with both runners' files still pointing at the unchanged step.
+
+**Verified:**
+
+- The opening of step 3 of `core/shared/complete-procedure.md` names uncommitted changes in the tree as either a previous run's partial work or another run's live work (a run still in progress sharing the tree)
+- In both cases the runner continues from whatever bears on its task (reading it, continuing from it, carrying its paths in the running list) rather than redoing or reverting it, and leaves the rest untouched with its paths kept out of the running list
+- Step numbering and headings are unchanged (steps 1-5, `### 3. Carry out the task`), and the runner files (`core/agents/complete-task.md`, `core/skills/complete-task/SKILL.md`) are unedited and still point at the procedure and its step 5
+- `uv run scripts/build_hosts.py` rebuilt the three host trees and `uv run scripts/build_hosts.py --check` passes, with only the four `complete-procedure.md` copies changed
+
+---
