@@ -66,6 +66,8 @@ The orchestrator's commit call reads the agent's path file line-exact: one path 
 
 The agent's path file is the task's whole change set: the created and edited paths from the completion procedure's running list plus `<MILESTONE_DIR>/TASKS_TODO.md` and `<MILESTONE_DIR>/TASKS_DONE.md`, the two task files written into the file by the agent's own step-5 call behind the move's `&&`, where today's `git add` names them. The orchestrator's commit call reads the file as its only pathspec for its guard, its `git add`, and its commit, and names no path itself.
 
+The path file has one fixed name per run that every task's agent writes, and the orchestrator's commit call moves the file out of the way after reading it, into a `processed` subdirectory of the scratch directory under a name the call makes unique (for example through `mktemp` inside that subdirectory), following the alternatives pass's move-into-processed precedent and deleting nothing. The fixed name is therefore absent whenever the next agent starts, and no part of either name comes from the task title.
+
 ### Tests
 
 The `environment`, `repo`, `git`, and `run_call` helpers move from `tests/test_sweep_batched_call.py` into `tests/conftest.py`: `environment` as a fixture, `git` and `run_call` as module-level helpers or fixtures returning them, and `repo` generalized into a factory fixture taking which fixture milestones to seed, on the pattern of the existing `milestone_dir` and `task_list_dir` factories, while the sweep-specific seeding stays in its own test. `test_sweep_batched_call.py` is rewritten to use them, the new parallel test uses them too, and `test_sweep_compact_view.py` keeps its own copies untouched.
