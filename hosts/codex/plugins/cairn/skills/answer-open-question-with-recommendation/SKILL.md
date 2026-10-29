@@ -61,8 +61,9 @@ question gets an embedded recommendation), or to record a literal answer via
 ### 3. Commit the recommendation answer
 
 Read and follow the shared commit procedure at
-`${PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these three inputs, using the
-`<MILESTONE_DIR>` from step 1:
+`${PLUGIN_ROOT}/shared/commit-procedure.md`, running its one commit-tool command yourself as
+this step's one git tool call. Supply it these three inputs, using the `<MILESTONE_DIR>` from
+step 1:
 
 - **PATHS** — this skill's own edits: `<MILESTONE_DIR>/open_questions.xml` and
   `<MILESTONE_DIR>/requirements.md`.
@@ -75,9 +76,10 @@ Read and follow the shared commit procedure at
 - **BODY** — the lifted recommendation: the "`<option>` — `<rationale>`" line the `lift` call
   printed in step 2, verbatim — the answer that was recorded.
 
-That procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
-Its no-op guard also covers this skill's clean-stop case: if step 2 stopped on the `lift`
-call's `Error:` line, neither file changed, so nothing is staged and nothing is committed.
+The commit tool runs the dirty-own-path guard, the path-scoped staging, and the commit. Its
+guard also covers this skill's clean-stop case: if step 2 stopped on the `lift` call's
+`Error:` line, neither file changed, so the commit tool prints its no-op line
+`Nothing committed — none of the paths changed.` and nothing is staged or committed.
 
 ### 4. Report findings
 
@@ -94,10 +96,10 @@ keep only the one piece of genuinely git-absent advisory output: any new open qu
 recorded decision may have introduced — surface these but do **not** add them to the document
 without user confirmation.
 
-**No-op case:** if step 3's dirty-own-path guard fired — nothing was committed because
-neither file changed (step 2's clean stop on the `lift` call's `Error:` line) — do **not**
-print the terse success line. The report is step 2's stop message, opening with its fixed
-line.
+**No-op case:** if step 3's commit tool printed
+`Nothing committed — none of the paths changed.` — nothing was committed because neither file
+changed (step 2's clean stop on the `lift` call's `Error:` line) — do **not** print the terse
+success line. The report is step 2's stop message, opening with its fixed line.
 
 Then stay available: the user may now ask follow-up questions or request adjustments, with
 the full recording context still in hand.

@@ -97,8 +97,9 @@ fixed line `Alternative not recorded — the recording core stopped.` first, the
 ### 4. Commit the alternative answer
 
 Read and follow the shared commit procedure at
-`${PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these three inputs, using the
-`<MILESTONE_DIR>` from step 1:
+`${PLUGIN_ROOT}/shared/commit-procedure.md`, running its one commit-tool command yourself as
+this step's one git tool call. Supply it these three inputs, using the `<MILESTONE_DIR>` from
+step 1:
 
 - **PATHS** — this skill's own edits: `<MILESTONE_DIR>/open_questions.xml` and
   `<MILESTONE_DIR>/requirements.md`.
@@ -111,10 +112,11 @@ Read and follow the shared commit procedure at
 - **BODY** — the lifted alternative: the "`<id>` — `<what-it-is>`" line the `lift` call printed
   in step 2, verbatim — the answer that was recorded.
 
-That procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
-Its no-op guard also covers this skill's clean-stop cases: if step 2 stopped on the tool's
-`Error:` line or the recording core in step 3 stopped on one, neither file changed, so
-nothing is staged and nothing is committed.
+The commit tool runs the dirty-own-path guard, the path-scoped staging, and the commit. Its
+guard also covers this skill's clean-stop cases: if step 2 stopped on the tool's `Error:` line
+or the recording core in step 3 stopped on one, neither file changed, so the commit tool
+prints its no-op line `Nothing committed — none of the paths changed.` and nothing is staged
+or committed.
 
 ### 5. Report findings
 
@@ -132,9 +134,10 @@ read), or how the documents changed (the removed block, the decision folded into
 genuinely git-absent advisory output: any new open questions the recorded decision may have
 introduced — surface these but do **not** add them to the document without user confirmation.
 
-**No-op case:** if step 4's dirty-own-path guard fired — nothing was committed because
-neither file changed (step 2 or the recording core in step 3 stopped on the tool's `Error:`
-line) — do **not** print the terse success line. The report is that stop's own message,
+**No-op case:** if step 4's commit tool printed
+`Nothing committed — none of the paths changed.` — nothing was committed because neither file
+changed (step 2 or the recording core in step 3 stopped on the tool's `Error:` line) — do
+**not** print the terse success line. The report is that stop's own message,
 opening with the fixed line its step gives.
 
 Then stay available: the user may now ask follow-up questions or request adjustments, with the

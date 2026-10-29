@@ -484,9 +484,9 @@ restatement of one past decision.>
 This step runs only after step 6 wrote the composed store. A pass that wrote nothing — the empty
 commit range (step 3), no surviving candidate and no flagged entry (step 5), or a composed store
 identical to its baseline (step 6) — went straight to step 8 and never reaches this step or the
-shared commit procedure: with nothing of its own written, running that procedure would let its
-dirty-own-path guard commit the user's edits admitted by step 2's dirty-store guard under this
-skill's subject. No empty commit is written to record such a run either.
+shared commit procedure: with nothing of its own written, running that procedure would let the
+commit tool's dirty-own-path guard commit the user's edits admitted by step 2's dirty-store guard
+under this skill's subject. No empty commit is written to record such a run either.
 
 **The write was not the confirmation; this is.** The working tree is the only review surface. Tell
 the user, in one line, that the composed store has been written to
@@ -505,7 +505,7 @@ no diff after a round either; the user re-reads `git diff`. A reply that is neit
 acceptance nor an explicit rejection is a change request or a question: handle it and ask again.
 There is no round limit; the loop ends only on one of the two answers below.
 
-**On acceptance — commit.** Read and follow the shared commit procedure at `${PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these three inputs:
+**On acceptance — commit.** Read and follow the shared commit procedure at `${PLUGIN_ROOT}/shared/commit-procedure.md`, running its one commit-tool command yourself as this step's one git tool call. Supply it these three inputs:
 
 - **PATHS** — this skill's own change set: the fixed-path store `milestones/answer_decision_principles.md` (a `milestones/`-root artifact, **not** any `<MILESTONE_DIR>` file — this skill writes only that store).
 - **SUBJECT** — `Principle-capture: <milestone_id>`, with `<milestone_id>` the argument from step 1 used verbatim (e.g. `Principle-capture: milestone_12_user-guide`), the marker naming this skill's distinctive principle-capture function.
@@ -527,10 +527,14 @@ There is no round limit; the loop ends only on one of the two answers below.
   The body is the only surviving record of the why behind a prune or merge — the console is silent
   (step 8) and the store keeps no changelog — so it is never printed to the conversation.
 
-The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit
-that records BODY under SUBJECT. The rewrite is committed as it stands after the last
-review round, over the working-tree baseline, so edits admitted in step 2 ride in the same commit.
-Once the commit lands, discard the snapshot (`rm -f "$SNAPSHOT"`) and go to step 8 (captured).
+The commit tool runs the dirty-own-path guard, the path-scoped staging, and the commit that
+records BODY under SUBJECT. The rewrite is committed as it stands after the last review round,
+over the working-tree baseline, so edits admitted in step 2 ride in the same commit. Once the
+commit lands — the tool printed nothing — discard the snapshot (`rm -f "$SNAPSHOT"`) and go to
+step 8 (captured). If the tool instead printed
+`Nothing committed — none of the paths changed.`, the accepted rewrite matches the store as last
+committed and nothing was committed: discard the snapshot the same way and go to step 8 (nothing
+captured).
 
 **On explicit rejection — restore the snapshot and exit without committing.** Restore the store
 from the step-6 snapshot, **not from `HEAD`**:
@@ -543,10 +547,11 @@ When the snapshot was recorded as *absent*, remove the file the write created in
 (`rm milestones/answer_decision_principles.md`). Either way the store stands exactly as it did
 before the first write: in the clean case that is `HEAD`; after a dirty-store proceed it is the
 user's own uncommitted edits, which survive intact. Then **exit explicitly — do not invoke
-`shared/commit-procedure.md`**, not even for its guard: stage nothing and commit nothing. The
-procedure's dirty-own-path guard would read the user's surviving edits as this pass's change and
-commit them under `Principle-capture: <milestone_id>`, which is why the rejection path never reaches
-it. No empty commit records the rejection. Go to step 8 (nothing captured).
+`shared/commit-procedure.md`**, not even for its commit tool's guard: stage nothing and commit
+nothing. The commit tool's dirty-own-path guard would read the user's surviving edits as this
+pass's change and commit them under `Principle-capture: <milestone_id>`, which is why the
+rejection path never reaches it. No empty commit records the rejection. Go to step 8 (nothing
+captured).
 
 ### 8. Report
 
@@ -567,7 +572,9 @@ it. No empty commit records the rejection. Go to step 8 (nothing captured).
   - **no candidates** (step 5), commits were in range, but none generalizes and none contradicts
     the store — `Nothing captured or committed — no answer generalizes or contradicts the store.`
   - **composed store identical to its baseline** (step 6), everything the milestone teaches is
-    already in the store, so nothing was written —
+    already in the store, so nothing was written, or **an accepted rewrite the commit tool found
+    unchanged** (step 7), its no-op line printed because the store already matches its last
+    commit —
     `Nothing captured or committed — the store already holds what the milestone teaches.`
   - **rejection** (step 7), the rewrite was declined and the store restored to its pre-write state —
     `Nothing captured or committed — the rewrite was declined and the store restored.`

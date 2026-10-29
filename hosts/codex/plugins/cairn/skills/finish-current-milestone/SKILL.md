@@ -102,12 +102,12 @@ If nothing in the milestone changes the project's environment context or structu
 
 ### 8. Commit the finish
 
-Read and follow the shared commit procedure at `${PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
+Read and follow the shared commit procedure at `${PLUGIN_ROOT}/shared/commit-procedure.md`, running its one commit-tool command yourself as this step's one git tool call. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set: **always** `milestones/README.md` (it carries the completion summary from steps 4–5 and, on passes where step 6 cleared it, the `Current milestone: none` pointer, in the same edit), and **additionally** `AGENTS.md` **only on passes where step 7 actually edited it**. If step 7 was skipped, `AGENTS.md` is not in the set and the commit covers `milestones/README.md` alone. This conditional inclusion is keyed on whether this skill's step 7 edited the file — decided as the edit is (or is not) made, never by diffing or inspecting content.
 - **SUBJECT** — `Milestone-finish: milestone_<NN>_<slug>`.
 
-The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
+The commit tool runs the dirty-own-path guard, the path-scoped staging, and the commit.
 
 ### 9. Confirm
 
@@ -119,7 +119,7 @@ Milestone finished.
 
 Do not restate the milestone name, the tasks-completed count, the accomplishment bullets written into `milestones/README.md`, the pointer clear, any `AGENTS.md` sections touched, or the commit. Do not print any next-step or handoff pointer.
 
-If step 8's dirty-own-path no-op guard fired (the pass changed no files, so nothing was committed), do not print the terse success line. Instead print this one fixed no-op line and nothing else:
+If step 8's commit tool printed `Nothing committed — none of the paths changed.` (the pass changed no files, so nothing was committed), do not print the terse success line. Instead print this one fixed no-op line and nothing else:
 
 ```
 Nothing to finish — no changes to commit.

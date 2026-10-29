@@ -42,12 +42,12 @@ If the call fails — the shell cannot find `python3`, or the tool exits non-zer
 
 ### 3. Commit the new milestone
 
-Read and follow the shared commit procedure at `${PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs, both exactly as the tool printed them in step 2:
+Read and follow the shared commit procedure at `${PLUGIN_ROOT}/shared/commit-procedure.md`, running its one commit-tool command yourself as this step's one git tool call. Supply it these two inputs, both exactly as the tool printed them in step 2:
 
 - **PATHS** — the milestone directory path, the tool's second line; the directory holds exactly the four files the tool just created.
 - **SUBJECT** — the tool's first line.
 
-The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
+The commit tool runs the dirty-own-path guard, the path-scoped staging, and the commit.
 
 ### 4. Confirm
 
@@ -59,7 +59,7 @@ Milestone defined.
 
 Do not add the created directory path, the title, the goal text, or a next-step pointer.
 
-If instead the step-3 dirty-own-path guard fired (nothing under the milestone directory changed, so nothing was committed), do not print the terse line — print this one fixed line and nothing else:
+If instead the step-3 commit tool printed `Nothing committed — none of the paths changed.` (nothing under the milestone directory changed, so nothing was committed), do not print the terse line — print this one fixed line and nothing else:
 
 ```
 Milestone not committed — its directory held no uncommitted file.

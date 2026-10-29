@@ -136,14 +136,14 @@ Never write a current-milestone pointer into `{{CONTEXT_FILE}}`; the pointer liv
 
 ### 7. Commit the bootstrap
 
-Read and follow the shared commit procedure at `{{PLUGIN_ROOT}}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
+Read and follow the shared commit procedure at `{{PLUGIN_ROOT}}/shared/commit-procedure.md`, running its one commit-tool command yourself as this step's one git tool call. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set: **always** `milestones/README.md` (created or edited in step 5), and **additionally** `{{CONTEXT_FILE}}` **only on runs where step 6 created it or appended the `## Milestone Workflow` section to it**. When step 6 left an existing section as-is, `{{CONTEXT_FILE}}` is not in the set and the commit covers `milestones/README.md` alone. This conditional inclusion is keyed on whether this skill's step 6 made the edit — decided as the edit is (or is not) made, never by diffing or inspecting content.
 - **SUBJECT** — `Workflow-bootstrap: milestones`.
 
 Supply no BODY: the commit is subject-only. Hand the paths over unchanged — uncommitted changes already present in them before this run (for example a `{{CONTEXT_FILE}}` just written by `/init`) are swept into this commit, with no status probe beforehand, no stop, no confirmation, no hunk-level staging, and no advisory.
 
-The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
+The commit tool runs the dirty-own-path guard, the path-scoped staging, and the commit.
 
 ### 8. Confirm
 
@@ -155,7 +155,7 @@ Workflow bootstrapped.
 
 Do not list which items were created or left untouched, the pointer's initial value, the commit, or any next-step or handoff pointer; the commit diff shows which files were created or appended to.
 
-If instead the step-7 dirty-own-path guard fired (none of the paths changed, so nothing was committed), do not print the terse line — print this one fixed line and nothing else:
+If instead the step-7 commit tool printed `Nothing committed — none of the paths changed.` (none of the paths changed, so nothing was committed), do not print the terse line — print this one fixed line and nothing else:
 
 ```
 Bootstrap committed nothing — the scaffold already matched the last commit.

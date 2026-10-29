@@ -75,12 +75,12 @@ Replace the (empty) `## Relevant starting state` section in `requirements.md` wi
 
 ### 6. Commit the starting state
 
-Read and follow the shared commit procedure at `{{PLUGIN_ROOT}}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
+Read and follow the shared commit procedure at `{{PLUGIN_ROOT}}/shared/commit-procedure.md`, running its one commit-tool command yourself as this step's one git tool call. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set: `<MILESTONE_DIR>/requirements.md` (the file whose `## Relevant starting state` section it just filled).
 - **SUBJECT** — `Starting-state: <milestone_id>`.
 
-The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
+The commit tool runs the dirty-own-path guard, the path-scoped staging, and the commit.
 
 ### 7. Confirm
 
@@ -92,7 +92,7 @@ Starting state recorded.
 
 Do not add the milestone id, the count of systems documented, or a next-step pointer.
 
-If instead the step-6 dirty-own-path guard fired (`requirements.md` was unchanged, so nothing was committed), do not print the terse line — print this one fixed line and nothing else:
+If instead the step-6 commit tool printed `Nothing committed — none of the paths changed.` (`requirements.md` was unchanged, so nothing was committed), do not print the terse line — print this one fixed line and nothing else:
 
 ```
 Starting state unchanged — nothing committed.

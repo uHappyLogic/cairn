@@ -54,13 +54,13 @@ That procedure names the standing picks on the other open questions that the ans
 
 ### 5. Commit the manual answer
 
-Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these three inputs, using the `<MILESTONE_DIR>` resolved in step 3:
+Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, running its one commit-tool command yourself as this step's one git tool call. Supply it these three inputs, using the `<MILESTONE_DIR>` resolved in step 3:
 
 - **PATHS** — this skill's own edits: `<MILESTONE_DIR>/open_questions.xml` and `<MILESTONE_DIR>/requirements.md`.
 - **SUBJECT** — exactly `Manual-answer: <Short Title>` (the answered question's handle). The marker is the provenance `/capture-milestone-principle-updates` reads when it walks a milestone's answer commits across all three subjects: `Manual-answer:` and `Alternative-answer:` mark override signals it distills new principles from, while `Recommendation-answer:` marks evidence about existing principles only.
 - **BODY** — the decision's rationale — but record only rationale that genuinely exists in this conversation. Never prompt the user for a rationale and never fabricate one. When `/discuss-open-question` deliberation is in context, the body captures that reasoning. On a cold answer (no deliberation), the body is the literal answer text — recorded verbatim, including any inline "because" clause the user typed; when the answer states no reasoning, the body holds the bare decision. The answer string is itself the cold path's rationale affordance — add no separate rationale prompt.
 
-That procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit. Its no-op guard also covers this skill's clean-stop cases: if step 4 stopped on the tool's `Error:` line, step 2's redirect guard fired on the retired sentinel, or step 1 hit a parse error, neither file changed, so nothing is staged and nothing is committed.
+The commit tool runs the dirty-own-path guard, the path-scoped staging, and the commit. Its guard also covers this skill's clean-stop cases: if step 4 stopped on the tool's `Error:` line, step 2's redirect guard fired on the retired sentinel, or step 1 hit a parse error, neither file changed, so the commit tool prints its no-op line `Nothing committed — none of the paths changed.` and nothing is staged or committed.
 
 ### 6. Report findings
 
@@ -72,4 +72,4 @@ Answer recorded.
 
 Do **not** re-narrate which question resolved or how the documents changed (the removed block, the decision folded into `## Decisions`, the cascading resolutions). Alongside the terse line keep only the one piece of genuinely git-absent advisory output: any new open questions the answer may have introduced — surface these but do **not** add them to the document without user confirmation.
 
-**No-op case:** if step 5's dirty-own-path guard fired — nothing was committed because neither file changed (a step 1 parse error, the step 2 retired-sentinel redirect, or a step 4 stop on the tool's `Error:` line) — do **not** print the terse success line. The report is that stop's own message, opening with the fixed line its step gives.
+**No-op case:** if step 5's commit tool printed `Nothing committed — none of the paths changed.` — nothing was committed because neither file changed (a step 1 parse error, the step 2 retired-sentinel redirect, or a step 4 stop on the tool's `Error:` line) — do **not** print the terse success line. The report is that stop's own message, opening with the fixed line its step gives.

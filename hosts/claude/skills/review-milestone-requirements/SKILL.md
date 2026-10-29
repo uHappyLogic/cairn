@@ -138,12 +138,12 @@ Neither path resolves a conflict: never edit, reword, or remove either `## Decis
 
 ### 5. Commit the reshaped requirements
 
-Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
+Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, running its one commit-tool command yourself as this step's one git tool call. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set, the milestone's two requirements documents: `<MILESTONE_DIR>/open_questions.xml` (where every prune, dedup, and new block of this pass landed) and `<MILESTONE_DIR>/requirements.md` (where step 4's note deletions landed).
 - **SUBJECT** — `Requirements-review: <milestone_id>`.
 
-The shared procedure owns the no-op guard, the path-scoped staging, and the commit. Its dirty-own-path guard covers this skill's no-op case: a pass that reconciled, pruned, and surfaced nothing and found no note to handle leaves both files unchanged, so nothing is staged and nothing is committed; a pass that reshaped the question set or deleted a note commits that change.
+The commit tool runs the dirty-own-path guard, the path-scoped staging, and the commit. Its guard covers this skill's no-op case: a pass that reconciled, pruned, and surfaced nothing and found no note to handle leaves both files unchanged, so the tool prints `Nothing committed — none of the paths changed.` and nothing is staged or committed; a pass that reshaped the question set or deleted a note commits that change.
 
 ### 6. Report convergence
 
@@ -170,7 +170,7 @@ Requirements converged — ready for task derivation.
 
 Print that line whenever `list` printed nothing, on a pass that reshaped the requirements and on a no-op pass alike, and never when it printed anything.
 
-**No-op pass.** When the step-5 dirty-own-path guard fires — this pass reconciled, pruned, and surfaced nothing and found no note, so both files are unchanged and nothing was committed — do **not** print `Requirements reviewed.` Instead print, in its place, this one fixed line:
+**No-op pass.** When the step-5 commit tool prints `Nothing committed — none of the paths changed.` — this pass reconciled, pruned, and surfaced nothing and found no note, so both files are unchanged and nothing was committed — do **not** print `Requirements reviewed.` Instead print, in its place, this one fixed line:
 
 ```
 Requirements unchanged — the review found nothing to reshape.

@@ -31,3 +31,16 @@ Add the new stdlib-only, self-contained commit tool under `core/tools/` that the
 - `uv run scripts/build_hosts.py --check` passes after the rebuild.
 
 ---
+
+## Reduce The Commit Procedure To The Tool
+
+Rewrite `core/shared/commit-procedure.md` so its three steps become the commit tool's one fixed command over PATHS, SUBJECT, and BODY, and update the eleven skills that follow it by reference so each runs that command as its one git tool call and reads the tool's printed line directly to choose its no-op line. This moves the commit mechanics into the tool for every skill that never inlined them. Verified by the procedure showing the one command, each of the eleven skills reading the tool's line for its no-op, and the rebuilt host trees passing `--check`.
+
+**Verified:**
+
+- `core/shared/commit-procedure.md` keeps its PATHS, SUBJECT, and optional BODY inputs and reduces its procedure to the one commit-tool command `python3 {{PLUGIN_ROOT}}/tools/commit.py --subject "<SUBJECT>" --body "<BODY>" -- <PATHS>` (the `--body` left out for a subject-only commit), run as the step's one git tool call with every path its own argument after `--` and none held in a shell variable, and no git command of the runner's own beside it (no status check, no `git add`, no `git commit`, no `--allow-empty`).
+- The procedure states the tool's three outcomes as the caller reads them: nothing printed is a landed commit, exactly `Nothing committed — none of the paths changed.` on stdout is the no-op from which the caller chooses its own no-op line, and one `Error:` line on stderr is a failure with nothing committed, passed on to the caller.
+- Each of the eleven skills that follow the procedure by reference (`answer-open-question`, `answer-open-question-with-alternative`, `answer-open-question-with-recommendation`, `capture-milestone-principle-updates`, `define-milestone-goal`, `finish-current-milestone`, `goto-next-milestone`, `init-milestone-base-workflow`, `modify-milestone-goal`, `review-milestone-requirements`, `specify-milestone-starting-state`) runs the procedure's one commit-tool command as its step's one git tool call, no longer says "carrying out its steps yourself" or that the procedure owns the guard, and keys its no-op line on the commit tool printing `Nothing committed — none of the paths changed.`; capture maps that line after an accepted rewrite to its existing `the store already holds what the milestone teaches` line and keeps its rejection path off the tool entirely.
+- `uv run scripts/build_hosts.py` rebuilt the three host trees and `uv run scripts/build_hosts.py --check` passes; `uv run pytest` (1093 passed) and `uv run --no-project --python 3.9 --with pytest pytest` (1089 passed, 1 skipped) pass.
+
+---

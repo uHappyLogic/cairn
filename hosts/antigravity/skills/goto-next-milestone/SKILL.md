@@ -43,12 +43,12 @@ Leave the `## Current Milestone` heading, the `## Milestone History` section, an
 
 ### 4. Commit the activation
 
-Read and follow the shared commit procedure at `~/.gemini/config/plugins/cairn/shared/commit-procedure.md`, carrying out its steps yourself. Supply it these two inputs:
+Read and follow the shared commit procedure at `~/.gemini/config/plugins/cairn/shared/commit-procedure.md`, running its one commit-tool command yourself as this step's one git tool call. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set: `milestones/README.md` (the file whose `Current milestone:` pointer it just overwrote).
 - **SUBJECT** — `Milestone-activation: milestone_<number>_<slug>`.
 
-The shared procedure owns the path-scoped staging, the dirty-own-path no-op guard, and the commit.
+The commit tool runs the dirty-own-path guard, the path-scoped staging, and the commit.
 
 ### 5. Confirm
 
@@ -60,7 +60,7 @@ Milestone activated.
 
 Do not add the activated milestone's path or title, or a next-step pointer.
 
-If instead the step-4 dirty-own-path guard fired (the `Current milestone:` pointer was unchanged, so nothing was committed), do not print the terse line — print this one fixed line and nothing else:
+If instead the step-4 commit tool printed `Nothing committed — none of the paths changed.` (the `Current milestone:` pointer was unchanged, so nothing was committed), do not print the terse line — print this one fixed line and nothing else:
 
 ```
 Activation committed nothing — the pointer already matched the last commit.

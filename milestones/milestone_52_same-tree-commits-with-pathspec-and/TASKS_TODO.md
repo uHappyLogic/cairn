@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Reduce The Commit Procedure To The Tool
-
-Rewrite `core/shared/commit-procedure.md` so its three steps become the commit tool's one fixed command over PATHS, SUBJECT, and BODY, and update the eleven skills that follow it by reference so each runs that command as its one git tool call and reads the tool's printed line directly to choose its no-op line. This moves the commit mechanics into the tool for every skill that never inlined them. Verified by the procedure showing the one command, each of the eleven skills reading the tool's line for its no-op, and the rebuilt host trees passing `--check`.
-
----
-
 ## Route The Batch Calls Through The Tool
 
 Replace the inlined guard, `git add`, and `git commit` in the three question-document batch calls — the answer sweep's batched call in both its question and conflict sections, the recommendation pass's batch call for its annotation and ordering commits, and the alternatives pass's batch call — with the commit tool's command, each call capturing the tool's stdout and echoing its own landed-commit marker only when that capture is empty, with their prose and reporting steps following. These calls are where a completion agent's staged files could ride into a question commit, which the pathspec now prevents. Verified by `tests/test_sweep_batched_call.py` passing against the changed call under both interpreters and the rebuilt host trees passing `--check`.
