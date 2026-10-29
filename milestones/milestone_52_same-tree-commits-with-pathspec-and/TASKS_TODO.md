@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Orchestrator Commits Each Task From The Path File
-
-Change `core/skills/complete-all-tasks/SKILL.md` and the three hosts' `COMPLETE_TASK_DISPATCH` slot values so the run creates its scratch directory once with `mktemp -d`, passes it on every dispatch as the fixed `Scratch directory:` prompt line, and replaces step 2c's whole-index guard and commit with one fixed call that commits through the commit tool with the agent's path file as its only pathspec and then moves that file into a `processed` subdirectory of the scratch directory under a name the call makes unique, deleting nothing; an absent or empty file after a `DONE` commits nothing, ends the run on a new fixed identifier-free stop line with the task name and whether the file was absent or empty below it, and the `Task run committed nothing — no task staged a change.` condition, its line, and its table row are retired so a run whose tasks all returned `DONE` always ends on `All tasks completed.`. Verified by the new stop line's row in `docs/skill-reference.md`'s fixed-lines table and the retired row gone with `tests/test_fixed_console_lines.py` passing, the rebuilt host trees passing `--check`, and the on-demand agy suite run for the Antigravity slot change.
-
----
-
 ## Add The Parallel Two-Milestone Completion Test
 
 Add one test that extracts the completion agent's step-5 fixed call and the orchestrator's commit-from-file call from the rendered Claude Code tree and, for each of two fixture milestones seeded into one `tmp_path` repository through the conftest factory, makes the task's edits, runs the agent's call with that milestone's recorded paths substituted, then runs the orchestrator's call on the path file it left behind, running the two milestones' agent-then-orchestrator sequences concurrently and asserting each `Task-completion:` commit carries only its own paths; it writes no path file of its own and runs no inline `complete-task` call. It is the milestone's one simple proof that two runs can share a tree without one's files riding into the other's commit. Verified by the test passing under both interpreters.

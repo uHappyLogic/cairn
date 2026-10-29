@@ -166,9 +166,9 @@ Every skill's console report opens with one fixed line saying how the run ended,
 | `submit-task` | stop | `Task not submitted — the task-list tool refused the insert.` |
 | `complete-all-tasks` | success | `All tasks completed.` |
 | `complete-all-tasks` | no-op | `No tasks to complete — the task list is empty.` |
-| `complete-all-tasks` | no-op | `Task run committed nothing — no task staged a change.` |
 | `complete-all-tasks` | stop | `Task run stopped — a task failed.` |
 | `complete-all-tasks` | stop | `Task run stopped — a task agent returned no status.` |
+| `complete-all-tasks` | stop | `Task run stopped — a completed task could not be committed.` |
 | `complete-task` | success | `Task completed.` |
 | `complete-task` | no-op | `No task completed — no file changed.` |
 | `finish-current-milestone` | success | `Milestone finished.` |

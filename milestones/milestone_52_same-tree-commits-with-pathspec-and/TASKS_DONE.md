@@ -119,3 +119,21 @@ Change `core/agents/complete-task.md` so it takes a third prompt line, `Scratch 
 - `uv run scripts/build_hosts.py --check` passes with the three rebuilt host agent files, and both pytest runs pass (1096 passed; 1092 passed, 1 skipped)
 
 ---
+
+## Orchestrator Commits Each Task From The Path File
+
+Change `core/skills/complete-all-tasks/SKILL.md` and the three hosts' `COMPLETE_TASK_DISPATCH` slot values so the run creates its scratch directory once with `mktemp -d`, passes it on every dispatch as the fixed `Scratch directory:` prompt line, and replaces step 2c's whole-index guard and commit with one fixed call that commits through the commit tool with the agent's path file as its only pathspec and then moves that file into a `processed` subdirectory of the scratch directory under a name the call makes unique, deleting nothing; an absent or empty file after a `DONE` commits nothing, ends the run on a new fixed identifier-free stop line with the task name and whether the file was absent or empty below it, and the `Task run committed nothing — no task staged a change.` condition, its line, and its table row are retired so a run whose tasks all returned `DONE` always ends on `All tasks completed.`. Verified by the new stop line's row in `docs/skill-reference.md`'s fixed-lines table and the retired row gone with `tests/test_fixed_console_lines.py` passing, the rebuilt host trees passing `--check`, and the on-demand agy suite run for the Antigravity slot change.
+
+**Verified:**
+
+- `core/skills/complete-all-tasks/SKILL.md` step 2 runs `mktemp -d` once before the first dispatch, holds the path as `<scratch dir>`, written out in full in every later command, and deletes nothing in it.
+- Every dispatch prompt carries the fixed third line `Scratch directory: <scratch dir>`, and the three hosts' `COMPLETE_TASK_DISPATCH` slot values name the task name, the milestone directory, and the scratch directory and nothing else.
+- Step 2c is one fixed call that commits through the commit tool with `--path-file "<scratch dir>/paths.txt"` as its only pathspec under `Task-completion: <TASK_NAME>`, names no path itself, runs no git command of its own, and then moves the file into `<scratch dir>/processed/` under a `mktemp`-unique name, deleting nothing.
+- An absent or empty path file after a `DONE` commits nothing and ends the run on the new fixed identifier-free stop line `Task run stopped — a completed task could not be committed.`, with the task name and `path file absent` or `path file empty` below it, leaving the tree as the agent left it.
+- The `Task run committed nothing — no task staged a change.` condition, line, and table row are gone from `core/`, `hosts/`, `docs/`, `scripts/`, and `tests/`, and step 3 ends a run whose tasks all returned `DONE` on `All tasks completed.`.
+- `docs/skill-reference.md`'s fixed-lines table carries the new stop row and no retired row, and `uv run pytest tests/test_fixed_console_lines.py` passes (165 passed).
+- The rendered Claude Code call run in a scratch repository commits only the path file's paths while another staged change stays staged, prints nothing on a no-op, prints `path file absent` and `path file empty` in those cases, and leaves the fixed name absent after each read.
+- `uv run scripts/build_hosts.py --check` passes, `uv run pytest` passes (1096 passed), and the 3.9 floor run passes (1092 passed, 1 skipped).
+- `uv run pytest agy_tests` passes (3 passed) against the built `hosts/antigravity/` tree installed at `~/.gemini/config/plugins/cairn`.
+
+---
