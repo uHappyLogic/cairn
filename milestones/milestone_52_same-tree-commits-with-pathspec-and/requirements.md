@@ -44,5 +44,9 @@ No runtime file repeats a git write on failure, no completion runner creates or 
 
 ## Decisions
 
+### Commit tool
+
+A new stdlib-only, self-contained commit tool under `tools/` (Python 3.9+, importing no sibling, rendered byte-identical into every host) replaces the commit procedure's three steps with one invocation: given the paths, the subject, and an optional body, it runs the dirty-own-path guard, the path-scoped `git add`, and `git commit` with the paths as its pathspec, repeats each git write on failure a bounded number of times before passing git's message on after the last attempt, and prints a fixed result for the no-op. `commit-procedure.md` reduces to that one command, the seven fixed calls (the answer sweep's batched call, both annotating passes' batch calls, the inline `complete-task` skill, `submit-task`, `derive-tasks`, and the orchestrator's new commit call) replace their inlined three steps with it, and the eleven skills following the procedure by reference run it as their one git tool call. The CLAUDE.md invariants change to match: the committing invariant places the commit mechanics in the tool rather than in `commit-procedure.md`, the rule that a tool touches no git is scoped to the document writers so the commit tool may run git writes, and the shell-literal invariant's sentence setting a commit tool aside is reworded.
+
 ## Out of Scope
 
