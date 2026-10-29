@@ -1,4 +1,5 @@
-"""Shared fixtures for the suite of the four tools under core/tools/.
+"""Shared fixtures for the suite of the four tools under core/tools/, and for the tests that run
+a fixed shell call extracted from the rendered Claude Code tree in a temporary git repository.
 
 Each tool is importable by its module name (`open_questions`, `define_milestone`,
 `task_list`, `requirements`) through the `pythonpath = ["core/tools"]` line in
@@ -6,6 +7,8 @@ pyproject.toml and driven end-to-end as a subprocess under the interpreter runni
 suite, so every exit status, stdout, and stderr the tests see is exactly what a caller sees.
 """
 
+import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -23,6 +26,8 @@ DEFINE_TOOL = REPO_ROOT / "core" / "tools" / "define_milestone.py"
 TASK_LIST_TOOL = REPO_ROOT / "core" / "tools" / "task_list.py"
 REQUIREMENTS_TOOL = REPO_ROOT / "core" / "tools" / "requirements.py"
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
+CLAUDE_TREE = REPO_ROOT / "hosts" / "claude"
+CLAUDE_PLUGIN_ROOT_VARIABLE = "CLAUDE_PLUGIN_ROOT"
 
 
 @pytest.fixture
@@ -154,5 +159,95 @@ def requirements_dir(tmp_path):
         data = (FIXTURES / "requirements.md").read_bytes() if requirements is None else requirements
         (destination / "requirements.md").write_bytes(data)
         return destination
+
+    return build
+
+
+# --- git repositories for the fixed shell calls ---------------------------------------------
+
+
+def run_git(repo, env, *args):
+    """Run one git command in the repository under the given environment, asserting it exited
+    0, and return its stdout as text."""
+    result = subprocess.run(["git", *args], cwd=str(repo), env=env, capture_output=True, check=False)
+    assert result.returncode == 0, result.stderr.decode("utf-8", "replace")
+    return result.stdout.decode("utf-8")
+
+
+def run_bash(cwd, env, call):
+    """Run a fixed shell call under `bash -c` from the given directory with no standard input:
+    -> (exit status, stdout, stderr), the two streams as text."""
+    result = subprocess.run(
+        ["bash", "-c", call], cwd=str(cwd), env=env, stdin=subprocess.DEVNULL, capture_output=True, check=False
+    )
+    return result.returncode, result.stdout.decode("utf-8"), result.stderr.decode("utf-8")
+
+
+@pytest.fixture
+def environment(tmp_path):
+    """The environment a fixed call runs under: the Claude Code tree's plugin-root variable
+    exported to the tree root, `python3` resolving to the interpreter running the suite (so each
+    pytest run drives the rendered tools under its own interpreter), no bytecode written into the
+    tree, and git isolated from every global or system configuration with a fixed identity."""
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    wrapper = bin_dir / "python3"
+    wrapper.write_text(f'#!/bin/sh\nexec {shlex.quote(sys.executable)} "$@"\n', encoding="utf-8")
+    wrapper.chmod(0o755)
+    home = tmp_path / "home"
+    home.mkdir()
+    env = dict(os.environ)
+    env.update(
+        {
+            CLAUDE_PLUGIN_ROOT_VARIABLE: str(CLAUDE_TREE),
+            "PATH": str(bin_dir) + os.pathsep + env.get("PATH", ""),
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "HOME": str(home),
+            "XDG_CONFIG_HOME": str(home / ".config"),
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_CONFIG_GLOBAL": os.devnull,
+            "GIT_AUTHOR_NAME": "Cairn Test",
+            "GIT_AUTHOR_EMAIL": "test@example.invalid",
+            "GIT_COMMITTER_NAME": "Cairn Test",
+            "GIT_COMMITTER_EMAIL": "test@example.invalid",
+        }
+    )
+    return env
+
+
+@pytest.fixture
+def git():
+    """Run one git command: git(repo, environment, "log", "-1") -> its stdout as text, the
+    command asserted to have exited 0."""
+    return run_git
+
+
+@pytest.fixture
+def run_call():
+    """Run a fixed shell call under bash: run_call(repo, environment, call) -> (exit status,
+    stdout, stderr)."""
+    return run_bash
+
+
+@pytest.fixture
+def repo(tmp_path, environment):
+    """A fresh git repository under tmp_path whose one commit holds copies of the named fixture
+    milestones and the given files: repo({"milestones/milestone_07_slug/": "sweep"},
+    files={"README.md": b"..."}) -> the repository Path, each fixture directory copied to the
+    path it is keyed by and each file written with its bytes."""
+
+    def build(milestones, files=None):
+        files = {} if files is None else files
+        root = tmp_path / "repo"
+        root.mkdir()
+        for destination, name in milestones.items():
+            shutil.copytree(FIXTURES / name, root / destination)
+        for path, data in files.items():
+            (root / path).parent.mkdir(parents=True, exist_ok=True)
+            (root / path).write_bytes(data)
+        run_git(root, environment, "init", "-q")
+        run_git(root, environment, "add", "--", *milestones, *files)
+        run_git(root, environment, "commit", "-q", "-m", "Initial commit")
+        return root
 
     return build

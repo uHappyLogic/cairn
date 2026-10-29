@@ -12,10 +12,7 @@ losing entry's subsection body, and skips the dependent whose pick the target's 
 with no commit and no output; a dirty milestone file stops the call before any write. The stop
 path after a fold or a replace is left to the hands-on check, so nothing here provokes one."""
 
-import os
 import re
-import shlex
-import shutil
 import subprocess
 import sys
 from collections import Counter
@@ -29,7 +26,8 @@ SWEEP = TREE / "skills" / "answer-all-open-questions-with-recommendation" / "SKI
 REVIEW = TREE / "skills" / "review-milestone-requirements" / "SKILL.md"
 TOOL = TREE / "tools" / "open_questions.py"
 PLUGIN_ROOT_VARIABLE = "CLAUDE_PLUGIN_ROOT"
-FIXTURE = Path(__file__).resolve().parent / "fixtures" / "sweep"
+FIXTURE_NAME = "sweep"
+FIXTURE = Path(__file__).resolve().parent / "fixtures" / FIXTURE_NAME
 
 FOLD_COMMAND = "/tools/requirements.py fold "
 REPLACE_COMMAND = "/tools/requirements.py replace "
@@ -198,57 +196,15 @@ def compose(questions):
 
 
 # --- the temporary repository and the run ---------------------------------------------------
+# The call's environment, the git and bash runners, and the repository factory are the
+# conftest's; only the sweep's seeding is this module's.
 
 
 @pytest.fixture
-def environment(tmp_path):
-    """The call's environment: the tree's plugin-root variable exported to the tree root,
-    `python3` resolving to the interpreter running the suite (so each pytest run drives the
-    rendered tools under its own interpreter), no bytecode written into the tree, and git
-    isolated from every global or system configuration with a fixed identity."""
-    bin_dir = tmp_path / "bin"
-    bin_dir.mkdir()
-    wrapper = bin_dir / "python3"
-    wrapper.write_text(f'#!/bin/sh\nexec {shlex.quote(sys.executable)} "$@"\n', encoding="utf-8")
-    wrapper.chmod(0o755)
-    home = tmp_path / "home"
-    home.mkdir()
-    env = dict(os.environ)
-    env.update(
-        {
-            PLUGIN_ROOT_VARIABLE: str(TREE),
-            "PATH": str(bin_dir) + os.pathsep + env.get("PATH", ""),
-            "PYTHONDONTWRITEBYTECODE": "1",
-            "HOME": str(home),
-            "XDG_CONFIG_HOME": str(home / ".config"),
-            "GIT_CONFIG_NOSYSTEM": "1",
-            "GIT_CONFIG_GLOBAL": os.devnull,
-            "GIT_AUTHOR_NAME": "Sweep Test",
-            "GIT_AUTHOR_EMAIL": "sweep@example.invalid",
-            "GIT_COMMITTER_NAME": "Sweep Test",
-            "GIT_COMMITTER_EMAIL": "sweep@example.invalid",
-        }
-    )
-    return env
-
-
-def git(repo, env, *args):
-    result = subprocess.run(["git", *args], cwd=str(repo), env=env, capture_output=True, check=False)
-    assert result.returncode == 0, result.stderr.decode("utf-8", "replace")
-    return result.stdout.decode("utf-8")
-
-
-@pytest.fixture
-def repo(tmp_path, environment):
-    """A temporary git repository whose one commit holds the golden sweep milestone and an
-    unrelated tracked file."""
-    root = tmp_path / "repo"
-    shutil.copytree(FIXTURE, root / MILESTONE)
-    (root / "README.md").write_bytes(b"An unrelated tracked file.\n")
-    git(root, environment, "init", "-q")
-    git(root, environment, "add", "README.md", DOCUMENT, REQUIREMENTS)
-    git(root, environment, "commit", "-q", "-m", "Initial commit")
-    return root
+def repo(repo):
+    """The conftest's repository factory seeded for the sweep: one commit holding the golden
+    sweep milestone at MILESTONE and an unrelated tracked file."""
+    return repo({MILESTONE: FIXTURE_NAME}, files={"README.md": b"An unrelated tracked file.\n"})
 
 
 def tool(repo, env, *args):
@@ -282,13 +238,6 @@ def walked_questions(repo, env):
     return questions, lifted
 
 
-def run_call(repo, env, call):
-    result = subprocess.run(
-        ["bash", "-c", call], cwd=str(repo), env=env, stdin=subprocess.DEVNULL, capture_output=True, check=False
-    )
-    return result.returncode, result.stdout.decode("utf-8"), result.stderr.decode("utf-8")
-
-
 # --- reading the outcome --------------------------------------------------------------------
 
 
@@ -299,15 +248,21 @@ def block_lines(document, title):
     return lines[start : lines.index("  </open-question>", start) + 1]
 
 
-def diff_lines(repo, env, commit, path):
-    """The removed and the added lines a commit's diff shows for one path."""
-    removed, added = [], []
-    for line in git(repo, env, "show", "--format=", "--no-color", commit, "--", path).splitlines():
-        if line.startswith("-") and not line.startswith("---"):
-            removed.append(line[1:])
-        elif line.startswith("+") and not line.startswith("+++"):
-            added.append(line[1:])
-    return removed, added
+@pytest.fixture
+def diff_lines(git):
+    """Read a commit's diff for one path: diff_lines(repo, environment, commit, path) -> the
+    removed and the added lines it shows."""
+
+    def read(repo, env, commit, path):
+        removed, added = [], []
+        for line in git(repo, env, "show", "--format=", "--no-color", commit, "--", path).splitlines():
+            if line.startswith("-") and not line.startswith("---"):
+                removed.append(line[1:])
+            elif line.startswith("+") and not line.startswith("+++"):
+                added.append(line[1:])
+        return removed, added
+
+    return read
 
 
 def decision_subsections(text):
@@ -390,7 +345,7 @@ def test_the_conflict_question_opens_with_the_review_pass_phrase_naming_the_fixt
 
 
 def test_a_clean_run_commits_each_answer_rewrites_the_losing_entry_and_skips_the_stripped_dependent(
-    repo, environment
+    repo, environment, git, run_call, diff_lines
 ):
     pristine = (repo / DOCUMENT).read_text(encoding="utf-8")
     questions, lifted = walked_questions(repo, environment)
@@ -457,7 +412,7 @@ def test_a_clean_run_commits_each_answer_rewrites_the_losing_entry_and_skips_the
     assert git(repo, environment, "status", "--porcelain").splitlines() == [" M README.md", "?? notes.txt"]
 
 
-def test_a_dirty_milestone_file_stops_the_call_before_any_write(repo, environment):
+def test_a_dirty_milestone_file_stops_the_call_before_any_write(repo, environment, git, run_call):
     questions, _ = walked_questions(repo, environment)
     edited = (FIXTURE / "requirements.md").read_bytes() + b"\nA hand edit left uncommitted.\n"
     (repo / REQUIREMENTS).write_bytes(edited)

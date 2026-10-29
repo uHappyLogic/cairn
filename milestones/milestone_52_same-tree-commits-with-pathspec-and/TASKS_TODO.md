@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Move Git Test Helpers Into Conftest
-
-Move the `environment`, `repo`, `git`, and `run_call` helpers of `tests/test_sweep_batched_call.py` into `tests/conftest.py` — `environment` as a fixture, `git` and `run_call` as module-level helpers or fixtures returning them, and `repo` generalized into a factory fixture taking which fixture milestones to seed, on the pattern of the existing `milestone_dir` and `task_list_dir` factories — keeping the sweep-specific seeding in the sweep test, rewriting that test to use them, and leaving `test_sweep_compact_view.py` untouched. The commit tool's tests, the lock retry test, and the parallel test that follow all build git repositories on these fixtures, so they need one home before the first of them is written. Verified by both pytest runs passing with the batched-call test's assertions unchanged.
-
----
-
 ## Add The Commit Tool And Its Tests
 
 Add the new stdlib-only, self-contained commit tool under `core/tools/` that the `## Decisions` entries Commit tool and Path file specify: given paths (as arguments, or read line-exact from a path file, one per line, an empty list refused), a subject, and an optional body, it runs the dirty-own-path guard, the path-scoped `git add`, and `git commit` with the paths as its pathspec, repeating a git write only when git exits with 128 — about ten to twenty times with a fixed pause of a quarter to half a second between attempts, a fractional sleep inside the tool, one constant schedule with no override — passing exit 1 on at once, exiting 0 with its fixed no-op line on stdout when nothing changed, printing nothing when a commit lands, and keeping exit 1 with one `Error:` line on stderr for refusals and a git failure after the last retry. Every skill-layer commit in this milestone runs through it, so it lands before any caller changes. Verified by its subprocess contract and parity tests on the conftest git fixtures under both interpreters, its line in CLAUDE.md's repository layout, and a rebuilt `hosts/` tree passing `--check`.
