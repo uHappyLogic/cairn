@@ -70,6 +70,8 @@ The agent's path file is the task's whole change set: the created and edited pat
 
 The path file has one fixed name per run that every task's agent writes, and the orchestrator's commit call moves the file out of the way after reading it, into a `processed` subdirectory of the scratch directory under a name the call makes unique (for example through `mktemp` inside that subdirectory), following the alternatives pass's move-into-processed precedent and deleting nothing. The fixed name is therefore absent whenever the next agent starts, and no part of either name comes from the task title.
 
+An absent path file and an empty one after a `DONE` are both a stop condition: the orchestrator commits nothing, ends the run, and prints a new fixed identifier-free stop line of its own, one new row in the fixed-lines table and its test, with the task name and whether it found the file absent or empty on the lines below. The tree is left as the agent left it, resumable, with the move and the edits uncommitted.
+
 ### Tests
 
 The `environment`, `repo`, `git`, and `run_call` helpers move from `tests/test_sweep_batched_call.py` into `tests/conftest.py`: `environment` as a fixture, `git` and `run_call` as module-level helpers or fixtures returning them, and `repo` generalized into a factory fixture taking which fixture milestones to seed, on the pattern of the existing `milestone_dir` and `task_list_dir` factories, while the sweep-specific seeding stays in its own test. `test_sweep_batched_call.py` is rewritten to use them, the new parallel test uses them too, and `test_sweep_compact_view.py` keeps its own copies untouched.
