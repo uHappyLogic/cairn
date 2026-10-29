@@ -15,7 +15,8 @@ whole set, and embed each block's `<recommendation>`, its `<depends-on>` declara
 `<applied-principle>` citations yourself, through the plugin's open-question tool. You are the
 only party in this pass that changes `<MILESTONE_DIR>/open_questions.xml`, and every write
 you make of it is a tool call — `embed` to write, `lift` to read back the lines the commit
-records, `sort` to reorder — never a direct edit; reading the document whole
+records, `sort` to reorder — never a direct edit, and every commit of it is a call to the
+plugin's commit tool, never a git write of your own; reading the document whole
 with the file-reading tool is for reasoning only, and every list, locate, or lift of a block
 is the tool's, each call written out in full as its fenced block shows it, never through a
 variable, alias, or function of your own defined to stand for the command or any part of it.
@@ -221,12 +222,16 @@ then
 else
   printf '%s\t%s\n' "<Short Title>" "$err"
 fi
-if [ -n "$body" ] && [ -n "$(git status --porcelain -- <MILESTONE_DIR>/open_questions.xml)" ]; then
-  git add <MILESTONE_DIR>/open_questions.xml && git commit -q -m "Recommendation-annotation: <milestone_id>" -m "$body" && echo 'annotation commit landed'
+if [ -n "$body" ]; then
+  out="$(python3 {{PLUGIN_ROOT}}/tools/commit.py --subject "Recommendation-annotation: <milestone_id>" --body "$body" -- <MILESTONE_DIR>/open_questions.xml)" &&
+  if [ -z "$out" ]; then
+    echo 'annotation commit landed'
+  fi
 fi &&
 python3 {{PLUGIN_ROOT}}/tools/open_questions.py sort <MILESTONE_DIR> &&
-if [ -n "$(git status --porcelain -- <MILESTONE_DIR>/open_questions.xml)" ]; then
-  git add <MILESTONE_DIR>/open_questions.xml && git commit -q -m "Question-ordering: <milestone_id>" && echo 'ordering commit landed'
+out="$(python3 {{PLUGIN_ROOT}}/tools/commit.py --subject "Question-ordering: <milestone_id>" -- <MILESTONE_DIR>/open_questions.xml)" &&
+if [ -z "$out" ]; then
+  echo 'ordering commit landed'
 fi
 ```
 
@@ -257,26 +262,31 @@ the newline in that join is a literal line break inside the quotes, the one form
 reads alike, never `$'\n'` or `echo -e`. On a refusal the call prints the block's Short Title,
 a tab, and the `Error:` line, and adds no line to `body`.
 
-After the last section the call carries out the three steps of the shared commit procedure at
-`{{PLUGIN_ROOT}}/shared/commit-procedure.md` itself — its dirty-own-path guard, the
-path-scoped `git add` of `<MILESTONE_DIR>/open_questions.xml` alone (never `git add -A`), and
-the commit under `Recommendation-annotation: <milestone_id>` with the lifted lines, one per
-annotated block in section order, as its body through the procedure's own second `-m` form.
-That commit is conditioned on a non-empty `body`, so a call that wrote no block never commits
-an empty-bodied annotation. The call then runs `sort`, which rewrites the document with the
-`<recommendation>`-bearing blocks first, in exactly the order the answer sweep's `walk` will
-dispatch them, and every block still carrying none last in its prior order — so a reader meets
-the questions whose answers no dependency can nullify before the questions that build on them —
-and commits the reorder under `Question-ordering: <milestone_id>` with **no body**, behind the
-same guard. That guard is the sort's **only** no-op test: a document already in sorted order
-is left as it is, the path stays unchanged, and nothing is committed. Never test the outcome
+After the last section the call runs the one command of the shared commit procedure at
+`{{PLUGIN_ROOT}}/shared/commit-procedure.md`, the plugin's commit tool, with
+`<MILESTONE_DIR>/open_questions.xml` alone as its path, `Recommendation-annotation:
+<milestone_id>` as its subject, and the lifted lines, one per annotated block in section order,
+as its body. That commit is conditioned on a non-empty `body`, so a call that wrote no block
+never commits an empty-bodied annotation. The call then runs `sort`, which rewrites the
+document with the `<recommendation>`-bearing blocks first, in exactly the order the answer
+sweep's `walk` will dispatch them, and every block still carrying none last in its prior order
+— so a reader meets the questions whose answers no dependency can nullify before the questions
+that build on them — and commits the reorder through the same tool under `Question-ordering:
+<milestone_id>` with **no body**. Each time, the tool runs the dirty-own-path guard over the
+one document, stages exactly it, and commits it with it as the commit's pathspec, so nothing
+else the index holds — a change another run has staged included — rides in the commit, and it
+repeats a git write another process's lock refused before giving up. Its stdout is captured in
+`out`: empty when the commit landed, its fixed no-op line when the document did not change, so
+each commit's marker line is printed only when `out` is empty and a no-op commits and prints
+nothing. That guard is the sort's **only** no-op test: a document already in sorted order is
+left as it is, the path stays unchanged, and nothing is committed. Never test the outcome
 yourself — no `list` before and after, no diff read. Because the annotation commit lands before
 the sort runs, no annotation rides in the `Question-ordering:` commit and no reorder in the
 annotation commit; a failed annotation commit stops the call before the sort for the same
-reason. Git's success output is silenced. `err` and `body` are each one quoted text value set
-and used within this one call, never a tool command or a path list. This pass requires **no**
-clean working tree: each commit is path-scoped to the one document, so a dirty tree elsewhere
-stays out of it.
+reason. `err`, `body`, and `out` are each one quoted text value set and used within this one
+call, never a tool command or a path list. This pass requires **no** clean working tree: each
+commit is made with the one document as its pathspec, so a dirty tree elsewhere stays out of
+it.
 
 What the call prints is the whole outcome:
 
@@ -286,9 +296,9 @@ What the call prints is the whole outcome:
   landed.
 - **`ordering commit landed`** — the sort moved a block and the `Question-ordering:
   <milestone_id>` commit landed.
-- **Any other line** — the sort's own `Error:` line (the document unchanged by it) or git's
-  message for a commit it refused; nothing after it in the call ran. Print it verbatim
-  alongside step 7's report.
+- **Any other line** — the sort's own `Error:` line (the document unchanged by it) or the
+  commit tool's (nothing committed, its line carrying git's own message); nothing after it in
+  the call ran. Print it verbatim alongside step 7's report.
 
 An accepted block prints nothing of its own. Hold the two marker lines: step 7 reads them across
 every call of the run.

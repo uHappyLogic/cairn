@@ -14,7 +14,8 @@ to one file in the run's scratch directory outside the repository and ends with 
 `DONE`, so a return never travels through the orchestrator's context. The orchestrator is the
 only party in this pass that changes the question document, `<MILESTONE_DIR>/open_questions.xml`
 — every read and write it makes of that document is a call to the plugin's open-question tool,
-`list` to gather and check and `embed` to write, never a direct read or edit, and each call is
+`list` to gather and check and `embed` to write, never a direct read or edit, every commit of
+it is a call to the plugin's commit tool, never a git write of its own, and each call is
 written out in full as its fenced block shows it, never through a variable, alias, or function
 of your own defined to stand for the command or any part of it. Alternatives are enumerated per
 question against the siblings as scope only, so the dispatches are independent: they run
@@ -200,10 +201,8 @@ mkdir -p "<scratch dir>/processed"
 find "<scratch dir>" -maxdepth 1 -type f -name '*.xml' | while IFS= read -r f; do
   t="${f##*/}"; t="${t%.xml}"
   if err="$(python3 ${PLUGIN_ROOT}/tools/open_questions.py embed --alternatives <MILESTONE_DIR> "$t" < "$f" 2>&1)"; then
-    if [ -n "$(git status --porcelain -- <MILESTONE_DIR>/open_questions.xml)" ]; then
-      out="$(git add <MILESTONE_DIR>/open_questions.xml 2>&1 && git commit -q -m "Alternatives-annotation: $t" 2>&1)" ||
-        printf '%s\t%s\n' "$t" "$(printf '%s\n' "$out" | head -n 1)"
-    fi
+    out="$(python3 ${PLUGIN_ROOT}/tools/commit.py --subject "Alternatives-annotation: $t" -- <MILESTONE_DIR>/open_questions.xml 2>&1)" ||
+      printf '%s\tcommit failed: %s\n' "$t" "$out"
   else
     printf '%s\t%s\n' "$t" "$err"
   fi
@@ -216,26 +215,35 @@ under its temporary name, never the `processed` subdirectory — and for each on
 Short Title from the file name and redirects the file into `embed --alternatives`, which writes
 the file's `<alternative>` elements into the existing block in canonical form or refuses it
 with one `Error:` line and the document unchanged. Each question the tool accepted is then
-committed by the steps of the shared commit procedure at
-`${PLUGIN_ROOT}/shared/commit-procedure.md` — its dirty-own-path guard, the path-scoped
-`git add` of `<MILESTONE_DIR>/open_questions.xml` alone (never `git add -A`), and a subject-only
-commit under `Alternatives-annotation: <Short Title>` with **no body** — with git's success
-output silenced. Every file the call piped, accepted or refused, is then moved into the
-`processed` subdirectory, so the next scan sees only files that landed after this one and no
-file is ever piped twice; the record of what was piped lives on disk, never in your context.
-This pass requires **no** clean working tree: each commit is path-scoped to the one document,
-so a dirty tree elsewhere stays out of it.
+committed by the one command of the shared commit procedure at
+`${PLUGIN_ROOT}/shared/commit-procedure.md`, the plugin's commit tool, with
+`<MILESTONE_DIR>/open_questions.xml` alone as its path and a subject-only commit under
+`Alternatives-annotation: <Short Title>` with **no body**: the tool runs the dirty-own-path
+guard over the one document, stages exactly it, and commits it with it as the commit's
+pathspec, so nothing else the index holds — a change another run has staged included — rides
+in the commit, and it repeats a git write another process's lock refused before giving up.
+Its whole print is captured in `out` — nothing when the commit landed, its fixed no-op line
+when the document did not change, one `Error:` line, carrying git's own message, when it
+failed — and only a failure is printed; the call prints no landed-commit marker, since the
+closing check (sub-step **g**) reads what landed from the document. Every file the call piped,
+accepted or refused, is then moved into the `processed` subdirectory, so the next scan sees
+only files that landed after this one and no file is ever piped twice; the record of what was
+piped lives on disk, never in your context. This pass requires **no** clean working tree: each
+commit is made with the one document as its pathspec, so a dirty tree elsewhere stays out of
+it.
 
 What the call prints is the whole outcome. It prints nothing when every file embedded and
 committed; otherwise one line per refused file or failed commit — the Short Title, a tab, then
-the tool's `Error:` line or git's first line. An annotated question gets no line.
+the embed's `Error:` line, or `commit failed:`, a space, and the commit tool's `Error:` line. An
+annotated question gets no line.
 
 - A line whose text after the tab begins `Error:` is a **refused file**: that question's block
   is unchanged. Hold the line verbatim — it fills that question's repair (sub-step **e**), or,
   when the question has already had its repair, its advisory entry.
-- Any other line is a **failed commit**: the embed wrote, but git refused the commit. That
-  question gets no repair, since its block already carries alternatives and a second embed
-  would be refused; note its Short Title with git's line for the step-4 advisory.
+- A line whose text after the tab begins `commit failed:` is a **failed commit**: the embed
+  wrote, but the commit tool committed nothing. That question gets no repair, since its block
+  already carries alternatives and a second embed would be refused; note its Short Title with
+  the commit tool's `Error:` line for the step-4 advisory.
 
 **e. Repair every refused file once, all together.** The moment a batch call prints refused
 files, send every one of that call's repairs together in the same turn — immediately, before

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Route The Batch Calls Through The Tool
-
-Replace the inlined guard, `git add`, and `git commit` in the three question-document batch calls — the answer sweep's batched call in both its question and conflict sections, the recommendation pass's batch call for its annotation and ordering commits, and the alternatives pass's batch call — with the commit tool's command, each call capturing the tool's stdout and echoing its own landed-commit marker only when that capture is empty, with their prose and reporting steps following. These calls are where a completion agent's staged files could ride into a question commit, which the pathspec now prevents. Verified by `tests/test_sweep_batched_call.py` passing against the changed call under both interpreters and the rebuilt host trees passing `--check`.
-
----
-
 ## Route The Task-File Writer Calls Through The Tool
 
 Replace the inlined guard, `git add`, and `git commit` in the inline `complete-task` skill's, `submit-task`'s, and `derive-tasks`' fixed calls with the commit tool's command chained behind their task-list tool call, each capturing the tool's stdout and echoing its landed-commit marker only when that capture is empty, with their prose following. Each task-file commit then carries exactly its own paths and survives another run's lock. Verified by the three rendered calls running as shown against a scratch repository and the rebuilt host trees passing `--check`.

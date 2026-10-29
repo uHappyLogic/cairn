@@ -19,8 +19,9 @@ batched shell call** (step 3) that takes the questions in the order the tool giv
 commits each answer before the next question is touched. You record **every pick as given**
 and never judge it — a pick is never re-weighed, replaced, or skipped on its merits.
 Every gather, order, view, re-check, and change of `open_questions.xml` is a call to the
-plugin's open-question tool, every change of `requirements.md` is a call to its fold tool, and
-this run edits neither document by hand; `open_questions.xml` is never read with the
+plugin's open-question tool, every change of `requirements.md` is a call to its fold tool, every
+commit is a call to its commit tool, and this run edits neither document by hand and runs no
+git write of its own; `open_questions.xml` is never read with the
 file-reading tool: the gather, the order, and the view of it are one fixed shell call (step 1).
 Every tool call the run makes — this skill's own, those inside step 1's loop and step 3's
 sections included — is written out in full as its fenced block shows it, never through a
@@ -28,7 +29,8 @@ variable, alias, or function of your own defined to stand for the command or any
 `requirements.md` is read whole once with the file-reading tool, in the same turn as step 1's
 call (step 2), for reasoning only. It requires **no** clean working tree beyond the milestone's
 two files: step 3's call stops before any write while either of them holds a change, and every
-commit is path-scoped to them, so a dirty tree elsewhere stays out of it.
+commit is made with them as its pathspec, so a dirty tree elsewhere, a change another run has
+staged included, stays out of it.
 
 ## Usage
 
@@ -180,8 +182,9 @@ if pick="$(python3 ${PLUGIN_ROOT}/tools/open_questions.py lift <MILESTONE_DIR> "
 <the decision>
 EOF
   python3 ${PLUGIN_ROOT}/tools/open_questions.py remove <MILESTONE_DIR> "<Short Title>" --option "<Option>" &&
-  if [ -n "$(git status --porcelain -- <MILESTONE_DIR>/open_questions.xml <MILESTONE_DIR>/requirements.md)" ]; then
-    git add <MILESTONE_DIR>/open_questions.xml <MILESTONE_DIR>/requirements.md && git commit -q -m "Recommendation-answer: <Short Title>" -m "$pick" && echo 'answer commit landed'
+  out="$(python3 ${PLUGIN_ROOT}/tools/commit.py --subject "Recommendation-answer: <Short Title>" --body "$pick" -- <MILESTONE_DIR>/open_questions.xml <MILESTONE_DIR>/requirements.md)" &&
+  if [ -z "$out" ]; then
+    echo 'answer commit landed'
   fi ||
   { printf 'stopped at\t%s\n' "<Short Title>"; false; }
 fi &&
@@ -212,8 +215,9 @@ if pick="$(python3 ${PLUGIN_ROOT}/tools/open_questions.py lift <MILESTONE_DIR> "
 <the new body>
 EOF
   python3 ${PLUGIN_ROOT}/tools/open_questions.py remove <MILESTONE_DIR> "<Short Title>" --option "<Option>" &&
-  if [ -n "$(git status --porcelain -- <MILESTONE_DIR>/open_questions.xml <MILESTONE_DIR>/requirements.md)" ]; then
-    git add <MILESTONE_DIR>/open_questions.xml <MILESTONE_DIR>/requirements.md && git commit -q -m "Recommendation-answer: <Short Title>" -m "$pick" && echo 'answer commit landed'
+  out="$(python3 ${PLUGIN_ROOT}/tools/commit.py --subject "Recommendation-answer: <Short Title>" --body "$pick" -- <MILESTONE_DIR>/open_questions.xml <MILESTONE_DIR>/requirements.md)" &&
+  if [ -z "$out" ]; then
+    echo 'answer commit landed'
   fi ||
   { printf 'stopped at\t%s\n' "<Short Title>"; false; }
 fi &&
@@ -222,8 +226,8 @@ fi &&
 It is filled exactly as the question section is, with the losing entry's heading after
 `--section` and the new body between the `<<'EOF'` line and the `EOF` line, and it stands at
 the conflict question's place in step 1's printed order like any other section. Every section
-thus makes the same tool calls — one `lift`, one fold-tool call, one `remove` — and a
-conflict section holds exactly one `replace` and no `fold`.
+thus makes the same tool calls — one `lift`, one fold-tool call, one `remove`, one commit-tool
+call — and a conflict section holds exactly one `replace` and no `fold`.
 
 The call's first lines are the **stranded-fold guard**: when either milestone file holds any
 staged or unstaged change, whatever its origin — a fold or rewrite a stopped run left
@@ -243,22 +247,26 @@ rewrites everything below that existing subsection's heading line with the new b
 heading line and every byte outside the subsection kept — so the recorded decision always
 lands before the block is removed; `remove` deletes the block with `--option` naming the
 recorded option and, in the same write, strips the pick of every block whose `<depends-on>`
-assumed another option of it, keeping their alternatives; and the section carries out the three steps of the shared
-commit procedure at `${PLUGIN_ROOT}/shared/commit-procedure.md` itself — its dirty-own-path
-guard, the path-scoped `git add` of the two milestone files (never `git add -A`), and the
-commit under `Recommendation-answer: <Short Title>` with the held line as its body through the
-procedure's second `-m` form — with git's success output silenced and `answer commit landed`
-printed once the commit has landed. One commit per answer is what lets a single answer be
-reverted and re-answered on its own. `pick` is one quoted value per section, set at the
-section's first line and used within it, never a tool command or a path list; no shell variable
-carries anything from one section to the next.
+assumed another option of it, keeping their alternatives; and the section runs the one
+command of the shared commit procedure at `${PLUGIN_ROOT}/shared/commit-procedure.md`, the
+plugin's commit tool, with the two milestone files as its paths, `Recommendation-answer:
+<Short Title>` as its subject, and the held line as its body. The tool runs the dirty-own-path
+guard over the two files, stages exactly them, and commits them with them as the commit's
+pathspec, so nothing else the index holds — a change another run has staged included — rides
+in the answer's commit, and it repeats a git write another process's lock refused before
+giving up. Its stdout is captured in `out`: empty when the commit landed, its fixed no-op line
+when neither file changed, so `answer commit landed` is printed only when `out` is empty and a
+no-op commits and prints nothing. One commit per answer is what lets a single answer be
+reverted and re-answered on its own. `pick` and `out` are each one quoted value per section,
+set and used within it, never a tool command or a path list; no shell variable carries
+anything from one section to the next.
 
-A **stop**: when the fold, the `remove`, or a git step fails after a successful lift — the fold
+A **stop**: when the fold, the `remove`, or the commit fails after a successful lift — the fold
 tool refusing (a `replace` whose heading no `###` subsection of `## Decisions` carries
-included), `remove` refusing the option, git refusing the commit — the failing command's
-own `Error:` line or git's message reaches the output unredirected, the section prints
-`stopped at`, a tab, and the Short Title, and the call ends there: no later section and no
-completeness walk runs. The tree is left exactly as it stands — no rollback, no restore, no
+included), `remove` refusing the option, the commit tool failing with git's own message in its
+line — the failing tool's own `Error:` line reaches the output unredirected, the section
+prints `stopped at`, a tab, and the Short Title, and the call ends there: no later section and
+no completeness walk runs. The tree is left exactly as it stands — no rollback, no restore, no
 skip-and-continue, and never a change to `open_questions.xml` outside the tool — so every
 earlier answer is committed and only this question is unfinished: clean when the fold was
 refused, its decision folded or its rewrite written, uncommitted, with its block still
@@ -276,8 +284,8 @@ What the call prints is the whole outcome:
 
 - **`dirty before start`**, with `git status --porcelain` lines beneath it — nothing ran.
 - **`answer commit landed`** — one per committed answer.
-- **`stopped at`, a tab, and a Short Title**, beside the `Error:` line or git message printed
-  just before it — the run stopped at that question.
+- **`stopped at`, a tab, and a Short Title**, beside the `Error:` line printed just before it —
+  the run stopped at that question.
 - **`completeness walk`** — the call reached its end; every line after it is an id the walk
   printed, or its `Error:` line.
 
@@ -315,7 +323,6 @@ Two stops replace the status line, each opening with its own fixed line:
   discard those changes, then re-run this skill. The run recorded nothing.
 - **Stopped at a question** — the call printed `stopped at`, a tab, and a Short Title: print
   the fixed line `Sweep stopped — an answer could not be recorded.` first, then below it that
-  Short Title paired with the `Error:` line or git message printed beside it, quoted
-  verbatim, a multi-line git message whole. Every answer before it is committed; whatever this
-  question left uncommitted in the two files stays as it is, and the next run's guard stops on
-  it until it is committed or discarded.
+  Short Title paired with the `Error:` line printed beside it, quoted verbatim. Every answer
+  before it is committed; whatever this question left uncommitted in the two files stays as it
+  is, and the next run's guard stops on it until it is committed or discarded.
