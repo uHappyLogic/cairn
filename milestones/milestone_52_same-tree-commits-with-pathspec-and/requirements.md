@@ -50,6 +50,8 @@ A new stdlib-only, self-contained commit tool under `tools/` (Python 3.9+, impor
 
 A git write repeats only when git exits with 128, its fatal-error code, which is the code a held `index.lock` produces. Exit 1 passes on at once: a hook refusal, nothing to commit, or a commit pathspec matching no file. The exit status is the only thing tested, and no message text is read.
 
+A failed git write repeats about ten to twenty times with a fixed pause of a quarter to half a second between attempts, a fractional sleep inside the tool, giving a window of about three to five seconds; one constant schedule applies at every git write, with no override.
+
 ### Parallel test
 
 The one parallel test extracts two calls from the rendered tree: the completion agent's step-5 fixed call, which chains the `move` with the write of the path list the orchestrator commits from, and the orchestrator's commit-from-file call. For each of its two milestones the test makes the task's edits, runs the agent's call with that milestone's recorded paths substituted, and then runs the orchestrator's call on the path file the agent's call left behind; the two milestones' agent-then-orchestrator sequences run concurrently in one repository, and each resulting `Task-completion:` commit is asserted to carry only its own paths. The test writes no path file of its own, since a test-written file would pass a format mismatch between the agent's write and the orchestrator's read, and it does not run the inline `complete-task` skill's call. The agent's step 5 therefore stays one fixed shell call chaining the move with the path-list write, so both halves of the interface this milestone creates can be extracted and run as written.
