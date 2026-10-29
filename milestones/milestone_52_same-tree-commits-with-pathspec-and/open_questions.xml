@@ -276,4 +276,7 @@
       <drawback>It breaks whole-line harness matches just as any rewording does, and it ties the line to a mechanism again, so a later change to how the change set travels would force another rewording. Its accuracy also depends on the sibling questions on whether the path file lists the task files and on how a missing or empty path file is handled. If a missing file is treated as no committable change, &quot;recorded&quot; no longer holds for that case.</drawback>
     </alternative>
   </open-question>
+  <open-question id="Commit tool no-op exit">
+    <question>The commit tool prints a fixed result when its dirty-own-path guard finds nothing to commit, while its sibling tools signal every refusal with one Error: line on stderr and a non-zero exit, and every fixed call chains the tool behind &amp;&amp; and echoes its landed-commit marker after a successful exit. Does the tool&apos;s no-op exit 0, as a success whose fixed line the calling runner reads, or exit non-zero like a refusal, so a chained call ends there and echoes no marker?</question>
+  </open-question>
 </open-questions>
