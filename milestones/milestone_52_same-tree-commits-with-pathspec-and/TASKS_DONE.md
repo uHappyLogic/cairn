@@ -104,3 +104,18 @@ Rewrite the opening of step 3 of `core/shared/complete-procedure.md` so uncommit
 - `uv run scripts/build_hosts.py` rebuilt the three host trees and `uv run scripts/build_hosts.py --check` passes, with only the four `complete-procedure.md` copies changed
 
 ---
+
+## Completion Agent Writes Its Path File
+
+Change `core/agents/complete-task.md` so it takes a third prompt line, `Scratch directory: <scratch dir>`, stages nothing, and runs step 5 as one fixed shell call chaining the task-list tool's `move` with the write of the task's whole change set — the recorded created and edited paths plus `<MILESTONE_DIR>/TASKS_TODO.md` and `<MILESTONE_DIR>/TASKS_DONE.md`, one path per line — to a file of one fixed name per run inside that scratch directory, behind the move's `&&`, with its return protocol reworded to match. The orchestrator commits each task from that file, so the agent's return becomes a file as the alternatives agent's already is. Verified by `agy_tests/test_subagent_write_tools.py` updated to the three-line prompt and to the landed path file as its pass signal, and the rebuilt host trees passing `--check`.
+
+**Verified:**
+
+- `core/agents/complete-task.md` takes three prompt lines (the task name, `Milestone directory: <MILESTONE_DIR>`, and `Scratch directory: <scratch dir>`), its frontmatter description naming the scratch directory within the 25-word cap
+- Its step 5 is one fixed shell call: the procedure's `move` with its quoted bar heredoc, then `&&` and `cat > "<scratch dir>/paths.txt"` with a quoted heredoc holding the recorded created and edited paths plus `<MILESTONE_DIR>/TASKS_TODO.md` and `<MILESTONE_DIR>/TASKS_DONE.md`, one path per line, under one fixed name per run taken from no task title
+- The agent stages and commits nothing: its staging contract is replaced by a path-file contract with no `git add` or `git commit`, and its return protocol says `DONE` means the change set was written to the path file (no payload above it) and a `FAILED` writes no path file, stages and commits nothing, and keeps the resumable-tree promise
+- The rendered call, run verbatim against the agy fixture milestone under bash and zsh, writes the path file and stages nothing; the commit tool's `--path-file` then commits exactly those three paths with another staged path left staged; a refused move writes no path file
+- `agy_tests/test_subagent_write_tools.py` dispatches the agent with the three-line prompt and takes the landed `<scratch dir>/paths.txt` (exactly the deliverable and both task files, nothing else in the scratch directory, nothing staged or committed) as its pass signal; it compiles under 3.13 and 3.9 and passes in a simulated dispatch running the rendered Antigravity call, failing when the deliverable is left out (the live agy run was not made, since the installed copy differs from the built tree and replacing it is the user's act)
+- `uv run scripts/build_hosts.py --check` passes with the three rebuilt host agent files, and both pytest runs pass (1096 passed; 1092 passed, 1 skipped)
+
+---

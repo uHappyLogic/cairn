@@ -7,17 +7,19 @@ orchestrator skill stands between the probe and the agent.
   seeded milestone directory, and a scratch directory this test created. Its pass signal is
   the one file its contract has it land, `<scratch dir>/<Short Title>.xml`, holding
   `<alternative>` elements, with the seeded repository left exactly as committed.
-- `complete-task` is dispatched with the heading of the fixture's one trivial task and the
-  seeded milestone directory. Its pass signal is the task's deliverable landed in the seeded
-  repository and the task's section moved from `TASKS_TODO.md` into `TASKS_DONE.md` in the
-  task-list tool's rendering, with both task files staged and nothing committed.
+- `complete-task` is dispatched with the heading of the fixture's one trivial task, the
+  seeded milestone directory, and a scratch directory this test created. Its pass signal is
+  the task's deliverable landed in the seeded repository, the task's section moved from
+  `TASKS_TODO.md` into `TASKS_DONE.md` in the task-list tool's rendering, and the one file its
+  contract has it land, `<scratch dir>/paths.txt`, naming the task's whole change set one path
+  per line (the deliverable and both task files), with nothing staged and nothing committed.
 
 Each agent reaches its files only through the write and shell tools (the alternatives agent
 runs the open-question tool, writes its file, and renames it; the completion agent writes the
-deliverable, runs the task-list tool's move, and stages), so a landed file is the proof those
-tools were granted: an agent without them cannot land one, whatever it reports. Nothing of an
-agent's final message is read or judged, and no transcript record is opened; the pass signal
-is the files alone.
+deliverable, runs the task-list tool's move, and writes its path file), so a landed file is
+the proof those tools were granted: an agent without them cannot land one, whatever it
+reports. Nothing of an agent's final message is read or judged, and no transcript record is
+opened; the pass signal is the files alone.
 
 The process's printed `--output-format stream-json` output is read for one thing only: that
 the process dispatched the named agent with that prompt and wrote no file and ran no command
@@ -30,6 +32,7 @@ dispatching process's output, so that output says nothing about the agent's work
 import json
 import subprocess
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 FIXTURE_MILESTONE = "milestones/milestone_01_pocket-ledger-foundations"
 # A block of the fixture's open_questions.xml, by its Short Title.
@@ -38,6 +41,8 @@ SHORT_TITLE = "Data file format"
 TASK_TITLE = "Add The Project README"
 TASK_DELIVERABLE = "README.md"
 TASK_DELIVERABLE_HEADING = "# Pocket Ledger"
+# The completion agent's return: one fixed file name inside the run's scratch directory.
+PATH_FILE = "paths.txt"
 
 # The two plugin agents, by the bare names the plugin registers them under.
 ALTERNATIVES_AGENT = "provide-alternatives-to-open-question"
@@ -77,10 +82,15 @@ def alternatives_prompt(milestone_dir, scratch_dir):
     )
 
 
-def completion_prompt(milestone_dir):
+def completion_prompt(milestone_dir, scratch_dir):
     """The completion orchestrator's dispatch prompt, as complete-all-tasks shows it: the
-    task's heading and the resolved milestone directory, nothing else."""
-    return f'Complete the task named: "{TASK_TITLE}"\n\nMilestone directory: {milestone_dir}'
+    task's heading, the resolved milestone directory, and the run's scratch directory,
+    nothing else."""
+    return (
+        f'Complete the task named: "{TASK_TITLE}"\n\n'
+        f"Milestone directory: {milestone_dir}\n\n"
+        f"Scratch directory: {scratch_dir}"
+    )
 
 
 def records_of(stdout):
@@ -141,6 +151,27 @@ def assert_dispatched_only(completed, agent, prompt):
     assert own_work_tool_steps(records) == [], own_work_tool_steps(records)
 
 
+def repository_paths(repository, text):
+    """The path file's lines, each taken whole and a line holding nothing skipped, as the
+    commit tool reads them, and each as the repository-relative path git reads it as from the
+    repository root, where the orchestrator commits: a relative line taken against that root
+    and an absolute one as given, so the agent may record either form. A line naming a path
+    outside the repository is kept as written, so it fails the comparison it is part of."""
+    root = repository.resolve()
+    paths = []
+    for line in text.split("\n"):
+        if not line:
+            continue
+        path = Path(line)
+        if not path.is_absolute():
+            path = root / path
+        try:
+            paths.append(path.resolve().relative_to(root).as_posix())
+        except ValueError:
+            paths.append(line)
+    return paths
+
+
 def git(repository, *args):
     return subprocess.run(
         ["git", *args],
@@ -188,10 +219,12 @@ def test_the_alternatives_agent_lands_its_scratch_file(seeded_repo, run_agy, tmp
     assert git(repository, "status", "--porcelain") == ""
 
 
-def test_the_completion_agent_lands_the_task_and_stages_the_move(seeded_repo, run_agy):
+def test_the_completion_agent_lands_the_task_and_its_path_file(seeded_repo, run_agy, tmp_path):
     repository = seeded_repo()
     milestone = repository / FIXTURE_MILESTONE
-    prompt = completion_prompt(milestone)
+    scratch = tmp_path / "scratch"
+    scratch.mkdir()
+    prompt = completion_prompt(milestone, scratch)
 
     completed = run_agy(
         dispatch_prompt(COMPLETION_AGENT, "Task completer", prompt),
@@ -217,8 +250,18 @@ def test_the_completion_agent_lands_the_task_and_stages_the_move(seeded_repo, ru
     assert "**Verified:**" in done, done
     assert done.rstrip().endswith("---"), done
 
-    # Both task files staged by the agent, and nothing committed: the seed commit stands alone.
-    staged = set(git(repository, "diff", "--cached", "--name-only").splitlines())
+    # The pass signal: the agent's return file, at the one fixed name inside the scratch
+    # directory, and nothing else written there. It names the task's whole change set, one
+    # path per line, each line taken whole: the deliverable the agent created and the two task
+    # files the move changed, and no other path.
+    landed = scratch / PATH_FILE
+    written = sorted(path.name for path in scratch.iterdir())
+    assert written == [PATH_FILE], f"expected only {PATH_FILE} in {scratch}; it holds {written}"
+    text = landed.read_text(encoding="utf-8")
     task_files = {f"{FIXTURE_MILESTONE}/TASKS_TODO.md", f"{FIXTURE_MILESTONE}/TASKS_DONE.md"}
-    assert task_files <= staged, staged
+    assert set(repository_paths(repository, text)) == task_files | {TASK_DELIVERABLE}, text
+
+    # Nothing staged and nothing committed by the agent: the index matches the seed commit,
+    # which stands alone.
+    assert git(repository, "diff", "--cached", "--name-only") == ""
     assert git(repository, "rev-list", "--count", "HEAD").strip() == "1"

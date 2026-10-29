@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Completion Agent Writes Its Path File
-
-Change `core/agents/complete-task.md` so it takes a third prompt line, `Scratch directory: <scratch dir>`, stages nothing, and runs step 5 as one fixed shell call chaining the task-list tool's `move` with the write of the task's whole change set — the recorded created and edited paths plus `<MILESTONE_DIR>/TASKS_TODO.md` and `<MILESTONE_DIR>/TASKS_DONE.md`, one path per line — to a file of one fixed name per run inside that scratch directory, behind the move's `&&`, with its return protocol reworded to match. The orchestrator commits each task from that file, so the agent's return becomes a file as the alternatives agent's already is. Verified by `agy_tests/test_subagent_write_tools.py` updated to the three-line prompt and to the landed path file as its pass signal, and the rebuilt host trees passing `--check`.
-
----
-
 ## Orchestrator Commits Each Task From The Path File
 
 Change `core/skills/complete-all-tasks/SKILL.md` and the three hosts' `COMPLETE_TASK_DISPATCH` slot values so the run creates its scratch directory once with `mktemp -d`, passes it on every dispatch as the fixed `Scratch directory:` prompt line, and replaces step 2c's whole-index guard and commit with one fixed call that commits through the commit tool with the agent's path file as its only pathspec and then moves that file into a `processed` subdirectory of the scratch directory under a name the call makes unique, deleting nothing; an absent or empty file after a `DONE` commits nothing, ends the run on a new fixed identifier-free stop line with the task name and whether the file was absent or empty below it, and the `Task run committed nothing — no task staged a change.` condition, its line, and its table row are retired so a run whose tasks all returned `DONE` always ends on `All tasks completed.`. Verified by the new stop line's row in `docs/skill-reference.md`'s fixed-lines table and the retired row gone with `tests/test_fixed_console_lines.py` passing, the rebuilt host trees passing `--check`, and the on-demand agy suite run for the Antigravity slot change.
