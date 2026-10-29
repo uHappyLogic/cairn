@@ -77,3 +77,17 @@ Replace the inlined guard, `git add`, and `git commit` in the inline `complete-t
 - `uv run scripts/build_hosts.py` rebuilt the three host trees and `uv run scripts/build_hosts.py --check` passes; `uv run pytest` (1093 passed) and `uv run --no-project --python 3.9 --with pytest pytest` (1089 passed, 1 skipped) pass.
 
 ---
+
+## Test The Lock Retry Through One Fixed Call
+
+Add one test that extracts the inline `complete-task` skill's fixed call from the rendered Claude Code tree — the one fixed call the parallel test leaves unrun — and runs it in a `tmp_path` repository in two cases: holding `.git/index.lock` and releasing it within the retry window, asserting the commit landed with only its own paths; and creating the lock and never removing it, asserting the call ends within a time limit a little above the retry bound, passes on git's `Unable to create '…/.git/index.lock'` message, and lands no commit. This is the milestone's deterministic proof of the retry, which the parallel test is not relied on for and which no other fixed call is run against a lock for. Verified by the test passing under both interpreters on the conftest git fixtures.
+
+**Verified:**
+
+- `tests/test_completion_call_lock_retry.py` extracts the inline `complete-task` skill's fixed call from the rendered Claude Code tree as the one fence of `hosts/claude/skills/complete-task/SKILL.md` holding the task-list tool's `move` (asserting it runs the commit tool once), fills its milestone directory, task title, bar bullets, and recorded paths, and runs it under `bash -c` in a `tmp_path` repository built on the conftest `repo`, `environment`, and `git` fixtures, with another run's change staged and an untracked file present.
+- Held lock released within the retry window: the test holds `.git/index.lock`, waits until git's own trace (`GIT_TRACE` to a file) records a second `git add`, proving the first met the lock and was repeated, then releases it; the call exits 0 printing only `completion commit landed`, and one `Task-completion: Build The Parser First` commit lands carrying exactly the edited and created paths plus the two task files, the other run's staged change still staged and the untracked file untouched.
+- Lock never released: the call ends after at least the retry window and within a limit of the window plus 3 seconds (under one more window), exits non-zero with empty stdout and exactly one commit-tool `Error: git add …` line on stderr carrying git's `Unable to create '…/.git/index.lock': File exists.` message, after exactly `commit.ATTEMPTS` traced adds and no `git commit`; no commit lands (HEAD unchanged, one commit in history), nothing of the call is staged, and the landed move stays in the tree.
+- With the rendered tool's retry disabled (`ATTEMPTS = 1`, restored afterwards), both run cases fail, so the test proves the retry rather than passing vacuously.
+- The test passes under both interpreters: `uv run pytest` (1096 passed) and `uv run --no-project --python 3.9 --with pytest pytest` (1092 passed, 1 skipped), the new file's 3 tests passing in each.
+
+---

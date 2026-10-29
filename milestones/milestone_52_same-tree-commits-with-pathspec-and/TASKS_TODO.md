@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Test The Lock Retry Through One Fixed Call
-
-Add one test that extracts the inline `complete-task` skill's fixed call from the rendered Claude Code tree — the one fixed call the parallel test leaves unrun — and runs it in a `tmp_path` repository in two cases: holding `.git/index.lock` and releasing it within the retry window, asserting the commit landed with only its own paths; and creating the lock and never removing it, asserting the call ends within a time limit a little above the retry bound, passes on git's `Unable to create '…/.git/index.lock'` message, and lands no commit. This is the milestone's deterministic proof of the retry, which the parallel test is not relied on for and which no other fixed call is run against a lock for. Verified by the test passing under both interpreters on the conftest git fixtures.
-
----
-
 ## Extend The Resumption Rule To Live Work
 
 Rewrite the opening of step 3 of `core/shared/complete-procedure.md` so uncommitted changes in the tree are named as either a previous run's partial work or another run's live work, with the runner continuing from what bears on its task and leaving the rest untouched in both cases. Several `complete-all-tasks` runs may now share one working tree, so the rule must cover work that is in progress rather than abandoned. Verified by the rebuilt host trees passing `--check` with both runners' files still pointing at the unchanged step.
