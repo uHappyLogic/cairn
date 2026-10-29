@@ -58,5 +58,9 @@ The one parallel test extracts two calls from the rendered tree: the completion 
 
 The docs cover only the same-tree concurrency they already describe: they record the pathspec, the retry, and the commit-from-file mechanism, and state that the existing "Preparing the next milestone while the current one runs" chain of `docs/ways-of-using-cairn.md` no longer leaks a completion agent's files into the answer sweep's or an annotating pass's commit. Design claim 12 is reworded from a clean tree after each skill to per-commit hygiene, each commit carrying only its own paths, because a preparation run beside a live completion run already leaves the tree dirty. Claim 9, that tasks run one at a time, stays as written. Two `complete-all-tasks` runs sharing one tree are left unstated in this release and no new chain is added, until the scope gate that keeps two runs' cores apart lands in its later milestone.
 
+### Path file
+
+The orchestrator's commit call reads the agent's path file line-exact: one path per line, each line taken whole with no word splitting, and the list passed as arguments to the guard `git status --porcelain --`, to `git add --`, and to `git commit --` behind an explicit check that the list is not empty. Because the commit tool absorbs the read, the loop lives in the tool rather than in a shell, so no shell holds the list and no shell differs. Git's `--pathspec-from-file` flag is not used, so no git version floor arises and nothing is checked or stated.
+
 ## Out of Scope
 
