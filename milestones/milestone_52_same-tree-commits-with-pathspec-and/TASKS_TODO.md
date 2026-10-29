@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Add The Commit Tool And Its Tests
-
-Add the new stdlib-only, self-contained commit tool under `core/tools/` that the `## Decisions` entries Commit tool and Path file specify: given paths (as arguments, or read line-exact from a path file, one per line, an empty list refused), a subject, and an optional body, it runs the dirty-own-path guard, the path-scoped `git add`, and `git commit` with the paths as its pathspec, repeating a git write only when git exits with 128 — about ten to twenty times with a fixed pause of a quarter to half a second between attempts, a fractional sleep inside the tool, one constant schedule with no override — passing exit 1 on at once, exiting 0 with its fixed no-op line on stdout when nothing changed, printing nothing when a commit lands, and keeping exit 1 with one `Error:` line on stderr for refusals and a git failure after the last retry. Every skill-layer commit in this milestone runs through it, so it lands before any caller changes. Verified by its subprocess contract and parity tests on the conftest git fixtures under both interpreters, its line in CLAUDE.md's repository layout, and a rebuilt `hosts/` tree passing `--check`.
-
----
-
 ## Reduce The Commit Procedure To The Tool
 
 Rewrite `core/shared/commit-procedure.md` so its three steps become the commit tool's one fixed command over PATHS, SUBJECT, and BODY, and update the eleven skills that follow it by reference so each runs that command as its one git tool call and reads the tool's printed line directly to choose its no-op line. This moves the commit mechanics into the tool for every skill that never inlined them. Verified by the procedure showing the one command, each of the eleven skills reading the tool's line for its no-op, and the rebuilt host trees passing `--check`.

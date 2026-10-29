@@ -1,8 +1,8 @@
-"""Shared fixtures for the suite of the four tools under core/tools/, and for the tests that run
+"""Shared fixtures for the suite of the five tools under core/tools/, and for the tests that run
 a fixed shell call extracted from the rendered Claude Code tree in a temporary git repository.
 
 Each tool is importable by its module name (`open_questions`, `define_milestone`,
-`task_list`, `requirements`) through the `pythonpath = ["core/tools"]` line in
+`task_list`, `requirements`, `commit`) through the `pythonpath = ["core/tools"]` line in
 pyproject.toml and driven end-to-end as a subprocess under the interpreter running the
 suite, so every exit status, stdout, and stderr the tests see is exactly what a caller sees.
 """
@@ -25,6 +25,7 @@ TOOL = REPO_ROOT / "core" / "tools" / "open_questions.py"
 DEFINE_TOOL = REPO_ROOT / "core" / "tools" / "define_milestone.py"
 TASK_LIST_TOOL = REPO_ROOT / "core" / "tools" / "task_list.py"
 REQUIREMENTS_TOOL = REPO_ROOT / "core" / "tools" / "requirements.py"
+COMMIT_TOOL = REPO_ROOT / "core" / "tools" / "commit.py"
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 CLAUDE_TREE = REPO_ROOT / "hosts" / "claude"
 CLAUDE_PLUGIN_ROOT_VARIABLE = "CLAUDE_PLUGIN_ROOT"
@@ -220,6 +221,25 @@ def git():
     """Run one git command: git(repo, environment, "log", "-1") -> its stdout as text, the
     command asserted to have exited 0."""
     return run_git
+
+
+@pytest.fixture
+def run_commit(environment):
+    """Run the commit tool as a subprocess from a working directory under the isolated git
+    environment: run_commit(repo, "--subject", "A subject", "--", "a.md"). Standard input is
+    never a terminal; env replaces the environment fixture's for one call."""
+
+    def run(cwd, *args, env=None):
+        return subprocess.run(
+            [sys.executable, "-B", str(COMMIT_TOOL), *args],
+            cwd=str(cwd),
+            env=environment if env is None else env,
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            check=False,
+        )
+
+    return run
 
 
 @pytest.fixture
