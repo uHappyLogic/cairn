@@ -78,5 +78,9 @@ The `environment`, `repo`, `git`, and `run_call` helpers move from `tests/test_s
 
 The lock retry is tested deterministically through one fixed call extracted from the rendered tree, run in a `tmp_path` repository in two cases. In the first, the test holds `.git/index.lock` and releases it within the retry window, then asserts the commit landed with only its own paths. In the second, the test creates the lock and never removes it, then asserts that the call ends within a time limit a little above the retry bound, that it passes on git's `Unable to create '…/.git/index.lock'` message, and that no commit landed. The other fixed calls are not run against a held lock and not checked by text, and the parallel test is not relied on for the retry.
 
+### Fixed console lines
+
+The orchestrator's committed-nothing condition, its fixed line `Task run committed nothing — no task staged a change.`, and its row in the fixed-lines table are removed. A run whose tasks all returned `DONE` always ends on `All tasks completed.`, and step 2c's per-task guard either stays as a silent skip or goes with the line. `tests/test_fixed_console_lines.py` needs no change of its own, because it checks only the rows the table lists.
+
 ## Out of Scope
 
