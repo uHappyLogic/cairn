@@ -74,5 +74,9 @@ When `tasks` runs with its body flag, every task line stays at column 0 in the s
 
 `tasks` assigns a commit's milestone by the root-anchored `milestones/*/TASKS_TODO.md` pattern over the commit's file list, in one file-list read with no diff parse, which joins all 174 recorded commits, the two touching a fixture `TASKS_TODO.md` under `tests/fixtures/` included. A commit whose file list holds no matching file, or more than one, is still printed, its milestone field holding one fixed placeholder in place of a path, so the line keeps its date and task title and a hand-made anomaly stays visible on the print rather than dropping a task commit from a query defined as every one that changed the path. The discovery pattern the root-anchored one will be swapped for is the next milestone's to set.
 
+### `tasks` subject selection
+
+`tasks` selects only commits whose subject opens with `Task-completion:` and takes the title from the subject after the marker. The 222 retired `Tasklist-completion: complete one milestone task` commits, which carry the task heading in their body, are never read by this query, and nothing in this milestone promises a later reader for them: every reader this milestone moves onto `tasks` reads a milestone no legacy commit touches, and the older record stays readable in the finished milestones' own `TASKS_DONE.md` files until the migration removes them. The tool's help text and contract state where the record starts (the first `Task-completion:` commit, 2026-09-02, `milestone_15`), so an older milestone or path that lists nothing is a documented limit, not a silent gap.
+
 ## Out of Scope
 
