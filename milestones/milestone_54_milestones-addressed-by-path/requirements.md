@@ -104,6 +104,8 @@ Three definitions under `scripts/hosts/` render `core/` into `hosts/claude/`, `h
 
 - **Removed milestones.** Only capture accepts a removed path, by its own test in its own step 1: `<path>/requirements.md` in the tree, or else a path-scoped `git log -1 --format=%h -- <path>/requirements.md` printing a hash. `ask-in-milestone-context` stays tree-only under `--milestone`, like every other skill, and a question about a finished milestone is answered from the project-wide record read with no milestone named.
 
+- **Capture's argument.** `capture-milestone-principle-updates` keeps a required positional argument, now the milestone's repo-relative path as the definition tool printed it, used verbatim in the repeat-capture grep, the path-scoped answer walk, and the `Principle-capture:` subject. It parses no `--milestone`, does not resolve through the shared resolution procedure, and keeps its own existence test and its own two fixed stop lines, reworded from "id" to "path". It stays the stated exception in the resolution invariant, its reason restated: the milestone it harvests may already be finished and removed, which the shared resolution does not accept.
+
 ### Finishing a milestone
 
 - **Removal through the commit tool.** The commit tool gains a removal input (for example a repeatable `--remove PATH` option) under which it runs `git rm -r -q -- PATH` itself as one more git write inside its retry schedule, before staging the other named paths and making the one pathspec commit over all of them. Finish runs only that one command, naming the milestone directory as the removal and the context file as an ordinary path when edited, under `Milestone-finish: <path>` with the summary as body.
