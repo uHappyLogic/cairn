@@ -696,6 +696,31 @@
   </open-question>
   <open-question id="Migration re-run detection">
     <question>How does `migrate-milestones`, re-run after an interruption partway through its one-commit-per-milestone walk, tell the entries already migrated from the rest: by a `Milestone-finish: &lt;path&gt;` subject already in the log, by the entry&apos;s directory being gone from the tree, or not at all, refusing a second run?</question>
+    <alternative id="Log subject">
+      Before each entry the walk reads the log for a commit whose subject is exactly `Milestone-finish: &lt;path&gt;`, the path-form subject only a migration or native finish writes (the old finishes name `milestone_&lt;NN&gt;_&lt;slug&gt;` with no `milestones/` prefix, so they never match). An entry whose path has such a commit is skipped as already migrated. Whether the directory is still in the tree is not checked, and a re-run resumes at the first entry with no match.
+      <advantage>The log is exactly what the migration writes, so the test reads the migration&apos;s own output. An entry whose directory was removed by hand and never migrated still counts as unmigrated, because its directory being absent is never taken as proof.</advantage>
+      <drawback>It goes against the draft&apos;s &quot;presence wins over the log&quot;. If one migration commit is reverted to restore a milestone and the migration is run again, the subject is still in history, so the re-run skips an entry whose directory is back and whose record the revert undid. The exact-match test also depends on the path spelling the Canonical path form sibling settles (the trailing slash).</drawback>
+    </alternative>
+    <alternative id="Directory absent">
+      Before each entry the walk checks the tree for the entry&apos;s numbered directory. An entry whose directory is gone is skipped as already migrated, and the log is not read for this purpose. A re-run resumes at the first entry whose directory still stands.
+      <advantage>It is the simplest test, and it reads &quot;finished&quot; the way the live and gate queries do (a missing directory means finished, presence wins), so a reverted migration commit brings its entry back into the next run.</advantage>
+      <drawback>An entry whose directory was migrated looks the same as one whose directory was removed by hand or never existed. Any such entry is silently skipped with no finish commit and no record, which takes away the decision the Migration missing directory sibling owns. So this option only works if that sibling settles in a way that treats an absent directory as needing no commit.</drawback>
+    </alternative>
+    <alternative id="Absent and logged">
+      The walk reads both signals for each entry. If the directory still stands, the entry is migrated now, even when a path-form `Milestone-finish: &lt;path&gt;` subject is already in the log (a reverted migration). If the directory is gone and the log holds that subject, the entry is skipped as already migrated. If the directory is gone and no such subject exists, the entry is not treated as migrated and goes to whatever handling the Migration missing directory sibling settles.
+      <advantage>It is the only test that handles all three situations correctly, an interrupted run, a reverted migration commit, and a hand-removed directory, and it matches how the milestones tool itself reads a finished milestone: no directory in the tree plus a finish commit in the log.</advantage>
+      <drawback>Each entry costs two reads and the skill carries a three-way rule instead of one test. The log half shares the subject-match test&apos;s dependence on the path spelling the Canonical path form sibling settles.</drawback>
+    </alternative>
+    <alternative id="README as progress">
+      This rejects the premise that the README stays unchanged until the closing commit. Each migration commit also removes its own `### Milestone N — Title` entry from `## Milestone History` in `milestones/README.md`, beside the directory removal, under the same `Milestone-finish: &lt;path&gt;` subject. A re-run walks whatever entries are left, with no detection step. The closing commit then removes a README whose history is empty.
+      <advantage>Progress is stored in the very file the walk reads, so resuming needs no test at all, and reverting one migration commit puts back the directory and its history entry together, so the next run picks that entry up again.</advantage>
+      <drawback>Every migration commit then touches a file a native finish never touches, so the migrated records stop being &quot;exactly the commit the new finish would make&quot;. The roughly 581-line README is also rewritten about fifty times, and each of those commits carries a README hunk that later readers of the finish commits have to look past.</drawback>
+    </alternative>
+    <alternative id="Refuse second run">
+      The migration does not resume. At the start it checks whether any history entry already has a path-form `Milestone-finish: &lt;path&gt;` commit in the log. If one does, it stops on one fixed stop line, makes no commit, and lists below that line the remedy: revert the migration commits made so far, each of which reverts on its own, then run again. A run that finds none walks every entry from the oldest.
+      <advantage>It is the smallest skill. It needs no per-entry rule and has no half-migrated state to reason about, which suits a skill a person runs once per project and never puts in a chain.</advantage>
+      <drawback>A run making some fifty commits, roughly 53 in this repository, could plausibly be interrupted, and the way out is then a revert of dozens of commits before the whole walk is repeated. Until that is done the project is half migrated: some milestones are readable only through the new record and the rest only through the README.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Migration missing directory">
     <question>What does `migrate-milestones` do with a `## Milestone History` entry whose numbered directory is absent from the tree (removed by hand, or never present in a project that wrote its history by hand): stop the walk, skip the entry with a line in its report, or make the finish commit from the entry alone with nothing removed?</question>
