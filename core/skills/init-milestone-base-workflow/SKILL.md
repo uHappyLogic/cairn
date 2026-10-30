@@ -122,7 +122,7 @@ This file provides guidance to the coding agent working in this repository.
 This project uses the milestone-driven workflow. Each milestone lives at
 `milestones/milestone_<N>_<slug>/` with `requirements.md`, `open_questions.xml`, and
 `TASKS_TODO.md`. `milestones/README.md` is the source of truth for which milestone is
-current. Never advance the pointer without first running `/finish-current-milestone`.
+current. Never advance the pointer without first running `/finish-milestone`.
 ```
 
 **If `{{CONTEXT_FILE}}` already exists**, update it without disturbing existing content:

@@ -18,7 +18,7 @@ current milestone, an unfinished one, or one already finished (backfill included
 answer commit lands during the requirements phase, the milestone's finish status carries no
 information the harvest needs: a run against a milestone whose questions are still being answered
 simply harvests what exists so far, and a later run re-walks the same path to pick up the rest.
-Running it right after `/finish-current-milestone` is the natural moment, since the milestone's
+Running it right after `/finish-milestone` is the natural moment, since the milestone's
 answer set is complete by then, but it is never a precondition.
 
 It is the **sole writer** of `milestones/answer_decision_principles.md` (a single project-wide file at

@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        A proposal is a work item in waiting. When the maintainer accepts it, they run `/define-milestone-goal` on `main` with your goal statement, which reserves `milestone_<N>_<slug>` for you; you then fork, run the milestone through `/finish-current-milestone`, and open a pull request that closes this issue. `CONTRIBUTING.md` spells out each step.
+        A proposal is a work item in waiting. When the maintainer accepts it, they run `/define-milestone-goal` on `main` with your goal statement, which reserves `milestone_<N>_<slug>` for you; you then fork, run the milestone through `/finish-milestone`, and open a pull request that closes this issue. `CONTRIBUTING.md` spells out each step.
   - type: textarea
     id: goal
     attributes:
@@ -41,5 +41,5 @@ body:
       label: Commitment
       description: A proposal is accepted only with its contributor attached; there is no plain-pull-request tier, and a change the maintainer is expected to make is a feature request instead.
       options:
-        - label: I will run this milestone myself in a fork, from the reserved `Milestone-definition:` commit through `/finish-current-milestone`, and open the pull request.
+        - label: I will run this milestone myself in a fork, from the reserved `Milestone-definition:` commit through `/finish-milestone`, and open the pull request.
           required: true

@@ -5,7 +5,7 @@ description: Activate an already-defined milestone by pointing milestones/README
 
 # goto-next-milestone
 
-Activates an already-defined milestone by updating `milestones/README.md` to point to it as the current milestone. The milestone directory must already exist (created by `/define-milestone-goal`); this skill creates no files or directories. Run this after `/finish-current-milestone` has cleared the current pointer to "none".
+Activates an already-defined milestone by updating `milestones/README.md` to point to it as the current milestone. The milestone directory must already exist (created by `/define-milestone-goal`); this skill creates no files or directories. Run this after `/finish-milestone` has cleared the current pointer to "none".
 
 ## Usage
 
@@ -19,7 +19,7 @@ No arguments. The milestone to activate is discovered automatically.
 
 ### 1. Check prerequisites
 
-Read `milestones/README.md` and find the line whose prefix is `Current milestone:`. If that line is not `Current milestone: none` (i.e. it still points to an active milestone path), stop and print the fixed line `No milestone activated — the current one is not finished.` first, then below it the remedy: run `/finish-current-milestone` first.
+Read `milestones/README.md` and find the line whose prefix is `Current milestone:`. If that line is not `Current milestone: none` (i.e. it still points to an active milestone path), stop and print the fixed line `No milestone activated — the current one is not finished.` first, then below it the remedy: run `/finish-milestone` first.
 
 ### 2. Pick the lowest candidate
 

@@ -395,7 +395,7 @@ mis-numbering.
 Any disagreement, in **either** direction, stops the run:
 
 - a milestone number on the commit side with no matching history entry — a
-  `/finish-current-milestone` whose `milestones/README.md` entry is missing or renumbered;
+  `/finish-milestone` whose `milestones/README.md` entry is missing or renumbered;
 - a milestone number on the history side with no matching finish commit — a history entry
   added by hand, or a finish commit outside the range.
 
@@ -406,7 +406,7 @@ the run, so a false stop costs a single `milestones/README.md` edit and a re-run
 
 **d. Empty range.** When both sides are empty — no `Milestone-finish:` commit in the range
 and no history entry added — no milestone was finished since `<LAST_TAG>`. That is ambiguous
-between a forgotten `/finish-current-milestone` and a deliberate version-only patch release,
+between a forgotten `/finish-milestone` and a deliberate version-only patch release,
 and only the maintainer can tell the two apart, so:
 
 1. State plainly that no milestone was finished since `<LAST_TAG>`.

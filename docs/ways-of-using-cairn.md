@@ -104,5 +104,5 @@ claude -p "/cairn:recommend-all-open-questions --milestone <milestone_id>" --dan
 Run this when `TASKS_TODO.md` is empty: it records the milestone's completion summary in `milestones/README.md`, clears the current-milestone pointer to `none`, and updates `CLAUDE.md` for lasting changes, leaving the repository ready for the next `goto-next-milestone`.
 
 ```sh
-claude -p "/cairn:finish-current-milestone" --dangerously-skip-permissions --model "sonnet" --effort medium;
+claude -p "/cairn:finish-milestone" --dangerously-skip-permissions --model "sonnet" --effort medium;
 ```

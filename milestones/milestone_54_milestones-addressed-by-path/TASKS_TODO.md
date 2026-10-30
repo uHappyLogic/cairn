@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Finish by Removing the Milestone Directory
-
-Rename `core/skills/finish-current-milestone/` to `finish-milestone`, keeping its two checks and its `tasks` read, and make it commit through the commit tool's one command with the milestone directory as the removal and the context file as an ordinary path when edited, under `Milestone-finish: <path>` with the summary as body: the title read from the `requirements.md` heading with any legacy `Milestone <N>: ` prefix stripped, a blank line, then the 3–8 bullets, a trailing trailer block allowed. It writes nothing to `milestones/README.md` and touches no pointer; its six fixed-lines rows, its `docs/skill-reference.md` entry, and every reference to the old name follow, verified by the suite and a finish in a scratch repository whose `summary` then prints the body back.
-
----
-
 ## Retire Activation and Reduce the Bootstrap
 
 Delete `core/skills/goto-next-milestone/` with its four fixed lines and its reference entry, and reduce `init-milestone-base-workflow` to the context file alone: it creates the file with a `## Milestone Workflow` section carrying the path-addressed guidance when the file is missing, appends the section when the file lacks it, leaves any present section exactly as it is, probes nothing, creates no `milestones/` scaffold, and commits only the context file subject-only under `Workflow-bootstrap: milestones`, its no-op lines reworded from the scaffold to the guidance. The git work-tree probe and the `python3 --version` check against 3.9 become the opening step of `define-milestone-goal`, run on every invocation before the definition tool and each stopping before any write on a fixed line moved from the bootstrap, with `README.md`'s prerequisite sentence naming `/define-milestone-goal` as the skill that checks them; verified by the suite, the fixed-lines test, and a bootstrap run on an empty project.

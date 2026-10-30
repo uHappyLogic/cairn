@@ -130,7 +130,7 @@ loop review, up to K passes, exit when the review line prints the convergence li
 end loop
 /cairn:derive-tasks
 /cairn:complete-all-tasks
-/cairn:finish-current-milestone
+/cairn:finish-milestone
 ```
 
 The definition line's argument is the text of `PROJECT.md` as the current phase's `Prompt: <n>` commit holds it, which the harness substitutes into the line before sending it, whole and with its line breaks, within the quoting rule Cairn's usage documentation states for a goal written inside `claude -p "…"`, which both prompts of the project section meet and a revision of either must keep. It is the one message of any delivery that carries prompt text, so each milestone records its own prompt verbatim under its Goal, and that record stays true after the file is overwritten; the line as sent is in its invocation's record, and its text is the prompt blob the manifest already records. The exception exists because a milestone's Goal is what every later line reads as the milestone's objective, and in a later phase the starting-state pass reads the earlier milestones' Goals as the record of what each one was for. A Goal holding the pointer sentence would point at a file the next phase overwrites: at phase 2 milestone 1's Goal would name prompt 2, and the starting-state pass, the one step of the chain with no counterpart in a manual run and the one where the phase-2 margin is expected to open (see "What phase 2 is expected to show"), would read a milestone whose goal no longer describes what it built. A goal that points at a file is also not how Cairn is used, since a goal is written as its content, so the pointer would measure the chain under a use it was never meant for. No scenario gains anything by the substitution: `PROJECT.md` is still written and committed under `Prompt: <n>` in every scenario, every manual delivery's build message stays the pointer sentence and no manual message carries prompt text, and every run finds the same committed text, a cairn chain in its definition line as every scenario in the file.
@@ -156,7 +156,7 @@ loop review, up to K passes, exit when the review line prints the convergence li
 end loop
 /cairn:derive-tasks
 /cairn:complete-all-tasks
-/cairn:finish-current-milestone
+/cairn:finish-milestone
 ```
 
 The turn stays in the first pass because it is the stakeholder's one sitting: a turn on every pass would make the attentive-session count, the delivery's cost in a person's time, depend on how many passes the loop took, and a person who has answered the questions that mattered to them leaves the passes after it to the chain, whose later review passes surface what those answers opened and whose sweeps record the picks. The second recommendation pass goes with the turn because it is the turn's consequence; on a later pass, with no turn before it, it would have nothing to pick. A first review pass that prints the convergence line skips the turn with the rest of its pass, since there is no question for the turn to read.
@@ -243,7 +243,7 @@ Cairn is meant to be used under a mixed strategy, because its skills differ in w
 | `/cairn:answer-all-open-questions-with-recommendation` | Fable 5.1 | high |
 | `/cairn:derive-tasks` | Fable 5.1 | xhigh |
 | `/cairn:complete-all-tasks` | Opus 5.5 | high |
-| `/cairn:finish-current-milestone` | Sonnet 5.5 | medium |
+| `/cairn:finish-milestone` | Sonnet 5.5 | medium |
 | `/cairn:answer-open-question-with-alternative …` and `/cairn:answer-open-question …` (the planned turn's answers, assess delivery) | Fable 5.1 | high |
 
 The planned turn's answer invocations, which no Cairn snippet covers, get the pair of the answer sweep, because recording an answer and reconciling the picks it undermines is the same kind of work; the reading and choosing is the operator's, under its own fixed pair. The recommendation pass appears twice in the assess delivery, before the turn and after it, and runs under its one pair both times, since the strategy keys by message; for the same reason every line of a bounded loop runs under its one pair on every pass.

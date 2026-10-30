@@ -116,7 +116,7 @@ tools = "tools"
 # the same slot names, and every name declared must appear in core/.
 [slots]
 # CONTEXT_FILE: the project's environment-context file, which the skills read for the
-# project's context, the bootstrap creates or extends, and finish-current-milestone updates.
+# project's context, the bootstrap creates or extends, and finish-milestone updates.
 # Claude Code reads its project instructions from CLAUDE.md, so the workflow reads and
 # writes its environment context there.
 CONTEXT_FILE = { file = "slots/CONTEXT_FILE.md" }
