@@ -98,6 +98,41 @@
   </open-question>
   <open-question id="Shallow clone detection">
     <question>Do the `gate` query and the history-side queries detect a shallow clone, whose truncated log reads every started milestone as unstarted so the gate holds no scope and drops finished milestones from `milestones`, `summary`, and `record` without sign, and if so how: refuse with an `Error:` line, warn on stderr beside the print, or state the limit in the help text only, as `tasks` does?</question>
+    <alternative id="Help text only">
+      No query checks for a shallow clone. `gate`, `milestones`, `summary`, and `record` state the limit in their help text and the docs exactly as `tasks` does today: in a shallow clone the truncated log omits older commits without any sign, so the started test can read a started milestone as unstarted and finished milestones can be missing from the history-side prints. Detection is left to a later milestone, or to none if no field run meets the case, and `tasks` stays unchanged.
+      <advantage>Adds no code path, no git call, and no new output to any query, keeps every query&apos;s contract the same as the one `tasks` already has, and costs nothing in a full clone, which is every case this repository has met (its log is not shallow).</advantage>
+      <drawback>A shallow clone (a CI checkout&apos;s default depth-1 fetch running a headless chain is the likely case) makes the gate pass a scope another milestone holds, so two milestones can work the same scope with no sign, and the record silently drops finished milestones; the draft&apos;s own finding is that the gate turns this from a short read into a sequencing failure.</drawback>
+    </alternative>
+    <alternative id="Refuse everywhere">
+      Every query that reads the log (`gate`, `milestones`, `summary`, `record`, and `tasks` brought along) first runs `git rev-parse --is-shallow-repository` and, when it prints `true`, refuses with one `Error:` line on stderr and exit 1 naming the shallow clone and the remedy (`git fetch --unshallow`), printing nothing on stdout. The `tasks` help text&apos;s no-check limit is replaced by the refusal, and its five readers meet the refusal through the failed-read handling they already have (three stop lines, two prose notes).
+      <advantage>One rule for the whole tool and no silent wrong answer anywhere: the refusal is the existing failure shape every sibling tool and every chained call already handles, so no runner needs a new branch, and the remedy is one command.</advantage>
+      <drawback>Refuses even a shallow clone deep enough to hold every relevant commit, and changes `tasks`, the second milestone&apos;s query, so finish, `derive-tasks`, and `submit-task` stop outright in any shallow checkout where today they run; one extra git call on every query.</drawback>
+    </alternative>
+    <alternative id="Refuse in new queries">
+      `gate`, `milestones`, `summary`, and `record` run `git rev-parse --is-shallow-repository` first and refuse with one `Error:` line on stderr and exit 1 naming the shallow clone and `git fetch --unshallow` when it prints `true`. `tasks` is left exactly as it is, its help text still stating the limit with no check.
+      <advantage>Every query this milestone writes fails loudly on the case, the gate above all, while `tasks` and its five readers keep the behaviour and tests the previous milestone shipped them with.</advantage>
+      <drawback>The tool then holds two shallow-clone rules, one per generation of queries, which its help text has to explain; `tasks` keeps printing a silently short list in a shallow clone beside queries that refuse the same repository, and finish&apos;s completed-task read stays unguarded.</drawback>
+    </alternative>
+    <alternative id="Warn everywhere">
+      Every query that reads the log (`gate`, `milestones`, `summary`, `record`, and `tasks`) checks `git rev-parse --is-shallow-repository` and, when it prints `true`, prints its normal output on stdout and exits as it would in a full clone, adding one fixed warning line on stderr saying the clone is shallow and the result may omit older commits.
+      <advantage>Nothing that runs today stops: a shallow clone deep enough to be complete keeps working, every chained call behind `&amp;&amp;` continues, and the operator still sees the case named beside every print.</advantage>
+      <drawback>A warning changes no outcome: the gate still passes a held scope and a headless chain, which reads only final messages and exit statuses, carries on past it; it also gives the tools&apos; stderr, which today carries only the one `Error:` line of a failure, a second kind of line on success.</drawback>
+    </alternative>
+    <alternative id="Gate refuses, history warns">
+      `gate` runs `git rev-parse --is-shallow-repository` first and refuses with one `Error:` line on stderr and exit 1, naming the shallow clone and `git fetch --unshallow`, when it prints `true`. `milestones`, `summary`, `record`, and `tasks` print as usual and exit as in a full clone, adding one fixed warning line on stderr in a shallow clone.
+      <advantage>Matches the response to the consequence: the one query whose wrong answer lets a write through stops it, while the reads, whose wrong answer is a short record a person or runner can still use, keep working and say so.</advantage>
+      <drawback>Two responses to one condition inside one tool, and the warnings carry the same cost as warning everywhere (no outcome changes, a new kind of stderr line on success); every gate site stops in any shallow checkout, a deep-enough one included.</drawback>
+    </alternative>
+    <alternative id="Gate refuses, history help">
+      `gate` runs `git rev-parse --is-shallow-repository` first and refuses with one `Error:` line on stderr and exit 1, naming the shallow clone and `git fetch --unshallow`, when it prints `true`. `milestones`, `summary`, and `record` make no check and state the limit in their help text and the docs as `tasks` does, and `tasks` is unchanged.
+      <advantage>The smallest change that closes the sequencing failure: one check on the one query that guards writes, the history-side queries sharing `tasks`&apos; already-documented contract, and stderr keeping its one meaning.</advantage>
+      <drawback>The conversational readers of `milestones`, `summary`, and `record` (`discuss-milestone-goal`, `ask-in-milestone-context`, the release notes if they move onto these queries) still read a silently truncated history and can answer that a finished milestone never happened.</drawback>
+    </alternative>
+    <alternative id="Gate fails closed">
+      `gate` runs `git rev-parse --is-shallow-repository` and, when it prints `true`, does not trust the started test: it treats every other live milestone overlapping the named one&apos;s scope as started and reports them as holders in its ordinary held output, never refusing. `milestones`, `summary`, `record`, and `tasks` make no check and state the limit in their help text as `tasks` does.
+      <advantage>The gate can never pass a held scope in a shallow clone, and it keeps working there whenever no other live milestone overlaps, which is the common single-milestone case, with no new failure path.</advantage>
+      <drawback>In a shallow clone it reports merely defined milestones as holders, so a runner waits on a hold that does not exist with nothing saying why, which is harder to diagnose than a refusal naming the shallow clone; how a hold is printed and exited depends on the gate&apos;s output contract, which a sibling question owns.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Trailer in finish body">
     <question>How does the finish body contract (title line, blank line, summary bullets) meet an attribution trailer such as `Co-Authored-By:` that a runner appends to the body it passes the commit tool: does the contract forbid one, or do `summary` and `record` treat a trailing block of `Token: value` lines as outside the record, given that 37 pre-flip `Task-completion:` bodies are such a trailer alone and that `tasks` prints bodies whole?</question>
