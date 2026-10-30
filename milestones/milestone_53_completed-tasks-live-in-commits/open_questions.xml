@@ -1,34 +1,4 @@
 <open-questions>
-  <open-question id="Task commit body contents">
-    <question>What does the body of a `Task-completion:` commit hold beyond the acceptance bar&apos;s `- ` bullets, given that today&apos;s `TASKS_DONE.md` entry records both the task&apos;s brief and the bar under a `**Verified:**` label, and that once the file is gone the brief survives only as the removed lines of `TASKS_TODO.md` in that commit&apos;s own diff?</question>
-    <applied-principle>Report only unrecoverable signals</applied-principle>
-    <recommendation option="Bar only">The draft&apos;s shape: the brief already sits in the same commit&apos;s diff as the removed section, so a body repeating it re-types text that can drift and loads the handover with quoting, while the subject plus the bar is what every reader&apos;s judgment needs.</recommendation>
-    <alternative id="Bar only">
-      The body holds nothing beyond the acceptance bar: exactly its `- ` bullets, one per criterion, with no brief, no label line, and no other field. The brief is recorded only where the draft already leaves it, as the removed lines of `TASKS_TODO.md` in the same commit&apos;s diff, and the subject carries the title.
-      <advantage>It is the draft&apos;s shape as written, one commit as the whole record with nothing repeated in it: the brief already sits in the commit&apos;s own diff, so the body adds only what nothing else in the commit holds, and no runner copies or re-types the brief, so nothing can drift from the section actually removed.</advantage>
-      <drawback>The task&apos;s purpose is no longer readable from the commit message: `git log` and a `tasks` call with its body flag show a title and bullets but no brief, so a reader that today reads the brief beside the bar in `TASKS_DONE.md` (finish drawing its summary of what was built, `ask-in-milestone-context` answering how a task turned out) must read the commit&apos;s diff and pick out the removed lines of `TASKS_TODO.md` to recover it; which readers need the brief depends on the reader body-flag question.</drawback>
-    </alternative>
-    <alternative id="Brief and labelled bar">
-      The body reproduces today&apos;s `TASKS_DONE.md` entry minus its heading and `---`: the task&apos;s brief, copied verbatim by the runner from its own read of the section before `remove`, then a `**Verified:**` label line, then the bar&apos;s `- ` bullets. The inline skill writes this as its commit body, and the agent writes the same text into its fixed-name body file.
-      <advantage>The commit message alone is the record today&apos;s done entry is, so every reader moving from `TASKS_DONE.md` to `tasks` reads the same brief-then-bar text with no diff parsing, and the label keeps the bar visibly distinct from the brief so it is never read as an authoring contract, as the task-altitude invariant requires of the `**Verified:**` label today.</advantage>
-      <drawback>The brief is stored twice in one commit (the body and the diff&apos;s removed lines) and is re-typed by the runner, so it can drift from what was actually removed; briefs routinely hold backticks and quotes, so the body the inline call passes grows more fragile to hand over (the inline-bar question&apos;s mechanism must carry it); and a Markdown bold label renders raw in `git log`.</drawback>
-    </alternative>
-    <alternative id="Brief and bare bar">
-      The body holds the task&apos;s brief, copied verbatim by the runner from its own read of the section before `remove`, then a blank line, then the bar&apos;s `- ` bullets, with no label line between them; the brief is told from the bar only by being prose while every bar line opens with `- `.
-      <advantage>The commit message carries both the purpose and the verification, readable through `git log` and the `tasks` body flag without the diff, in the shortest form and with no Markdown markup in a commit message.</advantage>
-      <drawback>Nothing marks where the brief ends and the bar begins except the prose-versus-bullets convention, which `core/shared/task-format.md` states but the task-list tool does not check, so a brief holding a `- ` line is misread as bar; the bar loses the label that keeps it from being read as an authoring contract; and the brief is still stored twice and re-typed by the runner, with the same drift risk and the same quoting load on the inline call.</drawback>
-    </alternative>
-    <alternative id="Tool-printed brief, labelled">
-      The body holds the brief, a `**Verified:**` label line, and the bar&apos;s `- ` bullets, as in today&apos;s done entry, but the brief is not copied by the runner: `remove` prints the removed section&apos;s body on stdout when it succeeds, and the runner&apos;s fixed call captures that print into the body (the inline skill into the text it passes to `--body`, the agent into its fixed-name body file) ahead of the label and the bar it writes itself.
-      <advantage>The body carries the full done-entry record readable without the diff, and the brief in it is byte-for-byte the text that left `TASKS_TODO.md`, so the duplication can never drift and no runner re-types a brief that may hold backticks and quotes.</advantage>
-      <drawback>It changes the task-list tool&apos;s contract, under which a mutator prints nothing on success, so `remove` gains an output contract, help text, and tests the goal&apos;s bare `remove` does not have, and every fixed completion call must capture a print and join it to the bar, adding a shell value or a redirect to calls the fixed-call and parallel tests pin; the brief is still stored twice in the commit.</drawback>
-    </alternative>
-    <alternative id="Tool-printed brief, bare">
-      The body holds the brief and then the bar&apos;s `- ` bullets separated by a blank line only, with no label line, the brief taken from a print `remove` makes of the removed section&apos;s body on success and captured by the runner&apos;s fixed call ahead of the bar it writes itself.
-      <advantage>The commit message carries purpose and verification with the brief guaranteed identical to the removed text, in the shortest form and with no Markdown label in a commit message.</advantage>
-      <drawback>It carries both costs at once: the task-list tool gains an output on success and every fixed completion call a captured print to join, and the boundary between brief and bar rests only on the unchecked prose-versus-bullets convention, with no label keeping the bar from being read as an authoring contract.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Inline bar into body">
     <question>How does the inline `complete-task` skill&apos;s one fixed shell call hand the multi-line acceptance bar to the commit tool&apos;s `--body` argument, given that criteria routinely hold backticks, double quotes, and apostrophes, which a double-quoted shell argument would expand or break on, and that the commit tool&apos;s contract gains no body-file option?</question>
     <applied-principle>Check tier claims against the live environment</applied-principle>
@@ -248,7 +218,6 @@
   </open-question>
   <open-question id="Bar form statement home">
     <question>Where is the acceptance bar&apos;s record form (one `- ` bullet per criterion, in verification order, held verbatim from derivation) stated once the completion procedure&apos;s step 5 command is a bare `remove` that carries no bar, given that the procedure stays commit-free and the bar&apos;s only destination is each runner&apos;s own commit?</question>
-    <depends-on question="Task commit body contents" option="Bar only"/>
     <recommendation option="Completion procedure states it">A rule both runners follow belongs in the procedure both already read, beside the step-2 hold-it-verbatim sentence it extends; naming a record&apos;s form is not a git step, so the procedure stays commit-free, and with the body being the bar alone that one sentence states the whole body&apos;s shape.</recommendation>
     <alternative id="Completion procedure states it">
       The record form (one `- ` bullet per criterion, in verification order, written as each stood when it passed, neither re-derived nor summarized) stays stated once, in `core/shared/complete-procedure.md`, as prose beside the bare `remove` at step 5 (or folded into step 2&apos;s hold-it-verbatim sentence), worded as the form of the bar the procedure hands to the runner, with the destination named only as &quot;the record your runner&apos;s own file writes&quot; and no git step, commit, or body named. The inline `complete-task` skill&apos;s fixed call and the agent&apos;s body-file heredoc show the bar as `- ` bullet placeholders and refer to the procedure for the form, adding no prose rule of their own.
@@ -278,7 +247,6 @@
   </open-question>
   <open-question id="Tasks line fields">
     <question>Which fields does one line of the milestones tool&apos;s `tasks` query carry, in what order and with what separator, given that the draft lists date, milestone path, and task title, that a title may hold spaces, and that a reader wanting a task&apos;s diff needs its commit hash or must search subjects itself?</question>
-    <depends-on question="Task commit body contents" option="Bar only"/>
     <recommendation option="Hash first, tab-separated">The tab is the family&apos;s existing listing separator and keeps a spaced title unambiguous, and the leading hash is what lets a reader reach a task&apos;s diff, where the brief now lives, with one git show instead of the subject search the tool exists to end.</recommendation>
     <alternative id="Hash first, tab-separated">
       Each line carries four fields: the commit&apos;s abbreviated hash as git&apos;s `%h` prints it, then the date as YYYY-MM-DD, the milestone path, and the task title, separated by single tab characters, the title last.
@@ -338,7 +306,6 @@
   </open-question>
   <open-question id="Mention sweep boundary">
     <question>Which mentions of `TASKS_DONE.md` outside the runtime files, host templates, docs, and tests the goal names are rewritten in this milestone, in particular the pull request template&apos;s checklist item and the three passages of `ideas/benchmark_for_cairn.md` that describe a cairn chain&apos;s tree?</question>
-    <depends-on question="Task commit body contents" option="Bar only"/>
     <recommendation option="Rewrite item only">The checklist is the one surface outside the goal&apos;s categories a person acts on, and a compliant PR would fail it as written, so it takes the commit form beside its Milestone-finish item; the benchmark is dated by its own naming rule, points at the plugin&apos;s docs for anything matched, and has the same passages rewritten at the pointer&apos;s removal.</recommendation>
     <alternative id="Rewrite item only">
       The pull request template&apos;s item is rewritten to the commit form, as in &quot;Rewrite both&quot;. `ideas/benchmark_for_cairn.md` is left as written: it is a dated design draft that names Cairn&apos;s files &quot;as the plugin had them when this document was written&quot; and points at the plugin&apos;s documentation for anything the harness matches. Its three passages wait until the benchmark is next revised or until the pointer&apos;s removal changes the same passages. Nothing else outside the goal&apos;s categories is touched, and historical records stay as written.
