@@ -82,5 +82,9 @@ When `tasks` runs with its body flag, every task line stays at column 0 in the s
 
 When no task commit changed PATH, `tasks` makes one further read-only check, only on that empty result: whether PATH exists in the working tree or was touched by any commit in history (one more path-scoped `git log` limited to one commit). If it does, the tool prints nothing and exits 0, keeping the family's print-nothing, exit-0 shape for the routine empty milestone so no chained reader breaks. If it exists in neither, the tool refuses with one `Error:` line on stderr naming PATH as given and exits 1. History counts as existence, so a deleted path or a later-removed milestone directory whose task commits remain is never refused.
 
+### The readers' `tasks` calls
+
+Every one of the five readers that replace their `TASKS_DONE.md` read runs `tasks` on its milestone directory with the body flag, unconditionally, at the step that read `TASKS_DONE.md` today: `finish-current-milestone` at step 2, `derive-tasks` for its coverage matrix, `ask-in-milestone-context` among its reads, and `submit-task` and `discuss-new-task` in their triage reads. No reader reads titles alone and no reader chooses per run, so one fixed call shape at five sites keeps each reader the evidence its whole read gave it, with no per-reader rule or run-time choice a test cannot pin; a milestone's bars are a few bullets per task, so the extra print is small.
+
 ## Out of Scope
 
