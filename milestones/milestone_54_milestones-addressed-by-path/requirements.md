@@ -86,5 +86,7 @@ Three definitions under `scripts/hosts/` render `core/` into `hosts/claude/`, `h
 
 - **Scope spelling.** The root is spelled `--at .`, and `./` is accepted as the same thing. The definition tool normalizes every scope lexically before forming the path, collapsing `.` components, duplicate and trailing slashes, and a leading `./`, and refuses an absolute path or one that climbs out of the repository with `..`. It then prints the canonical repo-relative form, which for the root is `milestones/<slug>/` and for a package is `pkg/milestones/<slug>/`, however the scope was typed.
 
+- **Missing scope.** The scope must already exist as a directory in the working tree, tested on the filesystem since the tool touches no git; when it does not, or names a non-directory, the call is refused with one `Error:` line naming the scope as given and nothing is written. Only the `milestones/` container is created when missing. A milestone whose core does not yet exist is placed by first creating the scope directory by hand, or at the nearest existing ancestor.
+
 ## Out of Scope
 
