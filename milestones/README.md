@@ -13,9 +13,19 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_52_same-tree-commits-with-pathspec-and/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 52 — Same-tree commits with pathspec and retry
+
+- A new stdlib-only commit tool, `tools/commit.py`, runs the dirty-own-path guard, the path-scoped `git add`, and `git commit` with the paths as its pathspec, so every skill-layer commit records only its own paths while another run's staged change stays staged.
+- The tool repeats a git write only when git exits 128, as a held lock makes it, 16 attempts a quarter of a second apart, prints nothing when a commit lands, and exits 0 with one fixed no-op line when none of the paths changed.
+- `commit-procedure.md` is reduced to the tool's one command, which the eleven skills following it by reference run as their one git tool call, and the six fixed calls that inlined the commit steps (the answer sweep, both annotating passes, the inline `complete-task`, `submit-task`, and `derive-tasks`) run the tool and echo their markers only when its capture is empty.
+- The `complete-task` agent stages nothing and writes its task's whole change set to a fixed-name `paths.txt` in a scratch directory that `complete-all-tasks` creates with `mktemp -d` and passes on every dispatch; the orchestrator commits each task from that file through the commit tool, moves it into `processed`, and stops on a new fixed line when it is absent or empty, the `Task run committed nothing` line retired.
+- The completion procedure's resumption rule names another run's live work beside a previous run's partial work.
+- The git test helpers moved into `tests/conftest.py`, and the suite gained the commit tool's contract, pathspec, retry, and parity tests, a lock-retry test through the inline `complete-task` call, and a test running two milestones' completions concurrently in one repository, each commit asserted to carry only its own paths.
+- `CLAUDE.md`'s committing, shell-literal, return-contract, and dispatch-prompt invariants and the docs record the mechanism, design claim 12 now states per-commit hygiene, and the preparing-the-next-milestone chain no longer leaks a completion agent's files into a preparation commit.
 
 ### Milestone 51 — Benchmark design finalization
 
@@ -557,3 +567,4 @@ Current milestone: `milestones/milestone_52_same-tree-commits-with-pathspec-and/
 | 49 | Noted contradictions and superseding fold | `milestones/milestone_49_noted-contradictions-and-superseding-fold/` |
 | 50 | Uniform milestone resolution with an override flag | `milestones/milestone_50_uniform-milestone-resolution-with-an/` |
 | 51 | Benchmark design finalization | `milestones/milestone_51_benchmark-design-finalization/` |
+| 52 | Same-tree commits with pathspec and retry | `milestones/milestone_52_same-tree-commits-with-pathspec-and/` |
