@@ -106,5 +106,7 @@ Three definitions under `scripts/hosts/` render `core/` into `hosts/claude/`, `h
 
 - **Missing finish date.** Before its first commit the migration checks whether the repository is shallow and stops with a fixed line and a remedy (fetch the full history) if it is. In a complete history, an entry with no `Milestone-finish:` commit for its id takes the author date of the newest commit that changed its directory.
 
+- **One confirmation.** Before its first commit `migrate-milestones` prints its whole plan: every `## Milestone History` entry it will finish, oldest first, each with the directory it removes and the author date its commit will carry, then what the closing commit removes and rewrites (`milestones/README.md`, a live milestone's `TASKS_DONE.md` if present, the context file's `## Milestone Workflow` section). It then asks once whether to proceed, as capture's step 7 asks once before its commit. Acceptance runs the whole walk and the closing commit with no further prompt; anything else ends the run on one fixed no-op line of its own, with no file changed and no commit made. The confirmation accepts or rejects the plan whole and edits no entry out of it.
+
 ## Out of Scope
 
