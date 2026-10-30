@@ -124,5 +124,9 @@ Three definitions under `scripts/hosts/` render `core/` into `hosts/claude/`, `h
 
 - **Reservation on `main`.** The maintainer's reservation step stays, rewritten for paths: on accepting the proposal the maintainer runs `/define-milestone-goal --at <scope>` with the accepted goal on `main`, choosing the scope, and its `Milestone-definition: <path>` commit is the reservation. The contributor branches from that commit and runs the pipeline with `--milestone <path>`. The `/goto-next-milestone` step and the pointer conditions on reserving and merging go. An abandoned contribution is still cleaned up by reverting the definition commit, and the pull request template's milestone field names the reserved path.
 
+### Carrying out this milestone
+
+- **Crossing the flip.** The resolution change is one task standing first in the derived list. It carries the resolution procedure's required `--milestone <path>` and its no-flag stop, plus each runner's flag clause; the pointer's other readers and writers (finish, `goto-next-milestone`, the bootstrap) go in later tasks. Its brief says it is completed alone by the inline `/complete-task` in the current session, which still resolves through the pointer because `milestones/README.md` stands until the migration. Every remaining implementation task is then completed by `/complete-all-tasks --milestone milestones/milestone_54_milestones-addressed-by-path/` in a fresh session with the rebuilt tree loaded, and the gate task stands last among them. A further fresh session runs `/migrate-milestones`, then the draft-revising last task by the inline `/complete-task --milestone <path>`, then the new finish with `--milestone <path>`. The old finish is never run, because finish needs an empty list and the last task comes after the migration, which removes the pointer file.
+
 ## Out of Scope
 
