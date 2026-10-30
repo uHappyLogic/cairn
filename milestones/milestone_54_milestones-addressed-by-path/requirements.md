@@ -64,5 +64,7 @@ Three definitions under `scripts/hosts/` render `core/` into `hosts/claude/`, `h
 
 - **`live` line.** Three tab-separated fields: the milestone path in its canonical printed form first, then a state field holding one of two fixed words, `started` or `defined`, then the title, read from the `requirements.md` heading, last. `live` runs the started test (one path-scoped `git log -1 --diff-filter=M` per live milestone) to fill the state field.
 
+- **No `live` filter yet.** The `live` query lands in this milestone as the unfiltered list alone: it takes no PATH argument, and the resolution stop and the gate are its only callers. The PATH filter, with its scope-contains-or-lies-under rule, is not built here; it is left to step 4, the next milestone, to add with the starting-state refresh's in-flight read, the first caller that needs it, and that milestone also decides the filter's argument shape and semantics.
+
 ## Out of Scope
 
