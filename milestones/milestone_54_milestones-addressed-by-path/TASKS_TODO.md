@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Milestone Subjects Carry the Milestone Path
-
-Change the six subjects that name a milestone as `<milestone_id>` (`Starting-state:`, `Requirements-review:`, `Task-derivation:`, `Recommendation-annotation:`, `Question-ordering:`, and `Goal-revision:`) to carry the resolved milestone path with its trailing slash, as the definition, finish, and capture subjects do, so every commit subject that names a milestone names its path and `<milestone_id>` leaves the runtime files and `docs/skill-reference.md`. Verified by the rebuilt trees, the suite, and one run of a changed runner landing a path-named commit.
-
----
-
 ## Commit Tool Removal Input
 
 Give `core/tools/commit.py` a repeatable `--remove PATH` option under which it runs `git rm -r -q -- PATH` as one more git write inside its retry schedule, before staging the other named paths, and makes its one pathspec commit over the removal and those paths together, stated in its help text. Pinned by a test file of its own covering the removal, the retry on exit 128, and that every existing call without the option behaves exactly as today.

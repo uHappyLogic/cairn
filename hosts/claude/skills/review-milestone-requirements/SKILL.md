@@ -29,7 +29,7 @@ The required leading `--milestone <path>` names the milestone by its repo-relati
 
 `requirements.md` is prose Markdown in four sections, with an optional fifth between `## Decisions` and `## Out of Scope`:
 ```md
-# Milestone <milestone_id>: <name>
+# <name>
 
 ## Goal
 
@@ -141,7 +141,7 @@ Neither path resolves a conflict: never edit, reword, or remove either `## Decis
 Read and follow the shared commit procedure at `${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, running its one commit-tool command yourself as this step's one git tool call. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set, the milestone's two requirements documents: `<MILESTONE_DIR>/open_questions.xml` (where every prune, dedup, and new block of this pass landed) and `<MILESTONE_DIR>/requirements.md` (where step 4's note deletions landed).
-- **SUBJECT** — `Requirements-review: <milestone_id>`.
+- **SUBJECT** — `Requirements-review: <MILESTONE_DIR>`, the milestone path exactly as resolved, trailing slash included.
 
 The commit tool runs the dirty-own-path guard, the path-scoped staging, and the commit. Its guard covers this skill's no-op case: a pass that reconciled, pruned, and surfaced nothing and found no note to handle leaves both files unchanged, so the tool prints `Nothing committed — none of the paths changed.` and nothing is staged or committed; a pass that reshaped the question set or deleted a note commits that change.
 
@@ -155,7 +155,7 @@ python3 ${CLAUDE_PLUGIN_ROOT}/tools/open_questions.py list <MILESTONE_DIR>
 
 It prints the Short Title of every `<open-question>` block still in the document, one per line in document order; empty output is a converged document. That print — not your recollection of the pass — is what the two items below are read from.
 
-On the success path, print exactly one fixed terse status line — `Requirements reviewed.` — carrying no identifier (no milestone id, no count, no commit subject). Do **not** re-narrate what the pass reshaped: there is no "What changed this pass" summary (blocks pruned, repeats merged, new questions raised, notes deleted, "possibly resolved — confirm" flags) and no handoff pointer toward `/discuss-open-question` or `/answer-open-question`.
+On the success path, print exactly one fixed terse status line — `Requirements reviewed.` — carrying no identifier (no milestone path, no count, no commit subject). Do **not** re-narrate what the pass reshaped: there is no "What changed this pass" summary (blocks pruned, repeats merged, new questions raised, notes deleted, "possibly resolved — confirm" flags) and no handoff pointer toward `/discuss-open-question` or `/answer-open-question`.
 
 Follow that terse line with only the two pieces of decision-critical state git never captures, so the user knows whether to loop again or move on:
 

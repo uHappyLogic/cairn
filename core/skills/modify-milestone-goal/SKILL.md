@@ -77,7 +77,7 @@ If the call exits non-zero, stop and do not commit: print the fixed line `Goal r
 Read and follow the shared commit procedure at `{{PLUGIN_ROOT}}/shared/commit-procedure.md`, running its one commit-tool command yourself as this step's one git tool call. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set: `<MILESTONE_DIR>/requirements.md` (the file whose `## Goal` section it just revised) and `<MILESTONE_DIR>/open_questions.xml` (the document step 5 clears picks from), so a goal revision and the picks it cleared are one commit.
-- **SUBJECT** — `Goal-revision: <milestone_id>`.
+- **SUBJECT** — `Goal-revision: <MILESTONE_DIR>`, the milestone path exactly as resolved, trailing slash included.
 
 The commit tool runs the dirty-own-path guard, the path-scoped staging, and the commit.
 
@@ -89,7 +89,7 @@ On the success path — the commit in step 6 recorded the revised goal — print
 Goal revised.
 ```
 
-Do not add the before → after goal text, the downstream-impact analysis from step 3, the picks step 5 cleared, the milestone id, or a next-step pointer. (The step-3 analysis still runs — it informs your own reasoning — but is not printed; the commit's diff is the record of the cleared picks.)
+Do not add the before → after goal text, the downstream-impact analysis from step 3, the picks step 5 cleared, the milestone path, or a next-step pointer. (The step-3 analysis still runs — it informs your own reasoning — but is not printed; the commit's diff is the record of the cleared picks.)
 
 If instead the step-6 commit tool printed `Nothing committed — none of the paths changed.` (the `## Goal` section was unchanged, so nothing was committed), do not print the terse line — print this one fixed line and nothing else:
 

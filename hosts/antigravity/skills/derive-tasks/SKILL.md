@@ -107,7 +107,7 @@ If the run derived no brief at all — every requirement is already satisfied �
 
 Write every brief as one task section, using the template and the authoring guidelines from `~/.gemini/config/plugins/cairn/shared/task-format.md` exactly: its `##` title heading, its description, and its trailing `---`. The brief you decomposed in step 3 *is* the task body; writing it down is a transcription into that format, not a second authoring pass that adds detail.
 
-Then run this one fixed shell call, written out in full exactly as shown, with only `<MILESTONE_DIR>`, `<milestone_id>` (the last path component of `<MILESTONE_DIR>`), and the sections replaced — every brief's section in the heredoc, **in dependency order**, so the finished file reads top-to-bottom in that order:
+Then run this one fixed shell call, written out in full exactly as shown, with only `<MILESTONE_DIR>` (in the subject too, the milestone path exactly as resolved, trailing slash included) and the sections replaced — every brief's section in the heredoc, **in dependency order**, so the finished file reads top-to-bottom in that order:
 
 ```
 python3 ~/.gemini/config/plugins/cairn/tools/task_list.py initialize <MILESTONE_DIR> <<'EOF' &&
@@ -123,13 +123,13 @@ python3 ~/.gemini/config/plugins/cairn/tools/task_list.py initialize <MILESTONE_
 
 ---
 EOF
-out="$(python3 ~/.gemini/config/plugins/cairn/tools/commit.py --subject "Task-derivation: <milestone_id>" -- <MILESTONE_DIR>/TASKS_TODO.md)" &&
+out="$(python3 ~/.gemini/config/plugins/cairn/tools/commit.py --subject "Task-derivation: <MILESTONE_DIR>" -- <MILESTONE_DIR>/TASKS_TODO.md)" &&
 if [ -z "$out" ]; then
   echo 'derivation commit landed'
 fi
 ```
 
-The task-list tool replaces `<MILESTONE_DIR>/TASKS_TODO.md` with its heading followed by the whole list in the order given, or, refusing anything in it, prints one `Error:` line and leaves the file byte-for-byte unchanged. After the `&&` the call runs the one command of the shared commit procedure at `~/.gemini/config/plugins/cairn/shared/commit-procedure.md`, the plugin's commit tool, with `Task-derivation: <milestone_id>` as its subject, no body, and this skill's own change set, `<MILESTONE_DIR>/TASKS_TODO.md`, as its one path, written out on the command line and never held in a shell variable. The tool runs the dirty-own-path guard over the file, stages exactly it, and commits it with it as the commit's pathspec, so nothing else the index holds — a change another run has staged included — rides in the derivation's commit, and it repeats a git write another process's lock refused before giving up. Its stdout is captured in `out`: empty when the commit landed, its fixed no-op line when the file did not change, so `derivation commit landed` is printed only when `out` is empty and a no-op commits and prints nothing. `out` is one quoted value set and used within this one call, never a tool command or a path list. Never write the briefs into the file any other way, one at a time or by editing it.
+The task-list tool replaces `<MILESTONE_DIR>/TASKS_TODO.md` with its heading followed by the whole list in the order given, or, refusing anything in it, prints one `Error:` line and leaves the file byte-for-byte unchanged. After the `&&` the call runs the one command of the shared commit procedure at `~/.gemini/config/plugins/cairn/shared/commit-procedure.md`, the plugin's commit tool, with `Task-derivation: <MILESTONE_DIR>` as its subject, no body, and this skill's own change set, `<MILESTONE_DIR>/TASKS_TODO.md`, as its one path, written out on the command line and never held in a shell variable. The tool runs the dirty-own-path guard over the file, stages exactly it, and commits it with it as the commit's pathspec, so nothing else the index holds — a change another run has staged included — rides in the derivation's commit, and it repeats a git write another process's lock refused before giving up. Its stdout is captured in `out`: empty when the commit landed, its fixed no-op line when the file did not change, so `derivation commit landed` is printed only when `out` is empty and a no-op commits and prints nothing. `out` is one quoted value set and used within this one call, never a tool command or a path list. Never write the briefs into the file any other way, one at a time or by editing it.
 
 What the call prints is the whole outcome: `derivation commit landed` when the commit landed; nothing when the commit tool found the file unchanged (the list matched what it already held); otherwise one `Error:` line — the task-list tool's, with `TASKS_TODO.md` unchanged and nothing committed, or, once the list has been written, the commit tool's, naming the git command that failed and carrying git's own message, with nothing committed.
 

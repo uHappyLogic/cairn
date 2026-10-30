@@ -24,7 +24,7 @@ The required leading `--milestone <path>` names the milestone by its repo-relati
 
 ### 1. Find the milestone
 
-Follow `${PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path. `<milestone_id>` below is the last path component of `<MILESTONE_DIR>` (the directory name under `milestones/`).
+Follow `${PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path.
 
 ### 2. Read the goal
 
@@ -78,7 +78,7 @@ Replace the (empty) `## Relevant starting state` section in `requirements.md` wi
 Read and follow the shared commit procedure at `${PLUGIN_ROOT}/shared/commit-procedure.md`, running its one commit-tool command yourself as this step's one git tool call. Supply it these two inputs:
 
 - **PATHS** — this skill's own change set: `<MILESTONE_DIR>/requirements.md` (the file whose `## Relevant starting state` section it just filled).
-- **SUBJECT** — `Starting-state: <milestone_id>`.
+- **SUBJECT** — `Starting-state: <MILESTONE_DIR>`, the milestone path exactly as resolved, trailing slash included.
 
 The commit tool runs the dirty-own-path guard, the path-scoped staging, and the commit.
 
@@ -90,7 +90,7 @@ On the success path — the commit in step 6 recorded the filled-in starting sta
 Starting state recorded.
 ```
 
-Do not add the milestone id, the count of systems documented, or a next-step pointer.
+Do not add the milestone path, the count of systems documented, or a next-step pointer.
 
 If instead the step-6 commit tool printed `Nothing committed — none of the paths changed.` (`requirements.md` was unchanged, so nothing was committed), do not print the terse line — print this one fixed line and nothing else:
 
