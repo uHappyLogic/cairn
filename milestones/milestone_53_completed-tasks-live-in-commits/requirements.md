@@ -86,5 +86,9 @@ When no task commit changed PATH, `tasks` makes one further read-only check, onl
 
 Every one of the five readers that replace their `TASKS_DONE.md` read runs `tasks` on its milestone directory with the body flag, unconditionally, at the step that read `TASKS_DONE.md` today: `finish-current-milestone` at step 2, `derive-tasks` for its coverage matrix, `ask-in-milestone-context` among its reads, and `submit-task` and `discuss-new-task` in their triage reads. No reader reads titles alone and no reader chooses per run, so one fixed call shape at five sites keeps each reader the evidence its whole read gave it, with no per-reader rule or run-time choice a test cannot pin; a milestone's bars are a few bullets per task, so the extra print is small.
 
+### Guarding an empty acceptance bar
+
+Once `remove` reads no bar, two shell tests guard it, so every route to an empty body is refused before a section goes or a commit lands. First, each runner's own fixed completion call (the inline `complete-task` skill's and the agent's step-5 call) opens with a shell test that the bar holds a non-blank line, chained ahead of `remove` behind `&&`, so an empty bar prints one fixed line, removes no section, and commits or writes nothing; the runner fixes the bar and runs the call again, as it does after a refused `move` today, the test replacing the refusal `move` gave at the same point. Second, the orchestrator's step-2c call adds `body file absent` and `body file empty` tests beside its two path-file tests, copying the pattern it already runs on the path file for the one place the bar crosses a process boundary; either one commits nothing and stops the run under the existing `Task run stopped — a completed task could not be committed.` line, with the test's own line printed below it, so no new fixed console line is needed. `remove` reads no bar, and the commit tool's contract is unchanged.
+
 ## Out of Scope
 
