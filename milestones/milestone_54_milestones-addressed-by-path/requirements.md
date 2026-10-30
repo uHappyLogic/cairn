@@ -88,5 +88,7 @@ Three definitions under `scripts/hosts/` render `core/` into `hosts/claude/`, `h
 
 - **Missing scope.** The scope must already exist as a directory in the working tree, tested on the filesystem since the tool touches no git; when it does not, or names a non-directory, the call is refused with one `Error:` line naming the scope as given and nothing is written. Only the `milestones/` container is created when missing. A milestone whose core does not yet exist is placed by first creating the scope directory by hand, or at the nearest existing ancestor.
 
+- **Match test.** `--milestone <path>` matches whenever `<path>/requirements.md` exists in the working tree, with no check that the path sits under a `milestones/` container. A matched path outside any container resolves, and every skill that does not gate (starting state, review, both annotating passes, the answer skills, `ask-in-milestone-context`) runs on it. The scope question is settled at the gate: the `gate` query refuses a milestone path that has no container with one `Error:` line, so `derive-tasks`, `submit-task`, and both completion runners stop on it.
+
 ## Out of Scope
 
