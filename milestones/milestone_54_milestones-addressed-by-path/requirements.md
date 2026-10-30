@@ -84,5 +84,7 @@ Three definitions under `scripts/hosts/` render `core/` into `hosts/claude/`, `h
 
 - **Canonical path.** The canonical form keeps the trailing slash: the definition tool prints `<scope>/milestones/<slug>/` as today's `root_label` does, the `tasks` query's milestone field keeps the slash `milestone_of` gives it now, and every subject that names a milestone carries the path with the slash (`Milestone-finish: milestones/<slug>/`). A `--milestone` value that differs only by a missing slash is refused, on the procedure's no-match line with the `live` paths listed beneath it; since the existence test `<path>/requirements.md` passes for both spellings, the procedure adds one explicit check that the value ends in `/`.
 
+- **Scope spelling.** The root is spelled `--at .`, and `./` is accepted as the same thing. The definition tool normalizes every scope lexically before forming the path, collapsing `.` components, duplicate and trailing slashes, and a leading `./`, and refuses an absolute path or one that climbs out of the repository with `..`. It then prints the canonical repo-relative form, which for the root is `milestones/<slug>/` and for a package is `pkg/milestones/<slug>/`, however the scope was typed.
+
 ## Out of Scope
 
