@@ -78,5 +78,9 @@ When `tasks` runs with its body flag, every task line stays at column 0 in the s
 
 `tasks` selects only commits whose subject opens with `Task-completion:` and takes the title from the subject after the marker. The 222 retired `Tasklist-completion: complete one milestone task` commits, which carry the task heading in their body, are never read by this query, and nothing in this milestone promises a later reader for them: every reader this milestone moves onto `tasks` reads a milestone no legacy commit touches, and the older record stays readable in the finished milestones' own `TASKS_DONE.md` files until the migration removes them. The tool's help text and contract state where the record starts (the first `Task-completion:` commit, 2026-09-02, `milestone_15`), so an older milestone or path that lists nothing is a documented limit, not a silent gap.
 
+### `tasks` empty result
+
+When no task commit changed PATH, `tasks` makes one further read-only check, only on that empty result: whether PATH exists in the working tree or was touched by any commit in history (one more path-scoped `git log` limited to one commit). If it does, the tool prints nothing and exits 0, keeping the family's print-nothing, exit-0 shape for the routine empty milestone so no chained reader breaks. If it exists in neither, the tool refuses with one `Error:` line on stderr naming PATH as given and exits 1. History counts as existence, so a deleted path or a later-removed milestone directory whose task commits remain is never refused.
+
 ## Out of Scope
 
