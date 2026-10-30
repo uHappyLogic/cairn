@@ -10,22 +10,22 @@ Replaces the `## Goal` of the current milestone's `requirements.md` with a revis
 ## Usage
 
 ```
-/modify-milestone-goal [--milestone <milestone_id>] <new or revised goal text>
+/modify-milestone-goal --milestone <path> <new or revised goal text>
 ```
 
-- `--milestone <milestone_id>`: optional and leading; names the milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
+- `--milestone <path>`: required and leading; names the milestone by its repo-relative path, exactly as the definition tool printed it, trailing slash included, e.g. `milestones/user-guide/`.
 - `<new or revised goal text>`: either a complete replacement goal statement, or a described change to fold into the existing one (e.g. "also cover a quick-reference section"). If it is a delta, integrate it against the current Goal rather than discarding what is still true.
 
 **Example:**
 ```
-/modify-milestone-goal Broaden the getting-started guide to walk a new user through their first week, not only their first session.
+/modify-milestone-goal --milestone milestones/user-guide/ Broaden the getting-started guide to walk a new user through their first week, not only their first session.
 ```
 
 ## Workflow
 
 ### 0. Find the current milestone
 
-First strip a leading `--milestone <milestone_id>` from the invocation text by the rule in `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md`, reading only the rest as the goal text. Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path.
+First strip the leading `--milestone <path>` from the invocation text by the rule in `${CLAUDE_PLUGIN_ROOT}/shared/resolve-milestone.md`, reading only the rest as the goal text. Follow `${CLAUDE_PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path.
 
 ### 1. Read the current Goal
 

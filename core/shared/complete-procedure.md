@@ -41,8 +41,8 @@ kind of work.
 
 When your runner supplies an already-resolved milestone directory, take it as given as
 `<MILESTONE_DIR>`, with no resolution of your own. Only when none is supplied, the inline
-`complete-task` skill's case, follow `{{PLUGIN_ROOT}}/shared/get-current-milestone.md` to
-resolve `<MILESTONE_DIR>`, with any `--milestone` override the runner holds as that
+`complete-task` skill's case, follow `{{PLUGIN_ROOT}}/shared/resolve-milestone.md` to
+resolve `<MILESTONE_DIR>`, with the `--milestone <path>` value the runner holds as that
 procedure's input.
 
 Read `<MILESTONE_DIR>/TASKS_TODO.md`. Locate the `##` section whose heading matches the

@@ -31,8 +31,8 @@ the `milestones/` root, **above** any one milestone, so principles accumulate ac
 ```
 
 - `<milestone_id>` (**required**): the milestone directory name under `milestones/`, e.g.
-  `milestone_12_user-guide` — exactly as `/specify-milestone-starting-state` takes it. No bare-number
-  form is accepted and no number-to-directory resolution exists; the value is used verbatim.
+  `milestone_12_user-guide`. No bare-number form is accepted and no number-to-directory
+  resolution exists; the value is used verbatim.
 
 **Example:**
 ```

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Require a Milestone Path at Resolution
-
-Rewrite `core/shared/get-current-milestone.md` as `core/shared/resolve-milestone.md`, where `--milestone <path>` is required, matches when `<path>/requirements.md` exists in the working tree with no container check and the value ends in `/`, and a call naming no milestone or a non-matching one stops on one fixed line with the milestones tool's new `live` query printed beneath it, the pointer never read; `core/tools/milestones.py` gains `live`, taking no PATH and printing three tab-separated fields (path, `started` or `defined` by the path-scoped `git log -1 --diff-filter=M` test, title) with the `**/milestones/*/requirements.md` discovery pattern defined once in it, tested on the conftest git fixtures. Every runner that resolved through the old procedure, `complete-procedure.md` included, references the new one and strips the flag at its own parse point, `capture-milestone-principle-updates` stays outside it, and the fixed-lines table, the Usage fences, and the `docs/skill-reference.md` headings follow. This task is completed alone by the inline `/complete-task` in the current session, which still resolves through the pointer because `milestones/README.md` stands until the migration; it is verified by both pytest runs, `--check`, and a flagless resolution printing the live list.
-
----
-
 ## Discovery Pattern Over Tasks Join and Fixture
 
 Swap the `tasks` query's root-anchored `milestones/*/TASKS_TODO.md` join for the tool's discovery pattern, keeping the trailing slash in its milestone field and the `-` placeholder for a commit joining none or several lists, so `2202e59` keeps its placeholder, and rewrite the two anchor tests for the pattern. Take the agy fixture out of the pattern by tracking `tests/fixtures/agy_project/milestones/` as `milestones.fixture/`, with the agy suite's `seeded_repo` renaming it to `milestones/` in its copy and the suite's literal paths naming that milestone by `--milestone <path>`, so `live` from this repository's root lists only its own milestones; verified by the suite, that `live` print, and the agy suite where the installed copy allows.

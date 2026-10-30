@@ -13,20 +13,20 @@ For completing the whole task list unattended, use `/complete-all-tasks` instead
 ## Invocation
 
 ```
-/complete-task [--milestone <milestone_id>] <task name>
+/complete-task --milestone <path> <task name>
 ```
 
 `<task name>` is the full or partial text of a `##` heading in the current milestone's
-`TASKS_TODO.md`. The optional leading `--milestone <milestone_id>` names the milestone by its
-exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the
-current-milestone pointer.
+`TASKS_TODO.md`. The required leading `--milestone <path>` names the milestone by its
+repo-relative path, exactly as the definition tool printed it, trailing slash included, e.g.
+`milestones/user-guide/`.
 
 ## Workflow
 
 ### 1. Run the shared procedure inline
 
-First strip a leading `--milestone <milestone_id>` from the invocation text by the rule in
-`{{PLUGIN_ROOT}}/shared/get-current-milestone.md`, holding any override as the input of the
+First strip the leading `--milestone <path>` from the invocation text by the rule in
+`{{PLUGIN_ROOT}}/shared/resolve-milestone.md`, holding its value as the input of the
 procedure's milestone resolution and reading only the rest as the task name. Read and follow
 the shared procedure at
 `{{PLUGIN_ROOT}}/shared/complete-procedure.md`, carrying out every step **yourself, in this conversation**,

@@ -10,16 +10,16 @@ Pure orchestrator. Reads the current milestone's task list and spawns one isolat
 ## Invocation
 
 ```
-/complete-all-tasks [--milestone <milestone_id>]
+/complete-all-tasks --milestone <path>
 ```
 
-With no argument the skill completes the current milestone's tasks. The optional leading `--milestone <milestone_id>` names another milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
+The required leading `--milestone <path>` names the milestone by its repo-relative path, exactly as the definition tool printed it, trailing slash included, e.g. `milestones/user-guide/`.
 
 ## Workflow
 
 ### 0. Find the current milestone
 
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+Follow `${CLAUDE_PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 1. Read the task list
 
@@ -57,7 +57,7 @@ Milestone directory: <MILESTONE_DIR>
 Scratch directory: <scratch dir>
 ```
 
-Every dispatch carries the `Milestone directory:` line, holding the `<MILESTONE_DIR>` step 0 resolved, whether from an override or from the pointer, so each agent works in the milestone this run commits for, and the `Scratch directory:` line, holding the one `<scratch dir>` created at the start of this step, the same directory on every dispatch, so each agent writes its two files where 2c reads them.
+Every dispatch carries the `Milestone directory:` line, holding the `<MILESTONE_DIR>` step 0 resolved from the `--milestone` path, so each agent works in the milestone this run commits for, and the `Scratch directory:` line, holding the one `<scratch dir>` created at the start of this step, the same directory on every dispatch, so each agent writes its two files where 2c reads them.
 
 Wait for the agent to return.
 

@@ -10,21 +10,21 @@ Facilitates a deliberation on a named `<open-question>` block in the current mil
 ## Usage
 
 ```
-/discuss-open-question [--milestone <milestone_id>] <Short Title>
+/discuss-open-question --milestone <path> <Short Title>
 ```
 
-The `<Short Title>` must match (case-insensitive) the `id` of an existing `<open-question>` block in `<MILESTONE_DIR>/open_questions.xml`. The optional leading `--milestone <milestone_id>` names the milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
+The `<Short Title>` must match (case-insensitive) the `id` of an existing `<open-question>` block in `<MILESTONE_DIR>/open_questions.xml`. The required leading `--milestone <path>` names the milestone by its repo-relative path, exactly as the definition tool printed it, trailing slash included, e.g. `milestones/user-guide/`.
 
 **Example:**
 ```
-/discuss-open-question Getting-started section order
+/discuss-open-question --milestone milestones/user-guide/ Getting-started section order
 ```
 
 ## Workflow
 
 ### 0. Find the current milestone
 
-First strip a leading `--milestone <milestone_id>` from the invocation text by the rule in `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md`, reading only the rest as the `<Short Title>`. Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+First strip the leading `--milestone <path>` from the invocation text by the rule in `~/.gemini/config/plugins/cairn/shared/resolve-milestone.md`, reading only the rest as the `<Short Title>`. Follow `~/.gemini/config/plugins/cairn/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 1. Locate the question
 

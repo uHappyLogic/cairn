@@ -1,8 +1,9 @@
 """The milestones tool's shared contract: its help states the record's two limits (a shallow
-clone's truncated log, and the record's start at the first Task-completion: commit), every
-failure is one Error line on stderr with exit 1 and nothing on stdout, a malformed invocation
-gets argparse's exit 2, no traceback reaches the caller, and a query writes nothing: the
-repository's status and HEAD are the same after it as before."""
+clone's truncated log, and the record's start at the first Task-completion: commit) and the
+live query's started test reading the same log, every failure is one Error line on stderr with
+exit 1 and nothing on stdout, a malformed invocation gets argparse's exit 2, no traceback
+reaches the caller, and a query writes nothing: the repository's status and HEAD are the same
+after it as before."""
 
 import os
 
@@ -13,7 +14,7 @@ FIRST = "milestones/milestone_07_first/"
 
 @pytest.fixture
 def seeded(repo):
-    return repo({FIRST: "parallel_first"})
+    return repo({FIRST: "parallel_first"}, files={FIRST + "requirements.md": b"# Milestone 7: First\n"})
 
 
 def assert_one_error_line(result):
@@ -40,6 +41,23 @@ def test_the_help_states_the_shallow_clone_limit_and_where_the_record_starts(tmp
     assert "Tasklist-completion:" in text
 
 
+@pytest.mark.parametrize("args", [("--help",), ("live", "--help")])
+def test_the_help_states_that_the_started_test_reads_a_shallow_clones_log(tmp_path, run_milestones, args):
+    result = run_milestones(tmp_path, *args)
+    assert result.returncode == 0
+    text = " ".join(result.stdout.decode("utf-8").split())
+    assert "started test" in text
+    assert "shallow clone" in text
+    assert 'reads "defined"' in text
+
+
+def test_the_live_help_names_the_discovery_pattern_and_the_line(tmp_path, run_milestones):
+    text = " ".join(run_milestones(tmp_path, "live", "--help").stdout.decode("utf-8").split())
+    assert "**/milestones/*/requirements.md" in text
+    assert "started" in text and "defined" in text
+    assert "--diff-filter=M" in text
+
+
 def test_the_help_names_the_query_and_its_body_flag(tmp_path, run_milestones):
     text = run_milestones(tmp_path, "tasks", "--help").stdout.decode("utf-8")
     assert "PATH" in text
@@ -53,6 +71,13 @@ def test_outside_a_git_repository_the_query_fails_on_one_error_line(tmp_path, ru
     assert "git log" in line
 
 
+def test_outside_a_git_repository_live_fails_on_one_error_line(tmp_path, run_milestones):
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    line = assert_one_error_line(run_milestones(outside, "live"))
+    assert "git ls-files" in line
+
+
 def test_an_empty_path_is_refused(seeded, run_milestones):
     assert_one_error_line(run_milestones(seeded, "tasks", ""))
 
@@ -63,9 +88,13 @@ def test_a_missing_git_fails_on_one_error_line(seeded, run_milestones, environme
     env = dict(environment, PATH=str(empty_bin))
     line = assert_one_error_line(run_milestones(seeded, "tasks", FIRST, env=env))
     assert "git" in line
+    line = assert_one_error_line(run_milestones(seeded, "live", env=env))
+    assert "git" in line
 
 
-@pytest.mark.parametrize("args", [(), ("tasks",), ("unknown", FIRST), ("tasks", FIRST, "--body")])
+@pytest.mark.parametrize(
+    "args", [(), ("tasks",), ("unknown", FIRST), ("tasks", FIRST, "--body"), ("live", FIRST), ("live", "--with-body")]
+)
 def test_a_malformed_invocation_exits_2(seeded, run_milestones, args):
     result = run_milestones(seeded, *args)
     assert result.returncode == 2
@@ -81,7 +110,13 @@ def test_a_query_writes_nothing(seeded, make_commit, run_milestones, git, enviro
         git(seeded, environment, "rev-parse", "HEAD"),
         sorted(os.listdir(seeded / ".git")),
     )
-    for args in (("tasks", FIRST), ("tasks", FIRST, "--with-body"), ("tasks", "untracked.txt"), ("tasks", "nope")):
+    for args in (
+        ("tasks", FIRST),
+        ("tasks", FIRST, "--with-body"),
+        ("tasks", "untracked.txt"),
+        ("tasks", "nope"),
+        ("live",),
+    ):
         run_milestones(seeded, *args)
     after = (
         git(seeded, environment, "status", "--porcelain", "--ignored"),

@@ -15,24 +15,23 @@ To record **every** recommendation-bearing question unattended instead, use
 ## Invocation
 
 ```
-/answer-open-question-with-recommendation [--milestone <milestone_id>] <Short Title>
+/answer-open-question-with-recommendation --milestone <path> <Short Title>
 ```
 
 `<Short Title>` must match (case-insensitive, against the block's `id`) an existing
 `<open-question>` block in `<MILESTONE_DIR>/open_questions.xml` that the
 `/recommend-all-open-questions` sweep has already annotated with a `<recommendation>`
-element. The skill resolves the current milestone itself, so nothing needs to be looked up
-first. The optional leading `--milestone <milestone_id>` names the milestone by its exact
-directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the
-current-milestone pointer.
+element. The required leading `--milestone <path>` names the milestone by its repo-relative
+path, exactly as the definition tool printed it, trailing slash included, e.g.
+`milestones/user-guide/`; nothing else needs to be looked up first.
 
 ## Workflow
 
 ### 1. Find the current milestone
 
-First strip a leading `--milestone <milestone_id>` from the invocation text by the rule in
-`~/.gemini/config/plugins/cairn/shared/get-current-milestone.md`, reading only the rest as `<Short Title>`.
-Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never
+First strip the leading `--milestone <path>` from the invocation text by the rule in
+`~/.gemini/config/plugins/cairn/shared/resolve-milestone.md`, reading only the rest as `<Short Title>`.
+Follow `~/.gemini/config/plugins/cairn/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never
 use a hardcoded path. Hold `<MILESTONE_DIR>` — you need it for the delegated recording and
 the commit.
 

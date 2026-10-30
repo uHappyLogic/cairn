@@ -12,10 +12,10 @@ Your job here is **decomposition and coverage**. You split the milestone into hi
 ## Usage
 
 ```
-/derive-tasks [--milestone <milestone_id>]
+/derive-tasks --milestone <path>
 ```
 
-With no argument the skill reads from and writes to the current milestone directory. The optional leading `--milestone <milestone_id>` names another milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
+The skill reads from and writes to the milestone directory the flag names. The required leading `--milestone <path>` names the milestone by its repo-relative path, exactly as the definition tool printed it, trailing slash included, e.g. `milestones/user-guide/`.
 
 ## Preconditions
 
@@ -26,7 +26,7 @@ With no argument the skill reads from and writes to the current milestone direct
 
 ### 0. Find the current milestone
 
-Follow `{{PLUGIN_ROOT}}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+Follow `{{PLUGIN_ROOT}}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 1. Read source documents
 

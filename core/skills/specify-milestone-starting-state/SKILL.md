@@ -10,21 +10,21 @@ Reads the milestone goal, explores the project's existing state, and writes a co
 ## Usage
 
 ```
-/specify-milestone-starting-state [--milestone <milestone_id>]
+/specify-milestone-starting-state --milestone <path>
 ```
 
-With no argument the skill fills the current milestone. The optional leading `--milestone <milestone_id>` names another milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
+The required leading `--milestone <path>` names the milestone by its repo-relative path, exactly as the definition tool printed it, trailing slash included, e.g. `milestones/user-guide/`.
 
 **Example:**
 ```
-/specify-milestone-starting-state --milestone milestone_12_user-guide
+/specify-milestone-starting-state --milestone milestones/user-guide/
 ```
 
 ## Workflow
 
 ### 1. Find the milestone
 
-Follow `{{PLUGIN_ROOT}}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path. `<milestone_id>` below is the last path component of `<MILESTONE_DIR>` (the directory name under `milestones/`).
+Follow `{{PLUGIN_ROOT}}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path. `<milestone_id>` below is the last path component of `<MILESTONE_DIR>` (the directory name under `milestones/`).
 
 ### 2. Read the goal
 

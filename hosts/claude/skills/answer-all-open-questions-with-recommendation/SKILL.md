@@ -35,19 +35,19 @@ staged included, stays out of it.
 ## Usage
 
 ```
-/answer-all-open-questions-with-recommendation [--milestone <milestone_id>]
+/answer-all-open-questions-with-recommendation --milestone <path>
 ```
 
-With no argument it sweeps every `<open-question>` block in the current milestone's
-`open_questions.xml` that contains a `<recommendation>` element. The optional leading
-`--milestone <milestone_id>` names another milestone by its exact directory name under
-`milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
+It sweeps every `<open-question>` block in the named milestone's `open_questions.xml` that
+contains a `<recommendation>` element. The required leading `--milestone <path>` names the
+milestone by its repo-relative path, exactly as the definition tool printed it, trailing slash
+included, e.g. `milestones/user-guide/`.
 
 ## Workflow
 
 ### 0. Find the current milestone, once
 
-Follow `${CLAUDE_PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use
+Follow `${CLAUDE_PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use
 a hardcoded path. Resolve it **once per run** and hold it: every tool call, every recorded
 answer, and every commit below uses this one directory, the one the run walked.
 

@@ -14,24 +14,24 @@ When the answer surfaces a concrete next step, this skill names the right cairn 
 ## Usage
 
 ```
-/ask-in-milestone-context [--milestone <milestone_id>] <question>
+/ask-in-milestone-context --milestone <path> <question>
 ```
 
-- `--milestone <milestone_id>`: optional and leading; names the milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
+- `--milestone <path>`: required and leading; names the milestone by its repo-relative path, exactly as the definition tool printed it, trailing slash included, e.g. `milestones/user-guide/`.
 - `<question>`: a free-form, informational question about the current milestone. Optional — invoked with no question, give a brief orientation to the milestone (goal, what's done, what's left) and invite a specific question.
 
 **Examples:**
 ```
-/ask-in-milestone-context how did we end up handling the case where two milestones are active at once?
-/ask-in-milestone-context what's left in this milestone and what's blocking it?
-/ask-in-milestone-context what changed in the rename task — which files did it touch?
+/ask-in-milestone-context --milestone milestones/user-guide/ how did we end up handling the case where two milestones are active at once?
+/ask-in-milestone-context --milestone milestones/user-guide/ what's left in this milestone and what's blocking it?
+/ask-in-milestone-context --milestone milestones/user-guide/ what changed in the rename task — which files did it touch?
 ```
 
 ## Workflow
 
 ### 0. Find the current milestone
 
-First strip a leading `--milestone <milestone_id>` from the invocation text by the rule in `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md`, reading only the rest as the question. Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+First strip the leading `--milestone <path>` from the invocation text by the rule in `~/.gemini/config/plugins/cairn/shared/resolve-milestone.md`, reading only the rest as the question. Follow `~/.gemini/config/plugins/cairn/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 If no override was given and the pointer is `none` (no active milestone), don't dead-end. Tell the user there's no open milestone, then answer from what *is* available — the `## Milestone History` and completed-milestone table in `milestones/README.md` — if the question is about past work. If they're clearly asking about active work that doesn't exist yet, say so and point them at `/define-milestone-goal` (or `/goto-next-milestone` if a milestone is defined but not active). An override never reads the pointer, so this fallback never applies to one: an override matching no milestone stops as that procedure says.
 

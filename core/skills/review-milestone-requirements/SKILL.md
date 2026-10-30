@@ -20,10 +20,10 @@ Every write this skill makes to `open_questions.xml`, and every listing of its b
 ## review-milestone-requirements
 
 ```
-/review-milestone-requirements [--milestone <milestone_id>]
+/review-milestone-requirements --milestone <path>
 ```
 
-With no argument the skill reviews the current milestone. The optional leading `--milestone <milestone_id>` names another milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
+The required leading `--milestone <path>` names the milestone by its repo-relative path, exactly as the definition tool printed it, trailing slash included, e.g. `milestones/user-guide/`.
 
 ## Milestone requirements document structure
 
@@ -60,7 +60,7 @@ The open questions live beside it in `<MILESTONE_DIR>/open_questions.xml` — on
 
 ### 0. Find the current milestone
 
-Follow `{{PLUGIN_ROOT}}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path.
+Follow `{{PLUGIN_ROOT}}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path.
 
 ### 1. Read the documents and take inventory
 

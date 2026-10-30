@@ -4,7 +4,7 @@ orchestrator read a shared procedure at the global ~/.gemini/config/plugins/cair
 ran a python3 tool command there.
 
 The skill is the vehicle because its steps make both acts mandatory and dispatch no agent:
-step 0 follows the shared get-current-milestone procedure, step 4 reads the shared task
+step 0 follows the shared resolve-milestone procedure, step 4 reads the shared task
 format, and step 5 runs the task-list tool's `insert` in one shell call, every path rendered
 as the tilde literal. The run's `--output-format stream-json` records each tool call with its
 parameters and its DONE or ERROR state, so the evidence is the host's own record of the

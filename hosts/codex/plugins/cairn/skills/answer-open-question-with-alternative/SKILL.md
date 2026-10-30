@@ -21,11 +21,11 @@ recommendation-bearing question at its *recommended* option unattended, use
 ## Invocation
 
 ```
-/answer-open-question-with-alternative [--milestone <milestone_id>] <Short Title>. <Alternative Id>
+/answer-open-question-with-alternative --milestone <path> <Short Title>. <Alternative Id>
 ```
 
-First strip a leading `--milestone <milestone_id>` from the argument by the rule in
-`${PLUGIN_ROOT}/shared/get-current-milestone.md`, holding any override for step 1, then split
+First strip the leading `--milestone <path>` from the argument by the rule in
+`${PLUGIN_ROOT}/shared/resolve-milestone.md`, holding its value for step 1, then split
 the rest on the **first `.`** — exactly as `answer-open-question` does. Everything
 before it is `<Short Title>` (the question handle); everything after it is `<Alternative Id>`
 (the `id` of the `<alternative>` to record). Trim surrounding whitespace from both halves.
@@ -36,15 +36,15 @@ before it is `<Short Title>` (the question handle); everything after it is `<Alt
 - `<Alternative Id>` must match (case-insensitive, against the `id` attribute) one of that
   block's embedded `<alternative id="...">` elements.
 
-The skill resolves the current milestone itself, so nothing needs to be looked up first. The
-optional leading `--milestone <milestone_id>` names the milestone by its exact directory name
-under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
+The required leading `--milestone <path>` names the milestone by its repo-relative path,
+exactly as the definition tool printed it, trailing slash included, e.g.
+`milestones/user-guide/`; nothing else needs to be looked up first.
 
 ## Workflow
 
 ### 1. Find the current milestone
 
-Follow `${PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded
+Follow `${PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded
 task-list path. Hold `<MILESTONE_DIR>` — you need it for the lift, the delegated recording,
 and the commit.
 

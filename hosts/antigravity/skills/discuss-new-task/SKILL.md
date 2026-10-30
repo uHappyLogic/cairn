@@ -22,27 +22,27 @@ Once those are clear, `submit-task` takes over — keep what you produce high-le
 ## Usage
 
 ```
-/discuss-new-task [--milestone <milestone_id>] <issue description>
+/discuss-new-task --milestone <path> <issue description>
 ```
 
-- `--milestone <milestone_id>`: optional and leading; names the milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
+- `--milestone <path>`: required and leading; names the milestone by its repo-relative path, exactly as the definition tool printed it, trailing slash included, e.g. `milestones/user-guide/`.
 - `<issue description>`: a free-form, possibly rough description of a problem, gap, or idea surfaced mid-flight. May be a single issue or a larger "we need to create X" that spans several pieces.
 
 **Example (single task):**
 ```
-/discuss-new-task the setup section's steps are out of order, feels confusing
+/discuss-new-task --milestone milestones/user-guide/ the setup section's steps are out of order, feels confusing
 ```
 
 **Example (likely several tasks):**
 ```
-/discuss-new-task I think we need a proper glossary — this is probably a few tasks, not one
+/discuss-new-task --milestone milestones/user-guide/ I think we need a proper glossary — this is probably a few tasks, not one
 ```
 
 ## Workflow
 
 ### 0. Find the current milestone
 
-First strip a leading `--milestone <milestone_id>` from the invocation text by the rule in `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md`, reading only the rest as the issue description. Follow `~/.gemini/config/plugins/cairn/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
+First strip the leading `--milestone <path>` from the invocation text by the rule in `~/.gemini/config/plugins/cairn/shared/resolve-milestone.md`, reading only the rest as the issue description. Follow `~/.gemini/config/plugins/cairn/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
 ### 1. Gather context
 

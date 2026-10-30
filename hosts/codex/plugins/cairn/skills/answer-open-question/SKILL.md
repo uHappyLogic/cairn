@@ -10,26 +10,26 @@ Resolves a named open question of the current milestone by recording the user's 
 ## Usage
 
 ```
-/answer-open-question [--milestone <milestone_id>] <Short Title>. <answer text>
+/answer-open-question --milestone <path> <Short Title>. <answer text>
 ```
 
-The `<Short Title>` must match (case-insensitive, against the block's `id`) an existing `<open-question>` block. The `.` character is the separator. Everything after the first `.` is the answer. The optional leading `--milestone <milestone_id>` names the milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
+The `<Short Title>` must match (case-insensitive, against the block's `id`) an existing `<open-question>` block. The `.` character is the separator. Everything after the first `.` is the answer. The required leading `--milestone <path>` names the milestone by its repo-relative path, exactly as the definition tool printed it, trailing slash included, e.g. `milestones/user-guide/`.
 
 **Example (literal answer):**
 ```
-/answer-open-question Getting-started section order. Use approach B — open the "Draft the Getting Started section of the user guide" deliverable with the install-and-run walkthrough, then follow it with the conceptual overview, so a new reader reaches a working setup before the background material.
+/answer-open-question --milestone milestones/user-guide/ Getting-started section order. Use approach B — open the "Draft the Getting Started section of the user guide" deliverable with the install-and-run walkthrough, then follow it with the conceptual overview, so a new reader reaches a working setup before the background material.
 ```
 
 **Example (retired sentinel — redirected, records nothing):**
 ```
-/answer-open-question Getting-started section order. record the recommendation
+/answer-open-question --milestone milestones/user-guide/ Getting-started section order. record the recommendation
 ```
 
 ## Workflow
 
 ### 1. Parse the input
 
-First strip a leading `--milestone <milestone_id>` from the skill args by the rule in `${PLUGIN_ROOT}/shared/get-current-milestone.md`, holding any override for step 3, then split the rest on the first `.` character:
+First strip the leading `--milestone <path>` from the skill args by the rule in `${PLUGIN_ROOT}/shared/resolve-milestone.md`, holding its value for step 3, then split the rest on the first `.` character:
 - Before: the question **Short Title** (trim whitespace)
 - After: the **answer text** (trim whitespace)
 
@@ -44,7 +44,7 @@ Compare the parsed answer text — **trimmed and lowercased** — against the re
 
 ### 3. Find the current milestone
 
-Follow `${PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path. Hold `<MILESTONE_DIR>` — you need it for the delegated recording and the commit.
+Follow `${PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path. Hold `<MILESTONE_DIR>` — you need it for the delegated recording and the commit.
 
 ### 4. Record the answer
 

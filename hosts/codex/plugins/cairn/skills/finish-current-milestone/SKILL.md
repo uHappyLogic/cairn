@@ -10,16 +10,16 @@ Wraps up the current milestone — verifies that no open question stands and all
 ## Usage
 
 ```
-/finish-current-milestone [--milestone <milestone_id>]
+/finish-current-milestone --milestone <path>
 ```
 
-With no argument the skill finishes the current milestone. The optional leading `--milestone <milestone_id>` names another milestone by its exact directory name under `milestones/`, e.g. `milestone_12_user-guide`, in place of the current-milestone pointer.
+The required leading `--milestone <path>` names the milestone by its repo-relative path, exactly as the definition tool printed it, trailing slash included, e.g. `milestones/user-guide/`.
 
 ## Workflow
 
 ### 1. Find the current milestone
 
-Follow `${PLUGIN_ROOT}/shared/get-current-milestone.md` to resolve `<MILESTONE_DIR>`, from a leading `--milestone <milestone_id>` override when one is given and from the `Current milestone:` line in `milestones/README.md` otherwise. A matching override is honoured whatever the pointer reads, `none` included. If no override was given and the pointer is `none`, that procedure's stop ends the run, its fixed line opening the report.
+Follow `${PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>` from the required leading `--milestone <path>`, whatever the `Current milestone:` line in `milestones/README.md` reads, `none` included. A call naming no milestone, or one that does not match, ends on that procedure's stop, its fixed line opening the report.
 
 Read `<MILESTONE_DIR>/requirements.md` and extract the milestone title from its top-level `# Milestone N: <Title>` heading (e.g. `# Milestone 1: Public Release Preparation` → title "Milestone 1 — Public Release Preparation"). The milestone number N comes from the path slug — strip any leading zeros when parsing it as an integer (e.g. `milestone_01_foo` → N is `1`).
 
@@ -92,7 +92,7 @@ Append the row in ascending milestone-number order (after any existing rows), al
 
 ### 6. Clear the current milestone pointer when it names the finished milestone
 
-In `milestones/README.md`, read the `Current milestone:` line. Only when its backtick-quoted path names the finished milestone's directory, `<MILESTONE_DIR>` (always the case when no override was given), overwrite that line with the literal:
+In `milestones/README.md`, read the `Current milestone:` line. Only when its backtick-quoted path names the finished milestone's directory, `<MILESTONE_DIR>`, overwrite that line with the literal:
 
 ```
 Current milestone: none
