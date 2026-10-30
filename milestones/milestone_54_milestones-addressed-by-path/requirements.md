@@ -74,6 +74,8 @@ Three definitions under `scripts/hosts/` render `core/` into `hosts/claude/`, `h
 
 - **Shallow clones.** `gate` runs `git rev-parse --is-shallow-repository` first and, when it prints `true`, refuses with one `Error:` line on stderr and exit 1 naming the shallow clone and `git fetch --unshallow`. `milestones`, `summary`, and `record` make no check and state the limit in their help text and the docs as `tasks` does, and `tasks` is unchanged.
 
+- **Trailers.** A trailing trailer block in a finish body is allowed, finish commits through the procedure by reference, and the commit tool is unchanged. On the reading side one rule covers every body the milestones tool prints: `summary`, `record`, and `tasks --with-body` all drop a trailing paragraph whose every line is `Token: value`, so a pre-flip task body that is only `Co-Authored-By:` (with `Claude-Session:` once) prints as a commit with no body.
+
 ### Skills and shared procedures
 
 - **Gate procedure.** The gate check lives in one new shared procedure under `core/shared/` that states the `gate` call, what a held scope means, and its one fixed stop line, with the holder paths beneath; the procedure owns the line, as the resolution procedure owns its two stops. Each of the four runners references it at its own point, as a separate step run before its work: before the fixed write call in `derive-tasks` and `submit-task`, before each dispatch in `complete-all-tasks`, and after the procedure's step 1 in the `complete-task` skill. The entry writers' write calls are unchanged and carry no gate, and `complete-procedure.md` is unchanged, so the agent, which reads only its own file and that procedure, never gates.
