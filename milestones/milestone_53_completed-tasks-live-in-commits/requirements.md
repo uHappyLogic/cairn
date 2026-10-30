@@ -54,5 +54,9 @@ Outside the runtime files: `CLAUDE.md` (six mentions: the repository layout, the
 
 ## Decisions
 
+### Shallow clones and `tasks`
+
+`tasks` makes no shallow check: it prints whatever the path-scoped log yields, in a shallow clone and a complete one alike, with no stop line, no warning, and no test of the case. The limit, that a shallow clone's truncated log omits older task commits without sign, is stated only in the tool's `--help` text and the docs, and the draft's "Limits to state up front" paragraph in `ideas/milestones_addressed_by_path.md` is revised to match in place of its stop line. Detection is left to a later milestone, such as the one adding the history-side queries whose readers depend on finish commits a shallow clone would cut the same way, or to none if no field run meets the case.
+
 ## Out of Scope
 
