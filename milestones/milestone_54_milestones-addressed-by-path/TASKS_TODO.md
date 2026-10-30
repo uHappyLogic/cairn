@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Conversational Skills Read the Record
-
-`discuss-milestone-goal` step 1 runs one fixed, unconditional `record .` call in place of its README history read, and `ask-in-milestone-context` loses its pointer-`none` fallback and its project-wide mode outright, resolving only through the shared procedure, and runs `record <PATH>` at its own discretion when a question concerns past work, scoped to the path the question concerns, the milestone's scope, or `.`, a finished milestone being answered from that project-wide read. Verified by the rebuilt trees and one run of each skill against this repository's record.
-
----
-
 ## Retire Current From Runtime Wording
 
 Reword every frontmatter description reading "the current milestone" and every runtime prose mention of the current milestone under `core/` (about eighty, `alternatives-procedure.md` and `recommend-procedure.md` among them) to name the milestone the run was pointed at, each description staying one clause of 25 words or fewer, with the three `settings.toml` hands-on comments, `.github/ISSUE_TEMPLATE/proposal.yml`, `/release-plugin`, and the per-skill entries of `docs/skill-reference.md` following. Verified by the rebuilt trees, the suite, and a grep of the rendered trees finding no "current milestone".
