@@ -1,9 +1,9 @@
-"""Shared fixtures for the suite of the five tools under core/tools/, and for the tests that run
+"""Shared fixtures for the suite of the six tools under core/tools/, and for the tests that run
 a fixed shell call extracted from the rendered Claude Code tree in a temporary git repository.
 
 Each tool is importable by its module name (`open_questions`, `define_milestone`,
-`task_list`, `requirements`, `commit`) through the `pythonpath = ["core/tools"]` line in
-pyproject.toml and driven end-to-end as a subprocess under the interpreter running the
+`task_list`, `requirements`, `commit`, `milestones`) through the `pythonpath = ["core/tools"]`
+line in pyproject.toml and driven end-to-end as a subprocess under the interpreter running the
 suite, so every exit status, stdout, and stderr the tests see is exactly what a caller sees.
 """
 
@@ -26,6 +26,7 @@ DEFINE_TOOL = REPO_ROOT / "core" / "tools" / "define_milestone.py"
 TASK_LIST_TOOL = REPO_ROOT / "core" / "tools" / "task_list.py"
 REQUIREMENTS_TOOL = REPO_ROOT / "core" / "tools" / "requirements.py"
 COMMIT_TOOL = REPO_ROOT / "core" / "tools" / "commit.py"
+MILESTONES_TOOL = REPO_ROOT / "core" / "tools" / "milestones.py"
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 CLAUDE_TREE = REPO_ROOT / "hosts" / "claude"
 CLAUDE_PLUGIN_ROOT_VARIABLE = "CLAUDE_PLUGIN_ROOT"
@@ -238,6 +239,61 @@ def run_commit(environment):
         )
 
     return run
+
+
+@pytest.fixture
+def run_milestones(environment):
+    """Run the milestones tool as a subprocess from a working directory under the isolated git
+    environment: run_milestones(repo, "tasks", "milestones/milestone_07_first/"). Standard input
+    is never a terminal; env replaces the environment fixture's for one call."""
+
+    def run(cwd, *args, env=None):
+        return subprocess.run(
+            [sys.executable, "-B", str(MILESTONES_TOOL), *args],
+            cwd=str(cwd),
+            env=environment if env is None else env,
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            check=False,
+        )
+
+    return run
+
+
+@pytest.fixture
+def make_commit(environment):
+    """Commit a change in a repository under the isolated git environment and return the new
+    commit's full hash: make_commit(repo, "Task-completion: A Task", files={"a.md": b"..."},
+    removed=("b.md",), body="- a criterion", date="2026-01-02T10:00:00+00:00"). Each file is
+    written with its bytes and each removed path deleted, the commit records exactly those paths,
+    its message is the subject, then a blank line and the body when one is given, kept verbatim
+    (no blank line or whitespace stripped), and its author date is the given one when given."""
+
+    def make(repo, subject, files=None, removed=(), body=None, date=None):
+        files = {} if files is None else files
+        for path, data in files.items():
+            (repo / path).parent.mkdir(parents=True, exist_ok=True)
+            (repo / path).write_bytes(data)
+        for path in removed:
+            (repo / path).unlink()
+        env = dict(environment)
+        if date is not None:
+            env["GIT_AUTHOR_DATE"] = date
+        paths = [*files, *removed]
+        run_git(repo, env, "add", "--all", "--", *paths)
+        message = subject if body is None else subject + "\n\n" + body
+        result = subprocess.run(
+            ["git", "commit", "-q", "--cleanup=verbatim", "-F", "-", "--", *paths],
+            cwd=str(repo),
+            env=env,
+            input=message.encode("utf-8"),
+            capture_output=True,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr.decode("utf-8", "replace")
+        return run_git(repo, env, "rev-parse", "HEAD").strip()
+
+    return make
 
 
 @pytest.fixture
