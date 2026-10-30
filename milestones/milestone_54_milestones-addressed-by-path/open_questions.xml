@@ -27,6 +27,41 @@
   </open-question>
   <open-question id="Live line fields">
     <question>Which fields does one line of the `live` query carry, in what order and with what separator, and how is a started milestone told from a merely defined one on its line, given that the draft lists path, whether it is started, and title, that `tasks` prints tab-separated fields with the title last, and that the resolution stop prints these lines beneath its fixed line for a retry to copy a path from?</question>
+    <alternative id="Path state title">
+      Three tab-separated fields, as the draft lists them: the milestone path in its canonical printed form first, then a state field holding one of two fixed words, `started` or `defined`, then the title, read from the `requirements.md` heading, last. `live` runs the started test (one path-scoped `git log -1 --diff-filter=M` per live milestone) to fill the state field.
+      <advantage>It follows the draft and the `tasks` precedent (tab separator, title last, so a spaced title stays unambiguous), puts the path at the start of the line where a retry under the resolution stop copies it, and states the started fact as a plain word that a person and a parser read the same way, which the starting state&apos;s in-flight read can use directly.</advantage>
+      <drawback>`live` stops reading the tree alone, as the draft&apos;s tool paragraph says it does, and pays one log call per live milestone even for the resolution stop, which needs only paths. It adds a two-word vocabulary that the help text and the docs must pin. The title field depends on the heading form, an axis the heading-and-title sibling owns.</drawback>
+    </alternative>
+    <alternative id="State first">
+      Three tab-separated fields with the state word first: `started` or `defined`, then the path, then the title last. The column order matches the draft&apos;s `milestones` line (state, finish date, path, title) minus the date. `live` runs the started test per live milestone, as in Path state title.
+      <advantage>A `live` line reads as a `milestones` line without its date column, so the two milestone listings share one field order and one parser, and started milestones are easy to pick out when scanning the column.</advantage>
+      <drawback>The path a retry copies is no longer at the start of the line, so a person has to skip a word to copy it from the resolution stop. Whether the shared order holds depends on the shape the milestones-query-line sibling settles. It carries the same per-milestone log cost and heading dependence as Path state title.</drawback>
+    </alternative>
+    <alternative id="Hash as state">
+      Three tab-separated fields: the path first, then the started test&apos;s own print as the state field (the abbreviated hash of the newest commit that modified the milestone&apos;s `TASKS_TODO.md` when it is started, and the fixed placeholder `-` when it is merely defined, the same placeholder `tasks` prints for a missing join), then the title last.
+      <advantage>The field is the gate&apos;s own evidence, printed unchanged, with no new vocabulary. A reader can `git show` the hash to see which task entry or completion started the milestone, and the `-` placeholder reuses a convention the tool already has.</advantage>
+      <drawback>The hash changes with every completion, so it means &quot;started&quot; only by not being `-`. A person reading the resolution stop must know that convention to tell the two states apart. It keeps the per-milestone log cost and the heading dependence.</drawback>
+    </alternative>
+    <alternative id="Path and state">
+      Two tab-separated fields: the path, then the state word, `started` or `defined`. No title is printed, so the slug in the path is the only name a line carries. `live` runs the started test per live milestone.
+      <advantage>`live` never parses `requirements.md`, so its print is independent of whatever heading form the definition tool ends up writing. The slug already comes from the title, so a line still names its milestone in words.</advantage>
+      <drawback>It departs from the draft&apos;s field list. A five-word slug is a truncated, lowercased title, so the resolution stop and the in-flight read show less than the milestone&apos;s own name. A title wanted later means changing the line shape every caller parses.</drawback>
+    </alternative>
+    <alternative id="Path and title">
+      Two tab-separated fields: the path, then the title last, with no started field. `live` reads the tree alone (`git ls-files` and each `requirements.md` heading). Started is the gate&apos;s to compute and print, and a started milestone is not told from a defined one on a `live` line at all.
+      <advantage>It keeps the draft&apos;s own sentence that `live` reads the tree alone and `gate` adds the log. The resolution stop, `live`&apos;s one caller in this milestone that prints its lines, needs no state and pays no log call per milestone. A shallow clone cannot make the line wrong.</advantage>
+      <drawback>It rejects the draft&apos;s premise that a line says whether its milestone is started. The starting state&apos;s in-flight read, which the draft has report each overlapping milestone by path and started state, would need the state from another query or a second shape later, a change for the next milestone. It depends on the heading form the heading-and-title sibling owns.</drawback>
+    </alternative>
+    <alternative id="Path alone">
+      One field: the path of each live milestone, one per line, with no state, no title, and no separator. This is the shape today&apos;s resolution stop prints (one directory name per line) and the shape the draft gives `gate`&apos;s holders. `live` reads the tree alone.
+      <advantage>It is the simplest contract. It matches the stop&apos;s listing as it stands and the gate&apos;s holder lines, so every milestone listing in this milestone is a bare path, and nothing in it can drift with the heading form or the started test.</advantage>
+      <drawback>It drops both of the draft&apos;s other fields. A person retrying has only the slug to choose by, the in-flight read gets neither the state nor the title, and adding either later changes the shape every caller parses.</drawback>
+    </alternative>
+    <alternative id="Aligned columns">
+      The draft&apos;s three fields in its order (path, then `started` or `defined`, then title last), separated by runs of spaces padded so the columns line up across the whole print instead of by a tab. `live` runs the started test per live milestone.
+      <advantage>The resolution stop is read by a person choosing a path to retry with, and aligned columns are the easiest form for a person to scan.</advantage>
+      <drawback>It breaks the convention that the tab is every tool&apos;s listing separator. A path holding a space can no longer be split from the state field reliably, and the padding requires measuring the whole list before printing the first line. A runner parsing the line needs a rule unlike the one it uses for `tasks`.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Live path filter">
     <question>Does the `live` query take its optional PATH filter (listing only the live milestones whose scope contains PATH or lies under it) in this milestone, or land as the unfiltered list alone, given that its callers here, the resolution stop and the gate, need no filter, that the next milestone&apos;s starting-state refresh is the first caller that does, and that a query lands with its first caller?</question>
