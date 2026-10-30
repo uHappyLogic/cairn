@@ -32,7 +32,10 @@ ISSUE = (
     "exit status, so the ledger never records a non-expense; verify by adding an entry with "
     "amount 0 and checking the error line and the exit status."
 )
-FIXTURE_TASKS_TODO = "milestones/milestone_01_pocket-ledger-foundations/TASKS_TODO.md"
+# The fixture milestone, by the path the seeded copy holds it under, written as the required
+# `--milestone <path>` takes it, trailing slash included, and its task list.
+FIXTURE_MILESTONE = "milestones/milestone_01_pocket-ledger-foundations/"
+FIXTURE_TASKS_TODO = FIXTURE_MILESTONE + "TASKS_TODO.md"
 
 # The host's tool names, the one parameter of each this test reads, and the tools that
 # dispatch an agent. The file-reading tools map each name to the parameter holding its path.
@@ -86,7 +89,11 @@ def test_the_orchestrator_reads_and_runs_at_the_global_plugin_root(seeded_repo, 
     tilde, root = plugin_root
     repository = seeded_repo()
 
-    completed = run_agy(f"/cairn:submit-task {ISSUE}", cwd=repository, output_format="stream-json")
+    completed = run_agy(
+        f"/cairn:submit-task --milestone {FIXTURE_MILESTONE} {ISSUE}",
+        cwd=repository,
+        output_format="stream-json",
+    )
     assert completed.returncode == 0, completed.stderr
     records = records_of(completed.stdout)
     assert records[-1].get("event") == "result", records[-1]

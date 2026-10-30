@@ -14,7 +14,8 @@ A live milestone is a directory holding a tracked file that matches the discover
 **/milestones/*/requirements.md and is present in the working tree: "**/" stands for any run
 of leading directories, none included, and "*" for exactly one directory name. The pattern is
 matched against the repository paths git ls-files lists, so a milestones/ container may stand
-at the root or at any depth beneath it.
+at the root or at any depth beneath it. The tasks query joins a commit to its milestone by the
+same pattern, read with TASKS_TODO.md in place of requirements.md.
 
 Subcommands:
   live
@@ -35,15 +36,16 @@ Subcommands:
       by single tab characters: the commit's abbreviated hash as git's %h prints it, its
       author date as YYYY-MM-DD, the milestone the task belongs to, and the task title,
       which is the subject after the "Task-completion:" marker with its surrounding spaces
-      trimmed. The milestone is the "milestones/<name>/" directory of the one file in the
-      commit's whole file list that matches the root-anchored pattern
-      milestones/*/TASKS_TODO.md (the task list the completion removed the task from);
-      when no file of the list matches, or more than one does, the field holds the fixed
-      placeholder "-" and the line is printed all the same. The lines are ordered newest
-      first by author timestamp, sorted after the log is read, commits sharing a timestamp
-      keeping git's order. A commit changed PATH when PATH, a file or a directory, differs
-      between it and its parent; merge commits are never listed. PATH may be a milestone
-      directory, which lists that milestone's completed tasks.
+      trimmed. The milestone is the directory, with its trailing slash, of the one file in
+      the commit's whole file list that matches the discovery pattern read with TASKS_TODO.md
+      as its last component, **/milestones/*/TASKS_TODO.md (the task list the completion
+      removed the task from), so a milestones/ container at any depth joins; when no file of
+      the list matches, or more than one does, the field holds the fixed placeholder "-" and
+      the line is printed all the same. The lines are ordered newest first by author
+      timestamp, sorted after the log is read, commits sharing a timestamp keeping git's
+      order. A commit changed PATH when PATH, a file or a directory, differs between it and
+      its parent; merge commits are never listed. PATH may be a milestone directory, which
+      lists that milestone's completed tasks.
       With --with-body each task line is followed by the commit's body, the verified bar
       the task was completed against, every body line printed beneath it indented by four
       spaces (a blank line inside the body included) with the body's outer blank lines
@@ -87,12 +89,12 @@ TASK_MARKER = "Task-completion:"
 NO_MILESTONE = "-"
 BODY_INDENT = "    "
 TASK_LIST_NAME = "TASKS_TODO.md"
-MILESTONES_ROOT = "milestones"
 
 # The discovery pattern, defined here once: every tracked file matching it, present in the
-# working tree, is one live milestone, the directory holding the file. "**" stands for any run
-# of whole leading path components, none included, "*" for exactly one non-empty component, and
-# every other component is matched literally.
+# working tree, is one live milestone, the directory holding the file, and the tasks join reads
+# it with the task list's name in place of its last component. "**" stands for any run of whole
+# leading path components, none included, "*" for exactly one non-empty component, and every
+# other component is matched literally.
 DISCOVERY_PATTERN = "**/milestones/*/requirements.md"
 
 STARTED = "started"
@@ -141,8 +143,10 @@ TASKS_DESCRIPTION = """\
 Print one line per commit that changed PATH and whose subject opens with
 Task-completion:, newest first by author timestamp. Each line is four fields
 separated by tabs: the abbreviated hash, the author date as YYYY-MM-DD, the
-milestone directory joined from the one milestones/*/TASKS_TODO.md in the
-commit's file list ("-" when none or several match), and the task title.
+milestone directory, with its trailing slash, joined from the one task list in
+the commit's file list matching the discovery pattern read with TASKS_TODO.md
+as its last component, **/milestones/*/TASKS_TODO.md ("-" when none or several
+match), and the task title.
 A milestone directory as PATH lists that milestone's completed tasks. When no
 task commit changed PATH, nothing is printed if PATH is present in the working
 tree or was changed by any commit, and one Error line is printed otherwise."""
@@ -247,13 +251,21 @@ def matches_components(pattern, components):
     return matches_components(rest, components[1:])
 
 
+def milestone_holding(name, file_name):
+    """The milestone directory, with its trailing slash, holding a repository path as its file
+    named file_name, when the path matches the discovery pattern read with file_name as its last
+    component, and None otherwise."""
+    components = name.split("/")
+    pattern = DISCOVERY_PATTERN.split("/")[:-1] + [file_name]
+    if not matches_components(pattern, components):
+        return None
+    return "/".join(components[:-1]) + "/"
+
+
 def discovered_milestone(name):
     """The milestone directory a repository path names, with its trailing slash, when the path
     matches the discovery pattern, and None otherwise."""
-    components = name.split("/")
-    if not matches_components(DISCOVERY_PATTERN.split("/"), components):
-        return None
-    return "/".join(components[:-1]) + "/"
+    return milestone_holding(name, DISCOVERY_PATTERN.split("/")[-1])
 
 
 # --- git ------------------------------------------------------------------------------
@@ -313,19 +325,15 @@ def parse_log(data):
     return commits
 
 
-def is_task_list(name):
-    """Whether a repository-root path matches milestones/*/TASKS_TODO.md."""
-    parts = name.split("/")
-    return len(parts) == 3 and parts[0] == MILESTONES_ROOT and parts[1] != "" and parts[2] == TASK_LIST_NAME
-
-
 def milestone_of(names):
-    """The milestone directory a commit's file list joins it to, or the fixed placeholder when
-    no file of the list, or more than one, is a milestone's task list."""
-    matches = sorted({name for name in names if is_task_list(name)})
+    """The milestone directory, with its trailing slash, a commit's file list joins it to: the
+    directory of the one file of the list that is a milestone's task list by the discovery
+    pattern, or the fixed placeholder when no file of the list, or more than one, is one."""
+    directories = (milestone_holding(name, TASK_LIST_NAME) for name in names)
+    matches = sorted({directory for directory in directories if directory is not None})
     if len(matches) != 1:
         return NO_MILESTONE
-    return matches[0][: -len(TASK_LIST_NAME)]
+    return matches[0]
 
 
 def task_commits(path):

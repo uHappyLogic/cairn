@@ -36,7 +36,9 @@ import subprocess
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-FIXTURE_MILESTONE = "milestones/milestone_01_pocket-ledger-foundations"
+# The fixture milestone, by the path the seeded copy holds it under, written as the required
+# `--milestone <path>` takes it, trailing slash included.
+FIXTURE_MILESTONE = "milestones/milestone_01_pocket-ledger-foundations/"
 # A block of the fixture's open_questions.xml, by its Short Title.
 SHORT_TITLE = "Data file format"
 # The fixture's one trivial task, by its `##` heading, and the file it has the agent create.
@@ -264,7 +266,7 @@ def test_the_completion_agent_lands_the_task_its_body_file_and_its_path_file(see
     # whole: the deliverable the agent created and the task list the removal changed, and no
     # other path.
     text = (scratch / PATH_FILE).read_text(encoding="utf-8")
-    task_list = f"{FIXTURE_MILESTONE}/TASKS_TODO.md"
+    task_list = FIXTURE_MILESTONE + "TASKS_TODO.md"
     assert set(repository_paths(repository, text)) == {task_list, TASK_DELIVERABLE}, text
 
     # Nothing staged and nothing committed by the agent: the index matches the seed commit,

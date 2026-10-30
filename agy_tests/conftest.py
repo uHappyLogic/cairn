@@ -21,6 +21,12 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parent.parent
 BUILT_TREE = REPO_ROOT / "hosts" / "antigravity"
 FIXTURE_PROJECT = REPO_ROOT / "tests" / "fixtures" / "agy_project"
+# The fixture project's milestone container, tracked under a name the milestones tool's
+# discovery pattern does not match, so this repository's own `live` never lists the fixture's
+# milestone, and the name each seeded copy holds it under, where the installed skills find a
+# normal root container.
+FIXTURE_CONTAINER = "milestones.fixture"
+SEEDED_CONTAINER = "milestones"
 PLUGIN_ROOT_TILDE = "~/.gemini/config/plugins/cairn"
 PLUGIN_ROOT = Path(os.path.expanduser(PLUGIN_ROOT_TILDE))
 
@@ -102,9 +108,11 @@ def _git(repository, *args):
 @pytest.fixture
 def seeded_repo(tmp_path):
     """A fresh committed copy of the fixture project for one agy process: seeded_repo() -> Path.
-    Each call copies tests/fixtures/agy_project to its own directory under tmp_path, runs
-    `git init` there, and makes the initial commit, so every agy process starts from the same
-    committed tree and nothing it changes reaches the fixture or another process."""
+    Each call copies tests/fixtures/agy_project to its own directory under tmp_path, renames
+    the copy's milestones.fixture/ container to milestones/, runs `git init` there, and makes
+    the initial commit, so every agy process starts from the same committed tree, holding the
+    fixture's milestone at milestones/<slug>/, and nothing it changes reaches the fixture or
+    another process."""
 
     count = 0
 
@@ -113,6 +121,7 @@ def seeded_repo(tmp_path):
         count += 1
         repository = tmp_path / f"project{count}"
         shutil.copytree(FIXTURE_PROJECT, repository)
+        (repository / FIXTURE_CONTAINER).rename(repository / SEEDED_CONTAINER)
         _git(repository, "init", "-q")
         _git(repository, "config", "user.name", "Agy Suite")
         _git(repository, "config", "user.email", "agy-suite@example.invalid")

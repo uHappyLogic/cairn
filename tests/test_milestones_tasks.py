@@ -1,8 +1,9 @@
 """The milestones tool's tasks query, its line and its selection: one line per Task-completion:
 commit that changed PATH, four tab-separated fields (%h, the author date as YYYY-MM-DD, the
-milestone joined from the commit's root-anchored milestones/*/TASKS_TODO.md, the title after the
-marker), newest first by author timestamp sorted after the read, with one fixed placeholder in
-the milestone field when the commit's file list holds no matching task list or more than one.
+milestone joined from the commit's one task list matching the discovery pattern read as
+**/milestones/*/TASKS_TODO.md, with its trailing slash, the title after the marker), newest
+first by author timestamp sorted after the read, with one fixed placeholder in the milestone
+field when the commit's file list holds no matching task list or more than one.
 Every test runs on a repository seeded through the conftest factory with two fixture
 milestones and one project file, then given commits made through the conftest helper."""
 
@@ -168,29 +169,66 @@ def test_a_commit_with_two_task_lists_gets_the_placeholder(seeded, make_commit, 
         assert [line.split("\t")[2:] for line in lines] == [[NO_MILESTONE, "Two Lists At Once"]]
 
 
-def test_the_join_pattern_is_anchored_at_the_repository_root(seeded, make_commit, run_milestones):
+def test_the_join_pattern_is_the_discovery_pattern(seeded, make_commit, run_milestones):
+    # Beside the root milestone's list, every list outside **/milestones/*/TASKS_TODO.md is
+    # passed by, so the commit joins the one list that matches.
     make_commit(
         seeded,
-        "Task-completion: Also Edits A Fixture List",
+        "Task-completion: Also Edits Unmatched Lists",
         files={
             FIRST + "TASKS_TODO.md": b"a\n",
-            "tests/fixtures/milestones/fixture/TASKS_TODO.md": b"b\n",
-            "tests/fixtures/sample/TASKS_TODO.md": b"c\n",
-            "milestones/milestone_07_first/nested/TASKS_TODO.md": b"d\n",
+            "tests/fixtures/sample/TASKS_TODO.md": b"b\n",
+            "milestones/milestone_07_first/nested/TASKS_TODO.md": b"c\n",
+            "tests/fixtures/agy_project/milestones.fixture/milestone_01/TASKS_TODO.md": b"d\n",
+            "milestones/TASKS_TODO.md": b"e\n",
+            "docs/Milestones/alpha/TASKS_TODO.md": b"f\n",
+            "pkg/milestones/alpha/TASKS_DONE.md": b"g\n",
         },
     )
     lines = tasks(run_milestones, seeded, FIRST).splitlines()
-    assert [line.split("\t")[2:] for line in lines] == [[FIRST, "Also Edits A Fixture List"]]
-
-
-def test_a_nested_or_unanchored_task_list_alone_gets_the_placeholder(seeded, make_commit, run_milestones):
+    assert [line.split("\t")[2:] for line in lines] == [[FIRST, "Also Edits Unmatched Lists"]]
+    # A nested project's list matches the pattern as well, so a commit changing it beside the
+    # root milestone's list joins two lists and gets the placeholder, as 2202e59 does.
     make_commit(
         seeded,
-        "Task-completion: Only A Fixture List",
-        files={"tests/fixtures/sample/TASKS_TODO.md": b"c\n"},
+        "Task-completion: Also Edits A Nested Project List",
+        files={
+            FIRST + "TASKS_TODO.md": b"h\n",
+            "tests/fixtures/agy_project/milestones/milestone_01/TASKS_TODO.md": b"i\n",
+        },
     )
-    lines = tasks(run_milestones, seeded, "tests").splitlines()
-    assert [line.split("\t")[2:] for line in lines] == [[NO_MILESTONE, "Only A Fixture List"]]
+    lines = tasks(run_milestones, seeded, FIRST).splitlines()
+    assert [line.split("\t")[2:] for line in lines][0] == [NO_MILESTONE, "Also Edits A Nested Project List"]
+
+
+@pytest.mark.parametrize(
+    "directory",
+    [
+        "pkg/milestones/alpha/",
+        "packages/api/milestones/rate limits/",
+        "a/milestones/b/milestones/c/",
+        "tests/fixtures/agy_project/milestones/milestone_01/",
+    ],
+)
+def test_a_task_list_in_a_container_at_any_depth_joins_its_milestone(seeded, make_commit, run_milestones, directory):
+    make_commit(seeded, "Task-completion: A Scoped Task", files={directory + "TASKS_TODO.md": b"a\n"})
+    lines = tasks(run_milestones, seeded, directory).splitlines()
+    assert [line.split("\t")[2:] for line in lines] == [[directory, "A Scoped Task"]]
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "tests/fixtures/sample/TASKS_TODO.md",
+        "milestones/milestone_07_first/nested/TASKS_TODO.md",
+        "tests/fixtures/agy_project/milestones.fixture/milestone_01/TASKS_TODO.md",
+        "milestones/TASKS_TODO.md",
+    ],
+)
+def test_a_task_list_outside_the_pattern_alone_gets_the_placeholder(seeded, make_commit, run_milestones, name):
+    make_commit(seeded, "Task-completion: Only An Unmatched List", files={name: b"c\n"})
+    lines = tasks(run_milestones, seeded, name).splitlines()
+    assert [line.split("\t")[2:] for line in lines] == [[NO_MILESTONE, "Only An Unmatched List"]]
 
 
 def test_a_removed_task_list_still_joins_its_milestone(seeded, make_commit, run_milestones):

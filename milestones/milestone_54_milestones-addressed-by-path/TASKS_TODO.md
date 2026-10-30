@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Discovery Pattern Over Tasks Join and Fixture
-
-Swap the `tasks` query's root-anchored `milestones/*/TASKS_TODO.md` join for the tool's discovery pattern, keeping the trailing slash in its milestone field and the `-` placeholder for a commit joining none or several lists, so `2202e59` keeps its placeholder, and rewrite the two anchor tests for the pattern. Take the agy fixture out of the pattern by tracking `tests/fixtures/agy_project/milestones/` as `milestones.fixture/`, with the agy suite's `seeded_repo` renaming it to `milestones/` in its copy and the suite's literal paths naming that milestone by `--milestone <path>`, so `live` from this repository's root lists only its own milestones; verified by the suite, that `live` print, and the agy suite where the installed copy allows.
-
----
-
 ## Milestone Subjects Carry the Milestone Path
 
 Change the six subjects that name a milestone as `<milestone_id>` (`Starting-state:`, `Requirements-review:`, `Task-derivation:`, `Recommendation-annotation:`, `Question-ordering:`, and `Goal-revision:`) to carry the resolved milestone path with its trailing slash, as the definition, finish, and capture subjects do, so every commit subject that names a milestone names its path and `<milestone_id>` leaves the runtime files and `docs/skill-reference.md`. Verified by the rebuilt trees, the suite, and one run of a changed runner landing a path-named commit.
