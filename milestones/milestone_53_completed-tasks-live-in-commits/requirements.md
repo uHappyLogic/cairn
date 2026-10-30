@@ -98,5 +98,9 @@ The acceptance bar's record form (one `- ` bullet per criterion, in verification
 
 Each line of the `tasks` query carries four fields: the commit's abbreviated hash as git's `%h` prints it, then the date as YYYY-MM-DD, the milestone path, and the task title, separated by single tab characters, the title last. The tab is the tools' existing listing separator and keeps a spaced title unambiguous, and the leading hash lets a reader reach a task's diff, where the brief now lives, with one `git show` instead of a subject search.
 
+### Readers on a failed `tasks` call
+
+`finish-current-milestone` and `derive-tasks` both treat a failed `tasks` call (the tool refusing, or git unavailable) as a stop, exactly as each already treats a failed open-question `list` call: `finish-current-milestone` stops on a fixed line of its own, `Cannot finish the milestone: the completed-task read failed.`, and `derive-tasks` on one of its own, `Cannot derive tasks: the completed-task read failed.`, each with the tool's one `Error:` line quoted verbatim below it, writing and committing nothing; the two new lines join the `## Fixed console lines` table and its test. No reader classifies the failure: a refusal and an absent git are one condition with one line, and an empty milestone is not a failure, so a fresh milestone never trips it.
+
 ## Out of Scope
 
