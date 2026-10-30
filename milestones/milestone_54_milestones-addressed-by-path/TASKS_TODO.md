@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Retire Activation and Reduce the Bootstrap
-
-Delete `core/skills/goto-next-milestone/` with its four fixed lines and its reference entry, and reduce `init-milestone-base-workflow` to the context file alone: it creates the file with a `## Milestone Workflow` section carrying the path-addressed guidance when the file is missing, appends the section when the file lacks it, leaves any present section exactly as it is, probes nothing, creates no `milestones/` scaffold, and commits only the context file subject-only under `Workflow-bootstrap: milestones`, its no-op lines reworded from the scaffold to the guidance. The git work-tree probe and the `python3 --version` check against 3.9 become the opening step of `define-milestone-goal`, run on every invocation before the definition tool and each stopping before any write on a fixed line moved from the bootstrap, with `README.md`'s prerequisite sentence naming `/define-milestone-goal` as the skill that checks them; verified by the suite, the fixed-lines test, and a bootstrap run on an empty project.
-
----
-
 ## Capture Takes a Milestone Path
 
 Make `capture-milestone-principle-updates` take the milestone's repo-relative path, as the definition tool printed it, as its required positional argument, used verbatim in the repeat-capture grep, the path-scoped answer walk, and the `Principle-capture:` subject, and accepted when `<path>/requirements.md` is in the tree or a path-scoped `git log -1 --format=%h -- <path>/requirements.md` prints a hash, so a finished and removed milestone is harvestable; it parses no `--milestone`, and its two stop lines are reworded from id to path. Verified by the fixed-lines test and a capture run against a removed milestone in a scratch repository.

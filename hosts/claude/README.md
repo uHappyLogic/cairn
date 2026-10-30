@@ -17,7 +17,7 @@ This repository is the Claude Code distribution of [Cairn](https://github.com/uH
 
 ## Installation
 
-Cairn has two runtime prerequisites: **git**, with your project root inside a git work tree that every skill commits into, and a **Python 3.9 or later** interpreter that answers as `python3` on your PATH. The skills drive the plugin's stdlib-only Python tools with it (no packages to install), and `/init-milestone-base-workflow` checks both once per project, git first, stopping with the remedy when either is missing.
+Cairn has two runtime prerequisites: **git**, with your project root inside a git work tree that every skill commits into, and a **Python 3.9 or later** interpreter that answers as `python3` on your PATH. The skills drive the plugin's stdlib-only Python tools with it (no packages to install), and `/define-milestone-goal` checks both each time it defines a milestone, git first, stopping with the remedy before anything is written when either is missing.
 
 ### Claude Code
 
@@ -32,7 +32,7 @@ In Claude Code, add the `cairn-claude` marketplace and install the plugin from i
 
 ### Bootstrap your project
 
-Then, in your project root, create the milestones scaffold once:
+Then, in your project root, add the milestone workflow guidance to `CLAUDE.md` once:
 
 ```
 /init-milestone-base-workflow
