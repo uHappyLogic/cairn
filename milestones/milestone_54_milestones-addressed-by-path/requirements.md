@@ -62,5 +62,7 @@ Three definitions under `scripts/hosts/` render `core/` into `hosts/claude/`, `h
 
 - **One tool.** All six queries (`live`, `gate`, `tasks`, `milestones`, `summary`, `record`) are subcommands of the one `core/tools/milestones.py`, which keeps its name, its one parser, its one `Error:` contract and help text, and its one git runner with the fixed `GIT_SETTINGS`. The discovery pattern is defined once in it and read by `live` and `gate`, by the live branches of `milestones` and `summary`, and by the `tasks` join once its root anchor is swapped for that pattern. No file is added under `core/tools/`; the tests stay in the existing `test_milestones_*` files on the conftest git fixtures, and the five `tasks` call sites stay unchanged. Any later split is left to whichever later milestone finds a reason for one.
 
+- **`live` line.** Three tab-separated fields: the milestone path in its canonical printed form first, then a state field holding one of two fixed words, `started` or `defined`, then the title, read from the `requirements.md` heading, last. `live` runs the started test (one path-scoped `git log -1 --diff-filter=M` per live milestone) to fill the state field.
+
 ## Out of Scope
 
