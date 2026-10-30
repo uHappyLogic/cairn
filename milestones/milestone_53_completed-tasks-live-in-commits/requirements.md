@@ -66,5 +66,9 @@ The body of a `Task-completion:` commit holds nothing beyond the acceptance bar:
 
 The inline `complete-task` skill's one fixed shell call opens by capturing the acceptance bar from a quoted heredoc through command substitution into one quoted value, written in the group-fed form `{ bar="$(cat)"; } <<'EOF'`, the `- ` bullets, then `EOF`, the form the recommendation pass's batch call already uses, because it parses on bash 3.2 where the nested `bar="$(cat <<'EOF'` form fails on an apostrophe; the capture is chained by `&&` ahead of the `remove` command, and the commit tool's command then passes the value as `--body "$bar"`. No file is written, no turn is added, the runner escapes nothing, and the commit tool's contract gains no body-file option.
 
+### `tasks` body layout
+
+When `tasks` runs with its body flag, every task line stays at column 0 in the shape it has without the flag, and each line of the commit's body is printed beneath it indented by one fixed prefix of four spaces, as `git log` indents a message, with the body's outer blank lines trimmed and nothing else changed. A task whose commit carries no body (one completed before the bar moved into commits) is its task line alone, with nothing beneath it and no placeholder, so the next column-0 line is the next task; the boundary needs no lookahead, cannot collide with anything a body holds, and one parser serves both forms.
+
 ## Out of Scope
 
