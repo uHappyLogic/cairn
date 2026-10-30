@@ -1,8 +1,8 @@
 """The milestones tool's shared contract: its help states the record's limits (a shallow clone's
 truncated log, with no check made for it, the record's start at the first Task-completion:
 commit, and the finish subjects read only in the path form) for the tasks query and the three
-history queries, the live query's started test reading the same log, and the trailer rule over
-every printed body; every failure is one Error line on stderr with exit 1 and nothing on stdout,
+history queries, the live query's started test reading the same log, the gate query alone
+refusing a shallow repository, and the trailer rule over every printed body; every failure is one Error line on stderr with exit 1 and nothing on stdout,
 a malformed invocation gets argparse's exit 2, no traceback reaches the caller, and a query
 writes nothing: the repository's status and HEAD are the same after it as before."""
 
@@ -67,8 +67,27 @@ def test_each_history_querys_help_states_the_shallow_clone_limit(tmp_path, run_m
 def test_the_top_level_help_states_the_finish_subject_limit_and_names_every_query(tmp_path, run_milestones):
     text = " ".join(run_milestones(tmp_path, "--help").stdout.decode("utf-8").split())
     assert "Milestone-finish: subjects naming a milestone path" in text
-    for query in ("live", "tasks", "milestones", "summary", "record"):
+    for query in ("live", "gate", "tasks", "milestones", "summary", "record"):
         assert query in text
+
+
+def test_the_top_level_help_states_that_the_gate_alone_checks_for_a_shallow_clone(tmp_path, run_milestones):
+    text = " ".join(run_milestones(tmp_path, "--help").stdout.decode("utf-8").split())
+    assert "the gate query alone checks, refusing a shallow repository" in text
+
+
+def test_the_gate_help_names_its_scope_rule_and_both_refusals(tmp_path, run_milestones):
+    result = run_milestones(tmp_path, "gate", "--help")
+    assert result.returncode == 0
+    text = " ".join(result.stdout.decode("utf-8").split())
+    assert "MILESTONE_PATH" in text
+    assert "one bare path per line" in text
+    assert "started" in text
+    assert "equals MILESTONE_PATH's scope, contains it, or lies under it" in text
+    assert "exits 0 whether or not it prints" in text
+    assert "git rev-parse --is-shallow-repository" in text
+    assert "git fetch --unshallow" in text
+    assert "no milestones/ container is refused" in text
 
 
 @pytest.mark.parametrize(
@@ -118,6 +137,13 @@ def test_outside_a_git_repository_live_fails_on_one_error_line(tmp_path, run_mil
     assert "git ls-files" in line
 
 
+def test_outside_a_git_repository_gate_fails_on_one_error_line(tmp_path, run_milestones):
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    line = assert_one_error_line(run_milestones(outside, "gate", FIRST))
+    assert "git rev-parse" in line
+
+
 @pytest.mark.parametrize("args", [("milestones", "."), ("summary", FIRST), ("record", ".")])
 def test_outside_a_git_repository_a_history_query_fails_on_one_error_line(tmp_path, run_milestones, args):
     outside = tmp_path / "outside"
@@ -126,7 +152,7 @@ def test_outside_a_git_repository_a_history_query_fails_on_one_error_line(tmp_pa
     assert "git" in line
 
 
-@pytest.mark.parametrize("query", ["tasks", "milestones", "summary", "record"])
+@pytest.mark.parametrize("query", ["gate", "tasks", "milestones", "summary", "record"])
 def test_an_empty_path_is_refused(seeded, run_milestones, query):
     assert_one_error_line(run_milestones(seeded, query, ""))
 
@@ -139,7 +165,7 @@ def test_a_missing_git_fails_on_one_error_line(seeded, run_milestones, environme
     assert "git" in line
     line = assert_one_error_line(run_milestones(seeded, "live", env=env))
     assert "git" in line
-    for args in (("milestones", "."), ("summary", FIRST), ("record", ".")):
+    for args in (("gate", FIRST), ("milestones", "."), ("summary", FIRST), ("record", ".")):
         line = assert_one_error_line(run_milestones(seeded, *args, env=env))
         assert "git" in line
 
@@ -165,6 +191,9 @@ def test_an_unreadable_live_requirements_file_fails_on_one_error_line(seeded, ru
         ("tasks", FIRST, "--body"),
         ("live", FIRST),
         ("live", "--with-body"),
+        ("gate",),
+        ("gate", FIRST, FIRST),
+        ("gate", FIRST, "--with-body"),
         ("milestones",),
         ("milestones", FIRST, FIRST),
         ("milestones", FIRST, "--with-body"),
@@ -197,6 +226,9 @@ def test_a_query_writes_nothing(seeded, make_commit, run_milestones, git, enviro
         ("tasks", "untracked.txt"),
         ("tasks", "nope"),
         ("live",),
+        ("gate", FIRST),
+        ("gate", "nope/"),
+        ("gate", "milestones/nope/"),
         ("milestones", "."),
         ("milestones", "nope"),
         ("summary", FIRST),

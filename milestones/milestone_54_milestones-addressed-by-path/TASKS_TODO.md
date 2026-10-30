@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Gate Query Over Started Milestones
-
-Add the `gate MILESTONE_PATH` query to `core/tools/milestones.py`: it refuses a shallow repository (`git rev-parse --is-shallow-repository` printing `true`, naming `git fetch --unshallow`) and a path with no `milestones/` container, each on one `Error:` line with exit 1, and otherwise prints, one bare path per line, every other live milestone that is started (its `TASKS_TODO.md` modified after its creation, by the path-scoped `git log -1 --diff-filter=M` test) and whose scope equals, contains, or lies under the named milestone's scope, exiting 0 whether or not anything is printed. Pinned by tests in the `test_milestones_*` family covering overlap in both directions, disjoint packages, a defined-only milestone, and both refusals.
-
----
-
 ## Finish by Removing the Milestone Directory
 
 Rename `core/skills/finish-current-milestone/` to `finish-milestone`, keeping its two checks and its `tasks` read, and make it commit through the commit tool's one command with the milestone directory as the removal and the context file as an ordinary path when edited, under `Milestone-finish: <path>` with the summary as body: the title read from the `requirements.md` heading with any legacy `Milestone <N>: ` prefix stripped, a blank line, then the 3–8 bullets, a trailing trailer block allowed. It writes nothing to `milestones/README.md` and touches no pointer; its six fixed-lines rows, its `docs/skill-reference.md` entry, and every reference to the old name follow, verified by the suite and a finish in a scratch repository whose `summary` then prints the body back.
