@@ -81,10 +81,13 @@ other tests yet.
 
 - **Design:** Task derivation makes a coverage matrix before it writes the
   tasks. Task completion derives an acceptance bar and verifies the work
-  against it. Then the task-list tool moves the task to the done list. The
-  tool writes the bar, as `**Verified:**` bullets, below the task.
+  against it. Then the task-list tool removes the task from the task list.
+  The commit of the task records the bar as its body, with one bullet for
+  each criterion. The subject of that commit gives the task title, and its
+  diff keeps the text of the task. The milestones tool reads these commits
+  from the git log.
 - **Metric:** Recall of requirement IDs in the tasks and in the verified
-  bullets.
+  bullets of the task commits.
 
 ### 8. Cairn makes the detailed design late, against the live project.
 
@@ -118,14 +121,17 @@ other tests yet.
   stdlib tool creates the document empty with the milestone. After that, the
   open-question tool is the only writer of the document. Each answer, cascade,
   prune, and embed is a tool call. The tool validates the input and writes the whole
-  document again in one canonical form. The two task files are the same. The
-  same stdlib tool creates them with the milestone. After that, the task-list
-  tool is the only writer of the two files. Each derivation, submission, and
-  move is a tool call. The tool writes the whole file again in one canonical
-  layout. A move changes both files, or neither. The decisions in
-  `requirements.md` are prose, and no tool is the only writer of that file.
-  The batch answer skill writes each decision with the stdlib fold tool. That
-  tool has two subcommands. The `fold` subcommand adds the decision, the
+  document again in one canonical form. The task list is the same. The same
+  stdlib tool creates it with the milestone. After that, the task-list tool
+  is the only writer of the task list. Each derivation, submission, and
+  removal is a tool call. The tool writes the whole file again in one
+  canonical layout. A removal changes only the task list, and a failed
+  removal changes nothing. A completed task has no file. Its record is its
+  task commit. The read-only milestones tool reads these commits from the git
+  log and prints one line for each task, with fields that tabs separate.
+  The decisions in `requirements.md` are prose, and no tool is the only
+  writer of that file. The batch answer skill writes each decision with the
+  stdlib fold tool. That tool has two subcommands. The `fold` subcommand adds the decision, the
   heading of its subsection when that heading is new, and the blank lines
   around them. The `replace` subcommand writes a new body below the heading
   of one subsection that exists. It does not make a new subsection. The batch
@@ -134,7 +140,7 @@ other tests yet.
   subsection only: the subsection of the decision that does not stand. Each
   subcommand changes no other byte of the file.
 - **Metric:** Golden-file diff of the document after an answer, a cascade, or
-  a prune, of the task files after each task-list write, and of
+  a prune, of the task list after each task-list write, and of
   `requirements.md` after each fold and each replace. The `tests/` suite runs
   this test on the open-question tool, on the task-list tool, and on the fold
   tool.

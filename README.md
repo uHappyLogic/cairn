@@ -127,12 +127,13 @@ All nineteen claims, each with its design and a metric to test it, are in [docs/
 
 ## How it works
 
-Each milestone lives in `milestones/milestone_<N>_<slug>/` and contains four files:
+Each milestone lives in `milestones/milestone_<N>_<slug>/` and contains three files:
 
 - `requirements.md` — goal, relevant starting state, decisions, and out of scope, as prose Markdown
 - `open_questions.xml` — the open questions, one `<open-question>` block each under a single `<open-questions>` root; created empty with the milestone and written only by the plugin's open-question tool, never by hand — the milestone's requirements have converged when no block remains
-- `TASKS_TODO.md` — pending tasks ordered by priority (highest first); created with the milestone and written only by the plugin's task-list tool, never by hand
-- `TASKS_DONE.md` — completed tasks in the same section format, each entry augmented with the acceptance bar the completer derived and verified the work against, recorded as a `**Verified:**` bullet list (one bullet per criterion); created with the milestone and written only by the plugin's task-list tool, which moves each finished task across and writes its bar
+- `TASKS_TODO.md` — pending tasks ordered by priority (highest first); created with the milestone and written only by the plugin's task-list tool, never by hand, which removes each task once it is completed
+
+A completed task's record is its own `Task-completion: <task heading>` commit rather than a file: the commit's diff holds the task's brief as the section removed from `TASKS_TODO.md`, and its body the acceptance bar the completer derived and verified the work against, one `- ` bullet per criterion. The plugin's read-only milestones tool lists a milestone's completed tasks, each with its bar, from those commits; since it reads the git log, a shallow clone lists only the task commits its truncated history still holds.
 
 `milestones/README.md` is the source of truth for which milestone is active. Skills read and write the current-milestone pointer there; it is never ambiguous which milestone is open.
 
