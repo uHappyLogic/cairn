@@ -87,9 +87,9 @@ def test_an_option_overriding_the_schedule_is_a_usage_error(run_commit, project)
     assert b"unrecognized arguments: --attempts" in result.stderr
 
 
-def test_the_parser_takes_no_input_beyond_the_subject_the_body_and_the_paths():
+def test_the_parser_takes_no_input_beyond_the_subject_the_body_the_paths_and_the_removals():
     options = {option for action in commit.build_parser()._actions for option in action.option_strings}
-    assert options == {"-h", "--help", "--subject", "--body", "--path-file"}
+    assert options == {"-h", "--help", "--subject", "--body", "--path-file", "--remove"}
 
 
 def test_help_exits_zero_and_names_every_input(run_commit, project):

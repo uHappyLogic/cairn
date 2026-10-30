@@ -1,8 +1,10 @@
 """The commit command of the skill layer: one git commit of exactly the named paths, made with
-those paths as its pathspec, each git write repeated while another process holds git's lock.
+those paths as its pathspec, each git write repeated while another process holds git's lock,
+with an optional removal of named paths made inside the same commit.
 
-Usage: python3 <plugin root>/tools/commit.py --subject SUBJECT [--body BODY] [--] PATH [PATH ...]
-       python3 <plugin root>/tools/commit.py --subject SUBJECT [--body BODY] --path-file FILE
+Usage: python3 <plugin root>/tools/commit.py --subject SUBJECT [--body BODY] [--remove PATH ...] [--] PATH [PATH ...]
+       python3 <plugin root>/tools/commit.py --subject SUBJECT [--body BODY] [--remove PATH ...] --path-file FILE
+       python3 <plugin root>/tools/commit.py --subject SUBJECT [--body BODY] --remove PATH [--remove PATH ...]
 
 Unlike the document writers beside it, which touch no git, this module exists to run git: it
 reads or writes no milestone file and takes no milestone directory. It runs git in the
@@ -10,39 +12,53 @@ working directory it is started from, so git reads every PATH relative to that d
 a path of the repository holding it.
 
 Steps, each run only when the one before it succeeded:
-  1. the dirty-own-path guard, "git status --porcelain -- PATH...", over the named paths
-     only. When it prints nothing, none of the paths changed: the call stages nothing,
-     commits nothing, prints its fixed no-op line on standard output, and exits 0. The
-     guard is a read: it runs with git's optional locks off, so it never takes the index
-     lock another process's write may be waiting for, and it is never repeated
-  2. the path-scoped stage, "git add -- PATH...", staging exactly the named paths
-  3. the commit, "git commit -m SUBJECT [-m BODY] -- PATH...", with the named paths as its
-     pathspec, so the commit records exactly those paths whatever else the index holds, and
-     every other staged change stays staged and uncommitted
+  1. the dirty-own-path guard, "git status --porcelain -- PATH... REMOVED...", over the named
+     paths and the paths to remove only, and, for each path given as --remove,
+     "git ls-files -- REMOVED", which tells whether the index still holds a file under it.
+     When the status prints nothing and no path to remove is still in the index, none of the
+     paths changed: the call removes nothing, stages nothing, commits nothing, prints its
+     fixed no-op line on standard output, and exits 0. The guard is a read: it runs with
+     git's optional locks off, so it never takes the index lock another process's write may
+     be waiting for, and it is never repeated
+  2. the removal, "git rm -r -q -- REMOVED", once for each path given as --remove that the
+     index still holds, in the order given and before any path is staged: it takes the
+     path's tracked files out of the index and the working tree, and leaves every untracked
+     file under it in place. A path whose files have already left the index (the staged
+     removal a failed earlier run of the same call left behind) is not removed again; its
+     staged removal is recorded by the commit as it stands. Git refuses to remove a tracked
+     file holding a change of its own, so a removal never discards uncommitted work
+  3. the path-scoped stage, "git add -- PATH...", staging exactly the named paths, run only
+     when a PATH is given
+  4. the commit, "git commit -m SUBJECT [-m BODY] -- PATH... REMOVED...", with the named
+     paths and the paths to remove together as its pathspec, so the one commit records the
+     removals and those paths and nothing else whatever else the index holds, and every
+     other staged change stays staged and uncommitted
 
 The paths are given either as arguments (behind "--" when one may begin with "-") or, with
 --path-file, in a file holding one path per line, never both. A path file is read
 line-exact: it is split at its newlines only, each line taken whole as one path with no word
 splitting, quoting, or trimming of its own, a line holding nothing is skipped (it names no
-path), and its last line needs no newline. However they are given, the paths reach every git
-command as separate arguments, read literally rather than as patterns, so a path holding a
-glob character names that one file only. No path is checked beyond that: git reports a path
-it cannot use.
+path), and its last line needs no newline. The paths to remove are given as --remove, one
+path per option, repeated for each, beside either form or alone. However they are given, the
+paths reach every git command as separate arguments, read literally rather than as
+patterns, so a path holding a glob character names that one file only. No path is checked
+beyond that: git reports a path it cannot use. A call without --remove runs exactly steps 1,
+3, and 4 over its named paths, the guard's status alone and no ls-files.
 
 SUBJECT is the commit's one-line subject, passed to git as given. BODY, when given and holding
 anything but whitespace, is the commit's body, passed to git as given, line breaks included;
 an empty or whitespace-only BODY makes the same subject-only commit as no BODY.
 
-The retry: each git write (steps 2 and 3) is repeated when git exits with status 128, its
-fatal-error status and the one a held .git/index.lock produces, up to ATTEMPTS attempts in
-all with a fixed pause of PAUSE seconds between two. The schedule is one constant applied at
-every write, with no option or variable to change it. Every other non-zero status (1: a
-hook's refusal, nothing to commit, a commit pathspec matching no file) is passed on at once.
-Only the exit status is tested; no message text is read.
+The retry: each git write (steps 2, 3, and 4) is repeated when git exits with status 128,
+its fatal-error status and the one a held .git/index.lock produces, up to ATTEMPTS attempts
+in all with a fixed pause of PAUSE seconds between two. The schedule is one constant applied
+at every write, with no option or variable to change it. Every other non-zero status (1: a
+hook's refusal, nothing to commit, a removal git refuses, a commit pathspec matching no
+file) is passed on at once. Only the exit status is tested; no message text is read.
 
 Refusals, made before any git command runs: an empty or multi-line SUBJECT, an empty path
-argument, no path given at all, and a path file that is missing, unreadable, not UTF-8 text,
-or naming no path. Nothing else is checked.
+argument, an empty --remove value, no path and no --remove given at all, and a path file
+that is missing, unreadable, not UTF-8 text, or naming no path. Nothing else is checked.
 
 Output and error contract:
   - a commit that lands prints nothing; a call whose guard found none of the paths changed
@@ -54,8 +70,9 @@ Output and error contract:
     that kept exiting 128; a malformed invocation (no --subject, or paths given both as
     arguments and through --path-file) gets argparse's own usage message and exit status 2;
     no traceback ever reaches the caller
-  - a failing call commits nothing and discards or unstages nothing; a failure at the commit
-    leaves the paths staged as step 2 left them
+  - a failing call commits nothing and discards or unstages nothing; a failure after the
+    removal leaves each removal staged as step 2 made it, and a failure at the commit leaves
+    the paths staged as step 3 left them, so a later run of the same call records them
 
 Standard library only; runs on Python 3.9 and later.
 """
@@ -124,13 +141,24 @@ def read_path_file(path):
     return paths
 
 
-def gather_paths(paths, path_file):
+def gather_removals(removals):
+    """The paths given as --remove, in the order given; none when the option is absent."""
+    removals = list(removals or ())
+    if any(not path for path in removals):
+        raise ToolError("a path given as --remove is empty")
+    return removals
+
+
+def gather_paths(paths, path_file, removals):
     if path_file is not None:
         return read_path_file(path_file)
-    if not paths:
-        raise ToolError("no path is given: name the paths to commit as arguments or in a file given as --path-file")
     if any(not path for path in paths):
         raise ToolError("a path given as an argument is empty")
+    if not paths and not removals:
+        raise ToolError(
+            "no path is given: name the paths to commit as arguments or in a file given as "
+            "--path-file, or the paths to remove as --remove"
+        )
     return list(paths)
 
 
@@ -179,22 +207,36 @@ def failure(command, result, attempts=1):
 def commit(args):
     subject = check_subject(args.subject)
     body = commit_body(args.body)
-    paths = gather_paths(args.paths, args.path_file)
+    removals = gather_removals(args.remove)
+    paths = gather_paths(args.paths, args.path_file, removals)
 
     guard_environment = dict(os.environ, GIT_OPTIONAL_LOCKS="0")
-    status = git(["status", "--porcelain", "--", *paths], guard_environment)
+    status = git(["status", "--porcelain", "--", *paths, *removals], guard_environment)
     if status.returncode != 0:
         raise failure("status", status)
-    if not status.stdout.strip():
+    indexed = []
+    for removal in removals:
+        listing = git(["ls-files", "--", removal], guard_environment)
+        if listing.returncode != 0:
+            raise failure("ls-files", listing)
+        if listing.stdout.strip():
+            indexed.append(removal)
+    if not status.stdout.strip() and not indexed:
         print(NO_OP_LINE)
         return 0
 
-    result, attempts = write(["add", "--", *paths])
-    if result.returncode != 0:
-        raise failure("add", result, attempts)
+    for removal in indexed:
+        result, attempts = write(["rm", "-r", "-q", "--", removal])
+        if result.returncode != 0:
+            raise failure("rm", result, attempts)
+
+    if paths:
+        result, attempts = write(["add", "--", *paths])
+        if result.returncode != 0:
+            raise failure("add", result, attempts)
 
     message = ["-m", subject] if body is None else ["-m", subject, "-m", body]
-    result, attempts = write(["commit", *message, "--", *paths])
+    result, attempts = write(["commit", *message, "--", *paths, *removals])
     if result.returncode != 0:
         raise failure("commit", result, attempts)
     return 0
@@ -208,9 +250,11 @@ def build_parser():
         prog="commit.py",
         description=(
             "Commit exactly the named paths, with those paths as the commit's pathspec: a "
-            "status guard over them, a path-scoped git add, and git commit, each git write "
-            "repeated on a fixed schedule while git exits 128. Prints nothing when the commit "
-            "lands and one fixed line when none of the paths changed."
+            "status guard over them, git rm -r -q of each path given as --remove, a "
+            "path-scoped git add of the other paths, and one git commit over the removals and "
+            "those paths together, each git write repeated on a fixed schedule while git exits "
+            "128. Prints nothing when the commit lands and one fixed line when none of the "
+            "paths changed."
         ),
     )
     parser.add_argument(
@@ -228,6 +272,16 @@ def build_parser():
         "--path-file",
         metavar="FILE",
         help="a file naming the paths to commit, one per line, each line taken whole; instead of PATH arguments",
+    )
+    parser.add_argument(
+        "--remove",
+        action="append",
+        metavar="PATH",
+        help=(
+            "a path to remove, run as git rm -r -q -- PATH inside the retry schedule before the "
+            "other paths are staged, its removal recorded by the same commit as those paths; "
+            "repeatable, one path per option, beside PATH arguments, --path-file, or alone"
+        ),
     )
     parser.add_argument(
         "paths",

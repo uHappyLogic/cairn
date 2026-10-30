@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Commit Tool Removal Input
-
-Give `core/tools/commit.py` a repeatable `--remove PATH` option under which it runs `git rm -r -q -- PATH` as one more git write inside its retry schedule, before staging the other named paths, and makes its one pathspec commit over the removal and those paths together, stated in its help text. Pinned by a test file of its own covering the removal, the retry on exit 128, and that every existing call without the option behaves exactly as today.
-
----
-
 ## Commit Tool Author Date Input
 
 Give `core/tools/commit.py` an optional `--date DATE` argument passed through unchanged as `git commit --date DATE`, setting the author date only while the committer date stays the time the commit is made, stated in its help text. Pinned by a test file of its own, with every existing call leaving it out and behaving exactly as today.
