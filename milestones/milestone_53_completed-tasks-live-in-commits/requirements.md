@@ -110,5 +110,9 @@ Of the mentions of `TASKS_DONE.md` outside the runtime files, host templates, do
 
 The retirement of `move` lands in one task that changes together the task-list tool's `remove`, the completion procedure's step 5, the inline `complete-task` skill's call, the `complete-task` agent's step-5 call, and the orchestrator's step-2c call, with the rebuilt hosts and the tests that run those calls. That task stands first in the derived list, and its brief says it is completed alone by the inline `/complete-task`: its runner records its own bar through the new call it has just written, `remove` plus a commit carrying the bar as `--body`, and not through the `move` the skill it loaded showed. `/complete-all-tasks` is then started in a fresh session for every remaining task, so no orchestrated run crosses the flip, every bar lands in its commit whichever way agent files load, and this milestone's `TASKS_DONE.md` stays the empty template.
 
+### Passing the bar from the agent
+
+The `complete-task` agent's step-5 call opens exactly as the inline `complete-task` skill's recorded call does, capturing the bar once from one quoted heredoc into one quoted shell value in the group-fed form `{ bar="$(cat)"; } <<'EOF'`, the `- ` bullets, `EOF`; the non-blank test runs on that value, chained by `&&` ahead of `remove`; only after `remove` succeeds does the call write the value to the fixed-name body file beside `paths.txt` and then write `paths.txt` from its own quoted heredoc. Nothing reaches the scratch directory unless the test and `remove` both pass, so both runners share one bar-handling form, the bar typed once and tested as written, and the empty-bar guard's writes-nothing wording and the agent's write-nothing-else contract hold without a carve-out.
+
 ## Out of Scope
 
