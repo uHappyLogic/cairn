@@ -116,5 +116,9 @@ The retirement of `move` lands in one task that changes together the task-list t
 
 The `complete-task` agent's step-5 call opens exactly as the inline `complete-task` skill's recorded call does, capturing the bar once from one quoted heredoc into one quoted shell value in the group-fed form `{ bar="$(cat)"; } <<'EOF'`, the `- ` bullets, `EOF`; the non-blank test runs on that value, chained by `&&` ahead of `remove`; only after `remove` succeeds does the call write the value to the fixed-name body file beside `paths.txt` and then write `paths.txt` from its own quoted heredoc. Nothing reaches the scratch directory unless the test and `remove` both pass, so both runners share one bar-handling form, the bar typed once and tested as written, and the empty-bar guard's writes-nothing wording and the agent's write-nothing-else contract hold without a carve-out.
 
+### `tasks` date and order
+
+Each `tasks` line's date field is the commit's author date (git's `%ad`/`%at`), and the tool orders its lines newest first by that same author timestamp, sorting the path-scoped log's commits after it reads them rather than relying on git's traversal order, so the printed date column is monotone whatever the commit graph says. Author date keeps the day the task was completed through a rebase or amend and matches the author-date convention the draft fixes for finish dates, and the order is a plain property of the printed column, statable without a graph exception and pinnable by a test with crafted dates.
+
 ## Out of Scope
 
