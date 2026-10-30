@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Capture Takes a Milestone Path
-
-Make `capture-milestone-principle-updates` take the milestone's repo-relative path, as the definition tool printed it, as its required positional argument, used verbatim in the repeat-capture grep, the path-scoped answer walk, and the `Principle-capture:` subject, and accepted when `<path>/requirements.md` is in the tree or a path-scoped `git log -1 --format=%h -- <path>/requirements.md` prints a hash, so a finished and removed milestone is harvestable; it parses no `--milestone`, and its two stop lines are reworded from id to path. Verified by the fixed-lines test and a capture run against a removed milestone in a scratch repository.
-
----
-
 ## Conversational Skills Read the Record
 
 `discuss-milestone-goal` step 1 runs one fixed, unconditional `record .` call in place of its README history read, and `ask-in-milestone-context` loses its pointer-`none` fallback and its project-wide mode outright, resolving only through the shared procedure, and runs `record <PATH>` at its own discretion when a question concerns past work, scoped to the path the question concerns, the milestone's scope, or `.`, a finished milestone being answered from that project-wide read. Verified by the rebuilt trees and one run of each skill against this repository's record.

@@ -13,8 +13,9 @@ preserves the analysis the user saw when recording it. This skill
 reads that finite, known-up-front set of commits for the milestone you name and distills from them
 the generalizable answering principles that the recommendation advisor can apply.
 
-It runs against **any** milestone id whose `milestones/<milestone_id>/requirements.md` exists — the
-current milestone, an unfinished one, or one already finished (backfill included). Because every
+It runs against **any** milestone path whose `requirements.md` stands in the working tree or once
+stood there in the git history — a live milestone, or a finished one whose directory its finish
+removed (backfill included). Because every
 answer commit lands during the requirements phase, the milestone's finish status carries no
 information the harvest needs: a run against a milestone whose questions are still being answered
 simply harvests what exists so far, and a later run re-walks the same path to pick up the rest.
@@ -27,16 +28,17 @@ the `milestones/` root, **above** any one milestone, so principles accumulate ac
 ## Usage
 
 ```
-/capture-milestone-principle-updates <milestone_id>
+/capture-milestone-principle-updates <path>
 ```
 
-- `<milestone_id>` (**required**): the milestone directory name under `milestones/`, e.g.
-  `milestone_12_user-guide`. No bare-number form is accepted and no number-to-directory
-  resolution exists; the value is used verbatim.
+- `<path>` (**required**): the milestone's repo-relative path, exactly as the definition tool
+  printed it, trailing slash included, e.g. `milestones/user-guide/`. The value is used verbatim:
+  no prefix is added or stripped, no bare number or directory name is looked up, and a missing
+  trailing slash is not supplied.
 
 **Example:**
 ```
-/capture-milestone-principle-updates milestone_12_user-guide
+/capture-milestone-principle-updates milestones/user-guide/
 ```
 
 > This skill writes **only** the principle store at the fixed path
@@ -52,17 +54,36 @@ the `milestones/` root, **above** any one milestone, so principles accumulate ac
 
 ### 1. Locate the milestone
 
-If no `<milestone_id>` argument was given, stop and report that the milestone id is required: the
-fixed line `Capture stopped — no milestone id was given.` first, then the usage above below it.
+If no `<path>` argument was given, stop and report that the milestone path is required: the
+fixed line `Capture stopped — no milestone path was given.` first, then the usage above below it.
 
-Resolve `<MILESTONE_DIR>` as `milestones/<milestone_id>/`. If `milestones/<milestone_id>/requirements.md`
-does not exist, **stop without changing anything** and report that the milestone was not found:
-the fixed line `Capture stopped — no milestone directory matches the id.` first, then below it the
-`milestone_*` directories present under `milestones/`, one per line, so the caller can retry with
-one of them. Directory existence is the only validation; nothing about the milestone's finish status is
-consulted.
+`<path>` matches when it ends in `/` and its `requirements.md` is found by either test, tried in
+this order:
 
-The same `<milestone_id>` feeds, verbatim, the repeat-capture guard's anchored grep in step 2, the
+1. `<path>/requirements.md` exists in the working tree — a live milestone.
+2. Otherwise, this path-scoped log, run from the workspace root, prints a hash — a milestone
+   whose directory is gone from the tree, its finish having removed it, read from the history
+   where the file once stood:
+
+   ```
+   git log -1 --format=%h -- <path>/requirements.md
+   ```
+
+If `<path>` does not end in `/`, or neither test finds the file, **stop without changing anything**
+and report that the milestone was not found: the fixed line
+`Capture stopped — no milestone directory matches the path.` first, then below it the output of
+the plugin's milestones tool, run from the workspace root,
+
+```
+python3 ${PLUGIN_ROOT}/tools/milestones.py milestones .
+```
+
+verbatim — one line per milestone, live or finished, its path the third tab-separated field — or,
+when the call fails, its one `Error: <reason>` line from stderr, so the caller can retry with one
+of the printed paths. These two tests are the only validation; nothing about the milestone's
+finish status is consulted, and nothing is restored to the working tree.
+
+The same `<path>` feeds, verbatim, the repeat-capture guard's anchored grep in step 2, the
 path-scoped commit walk in step 3, and the commit subject in step 7.
 
 ### 2. Start-of-run guards
@@ -74,12 +95,12 @@ it in the one fixed line `Capture stopped — declined at a start-of-run guard.`
 further, changed nothing, and committed nothing. With no hit, a
 guard prints nothing and asks nothing; the run continues unchanged.
 
-1. **Repeat-capture guard.** The `Principle-capture: <milestone_id>` commit subject is the record
+1. **Repeat-capture guard.** The `Principle-capture: <path>` commit subject is the record
    that this milestone was already ingested. Grep the history for that exact subject, **anchored on
-   both ends**, with `<milestone_id>` verbatim from step 1:
+   both ends**, with `<path>` verbatim from step 1:
 
    ```
-   git log --grep='^Principle-capture: <milestone_id>$' --format='%h %ad %s' --date=short
+   git log --grep='^Principle-capture: <path>$' --format='%h %ad %s' --date=short
    ```
 
    On a hit, the notice names the prior commit (its short hash, date, and subject) and asks once
@@ -102,17 +123,19 @@ guard prints nothing and asks nothing; the run continues unchanged.
 ### 3. Walk the milestone's answer commits
 
 Collect every answer commit for this milestone — all three provenances — with a **path-scoped**
-log, using the `<milestone_id>` from step 1 verbatim in the path:
+log, using the `<path>` from step 1 verbatim in the path:
 
 ```
-git log --format='%h %s' -E --grep='^(Manual-answer|Alternative-answer|Recommendation-answer): ' -- milestones/<milestone_id>/open_questions.xml
+git log --format='%h %s' -E --grep='^(Manual-answer|Alternative-answer|Recommendation-answer): ' -- <path>/open_questions.xml
 ```
 
-- **The path filter is itself the lower boundary.** `milestones/<milestone_id>/open_questions.xml`
+- **The path filter is itself the lower boundary.** `<path>/open_questions.xml`
   does not exist before `/define-milestone-goal` created it, so no earlier commit can touch it — there
   is no need for a milestone-start marker or recorded base SHA. It is also the only boundary on the
   harvest: no finish marker or upper bound is applied. The filter names `open_questions.xml` alone —
-  every answer removes its block from that file, so the one path selects exactly the answer commits.
+  every answer removes its block from that file, so the one path selects exactly the answer commits;
+  the finish commit that removed a finished milestone's directory touches the file too, but its
+  subject carries none of the three markers.
 - **Every subject is `<Marker>: <Short Title>`.** The marker names the provenance and the remainder
   is the answered question's Short Title — the `id` of the `<open-question>` block the answer removed.
 
@@ -124,7 +147,7 @@ Otherwise, for **each** commit, read three things and build one per-commit recor
 **Read the subject, the body, and the diff.**
 
 ```
-git show <hash> --format='%s%n%n%b' -- milestones/<milestone_id>/open_questions.xml milestones/<milestone_id>/requirements.md
+git show <hash> --format='%s%n%n%b' -- <path>/open_questions.xml <path>/requirements.md
 ```
 
 - **Subject → provenance and Short Title.** Split on the first `: `. The marker is the provenance
@@ -507,8 +530,8 @@ There is no round limit; the loop ends only on one of the two answers below.
 
 **On acceptance — commit.** Read and follow the shared commit procedure at `${PLUGIN_ROOT}/shared/commit-procedure.md`, running its one commit-tool command yourself as this step's one git tool call. Supply it these three inputs:
 
-- **PATHS** — this skill's own change set: the fixed-path store `milestones/answer_decision_principles.md` (a `milestones/`-root artifact, **not** any `<MILESTONE_DIR>` file — this skill writes only that store).
-- **SUBJECT** — `Principle-capture: <milestone_id>`, with `<milestone_id>` the argument from step 1 used verbatim (e.g. `Principle-capture: milestone_12_user-guide`), the marker naming this skill's distinctive principle-capture function.
+- **PATHS** — this skill's own change set: the fixed-path store `milestones/answer_decision_principles.md` (a `milestones/`-root artifact, **not** any file under `<path>` — this skill writes only that store).
+- **SUBJECT** — `Principle-capture: <path>`, with `<path>` the argument from step 1 used verbatim, trailing slash included (e.g. `Principle-capture: milestones/user-guide/`), the marker naming this skill's distinctive principle-capture function.
 - **BODY** — **one short line per store change**, each naming the **change kind** — `add`,
   `revision`, `prune`, `merge`, or `generalization` — and the **Short Title of the override answer
   commit that drove it**, e.g. `prune: Mutate live machinery last — driven by Cascade parent order`.
@@ -549,7 +572,7 @@ before the first write: in the clean case that is `HEAD`; after a dirty-store pr
 user's own uncommitted edits, which survive intact. Then **exit explicitly — do not invoke
 `shared/commit-procedure.md`**, not even for its commit tool's guard: stage nothing and commit
 nothing. The commit tool's dirty-own-path guard would read the user's surviving edits as this
-pass's change and commit them under `Principle-capture: <milestone_id>`, which is why the
+pass's change and commit them under `Principle-capture: <path>`, which is why the
 rejection path never reaches it. No empty commit records the rejection. Go to step 8 (nothing
 captured).
 
