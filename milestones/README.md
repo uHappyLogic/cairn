@@ -13,9 +13,19 @@ Milestones defined before the open-questions split — `milestone_01` through `m
 
 ## Current Milestone
 
-Current milestone: `milestones/milestone_53_completed-tasks-live-in-commits/`
+Current milestone: none
 
 ## Milestone History
+
+### Milestone 53 — Completed tasks live in commits
+
+- A completed task's whole record is now its `Task-completion:` commit: the title in the subject, the brief as the removed lines of `TASKS_TODO.md` in the diff, and the verified bar's `- ` bullets alone as the body.
+- The task-list tool's `move` became `remove`, which takes out one section, reads no bar, and ignores any `TASKS_DONE.md` beside the list, and the milestone-definition tool now creates three files.
+- The inline `complete-task` call captures the bar in the group-fed `{ bar="$(cat)"; } <<'EOF'` form, refuses a blank one with `acceptance bar empty`, and commits it as `--body`, while the agent writes it to a fixed-name `body.txt` beside `paths.txt` that the orchestrator commits from, stopping on an absent or empty body file.
+- A new read-only milestones tool, `tools/milestones.py`, lists through `tasks PATH [--with-body]` every `Task-completion:` commit that changed a path as hash, author date, milestone directory, and title, newest first, with each bar indented beneath it.
+- `finish-current-milestone`, `derive-tasks`, and `submit-task` read completed tasks through `tasks` and stop on a fixed line when it fails, while `ask-in-milestone-context` and `discuss-new-task` read it and carry on in prose.
+- The fixed-call tests assert each completion commit's body is exactly its bar and cover the empty-bar guard, and new test files cover the milestones tool on the shared git fixtures.
+- `CLAUDE.md`'s invariants, the docs, the README, and the pull request template describe the commit-borne record, and the design draft records step 2 as done with six findings for step 3.
 
 ### Milestone 52 — Same-tree commits with pathspec and retry
 
@@ -568,3 +578,4 @@ Current milestone: `milestones/milestone_53_completed-tasks-live-in-commits/`
 | 50 | Uniform milestone resolution with an override flag | `milestones/milestone_50_uniform-milestone-resolution-with-an/` |
 | 51 | Benchmark design finalization | `milestones/milestone_51_benchmark-design-finalization/` |
 | 52 | Same-tree commits with pathspec and retry | `milestones/milestone_52_same-tree-commits-with-pathspec-and/` |
+| 53 | Completed tasks live in commits | `milestones/milestone_53_completed-tasks-live-in-commits/` |
