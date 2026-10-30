@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Migrate Milestones Into Finish Commits
-
-Add `core/skills/migrate-milestones/`, a person-run skill in no chain that walks the README's `## Milestone History` entries oldest first and, for each whose directory still stands, makes through the commit tool the finish commit the new finish would make: the directory removed with `--remove`, the subject `Milestone-finish: <path>`, the body the title from that directory's `requirements.md` heading, a blank line, and the entry's bullets, and `--date` carrying the original finish commit's `%aI` author date, or the newest commit that changed the directory when no finish commit exists, while an entry whose directory is gone with a path-form finish subject in the log is skipped as migrated. Before its first commit it stops on a shallow repository or on any entry with no directory, listing them, then prints its whole plan and asks once, a rejection ending on one fixed no-op line with nothing changed; its closing commit removes `milestones/README.md` and a live milestone's `TASKS_DONE.md` if present and rewrites the context file's `## Milestone Workflow` section to the bootstrap's new guidance, and a project without the README is told so on one fixed line. Verified by the fixed-lines test and a run against a pointer-era scratch repository whose `milestones .` then lists every entry with its original date.
-
----
-
 ## Release Notes From the Milestones Tool
 
 Rewrite steps 5a–5e of `.claude/skills/release-plugin/SKILL.md` to read the record through the milestones tool rather than a `git log` of its own: `milestones .` supplies the finished milestones with their finish dates, the skill keeps those finished after the last tag's date, and `summary` on each supplies the title line and bullets of its `###` section, with the README cross-check dropped and steps 3c and 7 unchanged. Verified by reading both queries against a scratch repository holding finish-shaped commits on either side of a tag.

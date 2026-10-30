@@ -31,28 +31,7 @@ Workflow already bootstrapped — the guidance section is present.
 
 ### 2. Write the workflow guidance into CLAUDE.md
 
-**If `CLAUDE.md` does not exist**, create it with this minimal content:
-
-```markdown
-# CLAUDE.md
-
-This file provides guidance to the coding agent working in this repository.
-
-## Milestone Workflow
-
-This project uses the milestone-driven workflow. Each milestone lives at
-`<scope>/milestones/<slug>/`, under the `milestones/` container of the directory holding the
-core of its work, with `requirements.md`, `open_questions.xml`, and `TASKS_TODO.md`. No
-milestone is current: every skill working inside one is given its path as
-`--milestone <path>`, exactly as `/define-milestone-goal` printed it, trailing slash included.
-A milestone directory is removed only by `/finish-milestone`, whose `Milestone-finish: <path>`
-commit carries the milestone's record, so the directories standing are the live milestones and
-the git log holds the finished ones.
-```
-
-**If `CLAUDE.md` exists and lacks the section**, append the `## Milestone Workflow` section — its heading and the paragraph shown above, exactly — to the end of the file, leaving every existing line untouched.
-
-Never write a milestone path into `CLAUDE.md`, and never document the project's environment context in it yourself either.
+Write the `## Milestone Workflow` section exactly as `${CLAUDE_PLUGIN_ROOT}/shared/workflow-guidance.md` states it, by the one of that file's first two cases that applies: **if `CLAUDE.md` does not exist**, create it with the minimal content shown there; **if it exists and lacks the section**, append the section to the end of the file, leaving every existing line untouched. Never its third case: a section already present ended the run in step 1, and this skill rewrites nothing.
 
 ### 3. Commit the bootstrap
 
