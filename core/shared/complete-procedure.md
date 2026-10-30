@@ -18,7 +18,7 @@ Two things follow, and they shape this entire procedure:
 - **The task carries no acceptance criteria.** You derive the formal acceptance bar
   yourself, from the task description plus the milestone's `requirements.md` (step 2), and
   that derived bar — not anything authored in the task — is what step 4 verifies against
-  and what step 5 records.
+  and what step 5 hands on as the task's record.
 - **The task carries no forward contract.** Tasks run in order, so whatever an earlier task
   was to produce already exists: resolve every cross-task reference by reading that prior
   task's **live deliverable** in the project, never by trusting a name the task list
@@ -52,7 +52,7 @@ first, then the available `##` headings below it, one per line, so the caller ca
 not carry out anything that is not a task in `TASKS_TODO.md`.
 
 Read the located section in full, from its `##` heading to its trailing `---`, and hold its
-full heading text: it is the `<Task Title>` step 5 passes to the move. Its description is the
+full heading text: it is the `<Task Title>` step 5 passes to the removal. Its description is the
 statement of intent — what is to be achieved, why, and how it would be verified — and every
 sentence of it is input to the acceptance bar you derive next.
 
@@ -81,8 +81,7 @@ something a prior task produced, read that live deliverable now and let what it 
 contains — its real names, structure, and values — fix the criterion.
 
 Hold that derived bar in context verbatim. It is the gate step 4 checks against and the
-record step 5 appends to the `TASKS_DONE.md` entry, so it must not drift between here and
-there.
+record step 5 hands to your runner, so it must not drift between here and there.
 
 ### 3. Carry out the task
 
@@ -146,27 +145,23 @@ For each criterion:
 
 Do not proceed to step 5 until every criterion passes.
 
-### 5. Move the task TODO → DONE, augmented with the bar
+### 5. Remove the task from the list and hand on its bar
 
-The move is a **move-plus-augment**: the finished entry records both the brief and the bar
-the work was actually verified against. It is made by the plugin's task-list tool, the sole
-writer of both task files, which cuts the located section from `TASKS_TODO.md` and appends
-it to `TASKS_DONE.md` with the bar under a `**Verified:**` label it writes itself, closing the
-entry with the `---` separator:
+The finished task's record is the brief its section held together with the bar the work was
+actually verified against. The section leaves `TASKS_TODO.md` through the plugin's task-list
+tool, the sole writer of that file, which removes the located section — its heading, body,
+and `---` — and nothing else:
 
 ```
-python3 {{PLUGIN_ROOT}}/tools/task_list.py move <MILESTONE_DIR> "<Task Title>" <<'EOF'
-- <criterion 1, as verified>
-- <criterion 2, as verified>
-EOF
+python3 {{PLUGIN_ROOT}}/tools/task_list.py remove <MILESTONE_DIR> "<Task Title>"
 ```
 
-`<Task Title>` is the full heading step 1 located, and the quoted heredoc carries the
-derived acceptance bar as one `- ` bullet per criterion, in the order you verified them,
-written as they stood when they passed in step 4 — the same bar, neither re-derived nor
-summarized into prose.
+`<Task Title>` is the full heading step 1 located. The tool reads no bar, prints nothing on
+success, and on any failure prints one `Error: <reason>` line on stderr with a non-zero exit
+and `TASKS_TODO.md` left byte-for-byte unchanged.
 
-The tool prints nothing on success, and any failure is one `Error: <reason>` line on stderr
-with a non-zero exit and both task files left byte-for-byte unchanged.
-
-Run this command in one shell call chained with the git step your runner's own file shows.
+The bar this procedure hands to your runner takes one form: the derived acceptance bar as one
+`- ` bullet per criterion, in the order you verified them, written as they stood when they
+passed in step 4 — the same bar, neither re-derived nor summarized into prose, with no label,
+brief, or other line beside it. It reaches the record your runner's own file writes through
+the one shell call that file shows, which runs this command and carries the bar with it.

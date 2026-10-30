@@ -1,12 +1,13 @@
-"""The only writer of a milestone's existing TASKS_TODO.md and TASKS_DONE.md, the task lists.
+"""The only writer of a milestone's existing TASKS_TODO.md, the task list.
 
 Usage: python3 <plugin root>/tools/task_list.py <subcommand> MILESTONE_DIR [...]
 
-define_milestone.py creates both task files together with their milestone directory; from
-then on this module is their only writer. Every subcommand takes the already-resolved
-milestone directory as its first argument and acts on the task files inside it, which must
-already exist: no subcommand creates one. The caller resolves the milestone; this module
-never reads milestones/README.md, and it touches no git.
+define_milestone.py creates the task list together with its milestone directory; from then
+on this module is its only writer. Every subcommand takes the already-resolved milestone
+directory as its first argument and acts on the TASKS_TODO.md inside it, which must already
+exist: no subcommand creates it, and no other file in the directory is ever read or written.
+The caller resolves the milestone; this module never reads milestones/README.md, and it
+touches no git.
 
 Subcommands:
   initialize MILESTONE_DIR
@@ -23,27 +24,19 @@ Subcommands:
       the named section. The tool composes the heading, the body, and the "---" itself, so
       a body line reading as a "---" separator or a "## " heading is written verbatim as
       body text by this call
-  move MILESTONE_DIR TASK_TITLE
-      move the TASKS_TODO.md section whose heading is TASK_TITLE to the end of
-      TASKS_DONE.md, reading the acceptance bar it was verified against from standard
-      input as opaque Markdown: the entry is the section's heading and body, the
-      "**Verified:**" line, the bar verbatim with only its leading and trailing blank lines
-      trimmed, and the "---". An empty bar is refused; the bar is neither split into
-      criteria nor checked for bullets, and the title is never checked against the entries
-      TASKS_DONE.md already holds. Both new contents are rendered before either file is
-      touched; TASKS_DONE.md is replaced first and TASKS_TODO.md second, and when the second
-      replace fails TASKS_DONE.md's original bytes are written back, so the call fails with
-      both files as they were. Only when that restore fails too does the entry stand in both
-      files, and the Error line then says so
+  remove MILESTONE_DIR TASK_TITLE
+      remove the TASKS_TODO.md section whose heading is TASK_TITLE, its heading, body, and
+      "---" together, and nothing else. It reads nothing from standard input and renders
+      the removed section nowhere
 
 A TASK_TITLE is matched against the "## " headings only by exact equality after
 whitespace-folding and case-folding; a partial title, a title two sections share, or one
-no section carries is refused. Both writers refuse an empty title or body, and a title
-whose folded form equals one TASKS_TODO.md already holds (for initialize, one the list
-itself repeats). No other rule of the task format is checked: titles and bodies are written
+no section carries is refused. initialize and insert refuse an empty title or body, and a
+title whose folded form equals one TASKS_TODO.md already holds (for initialize, one the
+list itself repeats). No other rule of the task format is checked: titles and bodies are written
 as given.
 
-A free-text body (the list of initialize, the section body of insert, the bar of move) travels on standard
+A free-text body (the list of initialize, the section body of insert) travels on standard
 input, never as an argument: the tool reads sys.stdin.buffer to end of file exactly once
 per call and decodes it as UTF-8 itself, and it refuses a terminal stdin so a call that
 forgot to pipe its body (a quoted heredoc, a redirected file) fails instead of blocking.
@@ -51,34 +44,29 @@ forgot to pipe its body (a quoted heredoc, a redirected file) fails instead of b
 Task file model, read whole on every write:
   - the preamble is everything before the first column-0 "## " line; it is never checked
     and never refused, and every write discards it and renders the file's fixed heading
-    ("# TASKS TODO" or "# TASKS DONE") in its place
+    ("# TASKS TODO") in its place
   - every column-0 "## " line is a section heading, with no code-fence exemption
   - a section ends at its "---" line when one comes first, and otherwise at the next
     heading or the end of the file; a "---" line is that separator only when the next
     non-blank line is a heading or the end of the file, and every other "---" line is body
     text of its section, so a separator is always the one standing directly before the
     next heading or the end of the file
-  - in TASKS_DONE.md a section's last "**Verified:**" line splits its body from its
-    acceptance bar
-  - a section's body (and bar) is carried through as parsed, with only its leading and
-    trailing blank lines trimmed
+  - a section's body is carried through as parsed, with only its leading and trailing
+    blank lines trimmed
 
 Canonical layout, the form every write renders the whole file into, every section the call
 did not touch included: the heading line and one blank line; then for each section its
-"## <Task Title>" line, a blank line, the body and a blank line, in TASKS_DONE.md the
-"**Verified:**" line, a blank line, the bar and a blank line, then "---"; one blank line
+"## <Task Title>" line, a blank line, the body and a blank line, then "---"; one blank line
 between sections; UTF-8, LF line ends, the file ending in "---" plus one newline (or in the
 heading's blank line when it holds no section).
 
 Output and error contract:
   - a mutator prints nothing on success
   - every failure is exactly one line "Error: <reason>" on stderr with exit status 1, and
-    a non-zero exit leaves both task files byte-for-byte unchanged (move restores
-    TASKS_DONE.md itself when its second replace fails, and says so in the one line when
-    that restore fails too); a malformed invocation
+    a non-zero exit leaves TASKS_TODO.md byte-for-byte unchanged; a malformed invocation
     gets argparse's own usage message and exit status 2; no traceback ever reaches the
     caller
-  - each file is replaced through a temporary file in its own directory renamed over it,
+  - the file is replaced through a temporary file in its own directory renamed over it,
     keeping its mode
 
 Standard library only; runs on Python 3.9 and later.
@@ -90,15 +78,12 @@ import stat
 import sys
 import tempfile
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List
 
 TODO_NAME = "TASKS_TODO.md"
 TODO_HEADING = "# TASKS TODO"
-DONE_NAME = "TASKS_DONE.md"
-DONE_HEADING = "# TASKS DONE"
 HEADING_PREFIX = "## "
 SEPARATOR = "---"
-VERIFIED_LABEL = "**Verified:**"
 
 
 class ToolError(Exception):
@@ -109,14 +94,12 @@ class ToolError(Exception):
 class Section:
     title: str
     body: str
-    bar: Optional[str] = None
 
 
 @dataclass
 class TaskFile:
     heading: str
     sections: List[Section]
-    with_bar: bool
 
 
 # --- text -----------------------------------------------------------------------------
@@ -169,7 +152,7 @@ def trimmed(lines):
 # --- model ----------------------------------------------------------------------------
 
 
-def parse_sections(text, with_bar):
+def parse_sections(text):
     """The text's preamble (the lines before its first heading) and its sections."""
     lines = lines_of(text)
     index = 0
@@ -189,27 +172,14 @@ def parse_sections(text, with_bar):
                 break
             content.append(lines[index])
             index += 1
-        sections.append(make_section(title, content, with_bar))
+        sections.append(Section(title, trimmed(content)))
     return preamble, sections
-
-
-def make_section(title, content, with_bar):
-    if with_bar:
-        labels = [position for position, line in enumerate(content) if line.rstrip() == VERIFIED_LABEL]
-        if labels:
-            label = labels[-1]
-            return Section(title, trimmed(content[:label]), trimmed(content[label + 1:]))
-    return Section(title, trimmed(content))
 
 
 def render_section(section):
     parts = [HEADING_PREFIX + section.title, ""]
     if section.body:
         parts += [section.body, ""]
-    if section.bar is not None:
-        parts += [VERIFIED_LABEL, ""]
-        if section.bar:
-            parts += [section.bar, ""]
     parts.append(SEPARATOR)
     return "\n".join(parts) + "\n"
 
@@ -227,10 +197,6 @@ def todo_path(milestone_dir):
     return os.path.join(milestone_dir, TODO_NAME)
 
 
-def done_path(milestone_dir):
-    return os.path.join(milestone_dir, DONE_NAME)
-
-
 def read_file_bytes(path):
     try:
         with open(path, "rb") as handle:
@@ -239,27 +205,15 @@ def read_file_bytes(path):
         raise ToolError(f"{path} does not exist")
 
 
-def load_task_file(path, heading, with_bar):
-    """The parsed task file at path, its preamble discarded."""
-    return decode_task_file(path, read_file_bytes(path), heading, with_bar)
-
-
-def decode_task_file(path, data, heading, with_bar):
-    """The parsed task file whose bytes, read from path, are data, its preamble discarded."""
+def load_todo(milestone_dir):
+    """The parsed TASKS_TODO.md of the milestone, its preamble discarded."""
+    path = todo_path(milestone_dir)
     try:
-        text = data.decode("utf-8")
+        text = read_file_bytes(path).decode("utf-8")
     except UnicodeDecodeError:
         raise ToolError(f"{path} is not UTF-8 text")
-    _, sections = parse_sections(text, with_bar)
-    return TaskFile(heading, sections, with_bar)
-
-
-def load_todo(milestone_dir):
-    return load_task_file(todo_path(milestone_dir), TODO_HEADING, with_bar=False)
-
-
-def load_done(milestone_dir):
-    return load_task_file(done_path(milestone_dir), DONE_HEADING, with_bar=True)
+    _, sections = parse_sections(text)
+    return TaskFile(TODO_HEADING, sections)
 
 
 def write_bytes(path, data):
@@ -344,7 +298,7 @@ def cmd_initialize(args):
     path = todo_path(args.milestone_dir)
     read_file_bytes(path)
     text = read_body("the task list")
-    preamble, sections = parse_sections(text, with_bar=False)
+    preamble, sections = parse_sections(text)
     if any(not is_blank(line) for line in preamble):
         raise ToolError(
             "the task list on standard input holds text before its first \"## \" heading; "
@@ -362,7 +316,7 @@ def cmd_initialize(args):
         if key in seen:
             raise ToolError(f"the task list on standard input titles two sections \"{seen[key]}\" and \"{section.title}\", which fold to the same title")
         seen[key] = section.title
-    save_task_file(path, TaskFile(TODO_HEADING, sections, with_bar=False))
+    save_task_file(path, TaskFile(TODO_HEADING, sections))
     return 0
 
 
@@ -387,32 +341,12 @@ def cmd_insert(args):
     return 0
 
 
-def cmd_move(args):
-    todo = todo_path(args.milestone_dir)
-    done = done_path(args.milestone_dir)
-    todo_file = load_todo(args.milestone_dir)
-    done_bytes = read_file_bytes(done)
-    done_file = decode_task_file(done, done_bytes, DONE_HEADING, with_bar=True)
-    position = find_section(todo_file, todo, args.task_title)
-    bar = trimmed(lines_of(read_body("the acceptance bar")))
-    if not bar:
-        raise ToolError("the acceptance bar on standard input is empty")
-    section = todo_file.sections.pop(position)
-    done_file.sections.append(Section(section.title, section.body, bar))
-    new_done = render_file(done_file).encode("utf-8")
-    new_todo = render_file(todo_file).encode("utf-8")
-    write_bytes(done, new_done)
-    try:
-        write_bytes(todo, new_todo)
-    except Exception as error:
-        try:
-            write_bytes(done, done_bytes)
-        except Exception as restore_error:
-            raise ToolError(
-                f"replacing {todo} failed ({describe(error)}) and restoring {done} failed too "
-                f"({describe(restore_error)}); the section \"{section.title}\" now stands in both files"
-            )
-        raise
+def cmd_remove(args):
+    path = todo_path(args.milestone_dir)
+    task_file = load_todo(args.milestone_dir)
+    position = find_section(task_file, path, args.task_title)
+    del task_file.sections[position]
+    save_task_file(path, task_file)
     return 0
 
 
@@ -422,7 +356,7 @@ def cmd_move(args):
 def build_parser():
     parser = argparse.ArgumentParser(
         prog="task_list.py",
-        description="Write a milestone's existing TASKS_TODO.md and TASKS_DONE.md, the task lists this tool writes.",
+        description="Write a milestone's existing TASKS_TODO.md, the task list this tool writes.",
     )
     subcommands = parser.add_subparsers(dest="subcommand", metavar="<subcommand>", required=True)
 
@@ -431,7 +365,7 @@ def build_parser():
         subparser.add_argument(
             "milestone_dir",
             metavar="MILESTONE_DIR",
-            help="the resolved milestone directory holding TASKS_TODO.md and TASKS_DONE.md",
+            help="the resolved milestone directory holding TASKS_TODO.md",
         )
         subparser.set_defaults(func=func)
         return subparser
@@ -473,16 +407,16 @@ def build_parser():
         help="put the section behind the section with this title, compared whitespace-folded and case-folded",
     )
 
-    move_parser = add_subcommand(
-        "move",
-        cmd_move,
-        "move the TASKS_TODO.md section with the given title to the end of TASKS_DONE.md, "
-        "followed by the \"**Verified:**\" line and the acceptance bar read from standard input",
+    remove_parser = add_subcommand(
+        "remove",
+        cmd_remove,
+        "remove the TASKS_TODO.md section with the given title, its heading, body, and \"---\" "
+        "together, reading nothing from standard input and no other file of the milestone directory",
     )
-    move_parser.add_argument(
+    remove_parser.add_argument(
         "task_title",
         metavar="TASK_TITLE",
-        help="the title of the section to move, compared whitespace-folded and case-folded against the TASKS_TODO.md titles",
+        help="the title of the section to remove, compared whitespace-folded and case-folded against the TASKS_TODO.md titles",
     )
     return parser
 

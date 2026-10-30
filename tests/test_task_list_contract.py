@@ -1,5 +1,5 @@
 """The output and error contract every task-list subcommand shares: silent mutators, one Error
-line with exit 1 and both task files byte-for-byte unchanged, argparse's own exit 2 for a
+line with exit 1 and the task list byte-for-byte unchanged, argparse's own exit 2 for a
 malformed invocation, and never a traceback."""
 
 import os
@@ -14,11 +14,10 @@ import task_list
 TOOL = Path(task_list.__file__).resolve()
 
 TODO = task_list.TODO_NAME
-DONE = task_list.DONE_NAME
 
 
 def snapshot(target):
-    return (target / TODO).read_bytes(), (target / DONE).read_bytes()
+    return (target / TODO).read_bytes()
 
 
 def assert_one_error_line(result):
@@ -48,7 +47,7 @@ def test_unknown_subcommand_is_a_usage_error(run_task_list, tmp_path):
     assert b"invalid choice: 'append'" in result.stderr
 
 
-@pytest.mark.parametrize("subcommand", ["initialize", "insert", "move"])
+@pytest.mark.parametrize("subcommand", ["initialize", "insert", "remove"])
 def test_missing_milestone_dir_is_a_usage_error(run_task_list, subcommand):
     result = run_task_list(subcommand)
     assert result.returncode == 2
@@ -84,10 +83,10 @@ def test_insert_with_two_position_flags_is_a_usage_error(run_task_list, task_lis
     assert snapshot(target) == before
 
 
-def test_insert_and_move_without_a_title_are_usage_errors(run_task_list, task_list_dir):
+def test_insert_and_remove_without_a_title_are_usage_errors(run_task_list, task_list_dir):
     target = task_list_dir()
     before = snapshot(target)
-    for args in (["insert", str(target), "--end"], ["move", str(target)]):
+    for args in (["insert", str(target), "--end"], ["remove", str(target)]):
         result = run_task_list(*args, stdin=b"text\n")
         assert result.returncode == 2
         assert result.stdout == b""
@@ -107,10 +106,21 @@ def test_initialize_refuses_a_stray_flag_as_a_usage_error(run_task_list, task_li
 def test_help_exits_zero_and_lists_the_subcommands(run_task_list):
     result = run_task_list("--help")
     assert result.returncode == 0
-    for subcommand in (b"initialize", b"insert", b"move"):
+    for subcommand in (b"initialize", b"insert", b"remove"):
         assert subcommand in result.stdout
     assert b"append" not in result.stdout
+    assert b"move" not in result.stdout.replace(b"remove", b"")
     assert result.stderr == b""
+
+
+def test_the_retired_move_is_an_unknown_subcommand(run_task_list, task_list_dir):
+    target = task_list_dir()
+    before = snapshot(target)
+    result = run_task_list("move", str(target), "Build The Parser First", stdin=b"- a criterion\n")
+    assert result.returncode == 2
+    assert result.stdout == b""
+    assert b"invalid choice: 'move'" in result.stderr
+    assert snapshot(target) == before
 
 
 # --- failures ---------------------------------------------------------------------------
@@ -119,7 +129,7 @@ def test_help_exits_zero_and_lists_the_subcommands(run_task_list):
 def test_a_failure_is_exactly_one_error_line_on_stderr(run_task_list, task_list_dir):
     target = task_list_dir()
     before = snapshot(target)
-    result = run_task_list("move", str(target), "No Such Task", stdin=b"- a criterion\n")
+    result = run_task_list("remove", str(target), "No Such Task")
     assert_one_error_line(result)
     assert snapshot(target) == before
 
@@ -127,23 +137,27 @@ def test_a_failure_is_exactly_one_error_line_on_stderr(run_task_list, task_list_
 def test_an_operating_system_failure_is_an_error_line_not_a_traceback(run_task_list, tmp_path):
     blocker = tmp_path / "not-a-directory"
     blocker.write_text("")
-    for args in (["initialize", str(blocker)], ["insert", str(blocker), "A Task", "--end"], ["move", str(blocker), "A Task"]):
+    for args in (["initialize", str(blocker)], ["insert", str(blocker), "A Task", "--end"], ["remove", str(blocker), "A Task"]):
         result = run_task_list(*args, stdin=b"## A Task\n\nBody.\n\n---\n")
         assert_one_error_line(result)
     assert blocker.read_bytes() == b""
 
 
-@pytest.mark.parametrize("missing", [TODO, DONE])
-def test_a_missing_task_file_is_refused_and_nothing_is_written(run_task_list, task_list_dir, missing):
+@pytest.mark.parametrize(
+    "args, stdin",
+    [
+        (["initialize"], b"## A Task\n\nBody.\n\n---\n"),
+        (["insert", "A Task", "--end"], b"Body.\n"),
+        (["remove", "Build The Parser First"], None),
+    ],
+)
+def test_a_missing_task_list_is_refused_and_nothing_is_written(run_task_list, task_list_dir, args, stdin):
     target = task_list_dir()
-    (target / missing).unlink()
-    kept = DONE if missing == TODO else TODO
-    before = (target / kept).read_bytes()
-    result = run_task_list("move", str(target), "Build The Parser First", stdin=b"- a criterion\n")
+    (target / TODO).unlink()
+    result = run_task_list(args[0], str(target), *args[1:], stdin=stdin)
     assert_one_error_line(result)
     assert b"does not exist" in result.stderr
-    assert (target / kept).read_bytes() == before
-    assert sorted(path.name for path in target.iterdir()) == [kept]
+    assert list(target.iterdir()) == []
 
 
 @pytest.mark.parametrize(
@@ -151,10 +165,9 @@ def test_a_missing_task_file_is_refused_and_nothing_is_written(run_task_list, ta
     [
         ["initialize"],
         ["insert", "Non UTF Body", "--end"],
-        ["move", "Build The Parser First"],
     ],
 )
-def test_a_non_utf8_stdin_is_refused_with_both_files_unchanged(run_task_list, task_list_dir, args):
+def test_a_non_utf8_stdin_is_refused_with_the_list_unchanged(run_task_list, task_list_dir, args):
     target = task_list_dir()
     before = snapshot(target)
     result = run_task_list(args[0], str(target), *args[1:], stdin=b"## Bad \xff\xfe bytes\n\nBody.\n\n---\n")
@@ -163,11 +176,19 @@ def test_a_non_utf8_stdin_is_refused_with_both_files_unchanged(run_task_list, ta
     assert snapshot(target) == before
 
 
-def test_a_non_utf8_task_file_is_refused(run_task_list, task_list_dir):
+@pytest.mark.parametrize(
+    "args, stdin",
+    [
+        (["insert", "A Task", "--end"], b"Body.\n"),
+        (["remove", "A Task"], None),
+    ],
+)
+def test_a_non_utf8_task_list_is_refused(run_task_list, task_list_dir, args, stdin):
     target = task_list_dir(todo=b"# TASKS TODO\n\n## Bad \xff\n\nBody.\n\n---\n")
     before = snapshot(target)
-    result = run_task_list("insert", str(target), "A Task", "--end", stdin=b"Body.\n")
+    result = run_task_list(args[0], str(target), *args[1:], stdin=stdin)
     assert_one_error_line(result)
+    assert b"is not UTF-8 text" in result.stderr
     assert snapshot(target) == before
 
 
@@ -176,7 +197,6 @@ def test_a_non_utf8_task_file_is_refused(run_task_list, task_list_dir):
     [
         ["initialize"],
         ["insert", "Typed At A Terminal", "--end"],
-        ["move", "Build The Parser First"],
     ],
 )
 def test_a_terminal_stdin_is_refused_without_blocking(task_list_dir, args):
@@ -210,19 +230,24 @@ def test_every_mutator_prints_nothing_on_success(run_task_list, task_list_dir):
         (["insert", str(target), "Third Task", "--end"], b"The third body.\n"),
         (["insert", str(target), "Zeroth Task", "--before", "First Task"], b"The zeroth body.\n"),
         (["insert", str(target), "Middle Task", "--after", "First Task"], b"The middle body.\n"),
-        (["move", str(target), "First Task"], b"- the first criterion\n"),
+        (["remove", str(target), "First Task"], None),
     ]
     for args, stdin in calls:
         result = run_task_list(*args, stdin=stdin)
         assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
 
 
-def test_a_write_keeps_the_task_file_mode_and_leaves_no_temporary_file(run_task_list, task_list_dir):
+@pytest.mark.parametrize(
+    "args, stdin",
+    [
+        (["insert", "A Task", "--end"], b"Body.\n"),
+        (["remove", "Build The Parser First"], None),
+    ],
+)
+def test_a_write_keeps_the_task_list_mode_and_leaves_no_temporary_file(run_task_list, task_list_dir, args, stdin):
     target = task_list_dir()
     os.chmod(target / TODO, 0o640)
-    os.chmod(target / DONE, 0o604)
-    result = run_task_list("move", str(target), "Build The Parser First", stdin=b"- a criterion\n")
+    result = run_task_list(args[0], str(target), *args[1:], stdin=stdin)
     assert (result.returncode, result.stderr) == (0, b"")
     assert (os.stat(target / TODO).st_mode & 0o777) == 0o640
-    assert (os.stat(target / DONE).st_mode & 0o777) == 0o604
-    assert sorted(path.name for path in target.iterdir()) == [DONE, TODO]
+    assert sorted(path.name for path in target.iterdir()) == [TODO]

@@ -1,8 +1,8 @@
 """Where a task section ends: a "---" line is the section's separator only when it is the one
 standing directly before the next heading or the end of the file (only blank lines between),
 every other "---" line is body text, every column-0 "## " line is a heading, and a section
-with no qualifying "---" ends at the next heading or the end of the file — in bodies and
-**Verified:** bars alike, through every later re-parse."""
+with no qualifying "---" ends at the next heading or the end of the file, through every later
+re-parse."""
 
 import pytest
 
@@ -14,17 +14,13 @@ def silent(result):
     assert (result.returncode, result.stdout, result.stderr) == (0, b"", b"")
 
 
-def titles_and_bodies(text, with_bar=False):
-    _, sections = parse_sections(text, with_bar)
+def titles_and_bodies(text):
+    _, sections = parse_sections(text)
     return [(section.title, section.body) for section in sections]
 
 
 def todo_of(target):
     return (target / task_list.TODO_NAME).read_text(encoding="utf-8")
-
-
-def done_of(target):
-    return (target / task_list.DONE_NAME).read_text(encoding="utf-8")
 
 
 # --- the separator rule, in process -----------------------------------------------------
@@ -65,16 +61,9 @@ def test_an_indented_heading_or_a_deeper_heading_is_body_text():
     assert titles_and_bodies(text) == [("A", "  ## indented\n### Deeper")]
 
 
-def test_a_dash_line_in_a_bar_followed_by_prose_stays_in_the_bar():
-    text = "# TASKS DONE\n\n## A\n\nBody.\n\n**Verified:**\n\n- one\n\n---\n\nMore bar.\n\n---\n"
-    _, sections = parse_sections(text, with_bar=True)
-    assert [(section.title, section.body, section.bar) for section in sections] == [("A", "Body.", "- one\n\n---\n\nMore bar.")]
-
-
-def test_the_last_verified_line_splits_body_from_bar():
-    text = "## A\n\nBody naming **Verified:** inline.\n\n**Verified:**\n\nfirst\n\n**Verified:**\n\n- real bar\n\n---\n"
-    _, sections = parse_sections(text, with_bar=True)
-    assert (sections[0].body, sections[0].bar) == ("Body naming **Verified:** inline.\n\n**Verified:**\n\nfirst", "- real bar")
+def test_a_verified_label_line_is_plain_body_text():
+    text = "## A\n\nBody.\n\n**Verified:**\n\n- one\n\n---\n"
+    assert titles_and_bodies(text) == [("A", "Body.\n\n**Verified:**\n\n- one")]
 
 
 # --- through the subcommands and later re-parses ----------------------------------------
@@ -84,7 +73,7 @@ def test_a_body_dash_line_written_by_insert_survives_every_later_reparse(run_tas
     target = task_list_dir(todo=b"# TASKS TODO\n\n## First Task\n\nThe first body.\n\n---\n")
     silent(run_task_list("insert", str(target), "Second Task", "--before", "First Task", stdin=b"Before the line.\n\n---\n\nAfter the line.\n"))
     silent(run_task_list("insert", str(target), "Third Task", "--end", stdin=b"The third body.\n"))
-    silent(run_task_list("move", str(target), "First Task", stdin=b"- done\n"))
+    silent(run_task_list("remove", str(target), "First Task"))
     assert todo_of(target) == (
         "# TASKS TODO\n\n"
         "## Second Task\n\nBefore the line.\n\n---\n\nAfter the line.\n\n---\n\n"
@@ -118,24 +107,21 @@ def test_a_body_heading_line_written_by_insert_becomes_a_heading_on_the_next_rep
     )
 
 
-def test_a_bar_dash_line_written_by_move_survives_the_next_move(run_task_list, task_list_dir):
-    target = task_list_dir(done=b"# TASKS DONE\n\n")
-    silent(run_task_list("move", str(target), "Build The Parser First", stdin=b"- one\n\n---\n\n- two\n"))
-    silent(run_task_list("move", str(target), "Keep A Body Separator Line", stdin=b"- three\n"))
-    _, sections = parse_sections(done_of(target), with_bar=True)
-    assert [(section.title, section.bar) for section in sections] == [
-        ("Build The Parser First", "- one\n\n---\n\n- two"),
-        ("Keep A Body Separator Line", "- three"),
-    ]
-    assert sections[1].body.startswith("A body may hold a separator line of its own")
-    assert "\n---\n\nThe line above stays body text" in sections[1].body
+def test_a_body_dash_line_survives_the_removal_of_a_neighbouring_section(run_task_list, task_list_dir):
+    target = task_list_dir()
+    silent(run_task_list("remove", str(target), "Build The Parser First"))
+    silent(run_task_list("remove", str(target), "Render Unicode — Text As Given"))
+    _, sections = parse_sections(todo_of(target))
+    assert [section.title for section in sections] == ["Keep A Body Separator Line"]
+    assert sections[0].body.startswith("A body may hold a separator line of its own")
+    assert "\n---\n\nThe line above stays body text" in sections[0].body
 
 
 @pytest.mark.parametrize("anchor", ["--before", "--after"])
 def test_an_insert_next_to_an_unterminated_section_never_runs_into_it(run_task_list, task_list_dir, anchor):
     target = task_list_dir(todo=b"# TASKS TODO\n\n## First Task\n\nThe first body.\n## Last Task\n\nThe last body.")
     silent(run_task_list("insert", str(target), "New Task", anchor, "First Task", stdin=b"The new body.\n"))
-    _, sections = parse_sections(todo_of(target), with_bar=False)
+    _, sections = parse_sections(todo_of(target))
     order = ["New Task", "First Task", "Last Task"] if anchor == "--before" else ["First Task", "New Task", "Last Task"]
     assert [section.title for section in sections] == order
     assert todo_of(target).count("\n---\n") == 3

@@ -100,9 +100,9 @@ def workspace(tmp_path):
 
 @pytest.fixture
 def run_task_list():
-    """Run the task-list tool as a subprocess: run_task_list("move", str(dir), "Task Title",
-    stdin=b"- criterion"). Standard input is always piped (empty when stdin is None), so the
-    child never inherits a terminal."""
+    """Run the task-list tool as a subprocess: run_task_list("insert", str(dir), "Task Title",
+    "--end", stdin=b"The body."). Standard input is always piped (empty when stdin is None),
+    so the child never inherits a terminal."""
 
     def run(*args, stdin=None):
         return subprocess.run(
@@ -117,16 +117,14 @@ def run_task_list():
 
 @pytest.fixture
 def task_list_dir(tmp_path):
-    """A fresh milestone directory holding the two task files: by default copies of the golden
-    task-file fixtures, or the given bytes (task_list_dir(todo=b"# TASKS TODO\\n\\n")) -> Path."""
+    """A fresh milestone directory holding the task list: by default a copy of the golden
+    task-list fixture, or the given bytes (task_list_dir(todo=b"# TASKS TODO\\n\\n")) -> Path."""
 
-    def build(todo=None, done=None, name="milestone"):
+    def build(todo=None, name="milestone"):
         destination = tmp_path / name
         destination.mkdir()
         todo_bytes = (FIXTURES / "task_list_todo.md").read_bytes() if todo is None else todo
-        done_bytes = (FIXTURES / "task_list_done.md").read_bytes() if done is None else done
         (destination / "TASKS_TODO.md").write_bytes(todo_bytes)
-        (destination / "TASKS_DONE.md").write_bytes(done_bytes)
         return destination
 
     return build

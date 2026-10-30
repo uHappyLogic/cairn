@@ -1,7 +1,7 @@
 """The initialize subcommand: TASKS_TODO.md replaced whole by its heading and the ordered list
 read from standard input in the file's own section form, with no flag and no refusal for
 what the file held before, silent on success; every section validated first, so any refusal
-is one Error line with both task files byte-for-byte unchanged."""
+is one Error line with the task list byte-for-byte unchanged."""
 
 import pytest
 
@@ -25,7 +25,7 @@ def silent(result):
 
 
 def snapshot(target):
-    return (target / task_list.TODO_NAME).read_bytes(), (target / task_list.DONE_NAME).read_bytes()
+    return (target / task_list.TODO_NAME).read_bytes()
 
 
 def todo_of(target):
@@ -41,25 +41,17 @@ def refused(result, target, before):
 
 
 def test_initialize_replaces_a_fresh_file_with_the_heading_and_the_list_in_order(run_task_list, task_list_dir):
-    target = task_list_dir(todo=b"# TASKS TODO\n\n", done=b"# TASKS DONE\n\n")
+    target = task_list_dir(todo=b"# TASKS TODO\n\n")
     silent(run_task_list("initialize", str(target), stdin=LIST))
     assert todo_of(target) == CANONICAL
-    assert (target / task_list.DONE_NAME).read_bytes() == b"# TASKS DONE\n\n"
+    assert sorted(path.name for path in target.iterdir()) == [task_list.TODO_NAME]
 
 
 def test_initialize_replaces_whatever_the_file_held_with_no_flag(run_task_list, task_list_dir):
     target = task_list_dir()
-    done_before = (target / task_list.DONE_NAME).read_bytes()
     silent(run_task_list("initialize", str(target), stdin=LIST))
     assert todo_of(target) == CANONICAL
     assert "Build The Parser First" not in todo_of(target)
-    assert (target / task_list.DONE_NAME).read_bytes() == done_before
-
-
-def test_initialize_keeps_a_title_the_done_file_already_holds(run_task_list, task_list_dir):
-    target = task_list_dir()
-    silent(run_task_list("initialize", str(target), stdin=b"## Ship The Initial Tool\n\nFollow-up work reuses a done title.\n\n---\n"))
-    assert todo_of(target) == "# TASKS TODO\n\n## Ship The Initial Tool\n\nFollow-up work reuses a done title.\n\n---\n"
 
 
 def test_initialize_normalizes_the_list_into_the_canonical_layout(run_task_list, task_list_dir):
@@ -115,4 +107,4 @@ def test_initialize_refuses_a_missing_todo_file(run_task_list, task_list_dir):
     result = run_task_list("initialize", str(target), stdin=LIST)
     assert result.returncode == 1
     assert b"does not exist" in result.stderr
-    assert sorted(path.name for path in target.iterdir()) == [task_list.DONE_NAME]
+    assert list(target.iterdir()) == []

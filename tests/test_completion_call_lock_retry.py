@@ -1,15 +1,17 @@
 """The inline complete-task skill's fixed call, as the committed Claude Code tree renders it, run
 against another process's .git/index.lock: the one fenced block of the skill file holding the
-task-list tool's move, filled as the runner fills it (the milestone directory, the task's full
+task-list tool's remove, filled as the runner fills it (the milestone directory, the task's full
 heading, its bar as bullets, and the paths the task edited and created), and run under bash in a
 temporary git repository seeded through the conftest factory, with another run's change staged
 and an untracked file beside it. Git's own trace, written to a file, counts the attempts the
 commit tool makes, so the test knows the first `git add` met the held lock before it releases
 it. A lock released within the retry window lets the completion commit land carrying only its
-own paths; a lock never released ends the call within a limit a little above the retry bound,
-passing git's message on in the commit tool's one Error: line, with no commit. This is the
-suite's one fixed call run against a held lock: the retry schedule itself is the commit tool's
-and is tested in test_commit_retry.py, and the parallel test is not relied on for it."""
+own paths and the bar, exactly, as its body; a lock never released ends the call within a limit
+a little above the retry bound, passing git's message on in the commit tool's one Error: line,
+with no commit. An empty bar, filled as the runner would leave it, is refused by the call's own
+test before anything is removed or committed. This is the suite's one fixed call run against a
+held lock: the retry schedule itself is the commit tool's and is tested in test_commit_retry.py,
+and the parallel test is not relied on for it."""
 
 import os
 import re
@@ -25,26 +27,37 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 SKILL = REPO_ROOT / "hosts" / "claude" / "skills" / "complete-task" / "SKILL.md"
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
-MOVE_COMMAND = "/tools/task_list.py move "
+REMOVE_COMMAND = "/tools/task_list.py remove "
 COMMIT_COMMAND = "/tools/commit.py "
 BAR_PLACEHOLDER = "- <criterion "
 PATHS_PLACEHOLDER = "<recorded path 1> <recorded path 2>"
 
+# The lines the call opens with: the bar captured from its heredoc, then the empty-bar test.
+CAPTURE_LINE = "{ bar=\"$(cat)\"; } <<'EOF' &&"
+EMPTY_BAR_TEST = [
+    "if ! printf '%s\\n' \"$bar\" | grep -q '[^[:space:]]'; then",
+    "  echo 'acceptance bar empty'",
+    "  false",
+    "fi &&",
+]
+ACCEPTANCE_BAR_EMPTY = "acceptance bar empty\n"
+
 # <MILESTONE_DIR> as the runner fills it: the pointer's path, its trailing slash included.
 MILESTONE = "milestones/milestone_03_lock-retry-fixture/"
 TODO = MILESTONE + "TASKS_TODO.md"
-DONE = MILESTONE + "TASKS_DONE.md"
 
-# The golden task list's first task, its bar as the runner verified it, and the paths its work
-# edited (a tracked file) and created (a new one), in the order the runner recorded them.
+# The golden task list's first task, its bar as the runner verified it (an apostrophe and
+# parentheses included, which the group-fed capture must carry through every shell), and the
+# paths its work edited (a tracked file) and created (a new one), in the order the runner
+# recorded them.
 TASK_TITLE = "Build The Parser First"
 BAR = [
-    "- `src/parser.py` reads the whole file into its heading and sections",
+    "- `src/parser.py` reads the whole file into its heading and sections (the file's preamble dropped)",
     "- `src/parser_test.py` round-trips the golden files byte for byte",
 ]
 EDITED = "src/parser.py"
 CREATED = "src/parser_test.py"
-OWN_PATHS = [EDITED, CREATED, TODO, DONE]
+OWN_PATHS = [EDITED, CREATED, TODO]
 
 # Another run's work in the same tree: a staged edit and an untracked file.
 STAGED_ELSEWHERE = "README.md"
@@ -84,23 +97,23 @@ def fenced_blocks(text):
 
 
 def fixed_call():
-    """The one fence of the rendered skill file holding the move, which also runs the commit
+    """The one fence of the rendered skill file holding the removal, which also runs the commit
     tool."""
-    holding = [block for block in fenced_blocks(SKILL.read_text(encoding="utf-8")) if any(MOVE_COMMAND in line for line in block)]
-    assert len(holding) == 1, f"{len(holding)} fences of the skill file hold the move, not one"
+    holding = [block for block in fenced_blocks(SKILL.read_text(encoding="utf-8")) if any(REMOVE_COMMAND in line for line in block)]
+    assert len(holding) == 1, f"{len(holding)} fences of the skill file hold the removal, not one"
     lines = holding[0]
     assert sum(COMMIT_COMMAND in line for line in lines) == 1, "the call does not run the commit tool once"
     return lines
 
 
-def completion_call():
+def completion_call(bar=BAR):
     """The call written out as the runner writes it: the template's bar bullets replaced by the
-    verified bar, the two recorded-path placeholders by the task's paths, and every other
-    placeholder by its value."""
+    given bar (the verified one unless another is given), the two recorded-path placeholders by
+    the task's paths, and every other placeholder by its value."""
     template = fixed_call()
     bullets = [index for index, line in enumerate(template) if line.startswith(BAR_PLACEHOLDER)]
     assert bullets and bullets == list(range(bullets[0], bullets[-1] + 1)), "the bar's bullets are not one run"
-    lines = template[: bullets[0]] + BAR + template[bullets[-1] + 1 :]
+    lines = template[: bullets[0]] + list(bar) + template[bullets[-1] + 1 :]
     call = "\n".join(lines) + "\n"
     assert call.count(PATHS_PLACEHOLDER) == 1
     call = (
@@ -117,14 +130,13 @@ def completion_call():
 
 @pytest.fixture
 def project(repo, environment, git):
-    """A repository whose one commit holds the golden task files at MILESTONE, the file the task
+    """A repository whose one commit holds the golden task list at MILESTONE, the file the task
     edits, and an unrelated tracked file, with the task's edits made and another run's staged
     edit and untracked file in the tree beside them."""
     root = repo(
         {},
         files={
             TODO: (FIXTURES / "task_list_todo.md").read_bytes(),
-            DONE: (FIXTURES / "task_list_done.md").read_bytes(),
             EDITED: b"def parse(text):\n    raise NotImplementedError\n",
             STAGED_ELSEWHERE: b"An unrelated tracked file.\n",
         },
@@ -173,6 +185,11 @@ def head(git, project, environment):
     return git(project, environment, "rev-parse", "HEAD").strip()
 
 
+def message(git, project, environment):
+    """HEAD's whole commit message as git stored it: the subject, a blank line, and the body."""
+    return git(project, environment, "cat-file", "commit", "HEAD").split("\n\n", 1)[1]
+
+
 def staged(git, project, environment):
     return git(project, environment, "diff", "--cached", "--name-only").split()
 
@@ -180,17 +197,23 @@ def staged(git, project, environment):
 # --- the template as the rendered tree holds it ---------------------------------------------
 
 
-def test_the_call_chains_the_move_with_the_commit_tool_over_every_placeholder():
+def test_the_call_captures_and_tests_the_bar_then_chains_the_removal_with_the_commit_tool():
     lines = fixed_call()
     text = "\n".join(lines)
-    assert lines[0].startswith("python3 ") and MOVE_COMMAND in lines[0] and lines[0].endswith("<<'EOF' &&")
-    assert lines.index("EOF") == 1 + sum(line.startswith(BAR_PLACEHOLDER) for line in lines)
-    commit_line = next(line for line in lines if COMMIT_COMMAND in line)
-    assert commit_line.startswith('out="$(python3 ')
-    assert '--subject "Task-completion: <Task Title>" -- ' in commit_line
-    assert commit_line.endswith("<MILESTONE_DIR>/TASKS_TODO.md <MILESTONE_DIR>/TASKS_DONE.md)\" &&")
-    for placeholder in ("<MILESTONE_DIR>", "<Task Title>", PATHS_PLACEHOLDER):
-        assert placeholder in text
+    assert lines[0] == CAPTURE_LINE
+    eof = lines.index("EOF")
+    assert eof == 1 + sum(line.startswith(BAR_PLACEHOLDER) for line in lines)
+    assert lines[eof + 1 : eof + 1 + len(EMPTY_BAR_TEST)] == EMPTY_BAR_TEST
+    remove_line = lines[eof + 1 + len(EMPTY_BAR_TEST)]
+    assert remove_line == 'python3 ${CLAUDE_PLUGIN_ROOT}/tools/task_list.py remove <MILESTONE_DIR> "<Task Title>" &&'
+    commit_line = lines[eof + 2 + len(EMPTY_BAR_TEST)]
+    assert COMMIT_COMMAND in commit_line
+    assert commit_line == (
+        'out="$(python3 ${CLAUDE_PLUGIN_ROOT}/tools/commit.py --subject "Task-completion: <Task Title>" --body "$bar" -- '
+        f'{PATHS_PLACEHOLDER} <MILESTONE_DIR>/TASKS_TODO.md)" &&'
+    )
+    assert "<<'EOF'" not in remove_line, "the removal reads a heredoc"
+    assert text.count("<<'EOF'") == 1
     assert "echo 'completion commit landed'" in text
 
 
@@ -220,14 +243,13 @@ def test_a_lock_released_within_the_window_lets_the_commit_land_with_only_its_ow
     assert (process.returncode, stdout, stderr) == (0, COMPLETION_COMMIT_LANDED, "")
     assert attempts(trace, COMMIT_TRACE) == 1
     assert git(project, environment, "rev-parse", "HEAD^").strip() == before
-    assert git(project, environment, "log", "-1", "--format=%s").rstrip("\n") == f"Task-completion: {TASK_TITLE}"
-    assert git(project, environment, "log", "-1", "--format=%b").strip() == ""
-    committed = git(project, environment, "show", "--name-only", "--format=", "HEAD").split()
+    assert message(git, project, environment) == f"Task-completion: {TASK_TITLE}\n\n" + "\n".join(BAR) + "\n"
+    committed = git(project, environment, "show", "--name-only", "--format=", "HEAD").splitlines()
     assert sorted(committed) == sorted(OWN_PATHS)
     todo = git(project, environment, "show", f"HEAD:{TODO}")
-    done = git(project, environment, "show", f"HEAD:{DONE}")
     assert f"## {TASK_TITLE}\n" not in todo
-    assert f"## {TASK_TITLE}\n" in done and "\n".join(BAR) in done
+    assert todo.startswith("# TASKS TODO\n\n## Keep A Body Separator Line\n")
+    assert sorted(path.name for path in (project / MILESTONE).iterdir()) == ["TASKS_TODO.md"]
     assert staged(git, project, environment) == [STAGED_ELSEWHERE]
     assert git(project, environment, "status", "--porcelain").splitlines() == [
         f"M  {STAGED_ELSEWHERE}",
@@ -260,6 +282,27 @@ def test_a_lock_never_released_ends_the_call_within_the_limit_with_gits_message_
     assert git(project, environment, "rev-list", "--count", "HEAD").strip() == "1"
     lock.unlink()
     assert staged(git, project, environment) == [STAGED_ELSEWHERE]
-    # The move landed before the commit tool ran, so the completion stays in the tree for a rerun.
-    assert f"## {TASK_TITLE}\n" in (project / DONE).read_text(encoding="utf-8")
+    # The removal landed before the commit tool ran, so the completion stays in the tree for a
+    # rerun of the commit.
     assert f"## {TASK_TITLE}\n" not in (project / TODO).read_text(encoding="utf-8")
+
+
+# --- an empty bar ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("bar", [[], [""], ["   ", "\t", ""]], ids=["no-line", "blank-line", "whitespace-lines"])
+def test_an_empty_bar_prints_the_one_line_and_removes_and_commits_nothing(project, environment, git, run_call, bar):
+    before = head(git, project, environment)
+    todo_before = (project / TODO).read_bytes()
+    status, stdout, stderr = run_call(project, environment, completion_call(bar))
+    assert status != 0
+    assert (stdout, stderr) == (ACCEPTANCE_BAR_EMPTY, "")
+    assert (project / TODO).read_bytes() == todo_before
+    assert head(git, project, environment) == before
+    assert staged(git, project, environment) == [STAGED_ELSEWHERE]
+    assert git(project, environment, "status", "--porcelain").splitlines() == [
+        f"M  {STAGED_ELSEWHERE}",
+        f" M {EDITED}",
+        f"?? {UNTRACKED_ELSEWHERE}",
+        f"?? {CREATED}",
+    ]

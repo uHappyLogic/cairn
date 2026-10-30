@@ -9,15 +9,17 @@ orchestrator skill stands between the probe and the agent.
   `<alternative>` elements, with the seeded repository left exactly as committed.
 - `complete-task` is dispatched with the heading of the fixture's one trivial task, the
   seeded milestone directory, and a scratch directory this test created. Its pass signal is
-  the task's deliverable landed in the seeded repository, the task's section moved from
-  `TASKS_TODO.md` into `TASKS_DONE.md` in the task-list tool's rendering, and the one file its
-  contract has it land, `<scratch dir>/paths.txt`, naming the task's whole change set one path
-  per line (the deliverable and both task files), with nothing staged and nothing committed.
+  the task's deliverable landed in the seeded repository, the task's section removed from
+  `TASKS_TODO.md` in the task-list tool's rendering with no other file written beside it, and
+  the two files its contract has it land: `<scratch dir>/body.txt`, holding the acceptance bar
+  as `- ` bullets and nothing else, and `<scratch dir>/paths.txt`, naming the task's whole
+  change set one path per line (the deliverable and the task list), with nothing staged and
+  nothing committed.
 
 Each agent reaches its files only through the write and shell tools (the alternatives agent
 runs the open-question tool, writes its file, and renames it; the completion agent writes the
-deliverable, runs the task-list tool's move, and writes its path file), so a landed file is
-the proof those tools were granted: an agent without them cannot land one, whatever it
+deliverable, runs the task-list tool's remove, and writes its body file and path file), so a
+landed file is the proof those tools were granted: an agent without them cannot land one, whatever it
 reports. Nothing of an agent's final message is read or judged, and no transcript record is
 opened; the pass signal is the files alone.
 
@@ -41,7 +43,8 @@ SHORT_TITLE = "Data file format"
 TASK_TITLE = "Add The Project README"
 TASK_DELIVERABLE = "README.md"
 TASK_DELIVERABLE_HEADING = "# Pocket Ledger"
-# The completion agent's return: one fixed file name inside the run's scratch directory.
+# The completion agent's return: two fixed file names inside the run's scratch directory.
+BODY_FILE = "body.txt"
 PATH_FILE = "paths.txt"
 
 # The two plugin agents, by the bare names the plugin registers them under.
@@ -219,7 +222,7 @@ def test_the_alternatives_agent_lands_its_scratch_file(seeded_repo, run_agy, tmp
     assert git(repository, "status", "--porcelain") == ""
 
 
-def test_the_completion_agent_lands_the_task_and_its_path_file(seeded_repo, run_agy, tmp_path):
+def test_the_completion_agent_lands_the_task_its_body_file_and_its_path_file(seeded_repo, run_agy, tmp_path):
     repository = seeded_repo()
     milestone = repository / FIXTURE_MILESTONE
     scratch = tmp_path / "scratch"
@@ -238,28 +241,31 @@ def test_the_completion_agent_lands_the_task_and_its_path_file(seeded_repo, run_
     assert deliverable.is_file(), sorted(path.name for path in repository.iterdir())
     assert deliverable.read_text(encoding="utf-8").splitlines()[0] == TASK_DELIVERABLE_HEADING
 
-    # The section moved by the task-list tool: gone from TASKS_TODO.md, in TASKS_DONE.md once
-    # with its brief kept verbatim, the tool's **Verified:** label, and its closing separator.
+    # The section removed by the task-list tool: TASKS_TODO.md is the bare heading the tool
+    # renders, and the milestone directory gained no file, so no section was moved anywhere.
+    seeded_files = sorted(git(repository, "ls-files", "--", FIXTURE_MILESTONE).split())
     todo = (milestone / "TASKS_TODO.md").read_text(encoding="utf-8")
-    done = (milestone / "TASKS_DONE.md").read_text(encoding="utf-8")
-    assert "\n## " not in todo, todo
-    assert done.count("\n## ") == 1 and f"\n## {TASK_TITLE}\n" in done, done
-    seeded_todo = git(repository, "show", f"HEAD:{FIXTURE_MILESTONE}/TASKS_TODO.md")
-    brief = seeded_todo.split(f"## {TASK_TITLE}\n", 1)[1].split("\n---", 1)[0].strip()
-    assert brief in done, done
-    assert "**Verified:**" in done, done
-    assert done.rstrip().endswith("---"), done
+    assert todo == "# TASKS TODO\n\n", todo
+    present = sorted(path.relative_to(repository).as_posix() for path in milestone.iterdir())
+    assert present == seeded_files, present
 
-    # The pass signal: the agent's return file, at the one fixed name inside the scratch
-    # directory, and nothing else written there. It names the task's whole change set, one
-    # path per line, each line taken whole: the deliverable the agent created and the two task
-    # files the move changed, and no other path.
-    landed = scratch / PATH_FILE
+    # The pass signal: the agent's two return files, at their fixed names inside the scratch
+    # directory, and nothing else written there.
     written = sorted(path.name for path in scratch.iterdir())
-    assert written == [PATH_FILE], f"expected only {PATH_FILE} in {scratch}; it holds {written}"
-    text = landed.read_text(encoding="utf-8")
-    task_files = {f"{FIXTURE_MILESTONE}/TASKS_TODO.md", f"{FIXTURE_MILESTONE}/TASKS_DONE.md"}
-    assert set(repository_paths(repository, text)) == task_files | {TASK_DELIVERABLE}, text
+    assert written == [BODY_FILE, PATH_FILE], f"expected only {BODY_FILE} and {PATH_FILE} in {scratch}; it holds {written}"
+
+    # The body file holds the acceptance bar and nothing else: one `- ` bullet per criterion,
+    # with no label, brief, or other line.
+    bar = [line for line in (scratch / BODY_FILE).read_text(encoding="utf-8").splitlines() if line.strip()]
+    assert bar, "the body file holds no criterion"
+    assert all(line.startswith("- ") for line in bar), bar
+
+    # The path file names the task's whole change set, one path per line, each line taken
+    # whole: the deliverable the agent created and the task list the removal changed, and no
+    # other path.
+    text = (scratch / PATH_FILE).read_text(encoding="utf-8")
+    task_list = f"{FIXTURE_MILESTONE}/TASKS_TODO.md"
+    assert set(repository_paths(repository, text)) == {task_list, TASK_DELIVERABLE}, text
 
     # Nothing staged and nothing committed by the agent: the index matches the seed commit,
     # which stands alone.

@@ -2,7 +2,7 @@
 standard input, landed at exactly the one position its required flag names (--end,
 --before, --after), the body written verbatim, silent on success; an empty title or body, a
 folded title TASKS_TODO.md already holds, or an anchor naming no single section refused
-with one Error line and both task files byte-for-byte unchanged."""
+with one Error line and the task list byte-for-byte unchanged."""
 
 import pytest
 
@@ -19,7 +19,7 @@ def silent(result):
 
 
 def snapshot(target):
-    return (target / task_list.TODO_NAME).read_bytes(), (target / task_list.DONE_NAME).read_bytes()
+    return (target / task_list.TODO_NAME).read_bytes()
 
 
 def todo_of(target):
@@ -27,12 +27,12 @@ def todo_of(target):
 
 
 def titles_of(target):
-    _, sections = parse_sections(todo_of(target), with_bar=False)
+    _, sections = parse_sections(todo_of(target))
     return [section.title for section in sections]
 
 
 def section_of(target, title):
-    _, sections = parse_sections(todo_of(target), with_bar=False)
+    _, sections = parse_sections(todo_of(target))
     return next(section for section in sections if section.title == title)
 
 
@@ -95,9 +95,9 @@ def test_an_anchor_is_matched_whitespace_folded_and_case_folded(run_task_list, t
 
 def test_the_other_sections_keep_their_order_and_text(run_task_list, task_list_dir):
     target = task_list_dir()
-    _, before = parse_sections(todo_of(target), with_bar=False)
+    _, before = parse_sections(todo_of(target))
     silent(run_task_list("insert", str(target), "New Task", "--after", FIRST, stdin=b"The new body.\n"))
-    _, after = parse_sections(todo_of(target), with_bar=False)
+    _, after = parse_sections(todo_of(target))
     assert [section for section in after if section.title != "New Task"] == before
 
 
@@ -134,12 +134,6 @@ def test_no_task_format_rule_is_checked(run_task_list, task_list_dir):
     body = "One. Two. Three. Four. Five sentences.\n\n### Steps\n\n- a step"
     silent(run_task_list("insert", str(target), "x", "--end", stdin=body.encode("utf-8")))
     assert section_of(target, "x").body == body
-
-
-def test_a_title_the_done_file_already_holds_is_inserted(run_task_list, task_list_dir):
-    target = task_list_dir()
-    silent(run_task_list("insert", str(target), "Ship The Initial Tool", "--end", stdin=b"Follow-up work.\n"))
-    assert titles_of(target)[-1] == "Ship The Initial Tool"
 
 
 # --- refusals ---------------------------------------------------------------------------

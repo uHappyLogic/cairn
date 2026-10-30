@@ -1,19 +1,23 @@
 """Two milestones' tasks completed in parallel in one working tree, through the two calls of the
 completion interface as the committed Claude Code tree renders them: the completion agent's
-step-5 fixed call, the one fenced block of the agent file holding the task-list tool's move,
-which chains the move with the write of the path file, and the orchestrator's commit-from-file
-call, the one fenced block of the complete-all-tasks skill file running the commit tool. Two
-golden fixture milestones are seeded into one temporary git repository through the conftest
-factory, each run getting its own scratch directory as each complete-all-tasks run creates its
-own. For each milestone a thread makes its task's edits (a tracked file edited, a new file
-created, one of them holding a space), runs the agent's call filled as the agent fills it, that
-milestone's recorded paths substituted, and then runs the orchestrator's call on the path file
-the agent's call left behind; the two threads meet before their agent calls and again before
-their orchestrator calls, so each commit runs with the other run's whole change set uncommitted
-in the tree. Each Task-completion commit is asserted to carry exactly its own paths. The test
-writes no path file of its own, so a mismatch between the agent's write and the orchestrator's
-read fails here, and it runs no inline complete-task call. It is not relied on for the lock
-retry, which test_completion_call_lock_retry.py covers."""
+step-5 fixed call, the one fenced block of the agent file holding the task-list tool's remove,
+which captures and tests the bar and chains the removal with the writes of the body file and the
+path file, and the orchestrator's commit-from-file call, the one fenced block of the
+complete-all-tasks skill file running the commit tool. Two golden fixture milestones are seeded
+into one temporary git repository through the conftest factory, each run getting its own
+scratch directory as each complete-all-tasks run creates its own. For each milestone a thread
+makes its task's edits (a tracked file edited, a new file created, one of them holding a space),
+runs the agent's call filled as the agent fills it, that milestone's bar and recorded paths
+substituted, and then runs the orchestrator's call on the two files the agent's call left
+behind; the two threads meet before their agent calls and again before their orchestrator
+calls, so each commit runs with the other run's whole change set uncommitted in the tree. Each
+Task-completion commit is asserted to carry exactly its own paths and exactly its own bar as its
+body. An agent call given an empty bar is asserted to print the call's one line and to remove,
+write, and commit nothing, and the orchestrator's call is run on a scratch directory missing
+the body file or holding an empty one. The test writes no file the agent's call writes, so a
+mismatch between the agent's writes and the orchestrator's reads fails here, and it runs no
+inline complete-task call. It is not relied on for the lock retry, which
+test_completion_call_lock_retry.py covers."""
 
 import re
 import threading
@@ -21,20 +25,34 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import List, NamedTuple
 
+import pytest
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 TREE = REPO_ROOT / "hosts" / "claude"
 AGENT = TREE / "agents" / "complete-task.md"
 ORCHESTRATOR = TREE / "skills" / "complete-all-tasks" / "SKILL.md"
 
-MOVE_COMMAND = "/tools/task_list.py move "
+REMOVE_COMMAND = "/tools/task_list.py remove "
 COMMIT_COMMAND = "/tools/commit.py "
 BAR_PLACEHOLDER = "- <criterion "
 PATH_PLACEHOLDER = "<recorded path "
 PATH_FILE = "paths.txt"
+BODY_FILE = "body.txt"
 PROCESSED = "processed"
 UNFILLED = re.compile(r"<[A-Za-z][^<>\n]*>")
 
+# The lines the agent's call opens with: the bar captured from its heredoc, then the empty-bar
+# test, the same lines the inline skill's call opens with.
+CAPTURE_LINE = "{ bar=\"$(cat)\"; } <<'EOF' &&"
+EMPTY_BAR_TEST = [
+    "if ! printf '%s\\n' \"$bar\" | grep -q '[^[:space:]]'; then",
+    "  echo 'acceptance bar empty'",
+    "  false",
+    "fi &&",
+]
+
 COMPLETION_COMMIT_LANDED = "completion commit landed\n"
+ACCEPTANCE_BAR_EMPTY = "acceptance bar empty\n"
 
 # How long a thread waits for the other at either meeting point before the run is failed.
 MEETING_TIMEOUT = 60
@@ -61,17 +79,13 @@ class Milestone(NamedTuple):
         return self.directory + "TASKS_TODO.md"
 
     @property
-    def done(self):
-        return self.directory + "TASKS_DONE.md"
-
-    @property
     def recorded(self):
         """The paths the task created or edited, in the order the runner recorded them."""
         return [self.edited, self.created]
 
     @property
     def own_paths(self):
-        return [self.edited, self.created, self.todo, self.done]
+        return [self.edited, self.created, self.todo]
 
     @property
     def subject(self):
@@ -83,7 +97,7 @@ IMPORT = Milestone(
     directory="milestones/milestone_01_ledger-import/",
     title="Add The CSV Importer",
     bar=[
-        "- `src/importer.py` reads the sample export into ledger entries",
+        "- `src/importer.py` reads the sample export's rows into ledger entries (one per row)",
         "- `src/ledger.py` accepts the entries the importer reads",
     ],
     edited="src/ledger.py",
@@ -138,7 +152,7 @@ def fence_holding(path, command):
 
 
 def agent_template():
-    return fence_holding(AGENT, MOVE_COMMAND)
+    return fence_holding(AGENT, REMOVE_COMMAND)
 
 
 def orchestrator_template():
@@ -161,11 +175,11 @@ def filled(lines, values):
     return call
 
 
-def agent_call(milestone, scratch):
-    """The agent's step-5 call as the agent writes it: the bar's bullets replaced by the verified
-    bar, the recorded-path lines by the task's recorded paths, one per line, and every other
-    placeholder by its value."""
-    lines = replace_run(agent_template(), BAR_PLACEHOLDER, milestone.bar)
+def agent_call(milestone, scratch, bar=None):
+    """The agent's step-5 call as the agent writes it: the bar's bullets replaced by the given bar
+    (the milestone's verified one unless another is given), the recorded-path lines by the
+    task's recorded paths, one per line, and every other placeholder by its value."""
+    lines = replace_run(agent_template(), BAR_PLACEHOLDER, milestone.bar if bar is None else list(bar))
     lines = replace_run(lines, PATH_PLACEHOLDER, milestone.recorded)
     return filled(
         lines,
@@ -181,18 +195,29 @@ def orchestrator_call(milestone, scratch):
 # --- the two templates as the rendered tree holds them --------------------------------------
 
 
-def test_the_agent_call_writes_the_path_file_the_orchestrator_call_commits_from():
+def test_the_agent_call_writes_the_two_files_the_orchestrator_call_commits_from():
     agent = agent_template()
-    assert MOVE_COMMAND in agent[0] and agent[0].endswith("<<'EOF' &&")
-    path_file_line = f'cat > "<scratch dir>/{PATH_FILE}" <<\'EOF\''
-    assert agent.count(path_file_line) == 1
+    assert agent[0] == CAPTURE_LINE
+    eof = agent.index("EOF")
+    assert eof == 1 + sum(line.startswith(BAR_PLACEHOLDER) for line in agent)
+    assert agent[eof + 1 : eof + 1 + len(EMPTY_BAR_TEST)] == EMPTY_BAR_TEST
+    remove_line, body_line, path_file_line = agent[eof + 1 + len(EMPTY_BAR_TEST) : eof + 4 + len(EMPTY_BAR_TEST)]
+    assert remove_line == 'python3 ${CLAUDE_PLUGIN_ROOT}/tools/task_list.py remove <MILESTONE_DIR> "<Task Title>" &&'
+    assert body_line == f'printf \'%s\\n\' "$bar" > "<scratch dir>/{BODY_FILE}" &&'
+    assert path_file_line == f'cat > "<scratch dir>/{PATH_FILE}" <<\'EOF\''
     path_lines = agent[agent.index(path_file_line) + 1 :]
     assert path_lines[-1] == "EOF"
-    assert path_lines[-3:-1] == ["<MILESTONE_DIR>/TASKS_TODO.md", "<MILESTONE_DIR>/TASKS_DONE.md"]
+    assert path_lines[-2] == "<MILESTONE_DIR>/TASKS_TODO.md"
+    assert all(line.startswith(PATH_PLACEHOLDER) for line in path_lines[:-2])
     assert not any(re.search(r"\bgit\b", line) for line in agent), "the agent's call runs git"
 
     orchestrator = "\n".join(orchestrator_template())
-    assert f'--subject "Task-completion: <TASK_NAME>" --path-file "<scratch dir>/{PATH_FILE}"' in orchestrator
+    assert (
+        f'--subject "Task-completion: <TASK_NAME>" --body "$(cat "<scratch dir>/{BODY_FILE}")" '
+        f'--path-file "<scratch dir>/{PATH_FILE}"'
+    ) in orchestrator
+    for test_line in ("path file absent", "body file absent", "path file empty", "body file empty"):
+        assert f"echo '{test_line}'" in orchestrator
     assert "echo 'completion commit landed'" in orchestrator
 
 
@@ -255,15 +280,70 @@ def test_two_milestones_completed_in_parallel_in_one_tree_commit_only_their_own_
 
     for milestone in MILESTONES:
         commit = commits[milestone.subject]
-        assert git(project, environment, "log", "-1", "--format=%b", commit).strip() == ""
+        message = git(project, environment, "cat-file", "commit", commit).split("\n\n", 1)[1]
+        assert message == f"{milestone.subject}\n\n" + "\n".join(milestone.bar) + "\n", milestone.title
         committed = git(project, environment, "show", "--name-only", "--format=", commit).splitlines()
         assert sorted(committed) == sorted(milestone.own_paths), milestone.title
         todo = git(project, environment, "show", f"{commit}:{milestone.todo}")
-        done = git(project, environment, "show", f"{commit}:{milestone.done}")
         assert f"## {milestone.title}\n" not in todo
-        assert f"## {milestone.title}\n" in done and "\n".join(milestone.bar) in done
+        assert todo.startswith("# TASKS TODO\n\n## ")
+        assert sorted(path.name for path in (project / milestone.directory).iterdir()) == ["TASKS_TODO.md"]
 
     assert git(project, environment, "status", "--porcelain") == ""
-    for scratch in scratches:
+    for scratch, milestone in zip(scratches, MILESTONES):
         assert not (scratch / PATH_FILE).exists()
-        assert len(list((scratch / PROCESSED).iterdir())) == 1
+        assert not (scratch / BODY_FILE).exists()
+        processed = sorted((scratch / PROCESSED).iterdir())
+        assert [path.name.split(".")[0] for path in processed] == ["body", "paths"]
+        assert processed[0].read_text(encoding="utf-8") == "\n".join(milestone.bar) + "\n"
+
+
+# --- an empty bar and a missing or empty body file ------------------------------------------
+
+
+@pytest.mark.parametrize("bar", [[], [""], ["  ", "\t"]], ids=["no-line", "blank-line", "whitespace-lines"])
+def test_an_agent_call_with_an_empty_bar_prints_the_one_line_and_removes_writes_and_commits_nothing(
+    repo, environment, git, run_call, tmp_path, bar
+):
+    milestone = IMPORT
+    project = repo({milestone.directory: milestone.fixture}, files={milestone.edited: milestone.seeded})
+    initial = git(project, environment, "rev-parse", "HEAD").strip()
+    (project / milestone.edited).write_bytes(milestone.edit)
+    scratch = tmp_path / "scratch"
+    scratch.mkdir()
+    todo_before = (project / milestone.todo).read_bytes()
+
+    status, stdout, stderr = run_call(project, environment, agent_call(milestone, scratch, bar))
+
+    assert status != 0
+    assert (stdout, stderr) == (ACCEPTANCE_BAR_EMPTY, "")
+    assert (project / milestone.todo).read_bytes() == todo_before
+    assert list(scratch.iterdir()) == []
+    assert git(project, environment, "rev-parse", "HEAD").strip() == initial
+    assert git(project, environment, "diff", "--cached", "--name-only") == ""
+
+
+@pytest.mark.parametrize(
+    "body, printed",
+    [(None, "body file absent\n"), (b"", "body file empty\n"), (b"\n  \n\t\n", "body file empty\n")],
+    ids=["absent", "empty", "whitespace"],
+)
+def test_the_orchestrator_call_commits_nothing_without_a_bar_in_the_body_file(
+    repo, environment, git, run_call, tmp_path, body, printed
+):
+    milestone = IMPORT
+    project = repo({milestone.directory: milestone.fixture}, files={milestone.edited: milestone.seeded})
+    initial = git(project, environment, "rev-parse", "HEAD").strip()
+    (project / milestone.edited).write_bytes(milestone.edit)
+    scratch = tmp_path / "scratch"
+    scratch.mkdir()
+    (scratch / PATH_FILE).write_text(f"{milestone.edited}\n{milestone.todo}\n", encoding="utf-8")
+    if body is not None:
+        (scratch / BODY_FILE).write_bytes(body)
+
+    status, stdout, stderr = run_call(project, environment, orchestrator_call(milestone, scratch))
+
+    assert (stdout, stderr) == (printed, "")
+    assert git(project, environment, "rev-parse", "HEAD").strip() == initial
+    assert git(project, environment, "diff", "--cached", "--name-only") == ""
+    assert git(project, environment, "status", "--porcelain").splitlines() == [f" M {milestone.edited}"]
