@@ -1,9 +1,10 @@
-"""The milestones tool's shared contract: its help states the record's two limits (a shallow
-clone's truncated log, and the record's start at the first Task-completion: commit) and the
-live query's started test reading the same log, every failure is one Error line on stderr with
-exit 1 and nothing on stdout, a malformed invocation gets argparse's exit 2, no traceback
-reaches the caller, and a query writes nothing: the repository's status and HEAD are the same
-after it as before."""
+"""The milestones tool's shared contract: its help states the record's limits (a shallow clone's
+truncated log, with no check made for it, the record's start at the first Task-completion:
+commit, and the finish subjects read only in the path form) for the tasks query and the three
+history queries, the live query's started test reading the same log, and the trailer rule over
+every printed body; every failure is one Error line on stderr with exit 1 and nothing on stdout,
+a malformed invocation gets argparse's exit 2, no traceback reaches the caller, and a query
+writes nothing: the repository's status and HEAD are the same after it as before."""
 
 import os
 
@@ -51,6 +52,45 @@ def test_the_help_states_that_the_started_test_reads_a_shallow_clones_log(tmp_pa
     assert 'reads "defined"' in text
 
 
+@pytest.mark.parametrize("query", ["milestones", "summary", "record"])
+def test_each_history_querys_help_states_the_shallow_clone_limit(tmp_path, run_milestones, query):
+    result = run_milestones(tmp_path, query, "--help")
+    assert result.returncode == 0
+    text = " ".join(result.stdout.decode("utf-8").split())
+    assert "shallow clone" in text
+    assert "no check is made" in text
+    assert "finish" in text
+    assert "Milestone-finish:" in text
+    assert "Task-completion:" in text
+
+
+def test_the_top_level_help_states_the_finish_subject_limit_and_names_every_query(tmp_path, run_milestones):
+    text = " ".join(run_milestones(tmp_path, "--help").stdout.decode("utf-8").split())
+    assert "Milestone-finish: subjects naming a milestone path" in text
+    for query in ("live", "tasks", "milestones", "summary", "record"):
+        assert query in text
+
+
+@pytest.mark.parametrize(
+    "args", [("tasks", "--help"), ("summary", "--help"), ("record", "--help")]
+)
+def test_the_help_of_each_body_printer_states_the_trailer_rule(tmp_path, run_milestones, args):
+    text = " ".join(run_milestones(tmp_path, *args).stdout.decode("utf-8").split())
+    assert "trailing paragraph whose every line is a trailer" in text
+    assert "Token: value" in text
+
+
+def test_the_history_helps_name_their_line_shapes(tmp_path, run_milestones):
+    milestones = " ".join(run_milestones(tmp_path, "milestones", "--help").stdout.decode("utf-8").split())
+    assert '"live" or "finished"' in milestones
+    assert "YYYY-MM-DD" in milestones
+    assert "Every live line stands above every finished one" in milestones
+    summary = " ".join(run_milestones(tmp_path, "summary", "--help").stdout.decode("utf-8").split())
+    assert '"live"' in summary and "## Goal" in summary
+    record = " ".join(run_milestones(tmp_path, "record", "--help").stdout.decode("utf-8").split())
+    assert "column 0" in record and "four spaces" in record and "no bar" in record
+
+
 def test_the_live_help_names_the_discovery_pattern_and_the_line(tmp_path, run_milestones):
     text = " ".join(run_milestones(tmp_path, "live", "--help").stdout.decode("utf-8").split())
     assert "**/milestones/*/requirements.md" in text
@@ -78,8 +118,17 @@ def test_outside_a_git_repository_live_fails_on_one_error_line(tmp_path, run_mil
     assert "git ls-files" in line
 
 
-def test_an_empty_path_is_refused(seeded, run_milestones):
-    assert_one_error_line(run_milestones(seeded, "tasks", ""))
+@pytest.mark.parametrize("args", [("milestones", "."), ("summary", FIRST), ("record", ".")])
+def test_outside_a_git_repository_a_history_query_fails_on_one_error_line(tmp_path, run_milestones, args):
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    line = assert_one_error_line(run_milestones(outside, *args))
+    assert "git" in line
+
+
+@pytest.mark.parametrize("query", ["tasks", "milestones", "summary", "record"])
+def test_an_empty_path_is_refused(seeded, run_milestones, query):
+    assert_one_error_line(run_milestones(seeded, query, ""))
 
 
 def test_a_missing_git_fails_on_one_error_line(seeded, run_milestones, environment, tmp_path):
@@ -90,10 +139,42 @@ def test_a_missing_git_fails_on_one_error_line(seeded, run_milestones, environme
     assert "git" in line
     line = assert_one_error_line(run_milestones(seeded, "live", env=env))
     assert "git" in line
+    for args in (("milestones", "."), ("summary", FIRST), ("record", ".")):
+        line = assert_one_error_line(run_milestones(seeded, *args, env=env))
+        assert "git" in line
+
+
+@pytest.mark.skipif(hasattr(os, "geteuid") and os.geteuid() == 0, reason="root reads a file whatever its mode")
+def test_an_unreadable_live_requirements_file_fails_on_one_error_line(seeded, run_milestones):
+    requirements = seeded / FIRST / "requirements.md"
+    requirements.chmod(0)
+    try:
+        for args in (("milestones", "."), ("summary", FIRST), ("record", ".")):
+            line = assert_one_error_line(run_milestones(seeded, *args))
+            assert "requirements.md" in line
+    finally:
+        requirements.chmod(0o644)
 
 
 @pytest.mark.parametrize(
-    "args", [(), ("tasks",), ("unknown", FIRST), ("tasks", FIRST, "--body"), ("live", FIRST), ("live", "--with-body")]
+    "args",
+    [
+        (),
+        ("tasks",),
+        ("unknown", FIRST),
+        ("tasks", FIRST, "--body"),
+        ("live", FIRST),
+        ("live", "--with-body"),
+        ("milestones",),
+        ("milestones", FIRST, FIRST),
+        ("milestones", FIRST, "--with-body"),
+        ("summary",),
+        ("summary", FIRST, FIRST),
+        ("summary", FIRST, "--with-body"),
+        ("record",),
+        ("record", FIRST, FIRST),
+        ("record", FIRST, "--with-body"),
+    ],
 )
 def test_a_malformed_invocation_exits_2(seeded, run_milestones, args):
     result = run_milestones(seeded, *args)
@@ -116,6 +197,12 @@ def test_a_query_writes_nothing(seeded, make_commit, run_milestones, git, enviro
         ("tasks", "untracked.txt"),
         ("tasks", "nope"),
         ("live",),
+        ("milestones", "."),
+        ("milestones", "nope"),
+        ("summary", FIRST),
+        ("summary", "nope/"),
+        ("record", "."),
+        ("record", FIRST),
     ):
         run_milestones(seeded, *args)
     after = (

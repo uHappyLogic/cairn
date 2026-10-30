@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## History Queries Milestones Summary and Record
-
-Add the `milestones PATH`, `summary MILESTONE_PATH`, and `record PATH` queries to `core/tools/milestones.py` in the line shapes the decisions fix: `milestones` four tab-separated fields (`finished` or `live`, the finish commit's author date or `-`, path, title) with every live line above every finished one; `summary` a first line of the finish date or the word `live`, then the finish body or the title and the whole `## Goal` body; and `record` each `milestones` line at column 0 with the summary bullets and then the `tasks` lines indented four spaces beneath it, with no separator between milestones. Every body the tool prints, `tasks --with-body` included, drops a trailing paragraph whose every line is `Token: value`, the shallow-clone limit is stated in the help text and the docs, and tests go in the `test_milestones_*` family on the conftest git fixtures with finish-shaped commits.
-
----
-
 ## Gate Query Over Started Milestones
 
 Add the `gate MILESTONE_PATH` query to `core/tools/milestones.py`: it refuses a shallow repository (`git rev-parse --is-shallow-repository` printing `true`, naming `git fetch --unshallow`) and a path with no `milestones/` container, each on one `Error:` line with exit 1, and otherwise prints, one bare path per line, every other live milestone that is started (its `TASKS_TODO.md` modified after its creation, by the path-scoped `git log -1 --diff-filter=M` test) and whose scope equals, contains, or lies under the named milestone's scope, exiting 0 whether or not anything is printed. Pinned by tests in the `test_milestones_*` family covering overlap in both directions, disjoint packages, a defined-only milestone, and both refusals.

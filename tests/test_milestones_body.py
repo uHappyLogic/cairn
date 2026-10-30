@@ -1,7 +1,8 @@
 """The milestones tool's tasks query with its body flag: each task line stays at column 0 in its
 unflagged shape, and every line of the commit's body is printed beneath it indented by four
 spaces, as git log indents a message, with the body's outer blank lines trimmed and nothing
-else changed; a commit with no body is its task line alone. Every test runs on a repository
+else changed but the trailing trailer paragraph test_milestones_trailers.py pins; a commit
+with no body is its task line alone. Every test runs on a repository
 seeded through the conftest factory and given commits made through the conftest helper, whose
 messages git keeps verbatim."""
 

@@ -3,12 +3,15 @@ its record of finished work, read from its git log.
 
 Usage: python3 <plugin root>/tools/milestones.py live
        python3 <plugin root>/tools/milestones.py tasks PATH [--with-body]
+       python3 <plugin root>/tools/milestones.py milestones PATH
+       python3 <plugin root>/tools/milestones.py summary MILESTONE_PATH
+       python3 <plugin root>/tools/milestones.py record PATH
 
 Run from the workspace root. Every git read is a read-only git command (git log and git
 ls-files) run in the working directory the tool is started from, so git reads PATH relative to
 that directory, literally rather than as a pattern; the one file read is each live milestone's
-requirements.md, read from the working tree for its title. The tool writes no file, commits
-nothing, reads no file of its own, and never reads milestones/README.md.
+requirements.md, read from the working tree for its title and its goal. The tool writes no
+file, commits nothing, reads no file of its own, and never reads milestones/README.md.
 
 A live milestone is a directory holding a tracked file that matches the discovery pattern
 **/milestones/*/requirements.md and is present in the working tree: "**/" stands for any run
@@ -16,6 +19,22 @@ of leading directories, none included, and "*" for exactly one directory name. T
 matched against the repository paths git ls-files lists, so a milestones/ container may stand
 at the root or at any depth beneath it. The tasks query joins a commit to its milestone by the
 same pattern, read with TASKS_TODO.md in place of requirements.md.
+
+A finished milestone is a milestone path that is not live and that the subject of a commit
+other than a merge names after the "Milestone-finish:" marker, its surrounding spaces trimmed:
+a milestone path being a path with its trailing slash that the discovery pattern matches read
+with requirements.md appended, with no empty, "." or ".." component. When several such
+commits name one path, the first the log lists, the latest, is that milestone's finish commit,
+and its body is the milestone's record: its title line, a blank line, and its summary bullets.
+Presence wins over the log, so a milestone whose finish was reverted, its directory present
+again, is live. A milestone's scope is the directory holding its milestones/ container, the
+repository root for milestones/<slug>/ and pkg/ for pkg/milestones/<slug>/.
+
+Every commit body the tool prints (the task bars under tasks --with-body, the finish bodies
+summary and record print) has its outer blank lines trimmed and then drops a trailing
+paragraph whose every line is a trailer, "Token: value" with a token of letters, digits, and
+hyphens (Co-Authored-By: for instance), so a body that is only an attribution trailer prints
+as no body.
 
 Subcommands:
   live
@@ -49,43 +68,91 @@ Subcommands:
       With --with-body each task line is followed by the commit's body, the verified bar
       the task was completed against, every body line printed beneath it indented by four
       spaces (a blank line inside the body included) with the body's outer blank lines
-      trimmed and nothing else changed; a commit with no body is its task line alone. Every
-      task line stays at column 0, so the next column-0 line is the next task.
+      trimmed and a trailing trailer paragraph dropped, nothing else changed; a commit with
+      no body is its task line alone. Every task line stays at column 0, so the next column-0
+      line is the next task.
       When no task commit changed PATH the tool prints nothing and exits 0 if PATH is
       present in the working tree or was changed by any commit at all, and refuses
       otherwise, a path that is neither being most likely mistyped.
+  milestones PATH
+      print one line for every milestone, live or finished, that changed PATH through a task
+      commit (a commit the tasks query lists for PATH and joins to that milestone) or whose
+      scope overlaps PATH: the scope contains PATH or lies under it, read lexically from
+      PATH taken relative to the workspace root, so every milestone's scope overlaps "." and
+      a PATH that is absolute or leads out of the workspace overlaps no scope. Each line is
+      four fields separated by single tab characters: the state, the fixed word "live" or
+      "finished"; the date, the finish commit's author date as YYYY-MM-DD for a finished
+      milestone and the fixed placeholder "-" for a live one; the milestone path with its
+      trailing slash; and the title, for a live milestone as the live query reads it and for
+      a finished one the first line of its finish commit's body with whitespace runs folded
+      to one space, or "-" when the body is empty. Every live line stands above every
+      finished one: the live lines ordered by path, then the finished lines newest first by
+      the finish commit's author timestamp, those sharing a timestamp keeping git's order.
+      A PATH neither present in the working tree nor changed by any commit is refused; one
+      that is, with no milestone to list, prints nothing and exits 0.
+  summary MILESTONE_PATH
+      print one milestone's summary, MILESTONE_PATH being its path exactly as the milestones
+      query prints it, trailing slash included. The first line is a single field: the
+      finish commit's author date as YYYY-MM-DD for a finished milestone, the fixed word
+      "live" for a live one. For a finished milestone the finish commit's body follows (its
+      title line, a blank line, and its bullets); for a live one its title as the live
+      query reads it, then, when the section holds anything, a blank line and the body of
+      the requirements.md "## Goal" section, read from the working tree, from the line after
+      that heading to the next "# " or "## " heading or the end of the file, verbatim with
+      its outer blank lines trimmed. A MILESTONE_PATH that names neither a live nor a
+      finished milestone is refused.
+  record PATH
+      print, for every milestone the milestones query lists for PATH and in its order, that
+      query's line verbatim at column 0, then beneath it, every line indented by four spaces
+      (a blank line included): first the summary's last part, the bullets of a finished
+      milestone and the goal body of a live one, the summary's first line, title line, and
+      the blank line after the title dropped, since the column-0 line names them; then one
+      line, verbatim as the tasks query prints it and in its order, for every task commit
+      that changed PATH and joins that milestone, with no bar. No blank line or separator
+      stands between milestones, so the next column-0 line is the next milestone. A
+      milestone listed only because its scope overlaps PATH prints its line and its summary
+      alone, and "record ." prints the whole record. PATH is refused as the milestones
+      query refuses it.
 
 Limits:
   - the record is the git log: in a shallow clone the truncated history omits older task
-    commits without any sign, and no check is made for it; live's started test reads the
-    same log, so there a started milestone whose task list was modified only in the omitted
-    history reads "defined", with no check made for it either
-  - only subjects opening with "Task-completion:" are read, so the record starts at that
-    marker's first use (2026-09-02, in the plugin's own milestone_15); a task completed
-    earlier, under the retired "Tasklist-completion:" marker that carried the task title in
-    the commit body, is not listed
+    and finish commits without any sign, and no check is made for it, so a milestone whose
+    finish commit is cut off is neither listed by the milestones and record queries nor
+    summarized; live's started test reads the same log, so there a started milestone whose
+    task list was modified only in the omitted history reads "defined", with no check made
+    for it either
+  - only subjects opening with "Task-completion:" are read as task commits, so the record
+    starts at that marker's first use (2026-09-02, in the plugin's own milestone_15); a task
+    completed earlier, under the retired "Tasklist-completion:" marker that carried the task
+    title in the commit body, is not listed
+  - only "Milestone-finish:" subjects naming a milestone path are read as finish commits,
+    so a milestone whose finish subject names it by its id instead (the form used before
+    milestones were addressed by path) is not finished to the tool
 
 Output and error contract:
   - a query prints its lines on stdout and exits 0, printing nothing for an empty result
   - every failure is exactly one line "Error: <reason>" on stderr with exit status 1 and
-    nothing on stdout: a PATH that is empty, or neither present in the working tree nor
-    changed by any commit (the reason naming PATH as given), and a git command that could
-    not be run or failed (outside a git repository, for instance), the reason naming the
-    command and its exit status and carrying git's own message folded to one line, and a
-    live milestone's requirements.md that could not be read; a malformed invocation gets argparse's own usage message and exit status 2; no traceback
-    ever reaches the caller
+    nothing on stdout: a PATH or MILESTONE_PATH that is empty, a PATH neither present in the
+    working tree nor changed by any commit and a MILESTONE_PATH naming neither a live nor a
+    finished milestone (the reason naming the value as given), a git command that could not
+    be run or failed (outside a git repository, for instance), the reason naming the command
+    and its exit status and carrying git's own message folded to one line, and a live
+    milestone's requirements.md that could not be read; a malformed invocation gets
+    argparse's own usage message and exit status 2; no traceback ever reaches the caller
 
 Standard library only; runs on Python 3.9 and later.
 """
 
 import argparse
 import os
+import posixpath
 import re
 import subprocess
 import sys
 from dataclasses import dataclass
 
 TASK_MARKER = "Task-completion:"
+FINISH_MARKER = "Milestone-finish:"
 NO_MILESTONE = "-"
 BODY_INDENT = "    "
 TASK_LIST_NAME = "TASKS_TODO.md"
@@ -102,6 +169,15 @@ DEFINED = "defined"
 NO_TITLE = "-"
 TITLE_HEADING = re.compile(r"# (.*)")
 LEGACY_TITLE_PREFIX = re.compile(r"Milestone [0-9]+: ")
+
+LIVE = "live"
+FINISHED = "finished"
+NO_DATE = "-"
+GOAL_HEADING = "## Goal"
+# A line ending the goal section: the next top-level or second-level heading.
+SECTION_HEADING = re.compile(r"##? ")
+# One trailer line: a token of letters, digits, and hyphens, a colon, a space, and a value.
+TRAILER = re.compile(r"[A-Za-z0-9][A-Za-z0-9-]*: .*\S.*")
 
 # The fields of one commit in the log read, each preceded by a NUL: the full hash, %h, the
 # author timestamp, the author date, the subject, and the body. git makes no commit message
@@ -149,7 +225,10 @@ as its last component, **/milestones/*/TASKS_TODO.md ("-" when none or several
 match), and the task title.
 A milestone directory as PATH lists that milestone's completed tasks. When no
 task commit changed PATH, nothing is printed if PATH is present in the working
-tree or was changed by any commit, and one Error line is printed otherwise."""
+tree or was changed by any commit, and one Error line is printed otherwise.
+With --with-body, each body has its outer blank lines trimmed and drops a
+trailing paragraph whose every line is a trailer, Token: value (Co-Authored-By:,
+for instance)."""
 
 TASKS_LIMITS = """\
 Limits:
@@ -166,16 +245,94 @@ Limits:
     may omit the commit that modified a milestone's task list, which then reads
     "defined" without any sign, and no check is made for it"""
 
+FINISHED_DEFINITION = """\
+A finished milestone is a milestone path, with its trailing slash, that is not
+live and that a Milestone-finish: <path> subject names; the latest such commit
+is its finish commit, whose body is its summary (title line, blank line,
+bullets). A reverted finish, its directory present again, reads live."""
+
+TRAILER_RULE = """\
+Every body printed has its outer blank lines trimmed and drops a trailing
+paragraph whose every line is a trailer, Token: value (Co-Authored-By:, for
+instance)."""
+
+MILESTONES_DESCRIPTION = (
+    """\
+Print one line per milestone, live or finished, that changed PATH through a task
+commit (one the tasks query lists for PATH and joins to it) or whose scope
+overlaps PATH: the scope, the directory holding the milestone's milestones/
+container (the root for milestones/<slug>/), contains PATH or lies under it,
+read lexically, so every scope overlaps ".". Each line is four fields separated
+by tabs: "live" or "finished"; the finish commit's author date as YYYY-MM-DD,
+"-" for a live milestone; the milestone path with its trailing slash; and the
+title, read as the live query reads it for a live milestone and from the first
+line of the finish commit's body for a finished one ("-" when empty). Every live
+line stands above every finished one, the live lines by path, the finished ones
+newest first by the finish commit's author timestamp. A PATH neither present in
+the working tree nor changed by any commit is refused."""
+    + "\n\n"
+    + FINISHED_DEFINITION
+)
+
+SUMMARY_DESCRIPTION = (
+    """\
+Print one milestone's summary, MILESTONE_PATH being its path exactly as the
+milestones query prints it, trailing slash included. The first line is the
+finish commit's author date as YYYY-MM-DD for a finished milestone and the word
+"live" for a live one. Then follows the finish commit's body for a finished
+milestone (title line, blank line, bullets), and for a live one its title from
+the requirements.md heading, a blank line, and the body of its ## Goal section,
+read from the working tree, verbatim with its outer blank lines trimmed. A
+MILESTONE_PATH naming neither a live nor a finished milestone is refused."""
+    + "\n\n"
+    + FINISHED_DEFINITION
+    + "\n\n"
+    + TRAILER_RULE
+)
+
+RECORD_DESCRIPTION = (
+    """\
+Print, for each milestone the milestones query lists for PATH and in its order,
+that query's line at column 0, then beneath it, indented by four spaces: the
+summary's bullets for a finished milestone or its goal body for a live one (the
+date or "live" line, the title line, and the blank line after it dropped, since
+the column-0 line names them), then the tasks line of every task commit that
+changed PATH and joins that milestone, newest first, with no bar. No blank line
+or separator stands between milestones: the next column-0 line is the next
+milestone. A milestone listed only because its scope overlaps PATH prints its
+line and summary alone; record . prints the whole record. PATH is refused as the
+milestones query refuses it."""
+    + "\n\n"
+    + TRAILER_RULE
+)
+
+HISTORY_LIMITS = """\
+Limits:
+  - the record is the git log: in a shallow clone the truncated history omits
+    older finish and task commits without any sign, and no check is made for it,
+    so a milestone whose finish commit is cut off is neither listed nor
+    summarized
+  - only Milestone-finish: subjects naming a milestone path are read, so a
+    milestone whose finish subject names its id instead is not finished to the
+    tool
+  - only subjects opening with Task-completion: are read as task commits, so task
+    lines start at that marker's first use (2026-09-02, in the plugin's own
+    milestone_15); a task completed under the retired Tasklist-completion: marker
+    is not listed"""
+
 LIMITS = """\
 Limits:
   - the record is the git log: in a shallow clone the truncated history omits
-    older task commits without any sign, and no check is made for it; live's
-    started test reads the same log, so there a started milestone whose task list
-    was modified only in the omitted history reads "defined"
+    older task and finish commits without any sign, and no check is made for it;
+    live's started test reads the same log, so there a started milestone whose
+    task list was modified only in the omitted history reads "defined"
   - only subjects opening with Task-completion: are read, so the record starts at
     that marker's first use (2026-09-02, in the plugin's own milestone_15); a task
     completed earlier, under the retired Tasklist-completion: marker that carried
-    the task title in the commit body, is not listed"""
+    the task title in the commit body, is not listed
+  - only Milestone-finish: subjects naming a milestone path are read, so a
+    milestone whose finish subject names its id instead is not finished to the
+    tool"""
 
 
 class ToolError(Exception):
@@ -192,6 +349,25 @@ class TaskCommit:
     body: str
 
 
+@dataclass
+class FinishCommit:
+    timestamp: int
+    date: str
+    body: str
+
+
+@dataclass
+class Milestone:
+    """One milestone as the history queries print it: its state, date, path, and title, and
+    its summary's lines, the first line and the title line included."""
+
+    state: str
+    date: str
+    path: str
+    title: str
+    summary: list
+
+
 # --- text -----------------------------------------------------------------------------
 
 
@@ -204,14 +380,47 @@ def decoded(data):
     return data.decode("utf-8", "replace")
 
 
+def trimmed(lines):
+    """The lines with the leading and trailing ones holding only whitespace dropped."""
+    start, end = 0, len(lines)
+    while start < end and not lines[start].strip():
+        start += 1
+    while end > start and not lines[end - 1].strip():
+        end -= 1
+    return lines[start:end]
+
+
 def body_lines(body):
-    """The body's lines with its leading and trailing blank lines trimmed."""
-    lines = body.split("\n")
-    while lines and not lines[0].strip():
-        lines.pop(0)
-    while lines and not lines[-1].strip():
-        lines.pop()
+    """A commit body's lines as the tool prints them: its outer blank lines trimmed, then a
+    trailing paragraph whose every line is a trailer dropped, and the rest trimmed again."""
+    lines = trimmed(body.split("\n"))
+    start = len(lines)
+    while start > 0 and lines[start - 1].strip():
+        start -= 1
+    if start < len(lines) and all(TRAILER.fullmatch(line) for line in lines[start:]):
+        lines = trimmed(lines[:start])
     return lines
+
+
+def text_lines(text):
+    return re.split(r"\r?\n", text.lstrip("\ufeff"))
+
+
+def goal_lines(text):
+    """The body of a requirements.md text's "## Goal" section, from the line after its heading
+    to the next "# " or "## " heading or the end of the text, its outer blank lines trimmed;
+    no line when the text holds no such section."""
+    lines = text_lines(text)
+    for index, line in enumerate(lines):
+        if line.rstrip() != GOAL_HEADING:
+            continue
+        body = []
+        for following in lines[index + 1 :]:
+            if SECTION_HEADING.match(following):
+                break
+            body.append(following)
+        return trimmed(body)
+    return []
 
 
 def title_of(text):
@@ -266,6 +475,41 @@ def discovered_milestone(name):
     """The milestone directory a repository path names, with its trailing slash, when the path
     matches the discovery pattern, and None otherwise."""
     return milestone_holding(name, DISCOVERY_PATTERN.split("/")[-1])
+
+
+def is_milestone_path(text):
+    """Whether a text is a milestone path: a path with its trailing slash, no empty, "." or ".."
+    component, that the discovery pattern matches read with requirements.md appended."""
+    if not text.endswith("/"):
+        return False
+    if any(part in ("", ".", "..") for part in text[:-1].split("/")):
+        return False
+    return discovered_milestone(text + DISCOVERY_PATTERN.split("/")[-1]) == text
+
+
+def scope_of(directory):
+    """A milestone's scope as path components: the directory holding its milestones/ container,
+    no component for the repository root."""
+    return directory[:-1].split("/")[:-2]
+
+
+def path_scope(path):
+    """PATH as components relative to the workspace root, read lexically ("." and a trailing
+    slash folded away), or None when PATH is absolute or leads out of the workspace."""
+    normal = posixpath.normpath(path)
+    if normal == ".":
+        return []
+    if normal.startswith("/") or normal == ".." or normal.startswith("../"):
+        return None
+    return normal.split("/")
+
+
+def overlaps(scope, components):
+    """Whether a scope contains PATH's components or lies under them."""
+    if components is None:
+        return False
+    shorter = min(len(scope), len(components))
+    return scope[:shorter] == components[:shorter]
 
 
 # --- git ------------------------------------------------------------------------------
@@ -376,6 +620,37 @@ def task_commits(path):
     return sorted(found, key=lambda commit: commit.timestamp, reverse=True)
 
 
+def finish_commits():
+    """Every milestone path a finish commit names, mapped to the latest such commit, the first
+    the log lists: the commits other than merges whose subject opens with the finish marker
+    and names a milestone path."""
+    data = git(
+        [
+            "log",
+            "--no-merges",
+            "-z",
+            "--fixed-strings",
+            "--grep=" + FINISH_MARKER,
+            "--date=short",
+            "--format=" + LOG_FORMAT,
+        ]
+    )
+    found = {}
+    for fields, _ in parse_log(data):
+        _, _, timestamp, date, subject, body = (decoded(field) for field in fields)
+        if not subject.startswith(FINISH_MARKER):
+            continue
+        path = subject[len(FINISH_MARKER) :].strip()
+        if not is_milestone_path(path) or path in found:
+            continue
+        try:
+            seconds = int(timestamp)
+        except ValueError:
+            raise ToolError(f"git log printed an author timestamp this tool cannot read: {timestamp}")
+        found[path] = FinishCommit(timestamp=seconds, date=date, body=body)
+    return found
+
+
 def changed_by_any_commit(path):
     return bool(git(["log", "-1", "--full-history", "--format=%h", "--", path]).strip())
 
@@ -416,9 +691,68 @@ def is_started(directory):
     return bool(log.strip())
 
 
-def read_title(requirements):
+def read_text(requirements):
     with open(requirements, "rb") as handle:
-        return title_of(decoded(handle.read()))
+        return decoded(handle.read())
+
+
+def read_title(requirements):
+    return title_of(read_text(requirements))
+
+
+def live_milestone(directory, requirements):
+    text = read_text(requirements)
+    title = title_of(text)
+    goal = goal_lines(text)
+    return Milestone(LIVE, NO_DATE, directory, title, [LIVE, title] + ([""] + goal if goal else []))
+
+
+def finished_milestone(path, finish):
+    body = body_lines(finish.body)
+    title = fold(body[0]) if body else ""
+    return Milestone(FINISHED, finish.date, path, title or NO_TITLE, [finish.date] + body)
+
+
+def require_existing(path):
+    if not changed_by_any_commit(path) and not present_in_working_tree(path):
+        raise ToolError(f"the path {path} is neither present in the working tree nor changed by any commit")
+
+
+def listed_milestones(path):
+    """The milestones the milestones query lists for PATH, in its order, with the task commits
+    that changed PATH, newest first: every live milestone, by path, then every finished one,
+    newest first by the finish commit's author timestamp, that a task commit which changed PATH
+    joins or whose scope overlaps PATH."""
+    if not path:
+        raise ToolError("the PATH given is empty")
+    commits = task_commits(path)
+    if not commits:
+        require_existing(path)
+    joined = {commit.milestone for commit in commits}
+    components = path_scope(path)
+
+    def wanted(directory):
+        return directory in joined or overlaps(scope_of(directory), components)
+
+    live = live_milestones()
+    live_directories = {directory for directory, _ in live}
+    listed = [live_milestone(directory, requirements) for directory, requirements in live if wanted(directory)]
+    finished = [
+        (finish.timestamp, finished_milestone(directory, finish))
+        for directory, finish in finish_commits().items()
+        if directory not in live_directories and wanted(directory)
+    ]
+    finished.sort(key=lambda pair: pair[0], reverse=True)
+    listed.extend(milestone for _, milestone in finished)
+    return listed, commits
+
+
+def milestone_line(milestone):
+    return f"{milestone.state}\t{milestone.date}\t{milestone.path}\t{milestone.title}\n"
+
+
+def task_line(commit):
+    return f"{commit.short_hash}\t{commit.date}\t{commit.milestone}\t{commit.title}\n"
 
 
 # --- the queries ----------------------------------------------------------------------
@@ -439,14 +773,52 @@ def cmd_tasks(args):
         raise ToolError("the PATH given is empty")
     commits = task_commits(path)
     if not commits:
-        if not changed_by_any_commit(path) and not present_in_working_tree(path):
-            raise ToolError(f"the path {path} is neither present in the working tree nor changed by any commit")
+        require_existing(path)
         return 0
     lines = []
     for commit in commits:
-        lines.append(f"{commit.short_hash}\t{commit.date}\t{commit.milestone}\t{commit.title}\n")
+        lines.append(task_line(commit))
         if args.with_body:
             lines.extend(BODY_INDENT + line + "\n" for line in body_lines(commit.body))
+    sys.stdout.write("".join(lines))
+    return 0
+
+
+def cmd_milestones(args):
+    listed, _ = listed_milestones(args.path)
+    sys.stdout.write("".join(milestone_line(milestone) for milestone in listed))
+    return 0
+
+
+def cmd_summary(args):
+    path = args.milestone_path
+    if not path:
+        raise ToolError("the MILESTONE_PATH given is empty")
+    live = dict(live_milestones())
+    if path in live:
+        milestone = live_milestone(path, live[path])
+    else:
+        finish = finish_commits().get(path)
+        if finish is None:
+            raise ToolError(
+                f"the path {path} names neither a live milestone nor a finished one "
+                "(a milestone path ends in /, as the milestones query prints it)"
+            )
+        milestone = finished_milestone(path, finish)
+    sys.stdout.write("".join(line + "\n" for line in milestone.summary))
+    return 0
+
+
+def cmd_record(args):
+    listed, commits = listed_milestones(args.path)
+    by_milestone = {}
+    for commit in commits:
+        by_milestone.setdefault(commit.milestone, []).append(commit)
+    lines = []
+    for milestone in listed:
+        lines.append(milestone_line(milestone))
+        lines.extend(BODY_INDENT + line + "\n" for line in trimmed(milestone.summary[2:]))
+        lines.extend(BODY_INDENT + task_line(commit) for commit in by_milestone.get(milestone.path, ()))
     sys.stdout.write("".join(lines))
     return 0
 
@@ -494,6 +866,48 @@ def build_parser():
         ),
     )
     tasks_parser.set_defaults(func=cmd_tasks)
+
+    milestones_parser = subcommands.add_parser(
+        "milestones",
+        help="list the milestones, live and finished, that changed PATH or whose scope overlaps it",
+        description=MILESTONES_DESCRIPTION,
+        epilog=HISTORY_LIMITS,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    milestones_parser.add_argument(
+        "path",
+        metavar="PATH",
+        help="a file or directory, read by git relative to the working directory",
+    )
+    milestones_parser.set_defaults(func=cmd_milestones)
+
+    summary_parser = subcommands.add_parser(
+        "summary",
+        help="print one milestone's summary, its finish date and body or its goal",
+        description=SUMMARY_DESCRIPTION,
+        epilog=HISTORY_LIMITS,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    summary_parser.add_argument(
+        "milestone_path",
+        metavar="MILESTONE_PATH",
+        help="a milestone path, trailing slash included, as the milestones query prints it",
+    )
+    summary_parser.set_defaults(func=cmd_summary)
+
+    record_parser = subcommands.add_parser(
+        "record",
+        help="print the composed record of the work that changed PATH",
+        description=RECORD_DESCRIPTION,
+        epilog=HISTORY_LIMITS,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    record_parser.add_argument(
+        "path",
+        metavar="PATH",
+        help="a file or directory, read by git relative to the working directory",
+    )
+    record_parser.set_defaults(func=cmd_record)
     return parser
 
 
