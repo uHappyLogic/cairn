@@ -1,6 +1,6 @@
 ---
 name: complete-task
-description: Complete a single named task from the current milestone's TASKS_TODO.md inline in this conversation and commit it with its verified bar.
+description: Complete a single named task from the named milestone's TASKS_TODO.md inline in this conversation and commit it with its verified bar.
 ---
 
 # complete-task
@@ -16,7 +16,7 @@ For completing the whole task list unattended, use `/complete-all-tasks` instead
 /complete-task --milestone <path> <task name>
 ```
 
-`<task name>` is the full or partial text of a `##` heading in the current milestone's
+`<task name>` is the full or partial text of a `##` heading in the named milestone's
 `TASKS_TODO.md`. The required leading `--milestone <path>` names the milestone by its
 repo-relative path, exactly as the definition tool printed it, trailing slash included, e.g.
 `milestones/user-guide/`.

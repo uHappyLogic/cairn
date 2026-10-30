@@ -1,6 +1,6 @@
 ---
 name: answer-open-question-with-recommendation
-description: Record an open question's embedded recommendation as that question's answer in the current milestone's requirements.md.
+description: Record an open question's embedded recommendation as that question's answer in the named milestone's requirements.md.
 ---
 
 # answer-open-question-with-recommendation
@@ -27,7 +27,7 @@ path, exactly as the definition tool printed it, trailing slash included, e.g.
 
 ## Workflow
 
-### 1. Find the current milestone
+### 1. Find the milestone
 
 First strip the leading `--milestone <path>` from the invocation text by the rule in
 `${CLAUDE_PLUGIN_ROOT}/shared/resolve-milestone.md`, reading only the rest as `<Short Title>`.

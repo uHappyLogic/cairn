@@ -1,6 +1,6 @@
 ---
 name: answer-open-question-with-alternative
-description: Record a chosen alternative from an open question's embedded analysis as that question's answer in the current milestone's requirements.md.
+description: Record a chosen alternative from an open question's embedded analysis as that question's answer in the named milestone's requirements.md.
 ---
 
 # answer-open-question-with-alternative
@@ -42,7 +42,7 @@ exactly as the definition tool printed it, trailing slash included, e.g.
 
 ## Workflow
 
-### 1. Find the current milestone
+### 1. Find the milestone
 
 Follow `${PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded
 task-list path. Hold `<MILESTONE_DIR>` — you need it for the lift, the delegated recording,

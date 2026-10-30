@@ -1,6 +1,6 @@
 ---
 name: recommend-all-open-questions
-description: Annotate every open question in the current milestone carrying alternatives with a single recommended option, reasoning over the whole set inline.
+description: Annotate every open question in the named milestone carrying alternatives with a single recommended option, reasoning over the whole set inline.
 ---
 
 # recommend-all-open-questions
@@ -47,7 +47,7 @@ trailing slash included.
 
 ## Workflow
 
-### 0. Find the current milestone
+### 0. Find the milestone
 
 Follow `${PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`.
 Never use a hardcoded path.

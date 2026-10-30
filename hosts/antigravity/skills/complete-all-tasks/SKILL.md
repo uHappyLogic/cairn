@@ -1,11 +1,11 @@
 ---
 name: complete-all-tasks
-description: Complete every task in the current milestone's TASKS_TODO.md one by one, committing each with its verified bar.
+description: Complete every task in the named milestone's TASKS_TODO.md one by one, committing each with its verified bar.
 ---
 
 # complete-all-tasks
 
-Pure orchestrator. Reads the current milestone's task list and spawns one isolated subagent per task, each with a clean context and exactly one task to complete, then commits each finished task from the body file and the path file its subagent wrote. Never complete a task directly here, even as a fallback when a subagent fails.
+Pure orchestrator. Reads the named milestone's task list and spawns one isolated subagent per task, each with a clean context and exactly one task to complete, then commits each finished task from the body file and the path file its subagent wrote. Never complete a task directly here, even as a fallback when a subagent fails.
 
 ## Invocation
 
@@ -17,7 +17,7 @@ The required leading `--milestone <path>` names the milestone by its repo-relati
 
 ## Workflow
 
-### 0. Find the current milestone
+### 0. Find the milestone
 
 Follow `~/.gemini/config/plugins/cairn/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 

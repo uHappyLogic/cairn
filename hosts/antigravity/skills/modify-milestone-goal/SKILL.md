@@ -1,11 +1,11 @@
 ---
 name: modify-milestone-goal
-description: Revise the Goal section of the current milestone's requirements.md when the objective itself needs to be reshaped, broadened, narrowed, or corrected.
+description: Revise the Goal section of the named milestone's requirements.md when the objective itself needs to be reshaped, broadened, narrowed, or corrected.
 ---
 
 # modify-milestone-goal
 
-Replaces the `## Goal` of the current milestone's `requirements.md` with a revised goal statement and, in the same run, clears the standing picks on open questions that the revision undermines, keeping their alternatives. Everything else the change may have invalidated downstream is left as it stands, for the user and the next review pass. It is the only skill that edits the Goal of an *already-defined* milestone.
+Replaces the `## Goal` of the named milestone's `requirements.md` with a revised goal statement and, in the same run, clears the standing picks on open questions that the revision undermines, keeping their alternatives. Everything else the change may have invalidated downstream is left as it stands, for the user and the next review pass. It is the only skill that edits the Goal of an *already-defined* milestone.
 
 ## Usage
 
@@ -23,7 +23,7 @@ Replaces the `## Goal` of the current milestone's `requirements.md` with a revis
 
 ## Workflow
 
-### 0. Find the current milestone
+### 0. Find the milestone
 
 First strip the leading `--milestone <path>` from the invocation text by the rule in `~/.gemini/config/plugins/cairn/shared/resolve-milestone.md`, reading only the rest as the goal text. Follow `~/.gemini/config/plugins/cairn/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path.
 

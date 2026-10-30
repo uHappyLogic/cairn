@@ -5,12 +5,12 @@ body:
   - type: markdown
     attributes:
       value: |
-        A proposal is a work item in waiting. When the maintainer accepts it, they run `/define-milestone-goal` on `main` with your goal statement, which reserves `milestone_<N>_<slug>` for you; you then fork, run the milestone through `/finish-milestone`, and open a pull request that closes this issue. `CONTRIBUTING.md` spells out each step.
+        A proposal is a work item in waiting. When the maintainer accepts it, they run `/define-milestone-goal --at <scope>` on `main` with your goal statement, which reserves the milestone's path, `<scope>/milestones/<slug>/`, for you; you then fork, run the milestone with `--milestone <path>` through `/finish-milestone`, and open a pull request that closes this issue. `CONTRIBUTING.md` spells out each step.
   - type: textarea
     id: goal
     attributes:
       label: Goal statement
-      description: One paragraph in the shape a milestone's `## Goal` takes — an imperative statement of what the milestone accomplishes and what it leaves in the repository, specific enough to hand to `/define-milestone-goal` as it stands. On acceptance it becomes the `## Goal` of `milestones/milestone_<N>_<slug>/requirements.md` verbatim.
+      description: One paragraph in the shape a milestone's `## Goal` takes — an imperative statement of what the milestone accomplishes and what it leaves in the repository, specific enough to hand to `/define-milestone-goal` as it stands. On acceptance it becomes the `## Goal` of `<scope>/milestones/<slug>/requirements.md` verbatim.
       placeholder: Make the <skill> do <X> so that <outcome>, by <the concrete changes>; <what the milestone deliberately leaves out>.
     validations:
       required: true

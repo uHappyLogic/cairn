@@ -1,11 +1,11 @@
 ---
 name: review-milestone-requirements
-description: Review the current milestone's requirements to reconcile its open questions against recorded decisions, surface new gaps, and report whether it has converged.
+description: Review the named milestone's requirements to reconcile its open questions against recorded decisions, surface new gaps, and report whether it has converged.
 ---
 
 # review-milestone-requirements
 
-The current "work in progress" requirements for the planned milestone live in two documents of the current milestone directory: `requirements.md` (the prose — goal, relevant starting state, decisions, any noted contradictions, out of scope) and `open_questions.xml` (one `<open-question>` block per question still open). The overall goal is to make that requirements set ready enough for the work to begin.
+The current "work in progress" requirements for the planned milestone live in two documents of the named milestone's directory: `requirements.md` (the prose — goal, relevant starting state, decisions, any noted contradictions, out of scope) and `open_questions.xml` (one `<open-question>` block per question still open). The overall goal is to make that requirements set ready enough for the work to begin.
 
 This skill is the **repeatable engine** of the requirements-iteration loop — run it each time around:
 
@@ -58,7 +58,7 @@ The open questions live beside it in `<MILESTONE_DIR>/open_questions.xml` — on
 
 ## Workflow
 
-### 0. Find the current milestone
+### 0. Find the milestone
 
 Follow `${CLAUDE_PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path.
 

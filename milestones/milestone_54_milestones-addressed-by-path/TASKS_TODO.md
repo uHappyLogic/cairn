@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Retire Current From Runtime Wording
-
-Reword every frontmatter description reading "the current milestone" and every runtime prose mention of the current milestone under `core/` (about eighty, `alternatives-procedure.md` and `recommend-procedure.md` among them) to name the milestone the run was pointed at, each description staying one clause of 25 words or fewer, with the three `settings.toml` hands-on comments, `.github/ISSUE_TEMPLATE/proposal.yml`, `/release-plugin`, and the per-skill entries of `docs/skill-reference.md` following. Verified by the rebuilt trees, the suite, and a grep of the rendered trees finding no "current milestone".
-
----
-
 ## Migrate Milestones Into Finish Commits
 
 Add `core/skills/migrate-milestones/`, a person-run skill in no chain that walks the README's `## Milestone History` entries oldest first and, for each whose directory still stands, makes through the commit tool the finish commit the new finish would make: the directory removed with `--remove`, the subject `Milestone-finish: <path>`, the body the title from that directory's `requirements.md` heading, a blank line, and the entry's bullets, and `--date` carrying the original finish commit's `%aI` author date, or the newest commit that changed the directory when no finish commit exists, while an entry whose directory is gone with a path-form finish subject in the log is skipped as migrated. Before its first commit it stops on a shallow repository or on any entry with no directory, listing them, then prints its whole plan and asks once, a rejection ending on one fixed no-op line with nothing changed; its closing commit removes `milestones/README.md` and a live milestone's `TASKS_DONE.md` if present and rewrites the context file's `## Milestone Workflow` section to the bootstrap's new guidance, and a project without the README is told so on one fixed line. Verified by the fixed-lines test and a run against a pointer-era scratch repository whose `milestones .` then lists every entry with its original date.

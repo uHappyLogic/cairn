@@ -1,6 +1,6 @@
 # Complete-task procedure (shared core)
 
-This is the single source of truth for completing one named task from the current
+This is the single source of truth for completing one named task from the named
 milestone's task list: the `complete-task` skill follows these steps inline, the
 `complete-task` agent follows them in isolation. The wrappers add their own framing; this
 file describes only the work itself. If a step fails, diagnose the root cause with the

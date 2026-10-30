@@ -1,7 +1,7 @@
 # Alternatives procedure (shared core)
 
 This is the single source of truth for enumerating the honest alternatives of one open
-question in the current milestone. It is followed inline by the `discuss-open-question`
+question in the named milestone. It is followed inline by the `discuss-open-question`
 skill when the question it is deliberating carries no alternatives yet, and once per question
 by the read-only `provide-alternatives-to-open-question` subagent during the alternatives
 sweep. The caller supplies the one input below and renders the result; this file describes

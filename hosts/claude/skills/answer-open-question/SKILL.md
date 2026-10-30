@@ -1,11 +1,11 @@
 ---
 name: answer-open-question
-description: Answer a named open question of the current milestone by recording the supplied answer as a decision in its requirements.md.
+description: Answer a named open question of a milestone by recording the supplied answer as a decision in its requirements.md.
 ---
 
 # answer-open-question
 
-Resolves a named open question of the current milestone by recording the user's answer as a decision in `requirements.md`, removing the answered block from `open_questions.xml`, propagating the answer's implications through both, and committing those edits on their own with the decision's rationale in the commit body — establishing the `Manual-answer:` commit that `/capture-milestone-principle-updates` later reads, alongside `Alternative-answer:` and `Recommendation-answer:` commits, when it distills a milestone's answers into reusable principles: a manual answer is an override signal (a decision the recommender did not make), so its body rationale is what gets distilled. The answer text is recorded **literally**; the one reserved answer text is the retired sentinel `record the recommendation`, which this skill redirects instead of recording (step 2).
+Resolves a named open question of the milestone named by `--milestone` by recording the user's answer as a decision in `requirements.md`, removing the answered block from `open_questions.xml`, propagating the answer's implications through both, and committing those edits on their own with the decision's rationale in the commit body — establishing the `Manual-answer:` commit that `/capture-milestone-principle-updates` later reads, alongside `Alternative-answer:` and `Recommendation-answer:` commits, when it distills a milestone's answers into reusable principles: a manual answer is an override signal (a decision the recommender did not make), so its body rationale is what gets distilled. The answer text is recorded **literally**; the one reserved answer text is the retired sentinel `record the recommendation`, which this skill redirects instead of recording (step 2).
 
 ## Usage
 
@@ -42,7 +42,7 @@ Compare the parsed answer text — **trimmed and lowercased** — against the re
 - **Exactly the sentinel — redirect and stop:** recording a question's embedded recommendation lives in `/answer-open-question-with-recommendation`. **Stop without recording or committing anything** and print the fixed line `Answer not recorded — "record the recommendation" is retired here.` first, then below it a redirect message telling the user to record the recommendation via `/answer-open-question-with-recommendation <Short Title>` instead (or to answer with literal text here via `/answer-open-question <Short Title>. <answer text>`).
 - **Anything else — literal-answer path:** the parsed answer text *is* the `ANSWER`. Carry it forward to the recording in step 4.
 
-### 3. Find the current milestone
+### 3. Find the milestone
 
 Follow `${CLAUDE_PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path. Hold `<MILESTONE_DIR>` — you need it for the delegated recording and the commit.
 

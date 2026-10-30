@@ -1,7 +1,7 @@
 # Recommendation procedure (shared core)
 
 This is the single source of truth for picking one recommendation over an
-already-enumerated alternative set for an open question in the current milestone. It is
+already-enumerated alternative set for an open question in the named milestone. It is
 followed inline by the `recommend-all-open-questions` skill over every question its run
 annotates, held in view together as one whole-set judgment, and inline by the
 `discuss-open-question` skill for the one question it is deliberating. The caller supplies

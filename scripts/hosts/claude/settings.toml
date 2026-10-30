@@ -21,7 +21,7 @@
 #   --dangerously-skip-permissions --model "fable" --effort high`, loaded the skill from there,
 #   its text arriving with every ${CLAUDE_PLUGIN_ROOT} already resolved to that directory's
 #   absolute path, and the Bash tool ran every call in zsh.
-# - Compact view and requirements read: the project's current milestone held two
+# - Compact view and requirements read: the milestone the run resolved held two
 #   recommendation-bearing blocks, a third whose <depends-on> assumed an option of the first
 #   other than its pick, and one recommendation-less block. The runner sent step 1's call,
 #   as shown with only <MILESTONE_DIR> replaced, and the whole Read of requirements.md in one

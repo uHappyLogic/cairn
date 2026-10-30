@@ -1,13 +1,13 @@
 ---
 name: answer-all-open-questions-with-recommendation
-description: Record the embedded recommendation as the answer for every question in the current milestone that carries one, reasoning over the whole set inline.
+description: Record the embedded recommendation as the answer for every question in the named milestone that carries one, reasoning over the whole set inline.
 ---
 
 # answer-all-open-questions-with-recommendation
 
 This is the batch path that records every open question's **embedded recommendation** as its
 answer, unattended. The recommendation pass (`/recommend-all-open-questions`) annotates each
-question by embedding a `<recommendation>` element in its `<open-question>` block in the current
+question by embedding a `<recommendation>` element in its `<open-question>` block in the named
 milestone's `open_questions.xml`; this skill walks the blocks that carry one and records each
 pick — the decision lands under `## Decisions` of `requirements.md` and the answered block leaves
 `open_questions.xml` — one commit per answer, leaving recommendation-less blocks untouched
@@ -45,7 +45,7 @@ included, e.g. `milestones/user-guide/`.
 
 ## Workflow
 
-### 0. Find the current milestone, once
+### 0. Find the milestone, once
 
 Follow `${CLAUDE_PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use
 a hardcoded path. Resolve it **once per run** and hold it: every tool call, every recorded

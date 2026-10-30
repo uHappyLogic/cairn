@@ -1,11 +1,11 @@
 ---
 name: discuss-open-question
-description: Discuss a named open question in the current milestone requirements, surfacing alternatives, trade-offs, and a recommendation to help the user decide.
+description: Discuss a named open question in a milestone's requirements, surfacing alternatives, trade-offs, and a recommendation to help the user decide.
 ---
 
 # discuss-open-question
 
-Facilitates a deliberation on a named `<open-question>` block in the current milestone's `open_questions.xml` where the user cannot give an immediate answer. The goal is a concrete decision by the end of the conversation — not a design document. The skill is purely conversational: it never edits `open_questions.xml`, `requirements.md`, or any other file. It works on a block in **any state** — bare, carrying the `<alternative>` set the alternatives pass embedded, or carrying that set plus the `<recommendation>` the recommendation pass picked — and the state decides only where the option set comes from: an embedded alternative set is reused as it stands, never re-enumerated, and a bare block gets its options enumerated here first. The pick is always this skill's own, formed afresh over that set, and shown beside the sweep's standing pick when the block carries one.
+Facilitates a deliberation on a named `<open-question>` block in the named milestone's `open_questions.xml` where the user cannot give an immediate answer. The goal is a concrete decision by the end of the conversation — not a design document. The skill is purely conversational: it never edits `open_questions.xml`, `requirements.md`, or any other file. It works on a block in **any state** — bare, carrying the `<alternative>` set the alternatives pass embedded, or carrying that set plus the `<recommendation>` the recommendation pass picked — and the state decides only where the option set comes from: an embedded alternative set is reused as it stands, never re-enumerated, and a bare block gets its options enumerated here first. The pick is always this skill's own, formed afresh over that set, and shown beside the sweep's standing pick when the block carries one.
 
 ## Usage
 
@@ -22,7 +22,7 @@ The `<Short Title>` must match (case-insensitive) the `id` of an existing `<open
 
 ## Workflow
 
-### 0. Find the current milestone
+### 0. Find the milestone
 
 First strip the leading `--milestone <path>` from the invocation text by the rule in `${CLAUDE_PLUGIN_ROOT}/shared/resolve-milestone.md`, reading only the rest as the `<Short Title>`. Follow `${CLAUDE_PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 

@@ -1,11 +1,11 @@
 ---
 name: submit-task
-description: Add a single already-clear issue to the current milestone's TASKS_TODO.md as a brief-level task section.
+description: Add a single already-clear issue to the named milestone's TASKS_TODO.md as a brief-level task section.
 ---
 
 # submit-task
 
-Turns a single, already-clear issue into a brief-level task section in the current
+Turns a single, already-clear issue into a brief-level task section in the named
 milestone's `TASKS_TODO.md`. This skill is the user-facing entry point
 (`/submit-task`) and the handoff target for `/discuss-new-task`.
 
@@ -28,7 +28,7 @@ repo-relative path, exactly as the definition tool printed it, trailing slash in
 
 ## Workflow
 
-### 0. Find the current milestone
+### 0. Find the milestone
 
 First strip the leading `--milestone <path>` from the invocation text by the rule in `${PLUGIN_ROOT}/shared/resolve-milestone.md`, reading only the rest as the issue description. Follow `${PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 

@@ -1,11 +1,11 @@
 ---
 name: ask-in-milestone-context
-description: Answer an informational question about the current milestone from its goal, decisions, task lists, and live deliverables, without editing anything.
+description: Answer an informational question about the named milestone from its goal, decisions, task lists, and live deliverables, without editing anything.
 ---
 
 # ask-in-milestone-context
 
-Answers an informational question about the current milestone, grounded in the real project state: the milestone's goal and recorded decisions, the tasks done and still pending, the actual deliverables those tasks produced, and, when a question reaches into past work, the project's record of its milestones. The deliverable is **a clear answer** — not a decision, a new task, or an edited document. This skill reads; it never writes — it never creates or edits any file, not `requirements.md`, not `open_questions.xml`, not the task lists, nothing.
+Answers an informational question about the named milestone, grounded in the real project state: the milestone's goal and recorded decisions, the tasks done and still pending, the actual deliverables those tasks produced, and, when a question reaches into past work, the project's record of its milestones. The deliverable is **a clear answer** — not a decision, a new task, or an edited document. This skill reads; it never writes — it never creates or edits any file, not `requirements.md`, not `open_questions.xml`, not the task lists, nothing.
 
 Use it to look back ("how did the onboarding section end up covering setup?", "where did we put the troubleshooting steps?"), to take stock ("what's left in this milestone, and why is it ordered that way?", "what has this milestone changed so far?"), or to pull up relevant context on demand before deciding what to do next.
 
@@ -18,7 +18,7 @@ When the answer surfaces a concrete next step, this skill names the right cairn 
 ```
 
 - `--milestone <path>`: required and leading; names the milestone by its repo-relative path, exactly as the definition tool printed it, trailing slash included, e.g. `milestones/user-guide/`.
-- `<question>`: a free-form, informational question about the current milestone. Optional — invoked with no question, give a brief orientation to the milestone (goal, what's done, what's left) and invite a specific question.
+- `<question>`: a free-form, informational question about the named milestone. Optional — invoked with no question, give a brief orientation to the milestone (goal, what's done, what's left) and invite a specific question.
 
 **Examples:**
 ```
@@ -29,7 +29,7 @@ When the answer surfaces a concrete next step, this skill names the right cairn 
 
 ## Workflow
 
-### 0. Find the current milestone
+### 0. Find the milestone
 
 First strip the leading `--milestone <path>` from the invocation text by the rule in `${CLAUDE_PLUGIN_ROOT}/shared/resolve-milestone.md`, reading only the rest as the question. Follow `${CLAUDE_PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path. A call that resolves no milestone stops as that procedure says, with no answer and no fallback: this skill answers only within a named milestone.
 

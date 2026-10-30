@@ -1,6 +1,6 @@
 ---
 name: provide-alternatives-to-all-open-questions
-description: Annotate every open question in the current milestone lacking alternatives with a set of alternatives, dispatching one subagent per question.
+description: Annotate every open question in the named milestone lacking alternatives with a set of alternatives, dispatching one subagent per question.
 ---
 
 # provide-alternatives-to-all-open-questions
@@ -37,7 +37,7 @@ the definition tool printed it, trailing slash included, e.g. `milestones/user-g
 
 ## Workflow
 
-### 0. Find the current milestone
+### 0. Find the milestone
 
 Follow `~/.gemini/config/plugins/cairn/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`.
 Never use a hardcoded path.

@@ -1,11 +1,11 @@
 ---
 name: derive-tasks
-description: Convert the current milestone's requirements.md into a complete, dependency-ordered TASKS_TODO.md of brief-level task sections.
+description: Convert the named milestone's requirements.md into a complete, dependency-ordered TASKS_TODO.md of brief-level task sections.
 ---
 
 # derive-tasks
 
-Reads the current milestone requirements and derives a complete, dependency-ordered list of tasks into `TASKS_TODO.md`, ready for AI-driven completion via `/complete-task`.
+Reads the named milestone's requirements and derives a complete, dependency-ordered list of tasks into `TASKS_TODO.md`, ready for AI-driven completion via `/complete-task`.
 
 Your job here is **decomposition and coverage**. You split the milestone into high-level task briefs, prove that those briefs cover every requirement, order them by dependency, and write them into `TASKS_TODO.md` yourself, as one whole list through the plugin's task-list tool — nothing here is delegated. Keep every task section at brief altitude: a task states *what* is to be achieved, and the completer derives the flow and the formal acceptance bar itself from the description plus `requirements.md`, against the live project.
 
@@ -19,12 +19,12 @@ The skill reads from and writes to the milestone directory the flag names. The r
 
 ## Preconditions
 
-- All open questions in the current milestone must be resolved: its `open_questions.xml` holds no `<open-question>` block, so the plugin's open-question tool's `list` prints nothing (checked in step 2).
+- All open questions in the named milestone must be resolved: its `open_questions.xml` holds no `<open-question>` block, so the plugin's open-question tool's `list` prints nothing (checked in step 2).
 - `TASKS_TODO.md` should be empty or contain only stale tasks from a previous milestone; this skill replaces its contents.
 
 ## Workflow
 
-### 0. Find the current milestone
+### 0. Find the milestone
 
 Follow `{{PLUGIN_ROOT}}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 

@@ -1,6 +1,6 @@
 ---
 name: discuss-new-task
-description: Clarify a rough or ambiguous issue into one or more well-defined, task-sized pieces ready to add to the current milestone's task list.
+description: Clarify a rough or ambiguous issue into one or more well-defined, task-sized pieces ready to add to the named milestone's task list.
 ---
 
 # discuss-new-task
@@ -40,7 +40,7 @@ Once those are clear, `submit-task` takes over — keep what you produce high-le
 
 ## Workflow
 
-### 0. Find the current milestone
+### 0. Find the milestone
 
 First strip the leading `--milestone <path>` from the invocation text by the rule in `${CLAUDE_PLUGIN_ROOT}/shared/resolve-milestone.md`, reading only the rest as the issue description. Follow `${CLAUDE_PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
