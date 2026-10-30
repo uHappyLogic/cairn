@@ -80,5 +80,9 @@ Three definitions under `scripts/hosts/` render `core/` into `hosts/claude/`, `h
 
 - **Gate procedure.** The gate check lives in one new shared procedure under `core/shared/` that states the `gate` call, what a held scope means, and its one fixed stop line, with the holder paths beneath; the procedure owns the line, as the resolution procedure owns its two stops. Each of the four runners references it at its own point, as a separate step run before its work: before the fixed write call in `derive-tasks` and `submit-task`, before each dispatch in `complete-all-tasks`, and after the procedure's step 1 in the `complete-task` skill. The entry writers' write calls are unchanged and carry no gate, and `complete-procedure.md` is unchanged, so the agent, which reads only its own file and that procedure, never gates.
 
+### Milestone paths and resolution
+
+- **Canonical path.** The canonical form keeps the trailing slash: the definition tool prints `<scope>/milestones/<slug>/` as today's `root_label` does, the `tasks` query's milestone field keeps the slash `milestone_of` gives it now, and every subject that names a milestone carries the path with the slash (`Milestone-finish: milestones/<slug>/`). A `--milestone` value that differs only by a missing slash is refused, on the procedure's no-match line with the `live` paths listed beneath it; since the existence test `<path>/requirements.md` passes for both spellings, the procedure adds one explicit check that the value ends in `/`.
+
 ## Out of Scope
 
