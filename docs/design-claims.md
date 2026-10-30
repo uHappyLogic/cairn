@@ -6,10 +6,12 @@ ASD-STE100 Simplified Technical English, a controlled register whose short
 sentences and one-meaning-per-word vocabulary keep each claim unambiguous, so
 that it reads the same to a reader and to the author of a test. Each **Metric**
 line names the test that would check its claim. The repository's test suite
-runs only two of these tests: the test of claim 11, against the open-question
-tool, the task-list tool, and the fold tool, and the first part of the test of
-claim 2, against the one shell call of the batch answer skill; no suite runs
-the other tests yet.
+runs only three of these tests: the test of claim 11, against the open-question
+tool, the task-list tool, and the fold tool; the first part of the test of
+claim 2, against the one shell call of the batch answer skill; and the second
+part of the test of claim 12, against the commit tool, the shell call of the
+batch answer skill, and the shell calls of task completion. No suite runs the
+other tests yet.
 
 ## Decisions
 
@@ -139,14 +141,21 @@ the other tests yet.
 
 ### 12. Repository hygiene is structural.
 
-- **Design:** Each skill stages only its own paths, never all files. Each
-  commit subject has a marker that names the skill function. A pass that
-  changes nothing makes no commit. The work tree is clean after each skill,
-  with one exception. A failed run leaves its partial work in the tree for
-  the next run. The console shows one status line and does not repeat the
-  diff.
-- **Metric:** Count of unknown subjects, unscoped stages, and dirty trees after
-  a run (each must be 0).
+- **Design:** Each commit records only its own paths. Each skill gives its
+  paths to one commit tool. The tool stages only those paths, never all
+  files, and commits them with the same paths as its pathspec. Thus a change
+  of another run, staged or not, stays out of the commit. A task subagent
+  stages nothing. It writes the paths of its task to one file, and the
+  orchestrator commits the task from that file. When a git write fails
+  because another run holds the git lock, the tool tries the write again,
+  for a maximum of approximately 4 seconds. Each commit subject has a marker
+  that names the skill function. A pass that changes nothing makes no
+  commit. A failed run leaves its partial work in the tree for the next run.
+  The console shows one status line and does not repeat the diff.
+- **Metric:** Count of unknown subjects, commits with a path from outside
+  their own change set, and empty commits (each must be 0). The `tests/`
+  suite runs the second part of this test on the commit tool, on the shell
+  call of the batch answer skill, and on the shell calls of task completion.
 
 ## Efficiency
 
