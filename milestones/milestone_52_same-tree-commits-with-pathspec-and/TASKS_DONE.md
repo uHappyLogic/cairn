@@ -137,3 +137,18 @@ Change `core/skills/complete-all-tasks/SKILL.md` and the three hosts' `COMPLETE_
 - `uv run pytest agy_tests` passes (3 passed) against the built `hosts/antigravity/` tree installed at `~/.gemini/config/plugins/cairn`.
 
 ---
+
+## Add The Parallel Two-Milestone Completion Test
+
+Add one test that extracts the completion agent's step-5 fixed call and the orchestrator's commit-from-file call from the rendered Claude Code tree and, for each of two fixture milestones seeded into one `tmp_path` repository through the conftest factory, makes the task's edits, runs the agent's call with that milestone's recorded paths substituted, then runs the orchestrator's call on the path file it left behind, running the two milestones' agent-then-orchestrator sequences concurrently and asserting each `Task-completion:` commit carries only its own paths; it writes no path file of its own and runs no inline `complete-task` call. It is the milestone's one simple proof that two runs can share a tree without one's files riding into the other's commit. Verified by the test passing under both interpreters.
+
+**Verified:**
+
+- `tests/test_parallel_completion.py` extracts the completion agent's step-5 fixed call (the one fence of `hosts/claude/agents/complete-task.md` holding the move, which chains it with the path-file write) and the orchestrator's commit-from-file call (the one fence of `hosts/claude/skills/complete-all-tasks/SKILL.md` running the commit tool) from the rendered Claude Code tree
+- Two fixture milestones, `tests/fixtures/parallel_first/` and `tests/fixtures/parallel_second/`, are seeded into one `tmp_path` repository through the conftest `repo` factory
+- For each milestone the test makes the task's edits, runs the agent's call with that milestone's recorded paths substituted, then runs the orchestrator's call on the path file the agent's call left behind, the two milestones' agent-then-orchestrator sequences running concurrently in two threads
+- Each `Task-completion:` commit is asserted to carry exactly its own paths: its edited and created files and its milestone's two task files
+- The test writes no path file of its own and runs no inline `complete-task` call
+- The test passes under `uv run pytest` (pinned 3.13) and `uv run --no-project --python 3.9 --with pytest pytest`, the whole suite passing in both runs
+
+---
