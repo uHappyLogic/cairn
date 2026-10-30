@@ -46,12 +46,20 @@ First strip a leading `--milestone <milestone_id>` from the invocation text by t
 
 ### 1. Gather context
 
-Read in parallel to ground the discussion in the real project state rather than guessing:
+In parallel, as independent tool calls, to ground the discussion in the real project state rather than guessing:
 
-- `<MILESTONE_DIR>/requirements.md` — the goal, constraints, and decisions the issue must fit within.
-- `<MILESTONE_DIR>/TASKS_TODO.md` — pending tasks, to spot overlap and dependencies.
-- `<MILESTONE_DIR>/TASKS_DONE.md` — completed work, to catch issues already addressed.
-- `AGENTS.md` — the project's conventions and context, so the discussion uses the project's real terms.
+- Read `<MILESTONE_DIR>/requirements.md` — the goal, constraints, and decisions the issue must fit within.
+- Read `<MILESTONE_DIR>/TASKS_TODO.md` — pending tasks, to spot overlap and dependencies.
+- Run the plugin's milestones tool — completed work, to catch issues already addressed:
+
+  ```
+  python3 ${PLUGIN_ROOT}/tools/milestones.py tasks <MILESTONE_DIR> --with-body
+  ```
+
+  It prints, newest first, one tab-separated line per task completed in the milestone (the commit's abbreviated hash, its date, the milestone directory, and the task title), with the task's verified bar indented beneath it, and prints nothing when no task has been completed, which is no failure.
+- Read `AGENTS.md` — the project's conventions and context, so the discussion uses the project's real terms.
+
+If the `tasks` call fails, tell the user in prose that the completed-task read failed, quoting its one `Error: <reason>` line from stderr verbatim, and carry on from the other reads, printing no fixed line.
 
 If relevant project files are named or implied by the issue, read them too. Concrete grounding makes for sharper questions.
 
@@ -59,7 +67,7 @@ If relevant project files are named or implied by the issue, read them too. Conc
 
 Before asking anything, check two things:
 
-- **Already covered?** If existing tasks in `TASKS_TODO.md` or `TASKS_DONE.md` already address this, say so and name them instead of starting a discussion. For a larger chunk, part of it may already be tracked — point out what's covered and focus the discussion on the genuinely new remainder.
+- **Already covered?** If pending tasks in `TASKS_TODO.md` or completed tasks the `tasks` call listed already address this, say so and name them instead of starting a discussion. For a larger chunk, part of it may already be tracked — point out what's covered and focus the discussion on the genuinely new remainder.
 - **Already clear?** If the issue is *already* conceptually clear and is plainly a single task (affected system, desired behavior, and verification all evident), skip straight to step 5 and propose the handoff. Don't ask questions for their own sake.
 
 ### 3. Size the work: one task or several?

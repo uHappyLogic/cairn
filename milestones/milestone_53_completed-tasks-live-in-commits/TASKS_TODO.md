@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Conversational Readers Switch To Tasks Query
-
-Replace the `TASKS_DONE.md` read of `ask-in-milestone-context` (its reads list, its "how did task X turn out?" guidance, and its live-deliverable-over-entry rule) and `discuss-new-task` (its triage read and its already-covered check) with the same fixed `tasks <MILESTONE_DIR>` call with the body flag the other readers run, at the step that read the file, and have each, on a failed call, tell the user in prose that the completed-task read failed, quoting the `Error:` line, and carry on from its other reads with no fixed line, keeping the conversational skills' exemption. Needed so every reader of completed work reads the commits once the done file is gone. Verified by no `TASKS_DONE` left in either skill, the fixed-lines test unchanged and passing, and a rebuilt `hosts/` tree passing `--check`.
-
----
-
 ## Update The Invariants In CLAUDE.md
 
 Bring `CLAUDE.md` to the commit-borne record: the repository layout (the task-list and definition tool lines, the tests entry describing the fixed-call and parallel tests), the milestone file structure (three files), the task-list invariant (`remove` in place of `move`, no bar rendering, no two-file atomicity, the `TASKS_DONE.md` a pre-flip milestone keeps), the committing invariant's sentence naming the commit tool as the one tool that runs git (widened for the read-only milestones tool, the writers' rule unchanged), the return-contract and dispatch-prompt invariants (the body file beside `paths.txt`, the empty-bar guard), the task-altitude invariant (the bar recorded as the commit body), and the closing `## Milestone Workflow` block, recording the rationale of this milestone's `## Decisions` where a later editor might reverse them. Verified by a read of every changed invariant against the landed runtime files and tools and by no `TASKS_DONE` mention remaining in `CLAUDE.md` outside the pre-flip note.

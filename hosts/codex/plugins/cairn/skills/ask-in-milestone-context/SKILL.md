@@ -37,21 +37,29 @@ If no override was given and the pointer is `none` (no active milestone), don't 
 
 ### 1. Gather context
 
-Read in parallel, so the answer rests on the real state rather than memory:
+In parallel, as independent tool calls, so the answer rests on the real state rather than memory:
 
-- `<MILESTONE_DIR>/requirements.md` — the goal, relevant starting state, and recorded decisions.
-- `<MILESTONE_DIR>/open_questions.xml` — any remaining open questions, each an `<open-question>` block carrying whatever alternatives and recommendation the recommend sweep has embedded. Read it whole with the file-reading tool, exactly as you read `requirements.md`; that whole read is for reasoning only, and a locate, list, or lift of one block is a call to the plugin's open-question tool, `python3 ${PLUGIN_ROOT}/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`, never a search of your own over the file.
-- `<MILESTONE_DIR>/TASKS_DONE.md` — completed tasks. Each entry's description and `**Verified:**` bar tell you *what the task was meant to achieve* — the intent behind the deliverable that now exists.
-- `<MILESTONE_DIR>/TASKS_TODO.md` — pending tasks, in priority order. Their ordering explains dependencies ("what's blocking what").
-- `AGENTS.md` — the project's domain context, conventions, and real names for its systems and files, so your answer uses the project's vocabulary.
+- Read `<MILESTONE_DIR>/requirements.md` — the goal, relevant starting state, and recorded decisions.
+- Read `<MILESTONE_DIR>/open_questions.xml` — any remaining open questions, each an `<open-question>` block carrying whatever alternatives and recommendation the recommend sweep has embedded. Read it whole with the file-reading tool, exactly as you read `requirements.md`; that whole read is for reasoning only, and a locate, list, or lift of one block is a call to the plugin's open-question tool, `python3 ${PLUGIN_ROOT}/tools/open_questions.py <subcommand> <MILESTONE_DIR> …`, never a search of your own over the file.
+- Run the plugin's milestones tool — completed tasks:
 
-Read only what the question needs — a "what's left?" question barely touches `requirements.md`; a "how did task X turn out?" question leans hard on `TASKS_DONE.md` and the live deliverables. Don't read everything reflexively.
+  ```
+  python3 ${PLUGIN_ROOT}/tools/milestones.py tasks <MILESTONE_DIR> --with-body
+  ```
+
+  It prints, newest first, one tab-separated line per task completed in the milestone (the commit's abbreviated hash, its date, the milestone directory, and the task title), with the task's verified bar indented beneath it, and prints nothing when no task has been completed, which is no failure. Each task's title and verified bar tell you *what the task was meant to achieve* — the intent behind the deliverable that now exists — and its brief stands in its commit's diff, as the section removed from `TASKS_TODO.md`, which `git show <hash>` pulls up.
+- Read `<MILESTONE_DIR>/TASKS_TODO.md` — pending tasks, in priority order. Their ordering explains dependencies ("what's blocking what").
+- Read `AGENTS.md` — the project's domain context, conventions, and real names for its systems and files, so your answer uses the project's vocabulary.
+
+If the `tasks` call fails, tell the user in prose that the completed-task read failed, quoting its one `Error: <reason>` line from stderr verbatim, and carry on from the other reads and the live deliverables, printing no fixed line.
+
+Read only what the question needs — a "what's left?" question barely touches `requirements.md`; a "how did task X turn out?" question leans hard on the completed tasks the `tasks` call lists and the live deliverables. Don't read everything reflexively.
 
 ### 2. Ground the answer in what was actually produced
 
 For a question about *how finished work turned out* ("how did task X handle Y?", "where did Z go?"), the markdown artifacts give you intent — but the truth is in the deliverable. Go look:
 
-- **The live deliverable is primary.** Read the actual artifact the task produced. The `TASKS_DONE.md` entry tells you what to look for and what "done" meant; the deliverable itself tells you what was actually produced. When they diverge, the deliverable wins — and that divergence is often exactly what the user is asking about.
+- **The live deliverable is primary.** Read the actual artifact the task produced. The task's title and verified bar, as the `tasks` call lists them, tell you what to look for and what "done" meant; the deliverable itself tells you what was actually produced. When they diverge, the deliverable wins — and that divergence is often exactly what the user is asking about.
 - **Git history is a supporting lens, not the spine.** Completed tasks are committed and their commits carry the task heading, so searching commit subjects and bodies for the heading text (`git log --grep`) usually finds the commit for a done task and `git show` pulls up its diff — but the task→commit mapping stays best-effort. Use git to enrich an answer ("this landed in commit abc123, touching these files"), never as the sole source — fall back to reading the live files when no clean commit matches.
 
 For a question about *direction or state* (decisions, what's pending and why), the markdown artifacts are usually enough; reach for the deliverables only when the user asks something the documents can't settle.
