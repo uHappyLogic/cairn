@@ -104,3 +104,9 @@ Stop lines that leave the state unchanged, and what Karpathy does on each:
 | `Sweep stopped — the milestone files already held changes.` | a stopped run left an uncommitted fold or a hand edit | commit or revert it by hand, then re-run |
 | `Task run stopped — a task failed.` | partial work left in the tree, resumable | re-run `complete-all-tasks` (the self-loop) |
 | `Cannot finish the milestone: tasks remain to be completed.` | still in `Listed` | run `complete-all-tasks` |
+
+## Here and now halfway approach
+
+This would be to get the idea document, and split it into multiple milestones with execution order graph defined. The execution graph should prefer parallel execution to provide a short critical execution path.
+From there the milestones are worked out manually (starting state -> review -> tasks execution) according to the graph definition (including parallel execution).
+
