@@ -45,20 +45,24 @@ def test_a_title_no_word_of_which_survives_is_refused():
 def test_the_slug_names_the_directory_and_the_title_the_heading(run_define, workspace):
     root = workspace()
     title = "Café's   Multi-Host\n  work: über fast, really fast"
-    result = run_define("--title", title, stdin=GOAL, cwd=root)
+    result = run_define("--at", ".", "--title", title, stdin=GOAL, cwd=root)
     assert result.returncode == 0, result.stderr
-    directory = root / "milestones" / "milestone_01_cafes-multi-host-work-uber-fast"
+    directory = root / "milestones" / "cafes-multi-host-work-uber-fast"
+    assert result.stdout == (
+        b"Milestone-definition: milestones/cafes-multi-host-work-uber-fast/\n"
+        b"milestones/cafes-multi-host-work-uber-fast/\n"
+    )
     requirements = (directory / "requirements.md").read_text(encoding="utf-8")
-    assert requirements.startswith("# Milestone 1: Café's Multi-Host work: über fast, really fast\n\n")
+    assert requirements.startswith("# Café's Multi-Host work: über fast, really fast\n\n")
 
 
 def test_the_title_keeps_its_case_and_punctuation_and_has_no_length_cap(run_define, workspace):
     root = workspace()
     title = "A Very LONG title, with (punctuation) & symbols; " + "word " * 60
-    result = run_define("--title", title, stdin=GOAL, cwd=root)
+    result = run_define("--at", ".", "--title", title, stdin=GOAL, cwd=root)
     assert result.returncode == 0, result.stderr
-    requirements = (root / "milestones" / "milestone_01_a-very-long-title-with" / "requirements.md").read_text(encoding="utf-8")
-    assert requirements.splitlines()[0] == "# Milestone 1: " + " ".join(title.split())
+    requirements = (root / "milestones" / "a-very-long-title-with" / "requirements.md").read_text(encoding="utf-8")
+    assert requirements.splitlines()[0] == "# " + " ".join(title.split())
 
 
 @pytest.mark.parametrize(("value", "folded"), [("  a \n\t b  ", "a b"), ("x", "x"), ("line\r\nbreak", "line break")])
@@ -69,7 +73,7 @@ def test_read_title_folds_whitespace(value, folded):
 @pytest.mark.parametrize("value", ["", "   ", " \n\t \n "])
 def test_an_empty_title_is_refused(run_define, workspace, value):
     root = workspace()
-    result = run_define("--title", value, stdin=GOAL, cwd=root)
+    result = run_define("--at", ".", "--title", value, stdin=GOAL, cwd=root)
     assert result.returncode == 1
     assert result.stdout == b""
     assert result.stderr == b"Error: the title given as --title is empty\n"
@@ -78,7 +82,7 @@ def test_an_empty_title_is_refused(run_define, workspace, value):
 
 def test_a_title_without_slug_material_is_refused_end_to_end(run_define, workspace):
     root = workspace()
-    result = run_define("--title", "?! ...", stdin=GOAL, cwd=root)
+    result = run_define("--at", ".", "--title", "?! ...", stdin=GOAL, cwd=root)
     assert result.returncode == 1
     assert result.stdout == b""
     assert result.stderr.startswith(b"Error: no word of the title")

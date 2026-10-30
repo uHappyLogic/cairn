@@ -121,11 +121,11 @@ def test_the_section_heading_itself_is_matched_after_whitespace_and_case_folding
 
 def test_the_fresh_template_takes_its_first_and_later_decisions(run_define, run_requirements, workspace):
     root = workspace()
-    defined = run_define("--title", "First", stdin=b"Ship it.\n", cwd=root)
+    defined = run_define("--at", ".", "--title", "First", stdin=b"Ship it.\n", cwd=root)
     assert defined.returncode == 0, defined.stderr
-    target = root / "milestones" / "milestone_01_first"
+    target = root / "milestones" / "first"
     template = (target / NAME).read_bytes()
-    assert template == b"# Milestone 1: First\n\n## Goal\n\nShip it.\n\n## Relevant starting state\n\n## Decisions\n\n## Out of Scope\n\n"
+    assert template == b"# First\n\n## Goal\n\nShip it.\n\n## Relevant starting state\n\n## Decisions\n\n## Out of Scope\n\n"
 
     first = fold(run_requirements, target, "Opening Decision", b"The first decision.\n")
     assert first == inserted_after(template, b"## Decisions\n", b"\n### Opening Decision\n\nThe first decision.\n")
@@ -134,7 +134,7 @@ def test_the_fresh_template_takes_its_first_and_later_decisions(run_define, run_
     third = fold(run_requirements, target, "Another Decision", b"A third decision under its own heading.\n")
     assert second == inserted_after(first, b"The first decision.\n", b"\nA second decision under the same heading.\n")
     assert third == (
-        b"# Milestone 1: First\n\n## Goal\n\nShip it.\n\n## Relevant starting state\n\n## Decisions\n\n"
+        b"# First\n\n## Goal\n\nShip it.\n\n## Relevant starting state\n\n## Decisions\n\n"
         b"### Opening Decision\n\nThe first decision.\n\nA second decision under the same heading.\n\n"
         b"### Another Decision\n\nA third decision under its own heading.\n\n## Out of Scope\n\n"
     )

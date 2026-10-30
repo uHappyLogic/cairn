@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Define a Milestone at a Scope
-
-Make `core/tools/define_milestone.py` take a required `--at <scope>` (`.` or `./` for the root, every scope normalized lexically, an absolute or `..`-climbing path refused, a scope missing from the working tree or not a directory refused on one `Error:` line naming it as given), drop the number, create only the `milestones/` container when missing, head `requirements.md` with `# <title>`, and print `Milestone-definition: <scope>/milestones/<slug>/` then that canonical repo-relative path, its six test files updated. `define-milestone-goal` takes the same required `--at` and commits the printed path under the printed subject, and `discuss-milestone-goal` gains one step proposing the one directory holding the core of the work, as deep as the core allows and the root only when the core is the project itself, which the definition takes as given; verified by the suite and one definition at a package scope and one at the root.
-
----
-
 ## History Queries Milestones Summary and Record
 
 Add the `milestones PATH`, `summary MILESTONE_PATH`, and `record PATH` queries to `core/tools/milestones.py` in the line shapes the decisions fix: `milestones` four tab-separated fields (`finished` or `live`, the finish commit's author date or `-`, path, title) with every live line above every finished one; `summary` a first line of the finish date or the word `live`, then the finish body or the title and the whole `## Goal` body; and `record` each `milestones` line at column 0 with the summary bullets and then the `tasks` lines indented four spaces beneath it, with no separator between milestones. Every body the tool prints, `tasks --with-body` included, drops a trailing paragraph whose every line is `Token: value`, the shallow-clone limit is stated in the help text and the docs, and tests go in the `test_milestones_*` family on the conftest git fixtures with finish-shaped commits.

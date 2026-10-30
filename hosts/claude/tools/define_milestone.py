@@ -1,10 +1,22 @@
 """Creator of a new milestone: its directory and the three files it starts with.
 
-Usage: python3 <plugin root>/tools/define_milestone.py --title TITLE  (goal text on stdin)
+Usage: python3 <plugin root>/tools/define_milestone.py --at SCOPE --title TITLE  (goal text on stdin)
 
-Run from the workspace root. The milestones root is always `milestones` relative to the
-working directory; the tool never creates it, and when it is missing the call is refused
-with a pointer at /init-milestone-base-workflow and nothing is written.
+Run from the workspace root. The milestone is created at <scope>/milestones/<slug>/, under
+the milestones/ container of the scope given as --at, and named by its slug alone, with no
+number.
+
+Scope: --at names the directory holding the core of the milestone's work, relative to the
+working directory, "." (or "./") naming the root. It is required, with no default. It is
+normalized lexically, with no filesystem lookup: "." components, duplicate and trailing
+slashes, and a leading "./" are collapsed, and a ".." component cancels the component
+before it. A scope that is empty, absolute, or that climbs above the working directory with
+".." once normalized is refused. The normalized scope must then be an existing directory of
+the working tree, tested on the filesystem (the tool touches no git); a scope missing there,
+or naming something that is not a directory, is refused. Every scope refusal names the scope
+as given, and nothing is written. The tool never creates the scope; it creates only the
+scope's milestones/ container, when that is missing, and refuses a container path held by
+something that is not a directory.
 
 The title comes as --title and is folded to one line (whitespace runs and newlines
 collapsed to one space, ends trimmed); it is refused only when empty after that fold, and
@@ -15,11 +27,6 @@ refusing a terminal, closed, or non-UTF-8 stdin, and refusing text that is empty
 whitespace. The goal is written under `## Goal` exactly as received with only its leading
 and trailing whitespace trimmed.
 
-Number: every directory directly under the milestones root whose whole name matches
-milestone_<ASCII digits>_<non-empty slug> counts, any other entry is skipped without a
-message; its digits are read as an integer with leading zeros stripped, the new number is
-the maximum plus one (1 on a root holding none), formatted with at least two digits.
-
 Slug: the first five whitespace-separated words of the folded title that survive
 cleaning, joined by hyphens. Each word is folded to its ASCII base with NFKD and its
 combining marks dropped, lowercased, stripped of apostrophes, and every remaining run of
@@ -27,45 +34,49 @@ characters outside [a-z0-9] turned into one hyphen with edge hyphens trimmed, so
 hyphenated compound stays one word; a word that cleans down to nothing is skipped and the
 five are filled from the words that follow. A title no word of which survives is refused.
 
-Conflict: the milestone directory milestones/milestone_<NN>_<slug> is created
-exclusively, so anything already at that path (a directory, a file, or a symlink) refuses
-the call before anything is written. That is the only conflict check.
+Conflict: the milestone directory <scope>/milestones/<slug> is created exclusively, so
+anything already at that path (a directory, a file, or a symlink) refuses the call before
+anything is written. That is the only conflict check: the same slug may stand in the
+containers of two scopes.
 
 Files, written in this order into the new directory, each through a temporary file in the
 same directory renamed over the target:
   - open_questions.xml, the empty open-question document: <open-questions/> and a newline
-  - requirements.md, headed "# Milestone <N>: <title>" with the integer number, the goal
-    under "## Goal", then empty "## Relevant starting state", "## Decisions", and
-    "## Out of Scope" sections
+  - requirements.md, headed "# <title>", the goal under "## Goal", then empty
+    "## Relevant starting state", "## Decisions", and "## Out of Scope" sections
   - TASKS_TODO.md, headed "# TASKS TODO"
 
 Output and error contract:
   - on success exactly two unlabeled lines on stdout: the commit subject
-    "Milestone-definition: milestone_<NN>_<slug>", then the milestone directory path
-    "milestones/milestone_<NN>_<slug>/", relative to the working directory
+    "Milestone-definition: <path>", then the milestone path "<path>" itself, where <path> is
+    the canonical repo-relative path of the milestone directory with its trailing slash,
+    "milestones/<slug>/" for the root and "<scope>/milestones/<slug>/" otherwise, the scope
+    in its normalized form however it was typed
   - every failure is exactly one line "Error: <reason>" on stderr with exit status 1 and
-    empty stdout; a malformed invocation gets argparse's own usage message and exit status
-    2; no traceback ever reaches the caller
-  - a failure after the milestone directory was created removes what the call created, in
+    empty stdout; a malformed invocation (no --at or no --title included) gets argparse's
+    own usage message and exit status 2; no traceback ever reaches the caller
+  - a failure after the call created its first directory removes what the call created, in
     reverse creation order, with a plain unlink for each file and a non-recursive rmdir for
-    the directory, so nothing the call did not create is ever removed; a removal that fails
-    stops the cleanup, and the one Error line then gives the original reason followed by
-    the paths left in place
+    each directory (the milestone directory, and the container when the call created it), so
+    nothing the call did not create is ever removed; a removal that fails stops the
+    cleanup, and the one Error line then gives the original reason followed by the paths
+    left in place
 
 Standard library only; runs on Python 3.9 and later.
 """
 
 import argparse
 import os
+import posixpath
 import re
 import sys
 import tempfile
 import unicodedata
 
-MILESTONES_ROOT = "milestones"
+CONTAINER_NAME = "milestones"
 SUBJECT_MARKER = "Milestone-definition"
+ROOT_SCOPE = "."
 SLUG_WORDS = 5
-MILESTONE_NAME = re.compile(r"milestone_([0-9]+)_(.+)", re.DOTALL)
 APOSTROPHES = ("'", "‘", "’", "ʼ")
 NOT_SLUG_CHARACTERS = re.compile(r"[^a-z0-9]+")
 
@@ -74,7 +85,7 @@ OPEN_QUESTIONS_TEMPLATE = "<open-questions/>\n"
 
 REQUIREMENTS_NAME = "requirements.md"
 REQUIREMENTS_TEMPLATE = """\
-# Milestone {number}: {title}
+# {title}
 
 ## Goal
 
@@ -137,6 +148,30 @@ def read_goal():
     return goal
 
 
+def normalize_scope(value):
+    """The scope given as --at in its normalized form, "." for the root: collapsed lexically,
+    with no filesystem lookup; an empty, absolute, or climbing scope is a ToolError."""
+    if value == "":
+        raise ToolError("the scope given as --at is empty")
+    if posixpath.isabs(value):
+        raise ToolError(
+            f"the scope {value} given as --at is an absolute path; name a directory relative to the workspace root"
+        )
+    scope = posixpath.normpath(value)
+    if scope == os.pardir or scope.startswith(os.pardir + "/"):
+        raise ToolError(f"the scope {value} given as --at climbs out of the workspace root with ..")
+    return scope
+
+
+def check_scope(scope, value):
+    """Refuse a normalized scope that is not an existing directory of the working tree,
+    naming the scope as given."""
+    if not os.path.isdir(scope):
+        if os.path.lexists(scope):
+            raise ToolError(f"the scope {value} given as --at is not a directory; nothing was written")
+        raise ToolError(f"the scope {value} given as --at does not exist in the working tree; nothing was written")
+
+
 # --- naming ---------------------------------------------------------------------------
 
 
@@ -164,25 +199,16 @@ def derive_slug(title):
     return "-".join(words)
 
 
-def root_label(root):
-    return root.rstrip("/") + "/"
+def container_path(scope):
+    """The repo-relative path of the scope's milestones/ container, with no trailing slash."""
+    if scope == ROOT_SCOPE:
+        return CONTAINER_NAME
+    return posixpath.join(scope, CONTAINER_NAME)
 
 
-def next_number(root):
-    """The maximum number among the milestone directories directly under root, plus one."""
-    highest = 0
-    with os.scandir(root) as entries:
-        for entry in entries:
-            match = MILESTONE_NAME.fullmatch(entry.name)
-            if match is None:
-                continue
-            try:
-                is_directory = entry.is_dir()
-            except OSError:
-                continue
-            if is_directory:
-                highest = max(highest, int(match.group(1)))
-    return highest + 1
+def path_label(path):
+    """A directory path in its printed form: with its trailing slash."""
+    return path.rstrip("/") + "/"
 
 
 # --- writing --------------------------------------------------------------------------
@@ -209,13 +235,25 @@ def write_new_file(path, text):
         raise
 
 
-def milestone_files(number, title, goal):
+def milestone_files(title, goal):
     """The three files of a new milestone, in creation order, as (name, text) pairs."""
     return [
         (OPEN_QUESTIONS_NAME, OPEN_QUESTIONS_TEMPLATE),
-        (REQUIREMENTS_NAME, REQUIREMENTS_TEMPLATE.format(number=number, title=title, goal=goal)),
+        (REQUIREMENTS_NAME, REQUIREMENTS_TEMPLATE.format(title=title, goal=goal)),
         (TASKS_TODO_NAME, TASKS_TODO_TEMPLATE),
     ]
+
+
+def create_container(container):
+    """Create the scope's milestones/ container when it is missing; True when this call
+    created it. A container path held by anything but a directory is a ToolError."""
+    try:
+        os.mkdir(container)
+    except FileExistsError:
+        if not os.path.isdir(container):
+            raise ToolError(f"{path_label(container)} exists and is not a directory; nothing was written")
+        return False
+    return True
 
 
 def create_directory(directory):
@@ -244,12 +282,16 @@ def remove_created(created):
     return []
 
 
-def create_milestone(directory, files):
-    """Create the milestone directory exclusively and write its files into it; on any
-    failure remove what was created and raise one ToolError carrying the reason."""
-    create_directory(directory)
-    created = [directory]
+def create_milestone(container, directory, files):
+    """Create the container when missing and the milestone directory exclusively, and write
+    the files into it; on any failure remove what was created and raise one ToolError
+    carrying the reason."""
+    created = []
+    if create_container(container):
+        created.append(container)
     try:
+        create_directory(directory)
+        created.append(directory)
         for name, text in files:
             path = os.path.join(directory, name)
             write_new_file(path, text)
@@ -270,18 +312,14 @@ def create_milestone(directory, files):
 def define(args):
     title = read_title(args.title)
     slug = derive_slug(title)
+    scope = normalize_scope(args.at)
     goal = read_goal()
-    root = MILESTONES_ROOT
-    if not os.path.isdir(root):
-        raise ToolError(
-            f"the milestones root {root_label(root)} does not exist in the working directory; "
-            "run /init-milestone-base-workflow first"
-        )
-    number = next_number(root)
-    name = f"milestone_{number:02d}_{slug}"
-    directory = os.path.join(root, name)
-    create_milestone(directory, milestone_files(number, title, goal))
-    sys.stdout.write(f"{SUBJECT_MARKER}: {name}\n{root_label(directory)}\n")
+    check_scope(scope, args.at)
+    container = container_path(scope)
+    directory = posixpath.join(container, slug)
+    create_milestone(container, directory, milestone_files(title, goal))
+    path = path_label(directory)
+    sys.stdout.write(f"{SUBJECT_MARKER}: {path}\n{path}\n")
     return 0
 
 
@@ -289,8 +327,18 @@ def build_parser():
     parser = argparse.ArgumentParser(
         prog="define_milestone.py",
         description=(
-            "Create the next milestone directory under milestones/ with its open_questions.xml, "
-            "requirements.md, and TASKS_TODO.md; the goal text is read from standard input"
+            "Create a new milestone directory at <scope>/milestones/<slug>/ with its open_questions.xml, "
+            "requirements.md, and TASKS_TODO.md, creating the scope's milestones/ container when missing; "
+            "the goal text is read from standard input"
+        ),
+    )
+    parser.add_argument(
+        "--at",
+        required=True,
+        metavar="SCOPE",
+        help=(
+            "the existing directory holding the core of the milestone's work, relative to the workspace root, "
+            "\".\" for the root; normalized lexically, and refused when absolute or climbing out with \"..\""
         ),
     )
     parser.add_argument(

@@ -65,9 +65,9 @@ def test_a_fold_into_the_last_subsection_lands_above_the_noted_heading(run_requi
 
 def test_the_fresh_template_with_a_noted_section_takes_a_created_subsection_above_it(run_define, run_requirements, workspace):
     root = workspace()
-    defined = run_define("--title", "First", stdin=b"Ship it.\n", cwd=root)
+    defined = run_define("--at", ".", "--title", "First", stdin=b"Ship it.\n", cwd=root)
     assert defined.returncode == 0, defined.stderr
-    target = root / "milestones" / "milestone_01_first"
+    target = root / "milestones" / "first"
     noted = with_noted_section((target / NAME).read_bytes())
     (target / NAME).write_bytes(noted)
     result = run(run_requirements, "fold", target, "Opening Decision", b"The first decision.\n")

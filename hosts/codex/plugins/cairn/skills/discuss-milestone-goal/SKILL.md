@@ -5,7 +5,7 @@ description: Analyze an overall goal description and ask clarifying questions to
 
 # discuss-milestone-goal
 
-Facilitates a structured conversation to sharpen a vague or incomplete milestone goal into a clear, actionable statement ready for `/define-milestone-goal`. The output is a refined goal description — not a document yet: this skill is purely conversational, creates no files, and assigns no milestone number (that is the user's decision).
+Facilitates a structured conversation to sharpen a vague or incomplete milestone goal into a clear, actionable statement ready for `/define-milestone-goal`. The output is a refined goal description and the one directory the milestone is placed at — not a document yet: this skill is purely conversational and creates no files, and both proposals are the user's to confirm.
 
 ## Usage
 
@@ -63,4 +63,12 @@ When the conversation reaches a natural close, present a refined goal statement:
 **Proposed milestone goal:**
 > <one to three sentences that could go directly into the `## Goal` section of requirements.md>
 
-Invite the user to adjust the wording. Once they confirm, suggest invoking `/define-milestone-goal "<refined goal>"` to create the milestone.
+Invite the user to adjust the wording, then go on to the placement.
+
+### 6. Propose the placement
+
+From the refined goal, name the one directory that holds the core of the work — the code, module, or package the milestone is about — reading the project's actual layout to find it. Go as deep in the tree as the core allows, and propose the root, `.`, only when the core is the project itself. Work the milestone also needs outside that directory (documentation kept elsewhere, a shared configuration file, a test tree beside the package) is adjacent and does not widen the proposal: never move up to cover it, or to the root for safety, since a milestone placed higher overlaps every milestone placed beneath it and so runs one at a time with all of them. The directory must already exist in the working tree, because the definition refuses one that does not; when the core does not exist yet, propose its nearest existing ancestor, or say that the user can create the directory first. That one directory is the whole proposal, and the refined goal does not restate it.
+
+**Proposed placement:** `<scope>`, the directory's path relative to the workspace root.
+
+Invite the user to adjust it. Once both the goal and the placement are confirmed, suggest invoking `/define-milestone-goal --at <scope> <refined goal>` to create the milestone; the definition takes the placement as given.

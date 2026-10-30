@@ -8,11 +8,11 @@ One-time bootstrap for a project. It checks the workflow's two runtime prerequis
 
 ### `discuss-milestone-goal <overall_goal_description>`
 
-Facilitates a structured conversation to sharpen a vague goal into a clear, actionable statement. Produces a refined goal description ready for `/define-milestone-goal`. Creates no files.
+Facilitates a structured conversation to sharpen a vague goal into a clear, actionable statement. Produces a refined goal description ready for `/define-milestone-goal`, then proposes the milestone's placement: the one directory holding the core of the work, as deep in the tree as the core allows and the root only when the core is the project itself, which `/define-milestone-goal` takes as given as its `--at` scope. Creates no files.
 
-### `define-milestone-goal <overall_goal_description>`
+### `define-milestone-goal --at <scope> <overall_goal_description>`
 
-Creates a new milestone mechanically: the skill only chooses the milestone's title from the goal description and hands it, with the goal text on standard input, to the plugin's stdlib-only `tools/define_milestone.py`. The tool numbers the milestone max-plus-one over the existing `milestone_<N>_<slug>` directories, derives the slug from the title's first five words, refuses an existing target, and creates `milestones/milestone_<N>_<slug>/` with its three files from its own templates: an empty `open_questions.xml`, which the open-question tool then writes from that point on, `requirements.md` (the title heading and the Goal section filled, the other sections empty), plus an empty `TASKS_TODO.md`, which the task-list tool `tools/task_list.py` then writes from that point on. It prints the commit subject `Milestone-definition: milestone_<N>_<slug>` and the directory path, which the skill passes unchanged to the commit procedure; on failure it prints one `Error:` line and leaves nothing behind. Does **not** activate the milestone.
+Creates a new milestone mechanically: the skill only chooses the milestone's title from the goal description and hands it, with the required `--at` scope as given and the goal text on standard input, to the plugin's stdlib-only `tools/define_milestone.py`; a call with no `--at` stops on its own fixed line with nothing written. The scope is the directory holding the core of the work, `.` (or `./`) for the root. The tool normalizes it lexically, refuses one that is absolute, climbs out of the workspace root with `..`, or is not an existing directory of the working tree, derives the slug from the title's first five words, and creates `<scope>/milestones/<slug>/` exclusively, with no number, creating only the scope's `milestones/` container when it is missing, with its three files from its own templates: an empty `open_questions.xml`, which the open-question tool then writes from that point on, `requirements.md` (headed `# <title>`, the Goal section filled, the other sections empty), plus an empty `TASKS_TODO.md`, which the task-list tool `tools/task_list.py` then writes from that point on. It prints the commit subject `Milestone-definition: <path>` and then `<path>`, the milestone's canonical repo-relative path with its trailing slash (`milestones/<slug>/` at the root, `<scope>/milestones/<slug>/` otherwise), which the skill passes unchanged to the commit procedure; on failure it prints one `Error:` line and leaves nothing behind. Does **not** activate the milestone.
 
 ### `specify-milestone-starting-state --milestone <path>`
 
@@ -109,6 +109,7 @@ Every skill's console report opens with one fixed line saying how the run ended,
 | `init-milestone-base-workflow` | stop | `Bootstrap stopped — no suitable python3 interpreter.` |
 | `define-milestone-goal` | success | `Milestone defined.` |
 | `define-milestone-goal` | no-op | `Milestone not committed — its directory held no uncommitted file.` |
+| `define-milestone-goal` | stop | `Milestone not defined — no --at scope was given.` |
 | `define-milestone-goal` | stop | `Milestone not defined — the definition tool failed.` |
 | `specify-milestone-starting-state` | success | `Starting state recorded.` |
 | `specify-milestone-starting-state` | no-op | `Starting state unchanged — nothing committed.` |

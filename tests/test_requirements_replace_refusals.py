@@ -57,9 +57,9 @@ def test_a_missing_subsection_is_never_created(run_requirements, requirements_di
 
 def test_an_empty_decisions_section_has_no_subsection_to_replace(run_define, run_requirements, workspace):
     root = workspace()
-    defined = run_define("--title", "First", stdin=b"Ship it.\n", cwd=root)
+    defined = run_define("--at", ".", "--title", "First", stdin=b"Ship it.\n", cwd=root)
     assert defined.returncode == 0, defined.stderr
-    target = root / "milestones" / "milestone_01_first"
+    target = root / "milestones" / "first"
     template = (target / NAME).read_bytes()
     result = run_requirements("replace", str(target), "--section", "Opening Decision", stdin=b"A new body.\n")
     assert_refused(result, '"### Opening Decision"')

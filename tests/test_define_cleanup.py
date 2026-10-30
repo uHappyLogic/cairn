@@ -1,6 +1,7 @@
-"""define_milestone.py failure cleanup: a failure after the milestone directory exists removes
-exactly what the call created, in reverse creation order, with unlink and non-recursive
-rmdir, and a removal that fails stops the cleanup and is named in the one Error line."""
+"""define_milestone.py failure cleanup: a failure after the call created its first directory
+removes exactly what the call created, the milestones/ container included when the call made
+it, in reverse creation order, with unlink and non-recursive rmdir, and a removal that fails
+stops the cleanup and is named in the one Error line."""
 
 import errno
 import io
@@ -12,7 +13,7 @@ import pytest
 import define_milestone
 
 GOAL = b"Ship it.\n"
-DIRECTORY = os.path.join("milestones", "milestone_01_first")
+DIRECTORY = os.path.join("milestones", "first")
 
 
 def no_space(path):
@@ -21,13 +22,16 @@ def no_space(path):
 
 @pytest.fixture
 def define_in_process(workspace, monkeypatch, capsys):
-    """Run main() in a fresh workspace with the goal on stdin: returns (status, out, err, root)."""
+    """Run main() in a fresh workspace with the goal on stdin: returns (status, out, err, root).
+    container=False leaves the milestones/ container out, so the call creates it."""
 
-    def run(title="First"):
-        root = workspace()
+    def run(title="First", container=True, scope="."):
+        root = workspace(root=container)
+        if scope != ".":
+            (root / scope).mkdir(parents=True)
         monkeypatch.chdir(root)
         monkeypatch.setattr(sys, "stdin", io.TextIOWrapper(io.BytesIO(GOAL)))
-        status = define_milestone.main(["--title", title])
+        status = define_milestone.main(["--at", scope, "--title", title])
         captured = capsys.readouterr()
         return status, captured.out, captured.err, root
 
@@ -106,11 +110,50 @@ def test_a_failure_on_the_middle_file_removes_the_first_file_and_the_directory(d
     assert list((root / "milestones").iterdir()) == []
 
 
-def test_the_milestones_root_is_never_removed(define_in_process, fail_on):
+def test_a_container_that_already_stood_is_never_removed(define_in_process, fail_on):
     fail_on("requirements.md")
     status, _, _, root = define_in_process()
     assert status == 1
     assert (root / "milestones").is_dir()
+
+
+def test_a_container_the_call_created_is_removed_last(define_in_process, fail_on, removals):
+    fail_on("TASKS_TODO.md")
+    status, out, err, root = define_in_process(container=False)
+    assert (status, out) == (1, "")
+    assert err == f"Error: No space left on device: {os.path.join(DIRECTORY, 'TASKS_TODO.md')}\n"
+    assert removals == [
+        ("unlink", os.path.join(DIRECTORY, "requirements.md")),
+        ("unlink", os.path.join(DIRECTORY, "open_questions.xml")),
+        ("rmdir", DIRECTORY),
+        ("rmdir", "milestones"),
+    ]
+    assert list(root.iterdir()) == []
+
+
+def test_a_package_container_the_call_created_is_removed_and_the_scope_kept(define_in_process, fail_on, removals):
+    fail_on("open_questions.xml")
+    status, out, err, root = define_in_process(container=False, scope="pkg")
+    assert (status, out) == (1, "")
+    assert err.startswith("Error: No space left on device: pkg/milestones/first/open_questions.xml")
+    assert removals == [("rmdir", "pkg/milestones/first"), ("rmdir", "pkg/milestones")]
+    assert [path.name for path in root.iterdir()] == ["pkg"]
+    assert list((root / "pkg").iterdir()) == []
+
+
+def test_a_container_holding_a_stray_entry_is_left_in_place(define_in_process, fail_on):
+    def drop_stray(path):
+        with open(os.path.join("milestones", "stray.md"), "wb") as handle:
+            handle.write(b"someone else's")
+
+    fail_on("requirements.md", before=drop_stray)
+    status, out, err, root = define_in_process(container=False)
+    assert (status, out) == (1, "")
+    assert err == (
+        f"Error: No space left on device: {os.path.join(DIRECTORY, 'requirements.md')}; "
+        "the cleanup could not remove milestones\n"
+    )
+    assert [path.name for path in (root / "milestones").iterdir()] == ["stray.md"]
 
 
 def test_a_failed_rename_leaves_no_temporary_file(define_in_process, monkeypatch):
