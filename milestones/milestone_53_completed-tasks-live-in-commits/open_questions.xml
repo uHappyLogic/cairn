@@ -1,1 +1,41 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Task commit body contents">
+    <question>What does the body of a `Task-completion:` commit hold beyond the acceptance bar&apos;s `- ` bullets, given that today&apos;s `TASKS_DONE.md` entry records both the task&apos;s brief and the bar under a `**Verified:**` label, and that once the file is gone the brief survives only as the removed lines of `TASKS_TODO.md` in that commit&apos;s own diff?</question>
+  </open-question>
+  <open-question id="Inline bar into body">
+    <question>How does the inline `complete-task` skill&apos;s one fixed shell call hand the multi-line acceptance bar to the commit tool&apos;s `--body` argument, given that criteria routinely hold backticks, double quotes, and apostrophes, which a double-quoted shell argument would expand or break on, and that the commit tool&apos;s contract gains no body-file option?</question>
+  </open-question>
+  <open-question id="Empty bar guard">
+    <question>Once `remove` reads no bar, which step refuses an empty acceptance bar, or an absent or empty body file after an agent&apos;s `DONE`, before a `Task-completion:` commit lands, given that today only the task-list tool&apos;s `move` refuses an empty bar, the commit tool makes a subject-only commit from an empty body, and the orchestrator stops the run only on an absent or empty path file?</question>
+  </open-question>
+  <open-question id="Bar form statement home">
+    <question>Where is the acceptance bar&apos;s record form (one `- ` bullet per criterion, in verification order, held verbatim from derivation) stated once the completion procedure&apos;s step 5 command is a bare `remove` that carries no bar, given that the procedure stays commit-free and the bar&apos;s only destination is each runner&apos;s own commit?</question>
+  </open-question>
+  <open-question id="Tasks line fields">
+    <question>Which fields does one line of the milestones tool&apos;s `tasks` query carry, in what order and with what separator, given that the draft lists date, milestone path, and task title, that a title may hold spaces, and that a reader wanting a task&apos;s diff needs its commit hash or must search subjects itself?</question>
+  </open-question>
+  <open-question id="Tasks body layout">
+    <question>When `tasks` runs with its body flag, how is each commit&apos;s body set apart from the task lines around it so a reader can tell where one task&apos;s bar ends and the next task begins, including how a task whose commit carries no body (one completed before the bar moved into commits) appears?</question>
+  </open-question>
+  <open-question id="Tasks milestone join">
+    <question>How does `tasks` assign a milestone to a `Task-completion:` commit whose file list holds no `TASKS_TODO.md` under a milestone directory, or more than one, given that two commits in this repository&apos;s log also touch a fixture `TASKS_TODO.md` under `tests/fixtures/`?</question>
+  </open-question>
+  <open-question id="Tasks legacy subjects">
+    <question>Does `tasks` read only commits whose subject opens with `Task-completion:`, or also the 222 retired `Tasklist-completion: complete one milestone task` commits that carry the task heading in their body?</question>
+  </open-question>
+  <open-question id="Tasks empty result">
+    <question>What does `tasks` print, and with what exit status, for a PATH no task commit ever touched, whether a live milestone with no completed task or a mistyped path, given that git&apos;s path-scoped log prints nothing for either without distinguishing them?</question>
+  </open-question>
+  <open-question id="Tasks shallow clone">
+    <question>How does `tasks` behave in a shallow clone, whose truncated log would silently omit older task commits from what it prints, given that the draft names a shallow clone as a limit a stop line says?</question>
+  </open-question>
+  <open-question id="Reader body flag">
+    <question>Which of the five readers that replace their `TASKS_DONE.md` read with a `tasks` call (`finish-current-milestone`, `derive-tasks`, `ask-in-milestone-context`, `submit-task`, `discuss-new-task`) run it with the body flag, reading each task&apos;s bar, and which read task titles alone?</question>
+  </open-question>
+  <open-question id="Reader tasks failure">
+    <question>When a reader&apos;s `tasks` call fails (the tool refusing, or git unavailable), do `finish-current-milestone` and `derive-tasks` stop on a fixed line of their own, or proceed without the completed-task record?</question>
+  </open-question>
+  <open-question id="Mention sweep boundary">
+    <question>Which mentions of `TASKS_DONE.md` outside the runtime files, host templates, docs, and tests the goal names are rewritten in this milestone, in particular the pull request template&apos;s checklist item and the three passages of `ideas/benchmark_for_cairn.md` that describe a cairn chain&apos;s tree?</question>
+  </open-question>
+</open-questions>
