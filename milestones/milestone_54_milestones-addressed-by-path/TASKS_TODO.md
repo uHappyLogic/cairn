@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Commit Tool Author Date Input
-
-Give `core/tools/commit.py` an optional `--date DATE` argument passed through unchanged as `git commit --date DATE`, setting the author date only while the committer date stays the time the commit is made, stated in its help text. Pinned by a test file of its own, with every existing call leaving it out and behaving exactly as today.
-
----
-
 ## Define a Milestone at a Scope
 
 Make `core/tools/define_milestone.py` take a required `--at <scope>` (`.` or `./` for the root, every scope normalized lexically, an absolute or `..`-climbing path refused, a scope missing from the working tree or not a directory refused on one `Error:` line naming it as given), drop the number, create only the `milestones/` container when missing, head `requirements.md` with `# <title>`, and print `Milestone-definition: <scope>/milestones/<slug>/` then that canonical repo-relative path, its six test files updated. `define-milestone-goal` takes the same required `--at` and commits the printed path under the printed subject, and `discuss-milestone-goal` gains one step proposing the one directory holding the core of the work, as deep as the core allows and the root only when the core is the project itself, which the definition takes as given; verified by the suite and one definition at a package scope and one at the root.

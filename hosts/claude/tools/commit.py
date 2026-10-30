@@ -1,10 +1,11 @@
 """The commit command of the skill layer: one git commit of exactly the named paths, made with
 those paths as its pathspec, each git write repeated while another process holds git's lock,
-with an optional removal of named paths made inside the same commit.
+with an optional removal of named paths made inside the same commit and an optional author
+date given to it.
 
-Usage: python3 <plugin root>/tools/commit.py --subject SUBJECT [--body BODY] [--remove PATH ...] [--] PATH [PATH ...]
-       python3 <plugin root>/tools/commit.py --subject SUBJECT [--body BODY] [--remove PATH ...] --path-file FILE
-       python3 <plugin root>/tools/commit.py --subject SUBJECT [--body BODY] --remove PATH [--remove PATH ...]
+Usage: python3 <plugin root>/tools/commit.py --subject SUBJECT [--body BODY] [--date DATE] [--remove PATH ...] [--] PATH [PATH ...]
+       python3 <plugin root>/tools/commit.py --subject SUBJECT [--body BODY] [--date DATE] [--remove PATH ...] --path-file FILE
+       python3 <plugin root>/tools/commit.py --subject SUBJECT [--body BODY] [--date DATE] --remove PATH [--remove PATH ...]
 
 Unlike the document writers beside it, which touch no git, this module exists to run git: it
 reads or writes no milestone file and takes no milestone directory. It runs git in the
@@ -29,10 +30,10 @@ Steps, each run only when the one before it succeeded:
      file holding a change of its own, so a removal never discards uncommitted work
   3. the path-scoped stage, "git add -- PATH...", staging exactly the named paths, run only
      when a PATH is given
-  4. the commit, "git commit -m SUBJECT [-m BODY] -- PATH... REMOVED...", with the named
-     paths and the paths to remove together as its pathspec, so the one commit records the
-     removals and those paths and nothing else whatever else the index holds, and every
-     other staged change stays staged and uncommitted
+  4. the commit, "git commit -m SUBJECT [-m BODY] [--date DATE] -- PATH... REMOVED...", with
+     the named paths and the paths to remove together as its pathspec, so the one commit
+     records the removals and those paths and nothing else whatever else the index holds, and
+     every other staged change stays staged and uncommitted
 
 The paths are given either as arguments (behind "--" when one may begin with "-") or, with
 --path-file, in a file holding one path per line, never both. A path file is read
@@ -49,6 +50,14 @@ SUBJECT is the commit's one-line subject, passed to git as given. BODY, when giv
 anything but whitespace, is the commit's body, passed to git as given, line breaks included;
 an empty or whitespace-only BODY makes the same subject-only commit as no BODY.
 
+DATE, when given, is the commit's author date, passed to git unchanged as "git commit --date
+DATE" and parsed by git, which accepts among its forms the ISO 8601 date "git log
+--format=%aI" prints. It sets the author date only: the committer date stays the time the
+commit is actually made. A call without --date runs exactly the commands it ran before the
+option existed, both dates the time of the commit. A DATE git cannot parse fails the commit
+with git's own message; since git exits 128 for it, that failure is reported after the last
+attempt of the retry below.
+
 The retry: each git write (steps 2, 3, and 4) is repeated when git exits with status 128,
 its fatal-error status and the one a held .git/index.lock produces, up to ATTEMPTS attempts
 in all with a fixed pause of PAUSE seconds between two. The schedule is one constant applied
@@ -56,9 +65,10 @@ at every write, with no option or variable to change it. Every other non-zero st
 hook's refusal, nothing to commit, a removal git refuses, a commit pathspec matching no
 file) is passed on at once. Only the exit status is tested; no message text is read.
 
-Refusals, made before any git command runs: an empty or multi-line SUBJECT, an empty path
-argument, an empty --remove value, no path and no --remove given at all, and a path file
-that is missing, unreadable, not UTF-8 text, or naming no path. Nothing else is checked.
+Refusals, made before any git command runs: an empty or multi-line SUBJECT, an empty or
+whitespace-only DATE, an empty path argument, an empty --remove value, no path and no
+--remove given at all, and a path file that is missing, unreadable, not UTF-8 text, or
+naming no path. Nothing else is checked.
 
 Output and error contract:
   - a commit that lands prints nothing; a call whose guard found none of the paths changed
@@ -122,6 +132,13 @@ def commit_body(body):
     if body is None or not body.strip():
         return None
     return body
+
+
+def check_date(date):
+    """The author date git is given unchanged, or None when --date is absent."""
+    if date is not None and not date.strip():
+        raise ToolError("the date given as --date is empty")
+    return date
 
 
 def read_path_file(path):
@@ -207,6 +224,7 @@ def failure(command, result, attempts=1):
 def commit(args):
     subject = check_subject(args.subject)
     body = commit_body(args.body)
+    date = check_date(args.date)
     removals = gather_removals(args.remove)
     paths = gather_paths(args.paths, args.path_file, removals)
 
@@ -236,6 +254,8 @@ def commit(args):
             raise failure("add", result, attempts)
 
     message = ["-m", subject] if body is None else ["-m", subject, "-m", body]
+    if date is not None:
+        message += ["--date", date]
     result, attempts = write(["commit", *message, "--", *paths, *removals])
     if result.returncode != 0:
         raise failure("commit", result, attempts)
@@ -252,9 +272,9 @@ def build_parser():
             "Commit exactly the named paths, with those paths as the commit's pathspec: a "
             "status guard over them, git rm -r -q of each path given as --remove, a "
             "path-scoped git add of the other paths, and one git commit over the removals and "
-            "those paths together, each git write repeated on a fixed schedule while git exits "
-            "128. Prints nothing when the commit lands and one fixed line when none of the "
-            "paths changed."
+            "those paths together, given --date as its author date when one is named, each git "
+            "write repeated on a fixed schedule while git exits 128. Prints nothing when the "
+            "commit lands and one fixed line when none of the paths changed."
         ),
     )
     parser.add_argument(
@@ -267,6 +287,15 @@ def build_parser():
         "--body",
         metavar="BODY",
         help="the commit's body, passed to git as given; empty or absent makes a subject-only commit",
+    )
+    parser.add_argument(
+        "--date",
+        metavar="DATE",
+        help=(
+            "the commit's author date, passed to git unchanged as git commit --date DATE, such as "
+            "the ISO 8601 date git log --format=%%aI prints; it sets the author date only, the "
+            "committer date staying the time the commit is made; absent, both dates are that time"
+        ),
     )
     parser.add_argument(
         "--path-file",
