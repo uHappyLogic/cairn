@@ -1,38 +1,4 @@
 <open-questions>
-  <open-question id="Migration missing directory">
-    <question>What does `migrate-milestones` do with a `## Milestone History` entry whose numbered directory is absent from the tree (removed by hand, or never present in a project that wrote its history by hand): stop the walk, skip the entry with a line in its report, or make the finish commit from the entry alone with nothing removed?</question>
-    <recommendation option="Pre-flight stop">The migration runs whole or not at all, every commit it makes is a native-shaped finish with real files at its parent, and nothing about a milestone&apos;s record is guessed or silently dropped from a record whose README source the closing commit removes; an entry absent and unlogged is restored or edited out by the person before any commit.</recommendation>
-    <alternative id="Pre-flight stop">
-      Before its first commit the skill checks every `## Milestone History` entry for a directory under `milestones/` carrying its number; if any is absent it stops on one fixed line of its own, lists the absent entries (number and title) on the lines below it, and commits nothing. No absent entry is ever migrated: the person restores the directory (from history, where it once stood) or edits the entry out of the README by hand and runs the skill again.
-      <advantage>The migration either runs whole or not at all, so no partial walk is left behind for re-run detection to untangle, every finish commit it does make has the native shape (a real removal, the files at its parent for `show`), and nothing about a milestone&apos;s record is guessed.</advantage>
-      <drawback>A project whose history was written by hand, with directories that never existed, cannot migrate without a hand edit that drops those entries from the record or recreating directories it never had; and the person meets the block before any progress, on a skill run once per project with no chain to retry it.</drawback>
-    </alternative>
-    <alternative id="Stop at the entry">
-      The walk runs oldest first as planned and checks each entry&apos;s directory only when it reaches it; on the first absent one it stops on one fixed line naming that entry, leaving every earlier entry&apos;s finish commit landed and the later ones unmigrated, and commits nothing for the absent entry or the closing commit.
-      <advantage>The simplest form: no pre-scan and no special path, the absence surfacing exactly where the walk would otherwise fail on `git rm -r` of a path that does not exist, with a fixed line in place of git&apos;s message.</advantage>
-      <drawback>It leaves the project half-migrated, one absent entry at a time, so a project with several gaps needs several runs, and resuming depends on how the skill tells migrated entries from the rest after an interruption, an axis the re-run detection question owns; the hand-written-history case stays blocked as under a pre-flight stop.</drawback>
-    </alternative>
-    <alternative id="Skip with report line">
-      An entry whose directory is absent gets no commit: the walk continues past it, the skill&apos;s report names it on a line of its own under the status line, and the closing commit removes `milestones/README.md` as usual, so the entry&apos;s title and bullets survive only in the README&apos;s own history.
-      <advantage>The migration always completes in one run whatever state the tree is in, the absent entries are named rather than silently dropped, and every commit it makes is a native-shaped finish.</advantage>
-      <drawback>The skipped milestones vanish from the new record: `milestones`, `summary`, and `record` read finish commits only, so their bullets are unreachable by any query once the README is removed, and a reader of the record has no sign anything is missing beyond one report the person saw once.</drawback>
-    </alternative>
-    <alternative id="Bodied commit for every entry">
-      Every absent entry still gets its finish commit, `Milestone-finish: &lt;path&gt;` with the entry&apos;s title line, a blank line, and its bullets as the body, changing no file: the path is the directory&apos;s last tracked path where the log shows one under the entry&apos;s number (a directory removed by hand), and otherwise is formed from the entry&apos;s number and a slug of its title in the old `milestones/milestone_&lt;NN&gt;_&lt;slug&gt;/` form (a history written by hand).
-      <advantage>Every history entry reaches the record, so `milestones`, `summary`, and `record` print the whole history the README held and the closing commit removes nothing the record lacks.</advantage>
-      <drawback>The commit changes no path, which the commit tool reports as a no-op and does not make, so it needs an empty-commit route, a choice the commit mechanism question owns; `show` finds no files at its parent; and for a never-present directory the path in the subject is invented, naming a directory no commit ever held.</drawback>
-    </alternative>
-    <alternative id="Bodied commit or skip by cause">
-      The skill tells the two causes apart from the log: an entry whose numbered directory was once tracked and later removed gets a bodied finish commit changing no file, under its last tracked path, while an entry whose directory never appears in the log gets no commit and a line of its own in the report, as a skip.
-      <advantage>Every milestone that ever had files reaches the record under a path that really existed, and no path is invented for a history written by hand.</advantage>
-      <drawback>Two behaviours where one would do, keyed on a log search by number whose slug is unknown; the once-tracked case still needs the empty-commit route the commit mechanism question owns and leaves `show` with no files at its parent, and never-present entries still vanish from the record once the README is removed.</drawback>
-    </alternative>
-    <alternative id="Restore then finish">
-      For an entry whose numbered directory was once tracked, the skill first commits the directory restored from its last tracked state, then makes the ordinary finish commit removing it, so the finish has the native shape; an entry whose directory never appears in the log gets no commit and a line of its own in the report, as a skip.
-      <advantage>Every once-tracked milestone ends with exactly the record a native finish leaves, a real removal with its files at the commit&apos;s parent where `show` reaches them, and the walk needs no empty-commit route.</advantage>
-      <drawback>Two commits for each such milestone, one of them a restore that is no finish and needs a subject of its own, so reverting the finish leaves the restore standing; the migration writes back files the project deliberately removed; and never-present entries still vanish from the record once the README is removed.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Own runs crossing">
     <question>How do this milestone&apos;s own runs cross the flip to a required `--milestone &lt;path&gt;` and a renamed finish, given that every later skill run, this milestone&apos;s `complete-all-tasks` included, resolves through the rebuilt `hosts/claude/` tree the checkout installs from: which task carries the resolution change, and is it completed alone through the inline `complete-task` before the rest run in a fresh session, as milestone 53 crossed its bar flip?</question>
     <applied-principle>Mutate live machinery last</applied-principle>
@@ -66,7 +32,6 @@
   <open-question id="Heading and title line">
     <question>Once the number leaves the directory name, what heading does the definition tool write at the top of `requirements.md` (today `# Milestone &lt;N&gt;: &lt;title&gt;`), and what exactly is the first line of a finish commit&apos;s body, the title as the heading carried it, for a native finish and for a migrated entry whose README heading reads `### Milestone N — Title`, given that finish reads the title from that heading and that `summary` prints the body&apos;s first line as the milestone&apos;s title?</question>
     <applied-principle>Drop-vs-replace by ambiguity</applied-principle>
-    <depends-on question="Migration missing directory" option="Pre-flight stop"/>
     <recommendation option="Bare title, heading source">The file&apos;s place inside a milestone directory already says what it is, so the heading is the bare title, and both writers take the first body line from the milestone&apos;s own requirements.md heading with one stripping rule for the legacy numbered prefix, so the migration makes exactly the commit the new finish makes and the heading wins where the README copy drifted.</recommendation>
     <alternative id="Bare title, heading source">
       The definition tool heads `requirements.md` with `# &lt;title&gt;`. Every finish body, native and migrated alike, opens with the title read from the milestone&apos;s own `requirements.md` heading, with any legacy `Milestone &lt;N&gt;: ` prefix stripped. So the migration takes the title line from the directory it is about to remove, not from the README entry&apos;s `### Milestone N — Title` heading, and takes only the bullets from the README entry.
