@@ -100,5 +100,9 @@ Three definitions under `scripts/hosts/` render `core/` into `hosts/claude/`, `h
 
 - **Removal through the commit tool.** The commit tool gains a removal input (for example a repeatable `--remove PATH` option) under which it runs `git rm -r -q -- PATH` itself as one more git write inside its retry schedule, before staging the other named paths and making the one pathspec commit over all of them. Finish runs only that one command, naming the milestone directory as the removal and the context file as an ordinary path when edited, under `Milestone-finish: <path>` with the summary as body.
 
+### The migration skill
+
+- **Re-run detection.** The walk reads two signals for each entry. If the directory still stands, the entry is migrated now, even when a path-form `Milestone-finish: <path>` subject is already in the log (a reverted migration). If the directory is gone and the log holds that subject, the entry is skipped as already migrated. If the directory is gone and no such subject exists, the entry is not treated as migrated and falls under the absent-directory handling recorded below.
+
 ## Out of Scope
 
