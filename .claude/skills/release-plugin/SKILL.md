@@ -64,13 +64,12 @@ Call the argument `<VERSION>` from here on.
 Every `<NAME>` placeholder in the commands below is substituted as the literal value or as a
 **braced** shell variable (`${NAME}`), never unbraced. The session shell may be zsh, where a
 variable followed by `:` and a letter is read as a modifier — `$COMMIT:refs/heads/main`
-silently becomes `<COMMIT>efs/heads/main` and `$LAST_TAG:milestones/README.md` errors on
-`:m` — so an unbraced substitution breaks exactly the refspec and path arguments the run
-depends on. And no command in this file contains a `$` followed by a digit: the skill loader
-substitutes positional-argument tokens into this text before it is read — on the 1.5.1 run it
-replaced awk's whole-record field reference (a dollar sign followed by the digit zero) in the
-extraction program with `1.5.1` — so the three changelog filters below are Python, which reads
-a line and its fields without one.
+silently becomes `<COMMIT>efs/heads/main` — so an unbraced substitution breaks exactly the
+refspec arguments the run depends on. And no command in this file contains a `$` followed by
+a digit: the skill loader substitutes positional-argument tokens into this text before it is
+read — on the 1.5.1 run it replaced awk's whole-record field reference (a dollar sign followed
+by the digit zero) in the extraction program with `1.5.1` — so the changelog filters below
+are Python, which reads a line and its fields without one.
 
 ## Workflow
 
@@ -352,65 +351,94 @@ rest of the release with them.
 
 ### 5. Compose the release notes
 
-This step still mutates nothing: it reads the range, cross-checks its two sides, and builds
-the release body in context. Call the finished text `<RELEASE_BODY>`; step 6 writes it into
-`CHANGELOG.md` as the `<VERSION>` entry and commits it, and from that commit on the committed
-entry — not this draft — is what steps 7 and 8 show and publish.
+This step still mutates nothing: it reads the milestones finished since `<LAST_TAG>` back
+through the plugin's milestones tool and builds the release body in context. Call the
+finished text `<RELEASE_BODY>`; step 6 writes it into `CHANGELOG.md` as the `<VERSION>` entry
+and commits it, and from that commit on the committed entry — not this draft — is what steps 7
+and 8 show and publish.
 
 **Skip this whole step on a resumption.** The notes it would compose are already committed:
 the `Release: <VERSION>` commit at HEAD carries them as the `CHANGELOG.md` entry step 3c
 counted, and step 7 reads that entry back. Recomposing would produce a second condensed
 rewrite that could hand a distribution release notes differing from a monorepo release an
-earlier run already created; reading the entry back cannot. The cross-check in (c) and the
-empty-range confirmation in (d) are therefore not re-run on a resumption — the committed
-entry is the evidence they passed. Carry `<VERSION>` and `<LAST_TAG>` straight into step 7.
+earlier run already created; reading the entry back cannot. The empty-range confirmation in
+(d) is therefore not re-run on a resumption — the committed entry is the evidence it passed.
+Carry `<VERSION>` and `<LAST_TAG>` straight into step 7.
 
-**a. Gather the finished milestones from the commit range.**
-
-Each finished milestone lands in exactly one `Milestone-finish: milestone_<NN>_<slug>` commit
-touching `milestones/README.md`:
-
-```bash
-git log --grep='^Milestone-finish: ' --format='%s' <LAST_TAG>..HEAD -- milestones/README.md
-```
-
-From each subject take `<NN>` — the milestone number, read as an integer so `06` and `6` are
-the same milestone. Call this set the **commit side**.
-
-**b. Gather the history entries added over the same range.** The tracked tree is clean by
-step 2b, so the working file is HEAD:
+**a. List the milestones and the last release's date.** A milestone's record is its finish
+commit — a `Milestone-finish: <path>` commit whose body is the milestone's summary — and this
+step reads that record only through the plugin's milestones tool, never through a `git log`
+of its own. From the workspace root:
 
 ```bash
-diff <(git show <LAST_TAG>:milestones/README.md | grep '^### Milestone ' | sort) \
-     <(grep '^### Milestone ' milestones/README.md | sort)
+python3 core/tools/milestones.py milestones .
 ```
 
-Every heading present at HEAD but not at `<LAST_TAG>` — the `>` lines — is an added entry.
-Take its number from `### Milestone <N> — <Title>`, again as an integer. Call this set the
-**history side**. A heading that exists at both ends but was reworded shows up as added here;
-the cross-check below is what turns that into a visible stop rather than a silent
-mis-numbering.
+Each line is four tab-separated fields: `live` or `finished`, a date, the milestone path with
+its trailing slash, and the title. Only the `finished` lines are read here — a live milestone,
+dated `-`, is unfinished and never in the notes. A finished line's date is its finish
+commit's author date as `YYYY-MM-DD`, the original finish day for a milestone the migration
+re-finished as well, and the finished lines come newest finish first.
 
-**c. Cross-check the two sides.** They must name exactly the same set of milestone numbers.
-Any disagreement, in **either** direction, stops the run:
+Then read the last release's date in the same form, the author date of the commit
+`<LAST_TAG>` names:
 
-- a milestone number on the commit side with no matching history entry — a
-  `/finish-milestone` whose `milestones/README.md` entry is missing or renumbered;
-- a milestone number on the history side with no matching finish commit — a history entry
-  added by hand, or a finish commit outside the range.
+```bash
+git log -1 --format=%as <LAST_TAG>
+```
 
-On any mismatch, print **both sides** — the commit-side subjects and the history-side
-headings, with the unmatched numbers called out — state that nothing was changed, and exit.
-The maintainer fixes the source and re-runs. The release is the one irreversible artifact in
-the run, so a false stop costs a single `milestones/README.md` edit and a re-run.
+Call it `<TAG_DATE>`.
 
-**d. Empty range.** When both sides are empty — no `Milestone-finish:` commit in the range
-and no history entry added — no milestone was finished since `<LAST_TAG>`. That is ambiguous
-between a forgotten `/finish-milestone` and a deliberate version-only patch release,
-and only the maintainer can tell the two apart, so:
+**b. Keep the milestones finished since `<LAST_TAG>`.** Keep every `finished` line dated
+later than `<TAG_DATE>`; both are `YYYY-MM-DD`, so comparing them as strings compares the
+days. Drop every line dated earlier: that milestone was finished before the last release, and
+its section stands in that release's notes or an earlier one's.
+
+A line dated exactly `<TAG_DATE>` is the one the day alone cannot place, since a finish and a
+release often fall on the same day, the finish on either side of the release. Keep it exactly
+when no earlier release's notes already hold its section, which this count reports, with the
+line's title field written in place of `<Title>` — the tracked tree is clean by step 2a, so
+the working `CHANGELOG.md` is HEAD's:
+
+```bash
+python3 -c '
+import re, sys
+title = sys.stdin.read().strip("\n")
+heading = re.compile("### " + re.escape(title) + r"( \(milestone [0-9]+\))?")
+print(sum(1 for line in open("CHANGELOG.md", encoding="utf-8")
+          if heading.fullmatch(line.rstrip("\n"))))
+' <<'EOF'
+<Title>
+EOF
+```
+
+It counts the lines of `CHANGELOG.md` that are exactly `### <Title>`, the heading (e) writes,
+or `### <Title> (milestone <N>)`, the heading every section written before the milestones tool
+carries. `0` keeps the line, the milestone having been finished after the release that day;
+any other count drops it, its section already standing in the notes.
+
+**c. Read each kept milestone's summary.** For every kept line, in the order (a) printed
+them:
+
+```bash
+python3 core/tools/milestones.py summary <MILESTONE_PATH>
+```
+
+`<MILESTONE_PATH>` is the line's path field exactly as printed, trailing slash included. The
+first line printed is the finish date again; below it stands the finish commit's body — the
+milestone's title line, one blank line, then its bullets — with any trailer paragraph already
+left out. That title line and those bullets are everything (e) builds the milestone's section
+from. A summary with no title line or no bullet below it — a finish commit made by hand
+without the body `/finish-milestone` writes — stops the run: print the milestone path and the
+summary as printed, state that nothing was changed, and exit. The remedy is the maintainer's:
+revert that finish commit, finish the milestone again with `/finish-milestone`, and re-run.
+
+**d. Empty range.** When (b) keeps no line, no milestone was finished since `<LAST_TAG>`.
+That is ambiguous between a forgotten `/finish-milestone` and a deliberate version-only patch
+release, and only the maintainer can tell the two apart, so:
 
 1. State plainly that no milestone was finished since `<LAST_TAG>`.
-2. Build **commit-range-derived notes** in place of the usual history-entry sections: read
+2. Build **commit-range-derived notes** in place of the usual per-milestone sections: read
    the range's commits (`git log --format='%s' <LAST_TAG>..HEAD`, reading bodies where a
    subject is not self-explanatory) and condense them into a single
    `### Changes since <LAST_TAG>` section — at `###`, like every section in (e), and a short
@@ -420,21 +448,22 @@ and only the maintainer can tell the two apart, so:
 4. Proceed only on an **explicit** affirmative answer. Anything else — a refusal, a question,
    an ambiguous reply — stops the run with nothing changed.
 
-An empty range is the only path that reaches the rest of the release without history-entry
+An empty range is the only path that reaches the rest of the release without per-milestone
 sections, and it never takes itself silently.
 
-**e. Compose one section per finished milestone.** Otherwise, for each milestone on the
-(agreed) list, **highest number first**, read its `### Milestone <N> — <Title>` entry in
-`milestones/README.md` and rewrite it into:
+**e. Compose one section per finished milestone.** Otherwise, for each kept milestone, in the
+order (a) printed them — **newest finish first** — rewrite the summary (c) read into:
 
 ```markdown
-### <Title> (milestone <N>)
+### <Title>
 
 - <condensed user-facing change>
 - <condensed user-facing change>
 ```
 
-`<Title>` is the heading's title text; `<N>` is the milestone number as the heading writes it.
+`<Title>` is the summary's title line, verbatim. The heading carries the title alone: a
+milestone is addressed by its path and holds no number, so the ` (milestone <N>)` that closes
+every section written before the milestones tool is not carried on.
 
 Every section heading in the body is `###` — one level below the `## <VERSION> — <YYYY-MM-DD>`
 heading step 6c puts over the body in `CHANGELOG.md`, so the sections nest under their
@@ -446,7 +475,7 @@ The bullets are **condensed rewrites, never verbatim copies**. Keep what a consu
 plugin would notice — what the release now does, what changed for them, what was added,
 renamed, or retired. Cut milestone-internal process detail: task counts, per-task ledgers,
 audit passes, re-audit verdicts, which sweep touched which file, and how the work was
-verified. Where several history bullets describe one user-facing change, merge them into one.
+verified. Where several summary bullets describe one user-facing change, merge them into one.
 This is the shape every sectioned release page from `0.9.8` on and its `CHANGELOG.md` entry
 already carry, and matching it keeps the release series consistent.
 

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Release Notes From the Milestones Tool
-
-Rewrite steps 5a–5e of `.claude/skills/release-plugin/SKILL.md` to read the record through the milestones tool rather than a `git log` of its own: `milestones .` supplies the finished milestones with their finish dates, the skill keeps those finished after the last tag's date, and `summary` on each supplies the title line and bullets of its `###` section, with the README cross-check dropped and steps 3c and 7 unchanged. Verified by reading both queries against a scratch repository holding finish-shaped commits on either side of a tag.
-
----
-
 ## Docs and Invariants Follow the Path Form
 
 Rewrite the documentation to the path-addressed shape: every chain in `docs/ways-of-using-cairn.md` carries `--milestone <path>` from the definition line's printed path, with the activation line gone, the definition line taking `--at`, and finish described as removal; `docs/workflow.md`'s stages, diagram labels, and committing paragraph; `docs/design-claims.md` claims 9 and 10; `README.md`'s how-it-works and self-dogfooding paragraphs; `CONTRIBUTING.md`'s contributor flow, where the maintainer reserves with `/define-milestone-goal --at <scope>` on `main`, the contributor branches from that commit and runs the pipeline with `--milestone <path>`, and the goto step and the pointer conditions on reserving and merging go, the pull request template's milestone field naming the reserved path; `ideas/benchmark_for_cairn.md`'s bootstrap and activation lines; and `CLAUDE.md`'s layout, skill list, file-structure, and invariant sections, retiring the pointer, goto, and finish-precedes-goto invariants, rewriting the pre-split and pre-flip notes for what the migration leaves in history, and describing resolution, definition, finish, the commit tool's two new inputs, the tool's queries, and the migration as landed, while leaving its `## Milestone Workflow` tail for the migration's closing commit. Verified by the fixed-lines test, `--check`, and a read-through finding no pointer, activation, or README-history reference outside recorded history.
