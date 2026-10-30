@@ -62,5 +62,9 @@ Outside the runtime files: `CLAUDE.md` (six mentions: the repository layout, the
 
 The body of a `Task-completion:` commit holds nothing beyond the acceptance bar: exactly its `- ` bullets, one per criterion, with no brief, no label line, and no other field. The brief is recorded only where the removed section already leaves it, as the removed lines of `TASKS_TODO.md` in the same commit's diff, and the subject carries the title, so the subject plus the bar is the whole handover a reader's judgment needs and no text is re-typed where it could drift.
 
+### Passing the bar to the inline commit
+
+The inline `complete-task` skill's one fixed shell call opens by capturing the acceptance bar from a quoted heredoc through command substitution into one quoted value, written in the group-fed form `{ bar="$(cat)"; } <<'EOF'`, the `- ` bullets, then `EOF`, the form the recommendation pass's batch call already uses, because it parses on bash 3.2 where the nested `bar="$(cat <<'EOF'` form fails on an apostrophe; the capture is chained by `&&` ahead of the `remove` command, and the commit tool's command then passes the value as `--body "$bar"`. No file is written, no turn is added, the runner escapes nothing, and the commit tool's contract gains no body-file option.
+
 ## Out of Scope
 
