@@ -20,6 +20,7 @@ The skill reads from and writes to the milestone directory the flag names. The r
 ## Preconditions
 
 - All open questions in the named milestone must be resolved: its `open_questions.xml` holds no `<open-question>` block, so the plugin's open-question tool's `list` prints nothing (checked in step 2).
+- No other started milestone may hold the named milestone's scope (checked in step 7, the scope gate).
 - `TASKS_TODO.md` should be empty or contain only stale tasks from a previous milestone; this skill replaces its contents.
 
 ## Workflow
@@ -34,7 +35,7 @@ Read `AGENTS.md` at the workspace root for the project's domain context, working
 
 Read `<MILESTONE_DIR>/requirements.md` in full, plus any files referenced in its **Relevant starting state** section, so you understand the exact starting point.
 
-Read the shared task format at `${PLUGIN_ROOT}/shared/task-format.md`. That file owns the shape of every task section you write in step 7 — its template and authoring guidelines.
+Read the shared task format at `${PLUGIN_ROOT}/shared/task-format.md`. That file owns the shape of every task section you write in step 8 — its template and authoring guidelines.
 
 ### 2. Check for unresolved open questions
 
@@ -66,7 +67,7 @@ Apply these rules:
 - **One area per brief** — group by the natural boundary or area of the work, as defined by the project's organization in `AGENTS.md`. Do not mix distinct areas unless they are inseparable.
 - **No "nice to have" briefs** — only what the spec states. Do not pad the task list.
 
-**Conflicting decisions.** Where two `## Decisions` entries cannot both hold as written, the later-recorded entry governs the brief; an entry that only refines, narrows, or extends another is no conflict. Take every pair listed under `## Noted contradictions`, when that section stands, as conflicting as noted, without re-judging it, and resolve any other pair you find conflicting yourself, here or while building step 4's matrix, the same way. To tell which entry is later, find the commit that added each entry's lines by `git blame` or a pickaxe search (`git log -S`), path-scoped to `<MILESTONE_DIR>/requirements.md`: the entry from the newer commit is the later-recorded one (where an entry's lines came from more than one commit, the newest dates it). Never order a pair by its position in the file, and never take the order from the note. Flag nothing for either kind of pair, neither in step 6's plan nor in step 8's report: the brief simply follows the later entry. A noted contradiction never blocks the run, since step 2's `list` call stays the whole precondition.
+**Conflicting decisions.** Where two `## Decisions` entries cannot both hold as written, the later-recorded entry governs the brief; an entry that only refines, narrows, or extends another is no conflict. Take every pair listed under `## Noted contradictions`, when that section stands, as conflicting as noted, without re-judging it, and resolve any other pair you find conflicting yourself, here or while building step 4's matrix, the same way. To tell which entry is later, find the commit that added each entry's lines by `git blame` or a pickaxe search (`git log -S`), path-scoped to `<MILESTONE_DIR>/requirements.md`: the entry from the newer commit is the later-recorded one (where an entry's lines came from more than one commit, the newest dates it). Never order a pair by its position in the file, and never take the order from the note. Flag nothing for either kind of pair, neither in step 6's plan nor in step 9's report: the brief simply follows the later entry. A noted contradiction never blocks the run, since step 2's `list` call stays the whole precondition on the requirements.
 
 ### 4. Prove coverage (requirement → task matrix)
 
@@ -76,7 +77,7 @@ First run the plugin's milestones tool, for the work already recorded as complet
 python3 ${PLUGIN_ROOT}/tools/milestones.py tasks <MILESTONE_DIR> --with-body
 ```
 
-It prints, newest first, one tab-separated line per task completed in the milestone (the commit's abbreviated hash, its date, the milestone directory, and the task title), with the task's verified bar indented beneath it, and prints nothing when no task has been completed, which is no failure. If the call fails, stop and report it, writing and committing nothing: the fixed line `Cannot derive tasks: the completed-task read failed.` first, then its one `Error: <reason>` line from stderr verbatim below it, and print no line of step 8.
+It prints, newest first, one tab-separated line per task completed in the milestone (the commit's abbreviated hash, its date, the milestone directory, and the task title), with the task's verified bar indented beneath it, and prints nothing when no task has been completed, which is no failure. If the call fails, stop and report it, writing and committing nothing: the fixed line `Cannot derive tasks: the completed-task read failed.` first, then its one `Error: <reason>` line from stderr verbatim below it, and print no line of step 9.
 
 Then re-read `requirements.md` bullet by bullet and build a traceability matrix mapping **every** requirement, constraint, and behavioral detail to at least one brief:
 
@@ -101,9 +102,13 @@ Order briefs so each one's prerequisites come first: a brief that produces somet
 
 Show the user the ordered brief list and the coverage matrix (or a short summary of it, flagging anything already-satisfied or any residual gap). This is the cheap moment to correct ordering or scope — before writing N tasks. Then proceed (the user can interrupt to adjust).
 
-If the run derived no brief at all — every requirement is already satisfied — skip step 7: write nothing, commit nothing, and go to step 8.
+If the run derived no brief at all — every requirement is already satisfied — skip steps 7 and 8: run no gate, write nothing, commit nothing, and go to step 9.
 
-### 7. Write and commit the task list in one shell call
+### 7. Check the scope gate
+
+Before writing anything, follow `${PLUGIN_ROOT}/shared/check-scope-gate.md` for `<MILESTONE_DIR>`. When the gate is closed, its report is the whole output: write and commit nothing, and print no line of step 9.
+
+### 8. Write and commit the task list in one shell call
 
 Write every brief as one task section, using the template and the authoring guidelines from `${PLUGIN_ROOT}/shared/task-format.md` exactly: its `##` title heading, its description, and its trailing `---`. The brief you decomposed in step 3 *is* the task body; writing it down is a transcription into that format, not a second authoring pass that adds detail.
 
@@ -133,9 +138,9 @@ The task-list tool replaces `<MILESTONE_DIR>/TASKS_TODO.md` with its heading fol
 
 What the call prints is the whole outcome: `derivation commit landed` when the commit landed; nothing when the commit tool found the file unchanged (the list matched what it already held); otherwise one `Error:` line — the task-list tool's, with `TASKS_TODO.md` unchanged and nothing committed, or, once the list has been written, the commit tool's, naming the git command that failed and carrying git's own message, with nothing committed.
 
-On the task-list tool's `Error:` line — two briefs whose titles fold to the same title, or a section with an empty title or body — commit nothing and stop: report the failure with the fixed line `Cannot derive tasks: the task-list tool refused the list.` first and the `Error:` line quoted verbatim below it, and print no line of step 8.
+On the task-list tool's `Error:` line — two briefs whose titles fold to the same title, or a section with an empty title or body — commit nothing and stop: report the failure with the fixed line `Cannot derive tasks: the task-list tool refused the list.` first and the `Error:` line quoted verbatim below it, and print no line of step 9.
 
-### 8. Verify coverage and report
+### 9. Verify coverage and report
 
 Re-read the finished `<MILESTONE_DIR>/TASKS_TODO.md` and confirm every brief from the matrix produced a task section.
 
@@ -144,4 +149,4 @@ On the success path — the call printed `derivation commit landed` — print ex
 If the run derived nothing, so nothing is committed, do not print the terse success line; instead print the one fixed no-op line its case gives:
 
 - **Step 6 skipped the call because no brief was derived** — `No tasks derived — every requirement is already satisfied.`
-- **Step 7's commit tool found `TASKS_TODO.md` unchanged** — `No tasks derived — the list matched the task file already.`
+- **Step 8's commit tool found `TASKS_TODO.md` unchanged** — `No tasks derived — the list matched the task file already.`

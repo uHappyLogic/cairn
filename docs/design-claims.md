@@ -97,15 +97,24 @@ other tests yet.
 - **Metric:** Task body length, and the count of references that do not match
   the live project.
 
-### 9. Work is bounded: one milestone for each run, one task at a time.
+### 9. Work is bounded: one milestone for each run, one started milestone for each scope, one task at a time.
 
 - **Design:** Each run names the milestone that it works on by the path of
   the milestone directory. No file stores a current milestone. A run that
   does not name a live milestone stops and changes nothing. The finish skill
   removes the milestone directory, thus the directories that stay are the
-  live milestones. Tasks run in dependency order, one at a time.
+  live milestones. The scope of a milestone is the directory that holds its
+  `milestones/` container. A milestone is started when tasks go into its
+  task list, and it stays started until the finish skill removes its
+  directory. A started milestone holds its scope, the directories above it,
+  and the directories below it. Before the skills that add tasks write, and
+  before each task that the completion skills start, a scope gate checks the
+  scope. If a different started milestone holds it, the skill stops and
+  changes nothing. Tasks run in dependency order, one at a time.
 - **Metric:** Count of runs that change a milestone other than the milestone
-  that they name (must be 0), and the order of the task commits.
+  that they name (must be 0), count of task commits for a milestone while a
+  different started milestone holds its scope (must be 0), and the order of
+  the task commits.
 
 ## Records
 

@@ -30,9 +30,18 @@ First strip the leading `--milestone <path>` from the invocation text by the rul
 procedure's milestone resolution and reading only the rest as the task name. Read and follow
 the shared procedure at
 `${CLAUDE_PLUGIN_ROOT}/shared/complete-procedure.md`, carrying out every step **yourself, in this conversation**,
-its step 5 removal run as the one shell call step 2 shows. Never spawn the `complete-task` agent.
+with step 2 below run between its step 1 and its step 2, and its step 5 removal run as the one
+shell call step 3 shows. Never spawn the `complete-task` agent.
 
-### 2. Remove and commit the completion in one shell call
+### 2. Check the scope gate
+
+Once the procedure's step 1 has resolved `<MILESTONE_DIR>` and located the task, and before its
+step 2 loads anything or its step 3 changes anything, follow
+`${CLAUDE_PLUGIN_ROOT}/shared/check-scope-gate.md` for `<MILESTONE_DIR>`. When the gate is closed,
+its report is the whole output: carry out nothing of the task, remove and commit nothing, and
+print no line of step 4.
+
+### 3. Remove and commit the completion in one shell call
 
 Run the procedure's step 5 removal as this one fixed shell call, written out in full exactly
 as shown, with only `<MILESTONE_DIR>`, `<Task Title>`, the bar's bullets, and the paths
@@ -84,7 +93,7 @@ committed — diagnose it, fix it, and run the call again), or, once the removal
 commit tool's one `Error:` line, naming the git command that failed and carrying git's own
 message, with nothing committed.
 
-### 3. Hand back
+### 4. Hand back
 
 On the success path — the task was completed, verified, removed from `TASKS_TODO.md`, and
 committed with its bar, the call printing `completion commit landed` — print exactly one
@@ -96,7 +105,7 @@ Carry no task heading, verification detail, or commit subject, and print no foll
 pointer.
 
 If nothing was committed because the completion was abandoned before it changed any file —
-step 2's call never ran, or its commit tool found no path changed — print instead this one
+step 3's call never ran, or its commit tool found no path changed — print instead this one
 fixed no-op line, not the terse success line:
 
 ```
@@ -104,4 +113,5 @@ No task completed — no file changed.
 ```
 
 A task name matching no section is the procedure's own stop: its fixed line and the
-available headings are the whole report.
+available headings are the whole report. A closed scope gate is likewise the gate procedure's
+own stop, its fixed line and what it printed beneath being the whole report.

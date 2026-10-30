@@ -45,7 +45,11 @@ Then repeat the following loop until no tasks remain:
 
 Re-read `<MILESTONE_DIR>/TASKS_TODO.md` to get the current top task — the first `##` heading in the file. Do not cache the task list across iterations, since each completed task is removed.
 
-#### 2b. Spawn a subagent to complete the task
+#### 2b. Check the scope gate
+
+Before dispatching the task 2a identified, follow `${PLUGIN_ROOT}/shared/check-scope-gate.md` for `<MILESTONE_DIR>`, on every pass through the loop, so a milestone that started holding the scope while the run was working stops it before its next task. When the gate is closed, end the run there: its report is the whole output, no agent is dispatched for the task, and every task committed earlier in the run stays committed.
+
+#### 2c. Spawn a subagent to complete the task
 
 Use the `spawn_agent` tool to spawn one default (generic) subagent, with no custom agent type, and a prompt that tells it to read and follow the plugin's `complete-task` agent file at `${PLUGIN_ROOT}/agents/complete-task.md` and otherwise carries the task name, the milestone directory, and the scratch directory and nothing else, substituting `<TASK_NAME>` with the exact `##` heading text (without the `##` prefix), `<MILESTONE_DIR>` with the directory resolved in step 0, and `<scratch dir>` with the directory created at the start of step 2:
 
@@ -59,17 +63,17 @@ Milestone directory: <MILESTONE_DIR>
 Scratch directory: <scratch dir>
 ```
 
-Every dispatch carries the `Milestone directory:` line, holding the `<MILESTONE_DIR>` step 0 resolved from the `--milestone` path, so each agent works in the milestone this run commits for, and the `Scratch directory:` line, holding the one `<scratch dir>` created at the start of this step, the same directory on every dispatch, so each agent writes its two files where 2c reads them.
+Every dispatch carries the `Milestone directory:` line, holding the `<MILESTONE_DIR>` step 0 resolved from the `--milestone` path, so each agent works in the milestone this run commits for, and the `Scratch directory:` line, holding the one `<scratch dir>` created at the start of this step, the same directory on every dispatch, so each agent writes its two files where 2d reads them.
 
 Wait for the agent to return.
 
-- If the agent reports FAILED, stop the loop and end the run: print the fixed line `Task run stopped — a task failed.` first, then below it the task name and the failure reason. Do not proceed to 2c.
-- If the agent returns without an explicit DONE or FAILED status (e.g. it returned early, produced no output, or gave an ambiguous result), treat this as FAILED: stop the loop, print the fixed line `Task run stopped — a task agent returned no status.` first, then below it the task name and what was returned, and do not proceed to 2c. **Never attempt to complete the task yourself as a fallback.**
-- On `DONE`, the agent has written its task's acceptance bar to the body file `<scratch dir>/body.txt` and its task's change set — the paths it created or edited, plus the milestone task list — to the path file `<scratch dir>/paths.txt`, one path per line, and has staged and committed nothing. You commit the task from those two files in 2c; you name no path, type no bar, and stage nothing yourself, and the agent's message carries nothing to collect.
+- If the agent reports FAILED, stop the loop and end the run: print the fixed line `Task run stopped — a task failed.` first, then below it the task name and the failure reason. Do not proceed to 2d.
+- If the agent returns without an explicit DONE or FAILED status (e.g. it returned early, produced no output, or gave an ambiguous result), treat this as FAILED: stop the loop, print the fixed line `Task run stopped — a task agent returned no status.` first, then below it the task name and what was returned, and do not proceed to 2d. **Never attempt to complete the task yourself as a fallback.**
+- On `DONE`, the agent has written its task's acceptance bar to the body file `<scratch dir>/body.txt` and its task's change set — the paths it created or edited, plus the milestone task list — to the path file `<scratch dir>/paths.txt`, one path per line, and has staged and committed nothing. You commit the task from those two files in 2d; you name no path, type no bar, and stage nothing yourself, and the agent's message carries nothing to collect.
 
-#### 2c. Commit the task from its body file and path file
+#### 2d. Commit the task from its body file and path file
 
-After the subagent returns `DONE`, commit its task from the two files in this one fixed shell call, written out in full exactly as shown, with only `<scratch dir>` and `<TASK_NAME>` replaced, `<TASK_NAME>` being the exact `##` heading text step 2b already holds:
+After the subagent returns `DONE`, commit its task from the two files in this one fixed shell call, written out in full exactly as shown, with only `<scratch dir>` and `<TASK_NAME>` replaced, `<TASK_NAME>` being the exact `##` heading text step 2c already holds:
 
 ```
 if [ ! -e "<scratch dir>/paths.txt" ]; then
@@ -94,16 +98,16 @@ The call first tests the two files: the path file absent (no file under its fixe
 
 What the call prints is the whole outcome:
 
-- **`completion commit landed`** — the task's `Task-completion: <TASK_NAME>` commit landed. Go on to 2d.
-- **Nothing** — the commit tool found none of the paths changed, so nothing was committed and no empty commit made: skip the task silently and go on to 2d.
+- **`completion commit landed`** — the task's `Task-completion: <TASK_NAME>` commit landed. Go on to 2e.
+- **Nothing** — the commit tool found none of the paths changed, so nothing was committed and no empty commit made: skip the task silently and go on to 2e.
 - **Anything else** — `path file absent`, `body file absent`, `path file empty`, `body file empty`, the commit tool's one `Error:` line (naming the git command that failed and carrying git's own message, nothing committed), or a failed move's own message. Stop the loop and end the run: print the fixed line `Task run stopped — a completed task could not be committed.` first, then below it the task name and what the call printed, verbatim, which for an absent or empty file is the line saying which. Commit and stage nothing yourself and touch nothing in the tree: the agent's removal and edits stay uncommitted, exactly as it left them, for a later run to resume.
 
 Commit once per task.
 
-#### 2d. Continue
+#### 2e. Continue
 
 Go back to 2a and process the next task.
 
 ### 3. Report completion
 
-On the success path, when `<MILESTONE_DIR>/TASKS_TODO.md` contains no more `##` sections, print exactly one fixed terse status line for the whole run — `All tasks completed.` — and nothing more: no list of the tasks that were completed and no next-step pointer. This is the line whatever the per-task commits found: a task whose commit tool found none of its paths changed was skipped silently in 2c, and a run whose every task returned `DONE` and was committed or skipped has no other line.
+On the success path, when `<MILESTONE_DIR>/TASKS_TODO.md` contains no more `##` sections, print exactly one fixed terse status line for the whole run — `All tasks completed.` — and nothing more: no list of the tasks that were completed and no next-step pointer. This is the line whatever the per-task commits found: a task whose commit tool found none of its paths changed was skipped silently in 2d, and a run whose every task returned `DONE` and was committed or skipped has no other line.

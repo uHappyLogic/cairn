@@ -77,7 +77,13 @@ adds detail.
 (You already read `requirements.md` and `TASKS_TODO.md` in step 1, so reuse them rather
 than re-reading.)
 
-### 5. Insert and commit the section in one shell call
+### 5. Check the scope gate
+
+Before inserting anything, follow `~/.gemini/config/plugins/cairn/shared/check-scope-gate.md` for
+`<MILESTONE_DIR>`. When the gate is closed, its report is the whole output: insert and commit
+nothing, and print no line of step 7.
+
+### 6. Insert and commit the section in one shell call
 
 Split the section you authored in step 4 along `task-format.md`'s template: the text of its
 `##` heading is the title, and the description between the heading and the `---` is the
@@ -129,7 +135,7 @@ fixed line `Task not submitted — the task-list tool refused the insert.` first
 the `Error:` line quoted verbatim, so the user can re-run with a correct anchor or a distinct
 title.
 
-### 6. Confirm
+### 7. Confirm
 
 On the success path — the task was authored, inserted, and committed, the call printing
 `submission commit landed` — print exactly one fixed terse status line and nothing else:
@@ -139,7 +145,7 @@ On the success path — the task was authored, inserted, and committed, the call
 Carry no task title, insert position, or commit subject, and print no next-step or follow-up
 pointer.
 
-If step 5's commit tool found `TASKS_TODO.md` unchanged — nothing was committed — print
+If step 6's commit tool found `TASKS_TODO.md` unchanged — nothing was committed — print
 instead this one fixed no-op line, not the terse success line:
 
 ```
