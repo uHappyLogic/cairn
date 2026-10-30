@@ -70,5 +70,9 @@ The inline `complete-task` skill's one fixed shell call opens by capturing the a
 
 When `tasks` runs with its body flag, every task line stays at column 0 in the shape it has without the flag, and each line of the commit's body is printed beneath it indented by one fixed prefix of four spaces, as `git log` indents a message, with the body's outer blank lines trimmed and nothing else changed. A task whose commit carries no body (one completed before the bar moved into commits) is its task line alone, with nothing beneath it and no placeholder, so the next column-0 line is the next task; the boundary needs no lookahead, cannot collide with anything a body holds, and one parser serves both forms.
 
+### `tasks` milestone join
+
+`tasks` assigns a commit's milestone by the root-anchored `milestones/*/TASKS_TODO.md` pattern over the commit's file list, in one file-list read with no diff parse, which joins all 174 recorded commits, the two touching a fixture `TASKS_TODO.md` under `tests/fixtures/` included. A commit whose file list holds no matching file, or more than one, is still printed, its milestone field holding one fixed placeholder in place of a path, so the line keeps its date and task title and a hand-made anomaly stays visible on the print rather than dropping a task commit from a query defined as every one that changed the path. The discovery pattern the root-anchored one will be swapped for is the next milestone's to set.
+
 ## Out of Scope
 

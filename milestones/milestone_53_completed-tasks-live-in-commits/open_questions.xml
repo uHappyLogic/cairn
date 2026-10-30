@@ -1,33 +1,4 @@
 <open-questions>
-  <open-question id="Tasks milestone join">
-    <question>How does `tasks` assign a milestone to a `Task-completion:` commit whose file list holds no `TASKS_TODO.md` under a milestone directory, or more than one, given that two commits in this repository&apos;s log also touch a fixture `TASKS_TODO.md` under `tests/fixtures/`?</question>
-    <recommendation option="Root-anchored, placeholder field">The root-anchored pattern joins all 174 recorded commits, the two fixture-touching ones included, with one file-list read and no diff parse, and the discovery pattern it will be swapped for is the next milestone&apos;s to set; a placeholder keeps a hand-made anomaly on the print rather than dropping a task commit from a query defined as every one that changed the path.</recommendation>
-    <alternative id="Root-anchored, placeholder field">
-      The same root-anchored `milestones/*/TASKS_TODO.md` pattern picks the milestone, but a commit with no matching file or with more than one is still printed, its milestone field holding one fixed placeholder in place of a path, so the line keeps its date and task title.
-      <advantage>Joins all 174 recorded commits correctly at the same low cost while never dropping a task commit from the print, so an anomaly a hand-made commit introduces stays visible to the reader rather than silently missing.</advantage>
-      <drawback>Still breaks at step 3&apos;s relocation of milestones beneath a scope, and the placeholder becomes a value every reader of the line (finish&apos;s summary, derive-tasks&apos; coverage check) must recognize, a second shape of the milestone field beside a real path.</drawback>
-    </alternative>
-    <alternative id="Root-anchored, skip anomalies">
-      A commit&apos;s milestone is the directory of the one file in its file list matching the root-anchored pattern `milestones/*/TASKS_TODO.md` (today&apos;s layout, so every fixture path under `tests/fixtures/` is ignored, including `tests/fixtures/agy_project/milestones/milestone_01_…/TASKS_TODO.md`). A commit with no such file or with more than one is left out of the print, with no line and no message.
-      <advantage>The cheapest rule, one file-list read per commit with no diff parsed, and it joins every one of the 174 recorded `Task-completion:` commits to exactly one milestone, `5beab8f` and `2202e59` included, because neither fixture path sits directly under the root `milestones/` directory.</advantage>
-      <drawback>An anomalous commit vanishes silently from a query the draft defines as &quot;every task commit that changed PATH&quot;, and the pattern hard-codes the root container, so step 3&apos;s `&lt;scope&gt;/milestones/&lt;slug&gt;/` placement makes it miss every milestone outside the root and the rule must be rewritten then.</drawback>
-    </alternative>
-    <alternative id="Root-anchored, refuse anomaly">
-      The root-anchored `milestones/*/TASKS_TODO.md` pattern picks the milestone, and a commit with no matching file or with more than one makes the whole query refuse on one `Error:` line naming that commit&apos;s hash, exit 1, printing nothing else.
-      <advantage>No line the tool prints is ever a guess or a placeholder: since the plugin&apos;s own completion runners always touch exactly one milestone&apos;s task file, a commit breaking that is a hand-made anomaly, and it is surfaced loudly where it can be fixed rather than absorbed.</advantage>
-      <drawback>One odd commit in history permanently breaks the query for every PATH that commit touched, with no way to repair a past commit short of rewriting history, which turns a cosmetic anomaly into a reader failure, and the root anchoring still needs rewriting at step 3.</drawback>
-    </alternative>
-    <alternative id="Container pattern, placeholder">
-      The milestone is the directory of the one file in the list matching the draft&apos;s discovery pattern `**/milestones/*/TASKS_TODO.md` (a task file directly under any `milestones/` container, at any depth); a commit with no match or several is printed with one fixed placeholder in its milestone field.
-      <advantage>Uses the same pattern the draft already names for milestone discovery, so the join survives step 3&apos;s scoped placement unchanged and the tool carries one notion of where milestones live, and it still ignores the `parallel_first`/`parallel_second` fixtures of `5beab8f`.</advantage>
-      <drawback>`2202e59` touches `tests/fixtures/agy_project/milestones/milestone_01_pocket-ledger-foundations/TASKS_TODO.md`, which the container pattern matches, so that recorded task already prints with the placeholder instead of `milestone_47`, and any fixture project laid out as a cairn repository repeats the miss.</drawback>
-    </alternative>
-    <alternative id="Removed-section join">
-      The milestone is the directory of the `TASKS_TODO.md` file (under any path) in the commit&apos;s file list when there is exactly one; when there are several, it is the directory of the one whose diff removes a `## ` heading equal to the subject&apos;s task title, the section the completion actually removed; a commit where neither test singles out one file is printed with one fixed placeholder in its milestone field.
-      <advantage>Joins on what a task commit structurally is rather than on where milestones live, so it resolves both recorded fixture commits correctly (their fixture task files were added, not removed from) and keeps working unchanged after step 3 moves milestones beneath scopes.</advantage>
-      <drawback>The several-file case needs a patch read and a heading parse inside the read-only tool (a `show` with diff per ambiguous commit), adding parsing that depends on the subject copying the heading exactly, and a residual placeholder remains a second shape of the milestone field that readers must recognize.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Tasks legacy subjects">
     <question>Does `tasks` read only commits whose subject opens with `Task-completion:`, or also the 222 retired `Tasklist-completion: complete one milestone task` commits that carry the task heading in their body?</question>
     <recommendation option="Current subject only">Every reader this milestone moves onto tasks reads a milestone no legacy commit touches, and the older record stays readable in the finished milestones&apos; own TASKS_DONE.md files until the migration removes them, so a second subject and title source would live in the tool for good to serve no caller.</recommendation>
