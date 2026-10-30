@@ -60,5 +60,7 @@ Three definitions under `scripts/hosts/` render `core/` into `hosts/claude/`, `h
 
 - **Discovery pattern.** The milestones tool counts every tracked match of `**/milestones/*/requirements.md` as a live milestone, with no exclusion rule, and the `tasks` join uses the same pattern. This repository takes its agy fixture out of the pattern instead: the fixture project's container is tracked under a name the pattern does not match (such as `tests/fixtures/agy_project/milestones.fixture/`), and the agy suite's `seeded_repo` fixture renames it to `milestones/` when it copies the project into its temporary repository, so the installed skills still find a normal root container there. `live` lists only this repository's own milestones, and `2202e59` keeps its placeholder in `tasks`, since history is not rewritten.
 
+- **One tool.** All six queries (`live`, `gate`, `tasks`, `milestones`, `summary`, `record`) are subcommands of the one `core/tools/milestones.py`, which keeps its name, its one parser, its one `Error:` contract and help text, and its one git runner with the fixed `GIT_SETTINGS`. The discovery pattern is defined once in it and read by `live` and `gate`, by the live branches of `milestones` and `summary`, and by the `tasks` join once its root anchor is swapped for that pattern. No file is added under `core/tools/`; the tests stay in the existing `test_milestones_*` files on the conftest git fixtures, and the five `tasks` call sites stay unchanged. Any later split is left to whichever later milestone finds a reason for one.
+
 ## Out of Scope
 
