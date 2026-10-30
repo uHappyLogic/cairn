@@ -56,5 +56,9 @@ Three definitions under `scripts/hosts/` render `core/` into `hosts/claude/`, `h
 
 ## Decisions
 
+### The milestones tool
+
+- **Discovery pattern.** The milestones tool counts every tracked match of `**/milestones/*/requirements.md` as a live milestone, with no exclusion rule, and the `tasks` join uses the same pattern. This repository takes its agy fixture out of the pattern instead: the fixture project's container is tracked under a name the pattern does not match (such as `tests/fixtures/agy_project/milestones.fixture/`), and the agy suite's `seeded_repo` fixture renames it to `milestones/` when it copies the project into its temporary repository, so the installed skills still find a normal root container there. `live` lists only this repository's own milestones, and `2202e59` keeps its placeholder in `tasks`, since history is not rewritten.
+
 ## Out of Scope
 
