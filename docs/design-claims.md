@@ -97,21 +97,27 @@ other tests yet.
 - **Metric:** Task body length, and the count of references that do not match
   the live project.
 
-### 9. Work is bounded: one milestone, one task at a time.
+### 9. Work is bounded: one milestone for each run, one task at a time.
 
-- **Design:** One pointer names the current milestone. The finish skill must
-  run before the next milestone starts. Tasks run in dependency order, one at a
-  time.
-- **Metric:** Pointer state after each skill, and the order of the task
-  commits.
+- **Design:** Each run names the milestone that it works on by the path of
+  the milestone directory. No file stores a current milestone. A run that
+  does not name a live milestone stops and changes nothing. The finish skill
+  removes the milestone directory, thus the directories that stay are the
+  live milestones. Tasks run in dependency order, one at a time.
+- **Metric:** Count of runs that change a milestone other than the milestone
+  that they name (must be 0), and the order of the task commits.
 
 ## Records
 
 ### 10. The repository is the memory.
 
-- **Design:** The milestone files and the git log hold the full record. A new
-  session reads them and can answer questions about the project. No chat
-  transcript is necessary.
+- **Design:** The files of the live milestones and the git log hold the full
+  record. The finish commit of a milestone removes the milestone directory,
+  and the body of that commit is the summary of the milestone. The files of
+  the milestone stay in the parent of that commit. The read-only milestones
+  tool reads the finished milestones and the completed tasks from the git
+  log. A new session reads these records and can answer questions about the
+  project. No chat transcript is necessary.
 - **Metric:** Score of a new session on a fixed question bank about the
   project.
 

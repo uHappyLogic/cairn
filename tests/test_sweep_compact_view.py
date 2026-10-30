@@ -27,7 +27,7 @@ FIXTURE = Path(__file__).resolve().parent / "fixtures" / "compact_view"
 LIST_COMMAND = "/tools/open_questions.py list --with-question "
 FOLD_COMMAND = "/tools/requirements.py fold "
 
-# <MILESTONE_DIR> as the runner fills it: the pointer's path, its trailing slash included.
+# <MILESTONE_DIR> as the runner fills it: the --milestone path, its trailing slash included.
 MILESTONE = "milestones/milestone_09_golden-compact-view/"
 
 # The fixture holds three recommendation-bearing blocks (one a dependent of another, one

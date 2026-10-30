@@ -42,7 +42,7 @@ EMPTY_BAR_TEST = [
 ]
 ACCEPTANCE_BAR_EMPTY = "acceptance bar empty\n"
 
-# <MILESTONE_DIR> as the runner fills it: the pointer's path, its trailing slash included.
+# <MILESTONE_DIR> as the runner fills it: the --milestone path, its trailing slash included.
 MILESTONE = "milestones/milestone_03_lock-retry-fixture/"
 TODO = MILESTONE + "TASKS_TODO.md"
 

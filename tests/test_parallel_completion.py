@@ -60,7 +60,7 @@ MEETING_TIMEOUT = 60
 
 class Milestone(NamedTuple):
     """One milestone's run: its fixture and where it is seeded (<MILESTONE_DIR> as the runner
-    fills it, the pointer's path with its trailing slash), the task its top section names and
+    fills it, the --milestone path with its trailing slash), the task its top section names and
     that task's bar as verified, the tracked file the task edits (its seeded and edited bytes),
     and the file it creates."""
 

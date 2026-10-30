@@ -39,7 +39,7 @@ NEW_BODY_PLACEHOLDER = "<the new body>"
 # The opening the review pass gives every conflict question and the sweep tests by exact prefix.
 CONFLICT_OPENING = "Which conflicting decision stands:"
 
-# <MILESTONE_DIR> as the runner fills it: the pointer's path, its trailing slash included.
+# <MILESTONE_DIR> as the runner fills it: the --milestone path, its trailing slash included.
 MILESTONE = "milestones/milestone_07_golden-sweep-fixture/"
 DOCUMENT = MILESTONE + "open_questions.xml"
 REQUIREMENTS = MILESTONE + "requirements.md"

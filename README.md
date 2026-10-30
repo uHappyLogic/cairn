@@ -113,7 +113,7 @@ Run `/init` to document your project — its domain context, working conventions
 
 Handing long-running execution to an agent breaks down in a predictable way. An agent left to run for a long time hits questions nobody decided, and it either guesses quietly and builds on the guess or stops and waits for a person. Either way, you cannot walk away.
 
-Cairn works one milestone at a time, and the milestone is what makes the handoff possible. Each milestone first brings its open questions up, has them answered with recorded decisions, and only then derives tasks an agent can complete unattended. Bringing up all the important questions is the principle Cairn is built toward, not yet a measured result, and later milestones of Cairn's own development work toward it.
+Cairn works milestone by milestone, and the milestone is what makes the handoff possible. Each milestone first brings its open questions up, has them answered with recorded decisions, and only then derives tasks an agent can complete unattended. Bringing up all the important questions is the principle Cairn is built toward, not yet a measured result, and later milestones of Cairn's own development work toward it.
 
 This holds for any kind of work. Skills read your project's environment — its domain context, working conventions, available tools, and how work is verified as done — from `CLAUDE.md`, so the same sequence fits whatever you're producing.
 
@@ -127,7 +127,7 @@ All nineteen claims, each with its design and a metric to test it, are in [docs/
 
 ## How it works
 
-Each milestone lives in `milestones/milestone_<N>_<slug>/` and contains three files:
+Each milestone lives in `<scope>/milestones/<slug>/`, under the `milestones/` container of the directory holding the core of its work (`milestones/<slug>/` when that is the project root), and contains three files:
 
 - `requirements.md` — goal, relevant starting state, decisions, and out of scope, as prose Markdown
 - `open_questions.xml` — the open questions, one `<open-question>` block each under a single `<open-questions>` root; created empty with the milestone and written only by the plugin's open-question tool, never by hand — the milestone's requirements have converged when no block remains
@@ -135,13 +135,13 @@ Each milestone lives in `milestones/milestone_<N>_<slug>/` and contains three fi
 
 A completed task's record is its own `Task-completion: <task heading>` commit rather than a file: the commit's diff holds the task's brief as the section removed from `TASKS_TODO.md`, and its body the acceptance bar the completer derived and verified the work against, one `- ` bullet per criterion. The plugin's read-only milestones tool lists a milestone's completed tasks, each with its bar, from those commits; since it reads the git log, a shallow clone lists only the task commits its truncated history still holds.
 
-`milestones/README.md` is the source of truth for which milestone is active. Skills read and write the current-milestone pointer there; it is never ambiguous which milestone is open.
+No milestone is current. Every skill that works inside a milestone is given its path, `--milestone <path>`, exactly as `/define-milestone-goal` printed it, so it is never ambiguous which milestone a run works on, and several milestones can stand live at once. `/finish-milestone` removes a finished milestone's directory in one `Milestone-finish: <path>` commit whose body is the milestone's summary, so the directories standing are the live milestones and the git log holds the finished ones, which the milestones tool reads back.
 
 How the skills move a milestone through those files is described in [docs/workflow.md](docs/workflow.md), what each skill does is in [docs/skill-reference.md](docs/skill-reference.md), and how to chain the skills as headless command lines, mixing hosts, models, and effort levels, is in [docs/ways-of-using-cairn.md](docs/ways-of-using-cairn.md).
 
 ## Self-dogfooding
 
-This repository runs its own workflow on itself. The `milestones/` directory and `milestones/README.md` are live workflow artifacts produced by Cairn's own skills — the requirements, task list, and completed tasks for the current milestone are all right there in the repo. If you want to see what a real milestone looks like end-to-end, look no further.
+This repository runs its own workflow on itself. Its root `milestones/` container holds the live milestones Cairn's own skills produced — each one's requirements, open questions, and task list right there in the repo — and the git log holds every finished one: `python3 core/tools/milestones.py record .` prints the project's whole record, each milestone with its summary and the tasks that built it, and `git show` on a recent `Task-completion:` commit shows one task's change with its verified bar as the body. If you want to see what a real milestone looks like end-to-end, look no further.
 
 ## Contributing
 

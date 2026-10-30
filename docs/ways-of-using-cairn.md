@@ -4,7 +4,9 @@ How to chain Cairn's skills as headless command lines, one goal per section: eac
 
 ## Notation and flags
 
-Every line is one headless run, `claude -p "/cairn:<skill>"` on Claude Code, `agy -p "/cairn:<skill>"` on Antigravity, or `codex exec '$cairn:<skill>'` on Codex, where `/cairn:<skill>` is the skill's slash command under the plugin's `cairn:` namespace, `$cairn:<skill>` is the same skill under Codex's `$` sigil (single-quoted so the shell passes the `$` through as written), and the process exits when the skill finishes. Angle brackets mark the only text you substitute; every other token runs as written. The page uses five placeholders: `<goal>` is the milestone's goal description, exactly as the skill reference spells it in `define-milestone-goal <overall_goal_description>`, written as plain prose with no double quote since it sits inside the line's quoted prompt (no single quote on a Codex line, whose prompt is single-quoted); `<Short Title>` is an open question's Short Title and `<Alternative Id>` the `id` of one of its embedded alternatives, the two halves the skill reference spells as `answer-open-question-with-alternative <question_name>. <alternative id>`; and `<answer text>` is your own answer to a question, which `answer-open-question <question_name>` takes after the Short Title and a period, written as plain prose under the same quoting rule as `<goal>`; and `<milestone_id>` is a milestone's exact directory name under `milestones/`, as `define-milestone-goal` created it (for example `milestone_12_user-guide`, with no `milestones/` prefix and no trailing slash), the value of the optional leading flag the skill reference spells as `[--milestone <milestone_id>]`.
+Every line is one headless run, `claude -p "/cairn:<skill>"` on Claude Code, `agy -p "/cairn:<skill>"` on Antigravity, or `codex exec '$cairn:<skill>'` on Codex, where `/cairn:<skill>` is the skill's slash command under the plugin's `cairn:` namespace, `$cairn:<skill>` is the same skill under Codex's `$` sigil (single-quoted so the shell passes the `$` through as written), and the process exits when the skill finishes. Angle brackets mark the only text you substitute; every other token runs as written. The page uses six placeholders: `<goal>` is the milestone's goal description, exactly as the skill reference spells it in `define-milestone-goal --at <scope> <overall_goal_description>`, written as plain prose with no double quote since it sits inside the line's quoted prompt (no single quote on a Codex line, whose prompt is single-quoted); `<scope>` is the directory holding the core of the milestone's work, relative to the project root and `.` for the root, the value of that skill's required `--at` flag, as `discuss-milestone-goal` proposes it; `<path>` is the milestone's repo-relative path, trailing slash included, exactly as the definition tool printed it (for example `milestones/user-guide/` for a milestone defined `--at .`, or `packages/api/milestones/rate-limits/` for one defined `--at packages/api`), the value of the required leading flag the skill reference spells as `--milestone <path>`; `<Short Title>` is an open question's Short Title and `<Alternative Id>` the `id` of one of its embedded alternatives, the two halves the skill reference spells as `answer-open-question-with-alternative --milestone <path> <question_name>. <alternative id>`; and `<answer text>` is your own answer to a question, which `answer-open-question --milestone <path> <question_name>` takes after the Short Title and a period, written as plain prose under the same quoting rule as `<goal>`.
+
+Every line after a definition line names its milestone by `--milestone <path>`, first, before any text of the skill's own, because no milestone is current: nothing stores one and no line picks one, so every chain below is written for one milestone's path and runs the same whether that milestone is the only live one or one of several. The definition line's `Milestone-definition: <path>` commit subject records the path the later lines take (`git log -1 --format=%s` right after that line), and a line whose `--milestone` is missing or names no live milestone stops with nothing changed and lists every live milestone's path to retry with.
 
 The headless flags:
 
@@ -17,23 +19,22 @@ To move a line between Claude Code and Antigravity, change the binary (`claude` 
 
 ## Setting up a project
 
-Run this once per project, in a fresh git repository: it bootstraps the workflow, committing `milestones/README.md` with the current-milestone pointer at `none` and the `CLAUDE.md` workflow guidance, then defines the first milestone and commits its directory without activating it, so the pointer still reads `none` and the [Starting a milestone](#starting-a-milestone) chain runs next. Two preconditions come before the chain rather than in it: `git init` in the project root, since the bootstrap stops before writing anything outside a git work tree, and one `/init` run, whose `CLAUDE.md` environment context the later skills read and which the bootstrap sweeps into its own commit.
+Run this once per project, in a fresh git repository: the bootstrap line adds the milestone workflow guidance to `CLAUDE.md` and commits it under `Workflow-bootstrap: milestones`, then the definition line creates the first milestone at `<scope>/milestones/<slug>/`, creating the scope's `milestones/` container with it, and commits it under `Milestone-definition: <path>`; the [Starting a milestone](#starting-a-milestone) chain runs next on that `<path>`. Two preconditions come before the chain rather than in it: `git init` in the project root, since every line commits and the definition line stops before writing anything outside a git work tree, and one `/init` run, whose `CLAUDE.md` environment context the later skills read and which the bootstrap sweeps into its own commit.
 
 ```sh
 claude -p "/cairn:init-milestone-base-workflow" --dangerously-skip-permissions --model "sonnet" --effort medium;
-claude -p "/cairn:define-milestone-goal <goal>" --dangerously-skip-permissions --model "sonnet" --effort medium;
+claude -p "/cairn:define-milestone-goal --at <scope> <goal>" --dangerously-skip-permissions --model "sonnet" --effort medium;
 ```
 
 ## Starting a milestone
 
-Run this once a milestone is defined and the previous one is finished, so the current-milestone pointer reads `none`: it activates the lowest-numbered undone milestone without asking (the first line stops only if the pointer does not read `none` or no undone milestone exists), writes its starting state, surfaces the first review pass's open questions, embeds a set of alternatives on each, and picks a recommendation from every set. The alternatives line runs on `opus` at `--effort high`, one subagent per question, and the recommend line on `fable` at `--effort xhigh`, one inline pass over the whole set.
+Run this once a milestone is defined, on the `<path>` its definition line recorded: it writes the milestone's starting state, surfaces the first review pass's open questions, embeds a set of alternatives on each, and picks a recommendation from every set. No other milestone has to be finished first, and nothing else readies this one, since every line names the milestone it works on. The alternatives line runs on `opus` at `--effort high`, one subagent per question, and the recommend line on `fable` at `--effort xhigh`, one inline pass over the whole set.
 
 ```sh
-claude -p "/cairn:goto-next-milestone" --dangerously-skip-permissions --model "sonnet" --effort medium;
-claude -p "/cairn:specify-milestone-starting-state" --dangerously-skip-permissions --model "fable" --effort xhigh;
-claude -p "/cairn:review-milestone-requirements" --dangerously-skip-permissions --model "fable" --effort xhigh;
-claude -p "/cairn:provide-alternatives-to-all-open-questions" --dangerously-skip-permissions --model "opus" --effort high;
-claude -p "/cairn:recommend-all-open-questions" --dangerously-skip-permissions --model "fable" --effort xhigh;
+claude -p "/cairn:specify-milestone-starting-state --milestone <path>" --dangerously-skip-permissions --model "fable" --effort xhigh;
+claude -p "/cairn:review-milestone-requirements --milestone <path>" --dangerously-skip-permissions --model "fable" --effort xhigh;
+claude -p "/cairn:provide-alternatives-to-all-open-questions --milestone <path>" --dangerously-skip-permissions --model "opus" --effort high;
+claude -p "/cairn:recommend-all-open-questions --milestone <path>" --dangerously-skip-permissions --model "fable" --effort xhigh;
 ```
 
 ## Answering the questions that matter to you
@@ -41,12 +42,12 @@ claude -p "/cairn:recommend-all-open-questions" --dangerously-skip-permissions -
 Run this once [Starting a milestone](#starting-a-milestone) has put a recommendation on every question and you have read the annotated set: one answer line per decision you make yourself, in the first form to record an alternative you name by its id, the recommended one or another, and in the second to record an answer in your own words where no alternative fits, each clearing the picks on other questions it undermines; the recommend line then picks again for exactly the questions so cleared, the next line records every remaining recommendation, and the last two derive the task list and complete it, so the milestone needs you at the keyboard once, between the two chains, and leaves the ordered task list completed. The answer lines run on `fable` at `--effort high`, each inline over one question; the recommend line on `fable` at `--effort xhigh` and the sweep line on `fable` at `--effort high`, each one inline pass over the whole set; and the last two lines as in [Executing tasks](#executing-tasks).
 
 ```sh
-claude -p "/cairn:answer-open-question-with-alternative <Short Title>. <Alternative Id>" --dangerously-skip-permissions --model "fable" --effort high;
-claude -p "/cairn:answer-open-question <Short Title>. <answer text>" --dangerously-skip-permissions --model "fable" --effort high;
-claude -p "/cairn:recommend-all-open-questions" --dangerously-skip-permissions --model "fable" --effort xhigh;
-claude -p "/cairn:answer-all-open-questions-with-recommendation" --dangerously-skip-permissions --model "fable" --effort high;
-claude -p "/cairn:derive-tasks" --dangerously-skip-permissions --model "fable" --effort xhigh;
-claude -p "/cairn:complete-all-tasks" --dangerously-skip-permissions --model "opus" --effort high;
+claude -p "/cairn:answer-open-question-with-alternative --milestone <path> <Short Title>. <Alternative Id>" --dangerously-skip-permissions --model "fable" --effort high;
+claude -p "/cairn:answer-open-question --milestone <path> <Short Title>. <answer text>" --dangerously-skip-permissions --model "fable" --effort high;
+claude -p "/cairn:recommend-all-open-questions --milestone <path>" --dangerously-skip-permissions --model "fable" --effort xhigh;
+claude -p "/cairn:answer-all-open-questions-with-recommendation --milestone <path>" --dangerously-skip-permissions --model "fable" --effort high;
+claude -p "/cairn:derive-tasks --milestone <path>" --dangerously-skip-permissions --model "fable" --effort xhigh;
+claude -p "/cairn:complete-all-tasks --milestone <path>" --dangerously-skip-permissions --model "opus" --effort high;
 ```
 
 ## Running a mixed-agent requirements review
@@ -54,10 +55,10 @@ claude -p "/cairn:complete-all-tasks" --dangerously-skip-permissions --model "op
 Repeat this pass until `review-milestone-requirements` reports convergence: each pass reconciles the open questions against the recorded decisions and surfaces new gaps, embeds alternatives on every question that lacks them and a recommendation on every question that lacks one, and records each recommendation as a decision. The host changes between the review line and the alternatives line, so one agent surfaces the questions and another annotates them; the alternatives line runs on `opus` at `--effort high`, and the recommend line on `fable` at `--effort xhigh` and the answer line on `fable` at `--effort high`, each one inline pass over the whole set; swapping every line to one host by the legend's rule gives the single-host form of the same pass.
 
 ```sh
-agy -p "/cairn:review-milestone-requirements" --dangerously-skip-permissions
-claude -p "/cairn:provide-alternatives-to-all-open-questions" --dangerously-skip-permissions --model "opus" --effort high;
-claude -p "/cairn:recommend-all-open-questions" --dangerously-skip-permissions --model "fable" --effort xhigh;
-claude -p "/cairn:answer-all-open-questions-with-recommendation" --dangerously-skip-permissions --model "fable" --effort high;
+agy -p "/cairn:review-milestone-requirements --milestone <path>" --dangerously-skip-permissions
+claude -p "/cairn:provide-alternatives-to-all-open-questions --milestone <path>" --dangerously-skip-permissions --model "opus" --effort high;
+claude -p "/cairn:recommend-all-open-questions --milestone <path>" --dangerously-skip-permissions --model "fable" --effort xhigh;
+claude -p "/cairn:answer-all-open-questions-with-recommendation --milestone <path>" --dangerously-skip-permissions --model "fable" --effort high;
 ```
 
 ## Putting more intelligence into a stuck milestone
@@ -65,13 +66,13 @@ claude -p "/cairn:answer-all-open-questions-with-recommendation" --dangerously-s
 Run this when the review loop has not converged after passes at the settings above: it records the recommendations already embedded, runs one more review, alternatives, recommend, and answer pass — the review line on `opus` at `--effort max`, the alternatives line on `opus` at `--effort high`, and the recommend line on `fable` at `--effort xhigh` and both answer lines on `fable` at `--effort high`, each one inline pass over the whole set — then derives the task list and completes it in the same chain, with no stop between.
 
 ```sh
-claude -p "/cairn:answer-all-open-questions-with-recommendation" --dangerously-skip-permissions --model "fable" --effort high;
-claude -p "/cairn:review-milestone-requirements" --dangerously-skip-permissions --model "opus" --effort max;
-claude -p "/cairn:provide-alternatives-to-all-open-questions" --dangerously-skip-permissions --model "opus" --effort high;
-claude -p "/cairn:recommend-all-open-questions" --dangerously-skip-permissions --model "fable" --effort xhigh;
-claude -p "/cairn:answer-all-open-questions-with-recommendation" --dangerously-skip-permissions --model "fable" --effort high;
-claude -p "/cairn:derive-tasks" --dangerously-skip-permissions --model "fable" --effort xhigh;
-claude -p "/cairn:complete-all-tasks" --dangerously-skip-permissions --model "opus" --effort high;
+claude -p "/cairn:answer-all-open-questions-with-recommendation --milestone <path>" --dangerously-skip-permissions --model "fable" --effort high;
+claude -p "/cairn:review-milestone-requirements --milestone <path>" --dangerously-skip-permissions --model "opus" --effort max;
+claude -p "/cairn:provide-alternatives-to-all-open-questions --milestone <path>" --dangerously-skip-permissions --model "opus" --effort high;
+claude -p "/cairn:recommend-all-open-questions --milestone <path>" --dangerously-skip-permissions --model "fable" --effort xhigh;
+claude -p "/cairn:answer-all-open-questions-with-recommendation --milestone <path>" --dangerously-skip-permissions --model "fable" --effort high;
+claude -p "/cairn:derive-tasks --milestone <path>" --dangerously-skip-permissions --model "fable" --effort xhigh;
+claude -p "/cairn:complete-all-tasks --milestone <path>" --dangerously-skip-permissions --model "opus" --effort high;
 ```
 
 ## Executing tasks
@@ -80,29 +81,29 @@ Run this once a review pass has left every open question carrying a recommendati
 
 ```sh
 # wait until your account's usage window has reset
-claude -p "/cairn:answer-all-open-questions-with-recommendation" --dangerously-skip-permissions --model "fable" --effort high;
-claude -p "/cairn:derive-tasks" --dangerously-skip-permissions --model "fable" --effort xhigh;
-claude -p "/cairn:complete-all-tasks" --dangerously-skip-permissions --model "opus" --effort high;
+claude -p "/cairn:answer-all-open-questions-with-recommendation --milestone <path>" --dangerously-skip-permissions --model "fable" --effort high;
+claude -p "/cairn:derive-tasks --milestone <path>" --dangerously-skip-permissions --model "fable" --effort xhigh;
+claude -p "/cairn:complete-all-tasks --milestone <path>" --dangerously-skip-permissions --model "opus" --effort high;
 # wait until your account's usage window has reset
-claude -p "/cairn:complete-all-tasks" --dangerously-skip-permissions --model "opus" --effort high;
+claude -p "/cairn:complete-all-tasks --milestone <path>" --dangerously-skip-permissions --model "opus" --effort high;
 ```
 
-## Preparing the next milestone while the current one runs
+## Preparing another milestone while one runs
 
-Run this when you want the next milestone's questions ready before the current one is finished: it defines the next milestone without activating it, then aims every following line at it with a leading `--milestone <milestone_id>`, so the starting state, the first review pass's open questions, their alternatives, and a recommendation on each are committed for that milestone while the current-milestone pointer keeps naming the one in progress and its own chains run unchanged. The flag goes first, before any text of the skill's own, and names the milestone directly without reading the pointer, so it works whatever the pointer reads, `none` included; a value matching no milestone stops the line with nothing changed and lists the `milestone_*` directories present to retry with. The `<milestone_id>` the later lines take is the directory `define-milestone-goal` created, which its `Milestone-definition: <milestone_id>` commit subject names (`git log -1 --format=%s` right after the first line), and once the current milestone is finished, [Starting a milestone](#starting-a-milestone)'s `goto-next-milestone` line activates this one if it is the lowest-numbered undone milestone. The starting state describes the project as it stands when the line runs, so rerun that line, and the review after it, if the milestone still in progress changes what it describes. The chain can run while the current milestone's `complete-all-tasks` is still working in the same tree: a completion subagent stages nothing, leaving its edits uncommitted until its orchestrator commits that task from the path file it wrote, and every commit names its own paths as its pathspec, so a completion subagent's files no longer ride into an annotating pass's commit, nor into the answer sweep's when you go on to record this milestone's recommendations with `answer-all-open-questions-with-recommendation --milestone <milestone_id>`; a git write that meets the other run's lock is repeated for a few seconds rather than failing at once. The tree is dirty while both run, and each commit still carries only its own paths.
+Run this when you want a second milestone's questions ready while another milestone is still executing: it defines the second milestone at its own `<scope>` and runs [Starting a milestone](#starting-a-milestone)'s lines on its `<path>`, so the starting state, the first review pass's open questions, their alternatives, and a recommendation on each are committed for it while the other milestone's chains run unchanged on their own path. It is no special case of either chain: no milestone is current, so two chains in one project differ only in the path every line carries, and each line below takes the second milestone's `<path>`, the one its own definition line recorded. The starting state describes the project as it stands when the line runs, so rerun that line, and the review after it, if the milestone still executing changes what it describes. The chain can run while the other milestone's `complete-all-tasks` is still working in the same tree: a completion subagent stages nothing, leaving its edits uncommitted until its orchestrator commits that task from the path file it wrote, and every commit names its own paths as its pathspec, so a completion subagent's files never ride into an annotating pass's commit, nor into the answer sweep's when you go on to record this milestone's recommendations with `answer-all-open-questions-with-recommendation --milestone <path>`; a git write that meets the other run's lock is repeated for a few seconds rather than failing at once. The tree is dirty while both run, and each commit still carries only its own paths.
 
 ```sh
-claude -p "/cairn:define-milestone-goal <goal>" --dangerously-skip-permissions --model "sonnet" --effort medium;
-claude -p "/cairn:specify-milestone-starting-state --milestone <milestone_id>" --dangerously-skip-permissions --model "fable" --effort xhigh;
-claude -p "/cairn:review-milestone-requirements --milestone <milestone_id>" --dangerously-skip-permissions --model "fable" --effort xhigh;
-claude -p "/cairn:provide-alternatives-to-all-open-questions --milestone <milestone_id>" --dangerously-skip-permissions --model "opus" --effort high;
-claude -p "/cairn:recommend-all-open-questions --milestone <milestone_id>" --dangerously-skip-permissions --model "fable" --effort xhigh;
+claude -p "/cairn:define-milestone-goal --at <scope> <goal>" --dangerously-skip-permissions --model "sonnet" --effort medium;
+claude -p "/cairn:specify-milestone-starting-state --milestone <path>" --dangerously-skip-permissions --model "fable" --effort xhigh;
+claude -p "/cairn:review-milestone-requirements --milestone <path>" --dangerously-skip-permissions --model "fable" --effort xhigh;
+claude -p "/cairn:provide-alternatives-to-all-open-questions --milestone <path>" --dangerously-skip-permissions --model "opus" --effort high;
+claude -p "/cairn:recommend-all-open-questions --milestone <path>" --dangerously-skip-permissions --model "fable" --effort xhigh;
 ```
 
 ## Finishing a milestone
 
-Run this when `TASKS_TODO.md` is empty: it records the milestone's completion summary in `milestones/README.md`, clears the current-milestone pointer to `none`, and updates `CLAUDE.md` for lasting changes, leaving the repository ready for the next `goto-next-milestone`.
+Run this when the milestone's `TASKS_TODO.md` is empty and no open question stands: it removes the milestone's directory in one `Milestone-finish: <path>` commit whose body is the milestone's summary, its title line, a blank line, and its accomplishment bullets, and updates `CLAUDE.md` in the same commit for lasting changes. Nothing is cleared, since nothing was current: the milestone's files stand at that commit's parent, the plugin's milestones tool prints the summary back as the milestone's record, and reverting the commit makes the milestone live again.
 
 ```sh
-claude -p "/cairn:finish-milestone" --dangerously-skip-permissions --model "sonnet" --effort medium;
+claude -p "/cairn:finish-milestone --milestone <path>" --dangerously-skip-permissions --model "sonnet" --effort medium;
 ```
