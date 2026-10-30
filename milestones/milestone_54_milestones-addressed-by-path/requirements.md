@@ -104,5 +104,7 @@ Three definitions under `scripts/hosts/` render `core/` into `hosts/claude/`, `h
 
 - **Re-run detection.** The walk reads two signals for each entry. If the directory still stands, the entry is migrated now, even when a path-form `Milestone-finish: <path>` subject is already in the log (a reverted migration). If the directory is gone and the log holds that subject, the entry is skipped as already migrated. If the directory is gone and no such subject exists, the entry is not treated as migrated and falls under the absent-directory handling recorded below.
 
+- **Missing finish date.** Before its first commit the migration checks whether the repository is shallow and stops with a fixed line and a remedy (fetch the full history) if it is. In a complete history, an entry with no `Milestone-finish:` commit for its id takes the author date of the newest commit that changed its directory.
+
 ## Out of Scope
 
