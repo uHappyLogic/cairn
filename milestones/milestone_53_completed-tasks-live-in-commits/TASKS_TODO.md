@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Fixed-Line Readers Switch To Tasks Query
-
-Replace the `TASKS_DONE.md` read of `finish-current-milestone` (step 2, the summary bullets drawn from it, and the wording of its open-question stop), `derive-tasks` (the coverage matrix's already-satisfied check), and `submit-task` (its triage read) with one fixed call of the milestones tool, `tasks` on `<MILESTONE_DIR>` with the body flag, unconditionally at the step that read the file, and have each treat a failed call (the tool refusing, or git unavailable) as one stop with the tool's `Error:` line quoted verbatim below a fixed line of its own — `Cannot finish the milestone: the completed-task read failed.`, `Cannot derive tasks: the completed-task read failed.`, and a new line in `submit-task`'s `Task not submitted — …` family — writing and committing nothing, an empty milestone being no failure, and the three lines joining the `## Fixed console lines` table of `docs/skill-reference.md`. Verified by `tests/test_fixed_console_lines.py` passing in both pytest runs, no `TASKS_DONE` left in the three skills, and a rebuilt `hosts/` tree passing `--check`.
-
----
-
 ## Conversational Readers Switch To Tasks Query
 
 Replace the `TASKS_DONE.md` read of `ask-in-milestone-context` (its reads list, its "how did task X turn out?" guidance, and its live-deliverable-over-entry rule) and `discuss-new-task` (its triage read and its already-covered check) with the same fixed `tasks <MILESTONE_DIR>` call with the body flag the other readers run, at the step that read the file, and have each, on a failed call, tell the user in prose that the completed-task read failed, quoting the `Error:` line, and carry on from its other reads with no fixed line, keeping the conversational skills' exemption. Needed so every reader of completed work reads the commits once the done file is gone. Verified by no `TASKS_DONE` left in either skill, the fixed-lines test unchanged and passing, and a rebuilt `hosts/` tree passing `--check`.

@@ -70,7 +70,15 @@ Apply these rules:
 
 ### 4. Prove coverage (requirement → task matrix)
 
-Re-read `requirements.md` bullet by bullet and build a traceability matrix mapping **every** requirement, constraint, and behavioral detail to at least one brief:
+First run the plugin's milestones tool, for the work already recorded as completed in this milestone:
+
+```
+python3 {{PLUGIN_ROOT}}/tools/milestones.py tasks <MILESTONE_DIR> --with-body
+```
+
+It prints, newest first, one tab-separated line per task completed in the milestone (the commit's abbreviated hash, its date, the milestone directory, and the task title), with the task's verified bar indented beneath it, and prints nothing when no task has been completed, which is no failure. If the call fails, stop and report it, writing and committing nothing: the fixed line `Cannot derive tasks: the completed-task read failed.` first, then its one `Error: <reason>` line from stderr verbatim below it, and print no line of step 8.
+
+Then re-read `requirements.md` bullet by bullet and build a traceability matrix mapping **every** requirement, constraint, and behavioral detail to at least one brief:
 
 ```
 | Requirement (quote/paraphrase) | Covered by brief |
@@ -79,7 +87,7 @@ Re-read `requirements.md` bullet by bullet and build a traceability matrix mappi
 ```
 
 - Every requirement must map to ≥1 brief. If a requirement maps to none, you have a gap — add a brief (or note why it's already satisfied by the project's existing state per the **Relevant starting state**).
-- If a requirement is already satisfied by what already exists — or by work already recorded in `<MILESTONE_DIR>/TASKS_DONE.md` — mark it so and do not create a brief for it; note it in the report instead.
+- If a requirement is already satisfied by what already exists — or by a completed task the `tasks` call listed — mark it so and do not create a brief for it; note it in the report instead.
 - Where step 3's tie-break let the later-recorded entry of a conflicting pair govern, that entry is the requirement a brief covers; the earlier entry's conflicting text maps to no brief and is no gap, while whatever else of that entry still holds maps as usual.
 - Do not invent requirements that aren't in the spec.
 

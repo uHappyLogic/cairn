@@ -157,9 +157,11 @@ Every skill's console report opens with one fixed line saying how the run ended,
 | `derive-tasks` | no-op | `No tasks derived — the list matched the task file already.` |
 | `derive-tasks` | stop | `Cannot derive tasks: the following open questions must be resolved first:` |
 | `derive-tasks` | stop | `Cannot derive tasks: the open-question check failed.` |
+| `derive-tasks` | stop | `Cannot derive tasks: the completed-task read failed.` |
 | `derive-tasks` | stop | `Cannot derive tasks: the task-list tool refused the list.` |
 | `submit-task` | success | `Task submitted.` |
 | `submit-task` | no-op | `Task not submitted — the task file was unchanged.` |
+| `submit-task` | stop | `Task not submitted — the completed-task read failed.` |
 | `submit-task` | stop | `Task not submitted — an existing task already covers it.` |
 | `submit-task` | stop | `Task not submitted — the issue is not a task for this milestone.` |
 | `submit-task` | stop | `Task not submitted — the issue is too vague to author.` |
@@ -173,6 +175,7 @@ Every skill's console report opens with one fixed line saying how the run ended,
 | `complete-task` | no-op | `No task completed — no file changed.` |
 | `finish-current-milestone` | success | `Milestone finished.` |
 | `finish-current-milestone` | no-op | `Nothing to finish — no changes to commit.` |
+| `finish-current-milestone` | stop | `Cannot finish the milestone: the completed-task read failed.` |
 | `finish-current-milestone` | stop | `Cannot finish the milestone: the following open questions must be resolved first:` |
 | `finish-current-milestone` | stop | `Cannot finish the milestone: the open-question check failed.` |
 | `finish-current-milestone` | stop | `Cannot finish the milestone: tasks remain to be completed.` |

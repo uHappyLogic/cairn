@@ -34,14 +34,27 @@ First strip a leading `--milestone <milestone_id>` from the invocation text by t
 
 ### 1. Read context for triage
 
-Read in parallel:
-- `<MILESTONE_DIR>/requirements.md` — to confirm the issue fits the milestone's scope.
-- `<MILESTONE_DIR>/TASKS_TODO.md` — existing pending tasks, for duplicate-detection and positioning.
-- `<MILESTONE_DIR>/TASKS_DONE.md` — completed work, to catch issues already addressed.
+In parallel, as independent tool calls:
+- Read `<MILESTONE_DIR>/requirements.md` — to confirm the issue fits the milestone's scope.
+- Read `<MILESTONE_DIR>/TASKS_TODO.md` — existing pending tasks, for duplicate-detection and positioning.
+- Run the plugin's milestones tool — completed work, to catch issues already addressed:
+
+  ```
+  python3 ${CLAUDE_PLUGIN_ROOT}/tools/milestones.py tasks <MILESTONE_DIR> --with-body
+  ```
+
+  It prints, newest first, one tab-separated line per task completed in the milestone (the
+  commit's abbreviated hash, its date, the milestone directory, and the task title), with the
+  task's verified bar indented beneath it, and prints nothing when no task has been completed,
+  which is no failure.
+
+If the call fails, stop, writing and committing nothing: print the fixed line
+`Task not submitted — the completed-task read failed.` first, then below it its one
+`Error: <reason>` line from stderr verbatim.
 
 ### 2. Triage
 
-- **Duplicate?** If an existing pending task or a completed task already covers this issue, stop: print the fixed line `Task not submitted — an existing task already covers it.` first, then below it which task covers it. Do not add a duplicate.
+- **Duplicate?** If an existing pending task or a completed task the `tasks` call listed already covers this issue, stop: print the fixed line `Task not submitted — an existing task already covers it.` first, then below it which task covers it. Do not add a duplicate.
 - **In scope?** If the issue clearly belongs to a different milestone or is really an open design decision, stop instead of queuing it: print the fixed line `Task not submitted — the issue is not a task for this milestone.` first, then below it why, pointing to the better tool (`/discuss-open-question`).
 
 ### 3. Decide the position

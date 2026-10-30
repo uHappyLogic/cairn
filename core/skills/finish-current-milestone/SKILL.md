@@ -25,9 +25,17 @@ Read `<MILESTONE_DIR>/requirements.md` and extract the milestone title from its 
 
 ### 2. Read milestone content
 
-Read in parallel:
-- `<MILESTONE_DIR>/requirements.md` — to extract the milestone **Goal** and key decisions.
-- `<MILESTONE_DIR>/TASKS_DONE.md` — to list what was concretely built.
+In parallel, as two independent tool calls:
+- Read `<MILESTONE_DIR>/requirements.md` — to extract the milestone **Goal** and key decisions.
+- Run the plugin's milestones tool, to list what was concretely built:
+
+  ```
+  python3 {{PLUGIN_ROOT}}/tools/milestones.py tasks <MILESTONE_DIR> --with-body
+  ```
+
+  It prints, newest first, one tab-separated line per task completed in the milestone (the commit's abbreviated hash, its date, the milestone directory, and the task title), with the task's verified bar indented beneath it, and prints nothing when no task has been completed, which is no failure.
+
+If the call fails, stop and report it, writing and committing nothing: the fixed line `Cannot finish the milestone: the completed-task read failed.` first, then its one `Error: <reason>` line from stderr verbatim below it.
 
 ### 3. Verify the milestone is done
 
@@ -37,7 +45,7 @@ First check that no open question stands. Run
 python3 {{PLUGIN_ROOT}}/tools/open_questions.py list <MILESTONE_DIR>
 ```
 
-It prints the Short Title of every `<open-question>` block still in `<MILESTONE_DIR>/open_questions.xml`, one per line. If it prints nothing, proceed. If it prints anything, stop immediately, writing and committing nothing whatever `TASKS_DONE.md` holds, and output, with the printed lines as the bullets verbatim:
+It prints the Short Title of every `<open-question>` block still in `<MILESTONE_DIR>/open_questions.xml`, one per line. If it prints nothing, proceed. If it prints anything, stop immediately, writing and committing nothing whatever tasks step 2's `tasks` call listed, and output, with the printed lines as the bullets verbatim:
 
 ```
 Cannot finish the milestone: the following open questions must be resolved first:
@@ -55,7 +63,7 @@ Then check that `<MILESTONE_DIR>/TASKS_TODO.md` contains no `##` sections. If ta
 
 Write a short summary (3–8 bullet points) of what was accomplished. Draw from:
 - The Goal section of `requirements.md`
-- The completed tasks in `TASKS_DONE.md`
+- The completed tasks step 2's `tasks` call listed, each with its verified bar
 - Any significant decisions recorded in `requirements.md`
 
 Keep each bullet to one sentence, factual and grounded in the requirements and completed tasks — never an invented accomplishment. Focus on what now exists in the project, not on process.
