@@ -1,1 +1,98 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Discovery pattern scope">
+    <question>Which tracked paths does the milestones tool count as this project&apos;s live milestones: every match of `**/milestones/*/requirements.md` over `git ls-files`, which in this repository also matches the agy test fixture&apos;s `tests/fixtures/agy_project/milestones/milestone_01_pocket-ledger-foundations/` and so would list it under `live`, let it hold the root scope against every milestone here the first time its task list is edited, and join its `TASKS_TODO.md` in the `tasks` query once that query&apos;s root anchor is swapped for the same pattern, or a narrower rule that leaves a nested project&apos;s matches out?</question>
+  </open-question>
+  <open-question id="Tool split">
+    <question>Are the tree-side queries (`live`, `gate`) and the history-side queries (`tasks`, `milestones`, `summary`, `record`) subcommands of the one `milestones.py`, or two tools, given that every tool under `core/tools/` is one self-contained file copied byte-identical into each host, and that the tree-side half reads `git ls-files` and one path-scoped log per live milestone while the history-side half reads commit subjects and bodies?</question>
+  </open-question>
+  <open-question id="Live line fields">
+    <question>Which fields does one line of the `live` query carry, in what order and with what separator, and how is a started milestone told from a merely defined one on its line, given that the draft lists path, whether it is started, and title, that `tasks` prints tab-separated fields with the title last, and that the resolution stop prints these lines beneath its fixed line for a retry to copy a path from?</question>
+  </open-question>
+  <open-question id="Live path filter">
+    <question>Does the `live` query take its optional PATH filter (listing only the live milestones whose scope contains PATH or lies under it) in this milestone, or land as the unfiltered list alone, given that its callers here, the resolution stop and the gate, need no filter, that the next milestone&apos;s starting-state refresh is the first caller that does, and that a query lands with its first caller?</question>
+  </open-question>
+  <open-question id="Gate output contract">
+    <question>What does the `gate` query print and exit with when another started milestone overlaps the named milestone&apos;s scope, given that the draft proposes the holders one path per line on stdout with exit 1, that every sibling tool&apos;s non-zero exit is one `Error:` line on stderr, that a runner chains the gate ahead of its write behind `&amp;&amp;`, and that a held scope is a wait rather than a failure?</question>
+  </open-question>
+  <open-question id="Gate check home">
+    <question>Where does the gate check live for its four sites (`derive-tasks` and `submit-task` before their write, `complete-all-tasks` before each dispatch, the inline `complete-task` before its task): a step written in each runner&apos;s own file with a fixed stop line per runner, or one shared procedure with one stop line printed by every runner following it, given that the two completion runners share `complete-procedure.md`, which the dispatched agent also follows and which must not gate a dispatch its orchestrator already gated?</question>
+  </open-question>
+  <open-question id="Milestones query line">
+    <question>Which fields does one line of the `milestones PATH` query carry, in what order and with what separator, and what date and state does a live milestone&apos;s line show, given that the draft lists state, finish date, path, and title newest first, that a live milestone has no finish date, and that `tasks` prints a tab-separated line with the title last?</question>
+  </open-question>
+  <open-question id="Live summary print">
+    <question>What does the `summary` query print for a live milestone, and how does its print tell a live milestone from a finished one, given that for a finished milestone it prints the finish commit&apos;s body (title line, blank line, bullets) with its date, and that the draft says a live one prints its goal and the fact that it is live?</question>
+  </open-question>
+  <open-question id="Record composition">
+    <question>What is the composed shape of the `record PATH` query&apos;s print, how are one milestone&apos;s title and date, summary, and task lines set apart from the next milestone&apos;s, and is `record .` bounded, given that it prints every milestone from `milestones PATH` newest first and that this repository&apos;s record would hold 53 migrated milestones with their bullets and about 180 task lines?</question>
+  </open-question>
+  <open-question id="Shallow clone detection">
+    <question>Do the `gate` query and the history-side queries detect a shallow clone, whose truncated log reads every started milestone as unstarted so the gate holds no scope and drops finished milestones from `milestones`, `summary`, and `record` without sign, and if so how: refuse with an `Error:` line, warn on stderr beside the print, or state the limit in the help text only, as `tasks` does?</question>
+  </open-question>
+  <open-question id="Trailer in finish body">
+    <question>How does the finish body contract (title line, blank line, summary bullets) meet an attribution trailer such as `Co-Authored-By:` that a runner appends to the body it passes the commit tool: does the contract forbid one, or do `summary` and `record` treat a trailing block of `Token: value` lines as outside the record, given that 37 pre-flip `Task-completion:` bodies are such a trailer alone and that `tasks` prints bodies whole?</question>
+  </open-question>
+  <open-question id="Heading and title line">
+    <question>Once the number leaves the directory name, what heading does the definition tool write at the top of `requirements.md` (today `# Milestone &lt;N&gt;: &lt;title&gt;`), and what exactly is the first line of a finish commit&apos;s body, the title as the heading carried it, for a native finish and for a migrated entry whose README heading reads `### Milestone N — Title`, given that finish reads the title from that heading and that `summary` prints the body&apos;s first line as the milestone&apos;s title?</question>
+  </open-question>
+  <open-question id="Canonical path form">
+    <question>Does the canonical milestone path, the one the definition tool prints, every subject that names a milestone carries, and `--milestone` matches verbatim, keep a trailing slash as today&apos;s printed `milestones/milestone_&lt;NN&gt;_&lt;slug&gt;/` does, and is a `--milestone` value differing from it only in that slash accepted or refused under the no-normalization rule, given that `tasks` prints its milestone field in the printed form with the slash and that a typed path commonly omits one?</question>
+  </open-question>
+  <open-question id="Root scope spelling">
+    <question>How does `define-milestone-goal --at &lt;scope&gt;` name the project root, and what path does the definition tool print for a root-scoped milestone, given that `--at` is required with no default, that a `.` scope would form `./milestones/&lt;slug&gt;/` while every existing path is written `milestones/...` with no `./`, and that the printed path is what every later line of the chain names verbatim?</question>
+  </open-question>
+  <open-question id="Missing scope directory">
+    <question>When `--at` names a scope directory that does not exist in the tree, does the definition tool create the scope along with its `milestones/` container, or refuse, given that the container is created when missing by design and that a mistyped scope would otherwise plant a milestone under a directory nothing else uses?</question>
+  </open-question>
+  <open-question id="Resolution match test">
+    <question>Does `--milestone &lt;path&gt;` match whenever `&lt;path&gt;/requirements.md` exists, as the override does today, or only when `&lt;path&gt;` is a milestone by the discovery pattern (a directory directly under a `milestones/` container), given that the gate reads a milestone&apos;s scope as its container&apos;s parent and a matched path outside any container has no scope?</question>
+  </open-question>
+  <open-question id="Bootstrap probe landing">
+    <question>Where do the git work-tree check and the Python 3.9 check land once `init-milestone-base-workflow` no longer creates `milestones/` and its README: in the reduced bootstrap, in `define-milestone-goal` as the first skill every project runs, in both, or nowhere, given that the draft leaves the probe&apos;s landing to this milestone and that the literal `3.9` has three homes today (the README prerequisite, the bootstrap check, the CI floor run)?</question>
+  </open-question>
+  <open-question id="Bootstrap residual duty">
+    <question>What remains of `init-milestone-base-workflow` once it creates no scaffold: a skill that only appends the `## Milestone Workflow` section to the context file, and under which commit subject, given that its current `Workflow-bootstrap: milestones` subject names the directory it created, that its two no-op lines concern the README and the context file, and that the migration skill rewrites the same section for upgraded projects?</question>
+  </open-question>
+  <open-question id="Capture argument shape">
+    <question>Does `capture-milestone-principle-updates` keep its required positional milestone argument, now a path, or take the same required `--milestone &lt;path&gt;` as every other per-milestone skill, given that today it is the stated exception because the milestone it harvests is named rather than current, and that under the new shape every milestone is named?</question>
+  </open-question>
+  <open-question id="Removed milestone addressing">
+    <question>How does a skill that works on a finished milestone (capture harvesting it, `ask-in-milestone-context` asked about it) accept a path whose directory finish has removed, given that the resolution procedure matches only when `&lt;path&gt;/requirements.md` exists in the tree: by a history test of its own (any commit changed a file under the path), by a milestones-tool query, or by the finish commit&apos;s record?</question>
+  </open-question>
+  <open-question id="Conversational history read">
+    <question>Which fixed milestones-tool call replaces the `milestones/README.md` history read in `discuss-milestone-goal` step 1 and in `ask-in-milestone-context`, and with what bound, given that the draft names `record .` as the whole project&apos;s history, that this repository&apos;s history holds 53 milestones with 3 to 8 bullets each, and that both skills read the whole history section today?</question>
+  </open-question>
+  <open-question id="Ask-context without milestone">
+    <question>Does `ask-in-milestone-context` still run with no `--milestone &lt;path&gt;` when the question concerns finished work or the project&apos;s past, reading the record alone, or does it require a live milestone like every other per-milestone skill, given that today it answers about past work from the README history when the pointer reads `none`?</question>
+  </open-question>
+  <open-question id="Current-naming rename">
+    <question>Are the names and wording that say &quot;current&quot; revised now that nothing is current: `finish-current-milestone` becoming `finish-milestone` as the draft proposes, `core/shared/get-current-milestone.md` renamed or kept, and the frontmatter descriptions of some seventeen skills that read &quot;the current milestone&quot; reworded, given that a skill&apos;s name is its user-facing command and that the fixed-lines table and the docs name each?</question>
+  </open-question>
+  <open-question id="Finish removal mechanism">
+    <question>How does finish remove the milestone directory and commit the removal: `git rm -r` and then the commit tool, or a plain `rm -r` followed by the commit tool over the directory path, given that the commit tool is the one tool that writes through git, that its guard and path-scoped add would have to accept a path that no longer exists in the tree, and that the context-file edit rides in the same commit?</question>
+  </open-question>
+  <open-question id="Migration commit mechanism">
+    <question>How does `migrate-milestones` make each finish commit with the author date copied from the original `Milestone-finish:` commit: through a date option added to the commit tool, or through git commands of its own, given that the commit tool takes only paths, a subject, and a body, and that the committing invariant names it the one tool that writes through git?</question>
+  </open-question>
+  <open-question id="Migration re-run detection">
+    <question>How does `migrate-milestones`, re-run after an interruption partway through its one-commit-per-milestone walk, tell the entries already migrated from the rest: by a `Milestone-finish: &lt;path&gt;` subject already in the log, by the entry&apos;s directory being gone from the tree, or not at all, refusing a second run?</question>
+  </open-question>
+  <open-question id="Migration missing directory">
+    <question>What does `migrate-milestones` do with a `## Milestone History` entry whose numbered directory is absent from the tree (removed by hand, or never present in a project that wrote its history by hand): stop the walk, skip the entry with a line in its report, or make the finish commit from the entry alone with nothing removed?</question>
+  </open-question>
+  <open-question id="Migration missing finish date">
+    <question>What author date does a migrated finish commit take when the log holds no `Milestone-finish:` commit for that entry&apos;s id (a history written by hand, or a shallow clone that cut the old commit): the migration&apos;s own time, the newest commit touching the directory, or a stop?</question>
+  </open-question>
+  <open-question id="Migration confirmation">
+    <question>Does `migrate-milestones` print its plan (the entries it will finish, oldest first, and what its closing commit removes) and wait for one confirmation before its first commit, as capture gates its one commit, or run straight through, given that it is run by a person once per project, makes some fifty commits in this repository, and removes every finished milestone&apos;s directory?</question>
+  </open-question>
+  <open-question id="Release notes source">
+    <question>Does this milestone rewrite the maintainer-only `/release-plugin` skill, whose steps 3c and 7 gather release notes from `Milestone-finish:` commits path-scoped to `milestones/README.md` and from its `### Milestone` headings, to read the finish commit bodies instead, or is that left to the release that ships the change, given that the Goal cuts no release inside the milestone and that the next release&apos;s notes would otherwise find nothing?</question>
+  </open-question>
+  <open-question id="Contributor definition step">
+    <question>With milestone numbers gone, does the contributor flow in `CONTRIBUTING.md` still have the maintainer define a contributor&apos;s milestone on `main`, or does the contributor define it on the branch with `--at`, given that the reservation existed to keep numbers unique, and that two scopes may now hold the same slug while one scope refuses a duplicate?</question>
+  </open-question>
+  <open-question id="Own runs crossing">
+    <question>How do this milestone&apos;s own runs cross the flip to a required `--milestone &lt;path&gt;` and a renamed finish, given that every later skill run, this milestone&apos;s `complete-all-tasks` included, resolves through the rebuilt `hosts/claude/` tree the checkout installs from: which task carries the resolution change, and is it completed alone through the inline `complete-task` before the rest run in a fresh session, as milestone 53 crossed its bar flip?</question>
+  </open-question>
+</open-questions>
