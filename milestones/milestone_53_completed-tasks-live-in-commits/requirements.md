@@ -94,5 +94,9 @@ Once `remove` reads no bar, two shell tests guard it, so every route to an empty
 
 The acceptance bar's record form (one `- ` bullet per criterion, in verification order, written as each stood when it passed, neither re-derived nor summarized) stays stated once, in `core/shared/complete-procedure.md`, as prose beside the bare `remove` at step 5 or folded into step 2's hold-it-verbatim sentence, worded as the form of the bar the procedure hands to the runner, with the destination named only as the record the runner's own file writes and no git step, commit, or body named, so the procedure stays commit-free. The inline `complete-task` skill's fixed call and the agent's body-file heredoc show the bar as `- ` bullet placeholders and refer to the procedure for the form, adding no prose rule of their own; with the body being the bar alone, that one sentence states the whole body's shape.
 
+### `tasks` line fields
+
+Each line of the `tasks` query carries four fields: the commit's abbreviated hash as git's `%h` prints it, then the date as YYYY-MM-DD, the milestone path, and the task title, separated by single tab characters, the title last. The tab is the tools' existing listing separator and keeps a spaced title unambiguous, and the leading hash lets a reader reach a task's diff, where the brief now lives, with one `git show` instead of a subject search.
+
 ## Out of Scope
 

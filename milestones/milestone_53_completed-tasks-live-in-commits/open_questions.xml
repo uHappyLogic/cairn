@@ -1,28 +1,4 @@
 <open-questions>
-  <open-question id="Tasks line fields">
-    <question>Which fields does one line of the milestones tool&apos;s `tasks` query carry, in what order and with what separator, given that the draft lists date, milestone path, and task title, that a title may hold spaces, and that a reader wanting a task&apos;s diff needs its commit hash or must search subjects itself?</question>
-    <recommendation option="Hash first, tab-separated">The tab is the family&apos;s existing listing separator and keeps a spaced title unambiguous, and the leading hash is what lets a reader reach a task&apos;s diff, where the brief now lives, with one git show instead of the subject search the tool exists to end.</recommendation>
-    <alternative id="Hash first, tab-separated">
-      Each line carries four fields: the commit&apos;s abbreviated hash as git&apos;s `%h` prints it, then the date as YYYY-MM-DD, the milestone path, and the task title, separated by single tab characters, the title last.
-      <advantage>Every line names the exact commit, so a reader reaches the task&apos;s diff or full body with one `git show` and never searches subjects, even for a reused title; it leads with the hash as the draft&apos;s own `since` query does, and the tab keeps a spaced title unambiguous for both a person and a split on tab.</advantage>
-      <drawback>Adds a field none of the five readers this milestone moves onto `tasks` reads, and puts a git term in front of a line the draft means to speak in the workflow&apos;s vocabulary (milestone, task) rather than git&apos;s; tabs also render as uneven columns in a terminal.</drawback>
-    </alternative>
-    <alternative id="Draft fields, tab-separated">
-      Each line carries exactly the draft&apos;s three fields, in the draft&apos;s order: the commit date as YYYY-MM-DD, the milestone path, and the task title (the `Task-completion:` subject with its marker stripped), separated by single tab characters, the title last. No commit hash is printed; a reader wanting a task&apos;s diff searches subjects itself.
-      <advantage>Matches the draft as written and the plugin&apos;s one existing tab-separated listing (the open-question tool&apos;s `list --with-question` prints id, tab, question text), so a title holding spaces needs no positional rule and the shape stays the smallest that serves the five readers, none of which opens a task&apos;s diff today.</advantage>
-      <drawback>A reader that does want the diff has to recover the commit from the title by its own `git log --grep` or subject search, the hand-composed git pipeline the milestones tool exists to end, and a title reused across milestones (follow-up work may reuse a done title) makes that search ambiguous.</drawback>
-    </alternative>
-    <alternative id="Hash first, space-separated, title last">
-      Each line carries four fields: the abbreviated hash as `%h` prints it, the date as YYYY-MM-DD, the milestone path, and the task title, separated by single spaces, the title last and taking the rest of the line, so a parser splits on the first three spaces only (the hash, the date, and a milestone path the milestone-definition tool slugs carry no space).
-      <advantage>Reads like the `git log --oneline` form and the draft&apos;s `since` line (hash, date, subject), with the diff one `git show` away, while a person sees plain text with no tab characters.</advantage>
-      <drawback>Unambiguous only while no field before the title can hold a space: the hash and date never do, but a milestone path holding one (a hand-made or moved directory) would split wrongly with no error, so the line&apos;s correctness rests on the slug rule rather than on its separator.</drawback>
-    </alternative>
-    <alternative id="Draft fields, space-separated, title last">
-      Each line carries the draft&apos;s three fields with no hash: the date as YYYY-MM-DD, the milestone path, and the task title, separated by single spaces, the title last and taking the rest of the line, so a parser splits on the first two spaces only.
-      <advantage>The plainest line for the readers that only read it as text (finish&apos;s summary bullets, `ask-in-milestone-context`, the two triage skills&apos; already-addressed checks), with no tab characters and no git term, exactly the draft&apos;s fields.</advantage>
-      <drawback>Carries both costs of its two positions: a reader wanting the diff must search subjects itself, and splitting the title off is safe only while milestone paths stay space-free, which the separator does not guarantee.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Reader tasks failure">
     <question>When a reader&apos;s `tasks` call fails (the tool refusing, or git unavailable), do `finish-current-milestone` and `derive-tasks` stop on a fixed line of their own, or proceed without the completed-task record?</question>
     <recommendation option="Both stop">Both skills already stop on a failed open-question list with one fixed line, so a failed tasks call takes the same shape: no summary or brief is built on a missing record, a headless chain can match how the run ended, an absent git is caught before either file is edited, and an empty milestone is not a failure, so a fresh milestone never trips it.</recommendation>
