@@ -108,5 +108,9 @@ Three definitions under `scripts/hosts/` render `core/` into `hosts/claude/`, `h
 
 - **One confirmation.** Before its first commit `migrate-milestones` prints its whole plan: every `## Milestone History` entry it will finish, oldest first, each with the directory it removes and the author date its commit will carry, then what the closing commit removes and rewrites (`milestones/README.md`, a live milestone's `TASKS_DONE.md` if present, the context file's `## Milestone Workflow` section). It then asks once whether to proceed, as capture's step 7 asks once before its commit. Acceptance runs the whole walk and the closing commit with no further prompt; anything else ends the run on one fixed no-op line of its own, with no file changed and no commit made. The confirmation accepts or rejects the plan whole and edits no entry out of it.
 
+### Contributor flow and release
+
+- **Reservation on `main`.** The maintainer's reservation step stays, rewritten for paths: on accepting the proposal the maintainer runs `/define-milestone-goal --at <scope>` with the accepted goal on `main`, choosing the scope, and its `Milestone-definition: <path>` commit is the reservation. The contributor branches from that commit and runs the pipeline with `--milestone <path>`. The `/goto-next-milestone` step and the pointer conditions on reserving and merging go. An abandoned contribution is still cleaned up by reverting the definition commit, and the pull request template's milestone field names the reserved path.
+
 ## Out of Scope
 
