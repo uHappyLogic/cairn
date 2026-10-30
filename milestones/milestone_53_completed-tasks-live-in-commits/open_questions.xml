@@ -1,1 +1,17 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Flip run crossing">
+    <question>Does the retirement of `move` land in one task that changes together the task-list tool&apos;s `remove`, the completion procedure&apos;s step 5, the inline `complete-task` skill&apos;s call, the `complete-task` agent&apos;s step-5 call, and the orchestrator&apos;s step-2c call, with the rebuilt hosts, and how does this milestone&apos;s own `complete-all-tasks` run cross that task, given that the checkout&apos;s marketplace installs the plugin from `hosts/claude`, so after that task&apos;s commit each newly dispatched agent follows the new agent file while the running orchestrator keeps following the step-2c call it loaded at the start, which passes no body and so leaves the bar of every task completed before a restart out of its commit?</question>
+  </open-question>
+  <open-question id="Agent bar holding form">
+    <question>How does the `complete-task` agent&apos;s step-5 call hold the acceptance bar between its non-blank test, which runs ahead of `remove`, and its write of the body file beside `paths.txt`: captured into one quoted value in the group-fed heredoc form the inline skill uses and written to the file after `remove`, or written to the body file first and tested there, so that a refused `remove` leaves a body file standing in the scratch directory?</question>
+  </open-question>
+  <open-question id="Empty bar line listing">
+    <question>Is the fixed line that the inline `complete-task` skill&apos;s call and the `complete-task` agent&apos;s call print when their non-blank test refuses an empty acceptance bar a listed entry of the `## Fixed console lines` table, one line printed by both calls, or an in-call message like the orchestrator&apos;s `path file empty`, outside the table, given that the runner fixes the bar and runs the call again rather than ending the run?</question>
+  </open-question>
+  <open-question id="Other readers tasks failure">
+    <question>When a `tasks` call fails (the tool refusing, or git unavailable) for `ask-in-milestone-context`, `submit-task`, or `discuss-new-task`, do those three readers stop on a fixed line of their own, as `finish-current-milestone` and `derive-tasks` do, or proceed without the completed-task record?</question>
+  </open-question>
+  <open-question id="Tasks date source">
+    <question>Which date does a `tasks` line carry, the commit&apos;s author date or its committer date, and does the newest-first order follow that same date or git&apos;s default log order, given that the two dates differ once a commit is rebased or amended?</question>
+  </open-question>
+</open-questions>
