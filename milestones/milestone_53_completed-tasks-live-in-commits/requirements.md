@@ -106,5 +106,9 @@ Each line of the `tasks` query carries four fields: the commit's abbreviated has
 
 Of the mentions of `TASKS_DONE.md` outside the runtime files, host templates, docs, and tests the goal names, only the pull request template's checklist item is rewritten, to the commit form beside its Milestone-finish item, because it is the one surface outside the goal's categories a person acts on and a compliant pull request would fail it as written. `ideas/benchmark_for_cairn.md` is left as written: it is a dated design draft that names Cairn's files as the plugin had them when it was written and points at the plugin's documentation for anything the harness matches, so its three passages wait until the benchmark is next revised or until the pointer's removal changes the same passages. Nothing else outside the goal's categories is touched, and historical records stay as written.
 
+### Landing the flip
+
+The retirement of `move` lands in one task that changes together the task-list tool's `remove`, the completion procedure's step 5, the inline `complete-task` skill's call, the `complete-task` agent's step-5 call, and the orchestrator's step-2c call, with the rebuilt hosts and the tests that run those calls. That task stands first in the derived list, and its brief says it is completed alone by the inline `/complete-task`: its runner records its own bar through the new call it has just written, `remove` plus a commit carrying the bar as `--body`, and not through the `move` the skill it loaded showed. `/complete-all-tasks` is then started in a fresh session for every remaining task, so no orchestrated run crosses the flip, every bar lands in its commit whichever way agent files load, and this milestone's `TASKS_DONE.md` stays the empty template.
+
 ## Out of Scope
 
