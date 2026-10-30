@@ -66,5 +66,9 @@ Three definitions under `scripts/hosts/` render `core/` into `hosts/claude/`, `h
 
 - **No `live` filter yet.** The `live` query lands in this milestone as the unfiltered list alone: it takes no PATH argument, and the resolution stop and the gate are its only callers. The PATH filter, with its scope-contains-or-lies-under rule, is not built here; it is left to step 4, the next milestone, to add with the starting-state refresh's in-flight read, the first caller that needs it, and that milestone also decides the filter's argument shape and semantics.
 
+### Skills and shared procedures
+
+- **Gate procedure.** The gate check lives in one new shared procedure under `core/shared/` that states the `gate` call, what a held scope means, and its one fixed stop line, with the holder paths beneath; the procedure owns the line, as the resolution procedure owns its two stops. Each of the four runners references it at its own point, as a separate step run before its work: before the fixed write call in `derive-tasks` and `submit-task`, before each dispatch in `complete-all-tasks`, and after the procedure's step 1 in the `complete-task` skill. The entry writers' write calls are unchanged and carry no gate, and `complete-procedure.md` is unchanged, so the agent, which reads only its own file and that procedure, never gates.
+
 ## Out of Scope
 
