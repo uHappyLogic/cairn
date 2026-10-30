@@ -96,5 +96,9 @@ Three definitions under `scripts/hosts/` render `core/` into `hosts/claude/`, `h
 
 - **Match test.** `--milestone <path>` matches whenever `<path>/requirements.md` exists in the working tree, with no check that the path sits under a `milestones/` container. A matched path outside any container resolves, and every skill that does not gate (starting state, review, both annotating passes, the answer skills, `ask-in-milestone-context`) runs on it. The scope question is settled at the gate: the `gate` query refuses a milestone path that has no container with one `Error:` line, so `derive-tasks`, `submit-task`, and both completion runners stop on it.
 
+### Finishing a milestone
+
+- **Removal through the commit tool.** The commit tool gains a removal input (for example a repeatable `--remove PATH` option) under which it runs `git rm -r -q -- PATH` itself as one more git write inside its retry schedule, before staging the other named paths and making the one pathspec commit over all of them. Finish runs only that one command, naming the milestone directory as the removal and the context file as an ordinary path when edited, under `Milestone-finish: <path>` with the summary as body.
+
 ## Out of Scope
 
