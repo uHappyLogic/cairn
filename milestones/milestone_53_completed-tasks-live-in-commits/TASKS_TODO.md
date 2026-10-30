@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Milestone Definition Creates Three Files
-
-Make the milestone-definition tool create three files — `open_questions.xml`, `requirements.md`, and `TASKS_TODO.md` — dropping `TASKS_DONE.md` from its template constants, `milestone_files`, docstring, and `--help`, and from `tests/test_define_output.py` and `tests/test_define_cleanup.py` (whose failure injected on the done file moves to another file), and bring every skill that names the file set to three: `define-milestone-goal`, `init-milestone-base-workflow`'s `milestones/README.md` template and its context-file `## Milestone Workflow` block, and `modify-milestone-goal`'s stranded-tasks sentence, with the define entry of `docs/skill-reference.md`. Needed because a completed task's record is now its commit, so no milestone starts with a done file. Verified by both pytest runs passing, no `TASKS_DONE` left in those files, and a rebuilt `hosts/` tree passing `--check`.
-
----
-
 ## Fixed-Line Readers Switch To Tasks Query
 
 Replace the `TASKS_DONE.md` read of `finish-current-milestone` (step 2, the summary bullets drawn from it, and the wording of its open-question stop), `derive-tasks` (the coverage matrix's already-satisfied check), and `submit-task` (its triage read) with one fixed call of the milestones tool, `tasks` on `<MILESTONE_DIR>` with the body flag, unconditionally at the step that read the file, and have each treat a failed call (the tool refusing, or git unavailable) as one stop with the tool's `Error:` line quoted verbatim below a fixed line of its own — `Cannot finish the milestone: the completed-task read failed.`, `Cannot derive tasks: the completed-task read failed.`, and a new line in `submit-task`'s `Task not submitted — …` family — writing and committing nothing, an empty milestone being no failure, and the three lines joining the `## Fixed console lines` table of `docs/skill-reference.md`. Verified by `tests/test_fixed_console_lines.py` passing in both pytest runs, no `TASKS_DONE` left in the three skills, and a rebuilt `hosts/` tree passing `--check`.

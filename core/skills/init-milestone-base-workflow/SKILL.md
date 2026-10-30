@@ -91,7 +91,6 @@ Each milestone lives at `milestones/milestone_<N>_<slug>/` and contains:
 - `requirements.md` — goal, relevant starting state, decisions, out of scope
 - `open_questions.xml` — the open questions, one `<open-question>` block each under a single `<open-questions>` root, written only by the plugin's open-question tool
 - `TASKS_TODO.md` — pending tasks ordered by priority (highest first), written only by the plugin's task-list tool
-- `TASKS_DONE.md` — completed tasks, written only by the plugin's task-list tool
 
 ## Current Milestone
 
@@ -121,10 +120,9 @@ This file provides guidance to the coding agent working in this repository.
 ## Milestone Workflow
 
 This project uses the milestone-driven workflow. Each milestone lives at
-`milestones/milestone_<N>_<slug>/` with `requirements.md`, `open_questions.xml`,
-`TASKS_TODO.md`, and `TASKS_DONE.md`. `milestones/README.md` is the source of truth for
-which milestone is current. Never advance the pointer without first running
-`/finish-current-milestone`.
+`milestones/milestone_<N>_<slug>/` with `requirements.md`, `open_questions.xml`, and
+`TASKS_TODO.md`. `milestones/README.md` is the source of truth for which milestone is
+current. Never advance the pointer without first running `/finish-current-milestone`.
 ```
 
 **If `{{CONTEXT_FILE}}` already exists**, update it without disturbing existing content:

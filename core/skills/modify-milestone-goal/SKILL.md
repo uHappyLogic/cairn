@@ -52,7 +52,7 @@ Reason about what the new goal may have invalidated. Do **not** write this analy
 
   Judge it in prose, from those two texts as they are written. Do not re-form the recommender's judgment: do not weigh the block's other alternatives, ask which option is now best, or decide whether the same option would be picked again for a different reason. **Doubt strips**: a pick only arguably untouched is named, because a cleared block keeps its alternatives and the next run of the recommendation pass re-picks over them, while a stale pick left standing is recorded as a decision. A pick whose option text and rationale text neither conflict with the revised Goal nor rest on anything the revision changed is not named — sharing a topic with the revision is not being undermined by it. Judge each block on its own two texts only: a block whose `<depends-on>` names an undermined block is not named on that account.
 - Which `## Out of Scope` entries the new goal now pulls back in (or pushes out).
-- If `TASKS_TODO.md` / `TASKS_DONE.md` already hold tasks, which derived or completed tasks the new goal strands, contradicts, or leaves unaddressed.
+- If `TASKS_TODO.md` already holds tasks or the milestone has completed some, which derived or completed tasks the new goal strands, contradicts, or leaves unaddressed.
 
 ### 4. Edit the Goal
 

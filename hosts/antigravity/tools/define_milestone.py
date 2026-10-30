@@ -1,4 +1,4 @@
-"""Creator of a new milestone: its directory and the four files it starts with.
+"""Creator of a new milestone: its directory and the three files it starts with.
 
 Usage: python3 <plugin root>/tools/define_milestone.py --title TITLE  (goal text on stdin)
 
@@ -38,7 +38,6 @@ same directory renamed over the target:
     under "## Goal", then empty "## Relevant starting state", "## Decisions", and
     "## Out of Scope" sections
   - TASKS_TODO.md, headed "# TASKS TODO"
-  - TASKS_DONE.md, headed "# TASKS DONE"
 
 Output and error contract:
   - on success exactly two unlabeled lines on stdout: the commit subject
@@ -92,12 +91,6 @@ REQUIREMENTS_TEMPLATE = """\
 TASKS_TODO_NAME = "TASKS_TODO.md"
 TASKS_TODO_TEMPLATE = """\
 # TASKS TODO
-
-"""
-
-TASKS_DONE_NAME = "TASKS_DONE.md"
-TASKS_DONE_TEMPLATE = """\
-# TASKS DONE
 
 """
 
@@ -217,12 +210,11 @@ def write_new_file(path, text):
 
 
 def milestone_files(number, title, goal):
-    """The four files of a new milestone, in creation order, as (name, text) pairs."""
+    """The three files of a new milestone, in creation order, as (name, text) pairs."""
     return [
         (OPEN_QUESTIONS_NAME, OPEN_QUESTIONS_TEMPLATE),
         (REQUIREMENTS_NAME, REQUIREMENTS_TEMPLATE.format(number=number, title=title, goal=goal)),
         (TASKS_TODO_NAME, TASKS_TODO_TEMPLATE),
-        (TASKS_DONE_NAME, TASKS_DONE_TEMPLATE),
     ]
 
 
@@ -298,8 +290,7 @@ def build_parser():
         prog="define_milestone.py",
         description=(
             "Create the next milestone directory under milestones/ with its open_questions.xml, "
-            "requirements.md, TASKS_TODO.md, and TASKS_DONE.md; the goal text is read from "
-            "standard input"
+            "requirements.md, and TASKS_TODO.md; the goal text is read from standard input"
         ),
     )
     parser.add_argument(

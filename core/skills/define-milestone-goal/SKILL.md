@@ -1,11 +1,11 @@
 ---
 name: define-milestone-goal
-description: Create a new milestone directory with its four starting files from the provided goal description.
+description: Create a new milestone directory with its three starting files from the provided goal description.
 ---
 
 # define-milestone-goal
 
-Creates a new milestone directory under `milestones/` holding the four files every milestone starts with — `requirements.md`, `open_questions.xml`, `TASKS_TODO.md`, and `TASKS_DONE.md` — all created by the plugin's milestone-definition tool, which also works out the milestone's number and directory name. Your only work is choosing the milestone's title, handing the tool's output to the commit procedure, and reporting the result; the files are filled in by the skills that follow (`/specify-milestone-starting-state`, `/review-milestone-requirements`, etc.). Defining a milestone does not activate it: this skill never updates `{{CONTEXT_FILE}}` or `milestones/README.md`, which change only when the milestone becomes the *current* active one via `/goto-next-milestone`.
+Creates a new milestone directory under `milestones/` holding the three files every milestone starts with — `requirements.md`, `open_questions.xml`, and `TASKS_TODO.md` — all created by the plugin's milestone-definition tool, which also works out the milestone's number and directory name. Your only work is choosing the milestone's title, handing the tool's output to the commit procedure, and reporting the result; the files are filled in by the skills that follow (`/specify-milestone-starting-state`, `/review-milestone-requirements`, etc.). Defining a milestone does not activate it: this skill never updates `{{CONTEXT_FILE}}` or `milestones/README.md`, which change only when the milestone becomes the *current* active one via `/goto-next-milestone`.
 
 ## Usage
 
@@ -44,7 +44,7 @@ If the call fails — the shell cannot find `python3`, or the tool exits non-zer
 
 Read and follow the shared commit procedure at `{{PLUGIN_ROOT}}/shared/commit-procedure.md`, running its one commit-tool command yourself as this step's one git tool call. Supply it these two inputs, both exactly as the tool printed them in step 2:
 
-- **PATHS** — the milestone directory path, the tool's second line; the directory holds exactly the four files the tool just created.
+- **PATHS** — the milestone directory path, the tool's second line; the directory holds exactly the three files the tool just created.
 - **SUBJECT** — the tool's first line.
 
 The commit tool runs the dirty-own-path guard, the path-scoped staging, and the commit.

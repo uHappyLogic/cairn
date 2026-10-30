@@ -72,7 +72,7 @@ def removals(monkeypatch):
     return calls
 
 
-def test_a_failure_on_the_third_file_removes_what_was_written_in_reverse(define_in_process, fail_on, removals):
+def test_a_failure_on_the_last_file_removes_what_was_written_in_reverse(define_in_process, fail_on, removals):
     fail_on("TASKS_TODO.md")
     status, out, err, root = define_in_process()
     assert (status, out) == (1, "")
@@ -94,13 +94,12 @@ def test_a_failure_on_the_first_file_removes_only_the_directory(define_in_proces
     assert list((root / "milestones").iterdir()) == []
 
 
-def test_a_failure_on_the_last_file_removes_all_three_written_files(define_in_process, fail_on, removals):
-    fail_on("TASKS_DONE.md")
+def test_a_failure_on_the_middle_file_removes_the_first_file_and_the_directory(define_in_process, fail_on, removals):
+    fail_on("requirements.md")
     status, out, err, root = define_in_process()
     assert (status, out) == (1, "")
+    assert err == f"Error: No space left on device: {os.path.join(DIRECTORY, 'requirements.md')}\n"
     assert [path for _, path in removals] == [
-        os.path.join(DIRECTORY, "TASKS_TODO.md"),
-        os.path.join(DIRECTORY, "requirements.md"),
         os.path.join(DIRECTORY, "open_questions.xml"),
         DIRECTORY,
     ]

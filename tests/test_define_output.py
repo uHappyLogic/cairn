@@ -1,4 +1,4 @@
-"""define_milestone.py output and exit contract: two unlabeled stdout lines and the four files
+"""define_milestone.py output and exit contract: two unlabeled stdout lines and the three files
 on success, one Error line on stderr with exit 1 and empty stdout on every failure,
 argparse's own exit 2, and never a traceback."""
 
@@ -11,7 +11,7 @@ import pytest
 import define_milestone
 
 GOAL = b"Ship it.\n"
-FILES = ["TASKS_DONE.md", "TASKS_TODO.md", "open_questions.xml", "requirements.md"]
+FILES = ["TASKS_TODO.md", "open_questions.xml", "requirements.md"]
 
 
 def current_umask():
@@ -31,7 +31,7 @@ def test_success_prints_exactly_the_subject_and_the_directory(run_define, worksp
     )
 
 
-def test_success_writes_exactly_the_four_files(run_define, workspace):
+def test_success_writes_exactly_the_three_files(run_define, workspace):
     root = workspace()
     result = run_define("--title", "First steps", stdin=b"Make the first step.\n", cwd=root)
     assert result.returncode == 0, result.stderr
@@ -53,7 +53,6 @@ def test_success_writes_exactly_the_four_files(run_define, workspace):
         b"\n"
     )
     assert (directory / "TASKS_TODO.md").read_bytes() == b"# TASKS TODO\n\n"
-    assert (directory / "TASKS_DONE.md").read_bytes() == b"# TASKS DONE\n\n"
 
 
 def test_the_files_take_the_default_mode(run_define, workspace):
