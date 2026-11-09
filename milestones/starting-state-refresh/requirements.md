@@ -74,5 +74,9 @@ The one other live milestone stands in the same root container and is started, s
 
 - **Pick-clearing failure.** The `strip --recommendation` call stays after the section edit. When it fails, each of the three runners first makes one corrected re-run, with the named Short Titles fixed against the `Error:` line, since the tool refuses an unknown title with the document unchanged. A second failure stops all three on one fixed line the procedure owns, with the second `Error:` line verbatim below it and the edit left uncommitted, and a stopped writer makes no task-list write.
 
+### The task-entry writers
+
+- **No anchor.** When `since --milestones` prints nothing, `derive-tasks` and `submit-task` explore nothing and make no starting-state commit: each goes on to its own reads and write with the `## Relevant starting state` section as it stands, empty or filled, and prints nothing about it. Only `specify-milestone-starting-state` reads no output as a first run; at task entry, no output means there is no anchor to measure from.
+
 ## Out of Scope
 
