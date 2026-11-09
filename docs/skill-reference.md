@@ -113,6 +113,7 @@ Every skill's console report opens with one fixed line saying how the run ended,
 | `define-milestone-goal` | stop | `Milestone not defined — the definition tool failed.` |
 | `specify-milestone-starting-state` | success | `Starting state recorded.` |
 | `specify-milestone-starting-state` | no-op | `Starting state unchanged — nothing committed.` |
+| `specify-milestone-starting-state` | no-op | `Starting state current — the ground has not moved since it was recorded.` |
 | `review-milestone-requirements` | success | `Requirements reviewed.` |
 | `review-milestone-requirements` | no-op | `Requirements unchanged — the review found nothing to reshape.` |
 | `review-milestone-requirements` | verdict | `Requirements converged — ready for task derivation.` |

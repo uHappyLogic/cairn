@@ -5,7 +5,7 @@ description: Analyze the project's existing state and fill the "Relevant startin
 
 # specify-milestone-starting-state
 
-Reads the milestone goal, explores the project's existing state, and writes a concise summary into the `## Relevant starting state` section of `requirements.md`. The output is reference material — not decisions — to ground the `## Decisions` conversation that follows.
+Writes the `## Relevant starting state` section of the named milestone's `requirements.md` through the shared starting-state procedure: on a first run it writes the empty section into existence, and on a re-run after the ground moved it refreshes the filled section in place. The output is reference material — not decisions — to ground the `## Decisions` conversation that follows.
 
 ## Usage
 
@@ -26,74 +26,41 @@ The required leading `--milestone <path>` names the milestone by its repo-relati
 
 Follow `${PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded path.
 
-### 2. Read the goal
+### 2. Write the starting state
 
-Read `<MILESTONE_DIR>/requirements.md` in full. Extract the `## Goal` section. This is the lens for everything that follows — only surface starting state that is directly relevant to achieving or building on that goal.
+Read and follow the shared starting-state procedure at `${PLUGIN_ROOT}/shared/starting-state-procedure.md`, with `<MILESTONE_DIR>` as its input. It serves a first run and a refresh alike, so take the section as it finds it, empty or filled. Its step 1 decides which run this is, and the procedure then ends in exactly one of three ways:
 
-### 3. Load the environment and explore the project
+- **The anchor alone** — its step 1 found the ground unmoved, so it explored, edited, and cleared nothing. Make no commit and skip to step 4.
+- **A stop** — it stopped on one of its two fixed lines, `Starting state stopped — a milestones-tool read failed.` or `Starting state stopped — clearing the undermined picks failed.`, with the detail the procedure gives beneath it. That report, as the procedure states it, is this skill's whole report: make no commit, print nothing further, and end the run.
+- **The change handed back** — it ran through its step 7, with `requirements.md` edited or left as it stood, and `open_questions.xml` changed exactly when its step 6 cleared a pick. Go on to step 3.
 
-Read `AGENTS.md` at the workspace root for the project's environment. If it carries no description of the project's domain context or working conventions, suggest the user run `/init` to enrich it first — richer project context yields a sharper starting-state summary — then proceed with whatever the project reveals.
-
-Extract from `AGENTS.md`:
-- The project's domain context — what the project is and how its material is organized; use this to anchor all exploration
-- Working conventions — the practices the project follows
-- Available tools — whether any tools (including MCP tools) are available for deeper inspection
-- How work is verified as done — the project's convention for confirming a deliverable meets its bar
-
-Using the goal as a filter, investigate the areas the project documents in `AGENTS.md`. Focus on:
-
-- **Existing artifacts relevant to the goal** — find the artifacts, sections, and components whose names or responsibilities overlap with the goal. Read what they expose — their outward-facing surface. Skip internal detail.
-- **Existing capabilities** — if the goal builds on something that already exists, describe its current state and how other work connects to it.
-- **Supporting materials** — note any settings, reference data, or structures the milestone will likely touch.
-- **Known gaps** — if the goal requires something that clearly does not exist yet, state it as a gap in one sentence and move on; do not design its replacement here.
-
-Do not exhaustively catalog everything — stay goal-relevant. Depth over breadth: a precise description of one related area is more useful than a surface mention of ten.
-
-Use `find`, `grep`, and `Read` for file-based exploration. If MCP tools are documented in `AGENTS.md` and are relevant to exploration, use them.
-
-### 4. Write the starting state
-
-Draft the `## Relevant starting state` section. Structure it as named subsections, one per relevant system or area:
-
-```markdown
-## Relevant starting state
-
-### <System Name>
-
-<2–5 sentences: what exists, where it lives, what it exposes, and any known limitations relevant to the goal.>
-
-### <Another System>
-
-...
-```
-
-Write only what currently exists in the project: no intended behavior, no speculation about future state. Keep each subsection tight. The audience is someone who will use this to make decisions — they need facts, not commentary.
-
-### 5. Update the file
-
-Replace the (empty) `## Relevant starting state` section in `requirements.md` with the drafted content. Do not modify any other section.
-
-### 6. Commit the starting state
+### 3. Commit the starting state
 
 Read and follow the shared commit procedure at `${PLUGIN_ROOT}/shared/commit-procedure.md`, running its one commit-tool command yourself as this step's one git tool call. Supply it these two inputs:
 
-- **PATHS** — this skill's own change set: `<MILESTONE_DIR>/requirements.md` (the file whose `## Relevant starting state` section it just filled).
+- **PATHS** — this skill's own change set: `<MILESTONE_DIR>/requirements.md` (the file whose `## Relevant starting state` section the procedure wrote), and `<MILESTONE_DIR>/open_questions.xml` beside it only when the procedure's step 6 cleared a pick, so a refresh and the picks it cleared are one commit.
 - **SUBJECT** — `Starting-state: <MILESTONE_DIR>`, the milestone path exactly as resolved, trailing slash included.
 
 The commit tool runs the dirty-own-path guard, the path-scoped staging, and the commit.
 
-### 7. Confirm
+### 4. Confirm
 
-On the success path — the commit in step 6 recorded the filled-in starting state — print exactly one fixed terse status line and nothing else:
+On the success path — the commit in step 3 recorded the written or refreshed starting state — print exactly one fixed terse status line and nothing else:
 
 ```
 Starting state recorded.
 ```
 
-Do not add the milestone path, the count of systems documented, or a next-step pointer.
+Do not add the milestone path, the count of systems documented, the picks the procedure cleared, or a next-step pointer.
 
-If instead the step-6 commit tool printed `Nothing committed — none of the paths changed.` (`requirements.md` was unchanged, so nothing was committed), do not print the terse line — print this one fixed line and nothing else:
+If instead the step-3 commit tool printed `Nothing committed — none of the paths changed.` (the procedure explored and left `requirements.md` as it stood, so nothing was committed), do not print the terse line — print this one fixed line and nothing else:
 
 ```
 Starting state unchanged — nothing committed.
+```
+
+If the procedure ended on the anchor alone in step 2 (the ground had not moved, so nothing was explored and nothing was committed), print this one fixed line and nothing else:
+
+```
+Starting state current — the ground has not moved since it was recorded.
 ```

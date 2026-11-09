@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Starting-State Skill Follows the Procedure
-
-Rewrite `core/skills/specify-milestone-starting-state/SKILL.md` to follow `starting-state-procedure.md` for a first run and a refresh alike, so it no longer assumes an empty section, and to commit `requirements.md`, together with `open_questions.xml` when the procedure cleared a pick, under `Starting-state: <MILESTONE_DIR>`. Its two fixed lines stay as they are, it gains one fixed no-op line of its own, printed with nothing explored when `since` prints the anchor alone, and it stops on the procedure's two lines as the procedure states them. Verified by the rebuilt host trees, the new no-op line's row in the `## Fixed console lines` table passing `tests/test_fixed_console_lines.py`, and a read of the rendered skill against each of the three `since` outcomes.
-
----
-
 ## Review Pass Reads the Milestones Overview
 
 Give `core/skills/review-milestone-requirements/SKILL.md` one fixed milestones-tool call at its inventory step, run on every pass and read beside the two documents: the `milestones` overview in its milestone-path form for `<MILESTONE_DIR>` with `--last` written as the literal 10, a listed milestone getting a deeper read through `summary` or `show` only where the pass judges its line to bear on a gap or a pair of decisions. A failed call, meaning any non-zero exit, stops the pass at that step before any prune, dedup, new block, or note deletion: the report opens with one new fixed, identifier-free stop line with the `Error:` line verbatim beneath it, no commit is made, and neither the still-open list nor the convergence verdict is printed. Verified by the rebuilt host trees, the stop line's new row in the `## Fixed console lines` table passing `tests/test_fixed_console_lines.py`, and the rendered call run as written against this repository.
