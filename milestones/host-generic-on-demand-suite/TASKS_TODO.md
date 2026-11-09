@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Rename The Suite's Fixture Project
-
-Rename the suite's fixture project from `tests/fixtures/agy_project/` to `tests/fixtures/host_project/`, keeping its `milestones.fixture/` container, and change the conftest's `FIXTURE_PROJECT` and `seeded_repo` docstring, `CLAUDE.md`'s milestones-tool invariant and layout entry, and the four synthetic commit paths in `tests/test_milestones_tasks.py` to the new path in the same change. The fixture is named for the suite, so it follows the suite's new name. It is verified by both `uv run pytest` runs passing, by the milestones tool's `live` still not listing the fixture's milestone, and by a search finding the old path only in the historical files and this milestone's own.
-
----
-
 ## Select The Host With A Required Option
 
 Register a pytest command-line option `--host` in the suite's conftest taking exactly one of `claude`, `antigravity`, or `codex` per run, with no default, read in the existing `pytest_cmdline_main` hook before the prerequisite checks, which then cover only the named host; a run that names no host, or an unknown value, stops there before any test with one prerequisite-style stderr line listing the three accepted values and a non-zero exit, never a skip. Give each host one entry in the suite's Python for the values only the suite needs, and read the values a host definition already declares (its name, its built tree, and `plugin_dir`) from `scripts/hosts/<host>/settings.toml` with `tomllib`, leaving the build and the definitions' key set unchanged. It is verified by a run without `--host` and a run with an unknown value each printing that one line and exiting non-zero with no test outcome, and by a run with `--host antigravity` going on to Antigravity's prerequisite checks and no other host's.

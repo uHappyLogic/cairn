@@ -179,7 +179,7 @@ def test_the_join_pattern_is_the_discovery_pattern(seeded, make_commit, run_mile
             FIRST + "TASKS_TODO.md": b"a\n",
             "tests/fixtures/sample/TASKS_TODO.md": b"b\n",
             "milestones/milestone_07_first/nested/TASKS_TODO.md": b"c\n",
-            "tests/fixtures/agy_project/milestones.fixture/milestone_01/TASKS_TODO.md": b"d\n",
+            "tests/fixtures/host_project/milestones.fixture/milestone_01/TASKS_TODO.md": b"d\n",
             "milestones/TASKS_TODO.md": b"e\n",
             "docs/Milestones/alpha/TASKS_TODO.md": b"f\n",
             "pkg/milestones/alpha/TASKS_DONE.md": b"g\n",
@@ -194,7 +194,7 @@ def test_the_join_pattern_is_the_discovery_pattern(seeded, make_commit, run_mile
         "Task-completion: Also Edits A Nested Project List",
         files={
             FIRST + "TASKS_TODO.md": b"h\n",
-            "tests/fixtures/agy_project/milestones/milestone_01/TASKS_TODO.md": b"i\n",
+            "tests/fixtures/host_project/milestones/milestone_01/TASKS_TODO.md": b"i\n",
         },
     )
     lines = tasks(run_milestones, seeded, FIRST).splitlines()
@@ -207,7 +207,7 @@ def test_the_join_pattern_is_the_discovery_pattern(seeded, make_commit, run_mile
         "pkg/milestones/alpha/",
         "packages/api/milestones/rate limits/",
         "a/milestones/b/milestones/c/",
-        "tests/fixtures/agy_project/milestones/milestone_01/",
+        "tests/fixtures/host_project/milestones/milestone_01/",
     ],
 )
 def test_a_task_list_in_a_container_at_any_depth_joins_its_milestone(seeded, make_commit, run_milestones, directory):
@@ -221,7 +221,7 @@ def test_a_task_list_in_a_container_at_any_depth_joins_its_milestone(seeded, mak
     [
         "tests/fixtures/sample/TASKS_TODO.md",
         "milestones/milestone_07_first/nested/TASKS_TODO.md",
-        "tests/fixtures/agy_project/milestones.fixture/milestone_01/TASKS_TODO.md",
+        "tests/fixtures/host_project/milestones.fixture/milestone_01/TASKS_TODO.md",
         "milestones/TASKS_TODO.md",
     ],
 )

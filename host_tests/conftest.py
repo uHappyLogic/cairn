@@ -20,7 +20,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 BUILT_TREE = REPO_ROOT / "hosts" / "antigravity"
-FIXTURE_PROJECT = REPO_ROOT / "tests" / "fixtures" / "agy_project"
+FIXTURE_PROJECT = REPO_ROOT / "tests" / "fixtures" / "host_project"
 # The fixture project's milestone container, tracked under a name the milestones tool's
 # discovery pattern does not match, so this repository's own `live` never lists the fixture's
 # milestone, and the name each seeded copy holds it under, where the installed skills find a
@@ -108,7 +108,7 @@ def _git(repository, *args):
 @pytest.fixture
 def seeded_repo(tmp_path):
     """A fresh committed copy of the fixture project for one agy process: seeded_repo() -> Path.
-    Each call copies tests/fixtures/agy_project to its own directory under tmp_path, renames
+    Each call copies tests/fixtures/host_project to its own directory under tmp_path, renames
     the copy's milestones.fixture/ container to milestones/, runs `git init` there, and makes
     the initial commit, so every agy process starts from the same committed tree, holding the
     fixture's milestone at milestones/<slug>/, and nothing it changes reaches the fixture or
