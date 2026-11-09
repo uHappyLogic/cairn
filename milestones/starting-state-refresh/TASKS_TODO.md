@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Host Test for the Derive-Tasks Refresh
-
-Add one test to `host_tests/` that runs a single headless `/cairn:derive-tasks --milestone …` on the first fixture milestone and asserts, from the seeded repository's git log, that a `Starting-state:` commit lands before the `Task-derivation:` commit, naming no host so it runs unchanged under `--host claude`, `--host antigravity`, and `--host codex`. Test-side code local to the new test, beside the unchanged `seeded_repo`, builds the history on top of the seed through the plugin's commit tool in this order: the first milestone's `Starting-state: <path>` commit, then a second, overlapping milestone's files added, its `Task-completion:` commits, and its `Milestone-finish: <path>` commit removing its directory, the first milestone left with no open question so the derivation's precondition holds. Its passing runs belong to the acceptance task; here it is verified by building that history in a scratch directory and reading it through the milestones tool (`gate` on the first milestone printing nothing, `since --milestones` printing lines beyond the anchor), with the other host tests and the shared seed unchanged in the diff.
-
----
-
 ## Pass the Host Suite on Three Hosts
 
 Refresh each host's installed plugin copy on this machine from the committed rebuilt tree by that host's documented install, then run the whole host suite, the refresh test included, as `uv run pytest host_tests --host claude`, `--host antigravity`, and `--host codex`, and have every test pass on all three with none marked or skipped. A host that fails is fixed in this task before it is done, the trees rebuilt, the copies refreshed again, and the suite re-run on every host the fix touches. It stands after every task that changes `core/` or `host_tests/`, and is verified by the three passing runs' summaries.
