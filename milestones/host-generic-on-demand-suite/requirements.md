@@ -69,5 +69,7 @@ The trigger path set names one host definition, Antigravity's, and neither of th
 
 - **Tilde pin dropped.** The plugin-root test's assertion that every read attempted with a `~` path ended in `ERROR` is removed outright, with no replacement assertion and no host-specific branch. The test keeps its host-neutral checks: the shared procedure reached at the expanded root, the `task_list.py insert` call under the root, and the two sections in the seeded list. Antigravity's tilde refusal stays recorded only in the dated hands-on block of `scripts/hosts/antigravity/settings.toml`, which no automated run re-checks.
 
+- **Dispatch vehicle.** Each agent-dispatch test keeps a dispatching process of its own, with no orchestrator skill between it and the agent, and its prompt names the host's own dispatch mechanism, authored as one per-host value set: on Claude Code the `Agent` tool with `subagent_type` `cairn:<agent>`, on Antigravity `invoke_subagent` with the bare name as `TypeName`, as today, and on Codex `spawn_agent` starting a generic subagent. The prompt handed over is the host's real dispatch prompt: the three-line prompt alone on Claude Code and Antigravity, and on Codex that prompt opened by the line its `*_PROMPT_INSTRUCTIONS` slot renders, naming the agent file under the installed root. The pass signals stay the files the agent lands, unchanged.
+
 ## Out of Scope
 
