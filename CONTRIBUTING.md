@@ -48,7 +48,21 @@ The same suite holds one test of the build itself, `tests/test_build_rendering.p
 
 CI runs both pytest runs as the two steps after `--check` in the same `drift-gate` job, so one status covers the drift gate and both test runs.
 
-A third suite, the host suite, `host_tests/` at the repository root, drives the installed `agy` CLI against the global plugin copy at `~/.gemini/config/plugins/cairn` and sits outside `testpaths`, so neither pytest run above nor CI reaches it: it runs only when named, `uv run pytest host_tests`, and stops before any test with one line naming the remedy when `agy` is not on `PATH` or that copy is missing or differs from the committed `hosts/antigravity/` tree. Run it and have it pass before committing a change to the Antigravity host integration — `scripts/hosts/antigravity/`, `core/agents/*.md`, `scripts/build_hosts.py`, or `host_tests/` itself — the same path set the release pre-flight runs it for when any of them changed since the last release.
+A third suite, the host suite, `host_tests/` at the repository root, drives one host's installed CLI (`claude`, `agy`, or `codex`), run with your real home directory, against the plugin copy that host has installed, and sits outside `testpaths`, so neither pytest run above nor CI reaches it. It runs only when named, with the host chosen per run by the required `--host` option, which takes exactly one of `claude`, `antigravity`, or `codex` and has no default:
+
+```bash
+uv run pytest host_tests --host claude         # Claude Code
+uv run pytest host_tests --host antigravity    # Antigravity
+uv run pytest host_tests --host codex          # Codex
+```
+
+Before any test it checks the named host alone, in order: its CLI on `PATH`, the installed copy that CLI reports, that copy present, and that copy equal, file for file (a missing or extra file included), to the host's plugin directory in the committed built tree. A run that names no host, an unknown one, or more than one, or that finds one of these missing, stops before any test with one `host suite prerequisite missing:` line on stderr and a non-zero exit, never a skip, and every stop on one of the host's own checks names that host's remedy in its line. The suite writes nothing to any installation: bringing a copy up to date is yours to do by hand, with that host's documented install:
+
+- **Claude Code** — the copy is the `cairn@cairn` entry `claude plugin list --json` reports at a scope outside any project, read from its `readFromFolder` when set (the checkout's `hosts/claude/` under the directory marketplace below, where the comparison passes trivially and is still made) and otherwise from its `installPath`, and is compared with `hosts/claude/`; refresh the directory-marketplace install with `claude plugin marketplace add /path/to/cairn` and `claude plugin install cairn@cairn`.
+- **Antigravity** — the copy is the fixed global path `~/.gemini/config/plugins/cairn`, compared with `hosts/antigravity/`; copy the built `hosts/antigravity/` tree, or extract the release, into that path.
+- **Codex** — the copy is `~/.codex/plugins/cache/cairn/cairn/<version>/`, for the `cairn@cairn` version `codex plugin list --json` reports installed, compared with `hosts/codex/plugins/cairn/`; re-run `codex plugin marketplace add /path/to/cairn/hosts/codex` and `codex plugin add cairn@cairn`.
+
+Each host has one trigger set: its definition directory (`scripts/hosts/claude/`, `scripts/hosts/antigravity/`, or `scripts/hosts/codex/`) plus the host-neutral paths `core/agents/*.md`, `scripts/build_hosts.py`, and `host_tests/` itself. Before committing a change, run the suite against each host whose set the change touches and have it pass there, so a change to a host-neutral path owes a run on all three hosts and a change to one host's definition a run on that host alone.
 
 The root `VERSION` file holds the plugin version and nothing else. `uv run scripts/set_version.py <MAJOR.MINOR.PATCH>` writes it together with its mirrored surfaces (the root `.claude-plugin/marketplace.json` entry, `pyproject.toml`, and `uv.lock`); the version in every host manifest is rendered from `VERSION` by the build, never edited by hand.
 
