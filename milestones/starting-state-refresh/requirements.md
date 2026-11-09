@@ -86,5 +86,9 @@ The one other live milestone stands in the same root container and is started, s
 
 - **Overview read failure.** A failed overview call, meaning any non-zero exit, the tool's `Error:` line and git's failure alike, is one condition never classified by its wording, and it stops the pass at its inventory step, before any prune, dedup, new block, or note deletion. The pass prints one new fixed, identifier-free stop line of its own as its report's first line with the `Error:` line quoted verbatim beneath it, makes no commit, and prints neither the still-open list nor the convergence verdict. The new line gets its row in the `## Fixed console lines` table.
 
+### Chains and the benchmark draft
+
+- **Execution chain lines.** Each of the three chains that derive and complete tasks carries exactly one alternatives line, one recommend line, and one sweep line between its opening review and its derivation line, in that order, and nothing after the sweep. "Executing tasks" gains the alternatives and recommend lines ahead of its sweep. "Answering the questions that matter to you" gains an alternatives line after its hand-answer lines and ahead of its existing recommend line. "Putting more intelligence into a stuck milestone" keeps its own alternatives, recommend, and sweep lines as that pass. The new lines take the model and effort settings the "Starting a milestone" chain gives them.
+
 ## Out of Scope
 
