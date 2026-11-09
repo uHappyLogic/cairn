@@ -68,5 +68,7 @@ The one other live milestone stands in the same root container and is started, s
 
 - **Record read depth.** The record read stays two tiers and reads no verified bar: for each milestone whose overview line bears on the goal, the procedure reads its finish summary through `summary` or its recorded decisions through `show`, and makes no `tasks --with-body` call. Past tasks reach the starting state only as the titles the overview and the summaries already carry, and the milestones tool gains nothing for bars.
 
+- **Unchanged refresh.** Nothing records an exploration that changed nothing. The anchor moves only when a refresh changes the `## Relevant starting state` section, so every later run in the same stale window explores again: the skill on each re-run, `derive-tasks` on each entry, and `submit-task` on every task submitted, until a commit lands or the milestone finishes. The repeat is stated as an accepted cost in the procedure and the docs; the commit tool, `since`, and the skill's two fixed lines stay unchanged, and no state is added anywhere.
+
 ## Out of Scope
 
