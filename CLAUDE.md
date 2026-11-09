@@ -134,6 +134,10 @@ The build loop, both test runs, the version bump, and the distribution repositor
 ## Milestone Workflow
 
 This project uses the milestone-driven workflow. Each milestone lives at
-`milestones/milestone_<N>_<slug>/` with `requirements.md`, `open_questions.xml`, and
-`TASKS_TODO.md`. `milestones/README.md` is the source of truth for which milestone is
-current. Never advance the pointer without first running `/finish-milestone`.
+`<scope>/milestones/<slug>/`, under the `milestones/` container of the directory holding the
+core of its work, with `requirements.md`, `open_questions.xml`, and `TASKS_TODO.md`. No
+milestone is current: every skill working inside one is given its path as
+`--milestone <path>`, exactly as `/define-milestone-goal` printed it, trailing slash included.
+A milestone directory is removed only by `/finish-milestone`, whose `Milestone-finish: <path>`
+commit carries the milestone's record, so the directories standing are the live milestones and
+the git log holds the finished ones.
