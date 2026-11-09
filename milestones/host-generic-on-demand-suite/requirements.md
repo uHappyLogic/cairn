@@ -59,5 +59,9 @@ The trigger path set names one host definition, Antigravity's, and neither of th
 
 ## Decisions
 
+### Host selection and prerequisites
+
+- **Host selection.** The suite's conftest registers a pytest command-line option, `--host`, taking exactly one of `claude`, `antigravity`, or `codex` per run, with no default. A run that names no host stops in the existing `pytest_cmdline_main` hook before any test, with one prerequisite-style stderr line listing the three accepted values and a non-zero exit, never a skip; an unknown value stops the same way. The option is read before the prerequisite checks, which cover only the named host.
+
 ## Out of Scope
 
