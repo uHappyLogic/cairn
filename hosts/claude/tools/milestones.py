@@ -1,7 +1,7 @@
 """The read-only milestones tool: a project's live milestones, read from its working tree, and
 its record of finished work, read from its git log.
 
-Usage: python3 <plugin root>/tools/milestones.py live
+Usage: python3 <plugin root>/tools/milestones.py live [MILESTONE_PATH]
        python3 <plugin root>/tools/milestones.py gate MILESTONE_PATH
        python3 <plugin root>/tools/milestones.py tasks PATH [--with-body]
        python3 <plugin root>/tools/milestones.py milestones PATH
@@ -43,7 +43,7 @@ hyphens (Co-Authored-By: for instance), so a body that is only an attribution tr
 as no body.
 
 Subcommands:
-  live
+  live [MILESTONE_PATH]
       print one line for every live milestone, ordered by path. Each line is three fields
       separated by single tab characters: the milestone path, the directory holding the
       matched requirements.md with its trailing slash, as the definition tool prints it; its
@@ -53,8 +53,12 @@ Subcommands:
       "defined" otherwise; and its title, the text of the first "# " heading of its
       requirements.md with any legacy "Milestone <N>: " prefix stripped and whitespace runs
       folded to one space, or the fixed placeholder "-" when the file holds no such heading.
-      When no milestone is live the tool prints nothing and exits 0. The query takes no
-      argument.
+      When no milestone is live the tool prints nothing and exits 0.
+      With MILESTONE_PATH, read and refused as the gate query reads and refuses it, the query
+      prints, in the same line and order, only every live milestone other than the one
+      MILESTONE_PATH names, started or defined, whose scope equals MILESTONE_PATH's scope,
+      contains it, or lies under it; the milestone it names need not be live. Without it the
+      query prints every live milestone.
   gate MILESTONE_PATH
       print the milestones holding MILESTONE_PATH's scope, one bare path per line, the
       milestone path as the live query prints it, ordered by path: every live milestone other
@@ -189,8 +193,8 @@ Output and error contract:
     working tree nor changed by any commit and a summary or show MILESTONE_PATH naming neither
     a live nor a finished milestone (the reason naming the value as given), a shallow
     repository, which the gate and since queries refuse naming "git fetch --unshallow", and a
-    gate or since MILESTONE_PATH with no milestones/ container (the reason naming the value as
-    given), a git command that could not be run or failed (outside a git repository, for
+    live, gate, or since MILESTONE_PATH with no milestones/ container (the reason naming the
+    value as given), a git command that could not be run or failed (outside a git repository, for
     instance), the reason naming the command and its exit status and carrying git's own
     message folded to one line, and a live milestone's requirements.md that could not be read;
     a malformed invocation gets
@@ -274,7 +278,13 @@ when a commit other than a merge modified the milestone's TASKS_TODO.md after
 the one adding it (git log -1 --diff-filter=M on that path), "defined"
 otherwise; and the title, the first "# " heading of its requirements.md with any
 legacy "Milestone <N>: " prefix stripped ("-" when it has none). Nothing is
-printed when no milestone is live."""
+printed when no milestone is live.
+With MILESTONE_PATH, read lexically relative to the workspace root and refused
+when it names no directory directly inside a milestones/ container, as for the
+gate query, only the other live milestones, started or defined, whose scope, the
+directory holding their milestones/ container, equals MILESTONE_PATH's scope,
+contains it, or lies under it are printed, in the same line and order; the
+milestone it names is left out and need not be live."""
 
 TASKS_DESCRIPTION = """\
 Print one line per commit that changed PATH and whose subject opens with
@@ -990,9 +1000,33 @@ def task_line(commit):
 # --- the queries ----------------------------------------------------------------------
 
 
+def required_milestone(path):
+    """A live, gate, or since MILESTONE_PATH as components, as named_milestone reads it, an
+    empty one or one with no milestones/ container refused."""
+    if not path:
+        raise ToolError("the MILESTONE_PATH given is empty")
+    components = named_milestone(path)
+    if components is None:
+        raise ToolError(
+            f"the path {path} has no milestones/ container: a milestone path names a directory "
+            "directly inside one, read relative to the workspace root"
+        )
+    return components
+
+
 def cmd_live(args):
+    listed = live_milestones()
+    if args.milestone_path is not None:
+        components = required_milestone(args.milestone_path)
+        own = "/".join(components) + "/"
+        scope = components[:-2]
+        listed = [
+            (directory, requirements)
+            for directory, requirements in listed
+            if directory != own and overlaps(scope_of(directory), scope)
+        ]
     lines = []
-    for directory, requirements in live_milestones():
+    for directory, requirements in listed:
         state = STARTED if is_started(directory) else DEFINED
         lines.append(f"{directory}\t{state}\t{read_title(requirements)}\n")
     sys.stdout.write("".join(lines))
@@ -1006,14 +1040,7 @@ def cmd_gate(args):
             "the repository is a shallow clone, whose truncated log can read a started milestone "
             "as defined; run git fetch --unshallow and query again"
         )
-    if not path:
-        raise ToolError("the MILESTONE_PATH given is empty")
-    components = named_milestone(path)
-    if components is None:
-        raise ToolError(
-            f"the path {path} has no milestones/ container: a milestone path names a directory "
-            "directly inside one, read relative to the workspace root"
-        )
+    components = required_milestone(path)
     own = "/".join(components) + "/"
     scope = components[:-2]
     holders = [
@@ -1097,14 +1124,7 @@ def cmd_since(args):
             "the repository is a shallow clone, whose truncated log can omit a milestone's "
             "starting state or the commits after it; run git fetch --unshallow and query again"
         )
-    if not path:
-        raise ToolError("the MILESTONE_PATH given is empty")
-    components = named_milestone(path)
-    if components is None:
-        raise ToolError(
-            f"the path {path} has no milestones/ container: a milestone path names a directory "
-            "directly inside one, read relative to the workspace root"
-        )
+    components = required_milestone(path)
     own = "/".join(components) + "/"
     anchor = anchor_commit(own)
     if anchor is None:
@@ -1147,6 +1167,15 @@ def build_parser():
         description=LIVE_DESCRIPTION,
         epilog=LIVE_LIMITS,
         formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    live_parser.add_argument(
+        "milestone_path",
+        metavar="MILESTONE_PATH",
+        nargs="?",
+        help=(
+            "a milestone directory directly inside a milestones/ container, read relative to the "
+            "workspace root, whose overlapping scope's other live milestones alone are listed"
+        ),
     )
     live_parser.set_defaults(func=cmd_live)
 

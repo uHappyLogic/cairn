@@ -3,8 +3,9 @@ tab-separated fields (the milestone path with its trailing slash, "started" or "
 path-scoped git log -1 --diff-filter=M test on its TASKS_TODO.md, and the title from the first
 "# " heading of its requirements.md, any legacy "Milestone <N>: " prefix stripped, "-" when it
 has none), a live milestone being the directory of a tracked file matching the discovery
-pattern **/milestones/*/requirements.md that is present in the working tree. The query takes no
-argument and prints nothing, exiting 0, when no milestone is live. Every test runs on a
+pattern **/milestones/*/requirements.md that is present in the working tree. Given no argument
+the query prints every live milestone, and nothing, exiting 0, when no milestone is live; its
+MILESTONE_PATH filter is pinned in test_milestones_live_filter.py. Every test runs on a
 repository seeded through the conftest factory, then given commits made through the conftest
 helper."""
 

@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Live Query Filtered by Milestone Path
-
-Give the `live` query of `core/tools/milestones.py` an optional MILESTONE_PATH: with it the query lists, in its unchanged three-field line, every other live milestone, started or defined, whose scope equals, contains, or lies under the named milestone's, the named one left out as `gate` leaves it out, reading the path lexically as `gate` reads its argument and refusing on one `Error:` line a path that names no directory directly inside a `milestones/` container; with no argument it prints what it prints today. It is the starting-state procedure's in-flight read, the started field and the scope filter in one call. Pinned by tests beside `tests/test_milestones_live.py` covering overlap in both directions, a disjoint scope, a defined and a started sibling both listed, the refusal, and the unchanged no-argument print, with the host trees rebuilt.
-
----
-
 ## Milestones Query Milestone-Path Form and Bound
 
 Give the `milestones` query of `core/tools/milestones.py` two additions that leave `milestones PATH` reading as it does today: a milestone-path form, a flag taking a MILESTONE_PATH in place of the positional PATH, read lexically and refused as `gate` refuses a path that names no directory directly inside a `milestones/` container, whose print is the overview `milestones <scope>` gives for that milestone's scope; and an optional `--last N` that keeps every live line and only the N newest finished lines by finish timestamp. Without `--last` the query prints what it prints today, so `record`, `/release-plugin`, and every other reader are unchanged. Pinned by tests beside `tests/test_milestones_milestones.py` covering the form against the equivalent scope call, its refusal, the bound keeping every live line, and the unbounded print unchanged, with the host trees rebuilt.

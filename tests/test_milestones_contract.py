@@ -154,7 +154,7 @@ def test_outside_a_git_repository_a_history_query_fails_on_one_error_line(tmp_pa
     assert "git" in line
 
 
-@pytest.mark.parametrize("query", ["gate", "tasks", "milestones", "summary", "record", "since", "show"])
+@pytest.mark.parametrize("query", ["live", "gate", "tasks", "milestones", "summary", "record", "since", "show"])
 def test_an_empty_path_is_refused(seeded, run_milestones, query):
     assert_one_error_line(run_milestones(seeded, query, ""))
 
@@ -167,7 +167,7 @@ def test_a_missing_git_fails_on_one_error_line(seeded, run_milestones, environme
     assert "git" in line
     line = assert_one_error_line(run_milestones(seeded, "live", env=env))
     assert "git" in line
-    for args in (("gate", FIRST), ("milestones", "."), ("summary", FIRST), ("record", "."), ("since", FIRST), ("show", FIRST)):
+    for args in (("live", FIRST), ("gate", FIRST), ("milestones", "."), ("summary", FIRST), ("record", "."), ("since", FIRST), ("show", FIRST)):
         line = assert_one_error_line(run_milestones(seeded, *args, env=env))
         assert "git" in line
 
@@ -191,8 +191,9 @@ def test_an_unreadable_live_requirements_file_fails_on_one_error_line(seeded, ru
         ("tasks",),
         ("unknown", FIRST),
         ("tasks", FIRST, "--body"),
-        ("live", FIRST),
+        ("live", FIRST, FIRST),
         ("live", "--with-body"),
+        ("live", FIRST, "--with-body"),
         ("gate",),
         ("gate", FIRST, FIRST),
         ("gate", FIRST, "--with-body"),
@@ -234,6 +235,8 @@ def test_a_query_writes_nothing(seeded, make_commit, run_milestones, git, enviro
         ("tasks", "untracked.txt"),
         ("tasks", "nope"),
         ("live",),
+        ("live", FIRST),
+        ("live", "nope/"),
         ("gate", FIRST),
         ("gate", "nope/"),
         ("gate", "milestones/nope/"),
