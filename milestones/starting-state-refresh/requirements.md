@@ -96,5 +96,7 @@ The one other live milestone stands in the same root container and is started, s
 
 - **Second milestone's state.** The second, overlapping milestone reaches the host already finished. Test-side code local to the new test, a helper or seeding variant beside the unchanged `seeded_repo`, builds the history on top of the seed in this order: the first milestone's `Starting-state: <path>` commit, then the second milestone's files added, its `Task-completion:` commits, and its `Milestone-finish: <path>` commit removing its directory, made through the plugin's commit tool. Only one host process runs, `/cairn:derive-tasks --milestone …`. The shared one-commit seed and the other host tests that use it are left as they are.
 
+- **Acceptance runs.** Completing this milestone requires a passing run of the whole host suite, the new test included, against each of the three hosts (`--host claude`, `--host antigravity`, `--host codex`). The task that runs it starts, once the rebuilt tree is committed, by refreshing each host's installed copy on the maintainer's machine with that host's documented install. A host that fails is fixed inside this milestone before it finishes.
+
 ## Out of Scope
 
