@@ -72,5 +72,7 @@ The one other live milestone stands in the same root container and is started, s
 
 - **Read failure.** Any failed milestones-tool call of the starting-state procedure (`since`, `milestones`, `summary`, `show`, or `live`) is one unclassified condition in all three of its runners, `specify-milestone-starting-state`, `derive-tasks`, and `submit-task`: the run stops on a fixed line with the call's `Error:` line verbatim beneath it, before any edit of `## Relevant starting state`, any pick clearing, and any commit. In `derive-tasks` and `submit-task` this stops the whole writer, so no task-list write and no task commit follow.
 
+- **Pick-clearing failure.** The `strip --recommendation` call stays after the section edit. When it fails, each of the three runners first makes one corrected re-run, with the named Short Titles fixed against the `Error:` line, since the tool refuses an unknown title with the document unchanged. A second failure stops all three on one fixed line the procedure owns, with the second `Error:` line verbatim below it and the edit left uncommitted, and a stopped writer makes no task-list write.
+
 ## Out of Scope
 
