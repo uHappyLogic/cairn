@@ -81,5 +81,7 @@ The trigger path set names one host definition, Antigravity's, and neither of th
 
 - **Suite name.** The suite is named for the hosts it drives. Its directory stays at the repository root as `host_tests/`, its command becomes `uv run pytest host_tests`, the prose calls it "the host suite", and the prerequisite check's line opens `host suite prerequisite missing:`. Every reference is rewritten to that one name: the `CLAUDE.md` command and layout lines and the milestones-tool invariant's sentence, `CONTRIBUTING.md`, the release pre-flight's check g and its trigger path, the header comment of `scripts/hosts/antigravity/settings.toml`, and the conftest docstring. Historical mentions in `CHANGELOG.md` and `ideas/` stay as written.
 
+- **Fixture project name.** The fixture project is renamed along with the suite: it stays under `tests/fixtures/` under a name built from the suite's new name, the `agy_` prefix replaced, and keeps its `milestones.fixture/` container. The conftest's `FIXTURE_PROJECT` and `seeded_repo` docstring, `CLAUDE.md`'s milestones-tool invariant and layout entry, and the four synthetic commit paths in `tests/test_milestones_tasks.py` all change to the new path in the same change.
+
 ## Out of Scope
 
