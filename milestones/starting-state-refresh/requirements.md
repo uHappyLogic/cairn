@@ -70,5 +70,7 @@ The one other live milestone stands in the same root container and is started, s
 
 - **Unchanged refresh.** Nothing records an exploration that changed nothing. The anchor moves only when a refresh changes the `## Relevant starting state` section, so every later run in the same stale window explores again: the skill on each re-run, `derive-tasks` on each entry, and `submit-task` on every task submitted, until a commit lands or the milestone finishes. The repeat is stated as an accepted cost in the procedure and the docs; the commit tool, `since`, and the skill's two fixed lines stay unchanged, and no state is added anywhere.
 
+- **Read failure.** Any failed milestones-tool call of the starting-state procedure (`since`, `milestones`, `summary`, `show`, or `live`) is one unclassified condition in all three of its runners, `specify-milestone-starting-state`, `derive-tasks`, and `submit-task`: the run stops on a fixed line with the call's `Error:` line verbatim beneath it, before any edit of `## Relevant starting state`, any pick clearing, and any commit. In `derive-tasks` and `submit-task` this stops the whole writer, so no task-list write and no task commit follow.
+
 ## Out of Scope
 
