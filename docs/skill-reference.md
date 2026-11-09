@@ -159,6 +159,7 @@ Every skill's console report opens with one fixed line saying how the run ended,
 | `derive-tasks` | no-op | `No tasks derived — every requirement is already satisfied.` |
 | `derive-tasks` | no-op | `No tasks derived — the list matched the task file already.` |
 | `derive-tasks` | stop | `Cannot derive tasks: the following open questions must be resolved first:` |
+| `derive-tasks` | stop | `Cannot derive tasks: the starting-state refresh could not be committed.` |
 | `derive-tasks` | stop | `Cannot derive tasks: the open-question check failed.` |
 | `derive-tasks` | stop | `Cannot derive tasks: the completed-task read failed.` |
 | `derive-tasks` | stop | `Cannot derive tasks: the task-list tool refused the list.` |
