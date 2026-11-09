@@ -85,5 +85,7 @@ The trigger path set names one host definition, Antigravity's, and neither of th
 
 - **Fixture project name.** The fixture project is renamed along with the suite: it stays under `tests/fixtures/` under a name built from the suite's new name, the `agy_` prefix replaced, and keeps its `milestones.fixture/` container. The conftest's `FIXTURE_PROJECT` and `seeded_repo` docstring, `CLAUDE.md`'s milestones-tool invariant and layout entry, and the four synthetic commit paths in `tests/test_milestones_tasks.py` all change to the new path in the same change.
 
+- **Hands-on blocks.** Once the suite passes on a host, the dated hands-on block heading that host's `settings.toml` keeps its text and gets one appended re-check sentence, on all three hosts. The sentence names the date, the installed CLI version, that the check ran by the host-generic suite and under which invocation, and the points it covered; the rest stands as checked on its earlier dates. In Antigravity's block the sentence takes the place of the 2026-10-26 sentence's mention of the agy suite as the latest re-check, or is added after it.
+
 ## Out of Scope
 
