@@ -15,7 +15,13 @@
 # check against `agy` 1.3.4 that this block replaces; what it carried forward unchecked is
 # marked so. Re-checked 2026-10-26 against `agy` 1.4.7 by the host suite and one headless
 # probe: the tilde-path reading and running below, and both agents' dispatch by bare name
-# with their tools list; the other points stand as checked on 2026-10-18.
+# with their tools list; the other points stand as checked on 2026-10-18. Re-checked
+# 2026-11-09 against `agy` 1.5.3 by the host-generic suite, run as
+# `uv run pytest host_tests --host antigravity` against a global install refreshed from the
+# built tree: a session following a skill read the shared procedures at the expanded absolute
+# path of that install and ran the task-list tool there through run_command, and both agents,
+# dispatched by bare name through invoke_subagent, landed the files only their write and shell
+# tools produce; that run no longer checks the tilde refusal.
 # - Install: `agy plugin list` reports the plugin enabled at that global path, source
 #   antigravity, with its 22 skills and 2 agents, and a session loads its skills from there.
 #   The rendered tilde path reaches the files two ways: run_command's shell expands it, so a

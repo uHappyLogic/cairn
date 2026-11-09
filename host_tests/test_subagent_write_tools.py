@@ -1,7 +1,7 @@
-"""The subagent write-tool probe: two headless agy processes, each dispatching one plugin
-agent directly through the host's `invoke_subagent` tool, by the bare name the plugin
-registers it under and with the real prompt its orchestrator skill would pass, so no
-orchestrator skill stands between the probe and the agent.
+"""The agent-dispatch tests: two headless processes of the chosen host, each dispatching one
+plugin agent directly through the host's own dispatch mechanism, with the real prompt the
+host's orchestrator skill would hand it, so no orchestrator skill stands between the test and
+the agent.
 
 - `provide-alternatives-to-open-question` is dispatched with a fixture Short Title, the
   seeded milestone directory, and a scratch directory this test created. Its pass signal is
@@ -23,15 +23,16 @@ landed file is the proof those tools were granted: an agent without them cannot 
 reports. Nothing of an agent's final message is read or judged, and no transcript record is
 opened; the pass signal is the files alone.
 
-The process's printed `--output-format stream-json` output is read for one thing only: that
-the process dispatched the named agent with that prompt and wrote no file and ran no command
-of its own, so a landed file is the agent's work and not the dispatching process's. The host
-records a dispatch as a `subagent` step whose `subagent_info` lists each dispatched agent's
-`type_name` and `initial_prompt`; the dispatched agent's own tool calls never appear in the
-dispatching process's output, so that output says nothing about the agent's work.
+The process's printed records are read for one thing only: that the process dispatched the
+named agent with that prompt and wrote no file and ran no command of its own, so a landed file
+is the agent's work and not the dispatching process's. The dispatching process's prompt is
+worded, and its records read, only through the chosen host's entry, which names the host's
+dispatch mechanism, the name its records give the dispatched agent, and the prompt that agent
+is handed, and whose parser holds the host's write, shell, and dispatch tool names, so nothing
+here names a host. A dispatched agent's own tool calls are not the dispatching process's, so
+those records say nothing about the agent's work.
 """
 
-import json
 import subprocess
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -49,31 +50,12 @@ TASK_DELIVERABLE_HEADING = "# Pocket Ledger"
 BODY_FILE = "body.txt"
 PATH_FILE = "paths.txt"
 
-# The two plugin agents, by the bare names the plugin registers them under.
+# The two plugin agents, by the names their agent files carry.
 ALTERNATIVES_AGENT = "provide-alternatives-to-open-question"
 COMPLETION_AGENT = "complete-task"
-
-# The host's tools that write a file or run a command: a step of the dispatching process
-# using one would be work of its own, not the agent's.
-WORK_TOOLS = {
-    "write_to_file",
-    "replace_file_content",
-    "multi_replace_file_content",
-    "notebook_edit",
-    "run_command",
-}
-
-
-def dispatch_prompt(agent, role, prompt):
-    """The headless process's own prompt: dispatch one named plugin agent through the host's
-    invoke_subagent tool with the real prompt its orchestrator would pass, and nothing else."""
-    return (
-        "Use the invoke_subagent tool with one entry in its Subagents array whose TypeName is "
-        f"`{agent}`, whose Role is `{role}`, and whose Prompt is exactly the text below the blank "
-        "line. Dispatch nothing else, carry out no part of the work yourself, and wait for that "
-        "agent's final message before you end; then end with no further action.\n\n"
-        f"{prompt}"
-    )
+# The short label each dispatch carries where the host's dispatch mechanism takes one.
+ALTERNATIVES_LABEL = SHORT_TITLE
+COMPLETION_LABEL = "Task completer"
 
 
 def alternatives_prompt(milestone_dir, scratch_dir):
@@ -98,35 +80,6 @@ def completion_prompt(milestone_dir, scratch_dir):
     )
 
 
-def records_of(stdout):
-    """Every stream-json record of a run, one per non-empty stdout line."""
-    return [json.loads(line) for line in stdout.splitlines() if line.strip()]
-
-
-def step_updates(records):
-    return [record["step_update"] for record in records if record.get("event") == "step_update"]
-
-
-def final_steps(records):
-    """The run's steps in order, each the last record of its step index, so every step read
-    here is in its final state: a dispatch's index opens as an `invoke_subagent` tool step and
-    ends as the `subagent` step that records what was dispatched."""
-    steps = {}
-    for update in step_updates(records):
-        steps[update["step_index"]] = update
-    return [steps[index] for index in sorted(steps)]
-
-
-def dispatches(records):
-    """Every dispatch the process made, as (type_name, initial_prompt), in order."""
-    pairs = []
-    for update in final_steps(records):
-        if update.get("step_type") == "subagent":
-            for entry in update.get("subagent_info", {}).get("subagents", []):
-                pairs.append((entry.get("type_name"), entry.get("initial_prompt")))
-    return pairs
-
-
 def words_of(text):
     """The text with its whitespace runs folded, so a recorded prompt is compared on its words
     and a blank line or trailing newline the dispatching process rendered differently does
@@ -134,26 +87,20 @@ def words_of(text):
     return " ".join((text or "").split())
 
 
-def own_work_tool_steps(records):
-    """The names of the process's own tool steps that wrote a file or ran a command."""
-    return [
-        update["tool_name"]
-        for update in step_updates(records)
-        if update.get("step_type") == "tool" and update.get("tool_name") in WORK_TOOLS
-    ]
-
-
-def assert_dispatched_only(completed, agent, prompt):
+def assert_dispatched_only(host, completed, dispatch):
     """The process ended normally, dispatched exactly the named agent with the real prompt,
-    and did none of the work itself."""
+    and did none of the work itself: no write or shell call of its own."""
     assert completed.returncode == 0, completed.stderr
-    records = records_of(completed.stdout)
-    made = dispatches(records)
-    assert [(name, words_of(text)) for name, text in made] == [(agent, words_of(prompt))], (
-        f"expected one dispatch of {agent} with the real prompt; the dispatches were {made} and "
-        f"the steps were {[(step.get('step_type'), step.get('tool_name')) for step in final_steps(records)]}"
+    calls = host.records(completed.stdout).calls
+    made = [(call.target, call.prompt) for call in calls if call.kind == "dispatch"]
+    assert [(target, words_of(text)) for target, text in made] == [
+        (dispatch.target, words_of(dispatch.handover))
+    ], (
+        f"expected one dispatch of {dispatch.target} with the real prompt; the dispatches were "
+        f"{made} and the calls were {[(call.kind, call.name) for call in calls]}"
     )
-    assert own_work_tool_steps(records) == [], own_work_tool_steps(records)
+    own_work = [call.name for call in calls if call.kind in ("write", "shell")]
+    assert own_work == [], own_work
 
 
 def repository_paths(repository, text):
@@ -188,14 +135,16 @@ def git(repository, *args):
     ).stdout
 
 
-def test_the_alternatives_agent_lands_its_scratch_file(seeded_repo, run_host, tmp_path):
+def test_the_alternatives_agent_lands_its_scratch_file(seeded_repo, host, run_host, tmp_path):
     repository = seeded_repo()
     scratch = tmp_path / "scratch"
     scratch.mkdir()
-    prompt = alternatives_prompt(repository / FIXTURE_MILESTONE, scratch)
+    dispatch = host.dispatch(
+        ALTERNATIVES_AGENT, ALTERNATIVES_LABEL, alternatives_prompt(repository / FIXTURE_MILESTONE, scratch)
+    )
 
-    completed = run_host(dispatch_prompt(ALTERNATIVES_AGENT, SHORT_TITLE, prompt), cwd=repository)
-    assert_dispatched_only(completed, ALTERNATIVES_AGENT, prompt)
+    completed = run_host(dispatch.prompt, cwd=repository)
+    assert_dispatched_only(host, completed, dispatch)
 
     # The pass signal: the agent's return file, at the path the orchestrator derives from the
     # Short Title alone, renamed into place with no temporary name left behind.
@@ -220,15 +169,15 @@ def test_the_alternatives_agent_lands_its_scratch_file(seeded_repo, run_host, tm
     assert git(repository, "status", "--porcelain") == ""
 
 
-def test_the_completion_agent_lands_the_task_its_body_file_and_its_path_file(seeded_repo, run_host, tmp_path):
+def test_the_completion_agent_lands_the_task_its_body_file_and_its_path_file(seeded_repo, host, run_host, tmp_path):
     repository = seeded_repo()
     milestone = repository / FIXTURE_MILESTONE
     scratch = tmp_path / "scratch"
     scratch.mkdir()
-    prompt = completion_prompt(milestone, scratch)
+    dispatch = host.dispatch(COMPLETION_AGENT, COMPLETION_LABEL, completion_prompt(milestone, scratch))
 
-    completed = run_host(dispatch_prompt(COMPLETION_AGENT, "Task completer", prompt), cwd=repository)
-    assert_dispatched_only(completed, COMPLETION_AGENT, prompt)
+    completed = run_host(dispatch.prompt, cwd=repository)
+    assert_dispatched_only(host, completed, dispatch)
 
     # The task's deliverable, landed by the agent's file-writing tool.
     deliverable = repository / TASK_DELIVERABLE

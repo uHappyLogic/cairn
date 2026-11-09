@@ -1,29 +1,20 @@
-"""The plugin-root resolution test: one dispatch-free headless agy process, the submit-task
-skill run in a seeded repository, whose printed output asserts separately that the
-orchestrator read a shared procedure at the global ~/.gemini/config/plugins/cairn path and
-ran a python3 tool command there.
+"""The plugin-root resolution test: one dispatch-free headless process of the chosen host, the
+submit-task skill run in a seeded repository, whose records assert separately that the
+orchestrator read a shared procedure at the installed copy's root and ran a python3 tool
+command there.
 
 The skill is the vehicle because its steps make both acts mandatory and dispatch no agent:
-step 0 follows the shared resolve-milestone procedure, step 4 reads the shared task
-format, and step 6 runs the task-list tool's `insert` in one shell call, every path rendered
-as the tilde literal. The run's `--output-format stream-json` records each tool call with its
-parameters and its DONE or ERROR state, so the evidence is the host's own record of the
-orchestrator's calls, never a transcript file or the final message.
-
-What the test pins about the tilde path: the host's file-reading tool refuses a path that
-starts with `~` ("must be an absolute path"), so the orchestrator reaches a shared procedure
-only by expanding the rendered literal to an absolute path, while the shell expands the same
-literal in a `python3` command unaided. The orchestrator's file-reading tool is `read_file`
-(its path in `Path`) and was `view_file` (its path in `AbsolutePath`) before, the name a
-dispatched agent's tools list still grants, so a read under either name counts. A read that
-carried a tilde path and still ended DONE fails the test, which is the signal that this pin
-needs rewriting.
+step 0 follows the shared resolve-milestone procedure, step 4 reads the shared task format,
+and step 6 runs the task-list tool's `insert` in one shell call, every path rendered under the
+plugin root. The run prints its records in the host's machine-readable output mode, each tool
+call with its parameters and whether it completed or failed, so the evidence is the host's own
+record of the orchestrator's calls, never a transcript file or the final message. The records
+are read only through the chosen host's entry, whose parser holds that host's tool names and
+record shapes, so nothing here names a host.
 
 No dispatched agent's resolution is asserted here: the agents' own reads and commands are the
-subagent probe's business, and this process is asserted to have dispatched none.
+dispatch tests' business, and this process is asserted to have dispatched none.
 """
-
-import json
 
 # The one issue the skill is asked to queue: inside the fixture milestone's scope, distinct
 # from the fixture's own task, and concrete enough to be authored without a question back.
@@ -36,104 +27,49 @@ ISSUE = (
 # `--milestone <path>` takes it, trailing slash included, and its task list.
 FIXTURE_MILESTONE = "milestones/milestone_01_pocket-ledger-foundations/"
 FIXTURE_TASKS_TODO = FIXTURE_MILESTONE + "TASKS_TODO.md"
-
-# The host's tool names, the one parameter of each this test reads, and the tools that
-# dispatch an agent. The file-reading tools map each name to the parameter holding its path.
-FILE_READING_TOOLS = {"read_file": "Path", "view_file": "AbsolutePath"}
-SHELL_TOOL = "run_command"  # parameters.CommandLine
-DISPATCH_TOOLS = {"invoke_subagent", "define_subagent", "manage_subagents", "browser_subagent"}
+# What the chained insert call prints: nothing (the tool is silent on success) or the call's
+# own success line.
+INSERT_OUTPUTS = ("", "submission commit landed")
 
 
-def records_of(stdout):
-    """Every stream-json record of a run, one per non-empty stdout line."""
-    return [json.loads(line) for line in stdout.splitlines() if line.strip()]
-
-
-def tool_steps(records):
-    """The run's tool steps in order, each the last record of its step index, so every step
-    read here is in its final DONE or ERROR state, never ACTIVE."""
-    steps = {}
-    for record in records:
-        if record.get("event") != "step_update":
-            continue
-        update = record["step_update"]
-        if update.get("step_type") == "tool":
-            steps[update["step_index"]] = update
-    return [steps[index] for index in sorted(steps)]
-
-
-def parameter(step, name):
-    return step.get("tool_info", {}).get("parameters", {}).get(name, "")
-
-
-def output_of(step):
-    return step.get("tool_info", {}).get("output") or ""
-
-
-def command_output(step):
-    """A shell step's printed output. The host wraps it as an exit-code line, then a
-    `Command output:` line over what the command printed (that line and what follows absent
-    when it printed nothing); a wrapper reporting a non-zero exit yields None, and an
-    unwrapped output is returned as it stands."""
-    output = output_of(step).replace("\r\n", "\n")
-    if not output.startswith("Command exited with code "):
-        return output.strip()
-    status, _, rest = output.partition("\n")
-    if status.strip() != "Command exited with code 0.":
-        return None
-    _, marker, printed = rest.partition("Command output:")
-    return printed.strip() if marker else ""
-
-
-def test_the_orchestrator_reads_and_runs_at_the_global_plugin_root(seeded_repo, run_host, plugin_root):
-    tilde, root = plugin_root
+def test_the_orchestrator_reads_and_runs_at_the_installed_plugin_root(seeded_repo, host, run_host, plugin_root):
+    located, root = plugin_root
     repository = seeded_repo()
 
     completed = run_host(f"/cairn:submit-task --milestone {FIXTURE_MILESTONE} {ISSUE}", cwd=repository)
     assert completed.returncode == 0, completed.stderr
-    records = records_of(completed.stdout)
-    assert records[-1].get("event") == "result", records[-1]
-    assert records[-1]["result"]["status"] == "SUCCESS", records[-1]["result"]
-    steps = tool_steps(records)
+    records = host.records(completed.stdout)
+    assert records.succeeded, records.closing
+    calls = records.calls
 
-    # Dispatch-free: every step below is the orchestrator's own.
-    dispatched = [step["tool_name"] for step in steps if step["tool_name"] in DISPATCH_TOOLS]
+    # Dispatch-free: every call below is the orchestrator's own.
+    dispatched = [call.name for call in calls if call.kind == "dispatch"]
     assert dispatched == [], dispatched
 
-    # The orchestrator read a shared procedure at the global path.
-    reads = [
-        (parameter(step, FILE_READING_TOOLS[step["tool_name"]]), step["state"])
-        for step in steps
-        if step["tool_name"] in FILE_READING_TOOLS
-    ]
+    # The orchestrator read a shared procedure at the installed root.
+    reads = [(call.path, call.completed) for call in calls if call.kind == "read"]
     shared_prefix = str(root / "shared") + "/"
-    shared_reads = sorted(path for path, state in reads if state == "DONE" and path.startswith(shared_prefix))
-    assert shared_reads, f"no DONE file-reading call under {shared_prefix}; the calls were {reads}"
-
-    # The pin: the file-reading tool takes no tilde path. The shared procedure was reached at
-    # the expanded absolute path above, and a tilde path, whenever one was tried, ended in ERROR.
-    tilde_reads = [(path, state) for path, state in reads if path.startswith("~")]
-    assert all(state == "ERROR" for _, state in tilde_reads), tilde_reads
+    shared_reads = sorted(path for path, done in reads if done and path.startswith(shared_prefix))
+    assert shared_reads, f"no completed file read under {shared_prefix}; the reads were {reads}"
 
     # The orchestrator ran a python3 tool command there: the task-list tool's insert, under
-    # the root in either form (the shell expands the rendered tilde literal), whose output is
-    # the chained call's own success line or nothing (the tool is silent on success), never an
-    # interpreter failing to open the tool.
-    commands = [step for step in steps if step["tool_name"] == SHELL_TOOL]
-    tool_prefixes = (f"python3 {tilde}/tools/", f"python3 {root}/tools/")
+    # the root in either form it meets it in, whose output is the chained call's own success
+    # line or nothing, never an interpreter failing to open the tool.
+    commands = [call for call in calls if call.kind == "shell"]
+    tool_prefixes = tuple(f"python3 {form}/tools/" for form in (located, root))
     inserts = [
-        step
-        for step in commands
-        if step["state"] == "DONE"
-        and any(prefix in parameter(step, "CommandLine") for prefix in tool_prefixes)
-        and "task_list.py insert" in parameter(step, "CommandLine")
+        call
+        for call in commands
+        if call.completed
+        and any(prefix in call.command for prefix in tool_prefixes)
+        and "task_list.py insert" in call.command
     ]
     assert inserts, (
-        f"no DONE {SHELL_TOOL} call running task_list.py insert under {tilde}/tools/; "
-        f"the commands were {[parameter(step, 'CommandLine') for step in commands]}"
+        f"no completed shell call running task_list.py insert under {located}/tools/; "
+        f"the commands were {[call.command for call in commands]}"
     )
-    outputs = [command_output(step) for step in inserts]
-    assert any(output in ("", "submission commit landed") for output in outputs), outputs
+    outputs = [call.output for call in inserts]
+    assert any(output in INSERT_OUTPUTS for output in outputs), outputs
 
     # The tool at that root did the insert: the seeded task list gained its second section.
     todo = (repository / FIXTURE_TASKS_TODO).read_text(encoding="utf-8")

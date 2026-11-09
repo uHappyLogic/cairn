@@ -14,6 +14,11 @@ installation (bringing a copy up to date is the user's own act, by the host's do
 install, which the stop line names), runs every headless process at the account's default
 model and effort, and bounds each by one wall-clock limit of its own, the same on every host:
 a run that exceeds it is killed with its whole process group and fails its test.
+
+The tests themselves name no host. Each reads a run's tool-call records only through the
+chosen host's entry, whose parser turns that host's own record shape into one shape every test
+reads (ToolCall and Records below), and words each dispatching process's prompt through the
+same entry, which names the host's own dispatch mechanism (Dispatch below).
 """
 
 import json
@@ -24,6 +29,7 @@ import subprocess
 import sys
 import tomllib
 from pathlib import Path
+from typing import NamedTuple
 
 import pytest
 
@@ -57,25 +63,74 @@ class CopyNotLocated(Exception):
     """The host's CLI reported no installed copy; the one argument says why."""
 
 
+class ToolCall(NamedTuple):
+    """One tool call of a headless run, as the chosen host's entry reads it from that host's
+    own records. `kind` is "read", "shell", "dispatch", "write", or "other", the entry sorting
+    the host's own tool names into them; `name` is the host's own name for the tool; and
+    `completed` is True when the host recorded the call as completed and False when it
+    recorded it as failed or never as finished. The values the tests read are set for their
+    kind alone: a read's `path`; a shell call's `command` and its `output`, what the command
+    printed when the host recorded it running to a zero exit and None otherwise; and a
+    dispatch's `target`, the agent as the host's records name the dispatched one, and
+    `prompt`, the prompt that agent was handed."""
+
+    kind: str
+    name: str
+    completed: bool
+    path: str = ""
+    command: str = ""
+    output: str | None = None
+    target: str = ""
+    prompt: str = ""
+
+
+class Records(NamedTuple):
+    """A headless run's records, as the chosen host's entry reads them from the run's stdout:
+    `succeeded`, True when the run's closing record reports success; `closing`, that closing
+    record as the host printed it (None when it printed none), for a failure message; and
+    `calls`, every tool call of the run's own process, in order, each a ToolCall in its final
+    state."""
+
+    succeeded: bool
+    closing: object
+    calls: list
+
+
+class Dispatch(NamedTuple):
+    """One dispatch a test has a headless process make, as the chosen host's entry words it:
+    `prompt`, the process's own prompt, naming the host's dispatch mechanism and handing over
+    the agent's prompt; `target`, the agent as the host's records name the dispatched one; and
+    `handover`, the prompt that agent is to be handed, as the host's records hold it."""
+
+    prompt: str
+    target: str
+    handover: str
+
+
 class Host:
     """One host's entry. The values only the suite needs are given here, at construction:
     `cli`, the command the host's CLI is run by; `locate_copy`, taking the entry and returning
     where the installed copy the host loads stands, as the host's CLI reports it (Antigravity's
     at its fixed global path), or raising CopyNotLocated; and `remedy`, taking the entry and
     returning how the user brings that copy up to date by the host's documented install, the
-    text the entry then holds as `remedy` and every one of the host's stop lines carries; and
-    `headless`, taking the entry and a prompt and returning the command line of one headless
-    run of the host's CLI with that prompt, in the machine-readable output mode whose records
-    the tests read, or None while the entry gives no such command, which fails any test that
-    starts a run. `installed_root` is None until the prerequisite check has located the copy,
-    and then that copy's root as the suite reaches it. The values the host's definition
-    already declares are read from scripts/hosts/<name>/settings.toml with tomllib and never
-    restated: `name`, the definition directory's name, which names the host as the build
-    does; `plugin_name`; `plugin_dir`; `built_tree`, the committed hosts/<name>/ tree the
-    build renders; and `plugin_tree`, the directory plugin_dir names inside it, the one an
-    installed copy holds."""
+    text the entry then holds as `remedy` and every one of the host's stop lines carries. Three
+    more are what the tests run and read through, each None while the entry gives none, which
+    fails any test reaching it before a process starts: `headless`, taking the entry and a
+    prompt and returning the command line of one headless run of the host's CLI with that
+    prompt, in the machine-readable output mode whose records the tests read; `records`,
+    taking the entry and a run's stdout and returning its Records, the host's record parser,
+    which holds the host's own read, shell, dispatch, and write tool names and its way of
+    telling a completed call from a failed one; and `dispatch`, taking the entry, an agent's
+    name, a short label for the dispatch, and the agent's prompt, and returning the Dispatch
+    that names the host's own dispatch mechanism. `installed_root` is None until the
+    prerequisite check has located the copy, and then that copy's root as the suite reaches it.
+    The values the host's definition already declares are read from
+    scripts/hosts/<name>/settings.toml with tomllib and never restated: `name`, the definition
+    directory's name, which names the host as the build does; `plugin_name`; `plugin_dir`;
+    `built_tree`, the committed hosts/<name>/ tree the build renders; and `plugin_tree`, the
+    directory plugin_dir names inside it, the one an installed copy holds."""
 
-    def __init__(self, name, *, cli, locate_copy, remedy, headless=None):
+    def __init__(self, name, *, cli, locate_copy, remedy, headless=None, records=None, dispatch=None):
         with open(DEFINITIONS_DIR / name / "settings.toml", "rb") as settings_file:
             settings = tomllib.load(settings_file)
         self.name = name
@@ -86,8 +141,27 @@ class Host:
         self.cli = cli
         self.locate_copy = locate_copy
         self.remedy = remedy(self)
-        self.headless = headless
+        self._headless = headless
+        self._records = records
+        self._dispatch = dispatch
         self.installed_root = None
+
+    def _given(self, value, what):
+        if value is None:
+            pytest.fail(f"the {self.name} entry gives no {what}", pytrace=False)
+        return value
+
+    def headless_command(self, prompt):
+        """The command line of one headless run with the prompt."""
+        return self._given(self._headless, "headless command")(self, prompt)
+
+    def records(self, stdout):
+        """The Records of a run that printed stdout."""
+        return self._given(self._records, "record parser")(self, stdout)
+
+    def dispatch(self, agent, label, prompt):
+        """The Dispatch of the named agent, labelled, handed the prompt."""
+        return self._given(self._dispatch, "dispatch wording")(self, agent, label, prompt)
 
 
 def _tree_files(root):
@@ -202,6 +276,118 @@ def _copy_matches_built_tree(host):
     return None
 
 
+def _json_lines(stdout):
+    """Every JSON record a run printed, one per non-empty stdout line."""
+    return [json.loads(line) for line in stdout.splitlines() if line.strip()]
+
+
+# Antigravity's tool names by kind, as its step records name them. Each file-reading tool maps
+# to the parameter holding its path: the session's tool is read_file (its path in Path), and
+# view_file (AbsolutePath) is the name an agent's tools list grants and an earlier version
+# gave the session, so both count. The shell tool maps to the parameter holding its command
+# line. The dispatch tools are every tool that starts or defines an agent, and the write tools
+# every tool that writes or edits a file.
+ANTIGRAVITY_READ_TOOLS = {"read_file": "Path", "view_file": "AbsolutePath"}
+ANTIGRAVITY_SHELL_TOOLS = {"run_command": "CommandLine"}
+ANTIGRAVITY_DISPATCH_TOOLS = {"invoke_subagent", "define_subagent", "manage_subagents", "browser_subagent"}
+ANTIGRAVITY_WRITE_TOOLS = {
+    "write_to_file",
+    "replace_file_content",
+    "multi_replace_file_content",
+    "notebook_edit",
+    "sed_file",
+}
+
+
+def _antigravity_command_output(update):
+    """A completed run_command step's printed output. The host wraps it as an exit-code line,
+    then a `Command output:` line over what the command printed (that line and what follows
+    absent when it printed nothing); a wrapper reporting a non-zero exit yields None, and an
+    unwrapped output is returned as it stands."""
+    output = (update.get("tool_info", {}).get("output") or "").replace("\r\n", "\n")
+    if not output.startswith("Command exited with code "):
+        return output.strip()
+    status, _, rest = output.partition("\n")
+    if status.strip() != "Command exited with code 0.":
+        return None
+    _, marker, printed = rest.partition("Command output:")
+    return printed.strip() if marker else ""
+
+
+def _antigravity_calls(update):
+    """The ToolCalls one step records in its final update. The step's state tells a completed
+    call, DONE, from a failed one, ERROR. A `tool` step is one call, sorted by its tool name; a
+    `subagent` step, the record a dispatch through invoke_subagent ends as, is one dispatch per
+    agent its subagent_info lists, by that agent's type_name and initial_prompt."""
+    name = update.get("tool_name") or ""
+    completed = update.get("state") == "DONE"
+    if update.get("step_type") == "subagent":
+        agents = update.get("subagent_info", {}).get("subagents") or [{}]
+        return [
+            ToolCall(
+                "dispatch",
+                name,
+                completed,
+                target=agent.get("type_name") or "",
+                prompt=agent.get("initial_prompt") or "",
+            )
+            for agent in agents
+        ]
+    if update.get("step_type") != "tool":
+        return []
+    parameters = update.get("tool_info", {}).get("parameters", {})
+    if name in ANTIGRAVITY_READ_TOOLS:
+        return [ToolCall("read", name, completed, path=parameters.get(ANTIGRAVITY_READ_TOOLS[name], ""))]
+    if name in ANTIGRAVITY_SHELL_TOOLS:
+        output = _antigravity_command_output(update) if completed else None
+        command = parameters.get(ANTIGRAVITY_SHELL_TOOLS[name], "")
+        return [ToolCall("shell", name, completed, command=command, output=output)]
+    if name in ANTIGRAVITY_DISPATCH_TOOLS:
+        return [ToolCall("dispatch", name, completed)]
+    if name in ANTIGRAVITY_WRITE_TOOLS:
+        return [ToolCall("write", name, completed)]
+    return [ToolCall("other", name, completed)]
+
+
+def _antigravity_records(host, stdout):
+    """Antigravity's `--output-format stream-json` records, read into Records. The run prints
+    `step_update` events, several per step index as the step moves through its states, and
+    closes on a `result` event whose status is SUCCESS when the run succeeded. Each step is
+    read in its last update, its final state; only the dispatching process's own steps are
+    printed, never a dispatched agent's."""
+    printed = _json_lines(stdout)
+    closing = printed[-1] if printed else None
+    succeeded = (
+        isinstance(closing, dict)
+        and closing.get("event") == "result"
+        and closing.get("result", {}).get("status") == "SUCCESS"
+    )
+    final = {}
+    for record in printed:
+        if record.get("event") == "step_update":
+            update = record["step_update"]
+            final[update["step_index"]] = update
+    calls = [call for index in sorted(final) for call in _antigravity_calls(final[index])]
+    return Records(succeeded, closing, calls)
+
+
+def _antigravity_dispatch(host, agent, label, prompt):
+    """A dispatch through invoke_subagent: one Subagents entry whose TypeName is the agent's
+    bare name, the name its records give the dispatched agent, whose Role is the label, and
+    whose Prompt is the agent's prompt alone, handed over unchanged."""
+    return Dispatch(
+        prompt=(
+            "Use the invoke_subagent tool with one entry in its Subagents array whose TypeName is "
+            f"`{agent}`, whose Role is `{label}`, and whose Prompt is exactly the text below the "
+            "blank line. Dispatch nothing else, carry out no part of the work yourself, and wait "
+            "for that agent's final message before you end; then end with no further action.\n\n"
+            f"{prompt}"
+        ),
+        target=agent,
+        handover=prompt,
+    )
+
+
 # The checks run against the chosen host alone before any test, in order, each taking its
 # entry and returning None or the one line's reason and remedy, the first missing one
 # stopping the run: the CLI found on PATH, the CLI asked where the installed copy is, that
@@ -238,6 +424,8 @@ HOSTS = {
             "--output-format",
             "stream-json",
         ],
+        records=_antigravity_records,
+        dispatch=_antigravity_dispatch,
     ),
     "codex": Host(
         "codex",
@@ -383,7 +571,16 @@ def run_bounded(command, *, cwd, limit):
 
 
 @pytest.fixture
-def run_host(request):
+def host(request):
+    """The chosen host's entry, its installed copy located by the prerequisite check: every
+    test reads a run's tool-call records through its `records` and words every dispatching
+    process's prompt through its `dispatch`, so no test names a host's tools, record shapes,
+    or dispatch mechanism of its own."""
+    return chosen_host(request.config)
+
+
+@pytest.fixture
+def run_host(host):
     """Run one headless process of the chosen host's CLI in a seeded repository:
     run_host("<prompt>", cwd=repository) -> CompletedProcess with decoded stdout and stderr.
     The command line is the one the chosen host's entry composes for the prompt, with no model
@@ -392,19 +589,17 @@ def run_host(request):
     real HOME, so it drives the installed copy. A run past the limit is killed with its whole
     process group and fails its test, and an entry giving no headless command fails the test
     before any process starts."""
-    host = chosen_host(request.config)
 
     def run(prompt, *, cwd):
-        if host.headless is None:
-            pytest.fail(f"the {host.name} entry gives no headless command", pytrace=False)
-        return run_bounded(host.headless(host, prompt), cwd=cwd, limit=RUN_TIMEOUT)
+        return run_bounded(host.headless_command(prompt), cwd=cwd, limit=RUN_TIMEOUT)
 
     return run
 
 
 @pytest.fixture
-def plugin_root():
-    """Antigravity's installed copy's path in the two forms a run meets it in: (tilde,
-    expanded), the tilde literal of its fixed global path, which every rendered read path and
-    python3 command carries, and its expansion under the user's real HOME."""
-    return ANTIGRAVITY_ROOT, Path(os.path.expanduser(ANTIGRAVITY_ROOT))
+def plugin_root(host):
+    """The chosen host's installed copy's root in the two forms a run meets it in: (located,
+    expanded), the root as the host's entry located it, which a rendered command may carry as
+    written, and that root with a leading `~` expanded under the user's real HOME, the form an
+    absolute path takes. The two are the same path when the entry located an absolute one."""
+    return host.installed_root, Path(os.path.expanduser(host.installed_root))
