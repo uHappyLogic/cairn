@@ -71,6 +71,16 @@ Read `<MILESTONE_DIR>/requirements.md` and `<MILESTONE_DIR>/open_questions.xml` 
 - the **`<open-question>` blocks** already present (what's still flagged),
 - every stated requirement, constraint, and assumption.
 
+Beside the two documents, read the overview of the milestones around this one's scope, on every pass, with this one fixed call run from the workspace root, written out in full and never through a variable, alias, or function of your own defined to stand for the command or any part of it:
+
+```
+python3 ~/.gemini/config/plugins/cairn/tools/milestones.py milestones --milestone <MILESTONE_DIR> --last 10
+```
+
+It prints one tab-separated line per milestone whose scope overlaps this one's, live or finished: its state, its finish date (`-` while live), its path, and its title, every live line and the ten most recently finished. Read it as context for the inventory, not as a fifth thing to reconcile: only where you judge a listed milestone's line to bear on a gap or on a pair of decisions, read that milestone more deeply, its finish summary through `python3 ~/.gemini/config/plugins/cairn/tools/milestones.py summary <path>` or its recorded decisions through `python3 ~/.gemini/config/plugins/cairn/tools/milestones.py show <path>`, `<path>` the milestone path exactly as the overview printed it, each written out in full the same way; a line that bears on nothing gets no deeper read.
+
+**Any of these milestones-tool calls that fails** — any non-zero exit, whatever its `Error:` line says — is one condition: **stop the pass here**, before any prune, dedup, new block, or note deletion. Report the fixed line `Review stopped — the milestones record could not be read.` first, then below it the call's `Error:` line from stderr, verbatim. Make no commit, and print neither the still-open list nor the convergence verdict: that is the whole report, and the run ends there.
+
 ### 2. Reconcile the existing question set
 
 This is the step that makes the skill loop-aware: the documents have been edited since questions were last raised, so the existing blocks may be stale. Tidy them — but only with evidence, and never by answering:

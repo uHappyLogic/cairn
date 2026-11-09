@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Review Pass Reads the Milestones Overview
-
-Give `core/skills/review-milestone-requirements/SKILL.md` one fixed milestones-tool call at its inventory step, run on every pass and read beside the two documents: the `milestones` overview in its milestone-path form for `<MILESTONE_DIR>` with `--last` written as the literal 10, a listed milestone getting a deeper read through `summary` or `show` only where the pass judges its line to bear on a gap or a pair of decisions. A failed call, meaning any non-zero exit, stops the pass at that step before any prune, dedup, new block, or note deletion: the report opens with one new fixed, identifier-free stop line with the `Error:` line verbatim beneath it, no commit is made, and neither the still-open list nor the convergence verdict is printed. Verified by the rebuilt host trees, the stop line's new row in the `## Fixed console lines` table passing `tests/test_fixed_console_lines.py`, and the rendered call run as written against this repository.
-
----
-
 ## Review Pass Weighs Decisions Against Facts
 
 Add one bullet to the gap-surfacing step of `core/skills/review-milestone-requirements/SKILL.md`: a recorded decision resting on a `## Relevant starting state` fact that no longer holds becomes an ordinary open question, authored like any other gap and never under the conflict questions' fixed opening phrase, since there is no second entry to rewrite, so that its answer supersedes or confirms the decision through the answer core's existing rewrite rule. This is the one place a starting-state refresh's changed facts are weighed against the decisions, the refresh itself rewriting none. Verified by the rebuilt host trees and a read of the rendered step showing the bullet beside its four existing questions with the `## Decisions` consistency step unchanged.

@@ -117,6 +117,7 @@ Every skill's console report opens with one fixed line saying how the run ended,
 | `review-milestone-requirements` | success | `Requirements reviewed.` |
 | `review-milestone-requirements` | no-op | `Requirements unchanged — the review found nothing to reshape.` |
 | `review-milestone-requirements` | verdict | `Requirements converged — ready for task derivation.` |
+| `review-milestone-requirements` | stop | `Review stopped — the milestones record could not be read.` |
 | `discuss-open-question` | stop | `Cannot discuss: no open question matches the title.` |
 | `answer-open-question`, `answer-open-question-with-recommendation`, `answer-open-question-with-alternative` | success | `Answer recorded.` |
 | `answer-open-question` | stop | `Answer not recorded — the input has no "." separator.` |
