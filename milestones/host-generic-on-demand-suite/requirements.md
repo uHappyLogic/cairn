@@ -63,5 +63,7 @@ The trigger path set names one host definition, Antigravity's, and neither of th
 
 - **Host selection.** The suite's conftest registers a pytest command-line option, `--host`, taking exactly one of `claude`, `antigravity`, or `codex` per run, with no default. A run that names no host stops in the existing `pytest_cmdline_main` hook before any test, with one prerequisite-style stderr line listing the three accepted values and a non-zero exit, never a skip; an unknown value stops the same way. The option is read before the prerequisite checks, which cover only the named host.
 
+- **Installed copy location.** Before any test the suite asks the chosen host's own CLI where the installed copy is, and takes no per-run value for it. For Claude Code it runs `claude plugin list --json` and takes the `cairn@cairn` entry for the scope that applies to a repository outside any recorded project: its `readFromFolder` when set, otherwise its `installPath`. For Codex it reads the installed `cairn@cairn` version from `codex plugin list --json` and builds `~/.codex/plugins/cache/cairn/cairn/<version>/` from it. Both read a JSON listing, never a text table. Where the CLI reports no install, the prerequisite check stops the run.
+
 ## Out of Scope
 
