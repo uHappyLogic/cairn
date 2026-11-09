@@ -1,44 +1,4 @@
 <open-questions>
-  <open-question id="Headless run time limit">
-    <question>What bounds a headless run of the suite on Claude Code and on Codex? The suite holds no wall-clock limit of its own: each Antigravity run is bounded only by agy&apos;s own --print-timeout 20m, and neither claude nor codex exec lists a time limit for a print run in its help.</question>
-    <applied-principle>Check tier claims against the live environment</applied-principle>
-    <recommendation option="Suite timeout on every host">Neither `claude` nor `codex exec` lists a time limit in its installed help, so a suite-owned subprocess timeout with a whole-process-group kill is owed on two hosts under every bounded option; making it the only bound gives one value and one expiry behaviour on all three, where keeping `--print-timeout` beside it adds a second mechanism and value on Antigravity for an ending the test fails on either way, and an unbounded run would stall the release pre-flight.</recommendation>
-    <alternative id="Suite timeout on every host">
-      The suite gains one wall-clock limit of its own, enforced the same way for all three hosts: the shared run fixture passes a timeout to the subprocess it starts (20 minutes, the value agy&apos;s run carries today, one value for every host), and a run that exceeds it is killed and fails its test. agy&apos;s --print-timeout is dropped from its command line, so the suite&apos;s limit is the only bound on every host.
-      <advantage>One bound, one value, and one expiry behaviour on all three hosts, owned and tested by the suite itself rather than by three CLIs, which fits the goal that only the prerequisite check and the invocation differ per host.</advantage>
-      <drawback>Expiry becomes a killed process rather than a host&apos;s own orderly stop, so the test sees a Python timeout with no closing result record, and killing only the direct child can leave the host&apos;s own child processes (dispatched agents, shells) running unless the runner starts the process in its own session and kills its whole group; agy loses the native timeout its run relies on today.</drawback>
-    </alternative>
-    <alternative id="Suite timeout as a backstop">
-      The suite gains the same one wall-clock limit on every host, enforced through the subprocess timeout and killing the run on expiry, while agy keeps --print-timeout 20m on its command line as well; the suite&apos;s limit is set somewhat above agy&apos;s so that agy&apos;s own timeout fires first on Antigravity and the suite&apos;s limit is the only bound on Claude Code and Codex.
-      <advantage>Every host is bounded by a limit the suite owns, and Antigravity keeps its orderly native stop and its existing run unchanged, the suite&apos;s kill catching only a run that hangs past agy&apos;s own timeout.</advantage>
-      <drawback>Two bounds with two values to keep in step on Antigravity, and the hosts still differ in how a run ends (a native stop on Antigravity, a kill elsewhere), with the same process-group cleanup needed for the kill.</drawback>
-    </alternative>
-    <alternative id="Native bound, suite fallback">
-      Each host is bounded by its own native time limit where its CLI has one and by a suite wall-clock limit where it has none: agy keeps --print-timeout 20m as its only bound, and the claude and codex runs get a subprocess timeout of the same 20 minutes, killing the run on expiry. No spend or turn cap is added.
-      <advantage>Leaves the Antigravity run exactly as it is and adds a bound only where one is missing, the smallest change that gives every host a limit.</advantage>
-      <drawback>The bound is a per-host branch in the runner, native on one host and suite-side on two, so the three hosts end a stuck run differently, and the moment a host&apos;s CLI gains or loses a native timeout the branch has to follow it.</drawback>
-    </alternative>
-    <alternative id="Per-host suite durations">
-      As in the native-bound option, agy keeps --print-timeout 20m and the claude and codex runs get a suite subprocess timeout, but each host&apos;s limit is its own value rather than one shared 20 minutes, set from how long that host&apos;s runs of the three tests are observed to take (a longer one where its agent dispatch runs slower).
-      <advantage>Each limit can sit close to its host&apos;s real run time, so a hung run is cut off sooner on a fast host while a slower host is not killed mid-run by a limit sized for another.</advantage>
-      <drawback>Three values to choose and keep current from observation, none of which the repository records today since no automated test has driven claude or codex, and a per-host value needs a per-host home, which depends on where the suite&apos;s per-host values live.</drawback>
-    </alternative>
-    <alternative id="Suite timeout plus spend cap">
-      As in the native-bound option, agy keeps --print-timeout 20m and the claude and codex runs get a 20-minute suite subprocess timeout, and the claude run also passes --max-budget-usd with a fixed cap, the one run limit claude&apos;s help lists; codex, whose exec help lists neither a time nor a spend limit, gets the wall-clock limit alone.
-      <advantage>A runaway Claude Code run is stopped by the host itself on cost, with its own orderly ending, as well as by the wall clock, guarding against the expensive failure the suite&apos;s real-account runs at the default model can produce.</advantage>
-      <drawback>Adds a dollar figure to choose and keep current that bounds cost, not time, applies to one host only, and can stop a legitimate run whose spend varies with the account&apos;s model, so a budget stop is a new failure mode the tests have to tell apart from a real defect.</drawback>
-    </alternative>
-    <alternative id="Per-test pytest timeout">
-      Each test of the suite is bounded at the test level by a per-test timeout plugin (pytest-timeout added as a development dependency, one limit applied to every test on every host), rather than at the process level; agy&apos;s --print-timeout is kept or dropped as the native option keeps it, and no subprocess timeout is passed.
-      <advantage>One declared limit covers the whole test, the run and its assertions alike, on every host, with no timeout code in the run fixture.</advantage>
-      <drawback>Adds a third-party dependency to a repository whose tools are stdlib-only and whose suites carry none, and the plugin&apos;s signal or thread method interrupts the test without reliably killing the host process it started, so a hung CLI can outlive its failed test.</drawback>
-    </alternative>
-    <alternative id="No suite bound">
-      The suite adds no limit for Claude Code or Codex: the claude and codex runs carry no timeout, no spend cap, and no turn cap and run until the CLI exits, while agy keeps its native --print-timeout 20m; a stuck run is ended by the maintainer interrupting the suite, which is on-demand and run by hand.
-      <advantage>No new code, value, or dependency, and nothing that can kill a legitimate slow run, for a suite that is never unattended: it sits outside testpaths and CI and is run by the maintainer before committing or releasing.</advantage>
-      <drawback>A hung Claude Code or Codex run blocks the session indefinitely with no failure reported, which also stalls the release pre-flight&apos;s run of the suite, and the hosts differ in whether a run can hang at all.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Codex sandbox mode">
     <question>Under which approval and sandbox mode does the suite run codex exec? docs/ways-of-using-cairn.md documents the headless form with --dangerously-bypass-approvals-and-sandbox, while the Codex host definition&apos;s hands-on check was made under the workspace-write sandbox. The tests have the run commit in a git repository seeded under pytest&apos;s temporary directory and have the dispatched agents write to a scratch directory created there too.</question>
     <recommendation option="Documented bypass">It drives Codex in the headless form docs/ways-of-using-cairn.md documents and on the same footing as the `--dangerously-skip-permissions` the suite passes on the other two hosts, so a pass vouches for the chains users run and no sandbox write rule can fail a test for a reason outside the plugin; whether workspace-write lets git write the seeded repository is recorded nowhere, and one mode fixed in the suite keeps a run reproducible.</recommendation>

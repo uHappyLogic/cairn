@@ -71,5 +71,9 @@ The trigger path set names one host definition, Antigravity's, and neither of th
 
 - **Dispatch vehicle.** Each agent-dispatch test keeps a dispatching process of its own, with no orchestrator skill between it and the agent, and its prompt names the host's own dispatch mechanism, authored as one per-host value set: on Claude Code the `Agent` tool with `subagent_type` `cairn:<agent>`, on Antigravity `invoke_subagent` with the bare name as `TypeName`, as today, and on Codex `spawn_agent` starting a generic subagent. The prompt handed over is the host's real dispatch prompt: the three-line prompt alone on Claude Code and Antigravity, and on Codex that prompt opened by the line its `*_PROMPT_INSTRUCTIONS` slot renders, naming the agent file under the installed root. The pass signals stay the files the agent lands, unchanged.
 
+### Invocation and per-host values
+
+- **Run time limit.** The suite holds one wall-clock limit of its own, enforced the same way on all three hosts: the shared run fixture passes a timeout of 20 minutes, one value for every host, to the subprocess it starts, and a run that exceeds it is killed, its whole process group with it, and fails its test. `--print-timeout` is dropped from the `agy` command line, so the suite's limit is the only bound on every host.
+
 ## Out of Scope
 
