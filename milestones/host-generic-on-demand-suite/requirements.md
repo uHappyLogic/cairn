@@ -65,5 +65,9 @@ The trigger path set names one host definition, Antigravity's, and neither of th
 
 - **Installed copy location.** Before any test the suite asks the chosen host's own CLI where the installed copy is, and takes no per-run value for it. For Claude Code it runs `claude plugin list --json` and takes the `cairn@cairn` entry for the scope that applies to a repository outside any recorded project: its `readFromFolder` when set, otherwise its `installPath`. For Codex it reads the installed `cairn@cairn` version from `codex plugin list --json` and builds `~/.codex/plugins/cache/cairn/cairn/<version>/` from it. Both read a JSON listing, never a text table. Where the CLI reports no install, the prerequisite check stops the run.
 
+### The tests
+
+- **Tilde pin dropped.** The plugin-root test's assertion that every read attempted with a `~` path ended in `ERROR` is removed outright, with no replacement assertion and no host-specific branch. The test keeps its host-neutral checks: the shared procedure reached at the expanded root, the `task_list.py insert` call under the root, and the two sections in the seeded list. Antigravity's tilde refusal stays recorded only in the dated hands-on block of `scripts/hosts/antigravity/settings.toml`, which no automated run re-checks.
+
 ## Out of Scope
 
