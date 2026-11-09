@@ -80,5 +80,9 @@ The one other live milestone stands in the same root container and is started, s
 
 - **Gate position.** In both writers the scope gate runs twice, each time as its own step following `check-scope-gate.md`: once at the front, directly after resolution and before the staleness check, the reads, a refresh, and the authoring, and again directly ahead of the fixed write call, where it stands today, on every run. Either check closing stops the run under the procedure's one fixed line with nothing further written, and a refresh commit that landed before a closed second check stays committed. A `derive-tasks` run that derives no brief skips the second check as it skips the write, and the fixed write calls stay gate-free.
 
+### The review pass
+
+- **Overview bound.** The overview is bounded by a count applied in the tool: `milestones` gains an optional flag (for example `--last N`) that keeps every live line and only the N newest finished lines, by finish timestamp, the order the query already sorts them in. The review pass's one fixed call writes N as a literal, on the order of ten. Without the flag the query prints what it prints today, so `record`, `/release-plugin`, and every other reader are unchanged.
+
 ## Out of Scope
 
