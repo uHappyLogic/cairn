@@ -78,5 +78,7 @@ The one other live milestone stands in the same root container and is started, s
 
 - **No anchor.** When `since --milestones` prints nothing, `derive-tasks` and `submit-task` explore nothing and make no starting-state commit: each goes on to its own reads and write with the `## Relevant starting state` section as it stands, empty or filled, and prints nothing about it. Only `specify-milestone-starting-state` reads no output as a first run; at task entry, no output means there is no anchor to measure from.
 
+- **Gate position.** In both writers the scope gate runs twice, each time as its own step following `check-scope-gate.md`: once at the front, directly after resolution and before the staleness check, the reads, a refresh, and the authoring, and again directly ahead of the fixed write call, where it stands today, on every run. Either check closing stops the run under the procedure's one fixed line with nothing further written, and a refresh commit that landed before a closed second check stays committed. A `derive-tasks` run that derives no brief skips the second check as it skips the write, and the fixed write calls stay gate-free.
+
 ## Out of Scope
 
