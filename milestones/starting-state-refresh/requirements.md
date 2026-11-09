@@ -64,6 +64,8 @@ The one other live milestone stands in the same root container and is started, s
 
 - **Goal revisions.** A goal revision recorded after the anchor is a reason to explore again, in the broad form only and detected by subject: `since` without `--milestones` also lists the milestone's own `Goal-revision: <path>` commits after the anchor, so `specify-milestone-starting-state`, and with it the refresh line every execution chain opens with, explores again under the revised goal instead of ending on its no-op line. `since --milestones` keeps listing only other milestones' task and finish commits, so the task-entry writers do not refresh on a revision alone, and `modify-milestone-goal` is unchanged.
 
+- **Shallow clone.** `since` runs the same `git rev-parse --is-shallow-repository` test `gate` runs, through the existing `is_shallow()` helper, before any log read and in both forms, the broad one and `--milestones`, and refuses on `true` with one `Error:` line naming `git fetch --unshallow` as the remedy, whatever the truncated log would have yielded. Its help text and the milestones-tool invariant then name two queries that check, `gate` and `since`, in place of only `gate`.
+
 ### The starting-state procedure
 
 - **Record read depth.** The record read stays two tiers and reads no verified bar: for each milestone whose overview line bears on the goal, the procedure reads its finish summary through `summary` or its recorded decisions through `show`, and makes no `tasks --with-body` call. Past tasks reach the starting state only as the titles the overview and the summaries already carry, and the milestones tool gains nothing for bars.
