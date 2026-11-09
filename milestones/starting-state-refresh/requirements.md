@@ -52,5 +52,9 @@ The one other live milestone stands in the same root container and is started, s
 
 ## Decisions
 
+### The milestones tool
+
+- **Anchor subject.** `since` takes as a milestone's anchor the latest commit whose subject opens with `Starting-state:`, whatever follows the marker, among the commits that changed `<path>requirements.md`. The milestone is identified by the path-scoped file filter alone and the marker names the kind, as `tasks` selects every `Task-completion:` subject and joins the milestone from the file list rather than from the subject's descriptor, so a starting state committed under the earlier bare-directory-name subject is found the same way as the path form, and the tool names no legacy form.
+
 ## Out of Scope
 
