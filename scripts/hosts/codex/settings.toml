@@ -12,7 +12,20 @@
 # non-interactive (exec) sessions under the workspace-write sandbox, with the subagent
 # documentation alongside. It sourced ALTERNATIVES_PARALLELISM and ALTERNATIVES_REPAIR, and
 # contradicted ALTERNATIVES_CONCURRENCY, which the repair value's wait depends on and which
-# it therefore rewrote.
+# it therefore rewrote. Re-checked 2026-11-09 against `codex` (codex-cli 0.159.3) by the
+# host-generic suite, run as `uv run pytest host_tests --host codex`, every session started as
+# `codex exec --json --dangerously-bypass-approvals-and-sandbox`, against the install refreshed
+# from this checkout's hosts/codex marketplace with `codex plugin marketplace add` and
+# `codex plugin add cairn@cairn`: a session following a skill read the shared procedures at the
+# absolute path ${PLUGIN_ROOT} resolved to, the installed copy under
+# ~/.codex/plugins/cache/cairn/cairn/, through shell commands, ran the task-list tool there,
+# and dispatched no agent, and both agents, each dispatched through spawn_agent as one generic
+# subagent handed the three-line prompt opened by its *_PROMPT_INSTRUCTIONS line, read their
+# agent file there in their own session and landed the files only their write and shell tools
+# produce, their dispatching session writing no file and running no command of its own; the
+# handed-over prompt went uncompared, since the --json stream prints no spawn_agent item and
+# the session files under ~/.codex/sessions/ keep the message encrypted, so the dispatch count
+# and agent were read from those files, and the other points stand as checked on 2026-10-13.
 # - Sending a follow-up to a finished subagent: spawn_agent returns the agent's canonical task
 #   name; followup_task addressed to that name starts a new turn on the finished agent, which
 #   did the follow-up with its context intact and delivered a new final message, even after

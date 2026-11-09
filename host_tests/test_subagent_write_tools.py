@@ -23,9 +23,10 @@ landed file is the proof those tools were granted: an agent without them cannot 
 reports. Nothing of an agent's final message is read or judged, and no transcript record is
 opened; the pass signal is the files alone.
 
-The process's printed records are read for one thing only: that the process dispatched the
-named agent with that prompt and wrote no file and ran no command of its own, so a landed file
-is the agent's work and not the dispatching process's. The dispatching process's prompt is
+The process's records are read for one thing only: that the process dispatched the named
+agent with that prompt, the prompt left uncompared on a host whose records keep no readable
+copy of it, and wrote no file and ran no command of its own, so a landed file is the agent's
+work and not the dispatching process's. The dispatching process's prompt is
 worded, and its records read, only through the chosen host's entry, which names the host's
 dispatch mechanism, the name its records give the dispatched agent, and the prompt that agent
 is handed, and whose parser holds the host's write, shell, and dispatch tool names, so nothing
@@ -89,12 +90,18 @@ def words_of(text):
 
 def assert_dispatched_only(host, completed, dispatch):
     """The process ended normally, dispatched exactly the named agent with the real prompt,
-    and did none of the work itself: no write or shell call of its own."""
+    and did none of the work itself: no write or shell call of its own. Where the host's
+    records keep no readable copy of the handed-over prompt, which the entry's Dispatch gives
+    as a handover of None, the dispatches are compared by their count and agent alone."""
     assert completed.returncode == 0, completed.stderr
     calls = host.records(completed.stdout).calls
     made = [(call.target, call.prompt) for call in calls if call.kind == "dispatch"]
-    assert [(target, words_of(text)) for target, text in made] == [
-        (dispatch.target, words_of(dispatch.handover))
+
+    def compared(target, text):
+        return (target,) if dispatch.handover is None else (target, words_of(text))
+
+    assert [compared(target, text) for target, text in made] == [
+        compared(dispatch.target, dispatch.handover)
     ], (
         f"expected one dispatch of {dispatch.target} with the real prompt; the dispatches were "
         f"{made} and the calls were {[(call.kind, call.name) for call in calls]}"

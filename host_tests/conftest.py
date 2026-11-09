@@ -59,6 +59,13 @@ PLUGIN_ID = "cairn@cairn"
 # Antigravity's install location, the one fixed in the repository: the global path its
 # plugin root renders as, which the host loads the plugin from in every project.
 ANTIGRAVITY_ROOT = "~/.gemini/config/plugins/cairn"
+# The wording slot whose value opens each plugin agent's dispatch prompt, ahead of the prompt's
+# own first line, keyed by the agent's name: the line pointing a generic subagent at the
+# agent's file on a host that runs one, and nothing on a host that dispatches the agent by name.
+PROMPT_INSTRUCTIONS_SLOTS = {
+    "provide-alternatives-to-open-question": "ALTERNATIVES_PROMPT_INSTRUCTIONS",
+    "complete-task": "COMPLETE_TASK_PROMPT_INSTRUCTIONS",
+}
 
 
 class CopyNotLocated(Exception):
@@ -76,7 +83,8 @@ class ToolCall(NamedTuple):
     kind alone: a read's `path`; a shell call's `command` and its `output`, what the command
     printed when the host recorded it running to a zero exit and None otherwise; and a
     dispatch's `target`, the agent as the host's records name the dispatched one, and
-    `prompt`, the prompt that agent was handed."""
+    `prompt`, the prompt that agent was handed, None on a host whose records keep no readable
+    copy of it."""
 
     kind: str
     name: str
@@ -85,7 +93,7 @@ class ToolCall(NamedTuple):
     command: str = ""
     output: str | None = None
     target: str = ""
-    prompt: str = ""
+    prompt: str | None = ""
 
 
 class Records(NamedTuple):
@@ -104,7 +112,9 @@ class Dispatch(NamedTuple):
     """One dispatch a test has a headless process make, as the chosen host's entry words it:
     `prompt`, the process's own prompt, naming the host's dispatch mechanism and handing over
     the agent's prompt; `target`, the agent as the host's records name the dispatched one; and
-    `handover`, the prompt that agent is to be handed, as the host's records hold it."""
+    `handover`, the prompt that agent is to be handed, as the host's records hold it, or None
+    on a host whose records keep no readable copy of it, where a test compares the dispatches
+    by their count and agent alone."""
 
     prompt: str
     target: str
@@ -124,15 +134,18 @@ class Host:
     prompt, in the machine-readable output mode whose records the tests read; `records`,
     taking the entry and a run's stdout and returning its Records, the host's record parser,
     which holds the host's own read, shell, dispatch, and write tool names and its way of
-    telling a completed call from a failed one; and `dispatch`, taking the entry, an agent's
+    telling a completed call from a failed one, and reads whatever further records the host
+    keeps of the run (Codex's session files); and `dispatch`, taking the entry, an agent's
     name, a short label for the dispatch, and the agent's prompt, and returning the Dispatch
     that names the host's own dispatch mechanism. `installed_root` is None until the
     prerequisite check has located the copy, and then that copy's root as the suite reaches it.
     The values the host's definition already declares are read from
     scripts/hosts/<name>/settings.toml with tomllib and never restated: `name`, the definition
     directory's name, which names the host as the build does; `plugin_name`; `plugin_dir`;
-    `built_tree`, the committed hosts/<name>/ tree the build renders; and `plugin_tree`, the
-    directory plugin_dir names inside it, the one an installed copy holds."""
+    `built_tree`, the committed hosts/<name>/ tree the build renders; `plugin_tree`, the
+    directory plugin_dir names inside it, the one an installed copy holds; and the wording
+    slots, of which the suite reads the two opening the agents' dispatch prompts through
+    `prompt_instructions`."""
 
     def __init__(self, name, *, cli, locate_copy, remedy, headless=None, records=None, dispatch=None):
         with open(DEFINITIONS_DIR / name / "settings.toml", "rb") as settings_file:
@@ -142,6 +155,7 @@ class Host:
         self.plugin_dir = settings["plugin_dir"]
         self.built_tree = HOSTS_DIR / name
         self.plugin_tree = self.built_tree / self.plugin_dir
+        self._slots = settings["slots"]
         self.cli = cli
         self.locate_copy = locate_copy
         self.remedy = remedy(self)
@@ -166,6 +180,23 @@ class Host:
     def dispatch(self, agent, label, prompt):
         """The Dispatch of the named agent, labelled, handed the prompt."""
         return self._given(self._dispatch, "dispatch wording")(self, agent, label, prompt)
+
+    def prompt_instructions(self, agent):
+        """The text the host's definition opens the named agent's dispatch prompt with, its
+        PROMPT_INSTRUCTIONS_SLOTS slot's value read as the build reads a slot (the inline
+        string, or the value file less one trailing newline), with the plugin root it names
+        rendered as the installed copy's root expanded, the absolute path a session meets the
+        rendered root as."""
+        entry = self._slots[PROMPT_INSTRUCTIONS_SLOTS[agent]]
+        if isinstance(entry, str):
+            text = entry
+        else:
+            text = (DEFINITIONS_DIR / self.name / entry["file"]).read_text(encoding="utf-8")
+            for ending in ("\r\n", "\n"):
+                if text.endswith(ending):
+                    text = text[: -len(ending)]
+                    break
+        return text.replace("{{PLUGIN_ROOT}}", os.path.expanduser(self.installed_root))
 
 
 def _tree_files(root):
@@ -285,24 +316,16 @@ def _json_lines(stdout):
     return [json.loads(line) for line in stdout.splitlines() if line.strip()]
 
 
-# Claude Code's tool names by kind, as its tool_use blocks name them. The file-reading tool maps
-# to the input key holding its path, and each shell tool, Bash and the two that also run a
-# command line (Monitor, PowerShell), to the key holding its command line. The dispatch tools
-# are every tool that starts or resumes an agent: Agent, which takes the agent's registry name
-# as subagent_type and its prompt as prompt, Task, the name an earlier version gave it and the
-# session's tool list still carries, SendMessage, which resumes a finished agent, and Workflow,
-# which runs agents from a script. The write tools are every tool that writes or edits a file.
-CLAUDE_READ_TOOLS = {"Read": "file_path"}
-CLAUDE_SHELL_TOOLS = {"Bash": "command", "Monitor": "command", "PowerShell": "command"}
-CLAUDE_DISPATCH_TOOLS = {"Agent", "Task", "SendMessage", "Workflow"}
-CLAUDE_WRITE_TOOLS = {"Write", "Edit", "MultiEdit", "NotebookEdit"}
 # The commands a shell call prints a file through, each mapped to its options that take a
-# value. With permission checks bypassed, the mode every run of the suite uses, the host
-# directs the session to read files through the shell with cat, head, or sed -n, and a session
-# following a skill reads the plugin's shared procedures that way rather than with Read, so
-# each file one of these commands names is also a read by the shell call that ran it. sed
-# counts only when -n keeps it from printing anything but what its script selects.
-CLAUDE_FILE_PRINTERS = {"cat": set(), "head": {"-n", "-c"}, "tail": {"-n", "-c"}, "sed": {"-e", "-f"}}
+# value. A session reads files through the shell as well as through any file-reading tool its
+# host has: Claude Code, with permission checks bypassed, the mode every run of the suite uses,
+# directs the session to read files with cat, head, or sed -n, and a session following a skill
+# reads the plugin's shared procedures that way rather than with Read, while Codex gives the
+# session no file-reading tool at all, so every read it makes is a shell command. Each file one
+# of these commands names is therefore also a read by the shell call that ran it, on every host
+# whose entry reads its shell calls this way. sed counts only when -n keeps it from printing
+# anything but what its script selects.
+FILE_PRINTERS = {"cat": set(), "head": {"-n", "-c"}, "tail": {"-n", "-c"}, "sed": {"-e", "-f"}}
 # The characters a shell splits words and operators at, the operator-only tokens holding a <
 # or > being redirections and the rest the operators that end one simple command.
 SHELL_PUNCTUATION = "();<>|&"
@@ -337,10 +360,10 @@ def _printed_by(words):
     if not words:
         return []
     program = words[0].rsplit("/", 1)[-1]
-    if program not in CLAUDE_FILE_PRINTERS:
+    if program not in FILE_PRINTERS:
         return []
     arguments = words[1:]
-    operands = _shell_operands(arguments, CLAUDE_FILE_PRINTERS[program])
+    operands = _shell_operands(arguments, FILE_PRINTERS[program])
     if program != "sed":
         return operands
     options = [argument for argument in arguments if argument.startswith("-") and argument != "--"]
@@ -354,7 +377,7 @@ def _printed_by(words):
     return operands if scripted else operands[1:]
 
 
-def _claude_printed_files(command):
+def _printed_files(command):
     """The files a shell command line prints through cat, head, tail, or sed -n, each as the
     command names it, in order. The command is split one line at a time, its backslash-newline
     continuations joined and each heredoc's body skipped, into simple commands at the shell's
@@ -395,6 +418,19 @@ def _claude_printed_files(command):
     return files
 
 
+# Claude Code's tool names by kind, as its tool_use blocks name them. The file-reading tool maps
+# to the input key holding its path, and each shell tool, Bash and the two that also run a
+# command line (Monitor, PowerShell), to the key holding its command line. The dispatch tools
+# are every tool that starts or resumes an agent: Agent, which takes the agent's registry name
+# as subagent_type and its prompt as prompt, Task, the name an earlier version gave it and the
+# session's tool list still carries, SendMessage, which resumes a finished agent, and Workflow,
+# which runs agents from a script. The write tools are every tool that writes or edits a file.
+CLAUDE_READ_TOOLS = {"Read": "file_path"}
+CLAUDE_SHELL_TOOLS = {"Bash": "command", "Monitor": "command", "PowerShell": "command"}
+CLAUDE_DISPATCH_TOOLS = {"Agent", "Task", "SendMessage", "Workflow"}
+CLAUDE_WRITE_TOOLS = {"Write", "Edit", "MultiEdit", "NotebookEdit"}
+
+
 def _claude_result_text(result):
     """A tool_result block's content as text: a string as it stands, a list of content blocks
     by their text joined."""
@@ -420,7 +456,7 @@ def _claude_calls(use, answered):
     pair that answered it, or None when none did. A call answered with no is_error set is
     completed; one answered with is_error set, which a shell call's non-zero exit gives, failed,
     and one never answered never finished. A shell call is followed by one read per file its
-    command prints (CLAUDE_FILE_PRINTERS), each completed as the call is, and an Agent or Task
+    command prints (FILE_PRINTERS), each completed as the call is, and an Agent or Task
     call is one dispatch, by its subagent_type and prompt."""
     name = use.get("name") or ""
     parameters = use.get("input") or {}
@@ -430,7 +466,7 @@ def _claude_calls(use, answered):
     if name in CLAUDE_SHELL_TOOLS:
         output = _claude_command_output(*answered) if completed else None
         command = parameters.get(CLAUDE_SHELL_TOOLS[name]) or ""
-        reads = [ToolCall("read", name, completed, path=path) for path in _claude_printed_files(command)]
+        reads = [ToolCall("read", name, completed, path=path) for path in _printed_files(command)]
         return [ToolCall("shell", name, completed, command=command, output=output), *reads]
     if name in CLAUDE_DISPATCH_TOOLS:
         return [
@@ -610,6 +646,205 @@ def _antigravity_dispatch(host, agent, label, prompt):
     )
 
 
+# Codex's tool calls by kind, as the items of its `--json` events record them, each item typed
+# by what the call did rather than by the tool that made it. Every command the session runs is a
+# command_execution item, its command the shell's command line wrapping the session's own
+# (SHELLS); the session has no file-reading tool, so its reads are the files those commands
+# print (FILE_PRINTERS). Every change the session makes to a file is a file_change item. A call
+# of one of the agent-collaboration tools is a collab_tool_call item naming the tool, but the
+# stream prints such an item only for waiting on an agent, never for the spawn_agent call that
+# starts one, so the run's dispatches are read from its session files instead (CODEX_SESSIONS).
+# The other item types that record a tool call are listed so their calls are counted; every
+# remaining item (the session's messages, its reasoning, an error) records none.
+CODEX_SHELL_ITEMS = {"command_execution"}
+CODEX_WRITE_ITEMS = {"file_change"}
+CODEX_OTHER_ITEMS = {"collab_tool_call", "mcp_tool_call", "web_search", "todo_list", "image_generation"}
+# The shells Codex runs a session's command line through, as `<shell> -lc <command line>` or
+# `<shell> -c <command line>`.
+SHELLS = {"sh", "bash", "zsh"}
+# Where Codex keeps every session's records, one rollout-*.jsonl file per session under a
+# directory per day, each opening on a session_meta record whose payload holds the session's
+# thread id as `id` and, for a session a dispatch started, the dispatching session's thread id
+# as `parent_thread_id`. Codex's one dispatch tool, spawn_agent, starts a generic subagent in a
+# session of its own, so each such child session is one dispatch the parent made; its message
+# is kept only encrypted, so no record holds the handed-over prompt readably, and the child is
+# told apart by the agent file its own records show it reading. In a child's file the
+# session's own records are the item_completed events carrying its thread id, the history it
+# was forked from riding in the same file ahead of them; a command it ran is a CommandExecution
+# item whose command is the shell's argument list, completed when its status is completed.
+CODEX_SESSIONS = "~/.codex/sessions"
+CODEX_DISPATCH_TOOL = "spawn_agent"
+
+
+def _codex_command_line(command):
+    """The session's own command line inside a recorded command, which wraps it as one argument
+    of a shell's -lc or -c: the stream gives the whole command as one string, a session file as
+    its argument list. A command in any other shape is returned as one line, unchanged."""
+    if isinstance(command, list):
+        words = [str(word) for word in command]
+        whole = shlex.join(words)
+    else:
+        whole = command or ""
+        try:
+            words = shlex.split(whole)
+        except ValueError:
+            return whole
+    if (
+        len(words) == 3
+        and words[0].rsplit("/", 1)[-1] in SHELLS
+        and words[1].startswith("-")
+        and words[1].endswith("c")
+    ):
+        return words[2]
+    return whole
+
+
+def _codex_calls(item):
+    """The ToolCalls one stream item records in its final state. The item's status tells a
+    completed call, completed, from a failed one, failed or declined, and an item still
+    in_progress never finished. A command_execution item is one shell call, followed by one
+    read per file its command line prints (FILE_PRINTERS), each completed as the call is, its
+    output what the command printed when it ran to a zero exit."""
+    kind = item.get("type") or ""
+    completed = item.get("status") == "completed"
+    if kind in CODEX_SHELL_ITEMS:
+        command = _codex_command_line(item.get("command"))
+        ran = completed and item.get("exit_code") == 0
+        output = (item.get("aggregated_output") or "").strip() if ran else None
+        reads = [ToolCall("read", kind, completed, path=path) for path in _printed_files(command)]
+        return [ToolCall("shell", kind, completed, command=command, output=output), *reads]
+    if kind in CODEX_WRITE_ITEMS:
+        return [ToolCall("write", kind, completed)]
+    if kind in CODEX_OTHER_ITEMS:
+        return [ToolCall("other", item.get("tool") or kind, completed)]
+    return []
+
+
+def _codex_session_records(path):
+    """Every JSON record a session file holds, one per line, a line that is not one skipped."""
+    records = []
+    with open(path, encoding="utf-8", errors="replace") as session:
+        for line in session:
+            try:
+                record = json.loads(line)
+            except ValueError:
+                continue
+            if isinstance(record, dict):
+                records.append(record)
+    return records
+
+
+def _codex_session_meta(path):
+    """A session file's own session_meta payload, its first record's (a child's file carries
+    the meta of the session it was forked from further on), or None when it opens on none."""
+    with open(path, encoding="utf-8", errors="replace") as session:
+        first = session.readline()
+    try:
+        record = json.loads(first)
+    except ValueError:
+        return None
+    if not isinstance(record, dict) or record.get("type") != "session_meta":
+        return None
+    payload = record.get("payload")
+    return payload if isinstance(payload, dict) else None
+
+
+def _codex_agent_read(host, path):
+    """The plugin agent whose file under the installed root a read path names, in either form
+    of the root, or "" when it names none."""
+    for root in (host.installed_root, os.path.expanduser(host.installed_root)):
+        prefix = f"{root.rstrip('/')}/agents/"
+        name = path.removeprefix(prefix)
+        if name != path and name.endswith(".md") and "/" not in name:
+            return name.removesuffix(".md")
+    return ""
+
+
+def _codex_dispatched(host, path, child):
+    """The dispatch one child session records: spawn_agent, completed, since only a spawn that
+    started its agent has a session, its target the plugin agent whose file under the
+    installed root the child's own records show a completed read of (the first, "" when it
+    read none), and its prompt None, the message being kept encrypted."""
+    reads = []
+    for record in _codex_session_records(path):
+        payload = record.get("payload")
+        if record.get("type") != "event_msg" or not isinstance(payload, dict):
+            continue
+        if payload.get("type") != "item_completed" or payload.get("thread_id") != child:
+            continue
+        item = payload.get("item")
+        if not isinstance(item, dict) or item.get("type") != "CommandExecution":
+            continue
+        if item.get("status") == "completed":
+            reads.extend(_printed_files(_codex_command_line(item.get("command"))))
+    agents = [agent for agent in (_codex_agent_read(host, read) for read in reads) if agent]
+    target = agents[0] if agents else ""
+    return ToolCall("dispatch", CODEX_DISPATCH_TOOL, True, target=target, prompt=None)
+
+
+def _codex_dispatches(host, thread):
+    """One dispatch per child session of the run's own thread: every session file under
+    CODEX_SESSIONS whose own session_meta names that thread as its parent_thread_id, in path
+    order. A run whose stream named no thread made none the files can show."""
+    if not thread:
+        return []
+    sessions = Path(os.path.expanduser(CODEX_SESSIONS))
+    dispatches = []
+    for path in sorted(sessions.rglob("rollout-*.jsonl")):
+        meta = _codex_session_meta(path)
+        if meta is not None and meta.get("parent_thread_id") == thread:
+            dispatches.append(_codex_dispatched(host, path, meta.get("id")))
+    return dispatches
+
+
+def _codex_records(host, stdout):
+    """Codex's `codex exec --json` events, read into Records, with the run's dispatches read
+    from its session files. The run prints one JSON event per line: a thread.started event
+    naming the run's thread by its thread_id, then item.started, item.updated, and
+    item.completed events, each carrying one item by its id as it stands at that point,
+    between a turn.started and the closing event, turn.completed when the run succeeded and
+    turn.failed or error when it did not. Each item is read in its last event, its final
+    state, in the order the items started; only the session's own items are printed, never a
+    dispatched agent's. The dispatches follow them (_codex_dispatches)."""
+    printed = _json_lines(stdout)
+    closing = printed[-1] if printed else None
+    succeeded = isinstance(closing, dict) and closing.get("type") == "turn.completed"
+    thread = ""
+    final = {}
+    for record in printed:
+        if not isinstance(record, dict):
+            continue
+        if record.get("type") == "thread.started" and not thread:
+            thread = record.get("thread_id") or ""
+        if record.get("type") in ("item.started", "item.updated", "item.completed"):
+            if isinstance(record.get("item"), dict):
+                final[record["item"].get("id")] = record["item"]
+    calls = [call for item in final.values() for call in _codex_calls(item)]
+    return Records(succeeded, closing, calls + _codex_dispatches(host, thread))
+
+
+def _codex_dispatch(host, agent, label, prompt):
+    """A dispatch through spawn_agent: one default (generic) subagent, with no custom agent
+    type, whose message is the agent's prompt opened by the line the host's definition renders
+    ahead of it (Host.prompt_instructions), naming the agent's file under the installed root,
+    the one way a generic subagent learns its instructions. The records name the dispatched
+    agent by that file, so the target is the agent's bare name, and keep the message only
+    encrypted, so the handover is None; the label goes unused, spawn_agent taking none."""
+    message = host.prompt_instructions(agent) + prompt
+    return Dispatch(
+        prompt=(
+            f"Use the {CODEX_DISPATCH_TOOL} tool once to start one default (generic) subagent, "
+            "with no custom agent type, whose message is exactly the text below the blank line. "
+            "Dispatch nothing else, carry out no part of the work yourself, and wait with "
+            "wait_agent until that agent's final message has arrived before you end; then end "
+            "with no further action.\n\n"
+            f"{message}"
+        ),
+        target=agent,
+        handover=None,
+    )
+
+
 # The checks run against the chosen host alone before any test, in order, each taking its
 # entry and returning None or the one line's reason and remedy, the first missing one
 # stopping the run: the CLI found on PATH, the CLI asked where the installed copy is, that
@@ -669,6 +904,17 @@ HOSTS = {
             f"re-run `codex plugin marketplace add {host.built_tree}` and "
             f"`codex plugin add {PLUGIN_ID}`"
         ),
+        # Every run lifts approvals and the sandbox, so the seeded repository, its .git
+        # directory, and a test's scratch directory are all writable.
+        headless=lambda host, prompt: [
+            host.cli,
+            "exec",
+            "--json",
+            "--dangerously-bypass-approvals-and-sandbox",
+            prompt,
+        ],
+        records=_codex_records,
+        dispatch=_codex_dispatch,
     ),
 }
 
