@@ -243,8 +243,8 @@ minting a second one. The badge row waits for the first workflow run because bef
 repository commands, these steps belong to the maintainer: the skill prints them and exits
 with nothing changed.
 
-**g. The agy suite passes when the Antigravity host integration changed since the last
-release.** The suite under `agy_tests/` drives the installed `agy` CLI against the global
+**g. The host suite passes when the Antigravity host integration changed since the last
+release.** The suite under `host_tests/` drives the installed `agy` CLI against the global
 plugin copy at `~/.gemini/config/plugins/cairn`; it sits outside `testpaths`, so neither
 `uv run pytest` nor CI reaches it. It is owed a run only when its trigger set changed — the
 Antigravity host definition, the agent files, the build, or the suite itself — so list the
@@ -252,7 +252,7 @@ paths among them that `<LAST_TAG>..HEAD` changed:
 
 ```bash
 git diff --name-only <LAST_TAG>..HEAD -- \
-  scripts/hosts/antigravity/ 'core/agents/*.md' scripts/build_hosts.py agy_tests/
+  scripts/hosts/antigravity/ 'core/agents/*.md' scripts/build_hosts.py host_tests/
 ```
 
 No output means none of them changed since the last release: the suite does not run and
@@ -260,11 +260,11 @@ the check costs nothing. Any output means the release would ship an Antigravity 
 that differs from the one last released, so run the suite:
 
 ```bash
-uv run pytest agy_tests
+uv run pytest host_tests
 ```
 
 A zero exit passes the check. A non-zero exit stops the run: report pytest's output — the
-failing tests, or the one `agy suite prerequisite missing:` line the suite prints before any
+failing tests, or the one `host suite prerequisite missing:` line the suite prints before any
 test when `agy` is not on `PATH` or the copy is missing or differs from the committed
 `hosts/antigravity/` tree (a fresh build, by step e). The remedy is the maintainer's, outside
 this skill — fix the integration, or re-extract the release or copy the built tree into place

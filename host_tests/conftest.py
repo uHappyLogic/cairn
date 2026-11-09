@@ -1,8 +1,8 @@
-"""Fixtures of the agy suite, the on-demand pytest directory that drives the installed
+"""Fixtures of the host suite, the on-demand pytest directory that drives the installed
 Antigravity CLI against the plugin copy at ~/.gemini/config/plugins/cairn.
 
 The directory sits outside pyproject.toml's `testpaths`, so `uv run pytest` and the 3.9
-floor run never reach it; it runs only when named: `uv run pytest agy_tests`. Before any
+floor run never reach it; it runs only when named: `uv run pytest host_tests`. Before any
 test, one up-front check stops the whole run with a non-zero exit and one line when a
 prerequisite is missing. The suite drives the copy already installed in the user's real
 HOME and writes nothing to it (replacing that copy is the user's own act), runs every agy
@@ -89,7 +89,7 @@ def pytest_cmdline_main(config):
     for check in PREREQUISITES:
         missing = check()
         if missing is not None:
-            sys.stderr.write(f"agy suite prerequisite missing: {missing}\n")
+            sys.stderr.write(f"host suite prerequisite missing: {missing}\n")
             sys.stderr.flush()
             return 1
     return None
@@ -123,8 +123,8 @@ def seeded_repo(tmp_path):
         shutil.copytree(FIXTURE_PROJECT, repository)
         (repository / FIXTURE_CONTAINER).rename(repository / SEEDED_CONTAINER)
         _git(repository, "init", "-q")
-        _git(repository, "config", "user.name", "Agy Suite")
-        _git(repository, "config", "user.email", "agy-suite@example.invalid")
+        _git(repository, "config", "user.name", "Host Suite")
+        _git(repository, "config", "user.email", "host-suite@example.invalid")
         _git(repository, "config", "commit.gpgsign", "false")
         _git(repository, "add", "-A")
         _git(repository, "commit", "-q", "--no-verify", "-m", "Seed the fixture project")

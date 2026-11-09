@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Rename The Agy Suite To The Host Suite
-
-Move the on-demand suite from `agy_tests/` to `host_tests/` at the repository root and rewrite every reference to its name, so its command is `uv run pytest host_tests`, the prose calls it "the host suite", and the prerequisite check's line opens `host suite prerequisite missing:`: the `CLAUDE.md` command and layout lines and the milestones-tool invariant's sentence, `CONTRIBUTING.md`, the release pre-flight's check g and its trigger path, the header comment of `scripts/hosts/antigravity/settings.toml`, and the conftest docstring, while the historical mentions in `CHANGELOG.md` and `ideas/` stay as written. The rename comes first so every later task of this milestone builds on the final name, and it changes the name only, leaving the suite's Antigravity-only behaviour and the descriptions of it as they are. It is verified by `uv run pytest host_tests` reaching the prerequisite check under the new line, by a search finding the old suite name only in the historical files and this milestone's own, and by both `uv run pytest` runs and the build's `--check` still passing.
-
----
-
 ## Rename The Suite's Fixture Project
 
 Rename the suite's fixture project from `tests/fixtures/agy_project/` to `tests/fixtures/host_project/`, keeping its `milestones.fixture/` container, and change the conftest's `FIXTURE_PROJECT` and `seeded_repo` docstring, `CLAUDE.md`'s milestones-tool invariant and layout entry, and the four synthetic commit paths in `tests/test_milestones_tasks.py` to the new path in the same change. The fixture is named for the suite, so it follows the suite's new name. It is verified by both `uv run pytest` runs passing, by the milestones tool's `live` still not listing the fixture's milestone, and by a search finding the old path only in the historical files and this milestone's own.
