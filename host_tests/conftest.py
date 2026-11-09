@@ -11,9 +11,11 @@ reports (Antigravity's at its fixed global path), and that copy equal, file for 
 host's plugin directory in the built tree. No other host's prerequisites are checked. The
 suite drives the copy already installed in the user's real HOME and writes nothing to any
 installation (bringing a copy up to date is the user's own act, by the host's documented
-install, which the stop line names), runs every headless process at the account's default
-model and effort, and bounds each by one wall-clock limit of its own, the same on every host:
-a run that exceeds it is killed with its whole process group and fails its test.
+install, which the stop line names), starts every headless process with
+PYTHONDONTWRITEBYTECODE set, so no session it starts writes bytecode into an installed copy
+either, runs every headless process at the account's default model and effort, and bounds
+each by one wall-clock limit of its own, the same on every host: a run that exceeds it is
+killed with its whole process group and fails its test.
 
 The tests themselves name no host. Each reads a run's tool-call records only through the
 chosen host's entry, whose parser turns that host's own record shape into one shape every test
@@ -52,6 +54,13 @@ SEEDED_CONTAINER = "milestones"
 # every host, passed by the run fixture to the subprocess it starts. No host's own time limit
 # is passed on its command line, so this is the only bound on every host.
 RUN_TIMEOUT = 20 * 60
+
+# The variables the run fixture sets, over the user's own environment, in the environment of
+# every headless run it starts, the same on every host. PYTHONDONTWRITEBYTECODE keeps every
+# Python a session starts from writing bytecode, so a session that imports a tool module under
+# the installed root leaves no __pycache__ there, which the freshness check, extra files
+# included, would read as the copy differing from the built tree.
+RUN_ENVIRONMENT = {"PYTHONDONTWRITEBYTECODE": "1"}
 
 # The id Claude Code's and Codex's plugin listings give the plugin installed from its own
 # marketplace, both named cairn.
@@ -1018,16 +1027,23 @@ def _kill_group(process):
     process.wait()
 
 
-def run_bounded(command, *, cwd, limit):
-    """Run one command to its end within `limit` seconds -> CompletedProcess with decoded
-    stdout and stderr. The command starts in a session of its own, so it leads a process group
-    of its own that everything it starts joins. A run still going at the limit has that whole
-    group killed and fails the calling test, and so does a run the test is interrupted during,
-    which is killed the same way before the interruption goes on, so no run outlives the
-    test that started it."""
+def run_environment():
+    """The environment every headless run starts in: the user's own, its real HOME included,
+    with RUN_ENVIRONMENT's variables set over it."""
+    return {**os.environ, **RUN_ENVIRONMENT}
+
+
+def run_bounded(command, *, cwd, limit, env):
+    """Run one command to its end within `limit` seconds, in the environment `env` ->
+    CompletedProcess with decoded stdout and stderr. The command starts in a session of its
+    own, so it leads a process group of its own that everything it starts joins. A run still
+    going at the limit has that whole group killed and fails the calling test, and so does a
+    run the test is interrupted during, which is killed the same way before the interruption
+    goes on, so no run outlives the test that started it."""
     process = subprocess.Popen(
         command,
         cwd=str(cwd),
+        env=env,
         stdin=subprocess.DEVNULL,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -1070,13 +1086,17 @@ def run_host(host):
     run_host("<prompt>", cwd=repository) -> CompletedProcess with decoded stdout and stderr.
     The command line is the one the chosen host's entry composes for the prompt, with no model
     or effort flag (the account's defaults), and the run is bounded by RUN_TIMEOUT, the one
-    limit for every host, which no flag of the host's own adds to. It runs with the user's
-    real HOME, so it drives the installed copy. A run past the limit is killed with its whole
-    process group and fails its test, and an entry giving no headless command fails the test
-    before any process starts."""
+    limit for every host, which no flag of the host's own adds to. It runs in
+    run_environment(), the user's own environment with its real HOME, so it drives the
+    installed copy, and with RUN_ENVIRONMENT's PYTHONDONTWRITEBYTECODE set on every host, so no
+    Python the session starts writes bytecode into that copy. A run past the limit is killed
+    with its whole process group and fails its test, and an entry giving no headless command
+    fails the test before any process starts."""
 
     def run(prompt, *, cwd):
-        return run_bounded(host.headless_command(prompt), cwd=cwd, limit=RUN_TIMEOUT)
+        return run_bounded(
+            host.headless_command(prompt), cwd=cwd, limit=RUN_TIMEOUT, env=run_environment()
+        )
 
     return run
 
