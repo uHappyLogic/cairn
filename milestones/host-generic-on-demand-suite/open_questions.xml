@@ -1,6 +1,56 @@
 <open-questions>
   <open-question id="Host selection per run">
     <question>How does a run of the on-demand suite name the host it drives (Claude Code, Antigravity, or Codex), and what does a run that names none do? The suite today is bound to Antigravity by module constants: it reads no pytest option or environment variable and parametrizes no test. The two choices are asked together because they constrain each other: a mechanism such as one parametrized case per host already fixes the unnamed run as every host, so not every pairing of mechanism and unnamed-run behaviour is viable.</question>
+    <alternative id="Required host option">
+      A pytest command-line option (for example `--host claude|antigravity|codex`) that the suite&apos;s conftest registers. It takes exactly one host per run. A run that names none stops in the existing `pytest_cmdline_main` hook before any test, with one prerequisite-style stderr line listing the three accepted values and a non-zero exit, never a skip. An unknown value stops the same way.
+      <advantage>No run drives a host the caller did not name. This matches the plugin&apos;s habit of required arguments with no default (`--milestone`, `--at`, the task-list tool&apos;s position group). The value is parsed before the prerequisite hook runs, so the hook checks only the named host&apos;s CLI and copy, and the exit-1 contract stays as it is.</advantage>
+      <drawback>Today&apos;s bare command stops instead of running, so every documented invocation (the Commands line in `CLAUDE.md`, `CONTRIBUTING.md`, release check g) has to spell out the flag. Covering all three hosts takes three separate runs. How many runs the pre-flight needs depends on the sibling question of which hosts it covers.</drawback>
+    </alternative>
+    <alternative id="Host option, Antigravity default">
+      The same single-valued pytest option. A run that names none drives Antigravity, the one host the suite drives today, with Antigravity&apos;s prerequisite checks.
+      <advantage>Every existing invocation keeps its current meaning without being edited. A maintainer who only ever ran the Antigravity suite sees no change in behaviour.</advantage>
+      <drawback>One host gets a privileged default that the goal does not give it. A bare run quietly covers one host out of three, which leaves the other two unchecked in exactly the setting (an unattended pre-flight, a contributor&apos;s habit) where nobody notices. It also keeps the Antigravity binding the milestone is meant to remove, only moved into a default.</drawback>
+    </alternative>
+    <alternative id="Host option, unnamed runs all">
+      A pytest option that may be given once or several times (or take a comma-separated list) to name a subset of hosts. A run that names none drives all three hosts in one session, each test running once per host. Before any test, the prerequisite hook checks every host the run covers and stops on the first one that fails.
+      <advantage>A single bare command checks what the goal requires, all three tests on all three hosts, while naming one host still narrows a run for development or diagnosis.</advantage>
+      <drawback>A bare run fails up front unless every host&apos;s CLI and copy pass their checks. On the maintainer&apos;s machine as checked on 2026-11-09, the Antigravity and Codex copies are both stale, so the default run cannot start until both are refreshed. A full run is roughly three times as long, with each headless process bounded on the order of 20 minutes. Whether that cost is acceptable depends on the sibling questions about release pre-flight coverage and refreshing installed copies.</drawback>
+    </alternative>
+    <alternative id="Host option, unnamed runs installed">
+      A single-valued pytest option. A run that names none drives every host whose CLI resolves on `PATH` (`claude`, `agy`, `codex`), one after another in one session. The full prerequisite checks apply only to the hosts found, and the run stops when it finds none.
+      <advantage>A contributor with only one of the three CLIs can still run the bare command and get the one host they can check, while the maintainer, who has all three installed, gets full coverage from the same command.</advantage>
+      <drawback>Which hosts a bare run covers depends on what happens to be on `PATH`. The same command therefore means different things on different machines, and nothing in its output warns when a host was left out because its CLI was missing. On the maintainer&apos;s machine it behaves exactly like running all three, stale-copy stop included.</drawback>
+    </alternative>
+    <alternative id="Required host environment variable">
+      An environment variable (for example `CAIRN_SUITE_HOST`) that the prerequisite hook reads, naming exactly one host. When it is unset or empty the run stops before any test with one prerequisite-style line listing the accepted values, and an unknown value stops the same way. The suite registers no pytest option.
+      <advantage>Set once in a shell or a CI step, it carries across every later `uv run pytest` call and through any wrapper that does not forward pytest arguments, and adding it needs no pytest option registration.</advantage>
+      <drawback>The run&apos;s command line no longer shows which host it drove, so a log or a pasted command loses that fact. A value left over in the shell picks the host silently on later runs: the per-shell state the plugin&apos;s milestone addressing turned down for `--milestone` in favour of a typed path on every call.</drawback>
+    </alternative>
+    <alternative id="Host environment variable, Antigravity default">
+      An environment variable naming exactly one host. When it is unset, the run drives Antigravity, as the suite does today. No pytest option is registered.
+      <advantage>This is the smallest change to how the suite is invoked: nothing documented has to change, and choosing another host means adding one variable before the command.</advantage>
+      <drawback>It combines a privileged Antigravity default with a choice that is invisible on the command line. A forgotten or stale variable, or its absence, decides the host without any sign in the command. A bare run covers one host out of three.</drawback>
+    </alternative>
+    <alternative id="Host environment variable, unnamed runs all">
+      An environment variable that may name one host or a comma-separated subset. When it is unset, the run drives all three hosts in one session, and before any test the prerequisite hook checks every host the run covers.
+      <advantage>The bare command gives full coverage, and a shell or CI step can narrow every run to one host once, without repeating a flag.</advantage>
+      <drawback>It shares the all-hosts default&apos;s costs: a bare run that cannot start while any copy is stale (both are stale on the maintainer&apos;s machine today), and roughly three times the run time. It adds the environment variable&apos;s costs too: the narrowing is invisible in the command, and a leftover value silently narrows later runs.</drawback>
+    </alternative>
+    <alternative id="Host environment variable, unnamed runs installed">
+      An environment variable naming exactly one host. When it is unset, the run drives every host whose CLI resolves on `PATH`, one after another in one session, with the full prerequisite checks applied to those hosts and a stop when none is found.
+      <advantage>A bare run adapts to the machine, and a shell that has settled on one host keeps using it, with no flag on any command.</advantage>
+      <drawback>Neither the command nor the shell&apos;s visible state reliably says which hosts a run covered. That depends both on `PATH` and on a variable that may be left over, so two identical commands can test different hosts with nothing in the output to say so.</drawback>
+    </alternative>
+    <alternative id="Parametrized per host, unnamed runs all">
+      Each test is parametrized over the three hosts, one test case per host with the host as its id, and a run chooses hosts through pytest&apos;s own selection (`-k codex`, or a per-host marker with `-m`). It needs no option or variable of the suite&apos;s own. A run that selects nothing runs every case, so it covers all three hosts. Because selection is known only after collection, the prerequisite check either runs for all three hosts in `pytest_cmdline_main`, or moves to a collection-time hook that checks only the hosts whose cases were selected.
+      <advantage>Selection uses standard pytest tooling with nothing invented, and each host&apos;s result appears as its own named test outcome. One run&apos;s report therefore shows per host which test passed or failed, which suits the goal&apos;s &quot;pass against all three hosts&quot;.</advantage>
+      <drawback>Selecting hosts with `-k` matches substrings and can pick up unintended cases. The prerequisite hook either loses the before-collection, one-line, exit-1 stop for a selected host (when it moves to a collection hook) or refuses a single-host run because some unselected host&apos;s copy is stale (when it checks all three). A bare run has the all-hosts costs: it cannot start while any copy is stale, and it takes about three times as long.</drawback>
+    </alternative>
+    <alternative id="Parametrized per host, uninstalled skipped">
+      Each test is parametrized over the three hosts and selected through `-k`/`-m`, as above. A host whose CLI is missing from `PATH` has its cases skipped with a reason that names it, while the hosts that are present get the full prerequisite checks and stop the run on a failure. A run that selects nothing therefore covers every installed host.
+      <advantage>The suite runs on any contributor&apos;s machine with any subset of the CLIs, and every case left out still shows in the report as a named skip rather than disappearing.</advantage>
+      <drawback>It rejects the suite&apos;s settled contract that a missing prerequisite stops the run and is never a skip. An unattended pre-flight can then pass with a host&apos;s tests all skipped, which is exactly the silent gap that contract exists to prevent. It also carries the parametrized form&apos;s `-k` substring matching and its split prerequisite timing.</drawback>
+    </alternative>
   </open-question>
   <open-question id="Installed copy location">
     <question>How does the suite find the installed plugin copy of Claude Code and of Codex, whose host definitions record no install path? Antigravity&apos;s copy sits at the fixed global path ~/.gemini/config/plugins/cairn, held as a suite constant. On the maintainer&apos;s machine Claude Code loads the plugin straight from this checkout&apos;s hosts/claude through the directory marketplace, with versioned copies also under ~/.claude/plugins/cache/cairn/cairn/, and Codex copies it at install time to a versioned directory under ~/.codex/plugins/cache/cairn/cairn/.</question>
