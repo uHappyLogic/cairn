@@ -1,1 +1,47 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Host selection per run">
+    <question>How does a run of the on-demand suite name the host it drives (Claude Code, Antigravity, or Codex), and what does a run that names none do? The suite today is bound to Antigravity by module constants: it reads no pytest option or environment variable and parametrizes no test. The two choices are asked together because they constrain each other: a mechanism such as one parametrized case per host already fixes the unnamed run as every host, so not every pairing of mechanism and unnamed-run behaviour is viable.</question>
+  </open-question>
+  <open-question id="Installed copy location">
+    <question>How does the suite find the installed plugin copy of Claude Code and of Codex, whose host definitions record no install path? Antigravity&apos;s copy sits at the fixed global path ~/.gemini/config/plugins/cairn, held as a suite constant. On the maintainer&apos;s machine Claude Code loads the plugin straight from this checkout&apos;s hosts/claude through the directory marketplace, with versioned copies also under ~/.claude/plugins/cache/cairn/cairn/, and Codex copies it at install time to a versioned directory under ~/.codex/plugins/cache/cairn/cairn/.</question>
+  </open-question>
+  <open-question id="Installed copy freshness check">
+    <question>What must the prerequisite check require of the chosen host&apos;s installed plugin copy before any test runs? For Antigravity it requires the copy to be byte-identical, file for file, to the committed built tree hosts/antigravity/. On Claude Code the plugin can be loaded directly from this checkout&apos;s hosts/claude through the directory marketplace, where that comparison holds trivially, and on Codex the copy is a snapshot of hosts/codex/plugins/cairn/ taken at install time under the version it was installed at.</question>
+  </open-question>
+  <open-question id="Host tool-call record assertions">
+    <question>Which of the assertions that read the host&apos;s own tool-call records do the tests keep on all three hosts? Today the plugin-root test reads Antigravity&apos;s stream-json records to assert that no agent was dispatched, that a file read under the installed root&apos;s shared/ directory completed, and that a shell call running task_list.py insert under that root completed; each dispatch test reads them to assert exactly one dispatch of the named agent with the given prompt and no write or shell tool used by the dispatching process. Claude Code (--output-format stream-json) and Codex (codex exec --json) emit records of other shapes that the repository holds no parser for, and every other assertion of the three tests reads only files and git state.</question>
+  </open-question>
+  <open-question id="Antigravity tilde-path pin">
+    <question>What becomes of the plugin-root test&apos;s assertion that every file read attempted with a ~ path ended in ERROR, given that every test of the host-generic suite is to check behaviour that is the same on every host? The assertion pins that Antigravity&apos;s file-reading tool refuses the tilde literal its tree renders as the plugin root; the Claude Code and Codex trees render the root as a variable the host resolves, so no tilde path arises there.</question>
+  </open-question>
+  <open-question id="Agent dispatch test vehicle">
+    <question>How do the two agent-dispatch tests get their agent dispatched on each host? Today each test&apos;s own prompt tells the headless process to call Antigravity&apos;s invoke_subagent with the agent&apos;s bare name and the real three-line dispatch prompt, so no orchestrator skill stands between the test and the agent. Claude Code dispatches through its Agent tool by the namespaced name cairn:&lt;agent&gt;, and Codex registers no agent name: its orchestrators start a generic subagent whose prompt opens by telling it to read the plugin&apos;s agent file under the installed root.</question>
+  </open-question>
+  <open-question id="Headless run time limit">
+    <question>What bounds a headless run of the suite on Claude Code and on Codex? The suite holds no wall-clock limit of its own: each Antigravity run is bounded only by agy&apos;s own --print-timeout 20m, and neither claude nor codex exec lists a time limit for a print run in its help.</question>
+  </open-question>
+  <open-question id="Codex sandbox mode">
+    <question>Under which approval and sandbox mode does the suite run codex exec? docs/ways-of-using-cairn.md documents the headless form with --dangerously-bypass-approvals-and-sandbox, while the Codex host definition&apos;s hands-on check was made under the workspace-write sandbox. The tests have the run commit in a git repository seeded under pytest&apos;s temporary directory and have the dispatched agents write to a scratch directory created there too.</question>
+  </open-question>
+  <open-question id="Suite directory name">
+    <question>What is the host-generic suite called? The name is carried by its directory at the repository root (today agy_tests/), by its command (uv run pytest agy_tests), by the prose that refers to it (the agy suite), and by the one line its prerequisite check prints (agy suite prerequisite missing: ...), which the release pre-flight quotes.</question>
+  </open-question>
+  <open-question id="Fixture project directory name">
+    <question>Is the suite&apos;s fixture project, tracked at tests/fixtures/agy_project/, renamed along with the suite? Its path is named in CLAUDE.md&apos;s milestones-tool invariant and in the suite&apos;s conftest, and tests/test_milestones_tasks.py uses it as a synthetic commit path in three tests.</question>
+  </open-question>
+  <open-question id="Refreshing stale installed copies">
+    <question>How do the installed plugin copies get brought up to date so that this milestone&apos;s tasks can run the suite to a pass on all three hosts? The suite writes nothing to the installation it drives and stops before any test when the copy differs from the built tree. On the maintainer&apos;s machine, checked 2026-11-09, the Antigravity copy differs from hosts/antigravity/ and Codex holds cairn 1.7.6, a tree older than hosts/codex/plugins/cairn/.</question>
+  </open-question>
+  <open-question id="Release pre-flight host coverage">
+    <question>Against which hosts does the release pre-flight run the suite, and on which changed paths? Today check g runs the Antigravity-only suite when git diff since the last release tag prints anything under scripts/hosts/antigravity/, core/agents/*.md, scripts/build_hosts.py, or agy_tests/, and CONTRIBUTING.md asks for a run before committing a change to the same path set, which names neither the Claude Code nor the Codex host definition. The two choices are asked together because they constrain each other: running only the hosts a change touched needs trigger paths kept per host, which one shared path set cannot give.</question>
+  </open-question>
+  <open-question id="Per-host suite values home">
+    <question>Where do the suite&apos;s per-host values live: the CLI command and its flags, the plugin directory in the built tree, the installed root, and whatever tool names and record shapes the tests read? Today they are Antigravity-bound module constants and fixtures in the suite&apos;s Python files, while everything else about a host is declared under scripts/hosts/&lt;host&gt;/, where adding a host needs no host-specific Python.</question>
+  </open-question>
+  <open-question id="Hands-on block re-records">
+    <question>Does this milestone update the dated hands-on blocks heading scripts/hosts/claude/settings.toml and scripts/hosts/codex/settings.toml once the suite passes on those hosts? Each block is the one record of a host&apos;s hands-on check, naming the installed version and the points the run covered. Antigravity&apos;s cites the suite for its 2026-10-26 re-check; Claude Code&apos;s (2026-10-18, claude 2.1.302, its dispatch points carried forward unchecked from 2026-10-13) and Codex&apos;s (2026-10-13, under the workspace-write sandbox) record manual runs only.</question>
+  </open-question>
+  <open-question id="Host integration defects scope">
+    <question>When a suite test fails on a host because of the plugin&apos;s integration for that host and not because of the suite, is fixing the plugin (a slot value, a host definition, or a file under core/) part of this milestone? The goal requires the three existing tests to pass against all three hosts, and no automated test has driven claude or codex before.</question>
+  </open-question>
+</open-questions>
