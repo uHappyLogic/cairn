@@ -4,7 +4,7 @@ its record of finished work, read from its git log.
 Usage: python3 <plugin root>/tools/milestones.py live [MILESTONE_PATH]
        python3 <plugin root>/tools/milestones.py gate MILESTONE_PATH
        python3 <plugin root>/tools/milestones.py tasks PATH [--with-body]
-       python3 <plugin root>/tools/milestones.py milestones PATH
+       python3 <plugin root>/tools/milestones.py milestones (PATH | --milestone MILESTONE_PATH) [--last N]
        python3 <plugin root>/tools/milestones.py summary MILESTONE_PATH
        python3 <plugin root>/tools/milestones.py record PATH
        python3 <plugin root>/tools/milestones.py since MILESTONE_PATH [--milestones]
@@ -99,7 +99,7 @@ Subcommands:
       When no task commit changed PATH the tool prints nothing and exits 0 if PATH is
       present in the working tree or was changed by any commit at all, and refuses
       otherwise, a path that is neither being most likely mistyped.
-  milestones PATH
+  milestones (PATH | --milestone MILESTONE_PATH) [--last N]
       print one line for every milestone, live or finished, that changed PATH through a task
       commit (a commit the tasks query lists for PATH and joins to that milestone) or whose
       scope overlaps PATH: the scope contains PATH or lies under it, read lexically from
@@ -115,6 +115,13 @@ Subcommands:
       the finish commit's author timestamp, those sharing a timestamp keeping git's order.
       A PATH neither present in the working tree nor changed by any commit is refused; one
       that is, with no milestone to list, prints nothing and exits 0.
+      With --milestone MILESTONE_PATH in place of PATH, read and refused as the gate query
+      reads and refuses it, the query prints the overview of that milestone's scope: exactly
+      what it prints with that scope as PATH ("." for the repository root), the named
+      milestone included when it is listed there; the milestone it names need not be live.
+      With --last N, N a whole number, every live line is printed and only the N newest
+      finished lines, by the finish commit's author timestamp, the order they are printed in;
+      without it every finished line is printed. Exactly one of PATH and --milestone is given.
   summary MILESTONE_PATH
       print one milestone's summary, MILESTONE_PATH being its path exactly as the milestones
       query prints it, trailing slash included. The first line is a single field: the
@@ -193,8 +200,8 @@ Output and error contract:
     working tree nor changed by any commit and a summary or show MILESTONE_PATH naming neither
     a live nor a finished milestone (the reason naming the value as given), a shallow
     repository, which the gate and since queries refuse naming "git fetch --unshallow", and a
-    live, gate, or since MILESTONE_PATH with no milestones/ container (the reason naming the
-    value as given), a git command that could not be run or failed (outside a git repository, for
+    live, gate, or since MILESTONE_PATH or a milestones --milestone value with no milestones/
+    container (the reason naming the value as given), a git command that could not be run or failed (outside a git repository, for
     instance), the reason naming the command and its exit status and carrying git's own
     message folded to one line, and a live milestone's requirements.md that could not be read;
     a malformed invocation gets
@@ -355,7 +362,13 @@ title, read as the live query reads it for a live milestone and from the first
 line of the finish commit's body for a finished one ("-" when empty). Every live
 line stands above every finished one, the live lines by path, the finished ones
 newest first by the finish commit's author timestamp. A PATH neither present in
-the working tree nor changed by any commit is refused."""
+the working tree nor changed by any commit is refused.
+With --milestone MILESTONE_PATH in place of PATH, read lexically relative to the
+workspace root and refused when it names no directory directly inside a
+milestones/ container, as for the gate query, the query prints the overview of
+that milestone's scope, exactly what it prints with the scope as PATH ("." for
+the root); the milestone it names need not be live. With --last N every live
+line is printed and only the N newest finished lines; without it, every one."""
     + "\n\n"
     + FINISHED_DEFINITION
 )
@@ -1001,8 +1014,8 @@ def task_line(commit):
 
 
 def required_milestone(path):
-    """A live, gate, or since MILESTONE_PATH as components, as named_milestone reads it, an
-    empty one or one with no milestones/ container refused."""
+    """A live, gate, or since MILESTONE_PATH, or a milestones --milestone value, as components,
+    as named_milestone reads it, an empty one or one with no milestones/ container refused."""
     if not path:
         raise ToolError("the MILESTONE_PATH given is empty")
     components = named_milestone(path)
@@ -1069,10 +1082,31 @@ def cmd_tasks(args):
     return 0
 
 
+def bounded(listed, last):
+    """The listed milestones with every live one kept and, when a bound is given, only that many
+    of the finished ones, which stand after the live ones newest first."""
+    if last is None:
+        return listed
+    live = [milestone for milestone in listed if milestone.state == LIVE]
+    finished = [milestone for milestone in listed if milestone.state != LIVE]
+    return live + finished[:last]
+
+
 def cmd_milestones(args):
-    listed, _ = listed_milestones(args.path)
-    sys.stdout.write("".join(milestone_line(milestone) for milestone in listed))
+    path = args.path
+    if args.milestone is not None:
+        scope = required_milestone(args.milestone)[:-2]
+        path = "/".join(scope) or "."
+    listed, _ = listed_milestones(path)
+    sys.stdout.write("".join(milestone_line(milestone) for milestone in bounded(listed, args.last)))
     return 0
+
+
+def whole_number(text):
+    """A --last value: a whole number, zero included; anything else is argparse's refusal."""
+    if not re.fullmatch(r"[0-9]+", text):
+        raise argparse.ArgumentTypeError(f"invalid whole number: {text!r}")
+    return int(text)
 
 
 def resolved_milestone(path):
@@ -1225,10 +1259,26 @@ def build_parser():
         epilog=HISTORY_LIMITS,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    milestones_parser.add_argument(
+    milestones_target = milestones_parser.add_mutually_exclusive_group(required=True)
+    milestones_target.add_argument(
         "path",
         metavar="PATH",
+        nargs="?",
         help="a file or directory, read by git relative to the working directory",
+    )
+    milestones_target.add_argument(
+        "--milestone",
+        metavar="MILESTONE_PATH",
+        help=(
+            "in place of PATH, a milestone directory directly inside a milestones/ container, read "
+            "relative to the workspace root, whose scope's overview is printed"
+        ),
+    )
+    milestones_parser.add_argument(
+        "--last",
+        metavar="N",
+        type=whole_number,
+        help="print every live line and only the N newest finished lines",
     )
     milestones_parser.set_defaults(func=cmd_milestones)
 
