@@ -92,5 +92,9 @@ The one other live milestone stands in the same root container and is started, s
 
 - **Benchmark chains.** Both cairn deliveries of `ideas/benchmark_for_cairn.md` keep their one starting-state line in place and their lists unchanged. The draft's chain text gains one statement of why: the existing line already stands where the ways-of-using rule puts the refresh, directly ahead of the first review pass, and in a single-milestone run nothing outside the milestone's directory lands between it and derivation, so a second line would end on the no-op line every time. The expected-lines list takes the new no-op line from the skill reference's table.
 
+### The host-suite test
+
+- **Second milestone's state.** The second, overlapping milestone reaches the host already finished. Test-side code local to the new test, a helper or seeding variant beside the unchanged `seeded_repo`, builds the history on top of the seed in this order: the first milestone's `Starting-state: <path>` commit, then the second milestone's files added, its `Task-completion:` commits, and its `Milestone-finish: <path>` commit removing its directory, made through the plugin's commit tool. Only one host process runs, `/cairn:derive-tasks --milestone …`. The shared one-commit seed and the other host tests that use it are left as they are.
+
 ## Out of Scope
 
