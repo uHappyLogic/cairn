@@ -90,5 +90,7 @@ The one other live milestone stands in the same root container and is started, s
 
 - **Execution chain lines.** Each of the three chains that derive and complete tasks carries exactly one alternatives line, one recommend line, and one sweep line between its opening review and its derivation line, in that order, and nothing after the sweep. "Executing tasks" gains the alternatives and recommend lines ahead of its sweep. "Answering the questions that matter to you" gains an alternatives line after its hand-answer lines and ahead of its existing recommend line. "Putting more intelligence into a stuck milestone" keeps its own alternatives, recommend, and sweep lines as that pass. The new lines take the model and effort settings the "Starting a milestone" chain gives them.
 
+- **Benchmark chains.** Both cairn deliveries of `ideas/benchmark_for_cairn.md` keep their one starting-state line in place and their lists unchanged. The draft's chain text gains one statement of why: the existing line already stands where the ways-of-using rule puts the refresh, directly ahead of the first review pass, and in a single-milestone run nothing outside the milestone's directory lands between it and derivation, so a second line would end on the no-op line every time. The expected-lines list takes the new no-op line from the skill reference's table.
+
 ## Out of Scope
 
