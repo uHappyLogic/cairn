@@ -60,5 +60,7 @@ The one other live milestone stands in the same root container and is started, s
 
 - **Show argument.** `show` takes only `MILESTONE_PATH` and prints that milestone's `requirements.md` whole: from the working tree when the milestone is live, from the finish commit's parent when it is finished. It takes no FILE argument. The question document and the task list are served by no query, and no file-absent case arises, since every milestone, those from before the question-document split included, holds `requirements.md` at its finish parent.
 
+- **Scope argument.** The starting-state procedure and the review pass pass the milestone path they already resolved, as a runner does to `gate`, and the tool derives the scope: the path is read lexically as `gate` reads MILESTONE_PATH and refused with an `Error:` line when it names no directory directly inside a `milestones/` container. `live` gains an optional MILESTONE_PATH and with it lists every other live milestone, started or defined, whose scope equals, contains, or lies under the named one's, the named milestone left out as `gate` leaves it out; with no argument it prints what it prints today. `milestones` gains a separate milestone-path form beside its unchanged `milestones PATH`, a flag or a distinct argument so that a PATH keeps today's reading, whose overview is the one `milestones <scope>` would print.
+
 ## Out of Scope
 
