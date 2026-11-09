@@ -58,5 +58,7 @@ The one other live milestone stands in the same root container and is started, s
 
 - **Sibling preparation commits.** In its broad form, without `--milestones`, `since` leaves out a commit when every path it changed lies inside the directory of another milestone that is live and `defined` now, read from the tree as `live` reads it. Every commit of a currently started sibling counts, one that touches only its own directory included, and so does every commit of a finished one, its finish included. A commit touching any path outside such a directory counts in full, so the broad form stays a superset of `--milestones`.
 
+- **Show argument.** `show` takes only `MILESTONE_PATH` and prints that milestone's `requirements.md` whole: from the working tree when the milestone is live, from the finish commit's parent when it is finished. It takes no FILE argument. The question document and the task list are served by no query, and no file-absent case arises, since every milestone, those from before the question-document split included, holds `requirements.md` at its finish parent.
+
 ## Out of Scope
 
