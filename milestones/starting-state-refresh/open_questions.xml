@@ -1,1 +1,56 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Since anchor subject form">
+    <question>The milestones tool&apos;s new `since` query finds a milestone&apos;s anchor, its latest `Starting-state:` commit, by subject and by the milestone&apos;s `requirements.md` path. Must the anchor carry the path-form subject `Starting-state: &lt;path&gt;` exactly, or does any commit whose subject opens with `Starting-state:` and that changed that file count, so that a starting state committed under the earlier bare-directory-name subject (as a live milestone kept in place by `/migrate-milestones` has) is still found?</question>
+  </open-question>
+  <open-question id="Since shallow clone check">
+    <question>In a shallow clone the truncated log can omit a milestone&apos;s `Starting-state:` commit, so the new `since` query would read a recorded starting state as never written. Does `since` refuse a shallow repository as `gate` does, or read whatever the log yields with the limit stated only in its help text, as the history queries do?</question>
+  </open-question>
+  <open-question id="Since sibling preparation commits">
+    <question>`since` is to list every commit after the anchor that touched the milestone&apos;s scope outside the milestone&apos;s own directory. Another live milestone&apos;s directory in the same container, or in one nested below, lies inside that scope, so its definition, review, annotation, and answer commits would each read as the ground having moved. In the broad form (without `--milestones`), do commits that change only files inside another milestone&apos;s directory count, or are they left out?</question>
+  </open-question>
+  <open-question id="Show file argument">
+    <question>The planned `show MILESTONE_PATH FILE` query prints one of a milestone&apos;s three files as it stood at the finish commit&apos;s parent, or as it stands now when the milestone is live. Finish requires an empty question document and a task list holding no section, so at a finish commit&apos;s parent only `requirements.md` holds content, and a milestone from before the question-document split has no `open_questions.xml` there at all. Which files does `show` serve: all three by a FILE argument (and then what does it do for a file that parent does not hold), or `requirements.md` alone?</question>
+  </open-question>
+  <open-question id="Scope read argument">
+    <question>The starting-state procedure reads `live` filtered to its milestone&apos;s scope and the `milestones` overview on that scope, and the review pass reads the same overview, but each runner holds only the milestone&apos;s path (`&lt;scope&gt;/milestones/&lt;slug&gt;/`). Is the scope passed as a directory the runner derives from that path itself (`.` for the root), or do the two queries accept the milestone&apos;s path and derive its scope in the tool, as `gate` does; and does the filtered `live` print include the milestone the runner is working in?</question>
+  </open-question>
+  <open-question id="Record read task bars">
+    <question>The starting state&apos;s record read has two tiers: the `milestones` overview on the scope, then a deeper read through `summary` or `show` of the milestones whose title bears on the goal. Neither prints a completed task&apos;s verified bar, which only `tasks &lt;path&gt; --with-body` does, and only for tasks completed since bars moved into commit bodies. Does the deeper read include that bar read for the milestones that bear, or stop at their summaries and recorded decisions?</question>
+  </open-question>
+  <open-question id="Goal revision staleness">
+    <question>The starting state is explored with the milestone&apos;s goal as its filter, but `since` looks only at commits outside the milestone&apos;s own directory, so a `Goal-revision:` commit made after the latest `Starting-state:` commit leaves the anchor line standing alone and `specify-milestone-starting-state` would end on its no-op line without exploring. Does a goal revision recorded after the anchor count as a reason to explore again?</question>
+  </open-question>
+  <open-question id="Unchanged refresh repeat">
+    <question>A refresh that explores and finds nothing to change in the `## Relevant starting state` section lands no commit, so the anchor stays where it was and every later run in the same stale window (the skill run again, or the next `derive-tasks` or `submit-task` entry) explores again. How is that repeated exploration bounded, if at all?</question>
+  </open-question>
+  <open-question id="Starting-state read failure">
+    <question>The starting-state procedure opens with the milestones tool&apos;s `since` query and then reads the record and what is in flight through `milestones`, `summary`, `show`, and `live`. When one of those calls fails (the tool refuses, or git is unavailable), what does each of the procedure&apos;s three runners (`specify-milestone-starting-state`, `derive-tasks`, `submit-task`) do: stop on a fixed line with nothing written, or go on without that read?</question>
+  </open-question>
+  <open-question id="Pick-clearing call failure">
+    <question>During a refresh the starting-state procedure clears the standing picks the changed facts undermine with one `strip --recommendation` call, made after the section has been edited. When that call fails, does the runner stop with the edit left uncommitted, as `modify-milestone-goal` does on its own failed clearing call, or commit the refreshed section with the picks left standing; and does the same hold inside `derive-tasks` and `submit-task`, where a stale state is meant never to stop the writer?</question>
+  </open-question>
+  <open-question id="No anchor at task entry">
+    <question>`derive-tasks` and `submit-task` are to refresh the starting state when `since --milestones` prints a line beyond the anchor line. When it prints nothing at all, because the milestone has no `Starting-state:` commit (the step was skipped, or the section was written by hand or arrived in the milestone&apos;s first commit), does the writer follow the starting-state procedure as a first run and commit it, or go on to its own write with the section as it stands?</question>
+  </open-question>
+  <open-question id="Gate position in writers">
+    <question>`derive-tasks` and `submit-task` check the scope gate directly ahead of their write call today, after their reads and their authoring. The staleness check has to follow the gate and precede those reads, which moves the gate to the front of each writer. Is the gate then checked once, at the front, or again directly before the write call as well, now that the reads, a possible refresh, and the authoring stand between the check and the write?</question>
+  </open-question>
+  <open-question id="Review overview bound">
+    <question>The review pass is to read the `milestones` overview on its milestone&apos;s scope, bounded to the recent milestones, on every pass, but the `milestones` query takes no bound today and prints every milestone that ever touched the scope (56 lines on this repository&apos;s root). How is that overview bounded to the recent ones?</question>
+  </open-question>
+  <open-question id="Review overview read failure">
+    <question>The review pass gains one fixed call to the milestones tool at its inventory step, the `milestones` overview. When that call fails (the tool refuses, or git is unavailable), does the pass stop on a fixed line of its own before changing anything, or report the failure and carry on reviewing from the milestone&apos;s two documents alone?</question>
+  </open-question>
+  <open-question id="Execution chain loop lines">
+    <question>Each of the three chains on the ways-of-using page that derive and complete tasks (&quot;Answering the questions that matter to you&quot;, &quot;Putting more intelligence into a stuck milestone&quot;, &quot;Executing tasks&quot;) is to open with the refresh line and one review pass. A question that review raises needs an alternatives line, a recommend line, and an answer line before `derive-tasks` will run, and two of the three chains carry no alternatives line today. What lines does each of those chains carry between its opening review and its derivation line?</question>
+  </open-question>
+  <open-question id="Benchmark chain refresh line">
+    <question>The benchmark draft&apos;s two cairn deliveries each run one unbroken chain per phase: the starting-state line, the bounded review loop, then the derivation line directly behind the loop. Once every execution chain on the ways-of-using page opens with the refresh line and a review pass, do the benchmark deliveries gain a second starting-state line ahead of their derivation line, or keep the one they have?</question>
+  </open-question>
+  <open-question id="Refresh test holder state">
+    <question>The host-suite test needs `derive-tasks` to find its milestone&apos;s scope free and its starting state stale, which takes a second, overlapping milestone whose task or finish commits land after the first milestone&apos;s `Starting-state:` commit and which no longer holds the scope when `derive-tasks` runs. Is that second milestone seeded as already finished in the seeded repository&apos;s history, or left live in the seed and finished through the host by the test before it derives?</question>
+  </open-question>
+  <open-question id="Host test acceptance runs">
+    <question>The new host-suite test is to assert the refresh on all three hosts, but the suite runs on demand, outside CI, and can pass on a host only after the rebuilt tree is committed and that host&apos;s installed plugin copy is refreshed by hand. Does completing this milestone require a passing run of the test against each of the three hosts, the task that runs it refreshing the installed copies first, or only that the test is delivered and passes on the hosts available when it lands?</question>
+  </open-question>
+</open-questions>
