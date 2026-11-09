@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Review Pass Weighs Decisions Against Facts
-
-Add one bullet to the gap-surfacing step of `core/skills/review-milestone-requirements/SKILL.md`: a recorded decision resting on a `## Relevant starting state` fact that no longer holds becomes an ordinary open question, authored like any other gap and never under the conflict questions' fixed opening phrase, since there is no second entry to rewrite, so that its answer supersedes or confirms the decision through the answer core's existing rewrite rule. This is the one place a starting-state refresh's changed facts are weighed against the decisions, the refresh itself rewriting none. Verified by the rebuilt host trees and a read of the rendered step showing the bullet beside its four existing questions with the `## Decisions` consistency step unchanged.
-
----
-
 ## Derive-Tasks Gates First and Refreshes
 
 Make `core/skills/derive-tasks/SKILL.md` follow `check-scope-gate.md` twice, each time as its own step: at the front, directly after resolution and before everything else, and again directly ahead of the fixed write call, which stays gate-free, a run deriving no brief skipping the second check as it skips the write. Between the first gate and its reads it runs `since <MILESTONE_DIR> --milestones`: on no output or the anchor alone it explores nothing, prints nothing about the starting state, and goes on with the section as it stands, and on any line beyond the anchor it follows `starting-state-procedure.md` in place and commits the refreshed section, with `open_questions.xml` when a pick was cleared, under `Starting-state: <MILESTONE_DIR>` as a commit of its own that prints no line, before it reads the documents it decomposes. A failed `since` call, or either stop of the procedure, stops the whole run under the procedure's line with no task-list write and no task commit, and a refresh commit that landed before a closed second gate stays committed; verified by the rebuilt host trees, `tests/test_fixed_console_lines.py`, and a read of the rendered skill for each `since --milestones` outcome and both gate positions.

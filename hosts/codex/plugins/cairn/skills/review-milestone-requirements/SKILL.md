@@ -107,6 +107,7 @@ Now look for questions the documents don't yet capture — paying special attent
 - Are there edge cases not addressed?
 - Are there dependencies on systems not yet described?
 - Are there constraints implied but not stated?
+- Does a recorded decision rest on a `## Relevant starting state` fact that no longer holds? Ask it as an ordinary open question, authored below like any other gap and never under step 4's conflict opening, since there is no second entry to rewrite, so that its answer supersedes or confirms the decision through the answer's own rewrite of an entry it plainly supersedes. This is the one place a refreshed starting state is weighed against the decisions: the refresh rewrites none of them.
 
 Add only genuinely new questions — don't re-raise anything already present (you just inventoried them in step 1), and do not invent requirements: only annotate gaps relative to what is already written.
 
