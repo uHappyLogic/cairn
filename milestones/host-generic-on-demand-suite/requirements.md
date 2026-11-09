@@ -75,5 +75,7 @@ The trigger path set names one host definition, Antigravity's, and neither of th
 
 - **Run time limit.** The suite holds one wall-clock limit of its own, enforced the same way on all three hosts: the shared run fixture passes a timeout of 20 minutes, one value for every host, to the subprocess it starts, and a run that exceeds it is killed, its whole process group with it, and fails its test. `--print-timeout` is dropped from the `agy` command line, so the suite's limit is the only bound on every host.
 
+- **Codex sandbox mode.** Every Codex run of the suite passes `--dangerously-bypass-approvals-and-sandbox`, the flag `docs/ways-of-using-cairn.md` gives for headless Codex chains: no approval prompts and no sandbox, so the seeded repository under `tmp_path`, its `.git` directory, and the test-created scratch directory are all writable with no further flag. The mode is fixed in the suite, not chosen per run.
+
 ## Out of Scope
 
