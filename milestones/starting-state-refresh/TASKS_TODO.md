@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Show Query Over Live and Finished Milestones
-
-Add `show MILESTONE_PATH` to `core/tools/milestones.py`, taking no FILE argument and printing that milestone's `requirements.md` whole, from the working tree when the milestone is live and from its finish commit's parent when it is finished, so a past milestone's recorded decisions can be read without a hand-typed git command; a path naming no milestone is refused as `summary` refuses it, and the help text says the question document and the task list are served by no query. Pinned by `tests/test_milestones_*.py` tests on a temporary git repository covering a live milestone, a finished one, a finished one whose parent holds no `open_questions.xml`, and the refusal, with the host trees rebuilt.
-
----
-
 ## Live Query Filtered by Milestone Path
 
 Give the `live` query of `core/tools/milestones.py` an optional MILESTONE_PATH: with it the query lists, in its unchanged three-field line, every other live milestone, started or defined, whose scope equals, contains, or lies under the named milestone's, the named one left out as `gate` leaves it out, reading the path lexically as `gate` reads its argument and refusing on one `Error:` line a path that names no directory directly inside a `milestones/` container; with no argument it prints what it prints today. It is the starting-state procedure's in-flight read, the started field and the scope filter in one call. Pinned by tests beside `tests/test_milestones_live.py` covering overlap in both directions, a disjoint scope, a defined and a started sibling both listed, the refusal, and the unchanged no-argument print, with the host trees rebuilt.

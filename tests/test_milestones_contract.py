@@ -52,7 +52,7 @@ def test_the_help_states_that_the_started_test_reads_a_shallow_clones_log(tmp_pa
     assert 'reads "defined"' in text
 
 
-@pytest.mark.parametrize("query", ["milestones", "summary", "record"])
+@pytest.mark.parametrize("query", ["milestones", "summary", "record", "show"])
 def test_each_history_querys_help_states_the_shallow_clone_limit(tmp_path, run_milestones, query):
     result = run_milestones(tmp_path, query, "--help")
     assert result.returncode == 0
@@ -67,7 +67,7 @@ def test_each_history_querys_help_states_the_shallow_clone_limit(tmp_path, run_m
 def test_the_top_level_help_states_the_finish_subject_limit_and_names_every_query(tmp_path, run_milestones):
     text = " ".join(run_milestones(tmp_path, "--help").stdout.decode("utf-8").split())
     assert "Milestone-finish: subjects naming a milestone path" in text
-    for query in ("live", "gate", "tasks", "milestones", "summary", "record", "since"):
+    for query in ("live", "gate", "tasks", "milestones", "summary", "record", "since", "show"):
         assert query in text
 
 
@@ -146,7 +146,7 @@ def test_outside_a_git_repository_gate_and_since_fail_on_one_error_line(tmp_path
     assert "git rev-parse" in line
 
 
-@pytest.mark.parametrize("args", [("milestones", "."), ("summary", FIRST), ("record", ".")])
+@pytest.mark.parametrize("args", [("milestones", "."), ("summary", FIRST), ("record", "."), ("show", FIRST)])
 def test_outside_a_git_repository_a_history_query_fails_on_one_error_line(tmp_path, run_milestones, args):
     outside = tmp_path / "outside"
     outside.mkdir()
@@ -154,7 +154,7 @@ def test_outside_a_git_repository_a_history_query_fails_on_one_error_line(tmp_pa
     assert "git" in line
 
 
-@pytest.mark.parametrize("query", ["gate", "tasks", "milestones", "summary", "record", "since"])
+@pytest.mark.parametrize("query", ["gate", "tasks", "milestones", "summary", "record", "since", "show"])
 def test_an_empty_path_is_refused(seeded, run_milestones, query):
     assert_one_error_line(run_milestones(seeded, query, ""))
 
@@ -167,7 +167,7 @@ def test_a_missing_git_fails_on_one_error_line(seeded, run_milestones, environme
     assert "git" in line
     line = assert_one_error_line(run_milestones(seeded, "live", env=env))
     assert "git" in line
-    for args in (("gate", FIRST), ("milestones", "."), ("summary", FIRST), ("record", "."), ("since", FIRST)):
+    for args in (("gate", FIRST), ("milestones", "."), ("summary", FIRST), ("record", "."), ("since", FIRST), ("show", FIRST)):
         line = assert_one_error_line(run_milestones(seeded, *args, env=env))
         assert "git" in line
 
@@ -177,7 +177,7 @@ def test_an_unreadable_live_requirements_file_fails_on_one_error_line(seeded, ru
     requirements = seeded / FIRST / "requirements.md"
     requirements.chmod(0)
     try:
-        for args in (("milestones", "."), ("summary", FIRST), ("record", ".")):
+        for args in (("milestones", "."), ("summary", FIRST), ("record", "."), ("show", FIRST)):
             line = assert_one_error_line(run_milestones(seeded, *args))
             assert "requirements.md" in line
     finally:
@@ -208,6 +208,9 @@ def test_an_unreadable_live_requirements_file_fails_on_one_error_line(seeded, ru
         ("since",),
         ("since", FIRST, FIRST),
         ("since", FIRST, "--with-body"),
+        ("show",),
+        ("show", FIRST, "requirements.md"),
+        ("show", FIRST, "--with-body"),
     ],
 )
 def test_a_malformed_invocation_exits_2(seeded, run_milestones, args):
@@ -243,6 +246,8 @@ def test_a_query_writes_nothing(seeded, make_commit, run_milestones, git, enviro
         ("since", FIRST),
         ("since", FIRST, "--milestones"),
         ("since", "nope/"),
+        ("show", FIRST),
+        ("show", "nope/"),
     ):
         run_milestones(seeded, *args)
     after = (

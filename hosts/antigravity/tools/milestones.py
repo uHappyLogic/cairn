@@ -8,13 +8,16 @@ Usage: python3 <plugin root>/tools/milestones.py live
        python3 <plugin root>/tools/milestones.py summary MILESTONE_PATH
        python3 <plugin root>/tools/milestones.py record PATH
        python3 <plugin root>/tools/milestones.py since MILESTONE_PATH [--milestones]
+       python3 <plugin root>/tools/milestones.py show MILESTONE_PATH
 
 Run from the workspace root. Every git read is a read-only git command (git log, git ls-files,
-and the gate and since queries' git rev-parse) run in the working directory the tool is started from, so
-git reads PATH relative to that directory, literally rather than as a pattern; the one file
-read is each live milestone's requirements.md, read from the working tree for its title and its
-goal. The tool writes no file, commits nothing, reads no file of its own, and never reads
-milestones/README.md.
+the gate and since queries' git rev-parse, and the show query's git show) run in the working
+directory the tool is started from, so git reads PATH relative to that directory, literally
+rather than as a pattern; the one file read is each live milestone's requirements.md, read from
+the working tree for its title and its goal and by the show query whole, and the one file
+content read from a commit is a finished milestone's requirements.md at its finish commit's
+parent, read by the show query. The tool writes no file, commits nothing, reads no file of its
+own, and never reads milestones/README.md.
 
 A live milestone is a directory holding a tracked file that matches the discovery pattern
 **/milestones/*/requirements.md and is present in the working tree: "**/" stands for any run
@@ -155,6 +158,13 @@ Subcommands:
       "Milestone-finish:". The broad form therefore lists every line --milestones lists. The
       query first runs "git rev-parse --is-shallow-repository" and refuses when that prints
       "true", in both forms and before any log read: the remedy is "git fetch --unshallow".
+  show MILESTONE_PATH
+      print one milestone's requirements.md whole, verbatim, MILESTONE_PATH being its path
+      exactly as the milestones query prints it, trailing slash included: for a live milestone
+      the file as it stands in the working tree, and for a finished one the file as it stood at
+      its finish commit's parent, read with "git show". The query takes no FILE argument: the
+      question document and the task list are served by no query. A MILESTONE_PATH that names
+      neither a live nor a finished milestone is refused, as the summary query refuses it.
 
 Limits:
   - the record is the git log: in a shallow clone the truncated history omits older task
@@ -176,13 +186,14 @@ Output and error contract:
   - a query prints its lines on stdout and exits 0, printing nothing for an empty result
   - every failure is exactly one line "Error: <reason>" on stderr with exit status 1 and
     nothing on stdout: a PATH or MILESTONE_PATH that is empty, a PATH neither present in the
-    working tree nor changed by any commit and a MILESTONE_PATH naming neither a live nor a
-    finished milestone (the reason naming the value as given), a shallow repository, which
-    the gate and since queries refuse naming "git fetch --unshallow", and a gate or since
-    MILESTONE_PATH with no milestones/ container (the reason naming the value as given), a git command that could not
-    be run or failed (outside a git repository, for instance), the reason naming the command
-    and its exit status and carrying git's own message folded to one line, and a live
-    milestone's requirements.md that could not be read; a malformed invocation gets
+    working tree nor changed by any commit and a summary or show MILESTONE_PATH naming neither
+    a live nor a finished milestone (the reason naming the value as given), a shallow
+    repository, which the gate and since queries refuse naming "git fetch --unshallow", and a
+    gate or since MILESTONE_PATH with no milestones/ container (the reason naming the value as
+    given), a git command that could not be run or failed (outside a git repository, for
+    instance), the reason naming the command and its exit status and carrying git's own
+    message folded to one line, and a live milestone's requirements.md that could not be read;
+    a malformed invocation gets
     argparse's own usage message and exit status 2; no traceback ever reaches the caller
 
 Standard library only; runs on Python 3.9 and later.
@@ -397,6 +408,19 @@ refused in both forms before any log read, since its truncated log can omit the
 anchor or the commits after it: run git fetch --unshallow first. A
 MILESTONE_PATH with no milestones/ container is refused."""
 
+SHOW_DESCRIPTION = (
+    """\
+Print one milestone's requirements.md whole, verbatim, MILESTONE_PATH being its
+path exactly as the milestones query prints it, trailing slash included: for a
+live milestone the file as it stands in the working tree, for a finished one the
+file as it stood at its finish commit's parent, read with git show. The query
+takes no FILE argument: the question document and the task list are served by no
+query. A MILESTONE_PATH naming neither a live nor a finished milestone is
+refused, as the summary query refuses it."""
+    + "\n\n"
+    + FINISHED_DEFINITION
+)
+
 SINCE_LIMITS = """\
 Limits:
   - two queries check for a shallow clone, gate and since, each refusing one;
@@ -448,6 +472,7 @@ class TaskCommit:
 
 @dataclass
 class FinishCommit:
+    full_hash: str
     timestamp: int
     date: str
     body: str
@@ -744,7 +769,7 @@ def finish_commits():
     )
     found = {}
     for fields, _ in parse_log(data):
-        _, _, timestamp, date, subject, body = (decoded(field) for field in fields)
+        full_hash, _, timestamp, date, subject, body = (decoded(field) for field in fields)
         if not subject.startswith(FINISH_MARKER):
             continue
         path = subject[len(FINISH_MARKER) :].strip()
@@ -754,7 +779,7 @@ def finish_commits():
             seconds = int(timestamp)
         except ValueError:
             raise ToolError(f"git log printed an author timestamp this tool cannot read: {timestamp}")
-        found[path] = FinishCommit(timestamp=seconds, date=date, body=body)
+        found[path] = FinishCommit(full_hash=full_hash, timestamp=seconds, date=date, body=body)
     return found
 
 
@@ -803,9 +828,13 @@ def is_shallow():
     return git(["rev-parse", "--is-shallow-repository"]).strip() == b"true"
 
 
-def read_text(requirements):
+def read_bytes(requirements):
     with open(requirements, "rb") as handle:
-        return decoded(handle.read())
+        return handle.read()
+
+
+def read_text(requirements):
+    return decoded(read_bytes(requirements))
 
 
 def read_title(requirements):
@@ -1019,20 +1048,29 @@ def cmd_milestones(args):
     return 0
 
 
-def cmd_summary(args):
-    path = args.milestone_path
+def resolved_milestone(path):
+    """A summary or show MILESTONE_PATH as (live requirements.md path, None) for a live
+    milestone or (None, its finish commit) for a finished one; a path naming neither is refused."""
     if not path:
         raise ToolError("the MILESTONE_PATH given is empty")
     live = dict(live_milestones())
     if path in live:
-        milestone = live_milestone(path, live[path])
+        return live[path], None
+    finish = finish_commits().get(path)
+    if finish is None:
+        raise ToolError(
+            f"the path {path} names neither a live milestone nor a finished one "
+            "(a milestone path ends in /, as the milestones query prints it)"
+        )
+    return None, finish
+
+
+def cmd_summary(args):
+    path = args.milestone_path
+    requirements, finish = resolved_milestone(path)
+    if finish is None:
+        milestone = live_milestone(path, requirements)
     else:
-        finish = finish_commits().get(path)
-        if finish is None:
-            raise ToolError(
-                f"the path {path} names neither a live milestone nor a finished one "
-                "(a milestone path ends in /, as the milestones query prints it)"
-            )
         milestone = finished_milestone(path, finish)
     sys.stdout.write("".join(line + "\n" for line in milestone.summary))
     return 0
@@ -1074,6 +1112,20 @@ def cmd_since(args):
     full_hash, anchor_line = anchor
     lines = [anchor_line] + since_lines(own, components[:-2], full_hash, args.milestones)
     sys.stdout.write("".join(lines))
+    return 0
+
+
+def cmd_show(args):
+    path = args.milestone_path
+    requirements, finish = resolved_milestone(path)
+    if finish is None:
+        data = read_bytes(requirements)
+    else:
+        name = path + DISCOVERY_PATTERN.split("/")[-1]
+        data = git(["show", "--no-textconv", finish.full_hash + "^:" + name])
+    sys.stdout.flush()
+    sys.stdout.buffer.write(data)
+    sys.stdout.buffer.flush()
     return 0
 
 
@@ -1200,6 +1252,20 @@ def build_parser():
         help="list only other milestones' task and finish commits beneath the anchor",
     )
     since_parser.set_defaults(func=cmd_since)
+
+    show_parser = subcommands.add_parser(
+        "show",
+        help="print one milestone's requirements.md, live or as it stood at its finish",
+        description=SHOW_DESCRIPTION,
+        epilog=HISTORY_LIMITS,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    show_parser.add_argument(
+        "milestone_path",
+        metavar="MILESTONE_PATH",
+        help="a milestone path, trailing slash included, as the milestones query prints it",
+    )
+    show_parser.set_defaults(func=cmd_show)
     return parser
 
 
