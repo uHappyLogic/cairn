@@ -543,11 +543,15 @@ def _claude_dispatch(host, agent, label, prompt):
 # to the parameter holding its path: the session's tool is read_file (its path in Path), and
 # view_file (AbsolutePath) is the name an agent's tools list grants and an earlier version
 # gave the session, so both count. The shell tool maps to the parameter holding its command
-# line. The dispatch tools are every tool that starts or defines an agent, and the write tools
-# every tool that writes or edits a file.
+# line. The dispatch tools are every tool whose call starts an agent: invoke_subagent, and
+# browser_subagent, which starts a browser agent. A call that only defines an agent type
+# (define_subagent) or lists, checks on, messages, or waits for an agent already started
+# (manage_subagents, send_message, manage_task, wait) starts none and is read as an other
+# call, so a session checking on the agent it dispatched makes no second dispatch. The write
+# tools are every tool that writes or edits a file.
 ANTIGRAVITY_READ_TOOLS = {"read_file": "Path", "view_file": "AbsolutePath"}
 ANTIGRAVITY_SHELL_TOOLS = {"run_command": "CommandLine"}
-ANTIGRAVITY_DISPATCH_TOOLS = {"invoke_subagent", "define_subagent", "manage_subagents", "browser_subagent"}
+ANTIGRAVITY_DISPATCH_TOOLS = {"invoke_subagent", "browser_subagent"}
 ANTIGRAVITY_WRITE_TOOLS = {
     "write_to_file",
     "replace_file_content",
@@ -574,7 +578,8 @@ def _antigravity_command_output(update):
 
 def _antigravity_calls(update):
     """The ToolCalls one step records in its final update. The step's state tells a completed
-    call, DONE, from a failed one, ERROR. A `tool` step is one call, sorted by its tool name; a
+    call, DONE, from a failed one, ERROR. A `tool` step is one call, sorted by its tool name,
+    so only a tool that starts an agent is a dispatch (ANTIGRAVITY_DISPATCH_TOOLS); a
     `subagent` step, the record a dispatch through invoke_subagent ends as, is one dispatch per
     agent its subagent_info lists, by that agent's type_name and initial_prompt."""
     name = update.get("tool_name") or ""
