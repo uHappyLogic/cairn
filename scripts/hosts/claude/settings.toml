@@ -14,7 +14,16 @@
 # 2.1.296 that this block replaces, which ran with the subagent documentation alongside,
 # sourced ALTERNATIVES_CONCURRENCY, ALTERNATIVES_PARALLELISM, and ALTERNATIVES_REPAIR, and
 # confirmed CONTEXT_FILE, COMPLETE_TASK_DISPATCH, COMPLETE_TASK_PROMPT_INSTRUCTIONS,
-# ALTERNATIVES_DISPATCH, and ALTERNATIVES_PROMPT_INSTRUCTIONS as written.
+# ALTERNATIVES_DISPATCH, and ALTERNATIVES_PROMPT_INSTRUCTIONS as written. Re-checked 2026-11-09
+# against `claude` 2.1.319 by the host-generic suite, run as
+# `uv run pytest host_tests --host claude` against the user-scope directory-marketplace install
+# refreshed from this checkout's hosts/claude: a session following a skill read the shared
+# procedures at the absolute path ${CLAUDE_PLUGIN_ROOT} resolved to, through the Bash tool with
+# cat rather than Read, ran the task-list tool there, and dispatched no agent, and both agents,
+# dispatched through the Agent tool by their cairn:-namespaced names with the three-line prompt
+# alone, landed the files only their write and shell tools produce, their dispatching session
+# writing no file and running no command of its own; the other points stand as checked on
+# 2026-10-18 and carried forward from 2026-10-13.
 # - Install: `claude plugin list` reports the plugin enabled at user scope, read from this
 #   checkout's hosts/claude through its directory marketplace. A run in a throwaway git
 #   project, started as `claude -p "/cairn:answer-all-open-questions-with-recommendation"
