@@ -99,8 +99,8 @@ git describe --tags --abbrev=0 --exclude=<VERSION>
 
 Run all seven checks. Each one blocks a route by which the release would tag something other
 than a fresh build of committed `core/`, publish into a place that does not exist or cannot
-run its traffic workflow, or ship an Antigravity host integration the installed `agy` no
-longer runs, so any failure stops the run. None of them writes anything.
+run its traffic workflow, or ship any host's integration that host's installed CLI no longer
+runs, so any failure stops the run. None of them writes anything.
 
 **a. The tracked working tree is clean.**
 
@@ -243,35 +243,61 @@ minting a second one. The badge row waits for the first workflow run because bef
 repository commands, these steps belong to the maintainer: the skill prints them and exits
 with nothing changed.
 
-**g. The host suite passes when the Antigravity host integration changed since the last
-release.** The suite under `host_tests/` drives the installed `agy` CLI against the global
-plugin copy at `~/.gemini/config/plugins/cairn`; it sits outside `testpaths`, so neither
-`uv run pytest` nor CI reaches it. It is owed a run only when its trigger set changed — the
-Antigravity host definition, the agent files, the build, or the suite itself — so list the
-paths among them that `<LAST_TAG>..HEAD` changed:
+**g. The host suite passes on every host whose integration changed since the last
+release.** The suite under `host_tests/` drives one host's installed CLI, the host chosen per
+run by its required `--host` option, against the plugin copy that host has installed; it sits
+outside `testpaths`, so neither `uv run pytest` nor CI reaches it. Each host has one trigger
+set: that host's definition directory, plus the host-neutral paths every host's integration
+shares — the agent files, the build, and the suite itself. A host is owed a run only when its
+own set changed, so list, for each host on its own, the paths of its set that
+`<LAST_TAG>..HEAD` changed, running the three commands one at a time so each output is read
+against its own host:
+
+- Claude Code, `--host claude`:
+
+  ```bash
+  git diff --name-only <LAST_TAG>..HEAD -- \
+    scripts/hosts/claude/ 'core/agents/*.md' scripts/build_hosts.py host_tests/
+  ```
+
+- Antigravity, `--host antigravity`:
+
+  ```bash
+  git diff --name-only <LAST_TAG>..HEAD -- \
+    scripts/hosts/antigravity/ 'core/agents/*.md' scripts/build_hosts.py host_tests/
+  ```
+
+- Codex, `--host codex`:
+
+  ```bash
+  git diff --name-only <LAST_TAG>..HEAD -- \
+    scripts/hosts/codex/ 'core/agents/*.md' scripts/build_hosts.py host_tests/
+  ```
+
+A host whose command prints nothing is not run: nothing its integration is built from changed
+since the last release. Every host whose command printed anything is selected, since the
+release would ship that host's integration differing from the one last released, so a change
+to a host-neutral path selects all three hosts and a change under one host's definition
+directory selects that host alone. When no command prints anything, the suite does not run
+and the check costs nothing. Otherwise run the suite once against each selected host, one
+host per run, in the order above, with `<host>` the `--host` value its command is listed
+under:
 
 ```bash
-git diff --name-only <LAST_TAG>..HEAD -- \
-  scripts/hosts/antigravity/ 'core/agents/*.md' scripts/build_hosts.py host_tests/
+uv run pytest host_tests --host <host>
 ```
 
-No output means none of them changed since the last release: the suite does not run and
-the check costs nothing. Any output means the release would ship an Antigravity integration
-that differs from the one last released, so run the suite:
-
-```bash
-uv run pytest host_tests
-```
-
-A zero exit passes the check. A non-zero exit stops the run: report pytest's output — the
+The check passes when every selected host's run exits zero. A non-zero exit on any host stops
+the run there, without running the hosts after it: report the host and pytest's output — the
 failing tests, or the one `host suite prerequisite missing:` line the suite prints before any
-test when `agy` is not on `PATH` or the copy is missing or differs from the committed
-`hosts/antigravity/` tree (a fresh build, by step e). The remedy is the maintainer's, outside
-this skill — fix the integration, or re-extract the release or copy the built tree into place
-as that line says — then re-run `/release-plugin <VERSION>`. The check keeps this step's
-no-write rule: the suite writes nothing to the installation it drives, and every agy process
-it starts runs in a seeded copy of the fixture project under a temporary directory, so
-nothing tracked changes.
+test when that host's CLI is not on `PATH`, the CLI reports no installed copy, or the copy is
+missing or differs from that host's plugin directory in the committed built tree (a fresh
+build, by step e) — `hosts/claude/`, `hosts/antigravity/`, or `hosts/codex/plugins/cairn/`.
+The remedy is the maintainer's, outside this skill — fix the integration, or bring the
+installed copy up to date by the host's documented install, as that line says — then re-run
+`/release-plugin <VERSION>`. The check keeps this step's no-write rule: the suite writes
+nothing to any installation it drives, and every process it starts runs in a seeded copy of
+the fixture project under a temporary directory, so nothing tracked changes.
 
 ### 3. Validate the version argument
 
