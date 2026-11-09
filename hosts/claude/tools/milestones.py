@@ -7,9 +7,10 @@ Usage: python3 <plugin root>/tools/milestones.py live
        python3 <plugin root>/tools/milestones.py milestones PATH
        python3 <plugin root>/tools/milestones.py summary MILESTONE_PATH
        python3 <plugin root>/tools/milestones.py record PATH
+       python3 <plugin root>/tools/milestones.py since MILESTONE_PATH [--milestones]
 
 Run from the workspace root. Every git read is a read-only git command (git log, git ls-files,
-and the gate query's git rev-parse) run in the working directory the tool is started from, so
+and the gate and since queries' git rev-parse) run in the working directory the tool is started from, so
 git reads PATH relative to that directory, literally rather than as a pattern; the one file
 read is each live milestone's requirements.md, read from the working tree for its title and its
 goal. The tool writes no file, commits nothing, reads no file of its own, and never reads
@@ -130,6 +131,30 @@ Subcommands:
       milestone listed only because its scope overlaps PATH prints its line and its summary
       alone, and "record ." prints the whole record. PATH is refused as the milestones
       query refuses it.
+  since MILESTONE_PATH [--milestones]
+      print what changed around a milestone since its starting state was written, one line
+      per commit, each three fields separated by single tab characters: the commit's
+      abbreviated hash as git's %h prints it, its author date as YYYY-MM-DD, and its subject.
+      MILESTONE_PATH is read and refused as the gate query reads and refuses it. The first
+      line is the anchor: the latest commit, the first the log lists, other than a merge,
+      that changed MILESTONE_PATH's requirements.md and whose subject opens with
+      "Starting-state:", whatever follows the marker. When no such commit exists the query
+      prints nothing at all and exits 0. Beneath the anchor stands one line for every later
+      commit, a commit other than a merge reachable from HEAD and not from the anchor, that
+      changed a path inside the milestone's scope but outside the milestone's own directory,
+      ordered newest first by author timestamp, commits sharing a timestamp keeping git's
+      order; the milestone's own task commits, those whose subject opens with
+      "Task-completion:" and which the tasks query's join joins to the milestone, are never
+      listed. Without --milestones such a commit is left out when every path it changed lies
+      inside the directory of another live milestone that reads "defined" now, by the live
+      query's started test, unless it is another milestone's task or finish commit, and the
+      milestone's own commits whose subject opens with "Goal-revision:" and which changed
+      its requirements.md are listed too. With --milestones only other milestones' task and
+      finish commits are listed: those whose subject opens with "Task-completion:" and which
+      the join does not join to the milestone, and those whose subject opens with
+      "Milestone-finish:". The broad form therefore lists every line --milestones lists. The
+      query first runs "git rev-parse --is-shallow-repository" and refuses when that prints
+      "true", in both forms and before any log read: the remedy is "git fetch --unshallow".
 
 Limits:
   - the record is the git log: in a shallow clone the truncated history omits older task
@@ -137,8 +162,8 @@ Limits:
     finish commit is cut off is neither listed by the milestones and record queries nor
     summarized; live's started test reads the same log, so there a started milestone whose
     task list was modified only in the omitted history reads "defined", with no check made
-    for it either; the gate query alone checks, refusing a shallow repository rather than
-    reading its started test there
+    for it either; two queries check, gate and since, each refusing a shallow repository
+    rather than reading its truncated log
   - only subjects opening with "Task-completion:" are read as task commits, so the record
     starts at that marker's first use (2026-09-02, in the plugin's own milestone_15); a task
     completed earlier, under the retired "Tasklist-completion:" marker that carried the task
@@ -153,8 +178,8 @@ Output and error contract:
     nothing on stdout: a PATH or MILESTONE_PATH that is empty, a PATH neither present in the
     working tree nor changed by any commit and a MILESTONE_PATH naming neither a live nor a
     finished milestone (the reason naming the value as given), a shallow repository, which
-    the gate query refuses naming "git fetch --unshallow", and a gate MILESTONE_PATH with no
-    milestones/ container (the reason naming the value as given), a git command that could not
+    the gate and since queries refuse naming "git fetch --unshallow", and a gate or since
+    MILESTONE_PATH with no milestones/ container (the reason naming the value as given), a git command that could not
     be run or failed (outside a git repository, for instance), the reason naming the command
     and its exit status and carrying git's own message folded to one line, and a live
     milestone's requirements.md that could not be read; a malformed invocation gets
@@ -173,6 +198,8 @@ from dataclasses import dataclass
 
 TASK_MARKER = "Task-completion:"
 FINISH_MARKER = "Milestone-finish:"
+STARTING_STATE_MARKER = "Starting-state:"
+GOAL_REVISION_MARKER = "Goal-revision:"
 NO_MILESTONE = "-"
 BODY_INDENT = "    "
 TASK_LIST_NAME = "TASKS_TODO.md"
@@ -344,6 +371,37 @@ milestones query refuses it."""
     + TRAILER_RULE
 )
 
+SINCE_DESCRIPTION = """\
+Print what changed around a milestone since its starting state was written, one
+line per commit, three fields separated by tabs: the abbreviated hash, the
+author date as YYYY-MM-DD, and the subject. MILESTONE_PATH is read lexically
+relative to the workspace root and must name a directory directly inside a
+milestones/ container, as for the gate query.
+The first line is the anchor: the latest commit other than a merge that changed
+MILESTONE_PATH's requirements.md and whose subject opens with Starting-state:,
+whatever follows the marker. With no anchor nothing is printed at all. Beneath
+it, newest first by author timestamp, stands every later commit (reachable from
+HEAD and not from the anchor, merges left out) that changed a path inside the
+milestone's scope, the directory holding its milestones/ container, but outside
+its own directory; the milestone's own Task-completion: commits, joined to it as
+the tasks query joins them, are never listed. Without --milestones a commit is
+left out when every path it changed lies inside the directory of another live
+milestone that reads "defined" now, unless it is another milestone's task or
+finish commit, and the milestone's own Goal-revision: commits that changed its
+requirements.md are listed too. With --milestones only other milestones' task
+and finish commits are listed (Task-completion: subjects the join does not tie
+to this milestone, and Milestone-finish: subjects), so the broad form lists
+every line --milestones lists.
+A shallow repository (git rev-parse --is-shallow-repository printing true) is
+refused in both forms before any log read, since its truncated log can omit the
+anchor or the commits after it: run git fetch --unshallow first. A
+MILESTONE_PATH with no milestones/ container is refused."""
+
+SINCE_LIMITS = """\
+Limits:
+  - two queries check for a shallow clone, gate and since, each refusing one;
+    every other query reads whatever the truncated log yields"""
+
 HISTORY_LIMITS = """\
 Limits:
   - the record is the git log: in a shallow clone the truncated history omits
@@ -363,8 +421,8 @@ Limits:
   - the record is the git log: in a shallow clone the truncated history omits
     older task and finish commits without any sign, and no check is made for it;
     live's started test reads the same log, so there a started milestone whose
-    task list was modified only in the omitted history reads "defined"; the gate
-    query alone checks, refusing a shallow repository
+    task list was modified only in the omitted history reads "defined"; two
+    queries check, gate and since, each refusing a shallow repository
   - only subjects opening with Task-completion: are read, so the record starts at
     that marker's first use (2026-09-02, in the plugin's own milestone_15); a task
     completed earlier, under the retired Tasklist-completion: marker that carried
@@ -801,6 +859,97 @@ def listed_milestones(path):
     return listed, commits
 
 
+def anchor_commit(own):
+    """The milestone's anchor: the latest commit other than a merge, the first the log lists,
+    that changed its requirements.md and whose subject opens with the starting-state marker,
+    as (full hash, its line), or None when there is none."""
+    data = git(
+        [
+            "log",
+            "--full-history",
+            "--no-merges",
+            "-z",
+            "--fixed-strings",
+            "--grep=" + STARTING_STATE_MARKER,
+            "--date=short",
+            "--format=" + LOG_FORMAT,
+            "--",
+            own + DISCOVERY_PATTERN.split("/")[-1],
+        ]
+    )
+    for fields, _ in parse_log(data):
+        full_hash, short_hash, _, date, subject, _ = (decoded(field) for field in fields)
+        if subject.startswith(STARTING_STATE_MARKER):
+            return full_hash, f"{short_hash}\t{date}\t{subject}\n"
+    return None
+
+
+def inside(name, directory):
+    """Whether a repository path lies inside a directory given with its trailing slash."""
+    return name.startswith(directory)
+
+
+def under_scope(name, scope):
+    """Whether a repository path lies inside a scope given as path components."""
+    components = name.split("/")
+    return len(components) > len(scope) and components[: len(scope)] == scope
+
+
+def since_lines(own, scope, anchor, milestones_only):
+    """The lines beneath the anchor, newest first by author timestamp: every later commit other
+    than a merge that changed a path inside the scope and outside the milestone's own directory,
+    filtered as the since query's form asks."""
+    data = git(
+        [
+            "log",
+            "--no-merges",
+            "--name-only",
+            "--no-renames",
+            "-z",
+            "--date=short",
+            "--format=" + LOG_FORMAT,
+            anchor + "..HEAD",
+            "--",
+        ]
+    )
+    own_requirements = own + DISCOVERY_PATTERN.split("/")[-1]
+    defined = None
+    found = []
+    for fields, raw_names in parse_log(data):
+        _, short_hash, timestamp, date, subject, _ = (decoded(field) for field in fields)
+        names = [decoded(name) for name in raw_names]
+        is_task = subject.startswith(TASK_MARKER)
+        if is_task and milestone_of(names) == own:
+            continue
+        other_milestone = is_task or subject.startswith(FINISH_MARKER)
+        touches_scope = any(under_scope(name, scope) and not inside(name, own) for name in names)
+        if milestones_only:
+            wanted = other_milestone and touches_scope
+        elif subject.startswith(GOAL_REVISION_MARKER) and own_requirements in names:
+            wanted = True
+        elif not touches_scope:
+            wanted = False
+        elif other_milestone:
+            wanted = True
+        else:
+            if defined is None:
+                defined = [
+                    directory
+                    for directory, _ in live_milestones()
+                    if directory != own and not is_started(directory)
+                ]
+            wanted = not all(any(inside(name, directory) for directory in defined) for name in names)
+        if not wanted:
+            continue
+        try:
+            seconds = int(timestamp)
+        except ValueError:
+            raise ToolError(f"git log printed an author timestamp this tool cannot read: {timestamp}")
+        found.append((seconds, f"{short_hash}\t{date}\t{subject}\n"))
+    found.sort(key=lambda pair: pair[0], reverse=True)
+    return [line for _, line in found]
+
+
 def milestone_line(milestone):
     return f"{milestone.state}\t{milestone.date}\t{milestone.path}\t{milestone.title}\n"
 
@@ -899,6 +1048,31 @@ def cmd_record(args):
         lines.append(milestone_line(milestone))
         lines.extend(BODY_INDENT + line + "\n" for line in trimmed(milestone.summary[2:]))
         lines.extend(BODY_INDENT + task_line(commit) for commit in by_milestone.get(milestone.path, ()))
+    sys.stdout.write("".join(lines))
+    return 0
+
+
+def cmd_since(args):
+    path = args.milestone_path
+    if is_shallow():
+        raise ToolError(
+            "the repository is a shallow clone, whose truncated log can omit a milestone's "
+            "starting state or the commits after it; run git fetch --unshallow and query again"
+        )
+    if not path:
+        raise ToolError("the MILESTONE_PATH given is empty")
+    components = named_milestone(path)
+    if components is None:
+        raise ToolError(
+            f"the path {path} has no milestones/ container: a milestone path names a directory "
+            "directly inside one, read relative to the workspace root"
+        )
+    own = "/".join(components) + "/"
+    anchor = anchor_commit(own)
+    if anchor is None:
+        return 0
+    full_hash, anchor_line = anchor
+    lines = [anchor_line] + since_lines(own, components[:-2], full_hash, args.milestones)
     sys.stdout.write("".join(lines))
     return 0
 
@@ -1004,6 +1178,28 @@ def build_parser():
         help="a file or directory, read by git relative to the working directory",
     )
     record_parser.set_defaults(func=cmd_record)
+
+    since_parser = subcommands.add_parser(
+        "since",
+        help="print a milestone's starting-state anchor and the commits around it since",
+        description=SINCE_DESCRIPTION,
+        epilog=SINCE_LIMITS,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    since_parser.add_argument(
+        "milestone_path",
+        metavar="MILESTONE_PATH",
+        help=(
+            "a milestone directory directly inside a milestones/ container, read relative to the "
+            "workspace root"
+        ),
+    )
+    since_parser.add_argument(
+        "--milestones",
+        action="store_true",
+        help="list only other milestones' task and finish commits beneath the anchor",
+    )
+    since_parser.set_defaults(func=cmd_since)
     return parser
 
 
