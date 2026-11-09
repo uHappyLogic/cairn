@@ -84,5 +84,7 @@ The one other live milestone stands in the same root container and is started, s
 
 - **Overview bound.** The overview is bounded by a count applied in the tool: `milestones` gains an optional flag (for example `--last N`) that keeps every live line and only the N newest finished lines, by finish timestamp, the order the query already sorts them in. The review pass's one fixed call writes N as a literal, on the order of ten. Without the flag the query prints what it prints today, so `record`, `/release-plugin`, and every other reader are unchanged.
 
+- **Overview read failure.** A failed overview call, meaning any non-zero exit, the tool's `Error:` line and git's failure alike, is one condition never classified by its wording, and it stops the pass at its inventory step, before any prune, dedup, new block, or note deletion. The pass prints one new fixed, identifier-free stop line of its own as its report's first line with the `Error:` line quoted verbatim beneath it, makes no commit, and prints neither the still-open list nor the convergence verdict. The new line gets its row in the `## Fixed console lines` table.
+
 ## Out of Scope
 
