@@ -165,6 +165,7 @@ Every skill's console report opens with one fixed line saying how the run ended,
 | `derive-tasks` | stop | `Cannot derive tasks: the task-list tool refused the list.` |
 | `submit-task` | success | `Task submitted.` |
 | `submit-task` | no-op | `Task not submitted — the task file was unchanged.` |
+| `submit-task` | stop | `Task not submitted — the starting-state refresh could not be committed.` |
 | `submit-task` | stop | `Task not submitted — the completed-task read failed.` |
 | `submit-task` | stop | `Task not submitted — an existing task already covers it.` |
 | `submit-task` | stop | `Task not submitted — the issue is not a task for this milestone.` |

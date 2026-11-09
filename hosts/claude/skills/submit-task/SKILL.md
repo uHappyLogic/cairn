@@ -32,7 +32,74 @@ repo-relative path, exactly as the definition tool printed it, trailing slash in
 
 First strip the leading `--milestone <path>` from the invocation text by the rule in `${CLAUDE_PLUGIN_ROOT}/shared/resolve-milestone.md`, reading only the rest as the issue description. Follow `${CLAUDE_PLUGIN_ROOT}/shared/resolve-milestone.md` to resolve `<MILESTONE_DIR>`. Never use a hardcoded task-list path.
 
-### 1. Read context for triage
+### 1. Check the scope gate
+
+Directly after resolving the milestone, and before anything else, follow
+`${CLAUDE_PLUGIN_ROOT}/shared/check-scope-gate.md` for `<MILESTONE_DIR>`. When the gate is closed,
+its report is the whole output: read, refresh, insert, and commit nothing, and print no line
+of step 9.
+
+### 2. Refresh a stale starting state
+
+Before reading anything for triage, check whether other milestones' work has landed in the
+scope since this milestone's starting state was recorded. Run, from the workspace root, the
+plugin's milestones tool:
+
+```
+python3 ${CLAUDE_PLUGIN_ROOT}/tools/milestones.py since <MILESTONE_DIR> --milestones
+```
+
+Its first line, when it prints one, is the anchor, the commit that last recorded this
+milestone's starting state; every line beneath it is another milestone's task or finish
+commit that landed in the scope after it. Read its print as exactly one of three outcomes:
+
+- **No line at all, or the anchor alone** — there is no anchor to measure from, or nothing
+  has landed since it: explore nothing, commit nothing, print nothing about the starting
+  state, and go on to step 3 with the `## Relevant starting state` section as it stands,
+  empty or filled.
+- **Anything beyond the anchor** — the ground moved under the section: refresh it before
+  authoring anything, as below.
+- **The call failed** — any non-zero exit, whatever its `Error:` line says: stop the whole
+  run, reading, inserting, and committing nothing. Report the starting-state procedure's
+  fixed line `Starting state stopped — a milestones-tool read failed.` first, then below it
+  the call's `Error:` line from stderr, verbatim, and print no line of step 9.
+
+To refresh, read and follow the shared starting-state procedure at
+`${CLAUDE_PLUGIN_ROOT}/shared/starting-state-procedure.md` in place, with `<MILESTONE_DIR>` as its
+input; its pick judgment applies here in full, since this milestone's questions may carry
+standing picks. It ends in exactly one of three ways:
+
+- **The anchor alone** — its step 1 found the ground unmoved, so it explored, edited, and
+  cleared nothing. Make no commit and go on to step 3.
+- **A stop** — it stopped on one of its two fixed lines,
+  `Starting state stopped — a milestones-tool read failed.` or
+  `Starting state stopped — clearing the undermined picks failed.`, with the detail the
+  procedure gives beneath it. That report, as the procedure states it, is this run's whole
+  output: insert no task, commit nothing, and print no line of step 9.
+- **The change handed back** — it ran through its step 7, with `requirements.md` edited or
+  left as it stood, and `open_questions.xml` changed exactly when its step 6 cleared a pick.
+  Commit it, as below, then go on to step 3.
+
+Commit the handed-back change as a commit of its own, before any read of step 3 and any
+authoring, by reading and following the shared commit procedure at
+`${CLAUDE_PLUGIN_ROOT}/shared/commit-procedure.md`, running its one commit-tool command yourself as
+one git tool call, with these two inputs:
+
+- **PATHS** — `<MILESTONE_DIR>/requirements.md`, and `<MILESTONE_DIR>/open_questions.xml`
+  beside it only when the procedure's step 6 cleared a pick, so a refresh and the picks it
+  cleared are one commit.
+- **SUBJECT** — `Starting-state: <MILESTONE_DIR>`, the milestone path exactly as resolved,
+  trailing slash included.
+
+The refresh commit prints no line of its own in this run's report: whether it landed (the
+commit tool printed nothing) or found nothing to commit (it printed
+`Nothing committed — none of the paths changed.`, the exploration having left the section as
+it stood), go on to step 3. If the commit tool prints an `Error:` line instead, stop the whole
+run, inserting and committing nothing further: report the fixed line
+`Task not submitted — the starting-state refresh could not be committed.` first, then the
+`Error:` line quoted verbatim below it, and print no line of step 9.
+
+### 3. Read context for triage
 
 In parallel, as independent tool calls:
 - Read `<MILESTONE_DIR>/requirements.md` — to confirm the issue fits the milestone's scope.
@@ -52,19 +119,19 @@ If the call fails, stop, writing and committing nothing: print the fixed line
 `Task not submitted — the completed-task read failed.` first, then below it its one
 `Error: <reason>` line from stderr verbatim.
 
-### 2. Triage
+### 4. Triage
 
 - **Duplicate?** If an existing pending task or a completed task the `tasks` call listed already covers this issue, stop: print the fixed line `Task not submitted — an existing task already covers it.` first, then below it which task covers it. Do not add a duplicate.
 - **In scope?** If the issue clearly belongs to a different milestone or is really an open design decision, stop instead of queuing it: print the fixed line `Task not submitted — the issue is not a task for this milestone.` first, then below it why, pointing to the better tool (`/discuss-open-question`).
 
-### 3. Decide the position
+### 5. Decide the position
 
 You hold the whole task list, so you decide where the task goes:
 - If the task is a prerequisite for an existing task, position it **before** that task: `before: <Task Title>`.
 - If it depends on an existing task, position it **after** that task: `after: <Task Title>`.
 - Otherwise, `append`.
 
-### 4. Author the task section inline
+### 6. Author the task section inline
 
 Read the shared task format at `${CLAUDE_PLUGIN_ROOT}/shared/task-format.md` and write the task section
 **yourself, in this conversation**, following its template and authoring guidelines exactly.
@@ -74,21 +141,23 @@ The issue as the user described it, sharpened against the milestone's scope, *is
 body; writing it down is a transcription into that format, not a second authoring pass that
 adds detail.
 
-(You already read `requirements.md` and `TASKS_TODO.md` in step 1, so reuse them rather
+(You already read `requirements.md` and `TASKS_TODO.md` in step 3, so reuse them rather
 than re-reading.)
 
-### 5. Check the scope gate
+### 7. Check the scope gate again
 
-Before inserting anything, follow `${CLAUDE_PLUGIN_ROOT}/shared/check-scope-gate.md` for
-`<MILESTONE_DIR>`. When the gate is closed, its report is the whole output: insert and commit
-nothing, and print no line of step 7.
+Directly ahead of the insert, follow `${CLAUDE_PLUGIN_ROOT}/shared/check-scope-gate.md` for
+`<MILESTONE_DIR>` a second time, since another milestone may have started in the scope while
+this run read, triaged, and authored. When the gate is closed, its report is the whole output:
+insert and commit no task, and print no line of step 9. A refresh commit step 2 already landed
+stays committed. The call in step 8 checks no gate of its own.
 
-### 6. Insert and commit the section in one shell call
+### 8. Insert and commit the section in one shell call
 
-Split the section you authored in step 4 along `task-format.md`'s template: the text of its
+Split the section you authored in step 6 along `task-format.md`'s template: the text of its
 `##` heading is the title, and the description between the heading and the `---` is the
 body. The tool writes the `##` line and the `---` itself, so neither goes into the call. Map
-the position step 3 decided onto exactly one flag:
+the position step 5 decided onto exactly one flag:
 
 - **`append`** — `--end`.
 - **`before: <Task Title>`** — `--before "<Task Title>"`.
@@ -135,7 +204,7 @@ fixed line `Task not submitted — the task-list tool refused the insert.` first
 the `Error:` line quoted verbatim, so the user can re-run with a correct anchor or a distinct
 title.
 
-### 7. Confirm
+### 9. Confirm
 
 On the success path — the task was authored, inserted, and committed, the call printing
 `submission commit landed` — print exactly one fixed terse status line and nothing else:
@@ -145,7 +214,7 @@ On the success path — the task was authored, inserted, and committed, the call
 Carry no task title, insert position, or commit subject, and print no next-step or follow-up
 pointer.
 
-If step 6's commit tool found `TASKS_TODO.md` unchanged — nothing was committed — print
+If step 8's commit tool found `TASKS_TODO.md` unchanged — nothing was committed — print
 instead this one fixed no-op line, not the terse success line:
 
 ```
