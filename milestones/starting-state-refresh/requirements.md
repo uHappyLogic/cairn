@@ -62,5 +62,9 @@ The one other live milestone stands in the same root container and is started, s
 
 - **Scope argument.** The starting-state procedure and the review pass pass the milestone path they already resolved, as a runner does to `gate`, and the tool derives the scope: the path is read lexically as `gate` reads MILESTONE_PATH and refused with an `Error:` line when it names no directory directly inside a `milestones/` container. `live` gains an optional MILESTONE_PATH and with it lists every other live milestone, started or defined, whose scope equals, contains, or lies under the named one's, the named milestone left out as `gate` leaves it out; with no argument it prints what it prints today. `milestones` gains a separate milestone-path form beside its unchanged `milestones PATH`, a flag or a distinct argument so that a PATH keeps today's reading, whose overview is the one `milestones <scope>` would print.
 
+### The starting-state procedure
+
+- **Record read depth.** The record read stays two tiers and reads no verified bar: for each milestone whose overview line bears on the goal, the procedure reads its finish summary through `summary` or its recorded decisions through `show`, and makes no `tasks --with-body` call. Past tasks reach the starting state only as the titles the overview and the summaries already carry, and the milestones tool gains nothing for bars.
+
 ## Out of Scope
 
