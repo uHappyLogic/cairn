@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Check The Chosen Host's Installed Copy
-
-Make the prerequisite check, for the chosen host only, find that host's CLI on `PATH`, ask the CLI where the installed copy is, and require that copy to match the host's plugin directory in the committed built tree file for file, a missing or extra file included: for Claude Code the `cairn@cairn` entry of `claude plugin list --json` for the scope that applies to a repository outside any recorded project, its `readFromFolder` when set and otherwise its `installPath`, against `hosts/claude/`; for Codex `~/.codex/plugins/cache/cairn/cairn/<version>/`, built from the installed `cairn@cairn` version in `codex plugin list --json`, against `hosts/codex/plugins/cairn/`; and for Antigravity `~/.gemini/config/plugins/cairn` against `hosts/antigravity/`. A missing CLI, a CLI reporting no install, or a mismatch stops the run before any test on the one prerequisite line, which carries that host's own remedy by its documented install (copying the built tree or extracting the release for Antigravity, re-running `codex plugin marketplace add` and `codex plugin add cairn@cairn` for Codex, refreshing the directory-marketplace install for Claude Code), and the suite still writes nothing to any installation. It is verified by running the check against each of the three hosts on this machine and confirming, for each, that the path it compares is the copy that host's CLI reports and that its outcome, a pass or the stop line with its remedy, matches whether that copy equals the built tree.
-
----
-
 ## Bound Every Headless Run By One Timeout
 
 Replace the `run_agy` fixture with one shared run fixture that starts the chosen host's headless command from its entry and passes a timeout of 20 minutes, one value for every host, to the subprocess it starts, so a run that exceeds it is killed, its whole process group with it, and fails its test; `--print-timeout` is dropped from the `agy` command line, which makes the suite's limit the only bound on every host. It is verified by a run made to outlast a shortened limit being killed with every process of its group and failing its test, and by the `agy` command the fixture composes carrying no `--print-timeout`.
