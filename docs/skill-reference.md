@@ -190,3 +190,5 @@ Every skill's console report opens with one fixed line saying how the run ended,
 | `shared/resolve-milestone.md` | stop | `No milestone resolved — pass --milestone with a live milestone's path.` |
 | `shared/check-scope-gate.md` | stop | `Scope gate closed — the scope is held or could not be checked.` |
 | `shared/complete-procedure.md` | stop | `No task matches the given name.` |
+| `shared/starting-state-procedure.md` | stop | `Starting state stopped — a milestones-tool read failed.` |
+| `shared/starting-state-procedure.md` | stop | `Starting state stopped — clearing the undermined picks failed.` |
