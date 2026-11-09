@@ -83,6 +83,8 @@ The trigger path set names one host definition, Antigravity's, and neither of th
 
 - **Codex sandbox mode.** Every Codex run of the suite passes `--dangerously-bypass-approvals-and-sandbox`, the flag `docs/ways-of-using-cairn.md` gives for headless Codex chains: no approval prompts and no sandbox, so the seeded repository under `tmp_path`, its `.git` directory, and the test-created scratch directory are all writable with no further flag. The mode is fixed in the suite, not chosen per run.
 
+- **Per-host values home.** The values a host definition already declares, at least `plugin_dir` and the definition's own name and built tree, are read by the suite from `scripts/hosts/<host>/settings.toml` with `tomllib`. The values only the suite needs (the CLI command and its flags, the installed root, the tool names and parameter keys) and the per-host record-parsing code stay in the suite's Python as one per-host entry. The build and the definitions' key set are unchanged.
+
 ### References and records
 
 - **Suite name.** The suite is named for the hosts it drives. Its directory stays at the repository root as `host_tests/`, its command becomes `uv run pytest host_tests`, the prose calls it "the host suite", and the prerequisite check's line opens `host suite prerequisite missing:`. Every reference is rewritten to that one name: the `CLAUDE.md` command and layout lines and the milestones-tool invariant's sentence, `CONTRIBUTING.md`, the release pre-flight's check g and its trigger path, the header comment of `scripts/hosts/antigravity/settings.toml`, and the conftest docstring. Historical mentions in `CHANGELOG.md` and `ideas/` stay as written.
