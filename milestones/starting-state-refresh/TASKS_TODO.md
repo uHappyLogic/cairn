@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Pass the Host Suite on Three Hosts
-
-Refresh each host's installed plugin copy on this machine from the committed rebuilt tree by that host's documented install, then run the whole host suite, the refresh test included, as `uv run pytest host_tests --host claude`, `--host antigravity`, and `--host codex`, and have every test pass on all three with none marked or skipped. A host that fails is fixed in this task before it is done, the trees rebuilt, the copies refreshed again, and the suite re-run on every host the fix touches. It stands after every task that changes `core/` or `host_tests/`, and is verified by the three passing runs' summaries.
-
----
-
 ## Execution Chains Open With the Refresh
 
 Rewrite the three chains of `docs/ways-of-using-cairn.md` that derive and complete tasks so each opens with the starting-state refresh line and one review pass and then carries exactly one alternatives line, one recommend line, and one sweep line, in that order and with nothing after the sweep, ahead of its derivation line: "Executing tasks" gains the alternatives and recommend lines ahead of its sweep, "Answering the questions that matter to you" an alternatives line after its hand-answer lines and ahead of its existing recommend line, and "Putting more intelligence into a stuck milestone" keeps its own alternatives, recommend, and sweep lines as that pass, each new line taking the model and effort settings the "Starting a milestone" chain gives it. The sentence under "Preparing another milestone while one runs" telling the operator to rerun the starting-state line goes, replaced by that rule, and the page states that a task-entry writer refreshes a stale state itself and that an exploration which changes nothing is repeated by the next run, an accepted cost. Verified by a read of each chain's fenced block and prose against the Execution chain lines decision, every changed line's skill name, flag, model, and effort matching the lines the page already carries.

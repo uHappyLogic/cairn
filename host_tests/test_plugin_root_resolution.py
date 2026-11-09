@@ -16,6 +16,8 @@ No dispatched agent's resolution is asserted here: the agents' own reads and com
 dispatch tests' business, and this process is asserted to have dispatched none.
 """
 
+import shlex
+
 # The one issue the skill is asked to queue: inside the fixture milestone's scope, distinct
 # from the fixture's own task, and concrete enough to be authored without a question back.
 ISSUE = (
@@ -30,6 +32,21 @@ FIXTURE_TASKS_TODO = FIXTURE_MILESTONE + "TASKS_TODO.md"
 # What the chained insert call prints: nothing (the tool is silent on success) or the call's
 # own success line.
 INSERT_OUTPUTS = ("", "submission commit landed")
+
+
+def _dequoted_lines(command):
+    """Each line of a shell command, as written and, where it splits, with its words' shell
+    quoting removed and rejoined by single spaces, so a tool path the runner quoted (the plugin
+    root in single or double quotes) reads as the bare path the prefixes name. A line that does
+    not split, a quote left open across lines, is kept only as written."""
+    lines = []
+    for line in command.replace("\\\n", "").split("\n"):
+        lines.append(line)
+        try:
+            lines.append(" ".join(shlex.split(line)))
+        except ValueError:
+            pass
+    return lines
 
 
 def test_the_orchestrator_reads_and_runs_at_the_installed_plugin_root(seeded_repo, host, run_host, plugin_root):
@@ -53,16 +70,19 @@ def test_the_orchestrator_reads_and_runs_at_the_installed_plugin_root(seeded_rep
     assert shared_reads, f"no completed file read under {shared_prefix}; the reads were {reads}"
 
     # The orchestrator ran a python3 tool command there: the task-list tool's insert, under
-    # the root in either form it meets it in, whose output is the chained call's own success
-    # line or nothing, never an interpreter failing to open the tool.
+    # the root in either form it meets it in, its path bare or shell-quoted, whose output is
+    # the chained call's own success line or nothing, never an interpreter failing to open the
+    # tool.
     commands = [call for call in calls if call.kind == "shell"]
     tool_prefixes = tuple(f"python3 {form}/tools/" for form in (located, root))
     inserts = [
         call
         for call in commands
         if call.completed
-        and any(prefix in call.command for prefix in tool_prefixes)
-        and "task_list.py insert" in call.command
+        and any(
+            any(prefix in line for prefix in tool_prefixes) and "task_list.py insert" in line
+            for line in _dequoted_lines(call.command)
+        )
     ]
     assert inserts, (
         f"no completed shell call running task_list.py insert under {located}/tools/; "
