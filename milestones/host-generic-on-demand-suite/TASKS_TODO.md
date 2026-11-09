@@ -1,11 +1,5 @@
 # TASKS TODO
 
-## Bound Every Headless Run By One Timeout
-
-Replace the `run_agy` fixture with one shared run fixture that starts the chosen host's headless command from its entry and passes a timeout of 20 minutes, one value for every host, to the subprocess it starts, so a run that exceeds it is killed, its whole process group with it, and fails its test; `--print-timeout` is dropped from the `agy` command line, which makes the suite's limit the only bound on every host. It is verified by a run made to outlast a shortened limit being killed with every process of its group and failing its test, and by the `agy` command the fixture composes carrying no `--print-timeout`.
-
----
-
 ## Pass The Suite On Antigravity Through Host Entries
 
 Rework the plugin-root resolution test and both agent-dispatch tests so every assertion on the host's tool-call records and each dispatching process's prompt goes through the chosen host's entry (a record parser for that host's shape with its own read, shell, dispatch, and write tool names and its way of telling a completed call from a failed one, and the wording that names its dispatch mechanism), with Antigravity's existing parsing and `invoke_subagent` prompt becoming its entry and the tilde-pin assertion removed outright, with no replacement assertion and no host-specific branch, while every other record assertion and the file pass signals stay. Start by refreshing the installed copy at `~/.gemini/config/plugins/cairn` from the built `hosts/antigravity/` tree, have `uv run pytest host_tests --host antigravity` pass all three tests with none marked or skipped, then add one re-check sentence (the date, the installed `agy` version, that the check ran by the host suite and under which invocation, the points it covered) after the 2026-10-26 sentence of the hands-on block in `scripts/hosts/antigravity/settings.toml`, the rest of the block standing. A failure caused by the plugin's Antigravity integration rather than by the suite is not fixed in this task: stop and report the defect, which lands as its own task of this milestone.

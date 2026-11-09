@@ -188,17 +188,13 @@ def git(repository, *args):
     ).stdout
 
 
-def test_the_alternatives_agent_lands_its_scratch_file(seeded_repo, run_agy, tmp_path):
+def test_the_alternatives_agent_lands_its_scratch_file(seeded_repo, run_host, tmp_path):
     repository = seeded_repo()
     scratch = tmp_path / "scratch"
     scratch.mkdir()
     prompt = alternatives_prompt(repository / FIXTURE_MILESTONE, scratch)
 
-    completed = run_agy(
-        dispatch_prompt(ALTERNATIVES_AGENT, SHORT_TITLE, prompt),
-        cwd=repository,
-        output_format="stream-json",
-    )
+    completed = run_host(dispatch_prompt(ALTERNATIVES_AGENT, SHORT_TITLE, prompt), cwd=repository)
     assert_dispatched_only(completed, ALTERNATIVES_AGENT, prompt)
 
     # The pass signal: the agent's return file, at the path the orchestrator derives from the
@@ -224,18 +220,14 @@ def test_the_alternatives_agent_lands_its_scratch_file(seeded_repo, run_agy, tmp
     assert git(repository, "status", "--porcelain") == ""
 
 
-def test_the_completion_agent_lands_the_task_its_body_file_and_its_path_file(seeded_repo, run_agy, tmp_path):
+def test_the_completion_agent_lands_the_task_its_body_file_and_its_path_file(seeded_repo, run_host, tmp_path):
     repository = seeded_repo()
     milestone = repository / FIXTURE_MILESTONE
     scratch = tmp_path / "scratch"
     scratch.mkdir()
     prompt = completion_prompt(milestone, scratch)
 
-    completed = run_agy(
-        dispatch_prompt(COMPLETION_AGENT, "Task completer", prompt),
-        cwd=repository,
-        output_format="stream-json",
-    )
+    completed = run_host(dispatch_prompt(COMPLETION_AGENT, "Task completer", prompt), cwd=repository)
     assert_dispatched_only(completed, COMPLETION_AGENT, prompt)
 
     # The task's deliverable, landed by the agent's file-writing tool.

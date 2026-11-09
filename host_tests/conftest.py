@@ -11,13 +11,15 @@ reports (Antigravity's at its fixed global path), and that copy equal, file for 
 host's plugin directory in the built tree. No other host's prerequisites are checked. The
 suite drives the copy already installed in the user's real HOME and writes nothing to any
 installation (bringing a copy up to date is the user's own act, by the host's documented
-install, which the stop line names), runs every agy process at the account's default model
-and effort, and lets agy's own print timeout bound each run.
+install, which the stop line names), runs every headless process at the account's default
+model and effort, and bounds each by one wall-clock limit of its own, the same on every host:
+a run that exceeds it is killed with its whole process group and fails its test.
 """
 
 import json
 import os
 import shutil
+import signal
 import subprocess
 import sys
 import tomllib
@@ -38,9 +40,10 @@ FIXTURE_PROJECT = REPO_ROOT / "tests" / "fixtures" / "host_project"
 FIXTURE_CONTAINER = "milestones.fixture"
 SEEDED_CONTAINER = "milestones"
 
-# The one fixed bound on a headless run, enforced by agy itself through `--print-timeout`,
-# so the suite holds no wall-clock limit of its own.
-PRINT_TIMEOUT = "20m"
+# The suite's one wall-clock bound on a headless run, in seconds: 20 minutes, one value for
+# every host, passed by the run fixture to the subprocess it starts. No host's own time limit
+# is passed on its command line, so this is the only bound on every host.
+RUN_TIMEOUT = 20 * 60
 
 # The id Claude Code's and Codex's plugin listings give the plugin installed from its own
 # marketplace, both named cairn.
@@ -60,8 +63,11 @@ class Host:
     where the installed copy the host loads stands, as the host's CLI reports it (Antigravity's
     at its fixed global path), or raising CopyNotLocated; and `remedy`, taking the entry and
     returning how the user brings that copy up to date by the host's documented install, the
-    text the entry then holds as `remedy` and every one of the host's stop lines carries.
-    `installed_root` is None until the prerequisite check has located the copy,
+    text the entry then holds as `remedy` and every one of the host's stop lines carries; and
+    `headless`, taking the entry and a prompt and returning the command line of one headless
+    run of the host's CLI with that prompt, in the machine-readable output mode whose records
+    the tests read, or None while the entry gives no such command, which fails any test that
+    starts a run. `installed_root` is None until the prerequisite check has located the copy,
     and then that copy's root as the suite reaches it. The values the host's definition
     already declares are read from scripts/hosts/<name>/settings.toml with tomllib and never
     restated: `name`, the definition directory's name, which names the host as the build
@@ -69,7 +75,7 @@ class Host:
     build renders; and `plugin_tree`, the directory plugin_dir names inside it, the one an
     installed copy holds."""
 
-    def __init__(self, name, *, cli, locate_copy, remedy):
+    def __init__(self, name, *, cli, locate_copy, remedy, headless=None):
         with open(DEFINITIONS_DIR / name / "settings.toml", "rb") as settings_file:
             settings = tomllib.load(settings_file)
         self.name = name
@@ -80,6 +86,7 @@ class Host:
         self.cli = cli
         self.locate_copy = locate_copy
         self.remedy = remedy(self)
+        self.headless = headless
         self.installed_root = None
 
 
@@ -223,6 +230,14 @@ HOSTS = {
             f"copy the built {_plugin_tree_label(host)} tree, or extract the release, "
             f"into {ANTIGRAVITY_ROOT}"
         ),
+        headless=lambda host, prompt: [
+            host.cli,
+            "-p",
+            prompt,
+            "--dangerously-skip-permissions",
+            "--output-format",
+            "stream-json",
+        ],
     ),
     "codex": Host(
         "codex",
@@ -294,12 +309,12 @@ def _git(repository, *args):
 
 @pytest.fixture
 def seeded_repo(tmp_path):
-    """A fresh committed copy of the fixture project for one agy process: seeded_repo() -> Path.
-    Each call copies tests/fixtures/host_project to its own directory under tmp_path, renames
-    the copy's milestones.fixture/ container to milestones/, runs `git init` there, and makes
-    the initial commit, so every agy process starts from the same committed tree, holding the
-    fixture's milestone at milestones/<slug>/, and nothing it changes reaches the fixture or
-    another process."""
+    """A fresh committed copy of the fixture project for one headless process: seeded_repo() ->
+    Path. Each call copies tests/fixtures/host_project to its own directory under tmp_path,
+    renames the copy's milestones.fixture/ container to milestones/, runs `git init` there, and
+    makes the initial commit, so every headless process starts from the same committed tree,
+    holding the fixture's milestone at milestones/<slug>/, and nothing it changes reaches the
+    fixture or another process."""
 
     count = 0
 
@@ -320,35 +335,69 @@ def seeded_repo(tmp_path):
     return build
 
 
-@pytest.fixture
-def run_agy():
-    """Run one headless agy process in a seeded repository: run_agy("<prompt>", cwd=repository)
-    -> CompletedProcess with decoded stdout and stderr. The line is always
-    `agy -p <prompt> --dangerously-skip-permissions --print-timeout <PRINT_TIMEOUT>`, with no
-    `--model` and no `--effort` (the account's defaults) and an `--output-format` only when
-    one is given. It runs with the user's real HOME, so it drives the installed copy, and
-    nothing here bounds it but agy's own print timeout."""
+def _kill_group(process):
+    """Kill every process of the run's group, the CLI and whatever it started, and reap the
+    CLI; a group already gone is nothing to kill."""
+    try:
+        os.killpg(process.pid, signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+    process.wait()
 
-    def run(prompt, *, cwd, output_format=None):
-        command = [
-            "agy",
-            "-p",
-            prompt,
-            "--dangerously-skip-permissions",
-            "--print-timeout",
-            PRINT_TIMEOUT,
-        ]
-        if output_format is not None:
-            command += ["--output-format", output_format]
-        return subprocess.run(
-            command,
-            cwd=str(cwd),
-            stdin=subprocess.DEVNULL,
-            capture_output=True,
-            encoding="utf-8",
-            errors="replace",
-            check=False,
+
+def run_bounded(command, *, cwd, limit):
+    """Run one command to its end within `limit` seconds -> CompletedProcess with decoded
+    stdout and stderr. The command starts in a session of its own, so it leads a process group
+    of its own that everything it starts joins. A run still going at the limit has that whole
+    group killed and fails the calling test, and so does a run the test is interrupted during,
+    which is killed the same way before the interruption goes on, so no run outlives the
+    test that started it."""
+    process = subprocess.Popen(
+        command,
+        cwd=str(cwd),
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        encoding="utf-8",
+        errors="replace",
+        start_new_session=True,
+    )
+    try:
+        stdout, stderr = process.communicate(timeout=limit)
+    except subprocess.TimeoutExpired:
+        _kill_group(process)
+        _, stderr = process.communicate()
+        overran = True
+    except BaseException:
+        _kill_group(process)
+        raise
+    else:
+        overran = False
+    if overran:
+        pytest.fail(
+            f"`{command[0]}` ran past the suite's run limit of {limit} seconds and was killed "
+            f"with its whole process group; its stderr until then:\n{stderr}",
+            pytrace=False,
         )
+    return subprocess.CompletedProcess(command, process.returncode, stdout, stderr)
+
+
+@pytest.fixture
+def run_host(request):
+    """Run one headless process of the chosen host's CLI in a seeded repository:
+    run_host("<prompt>", cwd=repository) -> CompletedProcess with decoded stdout and stderr.
+    The command line is the one the chosen host's entry composes for the prompt, with no model
+    or effort flag (the account's defaults), and the run is bounded by RUN_TIMEOUT, the one
+    limit for every host, which no flag of the host's own adds to. It runs with the user's
+    real HOME, so it drives the installed copy. A run past the limit is killed with its whole
+    process group and fails its test, and an entry giving no headless command fails the test
+    before any process starts."""
+    host = chosen_host(request.config)
+
+    def run(prompt, *, cwd):
+        if host.headless is None:
+            pytest.fail(f"the {host.name} entry gives no headless command", pytrace=False)
+        return run_bounded(host.headless(host, prompt), cwd=cwd, limit=RUN_TIMEOUT)
 
     return run
 

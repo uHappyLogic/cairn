@@ -85,15 +85,11 @@ def command_output(step):
     return printed.strip() if marker else ""
 
 
-def test_the_orchestrator_reads_and_runs_at_the_global_plugin_root(seeded_repo, run_agy, plugin_root):
+def test_the_orchestrator_reads_and_runs_at_the_global_plugin_root(seeded_repo, run_host, plugin_root):
     tilde, root = plugin_root
     repository = seeded_repo()
 
-    completed = run_agy(
-        f"/cairn:submit-task --milestone {FIXTURE_MILESTONE} {ISSUE}",
-        cwd=repository,
-        output_format="stream-json",
-    )
+    completed = run_host(f"/cairn:submit-task --milestone {FIXTURE_MILESTONE} {ISSUE}", cwd=repository)
     assert completed.returncode == 0, completed.stderr
     records = records_of(completed.stdout)
     assert records[-1].get("event") == "result", records[-1]
