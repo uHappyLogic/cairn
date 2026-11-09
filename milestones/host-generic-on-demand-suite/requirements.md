@@ -87,5 +87,9 @@ The trigger path set names one host definition, Antigravity's, and neither of th
 
 - **Hands-on blocks.** Once the suite passes on a host, the dated hands-on block heading that host's `settings.toml` keeps its text and gets one appended re-check sentence, on all three hosts. The sentence names the date, the installed CLI version, that the check ran by the host-generic suite and under which invocation, and the points it covered; the rest stands as checked on its earlier dates. In Antigravity's block the sentence takes the place of the 2026-10-26 sentence's mention of the agy suite as the latest re-check, or is added after it.
 
+### Scope of the work
+
+- **Host integration defects.** When a suite test fails on a host because of the plugin's integration for that host, fixing the plugin is in scope on every surface the defect needs: a slot value or any other file of the host's definition under `scripts/hosts/<host>/`, a runtime file under `core/` (skills, agents, shared procedures), a tool under `core/tools/`, or `scripts/build_hosts.py`. Each fix lands in this milestone as its own task, with the host trees rebuilt and committed with it. No test is marked or left failing.
+
 ## Out of Scope
 
