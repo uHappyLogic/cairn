@@ -50,5 +50,7 @@ All 56 finished milestones share this milestone's root scope. Three bear directl
 
 - **Past decision against the brief.** When the read surfaces an earlier milestone's decision or verified bar that carrying out the task as briefed would undo, and this milestone's `requirements.md` does not address it, the earlier decision governs how the work is done wherever the brief can still be met: among the ways of meeting the brief the runner picks one that leaves the earlier decision or bar intact, and the read may fix a criterion to that effect. Only where every way of meeting the brief undoes the earlier decision does the brief govern and override it, as the later-recorded decision of a converged milestone. The runner never stops for it and nothing is flagged, so the procedure gains no stop and no fixed line.
 
+- **Criterion source.** Every criterion the step-2 read fixes names what it was formed against, inside its own `- ` bullet: the abbreviated hash from the `tasks` line when a task commit's diff or bar fixed it, and the milestone path from that line's third field when a decision that `show` printed fixed it. Step 2 states the rule once and step 5's form sentence lets a bullet carry the reference, so the `Task-completion:` commit body stays the bar alone, one bullet per criterion, and the read shows in every body `tasks --with-body` prints back.
+
 ## Out of Scope
 
