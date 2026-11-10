@@ -44,5 +44,9 @@ All 56 finished milestones share this milestone's root scope. Three bear directl
 
 ## Decisions
 
+### The past-work read
+
+- **Failed read.** A failure of either call of the read, the `tasks <path> --with-body` call or the `show <milestone path>` follow-up, is treated as the read not taken, whatever the reason, the `-` path field that `show` refuses included: the runner carries on with the task from `requirements.md`, the context file, and the live material, and prints no fixed line. The inline `complete-task` skill tells the user in prose that the past-work read failed, quoting the one `Error:` line verbatim, as `ask-in-milestone-context` does; the `complete-task` agent, whose only final messages are `DONE` and `FAILED:`, carries on and reports nothing about it. The procedure states this in a clause of its own, because its opening never-skip rule would otherwise push a runner to return `FAILED:`. A failed read costs what an untaken one costs, since the read is discretionary and the starting state and the context file carry the protection, and a git-level fault still stops the task at the scope gate or the commit.
+
 ## Out of Scope
 
