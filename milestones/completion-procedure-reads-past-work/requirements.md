@@ -58,5 +58,7 @@ All 56 finished milestones share this milestone's root scope. Three bear directl
 
 - **No bound.** The procedure shows the full fixed `tasks <path> --with-body` command with no pipe, flag, or size rule, and the runner takes its whole print whatever its length. No bound is added in this milestone. If the print's size later proves a problem, a later milestone revisits it, most directly by giving the tool a bound of its own, as `milestones` has `--last N`.
 
+- **Literal command.** `core/shared/complete-procedure.md` shows the full fixed command `python3 {{PLUGIN_ROOT}}/tools/milestones.py tasks <path> --with-body` and carries the starting-state procedure's clause once, in the sentence that introduces the read: every milestones-tool call the read makes, the `tasks` call on each file it is taken for and the `show <milestone path>` follow-up alike, is written out in full on every call, never through a variable, alias, or function of the runner's own defined to stand for the command or any part of it. The `CLAUDE.md` shell-literal invariant gains the completion procedure among the sites carrying the clause, and the rebuilt host trees carry the sentence.
+
 ## Out of Scope
 
