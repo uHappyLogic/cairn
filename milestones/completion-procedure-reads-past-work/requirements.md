@@ -52,5 +52,7 @@ All 56 finished milestones share this milestone's root scope. Three bear directl
 
 - **Criterion source.** Every criterion the step-2 read fixes names what it was formed against, inside its own `- ` bullet: the abbreviated hash from the `tasks` line when a task commit's diff or bar fixed it, and the milestone path from that line's third field when a decision that `show` printed fixed it. Step 2 states the rule once and step 5's form sentence lets a bullet carry the reference, so the `Task-completion:` commit body stays the bar alone, one bullet per criterion, and the read shows in every body `tasks --with-body` prints back.
 
+- **Deleted, renamed, and moved files.** Deleting, renaming, or moving a file that already exists counts as editing it. The read is taken under the same condition as for an edit, `requirements.md` not explaining the file's existence or place, at step 2 for the files the task names up front and at step 3 for the rest. The query is `tasks` on the path the file has before the task, which the procedure states in one clause, because the tool follows no rename (its log reads set `log.follow=false`): the new path carries no history from before the move, while the old path, still in the tree when the read is taken, lists every task commit that changed it. The tool stays unchanged.
+
 ## Out of Scope
 
