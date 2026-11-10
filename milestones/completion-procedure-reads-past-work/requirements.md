@@ -66,5 +66,7 @@ All 56 finished milestones share this milestone's root scope. Three bear directl
 
 - **Run population.** The read is counted only against runs that a reader judges to have met the trigger. Among the completion runs that modified an existing file, milestone files excluded, the reader reads `requirements.md` as it stood at the run's start and decides, per edited file, whether it explains that file's shape; only runs with at least one unexplained edited file are counted, so a miss means a run that should have read past work and did not.
 
+- **Read outcomes.** Each counted run gets one outcome from an ordered list, the first matching class winning: the `tasks <path> --with-body` command as shown (the full fixed command, written out literally, on an edited file's path); the milestones tool in another form (`tasks` without `--with-body`, `record` or another query on the file, a relative or variable-held tool path, an alias or function standing for the command); a hand-composed `git log`, `git blame`, `git show`, or `git diff` naming the file, a `git show` of a tool-printed hash being the tool read's follow-up and not this class; or no history read. A failed call counts under the form it was written in, and the `show <milestone path>` follow-up is recorded beside the outcome as a yes or no, not as an outcome of its own.
+
 ## Out of Scope
 
