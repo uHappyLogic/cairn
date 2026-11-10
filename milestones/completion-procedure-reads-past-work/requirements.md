@@ -70,5 +70,7 @@ All 56 finished milestones share this milestone's root scope. Three bear directl
 
 - **Result requiring the read.** The plan fixes the rule in advance and pools both failure kinds: the read becomes a required step when the counted runs that took no history read or composed their own reach a stated share below half. The share is set low enough to fall under the earlier measured failure rates, those that justified the task-list and fold tools, for instance one counted run in four.
 
+- **Run set.** The measurement is taken over this repository and every other project on this machine running the plugin, on Claude Code only. It starts at this milestone's landing commit for this repository and, for every other project, at the first release that ships the procedure change (the next after 1.9.0), since those projects install from the distribution repository; no pre-landing baseline is taken. Its result is read only once on the order of 200 completion runs across the projects combined have been collected.
+
 ## Out of Scope
 
