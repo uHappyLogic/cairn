@@ -1,1 +1,38 @@
-<open-questions/>
+<open-questions>
+  <open-question id="Failed past-work read">
+    <question>When the completion procedure&apos;s discretionary read of past work fails — its `tasks &lt;path&gt; --with-body` call or its `show &lt;milestone path&gt;` follow-up exits non-zero, as `show` does on the `-` a task line prints for a commit joining no single milestone — what does the runner do: stop the task on a fixed line with the tool&apos;s `Error:` line beneath it, as the review pass and the starting-state procedure stop on a failed read of theirs, or carry on with the task without the read, as `ask-in-milestone-context` carries on after telling the failure in prose?</question>
+  </open-question>
+  <open-question id="Past decision against brief">
+    <question>When the completion procedure&apos;s read of past work surfaces an earlier milestone&apos;s decision or verified bar that carrying out the task as briefed would undo, and the current milestone&apos;s `requirements.md` does not address it, what governs the work: the brief as written, the earlier decision wherever the brief can still be met, or does the runner stop without completing the task?</question>
+  </open-question>
+  <open-question id="Criterion naming its source">
+    <question>When the completion procedure&apos;s step-2 read of past work fixes a criterion of the acceptance bar, does that criterion name what it was formed against (the task commit&apos;s hash or the earlier milestone&apos;s path), so the read shows in the `Task-completion:` commit body, or is it worded like any other criterion with no reference to the read?</question>
+  </open-question>
+  <open-question id="Trigger for removed files">
+    <question>The completion procedure&apos;s read of past work is triggered by a file the task edits rather than creates whose shape the milestone&apos;s `requirements.md` does not explain. Does the same trigger cover a file the task deletes, renames, or moves?</question>
+  </open-question>
+  <open-question id="Trigger and context file">
+    <question>The completion procedure&apos;s read of past work is triggered by a file whose shape the milestone&apos;s `requirements.md` does not explain. Does a shape the project&apos;s context file explains (in this repository, a `CLAUDE.md` invariant) count as explained, so that no read is taken, or does only `requirements.md` count?</question>
+  </open-question>
+  <open-question id="Bound on large reads">
+    <question>With the milestones tool unchanged, does the completion procedure bound its `tasks &lt;path&gt; --with-body` read on a file that many task commits changed, or is the read taken whole whatever it prints? Measured on 2026-11-10 it prints 200 lines (59,079 bytes) for `docs/skill-reference.md` and 104 lines (31,521 bytes) for `CLAUDE.md`, and it grows with every later task that changes the file.</question>
+  </open-question>
+  <open-question id="Literal-command clause">
+    <question>Does the completion procedure&apos;s `tasks &lt;path&gt; --with-body` read carry the clause the review pass and the starting-state procedure put on their milestones-tool calls — the command written out in full, never through a variable, alias, or function of the runner&apos;s own — or does it show the full command with no such clause, as the other nine runtime files calling the milestones tool do?</question>
+  </open-question>
+  <open-question id="Measured run population">
+    <question>In the field measurement that decides whether the completion procedure&apos;s read of past work stays discretionary, which completion runs is the read counted against: every completion run, only runs that edited a file that already existed, or only runs a reader judges to have met the trigger (an edited file whose shape `requirements.md` does not explain), which no transcript shows mechanically?</question>
+  </open-question>
+  <open-question id="Measured read outcomes">
+    <question>In the field measurement that decides whether the completion procedure&apos;s read of past work stays discretionary, which outcomes are told apart for each counted run — for instance the named `tasks` command run as shown, a history read the agent composed itself (`git log`, `git blame`, or `git show` on the file), and no history read at all?</question>
+  </open-question>
+  <open-question id="Measurement run set">
+    <question>Over which runs is the field measurement of the completion procedure&apos;s read of past work taken: which projects and hosts, starting from which plugin release, and how many completion runs at the least before its result is read?</question>
+  </open-question>
+  <open-question id="Result requiring the read">
+    <question>What measured result makes the completion procedure&apos;s read of past work a required step instead of a discretionary one: any counted run in which the read was not taken or was composed by hand, a stated share of the counted runs, or another rule?</question>
+  </open-question>
+  <open-question id="Measurement evidence home">
+    <question>Where are the scripts and the report of the field measurement of the completion procedure&apos;s read of past work kept, so that its figures can be checked again later: under the git-ignored `temp/`, where the reports and scripts of the two earlier field measurements stood and no longer do, in a tracked location, or does the plan in `ideas/milestones_addressed_by_path.md` leave it unstated?</question>
+  </open-question>
+</open-questions>
