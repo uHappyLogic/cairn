@@ -1,43 +1,4 @@
 <open-questions>
-  <open-question id="Measurement evidence home">
-    <question>Where are the scripts and the report of the field measurement of the completion procedure&apos;s read of past work kept, so that its figures can be checked again later: under the git-ignored `temp/`, where the reports and scripts of the two earlier field measurements stood and no longer do, in a tracked location, or does the plan in `ideas/milestones_addressed_by_path.md` leave it unstated?</question>
-    <recommendation option="Both tracked beside the draft">The aim is figures that can be checked again, which `temp/` has already failed twice, and the report is the only evidence that outlasts the transcripts while the scripts are the only exact statement of what was counted, so both are tracked; `ideas/` already holds the plan and is versioned to be revised in the open, so no new top-level directory or standing convention is added for one measurement, and what the report quotes of other projects is the author&apos;s to hold to counts.</recommendation>
-    <alternative id="Both tracked beside the draft">
-      The plan states that the scripts and the report are committed in this repository under `ideas/`, next to `ideas/milestones_addressed_by_path.md` (for instance in one subdirectory named for the measurement), so the plan and its evidence stand together; the raw transcripts themselves are not committed.
-      <advantage>The evidence is versioned and reviewable in the open with no new top-level directory and no new `CLAUDE.md` layout entry, and a later reader of the plan finds the counting scripts and the report one directory away from it.</advantage>
-      <drawback>`ideas/` is documented as design drafts that precede any milestone, so a measurement report and its scripts stretch that directory&apos;s stated purpose; whatever the report quotes from other projects&apos; runs becomes part of this repository&apos;s tracked history, and the scripts can be re-run only while the transcripts they read still exist.</drawback>
-    </alternative>
-    <alternative id="Both under temp/">
-      The plan in `ideas/milestones_addressed_by_path.md` states that the measurement&apos;s scripts and its report are kept under the git-ignored `temp/`, as the two earlier field measurements&apos; were, and that only the resulting figures are carried into the `requirements.md` of the milestone that decides on them (and into `CLAUDE.md` if an invariant cites them); nothing of the evidence is committed.
-      <advantage>Nothing derived from field transcripts of other projects, their paths, task titles, or wording, enters this repository&apos;s history, and no new tracked location or layout entry is needed: it follows the precedent exactly and costs nothing to state.</advantage>
-      <drawback>It is the arrangement under which both earlier reports and the `answer-sweep-analysis/` scripts are already gone from `temp/`, so the figures could again be checked later only as the numbers a `requirements.md` quotes, never recomputed or audited for what was counted; the stated aim of the question, re-checking the figures, is not met.</drawback>
-    </alternative>
-    <alternative id="Both in a dedicated tracked directory">
-      The plan states that the scripts and the report are committed in this repository under a new tracked directory reserved for field-measurement evidence (one subdirectory per measurement), which the `CLAUDE.md` repository layout gains an entry for; the raw transcripts are not committed.
-      <advantage>It gives this and every later field measurement one stable, purpose-named home, so the figures the plugin&apos;s invariants cite (the 202 completion agents, the 856 answers) have a place to be checked from again instead of each measurement choosing ad hoc.</advantage>
-      <drawback>It adds a tracked directory and a layout entry, a standing convention, for what this milestone needs once, and it carries the same exposure of other projects&apos; run details in tracked history; the scripts again depend on transcripts kept nowhere in the repository.</drawback>
-    </alternative>
-    <alternative id="Scripts tracked, report in temp/">
-      The plan states that the counting scripts are committed in a tracked location of this repository while the report stays under the git-ignored `temp/`, its figures carried into the deciding milestone&apos;s `requirements.md` as before.
-      <advantage>The method, which run is counted and how each outcome is told apart, survives and can be re-run on the same or a later set of transcripts, while the report&apos;s project-specific findings stay out of tracked history.</advantage>
-      <drawback>The exact report the decision rested on is still lost the way the earlier ones were, so re-checking a quoted figure means re-running the scripts, which works only while the transcripts that produced it are still on disk.</drawback>
-    </alternative>
-    <alternative id="Report tracked, scripts in temp/">
-      The plan states that the report, including the counting rule written out in prose and the per-run tallies its figures are summed from, is committed in a tracked location of this repository, while the scripts that produced it stay under the git-ignored `temp/` as throwaway code.
-      <advantage>The figures can be checked later against the tallies the report records, with no dependence on transcripts that may since have aged out, and no one-off analysis code is added to a repository whose tracked Python is otherwise tested tools.</advantage>
-      <drawback>Re-deriving the figures from the runs themselves means writing the counting again from the report&apos;s prose, so an error in the scripts that shaped the tallies can no longer be found; the tallies also carry other projects&apos; run details into tracked history.</drawback>
-    </alternative>
-    <alternative id="Outside this repository">
-      The plan states that the scripts and the report are kept in a versioned location outside this repository, such as the separate benchmark project that `ideas/benchmark_for_cairn.md` describes or a private repository of the maintainer&apos;s, and the deciding milestone&apos;s `requirements.md` records the figures together with where that evidence lives.
-      <advantage>The evidence is versioned and can be checked again, while material derived from other projects&apos; transcripts stays out of the plugin&apos;s own, possibly public, history.</advantage>
-      <drawback>The benchmark project does not exist yet and any other repository is one more thing to keep, so the evidence lives where this repository&apos;s record can only point at it and nothing here guarantees it survives; a reader of the plan cannot follow the pointer without access.</drawback>
-    </alternative>
-    <alternative id="Left unstated">
-      The plan in `ideas/milestones_addressed_by_path.md` names what is counted, over which runs, and the result that makes the read required, as the goal lists, and says nothing about where the scripts or the report are kept, leaving that to whoever takes the measurement; the figures still reach the deciding milestone&apos;s `requirements.md` as that milestone&apos;s decisions.
-      <advantage>It keeps the plan to exactly the three things the goal requires it to carry and commits this milestone to no storage convention for work that will be done later, possibly on a different machine or under the benchmark project.</advantage>
-      <drawback>With nothing stated, the default is what happened before, a scratch directory that is later emptied, so the figures that decide whether the read becomes required are likely to survive only as quoted numbers that cannot be checked again.</drawback>
-    </alternative>
-  </open-question>
   <open-question id="Measured run population">
     <question>In the field measurement that decides whether the completion procedure&apos;s read of past work stays discretionary, which completion runs is the read counted against: every completion run, only runs that edited a file that already existed, or only runs a reader judges to have met the trigger (an edited file whose shape `requirements.md` does not explain), which no transcript shows mechanically?</question>
     <recommendation option="Reader-judged trigger runs">Only this population makes a miss mean a run that should have read past work and did not: every mechanical denominator counts a correct skip as a miss at a rate nobody knows, which no result stated as a share can absorb, and the mention search misreads build output and files the document names only by directory; the judging is light, since a milestone&apos;s runs are judged against the one `requirements.md` they share.</recommendation>

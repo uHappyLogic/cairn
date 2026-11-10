@@ -60,5 +60,9 @@ All 56 finished milestones share this milestone's root scope. Three bear directl
 
 - **Literal command.** `core/shared/complete-procedure.md` shows the full fixed command `python3 {{PLUGIN_ROOT}}/tools/milestones.py tasks <path> --with-body` and carries the starting-state procedure's clause once, in the sentence that introduces the read: every milestones-tool call the read makes, the `tasks` call on each file it is taken for and the `show <milestone path>` follow-up alike, is written out in full on every call, never through a variable, alias, or function of the runner's own defined to stand for the command or any part of it. The `CLAUDE.md` shell-literal invariant gains the completion procedure among the sites carrying the clause, and the rebuilt host trees carry the sentence.
 
+### The field measurement
+
+- **Evidence home.** The plan in `ideas/milestones_addressed_by_path.md` states that the measurement's scripts and its report are committed in this repository under `ideas/`, beside the draft, for instance in one subdirectory named for the measurement, so the plan and its evidence stand together and the figures can be checked again. The raw transcripts are not committed, and what the report takes from other projects is kept to counts. Nothing of the measurement is kept under the git-ignored `temp/`.
+
 ## Out of Scope
 
