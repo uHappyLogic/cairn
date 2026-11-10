@@ -6,6 +6,42 @@
 
 ## Relevant starting state
 
+### The completion procedure
+
+`core/shared/complete-procedure.md` (167 lines) is the single source for completing one task, followed inline by the `complete-task` skill and in isolation by the `complete-task` agent. Its five steps are: find and read the task; read the context file and `requirements.md` whole and derive the acceptance bar, reading a prior task's live deliverable where the bar depends on one; carry out the task; verify against the bar; remove the section through the task-list tool and hand on the bar. Step 2 ends on the no-drift rule, "Hold that derived bar in context verbatim", and step 3 opens with the uncommitted-changes paragraph and keeps the running list of touched paths. The file names no milestones-tool call and no git read of any kind: its one tool command is step 5's `python3 {{PLUGIN_ROOT}}/tools/task_list.py remove`, and it names no commit. Its last edits were two tasks of milestone 54 on 2026-10-30; `milestones/starting-state-refresh/` did not touch it.
+
+### The completion runners
+
+`core/agents/complete-task.md` reads only its own file and the procedure, which it is told to follow exactly, and adds the step-5 call that writes `body.txt` and `paths.txt`; `core/skills/complete-task/SKILL.md` follows the same procedure inline, with the scope gate between its steps 1 and 2 and the removal chained with the commit tool. `core/skills/complete-all-tasks/SKILL.md` dispatches the agent with three lines (task name, milestone directory, scratch directory) and holds no work context. None of the three mentions the record or any milestones-tool query but the gate's, so whatever the procedure names reaches both runners through the procedure alone.
+
+### The milestones tool's `tasks` and `show` queries
+
+`core/tools/milestones.py`, run from the workspace root, holds eight queries. `tasks PATH --with-body` prints every `Task-completion:` commit that changed PATH, newest first, as four tab-separated fields (abbreviated hash, author date, milestone path, title) with each commit's body, the verified bar, indented by four spaces beneath it; it prints nothing and exits 0 for a path in the tree or in history that no task commit changed, and refuses only a path found in neither. `show MILESTONE_PATH` takes the path exactly as that third field prints it and prints the milestone's `requirements.md` whole, from the working tree when the milestone is live and from the finish commit's parent when it is finished. Neither checks for a shallow clone, the task record starts at 2026-09-02, and a commit joining no single milestone prints `-` in the path field, which `show` refuses.
+
+### What the reads print on this repository
+
+Measured on 2026-11-10: `tasks core/shared/complete-procedure.md` prints 8 task lines, and 39 lines with `--with-body`, only the three newest commits (2026-10-30) carrying a bar, since a bar stands in the commit body only from milestone 53 on; across the project 54 of the 228 task commits `tasks .` lists carry one. `record core/shared/complete-procedure.md` prints 434 lines against 652 for `record .`, because `record` lists every milestone whose scope contains the path and all 57 of this repository's milestones stand in the root container; it prints summaries and task titles, with no bar and no decision's words. `show` on each of the three most recently finished milestones prints 104 to 138 lines, 24 to 35 KB.
+
+### Existing milestones-tool call sites
+
+Eleven runtime files under `core/` call the milestones tool, each showing the full command `python3 {{PLUGIN_ROOT}}/tools/milestones.py <query> …`; the starting-state procedure and the review pass add the clause that it is written out in full and never through a variable, alias, or function of the runner's own. `tasks` is called only as `tasks <MILESTONE_DIR> --with-body`, fixed and unconditional, by five skills, and never on a project file's path. Two reads are already discretionary: `summary` or `show` on a milestone whose overview line bears, in the review pass and the starting-state procedure, where a failed call stops the runner on a fixed line, and `ask-in-milestone-context`'s `record <PATH>`, taken when a question concerns past work and told in prose on a failure. The starting-state procedure reads no verified bar, by the previous milestone's decision.
+
+### The design draft
+
+`ideas/milestones_addressed_by_path.md` (275 lines) plans the path-addressed shape in five steps under `## Carrying it out`: steps 1 to 4 are headed "(done)" and each records what landed and where the shape above it still reads as planned, and `### 5. The record in the completion procedure` is the one still written as a plan, at about three tasks. That section, the shape section of the same name, "Who calls it", and "Surface touched" all name the `record` query as the completion procedure's read, and the step's "What the fourth milestone found" leaves the choice among a bounded `record`, a `record` without the milestones listed by scope alone, and `tasks PATH --with-body` to this milestone. The draft says the read becomes required "if measured runs show the call never made or made by hand" and that this milestone plans the measurement; it holds no plan yet, naming neither what is counted nor over which runs.
+
+### Earlier field measurements
+
+Earlier decisions rest on counts over field runs: 202 completion-agent transcripts measured on 2026-10-08 for milestone 46 (about three in four agents wrote an ad-hoc move script), and 88 answer-sweep runs, 856 answers across seven projects, measured on 2026-10-18 for milestone 48. Their reports and scripts stood under the git-ignored `temp/`, which today holds neither `answer-sweep-efficiency-options.md` nor the `answer-sweep-analysis/` scripts; the figures survive in those milestones' `requirements.md`, which `show` prints, and in `CLAUDE.md`. In the on-demand host suite, `host.records` (`host_tests/conftest.py`) reads a run's tool calls into one shape on all three hosts, and `host_tests/test_subagent_write_tools.py` dispatches the `complete-task` agent on the fixture's one trivial task, judging it by the files it lands and reading none of the agent's own tool calls.
+
+### Docs, invariants, and tests around the procedure
+
+`docs/workflow.md`'s execution phase and its milestones-tool paragraph, which names the five skills calling `tasks`, and `docs/skill-reference.md`'s `complete-all-tasks` and `complete-task` entries describe completion with no record read; the fixed-lines table carries one row for the procedure, `No task matches the given name.`. In `CLAUDE.md` the milestones-tool invariant lists each query's callers without the completion procedure, and the task-altitude, starting-state, and return-contract invariants describe the procedure's bar and its reads. No test under `tests/` reads `complete-procedure.md`: the fixed-call tests extract the runners' own calls, and `tests/test_fixed_console_lines.py` checks the stop line in every rendered tree. The procedure is rendered into `hosts/claude/shared/`, `hosts/antigravity/shared/`, and `hosts/codex/plugins/cairn/shared/`, with `{{PLUGIN_ROOT}}` and `{{CONTEXT_FILE}}` filled per host, and `uv run scripts/build_hosts.py --check` fails while the committed trees differ from a fresh build.
+
+### The record and what is in flight
+
+All 56 finished milestones share this milestone's root scope. Three bear directly: milestone 53 (2026-10-30) moved a completed task's record into its `Task-completion:` commit and created the tool with `tasks`; milestone 54 (2026-11-09) added `record`, `summary`, and `milestones` and addressed every milestone by path; `milestones/starting-state-refresh/` (2026-11-10) added `show` and `since`, put the history read into the starting state, and decided that read takes summaries and decisions and no bar. No other milestone is live, so nothing holds or prepares in the scope.
+
 ## Decisions
 
 ## Out of Scope
