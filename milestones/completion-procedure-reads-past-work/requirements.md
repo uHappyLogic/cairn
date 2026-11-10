@@ -56,5 +56,7 @@ All 56 finished milestones share this milestone's root scope. Three bear directl
 
 - **Context file.** Only the milestone's `requirements.md` counts as explaining a file's shape: its goal, its `## Relevant starting state`, and its recorded decisions. What the context file says about the file, however fully it gives the reason (in this repository a `CLAUDE.md` invariant), does not count, so an edited file whose shape `requirements.md` does not explain triggers the `tasks <path> --with-body` read even when the context file explains it. The procedure says this in one clause of its trigger sentence.
 
+- **No bound.** The procedure shows the full fixed `tasks <path> --with-body` command with no pipe, flag, or size rule, and the runner takes its whole print whatever its length. No bound is added in this milestone. If the print's size later proves a problem, a later milestone revisits it, most directly by giving the tool a bound of its own, as `milestones` has `--last N`.
+
 ## Out of Scope
 
