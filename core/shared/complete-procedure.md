@@ -70,6 +70,25 @@ relevant starting state, and its recorded decisions. This is what tells you what
 means for this task beyond the brief's own sentences — a decision recorded there is binding
 on the work, and any value, name, or threshold it fixes is authoritative.
 
+**The past-work read.** Why an existing file is the way it is stands in the project's completed
+tasks, read with `python3 {{PLUGIN_ROOT}}/tools/milestones.py tasks <path> --with-body` run from
+the workspace root, `<path>` the file's path, its whole print taken whatever its length, and
+followed where a printed task bears by `python3 {{PLUGIN_ROOT}}/tools/milestones.py show <milestone path>`
+for that milestone's decisions in their own words — every milestones-tool call this read makes,
+the `tasks` call on each file it is taken for and each `show` follow-up alike, written out in
+full on every call, never through a variable, alias, or function of your own defined to stand
+for the command or any part of it. `tasks` prints, newest first, one tab-separated line per task
+commit that changed the file — its abbreviated hash, date, milestone path, and title — with that
+task's verified bar indented beneath it, and `show` takes the milestone path exactly as that
+line's third field prints it. Take the read for each file the task edits rather than creates
+whose shape you judge `requirements.md` does not explain, only this milestone's goal, relevant
+starting state, and recorded decisions counting as an explanation and never what
+`{{CONTEXT_FILE}}` says about the file, however fully it gives the reason. Deleting, renaming,
+or moving a file that already exists counts as editing it, and the read on it is taken on the
+path the file has before the task, since the history follows no rename. Take it here for the
+files the task names up front: what it surfaces is input to the bar you derive next and may fix
+a criterion. Step 3 takes it for the rest.
+
 Then **derive the task's acceptance bar**: turn the task description plus what
 `requirements.md` binds for it into an explicit list of concrete, checkable criteria. Each
 criterion must be an observable property of a deliverable — something you can confirm by
@@ -106,6 +125,12 @@ Resolve anything a sibling task was to provide the same way — by reading that 
 deliverable in the project and building against what is really there. Since tasks run in
 order, the deliverable is the contract; a name recalled from another task's description is
 not.
+
+**Take the past-work read before an edit step 2 did not take it for.** When your edits reach an
+existing file beyond those the task names up front — to edit, delete, rename, or move it — and
+`requirements.md` does not explain its shape, take the past-work read on it, as step 2 states
+it, before you change it. What it surfaces shapes how you make the edit only: the acceptance bar
+stays exactly as step 2 derived it and is never re-derived on it.
 
 If the goal leaves genuine ambiguity, resolve it the way the description, the derived
 acceptance bar, and `requirements.md` most plausibly intend — the derived bar is your
