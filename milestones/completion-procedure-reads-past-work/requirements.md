@@ -64,5 +64,7 @@ All 56 finished milestones share this milestone's root scope. Three bear directl
 
 - **Evidence home.** The plan in `ideas/milestones_addressed_by_path.md` states that the measurement's scripts and its report are committed in this repository under `ideas/`, beside the draft, for instance in one subdirectory named for the measurement, so the plan and its evidence stand together and the figures can be checked again. The raw transcripts are not committed, and what the report takes from other projects is kept to counts. Nothing of the measurement is kept under the git-ignored `temp/`.
 
+- **Run population.** The read is counted only against runs that a reader judges to have met the trigger. Among the completion runs that modified an existing file, milestone files excluded, the reader reads `requirements.md` as it stood at the run's start and decides, per edited file, whether it explains that file's shape; only runs with at least one unexplained edited file are counted, so a miss means a run that should have read past work and did not.
+
 ## Out of Scope
 
