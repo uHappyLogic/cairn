@@ -68,5 +68,7 @@ All 56 finished milestones share this milestone's root scope. Three bear directl
 
 - **Read outcomes.** Each counted run gets one outcome from an ordered list, the first matching class winning: the `tasks <path> --with-body` command as shown (the full fixed command, written out literally, on an edited file's path); the milestones tool in another form (`tasks` without `--with-body`, `record` or another query on the file, a relative or variable-held tool path, an alias or function standing for the command); a hand-composed `git log`, `git blame`, `git show`, or `git diff` naming the file, a `git show` of a tool-printed hash being the tool read's follow-up and not this class; or no history read. A failed call counts under the form it was written in, and the `show <milestone path>` follow-up is recorded beside the outcome as a yes or no, not as an outcome of its own.
 
+- **Result requiring the read.** The plan fixes the rule in advance and pools both failure kinds: the read becomes a required step when the counted runs that took no history read or composed their own reach a stated share below half. The share is set low enough to fall under the earlier measured failure rates, those that justified the task-list and fold tools, for instance one counted run in four.
+
 ## Out of Scope
 
