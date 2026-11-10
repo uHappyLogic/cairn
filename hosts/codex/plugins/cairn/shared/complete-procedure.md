@@ -89,6 +89,25 @@ path the file has before the task, since the history follows no rename. Take it 
 files the task names up front: what it surfaces is input to the bar you derive next and may fix
 a criterion. Step 3 takes it for the rest.
 
+A failed call of the read, the `tasks` call or a `show` follow-up, whatever the reason (a `-` in
+the milestone-path field, which `show` refuses, included), is the read not taken rather than a
+failed step the opening rule has you diagnose, fix, and retry, and never a reason to stop the
+task: carry on from `requirements.md`, `AGENTS.md`, and the live material, printing no
+fixed line. Inline, as the `complete-task` skill, tell the user in prose that the past-work read
+failed, quoting its one `Error: <reason>` line from stderr verbatim; in isolation, as the
+`complete-task` agent, carry on and report nothing about it.
+
+When the read surfaces an earlier milestone's decision or verified bar that carrying out the
+task as briefed would undo, and this milestone's `requirements.md` does not address it, the
+earlier decision governs how the work is done wherever the brief can still be met: among the
+ways of meeting the brief, take one that leaves that decision or bar intact, and here the read
+may fix a criterion to that effect. Only where every way of meeting the brief undoes it does the
+brief govern, overriding it as the later-recorded decision of a converged milestone; never stop
+for it, and flag nothing. Every criterion the read fixes here names what it was formed against
+inside its own `- ` bullet: the abbreviated hash from the `tasks` line when a task commit's diff
+or bar fixed it, and the milestone path from that line's third field when a decision `show`
+printed fixed it.
+
 Then **derive the task's acceptance bar**: turn the task description plus what
 `requirements.md` binds for it into an explicit list of concrete, checkable criteria. Each
 criterion must be an observable property of a deliverable — something you can confirm by
@@ -187,6 +206,7 @@ and `TASKS_TODO.md` left byte-for-byte unchanged.
 
 The bar this procedure hands to your runner takes one form: the derived acceptance bar as one
 `- ` bullet per criterion, in the order you verified them, written as they stood when they
-passed in step 4 — the same bar, neither re-derived nor summarized into prose, with no label,
+passed in step 4 — the same bar, neither re-derived nor summarized into prose, a criterion the
+past-work read fixed carrying its source inside its own bullet as step 2 states, with no label,
 brief, or other line beside it. It reaches the record your runner's own file writes through
 the one shell call that file shows, which runs this command and carries the bar with it.
