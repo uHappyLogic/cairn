@@ -54,5 +54,7 @@ All 56 finished milestones share this milestone's root scope. Three bear directl
 
 - **Deleted, renamed, and moved files.** Deleting, renaming, or moving a file that already exists counts as editing it. The read is taken under the same condition as for an edit, `requirements.md` not explaining the file's existence or place, at step 2 for the files the task names up front and at step 3 for the rest. The query is `tasks` on the path the file has before the task, which the procedure states in one clause, because the tool follows no rename (its log reads set `log.follow=false`): the new path carries no history from before the move, while the old path, still in the tree when the read is taken, lists every task commit that changed it. The tool stays unchanged.
 
+- **Context file.** Only the milestone's `requirements.md` counts as explaining a file's shape: its goal, its `## Relevant starting state`, and its recorded decisions. What the context file says about the file, however fully it gives the reason (in this repository a `CLAUDE.md` invariant), does not count, so an edited file whose shape `requirements.md` does not explain triggers the `tasks <path> --with-body` read even when the context file explains it. The procedure says this in one clause of its trigger sentence.
+
 ## Out of Scope
 
